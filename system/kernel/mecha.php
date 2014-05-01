@@ -23,14 +23,14 @@ class Mecha {
     /**
      * Convert array into object
      */
-    public function O($array) {
+    public static function O($array) {
         return is_array($array) ? (object) array_map('self::O', $array) : $array;
     }
 
     /**
      * Convert object into array
      */
-    public function A($object) {
+    public static function A($object) {
         return is_object($object) ? array_map('self::A', (array) $object) : $object;
     }
 

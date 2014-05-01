@@ -120,7 +120,7 @@ class Text {
     /**
      * Convert text into slug URL
      */
-    private function text_to_slug($text, $lower = true, $strip_underscores_and_dots = true) {
+    private static function text_to_slug($text, $lower = true, $strip_underscores_and_dots = true) {
         if($lower) $text = strtolower($text);
         $text = preg_replace(
             array(
@@ -143,7 +143,7 @@ class Text {
     /**
      * Convert slug URL into plain text
      */
-    private function slug_to_text($slug) {
+    private static function slug_to_text($slug) {
         // 1. Replace `+` to ` `
         // 2. Replace `-` to ` `
         // 3. Replace `---` to `-`
@@ -203,7 +203,7 @@ class Text {
     }
 
     /**
-     * Convert formatted text fie into page array
+     * Convert formatted text file into page array
      */
     public static function toPage($text, $parse_contents = true) {
         $results = array();
