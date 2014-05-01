@@ -93,7 +93,7 @@ class File {
 
     // Write something before saving
     public static function write($data) {
-        self::$cache = str_replace("\r", "", $data); // try to only accept `\n`
+        self::$cache = $data;
         return new static;
     }
 

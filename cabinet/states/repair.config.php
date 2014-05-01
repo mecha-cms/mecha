@@ -37,7 +37,9 @@ return array(
     ),
 
     // Tag Page
-    'tag' => array(        'title' => 'Tagged',        'slug' => 'tagged',
+    'tag' => array(
+        'title' => 'Tagged',
+        'slug' => 'tagged',
         'per_page' => 7
     ),
 
@@ -66,7 +68,7 @@ return array(
     'defaults' => array(
         'page_title' => "",
         'page_content' => "",
-        'page_custom_css' => "",
-        'page_custom_js' => ""
+        'page_custom_css' => "<style media=\"screen\">\n\n</style>",
+        'page_custom_js' => "<script>\n\n</script>"
     )
 );

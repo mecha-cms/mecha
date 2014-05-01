@@ -231,8 +231,10 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
          * Collect all available slug to prevent duplicate
          */
         $slugs = array();
-        foreach(($path == 'article' ? Get::articles() : Get::pages()) as $file) {
-            $slugs[] = end(explode('_', basename($file, '.txt')));
+        if($files = $path == 'article' ? Get::articles() : Get::pages()) {
+            foreach($files as $file) {
+                $slugs[] = end(explode('_', basename($file, '.txt')));
+            }
         }
 
         /**
