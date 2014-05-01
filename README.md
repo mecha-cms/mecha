@@ -29,7 +29,7 @@ Mecha CMS
  1. Make sure that you already have the required components.
  2. Download **Mecha** by cloning this **GitHub** repo.
  3. Upload **Mecha** through your FTP/SFTP to the public folder/directory in your site.
- 4. Type `http://example.org/install.php` in the browser for installing. Or, if you placed this CMS in a sub-folder, type `http://example.org/sub-folder-name/install.php` instead [^1]
+ 4. Type `http://example.org/install.php` in the browser for installing. Or, if you placed this CMS in a sub-folder, type `http://example.org/sub-folder-name/install.php` instead &mdash;Seriously, if you really typed domain **http://example.org** in the browser, then you really are in a big trouble!
  5. Add your name, your username and your password in the form.
  6. Log in!
  7. After logged in, you can start configuring your blog by visiting the configuration page.
@@ -38,10 +38,3 @@ Mecha CMS
 ### Documentation
 
 Coming soon&hellip;
-
-*[CMS]: Content Management System
-*[HTML]: Hyper Text Markup Language
-*[CSS]: Cascade Style Sheet
-*[RSS]: Rich Site Summary
-
-[^1]: Seriously, if you really typed domain **http://example.org** in the browser, then you really are in a big trouble!
