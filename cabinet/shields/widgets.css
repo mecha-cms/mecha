@@ -1,0 +1,58 @@
+.widget .counter:before {content: " ("}
+.widget .counter:after {content:")"}
+
+.widget-archive-dropdown select {
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  display:block;
+  width:100%;
+  font:inherit;
+  color:inherit;
+  background:none;
+  border:1px solid;
+  outline:none;
+  padding:.2em;
+  cursor:pointer;
+}
+
+.widget-archive-hierarchy ul,
+.widget-archive-hierarchy li {
+  margin:0;
+  padding:0;
+  list-style:none;
+  clear:both;
+}
+
+.widget-archive-hierarchy .toggle {
+  width:1.2em;
+  float:left;
+  text-align:left;
+  text-decoration:none;
+  color:inherit;
+  cursor:pointer;
+  font-family:Helmet,FreeSans,Sans-Serif;
+}
+
+.widget-archive-hierarchy .archive-date .collapsed {display:none}
+.widget-archive-hierarchy .archive-date ul {margin-left:1.2em}
+
+.widget .selected a {
+  color:inherit;
+  text-decoration:none;
+}
+
+.widget-tag-cloud .tag-size {margin-left:.25em}
+.widget-tag-cloud .tag-size-0 {font-size:80%}
+.widget-tag-cloud .tag-size-1 {font-size:90%}
+.widget-tag-cloud .tag-size-2 {font-size:100%}
+.widget-tag-cloud .tag-size-3 {font-size:110%}
+.widget-tag-cloud .tag-size-4 {font-size:120%}
+.widget-tag-cloud .tag-size-5 {font-size:130%}
+.widget-tag-cloud .tag-size-6 {font-size:140%}
+.widget-tag-cloud .tag-size-7 {font-size:150%}
+
+.widget-tag-list .selected a {
+  color:inherit;
+  text-decoration:none;
+}

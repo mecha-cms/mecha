@@ -1,0 +1,13 @@
+Semua bidang kustom akan tersedia di dalam artikel dan halaman statis melalui variabel ini:
+
+#### Untuk Artikel
+
+~~~ .php
+$article->fields->kunci_bidang_kustom_anda
+~~~
+
+#### Untuk Halaman
+
+~~~ .php
+$page->fields->kunci_bidang_kustom_anda
+~~~

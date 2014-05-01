@@ -1,0 +1,469 @@
+# -----------------------------
+#  SOME DEFAULT TEXT FOR THEME
+# -----------------------------
+
+home: Home
+
+about: About
+
+author: Author
+authors: Authors
+
+profile: Profile
+profiles: Profiles
+
+name: Name
+names: Names
+
+anon: Anonymous
+
+unknown: Unknown
+
+admin: Administrator
+admins: Administrators
+
+guest: Guest
+guests: Guests
+
+pilot: Pilot
+pilots: Pilots
+
+passenger: Passenger
+passengers: Passengers
+
+intruder: Intruder
+intruders: Intruders
+
+visitor: Visitor
+visitors: Visitors
+
+shield: Shield
+shields: Shields
+
+username: Username
+usernames: Usernames
+
+password: Password
+passwords: Passwords
+
+status: Status
+statuses: Statuses
+
+photo: Photo
+photos: Photos
+
+id: ID
+ids: IDs
+
+email: Email
+emails: Emails
+
+url: URL
+urls: URLs
+
+message: Message
+messages: Messages
+
+prev: Previous
+next: Next
+
+old: Old
+new: New
+
+older: Older <i class="fa fa-arrow-circle-right"></i>
+newer: <i class="fa fa-arrow-circle-left"></i> Newer
+
+more: More
+less: Less
+
+read_more: Read More &raquo;
+
+welcome: Welcome
+
+from: From
+for: For
+to: To
+by: By
+as: As
+at: At
+on: On
+posted_by: Posted by
+
+comment: Comment
+comments: Comments
+comment_name: Name
+comment_email: Email
+comment_url: URL
+comment_status: Status
+comment_message: Message
+comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+comment_notification: A new comment has been added to this page => %s
+comment_notification_subject: A new comment has been added.
+
+contact_name: Name
+contact_email: Email
+contact_url: URL
+contact_message: Message
+contact_subject: Subject
+
+link: Link
+links: Links
+
+permalink: Permalink
+permalinks: Permalinks
+
+field: Field
+fields: Fields
+
+text: Text
+
+slug: Slug
+slugs: Slugs
+
+description: Description
+descriptions: Descriptions
+
+summary: Summary
+summaries: Summaries
+
+boolean: Boolean
+booleans: Booleans
+
+slogan: Slogan
+slogans: Slogans
+
+detail: Detail
+details: Details
+
+action: Action
+actions: Actions
+
+keyword: Keyword
+keywords: Keywords
+
+captcha: Captcha
+captchas: Captchas
+
+spam: Spam
+spams: Spams
+
+post: Post
+posts: Posts
+
+page: Page
+pages: Pages
+
+article: Article
+articles: Articles
+
+title: Title
+titles: Titles
+untitled: Untitled
+
+date: Date
+dates: Dates
+
+time: Time
+
+timezone: Timezone
+timezones: Timezones
+
+charset: Charset
+charsets: Charsets
+
+language: Language
+languages: Languages
+
+help: Help
+
+content: Content
+contents: Contents
+
+tag: Tag
+tags: Tags
+tagged: Tagged
+untagged: Untagged
+
+category: Category
+categories: Categories
+uncategorised: Uncategorised
+
+asset: Asset
+assets: Assets
+
+menu: Menu
+menus: Menus
+
+config: Configuration
+configs: Configurations
+
+setting: Setting
+settings: Settings
+
+cache: Cache
+caches: Caches
+
+feed: Feed
+feeds: Feeds
+
+sitemap: Sitemap
+
+shortcode: Shortcode
+shortcodes: Shortcodes
+
+plugin: Plugin
+plugins: Plugins
+
+install: Install
+uninstall: Uninstall
+
+file: File
+files: Files
+
+last: Last
+last_: Last %s
+
+size: Size
+sizes: Sizes
+
+type: Type
+types: Types
+
+error: Error
+errors: Errors
+
+key: Key
+keys: Keys
+
+value: Value
+values: Values
+
+
+# -----------------------------------
+#  MONTHS AND DAY NAMES LOCALIZATION
+# -----------------------------------
+
+months: January,February,March,April,May,June,July,August,September,October,November,December
+days: Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday
+
+
+# ---------
+#  ACTIONS
+# ---------
+
+ok: OK
+cancel: Cancel
+yes: Yes
+no: No
+
+create: Create
+creating: Creating
+created: Created
+
+save: Save
+saving: Saving
+saved: Saved
+
+publish: Publish
+publishing: Publishing
+published: Published
+
+submit: Submit
+submitting: Submitting
+submitted: Submitted
+
+send: Send
+sending: Sending
+sent: Sent
+
+edit: Edit
+editing: Editing
+edited: Edited
+
+update: Update
+updating: Updating
+updated: Updated
+
+delete: Delete
+deleting: Deleting
+deleted: Deleted
+
+delete_selected_files: Delete Selected Files
+deleting_selected_files: Deleting files
+deleted_selected_files: Selected files deleted
+
+remove: Remove
+removing: Removing
+removed: Removed
+
+rename: Rename
+renaming: Renaming
+renamed: Renamed
+
+repair: Repair
+repairing: Repairing
+repaired: Repaired
+
+search: Search
+searching: Searching
+searched: Searched
+
+find: Find
+finding: Finding
+found: Found
+
+select: Select
+selecting: Selecting
+selected: Selected
+
+upload: Upload
+uploading: Uploading
+uploaded: Uploaded
+
+load: Load
+loading: Loading
+loaded: Loaded
+
+login: Login
+logging_in: Logging in
+logged_in: Logged in
+
+logout: Logout
+logging_out: Logging out
+logged_out: Logged out
+
+log_in: Log In
+log_out: Log Out
+
+view: View
+viewing: Viewing
+viewed: Viewed
+
+preview: Preview
+previewing: Previewing
+Previewed: Previewed
+
+manage: Manage
+managing: Managing
+managed: Managed
+
+disable: Disable
+disabling: Disabling
+disabled: Disabled
+
+
+# ---------------
+#  MANAGER PAGES
+# ---------------
+
+manager:
+
+  powered: Powered by <strong>Mecha CMS</strong>
+
+  placeholder_title: Your Awesome Title
+  placeholder_slug: your-awesome-title
+  placeholder_content: Content goes here&hellip;
+  placeholder_description: Some description about this post (optional).
+  placeholder_js: Write your custom JavaScript here&hellip;
+  placeholder_css: Write your custom CSS here&hellip;
+  placeholder_file: Select a file&hellip;
+  placeholder_asset_name: example-asset-name.jpg
+  placeholder_spam_keywords: Comma separated list of keywords to be blacklisted.
+
+  title_new_article: New Article
+  title_new_page: New Page
+
+  title_compose: Compose
+
+  title_custom_css_and_js: Custom CSS and JavaScript
+
+  title_live_preview_css: Live Preview CSS
+  title_live_preview_js: Live Preview JavaScript
+
+  title_custom_js: Custom <abbr title="JavaScript">JS</abbr>
+  title_custom_css: Custom <abbr title="Cascade Style Sheet">CSS</abbr>
+
+  title_title_separator: Title Separator
+
+  title_general: General
+  title_header: Header
+  title_authorization: Authorization
+  title_page: Page
+  title_page_index: Index Page
+  title_page_tag: Tag Page
+  title_page_archive: Archive Page
+  title_page_search: Search Page
+  title_page_manager: Manager Page
+  title_other: Other
+
+  title_page_excerpt: Excerpt
+  title_page_excerpt_length: Excerpt Length
+  title_page_excerpt_tail: Excerpt Tail
+
+  title_per_page: Per Page
+  title_language_direction: Language Direction
+
+  title_allow_comment: Allow comments
+  title_allow_comment_notification: Notification for new comments
+  title_allow_resource_versioning: Enable resource versioning
+
+  title_widget_time: Widget time as <var>YYYY-MM</var> (year first)
+
+  title_defaults_page_title: Default Page Title
+  title_defaults_page_content: Default Page Content
+  title_defaults_page_custom_css: Default Page <abbr title="Cascade Style Sheet">CSS</abbr>
+  title_defaults_page_custom_js: Default Page JavaScript
+
+  this_article: This Article
+  this_page: This Page
+
+
+# ---------------
+#  NOTIFICATIONS
+# ---------------
+
+notify_empty: No %s yet.
+notify_exist: %s already exist.
+notify_not_exist: %s does not exist.
+notify_available: %s is available.
+notify_not_available: %s is not available.
+
+notify_file_exist: File %s already exist.
+notify_file_not_exist: File %s does not exist.
+notify_file_deleted: File %s successfully deleted.
+
+notify_success_created: <strong>%s</strong> created.
+notify_success_submitted: <strong>%s</strong> submitted.
+notify_success_updated: <strong>%s</strong> updated.
+notify_success_deleted: <strong>%s</strong> successfully deleted.
+
+notify_error_no_file_selected: Please select a file.
+notify_error_no_files_selected: Please select at least one file.
+notify_error_file_extension: Extension <code>%s</code> not allowed.
+notify_error_file_extension_missing: Please include the file extension. Example: <code>file.jpg</code>
+notify_error_file_size: File size must be under <code>%s</code>.
+notify_error_username_or_password: Invalid username or password.
+notify_error_empty_fields: Please fill out all the required fields.
+notify_error_empty_field: Please fill out the <strong>%s</strong> field.
+notify_error_slug_exist: Slug <code>%s</code> already exist.
+notify_error_slug_missing_letter: Slug URI should contain at least one letter, from <code>A</code> to <code>Z</code>.
+notify_error_post_content_empty: Post content cannot be empty.
+notify_error_too_short: <strong>%s</strong> too short.
+notify_error_too_long: <strong>%s</strong> too long.
+notify_error_not_found: Not found!
+
+notify_invalid_token: Invalid token.
+notify_invalid_time_pattern: Invalid time pattern.
+notify_invalid_per_page_number: Number of pages only accept non-decimal, positive number. Greater than zero.
+notify_invalid_indent_character: Use 4 spaces for indentation.
+
+notify_invalid_email: Invalid email address.
+notify_invalid_url: Invalid URL.
+notify_invalid_math_answer: Wrong math answer.
+
+notify_confirm_maybe_you_mean: Maybe you mean %s
+notify_confirm_delete: Are you sure you want to delete this?
+notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom CSS and JavaScript of %1$s.
+
+notify_warning_intruder_detected: Intruder detected!
+notify_warning_forbidden_input: You are not allowed to use %s in the %s field.

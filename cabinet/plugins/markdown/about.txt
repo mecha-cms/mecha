@@ -1,0 +1,6 @@
+Title: Markdown Plugin
+Author: Michel Fortin <http://michelf.ca/projects/php-markdown>
+
+====
+
+Markdown Extra &ndash; A text-to-HTML convertion tool for web writers.

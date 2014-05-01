@@ -1,0 +1,82 @@
+### 1. Membuat Menu Sederhana
+
+~~~
+Beranda: /
+Tentang: /tentang
+Kontak: /kontak
+~~~
+
+**Hasil:**
+
+~~~ .html
+<ul>
+  <li><a href="{{url}}">Beranda</a></li>
+  <li><a href="{{url}}tentang">Tentang</a></li>
+  <li><a href="{{url}}kontak">Kontak</a></li>
+</ul>
+~~~
+
+### 2. Menu Dropdown
+
+Gunakan 4 spasi untuk indentasi.
+
+~~~
+Menu:
+    Submenu 1: /submenu-1
+    Submenu 2: /submenu-2
+    Submenu 3:
+        Submenu 3.1: /submenu-3-1
+~~~
+
+**Hasil:**
+
+~~~ .html
+<ul>
+  <li><a href="#">Menu</a>
+    <ul>
+      <li><a href="{{url}}submenu-1">Submenu 1</a></li>
+      <li><a href="{{url}}submenu-2">Submenu 2</a></li>
+      <li><a href="#">Submenu 3</a>
+        <ul>
+          <li><a href="{{url}}submenu-3-1">Submenu 3.1</a></li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>
+~~~
+
+### 3. Membuat Menu Induk Menjadi Aktif
+
+~~~
+Menu (/suatu-tempat):
+    Submenu 1: /submenu-1
+    Submenu 2: /submenu-2
+~~~
+
+**Hasil:**
+
+~~~ .html
+<ul>
+  <li><a href="{{url}}suatu-tempat">Menu</a>
+    <ul>
+      <li><a href="{{url}}submenu-1">Submenu 1</a></li>
+      <li><a href="{{url}}submenu-2">Submenu 2</a></li>
+    </ul>
+  </li>
+</ul>
+~~~
+
+### 4. Tautan Eksternal
+
+~~~
+Menu: http://example.org
+~~~
+
+**Hasil:**
+
+~~~ .html
+<ul>
+  <li><a href="http://example.org">Menu</a></li>
+</ul>
+~~~

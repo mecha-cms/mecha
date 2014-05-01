@@ -1,0 +1,13 @@
+All custom fields will be available in the article pages and static pages through this variable:
+
+#### For Articles
+
+~~~ .php
+$article->fields->your_custom_field_key
+~~~
+
+#### For Pages
+
+~~~ .php
+$page->fields->your_custom_field_key
+~~~

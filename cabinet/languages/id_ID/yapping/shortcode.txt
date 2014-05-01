@@ -1,0 +1,35 @@
+Untuk menyingkirkan _kode pintasan_, cukup biarkan bidang kode yang ingin dihapus menjadi kosong.
+
+### Penggunaan
+
+Sebagai tautan HTML:
+
+~~~ .html
+<a href="`{{url}}`article/lorem-ipsum">teks tautan di sini</a>
+~~~
+
+Sebagai tautan Markdown:
+
+~~~
+[teks tautan di sini](`{{url}}`article/lorem-ipsum)
+~~~
+
+### Meng-Escape Kode Pintasan
+
+Apit _kode pintasan_ dengan simbol _backtick_ untuk mencegah parse kode:
+
+~~~
+Parse pola {{ini}}, tapi bukan ``{{ini}}``
+~~~
+
+### Tingkat Lanjut
+
+Anda bisa menerapkan variabel di dalam pola _kode pintasan_ melalui simbol `%s`. Sebagai contoh:
+
+Kunci                      | Nilai
+-------------------------- | ----------------------------
+``{{div class:%s id:%s}}`` | ``<div class="\1" id="\2">``
+
+Sehingga, menuliskan ``{{div class:foo id:bar}}`` di dalam halaman tulis akan menghasilkan ``<div class="foo" id="bar">`` di hasil keluaran.
+
+*[HTML]: Hyper Text Markup Language

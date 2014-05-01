@@ -1,0 +1,6 @@
+Title: Facebook OpenGraph Plugin for Mecha CMS
+Author: Taufik Nurrohman <http://latitudu.com>
+
+====
+
+Inject Facebook OpenGraph meta tags inside your Mecha&rsquo;s head automatically!
