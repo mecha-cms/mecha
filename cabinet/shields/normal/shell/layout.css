@@ -113,6 +113,9 @@ body {
   left:0;
   z-index:999;
   max-width:200px;
+  min-width:140px;
+  background-color:white;
+  border:1px solid;
   display:none;
 }
 
@@ -123,13 +126,12 @@ body {
 
 .blog-navigation li li a {
   padding:0 15px;
-  margin:2px 0 0;
+  margin:0;
 }
 
 .blog-navigation li ul ul {
   top:-2px;
   left:100%;
-  padding-left:2px;
 }
 
 .blog-navigation li:hover > ul {display:block}
@@ -159,7 +161,7 @@ body {
 }
 
 .post-title {margin:0 0 .7em}
-.post-footer {margin:1.3846153846153846em 0 0}
+.post-footer {margin:5% 0 0}
 
 
 /* BLOG PAGER */
@@ -315,6 +317,20 @@ body {
   .blog-navigation li {
     float:none;
     display:block;
+  }
+  .blog-navigation li ul {
+    display:block;
+    position:static;
+    width:auto;
+    max-width:100%;
+    min-width:0;
+    background:none;
+    border:none;
+  }
+  .blog-navigation li ul a {
+    margin:2px 0 0;
+    background-color:#333;
+    color:white;
   }
   .blog-sidebar,
   .blog-posts {
