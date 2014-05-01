@@ -32,11 +32,11 @@ class Asset {
     private static function checkPath($path) {
         $path = ltrim($path, '\\/');
         $config = Config::get();
-        if(File::exist(SHIELD . '/' . $config->shield . '/' . $path)) {
-            return SHIELD . '/' . $config->shield . '/' . $path;
+        if(File::exist(SHIELD . DS . $config->shield . DS . $path)) {
+            return SHIELD . DS . $config->shield . DS . $path;
         } else {
-            if(File::exist(ROOT . '/' . $path)) {
-                return ROOT . '/' . $path;
+            if(File::exist(ROOT . DS . $path)) {
+                return ROOT . DS . $path;
             } else {
                 return '## FILE NOT FOUND: ' . $path . ' ##';
             }

@@ -618,7 +618,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/(:any)', function($p
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->deleting . ': ' . ($path == 'asset' ? $speak->asset : $speak->cache) . $config->title_separator . $config->title,
+        'page_title' => $speak->deleting . ': ' . ($path == 'asset' ? $speak->asset : $speak->cache) . $config->title_separator . $config->manager->title,
         'asset_name' => $deletes,
         'cargo' => DECK . '/workers/kill.asset.php'
     ));
@@ -1149,7 +1149,7 @@ Route::accept($config->manager->slug . '/plugin/kill/(:any)', function($slug = "
     } else {
 
         Notify::warning($speak->notify_confirm_delete);
-    
+
     }
 
     Shield::attach('manager', false);

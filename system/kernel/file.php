@@ -86,7 +86,7 @@ class File {
             $file['extension'] = "";
         }
         if(in_array(strtolower($file['extension']), $image_extensions)) {
-            return '<img alt="' . basename($opened) . '" src="' . str_replace(ROOT, Config::get('url'), $opened) . '">';
+            return '<img alt="' . basename($opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), $opened) . '">';
         }
         return $cache;
     }
@@ -216,7 +216,7 @@ class File {
         }
 
         // Create public asset link to show on file uploaded
-        $link = str_replace(ROOT, $config->url, $destination) . '/' . $file['name'];
+        $link = str_replace(array(ROOT, '\\'), array($config->url, '/'), $destination) . '/' . $file['name'];
 
         $uploaded = array(
             $speak->uploaded => $file['name'],

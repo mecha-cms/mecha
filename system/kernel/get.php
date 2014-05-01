@@ -92,7 +92,7 @@ class Get {
                 $info = pathinfo($files[$i]);
                 $tree[] = array(
                     'path' => $files[$i],
-                    'url' => str_replace(ROOT, $config->url, $files[$i]),
+                    'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $files[$i]),
                     'name' => $info['basename'],
                     'dirname' => $info['dirname'],
                     'extension' => strtolower($info['extension']),
