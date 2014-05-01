@@ -46,7 +46,7 @@ class Route {
     private function __construct() {}
     private function __clone() {}
 
-    private function fix($string) {
+    private static function fix($string) {
         return str_replace(
             array(':any', ':num'),
             array('.[^/]*', '\d+'),

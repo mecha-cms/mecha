@@ -116,7 +116,7 @@ class Shield {
             exit;
         }
 
-        ob_start($minify ? 'self::sanitize_output' : "");
+        ob_start($minify ? 'self::sanitize_output' : null);
         Weapon::fire('before_launch');
 
         require $shield;
@@ -164,7 +164,7 @@ class Shield {
 
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
 
-        ob_start($minify ? 'self::sanitize_output' : "");
+        ob_start($minify ? 'self::sanitize_output' : null);
         Weapon::fire('before_launch');
 
         require $shield;
