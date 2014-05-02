@@ -208,11 +208,27 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
 
         if( ! empty($request['email'])) {
+
             if( ! Guardian::check($request['email'])->this_is_email) {
+
                 Notify::error($speak->notify_invalid_email);
+
+            } else {
+
+                /**
+                 * Do not allow passengers to enter your
+                 * email address in the comment email field
+                 */
+                if( ! Guardian::happy() && $request['email'] == $config->author_email) {
+                    Notify::warning(Config::speak('notify_warning_forbidden_input', array($request['email'], strtolower($speak->email))));
+                }
+
             }
+
         } else {
+
             Notify::error(Config::speak('notify_error_empty_field', array($speak->email)));
+
         }
 
         if( ! empty($request['url']) && ! Guardian::check($request['url'])->this_is_URL) {
@@ -242,14 +258,6 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         if(strlen($request['message']) > 1700) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
             Guardian::memorize();
-        }
-
-        /**
-         * Do not allow passengers to enter your
-         * email address in the comment email field
-         */
-        if( ! Guardian::happy() && $request['email'] == $config->author_email) {
-            Notify::warning(Config::speak('notify_warning_forbidden_input', array($request['email'], strtolower($speak->email))));
         }
 
         /**

@@ -48,6 +48,7 @@ class File {
 
     // Check if file already exist
     public static function exist($path) {
+        $path = str_replace(array('\\', '/'), DS, $path);
         return file_exists($path) ? $path : false;
     }
 
@@ -125,6 +126,7 @@ class File {
 
     // Save the written data to somewhere
     public static function saveTo($path) {
+        $path = str_replace(array('\\', '/'), DS, $path);
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
         fwrite($handle, self::$cache);
         fclose($handle);
@@ -148,7 +150,7 @@ class File {
             }
             foreach($destination as $dest) {
                 if(is_dir($dest)) {
-                    $dest = trim($dest, '\\/') . DS . basename(self::$opened);
+                    $dest = rtrim($dest, '\\/') . DS . ltrim(basename(self::$opened), '\\/');
                 }
                 if( ! self::exist($dest) && ! self::exist(preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest))) {
                     self::$increment = 0;
@@ -171,7 +173,7 @@ class File {
             'max' => 2097152, // Maximum allowed file size
             'allow' => array( // List of allowed file extensions
                 'css', 'html', 'js', 'md', 'txt',
-                'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
+                'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
                 'eot', 'ttf', 'woff',
                 'rar', 'tar', 'zip'
             )

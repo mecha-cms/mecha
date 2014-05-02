@@ -61,11 +61,11 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         $request['resource_versioning'] = Request::post('resource_versioning') ? true : false;
 
         // Fixes for slug pattern input
-        $request['index']['slug'] = Text::parse(Request::post('index.slug'))->to_slug;
-        $request['tag']['slug'] = Text::parse(Request::post('tag.slug'))->to_slug;
-        $request['archive']['slug'] = Text::parse(Request::post('archive.slug'))->to_slug;
-        $request['search']['slug'] = Text::parse(Request::post('search.slug'))->to_slug;
-        $request['manager']['slug'] = Text::parse(Request::post('manager.slug'))->to_slug;
+        $request['index']['slug'] = Text::parse(Request::post('index.slug', 'article'))->to_slug;
+        $request['tag']['slug'] = Text::parse(Request::post('tag.slug', 'tagged'))->to_slug;
+        $request['archive']['slug'] = Text::parse(Request::post('archive.slug', 'archive'))->to_slug;
+        $request['search']['slug'] = Text::parse(Request::post('search.slug', 'search'))->to_slug;
+        $request['manager']['slug'] = Text::parse(Request::post('manager.slug', 'manager'))->to_slug;
 
         if( // If ...
 
@@ -176,7 +176,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
     ));
 
     // Set default fields value...
-    if($page = Get::page($id, array('tags', 'comments'), ($path == 'article' ? ARTICLE : PAGE))) {
+    if($page = Get::page($id, array('content', 'tags', 'comments'), ($path == 'article' ? ARTICLE : PAGE))) {
 
         $fields = array(
             'id' => $id,

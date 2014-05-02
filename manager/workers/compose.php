@@ -1,6 +1,6 @@
 <div class="tab-area cf">
   <?php if($config->editor_mode != 'ignite'): ?>
-  <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/article/ignite"><i class="fa fa-fw fa-plus-square"></i> <?php echo $speak->new; ?></a>
+  <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type; ?>/ignite"><i class="fa fa-fw fa-plus-square"></i> <?php echo $speak->new; ?></a>
   <?php endif; ?>
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-pencil"></i> <?php echo $speak->manager->title_compose; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-leaf"></i> <?php echo $speak->manager->title_custom_css_and_js; ?></a>

@@ -398,7 +398,7 @@ class Get {
 
         if( ! isset($results['author'])) $results['author'] = $config->author;
 
-        $results['image'] = self::imageURL($content);
+        $results['image'] = self::imageURL($content, 1);
 
         if( ! isset($results['description'])) {
             $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
@@ -559,13 +559,22 @@ class Get {
 
     /**
      * =========================================================================
-     *  GET FIRST IMAGE URL FROM TEXT SOURCE
+     *  GET IMAGE URL FROM TEXT SOURCE
      * =========================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter  | Type    | Description
+     *  ---------- | ------- | ---------------------------------------------------
+     *  $source    | string  | The source text
+     *  $sequence  | integer | Sequence of available image URLs
+     *  $fallback  | string  | Fallback image URL if nothing matched
+     *  ---------- | ------- | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    public static function imageURL($source, $fallback = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC') {
+    public static function imageURL($source, $sequence = 1, $fallback = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC') {
         $images = self::imagesURL($source, $fallback);
-        return is_array($images) ? $images[0] : $fallback;
+        return is_array($images) && isset($images[$sequence - 1]) ? $images[$sequence - 1] : $fallback;
     }
 
     /**
