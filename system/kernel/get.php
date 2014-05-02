@@ -107,7 +107,7 @@ class Get {
                 if(strpos($info['filename'], $filter) !== false) {
                     $tree[] = array(
                         'path' => $files[$i],
-                        'url' => str_replace(ROOT, $config->url, $files[$i]),
+                        'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $files[$i]),
                         'name' => $info['basename'],
                         'dirname' => $info['dirname'],
                         'extension' => strtolower($info['extension']),
