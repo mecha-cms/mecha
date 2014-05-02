@@ -70,8 +70,8 @@ next: Berikutnya
 old: Lama
 new: Baru
 
-older: Lebih Lama <i class="icon icon-arrow-right"></i>
-newer: <i class="icon icon-arrow-left"></i> Lebih Baru
+older: Lebih Lama <i class="fa fa-arrow-circle-right"></i>
+newer: <i class="fa fa-arrow-circle-left"></i> Lebih Baru
 
 more: Lagi
 less: Kurangi
