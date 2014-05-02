@@ -356,7 +356,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 $custom = CUSTOM . '/' . Date::format($fields['date'], 'Y-m-d-H-i-s') . '.txt';
 
                 if(File::exist($custom)) {
-                    if(trim(File::open($custom)->read()) === "") {
+                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR) {
                         // Always delete empty custom files ...
                         File::open($custom)->delete();
                     } else {
@@ -835,7 +835,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
     $pages = array();
 
-    if($files = Mecha::eat(Get::comments())->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::comments())->order('DESC', 'path')->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
             $comment = Get::comment($comment['name']);
             $posts = Get::articles('DESC', Date::format($comment->post, 'Y-m-d-H-i-s'));
