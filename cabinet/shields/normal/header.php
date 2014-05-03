@@ -11,7 +11,7 @@
     <title><?php echo strip_tags($config->page_title); ?></title>
 
     <!--[if IE]>
-      <script src="<?php echo $config->protocol; ?>//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+      <script src="<?php echo $config->protocol; ?>html5shiv.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
     <?php Weapon::fire('shell_before'); ?>

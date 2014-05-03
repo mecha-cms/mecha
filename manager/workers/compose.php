@@ -78,7 +78,7 @@
       </div>
 
       <label class="grid-group">
-        <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_css; ?></abbr></span>
+        <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
         <span class="grid span-5"><textarea name="css" class="input-block"><?php echo $cache['css']; ?></textarea></span>
       </label>
 
