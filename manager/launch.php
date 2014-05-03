@@ -837,20 +837,10 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
     if($files = Mecha::eat(Get::comments())->order('DESC', 'path')->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
-            $comment = Get::comment($comment['name']);
-            $posts = Get::articles('DESC', Date::format($comment->post, 'Y-m-d-H-i-s'));
-            if( ! empty($posts)) {
-                $post = Get::extract($posts[0]);
-                $comment->permalink = $config->url . '/' . $config->index->slug . '/' . $post[0]['slug'] . '#comment-' . $comment->id;
-            } else {
-                $comment->permalink = '#';
-            }
-            $pages[] = $comment;
+            $pages[] = Get::comment($comment['name']);
         }
     } else {
-
         $pages = false;
-
     }
 
     Config::set(array(

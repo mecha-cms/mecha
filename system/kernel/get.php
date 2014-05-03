@@ -618,6 +618,8 @@ class Get {
 
     public static function comment($name) {
 
+        $config = Config::get();
+
         /**
          * Get comment by ID
          */
@@ -655,6 +657,14 @@ class Get {
 
         unset($results['content_raw']);
         unset($results['content']);
+
+        foreach(glob(ARTICLE . '/*.txt') as $posts) {
+            list($time, $kind, $slug) = explode('_', basename($posts, '.txt'));
+            if($time == $parts[0]) {
+                $results['permalink'] = $config->url . '/' . $config->index->slug . '/' . $slug . '#comment-' . $results['id'];
+                break;
+            }
+        }
 
         return (object) $results;
 

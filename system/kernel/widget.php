@@ -272,8 +272,8 @@ class Widget extends Weapon {
     /**
      * This is just an alias for `Weapon::fire()` !!!
      */
-    public function call($name, $arguments = array()) {
-        self::fire($name, $arguments, true);
+    public static function call($name, $arguments = array()) {
+        return self::fire($name, $arguments, true);
     }
 
 }
