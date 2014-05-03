@@ -17,10 +17,12 @@ echo '<title>' . $config->title . '</title>';
 echo '<description>' . $config->slogan . '</description>';
 echo '<link>' . $config->url . '</link>';
 
+$stripper = array('#&\#?[a-z0-9]{2,8}\;#i');
+
 foreach($bucket as $item) {
     echo '<item>';
-    echo '<title>' . Text::parse($item->title)->to_encoded_html . '</title>';
-    echo '<description>' . Text::parse($item->description)->to_encoded_html . '</description>';
+    echo '<title>' . preg_replace($stripper, "", Text::parse($item->title)->to_decoded_html) . '</title>';
+    echo '<description>' . preg_replace($stripper, "", Text::parse($item->description)->to_decoded_html) . '</description>';
     echo '<link>' . $item->url . '</link>';
     echo '<guid>' . $item->id . '</guid>';
     echo '<pubDate>' . $item->date->W3C . '</pubDate>';
