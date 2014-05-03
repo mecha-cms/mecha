@@ -1066,6 +1066,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     $about = File::exist(PLUGIN . '/' . $slug . '/about.txt') ? Text::toPage(File::open(PLUGIN . '/' . $slug . '/about.txt')->read()) : array(
         'title' => $speak->unknown,
         'author' => $speak->unknown,
+        'version' => $speak->unknown,
         'content' => Config::speak('notify_not_available', array($speak->description))
     );
 
@@ -1117,6 +1118,7 @@ Route::accept($config->manager->slug . '/plugin/kill/(:any)', function($slug = "
     $about = File::exist(PLUGIN . '/' . $slug . '/about.txt') ? Text::toPage(File::open(PLUGIN . '/' . $slug . '/about.txt')->read()) : array(
         'title' => $speak->unknown,
         'author' => $speak->unknown,
+        'version' => $speak->unknown,
         'content' => Config::speak('notify_not_available', array($speak->description))
     );
 
