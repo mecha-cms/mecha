@@ -222,9 +222,11 @@ class Text {
             $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
         }
         $results['content_raw'] = $contents;
-        $results['content'] = Filter::apply('content', Filter::apply('shortcode', $contents));
+        $contents = Filter::apply('shortcode', $contents);
         if($parse_contents) {
-            $results['content'] = Text::parse($results['content'])->to_html;
+            $results['content'] = Filter::apply('content', Text::parse($contents)->to_html);
+        } else {
+            $results['content'] = Filter::apply('content', $contents);
         }
         return $results;
     }
