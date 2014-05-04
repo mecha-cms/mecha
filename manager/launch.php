@@ -233,7 +233,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $slugs = array();
         if($files = $path == 'article' ? Get::articles() : Get::pages()) {
             foreach($files as $file) {
-                $slugs[] = end(explode('_', basename($file, '.txt')));
+                list($_time, $_kind, $_slug) = explode('_', basename($file, '.txt'));
+                $slugs[] = $_slug;
             }
         }
 
@@ -372,8 +373,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 Weapon::fire('on_page_update');
 
                 // Rename comment files if article date has been changed
-                if((string) $date != $fields['date']) {
-                    foreach(Get::comments(Date::format($id, 'Y-m-d-H-i-s')) as $comment) {
+                if(((string) $date != $fields['date']) && $comments = Get::comments(Date::format($id, 'Y-m-d-H-i-s'))) {
+                    foreach($comments as $comment) {
                         $parts = explode('_', $comment['name']);
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
                         File::open($comment['path'])->renameTo(implode('_', $parts));
