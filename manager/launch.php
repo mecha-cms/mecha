@@ -188,8 +188,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
             'description' => $page->description,
             'tags' => (array) $page->kind,
             'author' => isset($page->author) ? $page->author : Guardian::get('author'),
-            'css' => isset($page->css) ? $page->css : "",
-            'js' => isset($page->js) ? $page->js : "",
+            'css' => isset($page->css) ? $page->css_raw : "",
+            'js' => isset($page->js) ? $page->js_raw : "",
             'fields' => isset($page->fields) ? $page->fields : array()
         );
 
@@ -357,13 +357,17 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 $custom = CUSTOM . '/' . Date::format($fields['date'], 'Y-m-d-H-i-s') . '.txt';
 
                 if(File::exist($custom)) {
-                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR) {
+                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js))) {
                         // Always delete empty custom files ...
                         File::open($custom)->delete();
                     } else {
                         File::open($custom)
                             ->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)
                             ->save()->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '.txt');
+                    }
+                } else {
+                    if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
+                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . '/' . Date::format($date, 'Y-m-d-H-i-s') . '.txt');
                     }
                 }
 

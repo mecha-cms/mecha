@@ -418,11 +418,13 @@ class Get {
             $file = CUSTOM . '/' . $time . '.txt';
             if(File::exist($file)) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
-                $results['css'] = isset($custom[0]) ? Filter::apply('shortcode', trim($custom[0])) : "";
-                $results['js'] = isset($custom[1]) ? Filter::apply('shortcode', trim($custom[1])) : "";
+                $results['css_raw'] = isset($custom[0]) ? trim($custom[0]) : "";
+                $results['css'] = Filter::apply('shortcode', $results['css_raw']);
+                $results['js_raw'] = isset($custom[1]) ? trim($custom[1]) : "";
+                $results['js'] = Filter::apply('shortcode', $results['js_raw']);
             } else {
-                $results['css'] = "";
-                $results['js'] = "";
+                $results['css'] = $results['css_raw'] = "";
+                $results['js'] = $results['js_raw'] = "";
             }
         }
 
