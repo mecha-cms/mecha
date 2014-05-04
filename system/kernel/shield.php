@@ -28,7 +28,7 @@ class Shield {
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('before_sanitized', $buffer);
         $str = array(
-            '/<\!--([\s\S]+?)-->/' => "", // remove comments in HTML
+            '/<\!--(?!\[if)([\s\S]+?)-->/' => "", // remove comments in HTML
             '/>[^\S ]+/s' => '>', // strip whitespaces after tags, except space
             '/[^\S ]+\</s' => '<', // strip whitespaces before tags, except space
             '/>\s{2,}</s' => '><' // strip multiple whitespaces between closing and opening tag
@@ -51,14 +51,15 @@ class Shield {
      */
 
     public static function info($folder = null) {
+        $speak = Config::speak();
         $info = SHIELD . DS . (isset($folder) ? $folder : Config::get('shield')) . DS . 'about.txt';
         if(File::exist($info)) {
             $results = Text::toPage(File::open($info)->read());
             return Mecha::O($results);
         } else {
             return (object) array(
-                'name' => 'Unknown',
-                'author' => 'Unknown',
+                'name' => $speak->unknown,
+                'author' => $speak->unknown,
                 'content_raw' => "",
                 'content' => ""
             );

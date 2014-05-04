@@ -257,7 +257,6 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
         if(strlen($request['message']) > 1700) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
-            Guardian::memorize();
         }
 
         /**
@@ -284,6 +283,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
 
             File::write($data)->saveTo(RESPONSE . '/' . $post . '_' . $id . '_' . Request::post('parent', '0000-00-00-00-00-00') . '.txt');
+
+            Weapon::fire('on_comment_submit');
+            Weapon::fire('on_comment_update');
+
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
 
             if($config->email_notification) {

@@ -43,6 +43,7 @@ class Mecha {
          * Inline array
          */
         if(is_null($key)) {
+
             if($order == 'ASC') {
                 asort($array);
             } else {
@@ -54,7 +55,11 @@ class Mecha {
          * Multidimensional array
          */
         } else {
-            if(count($array) > 0 || ! empty($array)) {
+
+            $bucket = array();
+            $result = array();
+
+            if($array && (count($array) > 0 || ! empty($array))) {
                 foreach($array as $k => $v) {
                     $bucket[$k] = strtolower($v[$key]);
                 }
@@ -64,16 +69,17 @@ class Mecha {
                     arsort($bucket);
                 }
                 foreach($bucket as $k => $v) {
-                    $results[] = $array[$k];
+                    $result[] = $array[$k];
                 }
-                return $results;
+                return $result;
             }
+
         }
 
     }
 
     /**
-     * Initialize with eating...
+     * Initialize with eating ...
      */
     public static function eat($array) {
         self::$stomach = $array;

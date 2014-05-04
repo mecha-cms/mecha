@@ -8,11 +8,11 @@
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_email; ?></span>
-    <span class="grid span-5"><input name="email" type="email" class="input-block" value="<?php echo $cache['email']; ?>"></span>
+    <span class="grid span-5"><input name="email" type="text" class="input-block" value="<?php echo $cache['email']; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_url; ?></span>
-    <span class="grid span-5"><input name="url" type="url" class="input-block" value="<?php echo $cache['url']; ?>"></span>
+    <span class="grid span-5"><input name="url" type="text" class="input-block" value="<?php echo $cache['url']; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_status; ?></span>

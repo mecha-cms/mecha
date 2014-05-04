@@ -116,7 +116,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
 
 /**
- * Article and page Manager
+ * Article and Page Manager
  */
 
 Route::accept(array($config->manager->slug . '/(article|page)', $config->manager->slug . '/(article|page)/(:num)'), function($path = "", $offset = 1) use($config, $speak) {
@@ -238,7 +238,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         }
 
         /**
-         * Set post date by submitted time, or by input value if avilable
+         * Set post date by submitted time, or by input value if available
          */
         $date = Request::post('date', date('c'));
 
@@ -281,7 +281,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
         /**
          * Slug must contain at least one letter. This validation added to
-         * forbid the user from inputting a page offset instead of article slug.
+         * prevent the user from inputting a page offset instead of article slug.
          * Because the URL pattern of article's index page is `article/1` and the
          * URL pattern of article's single page is `article/article-slug`
          */
@@ -313,7 +313,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
                 File::write($data)->saveTo(($path == 'article' ? ARTICLE : PAGE) . '/' . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt');
 
-                if( ! empty($css) || ! empty($js) || $css != $config->defaults->page_custom_css || $js != $config->defaults->page_custom_js) {
+                if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
                     File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . '/' . Date::format($date, 'Y-m-d-H-i-s') . '.txt');
                 }
 
@@ -883,6 +883,9 @@ Route::accept($config->manager->slug . '/comment/kill/(:num)', function($id = ""
         Guardian::checkToken(Request::post('token'));
 
         File::open($comment->file_path)->delete();
+
+        Weapon::fire('on_comment_update');
+
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
         Session::set('mecha_total_comments_diff', $config->total_comments);
         Guardian::kick($config->manager->slug . '/comment');
@@ -947,6 +950,9 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
             $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
 
             File::open($comment->file_path)->write($data)->save();
+
+            Weapon::fire('on_comment_update');
+
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
             Guardian::kick($config->manager->slug . '/comment');
 
@@ -1031,6 +1037,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             $about = File::exist($files[$i] . '/about.txt') ? Text::toPage(File::open($files[$i] . '/about.txt')->read()) : array(
                 'title' => $speak->unknown,
                 'author' => $speak->unknown,
+                'version' => $speak->unknown,
                 'content' => Config::speak('notify_not_available', array($speak->description))
             );
             $pages[$i]['about'] = $about;
