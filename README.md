@@ -37,4 +37,13 @@ Mecha CMS
 
 ### Documentation
 
-Coming soon&hellip;
+http://mecha-cms.com
+
+### How to Contribute?
+
+ 1. Use this CMS, do something strange until you find a bug/error on this CMS, then let me know through the [issue](https://github.com/mecha-cms/cms/issues "Mecha CMS Issues")
+ 2. Share this CMS project page to your friends
+ 3. Make some shields for Mecha
+ 4. Make some [plugins](https://github.com/mecha-cms/plugin "Mecha CMS Plugins") for Mecha
+ 5. Make a donation 
+ 6. Say thanks, for motivation purpose :)
