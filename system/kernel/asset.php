@@ -49,26 +49,6 @@ class Asset {
         return str_replace(array(ROOT, '\\'), array($config->url, '/'), self::checkPath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::checkPath($path)) : "");
     }
 
-    // Get asset content
-    public static function read($path) {
-        return File::exist(self::checkPath($path)) ? File::open(self::checkPath($path))->read() : "";
-    }
-
-    // Create a new asset file
-    public static function create($content, $path) {
-        File::write($content)->saveTo(self::checkPath($path));
-    }
-
-    // Update content of an asset file
-    public static function update($content, $path) {
-        File::open(self::checkPath($path))->write($content)->save();
-    }
-
-    // Delete an asset file
-    public static function delete($path) {
-        File::open(self::checkPath($path))->delete();
-    }
-
     // Return HTML script of asset
     public static function script($path, $addon = "") {
         if(is_array($path)) {
