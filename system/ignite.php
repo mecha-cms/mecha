@@ -35,10 +35,6 @@ spl_autoload_register('prepare_to_launch');
 $config = Config::get();
 $speak = Config::speak();
 
-/**
- * Ignite the configuration files
- */
-
 if(File::exist(ROOT . '/install.php')) {
     Guardian::kick('install.php');
 }

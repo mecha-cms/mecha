@@ -38,7 +38,7 @@
 
     if (editor.length) {
         var mte = new MTE(editor[0], {
-            tabize: '    ',
+            tabSize: '    ',
             toolbarClass: 'editor-toolbar',
             toolbars: {
                 'table': {
@@ -78,11 +78,11 @@
             }
         });
         new MTE($('[name="css"]', form)[0], {
-            tabize: '  ',
+            tabSize: '  ',
             toolbar: false
         });
         new MTE($('[name="js"]', form)[0], {
-            tabize: '    ',
+            tabSize: '    ',
             toolbar: false
         });
     }
