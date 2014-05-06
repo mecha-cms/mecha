@@ -274,6 +274,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             $post = Date::format($article->time, 'Y-m-d-H-i-s');
             $id = date('Y-m-d-H-i-s');
+            $parent = Request::post('parent');
             $status = Guardian::happy() ? 'pilot' : 'passenger';
 
             $data  = 'Name: ' . strip_tags($request['name']) . "\n";
@@ -282,7 +283,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= 'Status: ' . $status . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
 
-            File::write($data)->saveTo(RESPONSE . '/' . $post . '_' . $id . '_' . Request::post('parent', '0000-00-00-00-00-00') . '.txt');
+            File::write($data)->saveTo(RESPONSE . '/' . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt');
 
             Weapon::fire('on_comment_submit');
             Weapon::fire('on_comment_update');

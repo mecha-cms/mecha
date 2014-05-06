@@ -92,7 +92,7 @@
     css.on("keyup", function() {
         setTimeout(function() {
             if (css_check.is(':checked')) {
-                css_preview.html('<style>' + css.val().replace(/<(\/)?style.*?>/g, "") + '</style>');
+                css_preview.html(css.val());
             }
         }, 15);
     });
@@ -100,7 +100,7 @@
     js.on("keyup", function() {
         setTimeout(function() {
             if (js_check.is(':checked')) {
-                js_preview.html('<scr' + 'ipt>' + js.val().replace(/<(\/)?script.*?>/g, "") + '</scr' + 'ipt>');
+                js_preview.html(js.val());
             }
         }, 15);
     });

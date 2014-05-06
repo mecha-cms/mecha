@@ -948,11 +948,11 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
         if( ! Notify::errors()) {
 
-            $data  = 'Name: ' . strip_tags($request['name']) . "\n";
+            $data  = 'Name: ' . $request['name'] . "\n";
             $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
             $data .= 'URL: ' . Request::post('url', '#') . "\n";
             $data .= 'Status: ' . $request['status'] . "\n";
-            $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
+            $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];
 
             File::open($comment->file_path)->write($data)->save();
 
