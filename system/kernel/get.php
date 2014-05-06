@@ -71,7 +71,7 @@ class Get {
      *  ----------- | ------ | -------------------------------------------------
      *  $folder     | string | The folder path of files to be listed
      *  $extensions | string | The file extensions
-     *  $order      | string | Ascending or descending? ASC/DESC ?
+     *  $order      | string | Ascending or descending? ASC/DESC?
      *  $sorter     | string | The key of array item as sorting reference
      *  $filter     | string | Filter the resulted array by keyword
      *  ----------- | ------ | -------------------------------------------------
@@ -646,7 +646,7 @@ class Get {
         $results = Text::toPage(File::open(RESPONSE . '/' . $name . '.txt')->read());
 
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
-        $results['file_name'] = $name;
+        $results['file_name'] = $name . '.txt';
         $results['file_path'] = RESPONSE . '/' . $name . '.txt';
 
         $parts = explode('_', $name);
