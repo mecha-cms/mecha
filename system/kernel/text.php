@@ -12,13 +12,7 @@
  *    // Perform a test
  *    var_dump(Text::parse('some text'));
  *
- *    // Convert array into object
- *    Mecha::O($array);
- *
- *    // Convert object into array
- *    Mecha::A($object);
- *
- *    // Convert formated text file into array
+ *    // Convert formated text into array
  *    Text::toArray("Key: value\nKey: value");
  *
  * -------------------------------------------------------

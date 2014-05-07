@@ -10,7 +10,7 @@
  *    // Sort an array ascending by key: 'id'
  *    $test = Mecha::eat($array)->order('ASC', 'id')->vomit();
  *
- *    var_dump(test);
+ *    var_dump($test);
  *
  * ------------------------------------------------------------
  *
