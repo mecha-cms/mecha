@@ -840,9 +840,9 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
     $pages = array();
 
-    if($files = Mecha::eat(Get::comments())->order('DESC', 'path')->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::comments(null, 'DESC'))->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
-            $pages[] = Get::comment($comment['name']);
+            $pages[] = Get::comment($comment['id']);
         }
     } else {
         $pages = false;

@@ -327,12 +327,12 @@ class Get {
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
+     *  ---------- | ------ | --------------------------------------------------
      *  $reference | mixed  | Slug, ID, file path or array of `Get::extract()`
      *  $excludes  | array  | Exclude some fields from results
      *  $folder    | string | Folder of the pages
-     *  ---------- | ------ | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ---------- | ------ | --------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -368,7 +368,7 @@ class Get {
         if( ! File::exist($results['file_path'])) return false;
 
         /**
-         * RULE: Do not do any tags looping, content Markdown-ing and
+         * RULES: Do not do any tags looping, content Markdown-ing and
          * external file requesting if it is marked as the excluded
          * fields. For better performance.
          */
@@ -428,14 +428,14 @@ class Get {
             }
         }
 
-        $comments = self::comments($time);
+        $comments = self::comments($results['id']);
         $results['article_total_comments'] = $results['page_total_comments'] = $comments !== false ? count($comments) : 0;
         $results['article_total_comments_text'] = $results['page_total_comments_text'] = ($results['page_total_comments'] . ' ' . ($results['page_total_comments'] > 1 ? $speak->comments : $speak->comment));
 
         if($comments && ! isset($excludes['comments'])) {
             $results['comments'] = array();
             foreach($comments as $comment) {
-                $results['comments'][] = self::comment($comment['name']);
+                $results['comments'][] = self::comment($comment['id']);
             }
         }
 
@@ -516,11 +516,11 @@ class Get {
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
+     *  ---------- | ------ | --------------------------------------------------
      *  $source    | string | The source text
      *  $fallback  | string | Fallback image URL if nothing matched
-     *  ---------- | ------ | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ---------- | ------ | --------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -566,12 +566,12 @@ class Get {
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
-     *  ---------- | ------- | ---------------------------------------------------
+     *  ---------- | ------- | -------------------------------------------------
      *  $source    | string  | The source text
      *  $sequence  | integer | Sequence of available image URLs
      *  $fallback  | string  | Fallback image URL if nothing matched
-     *  ---------- | ------- | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ---------- | ------- | -------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
     public static function imageURL($source, $sequence = 1, $fallback = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC') {
@@ -580,80 +580,89 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET COMMENTS BY PAGE TIME
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::comments('2014-04-02-15-15-15'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
-     *  $post_time | string | Post time as files result filter
+     *  $post_time | string | Post time as results filter
      *  $order     | string | Order results by ascending or descending? ASC/DESC?
+     *  $sorter    | string | The key of array item as sorting reference
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function comments($post_time = "", $order = 'ASC') {
-        return self::files(RESPONSE, 'txt', $order, 'path', (string) $post_time);
-    }
+    public static function comments($post_time = null, $order = 'ASC', $sorter = 'id') {
 
+        $results = array();
+
+        foreach(glob(RESPONSE . '/*.txt') as $comment) {
+            list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
+            list($year, $month, $day, $hour, $minute, $second) = explode('-', $id);
+            $results[] = array(
+                'file_path' => $comment,
+                'file_name' => basename($comment),
+                'time' => $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':' . $second,
+                'post' => (int) Date::format($post, 'U'),
+                'id' => (int) Date::format($id, 'U'),
+                'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')
+            );
+        }
+
+        if( ! is_null($post_time)) {
+            $clone = $results;
+            $results = array();
+            foreach($clone as $comment) {
+                if((int) Date::format($post_time, 'U') == $comment['post']) {
+                    $results[] = $comment;
+                }
+            }
+        }
+
+        return Mecha::eat($results)->order($order, $sorter)->vomit();
+
+    }
 
     /**
      * =========================================================================
-     *  EXTRACT COMMENT FILE INTO LIST OF COMMENT DATA FROM ITS NAME/ID
+     *  EXTRACT COMMENT FILE INTO LIST OF COMMENT DATA FROM ITS TIME/ID
      * =========================================================================
      *
      * -- CODE: ----------------------------------------------------------------
      *
-     *    var_dump(Get::comments('2014-04-02-15-15-15'));
+     *    var_dump(Get::comment(1399334470));
      *
      * -------------------------------------------------------------------------
      *
      */
 
-    public static function comment($name) {
+    public static function comment($id) {
 
         $config = Config::get();
+        $results = array();
 
-        /**
-         * Get comment by ID
-         */
-        if(is_numeric($name)) {
-            $name = (string) Date::format($name, 'Y-m-d-H-i-s');
-            foreach(self::comments() as $comment) {
-                $parts = explode('_', $comment['name']);
-                if($parts[1] == $name) {
-                    $name = $comment['name'];
-                    break;
-                }
+        foreach(self::comments() as $comment) {
+            if((int) Date::format($id, 'U') == $comment['id']) {
+                $results = $comment;
+                $name = $comment['file_name'];
+                break;
             }
         }
 
-        /**
-         * Remove file extension if it is there
-         */
-        $name = basename($name, '.txt');
+        if( ! File::exist(RESPONSE . '/' . $name)) return false;
 
-        if( ! File::exist(RESPONSE . '/' . $name . '.txt')) return false;
-
-        $results = Text::toPage(File::open(RESPONSE . '/' . $name . '.txt')->read());
+        $results = $results + Text::toPage(File::open(RESPONSE . '/' . $name)->read());
 
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
-        $results['file_name'] = $name . '.txt';
-        $results['file_path'] = RESPONSE . '/' . $name . '.txt';
-
-        $parts = explode('_', $name);
-        $results['post'] = (int) Date::format($parts[0], 'U');
-        $results['id'] = (int) Date::format($parts[1], 'U');
-        $results['time'] = Date::format($parts[1], 'c');
-        $results['parent'] = $parts[2] === '0000-00-00-00-00-00' ? null : (int) Date::format($parts[2], 'U');
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('comment', Text::parse($results['content'])->to_html);
 
@@ -662,7 +671,7 @@ class Get {
 
         foreach(glob(ARTICLE . '/*.txt') as $posts) {
             list($time, $kind, $slug) = explode('_', basename($posts, '.txt'));
-            if($time == $parts[0]) {
+            if((int) Date::format($time, 'U') == $results['post']) {
                 $results['permalink'] = $config->url . '/' . $config->index->slug . '/' . $slug . '#comment-' . $results['id'];
                 break;
             }
