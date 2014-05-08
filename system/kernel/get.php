@@ -5,6 +5,8 @@ class Get {
     protected function __construct() {}
     protected function __clone() {}
 
+    private static $placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC';
+
     /**
      * =========================================================================
      *  CONVERT FILE PATH OF ARTICLE/PAGE INTO ARRAY OF INFO
@@ -398,8 +400,6 @@ class Get {
 
         if( ! isset($results['author'])) $results['author'] = $config->author;
 
-        $results['image'] = self::imageURL($content, 1);
-
         if( ! isset($results['description'])) {
             $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
         } else {
@@ -426,7 +426,12 @@ class Get {
                 $results['css'] = $results['css_raw'] = "";
                 $results['js'] = $results['js_raw'] = "";
             }
+            $custom = $results['css'] . $results['js'];
+        } else {
+            $custom = "";
         }
+
+        $results['image'] = self::imageURL($content . $custom, 1, (File::exist(ROOT . '/favicon.ico') ? $config->url . '/favicon.ico' : self::$placeholder));
 
         $comments = self::comments($results['id']);
         $results['article_total_comments'] = $results['page_total_comments'] = $comments !== false ? count($comments) : 0;
@@ -524,10 +529,10 @@ class Get {
      *
      */
 
-    public static function imagesURL($source, $fallback = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC') {
+    public static function imagesURL($source, $fallback = '?') {
 
         /**
-         * Matched with...
+         * Matched with ...
          * 1. `![alt text](IMAGE URL)`
          * 2. `![alt text](IMAGE URL "optional title")`
          * ... and the single-quoted version of them
@@ -538,7 +543,7 @@ class Get {
         }
 
         /**
-         * Matched with...
+         * Matched with ...
          * 1. `<img src="IMAGE URL">`
          * 2. `<img foo="bar" src="IMAGE URL">`
          * 3. `<img src="IMAGE URL" foo="bar">`
@@ -555,7 +560,24 @@ class Get {
             return $matches[4];
         }
 
-        return $fallback; // No images!
+        /**
+         * Matched with ...
+         * 1. `background:url("IMAGE URL")`
+         * 2. `background-image:url("IMAGE URL")`
+         * 3. `background: url("IMAGE URL")`
+         * 4. `background-image: url("IMAGE URL")`
+         * 5. `background: foo url("IMAGE URL")`
+         * 6. `background-image: foo url("IMAGE URL")`
+         * 7. `content:url("IMAGE URL")`
+         * 8. `content: url("IMAGE URL")`
+         * ... and the uppercased version of them, and the single-quoted version of them, and the un-quoted version of them
+         */
+
+        if(preg_match_all('#(background|background-image|content)\:(.*?)?url\((\'(.[^\']*?)\'|"(.[^"]*?)")\)#i', $source, $matches)) {
+            return $matches[4];
+        }
+
+        return $fallback == '?' ? self::$placeholder : $fallback; // No images!
 
     }
 
@@ -574,9 +596,9 @@ class Get {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
-    public static function imageURL($source, $sequence = 1, $fallback = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC') {
+    public static function imageURL($source, $sequence = 1, $fallback = '?') {
         $images = self::imagesURL($source, $fallback);
-        return is_array($images) && isset($images[$sequence - 1]) ? $images[$sequence - 1] : $fallback;
+        return is_array($images) && isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? self::$placeholder : $fallback);
     }
 
     /**

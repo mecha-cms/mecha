@@ -142,7 +142,7 @@ class File {
         self::$opened = null;
     }
 
-    // Copying a file
+    // Copy a file
     public static function copyTo($destination = ROOT) {
         if(self::exist(self::$opened)) {
             if( ! is_array($destination)) {
@@ -237,7 +237,7 @@ class File {
 
     }
 
-    // Get file size and convert its size to ...
+    // Get file size and convert its size into ...
     public static function size($file, $type = "") {
         switch(strtolower($type)) {
             case '':

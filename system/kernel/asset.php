@@ -12,14 +12,14 @@
  *    echo Asset:stylesheet('foo.css');
  *    echo Asset:stylesheet('foo.css', ' id="main"');
  *
- * -- RESULT: ----------------------------------------------------------------------
+ * -- RESULT: ---------------------------------------------------------------------
  *
  *    http://example.org/foo.css
  *
  *    <link href="http://example.org/foo.css" rel="stylesheet">
  *    <link href="http://example.org/foo.css" rel="stylesheet" id="main">
  *
- * ---------------------------------------------------------------------------------
+ * --------------------------------------------------------------------------------
  *
  */
 

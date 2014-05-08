@@ -2,9 +2,11 @@
 
 class Widget extends Weapon {
 
+
     /**
      * Widget Manager
      */
+
     public static function manager() {
         $config = Config::get();
         $speak = Config::speak();
@@ -71,6 +73,7 @@ class Widget extends Weapon {
         return Filter::apply('widget_admin_menu', $html);
     }
 
+
     /**
      * Widget Archive
      *
@@ -78,6 +81,7 @@ class Widget extends Weapon {
      * [2]. Widget::archive('HIERARCHY', 'ASC');
      *
      */
+
     public static function archive($type = 'HIERARCHY', $sort = 'DESC') {
         $config = Config::get();
         $year_first = $config->widget_year_first;
@@ -152,6 +156,7 @@ class Widget extends Weapon {
         }
     }
 
+
     /**
      * Widget Tag
      *
@@ -161,6 +166,7 @@ class Widget extends Weapon {
      * [4]. Widget::tag('CLOUD', 'ASC', 'name', 7);
      *
      */
+
     public static function tag($type = 'LIST', $order = 'ASC', $sorter = 'name', $max_level = 6) {
         $config = Config::get();
         $counters = array();
@@ -214,6 +220,7 @@ class Widget extends Weapon {
         }
     }
 
+
     /**
      * Widget Search Box
      *
@@ -222,6 +229,7 @@ class Widget extends Weapon {
      * [3]. Widget::search('Search query...', '<i class="icon icon-search"></i>');
      *
      */
+
     public static function search($placeholder = "", $submit = "") {
         $config = Config::get();
         $speak = Config::speak();
@@ -234,6 +242,7 @@ class Widget extends Weapon {
         return Filter::apply('widget_search', $html);
     }
 
+
     /**
      * Widget Recent Post
      *
@@ -241,6 +250,7 @@ class Widget extends Weapon {
      * [2]. Widget::recentPost(5);
      *
      */
+
     public static function recentPost($total = 7, $class = 'recent') {
         if( ! $files = Get::articles('DESC')) return "";
         if($class == 'random') {
@@ -258,6 +268,7 @@ class Widget extends Weapon {
         return Filter::apply('widget_' . $class . '_post', $html);
     }
 
+
     /**
      * Widget Random Post
      *
@@ -265,13 +276,16 @@ class Widget extends Weapon {
      * [1]. Widget::randomPost(5);
      *
      */
+
     public static function randomPost($total = 7) {
         return self::recentPost($total, 'random');
     }
 
+
     /**
      * This is just an alias for `Weapon::fire()` !!!
      */
+
     public static function call($name, $arguments = array()) {
         return self::fire($name, $arguments, true);
     }

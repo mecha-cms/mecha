@@ -62,7 +62,10 @@ class Navigator {
         if(is_string($current)) {
 
             for($i = 0; $i < $total; ++$i) {
-                if($current == $pages[$i]['slug']) {
+
+                $slug = isset($pages[$i]['slug']) ? $pages[$i]['slug'] : preg_replace('#\.[a-z0-9]{3,4}$#', basename($pages[$i]));
+
+                if($current == $slug) {
 
                     // Generate next/previous URL for single page
                     self::$bucket['prev']['url'] = isset($pages[$i - 1]) ? $base . $connector . $pages[$i - 1]['slug'] : $base;

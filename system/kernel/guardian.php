@@ -29,7 +29,8 @@ class Guardian {
 
     // Generate a unique token
     public static function makeToken() {
-        $token = File::exist(SYSTEM . '/log/token.txt') ? File::open(SYSTEM . '/log/token.txt')->read() : sha1(uniqid(mt_rand(), true));
+        $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
+        $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
         Session::set(self::$token, $token);
         return $token;
     }
@@ -44,7 +45,7 @@ class Guardian {
 
     // Security token delete
     public static function deleteToken() {
-        File::open(SYSTEM . '/log/token.txt')->delete();
+        File::open(SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
         Session::kill(self::$token);
     }
 
@@ -93,7 +94,7 @@ class Guardian {
         return $value;
     }
 
-    // Logging in...
+    // Logging in ...
     public static function authorize() {
         $users = Text::toArray(File::open(SYSTEM . '/log/users.txt')->read());
         $authors = array();
@@ -113,14 +114,14 @@ class Guardian {
                 $token = self::makeToken();
                 Session::set(self::$login, array(
                     'token' => $token,
-                    // 'username' => $_POST['username'],
+                    'username' => $_POST['username'],
                     // 'password' => $authors[$_POST['username']]['password'],
                     'author' => $authors[$_POST['username']]['name'],
                     'status' => $authors[$_POST['username']]['status']
                 ));
-                File::write($token)->saveTo(SYSTEM . '/log/token.txt');
+                File::write($token)->saveTo(SYSTEM . '/log/' . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt');
                 chmod(SYSTEM . DS . 'log' . DS . 'users.txt', 0600);
-                chmod(SYSTEM . DS . 'log' . DS . 'token.txt', 0600);
+                chmod(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt', 0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
                 self::kick($config->manager->slug . '/login');
@@ -132,22 +133,23 @@ class Guardian {
         return new static;
     }
 
-    // Logging out...
+    // Logging out ...
     public static function reject() {
-        Session::kill(self::$login);
         self::deleteToken();
+        Session::kill(self::$login);
         return new static;
     }
 
     // Logged in
     public static function happy() {
+        $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $auth = Session::get(self::$login);
-        return isset($auth['token']) && File::exist(SYSTEM . '/log/token.txt') && $auth['token'] === File::open(SYSTEM . '/log/token.txt')->read() ? true : false;
+        return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }
 
     // Something goes wrong!
-    public static function abort($message = "") {
-        echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#3F3F3F;color:#DFC37D;padding:1em 1.2em">' . $message . '</div>';
+    public static function abort($reasons = "") {
+        echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#3F3F3F;color:#DFC37D;padding:1em 1.2em">' . $reasons . '</div>';
         exit;
     }
 
