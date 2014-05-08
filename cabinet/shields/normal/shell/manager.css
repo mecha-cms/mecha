@@ -64,9 +64,10 @@
 }
 
 .tab-area {
-  height:30px;
+  height:32px;
   line-height:30px;
   font-weight:bold;
+  overflow:hidden;
 }
 
 .tab {
@@ -230,7 +231,7 @@ textarea[name="js"] {
 
 
 /**
- * Page listing... I set the appearance as the
+ * Page listing ... I set the appearance as the
  * same as the comment list layout on the shield.
  *
  *    `.comment-list` => `.page-list`
