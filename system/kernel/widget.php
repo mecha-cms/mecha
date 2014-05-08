@@ -5,6 +5,9 @@ class Widget extends Weapon {
 
     /**
      * Widget Manager
+     *
+     * [1]. echo Widget::manager();
+     *
      */
 
     public static function manager() {
@@ -46,14 +49,14 @@ class Widget extends Weapon {
 
         /**
          * ========================================================================
-         *  ADD MORE ADMIN MENU
+         *  ADD MORE MANAGER MENU
          *
-         *  Inject more menu item to admin menu widget (for your plugin maybe?)
+         *  Inject more menu item to the manager menu (for your plugin maybe?)
          * ========================================================================
          *
          * -- CODE: ---------------------------------------------------------------
          *
-         *    Config::merge('admin_menu', array(
+         *    Config::merge('manager_menu', array(
          *        '<i class="fa fa-fw fa-icon-name"></i> Menu Name' => '/page',
          *        '<i class="fa fa-fw fa-icon-name"></i> Menu Name' => '/page',
          *        ...
@@ -63,14 +66,14 @@ class Widget extends Weapon {
          *
          */
 
-        if($more_menu = Mecha::A(Config::get('admin_menu'))) {
-            $menus = $menus + $more_menu;
+        if($more_menus = Mecha::A(Config::get('manager_menu'))) {
+            $menus = $menus + $more_menus;
         }
 
-        $html  = '<div class="widget widget-admin widget-admin-menu">';
+        $html  = '<div class="widget widget-manager widget-manager-menu">';
         $html .= Menu::get($menus);
         $html .= '</div>';
-        return Filter::apply('widget_admin_menu', $html);
+        return Filter::apply('widget_manager_menu', $html);
     }
 
 
@@ -273,7 +276,7 @@ class Widget extends Weapon {
      * Widget Random Post
      *
      * [1]. Widget::randomPost();
-     * [1]. Widget::randomPost(5);
+     * [2]. Widget::randomPost(5);
      *
      */
 

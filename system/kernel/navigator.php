@@ -45,7 +45,7 @@ class Navigator {
 
             $current = (int) $current;
 
-            // Generate next/previous link for index page
+            // Generate next/previous URL for index page
             self::$bucket['prev']['url'] = $current > 1 ? $base . $connector . ($current - 1) : $base;
             self::$bucket['next']['url'] = $current < ceil($total / $perpage) ? $base . $connector . ($current + 1) : $base;
 
@@ -63,9 +63,7 @@ class Navigator {
 
             for($i = 0; $i < $total; ++$i) {
 
-                $slug = isset($pages[$i]['slug']) ? $pages[$i]['slug'] : preg_replace('#\.[a-z0-9]{3,4}$#', basename($pages[$i]));
-
-                if($current == $slug) {
+                if($current == $pages[$i]['slug']) {
 
                     // Generate next/previous URL for single page
                     self::$bucket['prev']['url'] = isset($pages[$i - 1]) ? $base . $connector . $pages[$i - 1]['slug'] : $base;
@@ -80,6 +78,7 @@ class Navigator {
                     self::$bucket['next']['link'] = (self::$bucket['next']['url'] != $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "";
 
                 }
+
             }
 
         }

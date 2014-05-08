@@ -12,15 +12,15 @@
   padding:0 14px;
 }
 
-.widget-admin-menu ul li,
-.widget-admin-menu ul li:first-child {
+.widget-manager-menu ul li,
+.widget-manager-menu ul li:first-child {
   margin:0 0 2px;
   padding:0;
   border:none;
   position:relative;
 }
 
-.widget-admin-menu a {
+.widget-manager-menu a {
   display:block;
   background-color:#333;
   color:white;
@@ -31,25 +31,25 @@
   padding:0 8px;
 }
 
-.widget-admin-menu a:focus,
-.widget-admin-menu a:hover {background-color:#373737}
-.widget-admin-menu a:active {background-color:#2F2F2F}
+.widget-manager-menu a:focus,
+.widget-manager-menu a:hover {background-color:#373737}
+.widget-manager-menu a:active {background-color:#2F2F2F}
 
-.widget-admin-menu a .fa {
+.widget-manager-menu a .fa {
   font-weight:normal;
   color:#FFA;
 }
 
-.widget-admin-menu .selected a {
+.widget-manager-menu .selected a {
   background-color:#365D98;
   color:white;
   cursor:default;
 }
 
-.widget-admin-menu a .counter:before,
-.widget-admin-menu a .counter:after {display:none}
+.widget-manager-menu a .counter:before,
+.widget-manager-menu a .counter:after {display:none}
 
-.widget-admin-menu a .counter {
+.widget-manager-menu a .counter {
   position:absolute;
   top:5px;
   right:5px;
