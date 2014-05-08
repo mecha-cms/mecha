@@ -60,7 +60,7 @@ class Get {
      *
      * -- CODE: ----------------------------------------------------------------
      *
-     *    $files = Get::files('some/path', 'ASC', 'last_update');
+     *    $files = Get::files('some/path', 'txt', 'ASC', 'last_update');
      *
      *    foreach($files as $file_details) {
      *        echo $file_details . '<br>';
