@@ -118,16 +118,18 @@ class Shield {
         }
 
         ob_start($minify ? 'self::sanitize_output' : null);
+
         Weapon::fire('before_launch');
 
         require $shield;
 
         Weapon::fire('after_launch');
-        ob_end_flush();
 
         if($cacheable) {
             File::write(ob_get_contents())->saveTo($cache);
         }
+
+        ob_end_flush();
 
         exit;
 
@@ -166,11 +168,13 @@ class Shield {
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
 
         ob_start($minify ? 'self::sanitize_output' : null);
+
         Weapon::fire('before_launch');
 
         require $shield;
 
         Weapon::fire('after_launch');
+
         ob_end_flush();
 
         exit;
