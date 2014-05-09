@@ -187,6 +187,7 @@ body {
   margin:2px 0 0;
   padding:1em 0;
   border-left:5px solid transparent;
+  overflow:hidden;
 }
 
 .comment-pilot {

@@ -250,6 +250,7 @@ textarea[name="js"] {
 .page {
   margin:2px 0 0;
   padding:1em 0;
+  overflow:hidden;
 }
 
 .page-header,
