@@ -96,6 +96,10 @@ comment_email: Email
 comment_url: URL
 comment_status: Status
 comment_message: Message
+comment_reply: Reply
+comment_reply_to: Reply to %s
+comment_reply_cancel: Cancel Reply
+comment_replies: Replies
 comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 comment_notification: A new comment has been added to this page => %s
 comment_notification_subject: A new comment has been added.
@@ -275,6 +279,10 @@ submitted: Submitted
 send: Send
 sending: Sending
 sent: Sent
+
+reply: Reply
+replying: Replying
+replied: Replied
 
 edit: Edit
 editing: Editing
@@ -461,9 +469,11 @@ notify_invalid_email: Invalid email address.
 notify_invalid_url: Invalid URL.
 notify_invalid_math_answer: Wrong math answer.
 
-notify_confirm_maybe_you_mean: Maybe you mean %s
+notify_confirm: Are your sure?
+notify_confirm_page_leave: Are you sure you want to leave this page?
 notify_confirm_delete: Are you sure you want to delete this?
 notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom CSS and JavaScript of %1$s.
+notify_confirm_maybe_you_mean: Maybe you mean %s
 
 notify_warning_intruder_detected: Intruder detected!
 notify_warning_forbidden_input: You are not allowed to use %s in the %s field.

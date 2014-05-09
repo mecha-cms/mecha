@@ -96,6 +96,10 @@ comment_email: Email
 comment_url: URL
 comment_status: Status
 comment_message: Pesan
+comment_reply: Balasan
+comment_reply_to: Sebagai balasan %s
+comment_reply_cancel: Batal Membalas
+comment_replies: Balasan
 comment_guide: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 comment_notification: Komentar baru telah ditambahkan ke halaman ini => %s
 comment_notification_subject: Komentar baru telah ditambahkan.
@@ -275,6 +279,10 @@ submitted: Terkirim
 send: Kirim
 sending: Mengirim
 sent: Terkirim
+
+reply: Reply
+replying: Replying
+replied: Replied
 
 edit: Sunting
 editing: Menyunting
@@ -461,9 +469,11 @@ notify_invalid_email: Alamat email tidak valid.
 notify_invalid_url: URL tidak valid.
 notify_invalid_math_answer: Jawaban matematika salah.
 
-notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s
+notify_confirm: Anda yakin?
+notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?
 notify_confirm_delete: Anda yakin ingin menghapus ini?
 notify_confirm_delete_page: Ini juga akan menghapus semua komentar yang terkait dengan %1$s ini berikut berkas kustom CSS dan JavaScript %1$s.
+notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s
 
 notify_warning_intruder_detected: Penyusup terdeteksi!
 notify_warning_forbidden_input: Anda tidak diperbolehkan untuk menggunakan %s pada bidang %s.
