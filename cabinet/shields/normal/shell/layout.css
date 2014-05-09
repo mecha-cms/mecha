@@ -307,6 +307,7 @@ body {
     margin:0 5%;
   }
 }
+
 @media (max-width:690px) {
   body {padding-top:30px}
   .blog-header {text-align:center}

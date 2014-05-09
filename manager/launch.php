@@ -100,6 +100,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
         if( ! Notify::errors()) {
             File::open(STATE . '/config.txt')->write(serialize($request))->save();
+            Weapon::fire('on_config_update');
             Notify::success(Config::speak('notify_success_updated', array($speak->config)));
             Guardian::kick($request['manager']['slug'] . '/config');
         }
@@ -436,6 +437,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/(:num)', function($
 
         // Deleting caches ...
         Weapon::fire('on_page_update');
+        Weapon::fire('on_page_destruct');
 
         Notify::success(Config::speak('notify_success_deleted', array($page->title)));
         Guardian::kick($config->manager->slug . '/' . $path . '/ignite');
@@ -498,6 +500,9 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         }
 
         File::open(STATE . '/tags.txt')->write(serialize($data))->save();
+
+        Weapon::fire('on_tag_update');
+
         Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
         Guardian::kick($config->url_current);
 
@@ -551,6 +556,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
 
         if( ! Notify::errors()) {
             File::open(STATE . '/menus.txt')->write(trim($request['content']))->save();
+            Weapon::fire('on_menu_update');
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
             Guardian::kick($config->url_current);
         }
@@ -638,6 +644,8 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/(:any)', function($p
             File::open(($path == 'asset' ? ASSET : CACHE) . '/' . $file_to_delete)->delete();
         }
 
+        Weapon::fire('on_' . $path . '_destruct');
+
         Notify::success(Config::speak('notify_success_deleted', array(implode(', ', $deletes))));
         Guardian::kick($config->manager->slug . '/' . $path);
 
@@ -697,6 +705,7 @@ Route::accept($config->manager->slug . '/asset/repair/(:any)', function($old = "
 
         if( ! Notify::errors()) {
             File::open(ASSET . '/' . $old)->renameTo(implode('.', $parts));
+            Weapon::fire('on_asset_update');
             Notify::success(Config::speak('notify_success_updated', array($old)));
             Guardian::kick($config->manager->slug . '/asset');
         }
@@ -739,6 +748,9 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
         }
 
         File::open(STATE . '/shortcodes.txt')->write(serialize($data))->save();
+
+        Weapon::fire('on_shortcode_update');
+
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Guardian::kick($config->url_current);
 
@@ -794,6 +806,9 @@ Route::accept($config->manager->slug . '/cache/repair/(:any)', function($name = 
         Guardian::checkToken(Request::post('token'));
 
         File::open(CACHE . '/' . $name)->write(Request::post('content'))->save();
+
+        Weapon::fire('on_cache_update');
+
         Notify::success(Config::speak('notify_success_updated', array($speak->cache)));
         Guardian::kick($config->manager->slug . '/cache');
 
@@ -890,6 +905,7 @@ Route::accept($config->manager->slug . '/comment/kill/(:num)', function($id = ""
         File::open($comment->file_path)->delete();
 
         Weapon::fire('on_comment_update');
+        Weapon::fire('on_comment_destruct');
 
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
         Session::set('mecha_total_comments_diff', $config->total_comments);
@@ -1014,6 +1030,9 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
         }
 
         File::open(STATE . '/fields.txt')->write(serialize($fields))->save();
+
+        Weapon::fire('on_field_update');
+
         Notify::success(Config::speak('notify_success_updated', array($speak->fields)));
         Guardian::kick($config->url_current);
 
@@ -1109,7 +1128,10 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/(:any)', function(
     /**
      * Toggle file naming from `launch.php` to `pending.php` or ... you know.
      */
-    File::open(PLUGIN . '/' . $slug . '/' . ($path == 'freeze' ? 'launch' : 'pending') . '.php')->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
+    File::open(PLUGIN . '/' . $slug . '/' . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
+        ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
+
+    Weapon::fire('on_plugin_' . ($path == 'freeze' ? 'eject' : 'mounted'));
 
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
     Guardian::kick($config->manager->slug . '/plugin');
@@ -1148,6 +1170,8 @@ Route::accept($config->manager->slug . '/plugin/kill/(:any)', function($slug = "
         Guardian::checkToken(Request::post('token'));
 
         File::open(PLUGIN . '/' . $slug)->delete();
+
+        Weapon::fire('on_plugin_destruct');
 
         Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
         Guardian::kick($config->manager->slug . '/plugin');

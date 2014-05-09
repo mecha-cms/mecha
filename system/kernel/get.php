@@ -687,6 +687,7 @@ class Get {
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('comment', Text::parse($results['content'])->to_html);
+        $results['permalink'] = '#';
 
         unset($results['content_raw']);
         unset($results['content']);
