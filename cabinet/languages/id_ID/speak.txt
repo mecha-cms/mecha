@@ -67,11 +67,17 @@ messages: Pesan-Pesan
 prev: Sebelumnya
 next: Berikutnya
 
+first: Awal
+last: Akhir
+
 old: Lama
 new: Baru
 
 older: Lebih Lama <i class="fa fa-arrow-circle-right"></i>
 newer: <i class="fa fa-arrow-circle-left"></i> Lebih Baru
+
+oldest: Paling Lama
+newest: Paling Baru
 
 more: Lagi
 less: Kurangi

@@ -67,11 +67,17 @@ messages: Messages
 prev: Previous
 next: Next
 
+first: First
+last: Last
+
 old: Old
 new: New
 
 older: Older <i class="fa fa-arrow-circle-right"></i>
 newer: <i class="fa fa-arrow-circle-left"></i> Newer
+
+oldest: Oldest
+newest: Newest
 
 more: More
 less: Less

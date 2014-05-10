@@ -11,7 +11,7 @@ class Navigator {
      *
      * -- CODE: -------------------------------------------------------------------
      *
-     *    $pager = Navigator::extract(glob('some/files/*.txt'), 1, 5);
+     *    $pager = Navigator::extract(glob('some/files/*.txt'), 1, 5, 'foo/bar');
      *    echo $pager->prev->link;
      *
      * ----------------------------------------------------------------------------
@@ -31,8 +31,8 @@ class Navigator {
 
     public static function extract($pages = array(), $current = 1, $perpage = 10, $connector = '/') {
 
-        // Set default next and previous data
-        self::$bucket = array('prev' => false, 'next' => false);
+        // Set default next, previous and step data
+        self::$bucket = array('prev' => false, 'next' => false, 'step' => false);
 
         $config = Config::get();
         $speak = Config::speak();
@@ -57,6 +57,35 @@ class Navigator {
             self::$bucket['prev']['link'] = (self::$bucket['prev']['url'] != $base) ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "";
             self::$bucket['next']['link'] = (self::$bucket['next']['url'] != $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "";
 
+            // Generate pagination links for index page
+            $html = '<span class="pagination">';
+            $chunk = ceil($total / $perpage);
+            $step = $chunk > 5 ? 5 : $chunk;
+            $left = $current - $step;
+
+            if($left < 1) $left = 1;
+
+            if($current > 1) {
+                $html .= '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>';
+                $html .= '<a href="' . $config->url . $connector . ($current - 1) . '">' . $speak->prev . '</a>';
+            }
+
+            for($i = $current - $step + 1; $i < $current + $step; ++$i) {
+                if($chunk > 1) {
+                    if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
+                        $html .= $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong class="current">' . $i . '</strong>';
+                        self::$bucket['step']['url'][] = $i != $current ? $config->url . $connector . $i : false;
+                    }
+                }
+            }
+
+            if($current < $chunk) {
+                $html .= '<a href="' . $config->url . $connector . ($current + 1) . '">' . $speak->next . '</a>';
+                $html .= '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>';
+            }
+
+            self::$bucket['step']['link'] = $html . '</span>';
+
         }
 
         if(is_string($current)) {
@@ -76,6 +105,8 @@ class Navigator {
                     // Generate next/previous link for single page
                     self::$bucket['prev']['link'] = (self::$bucket['prev']['url'] != $base) ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "";
                     self::$bucket['next']['link'] = (self::$bucket['next']['url'] != $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "";
+
+                    break;
 
                 }
 

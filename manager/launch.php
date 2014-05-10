@@ -1145,6 +1145,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/(:any)', function(
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
 
     Weapon::fire('on_plugin_' . ($path == 'freeze' ? 'eject' : 'mounted'));
+    Weapon::fire('on_plugin_' . md5($slug) . '_' . ($path == 'freeze' ? 'eject' : 'mounted'));
 
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
     Guardian::kick($config->manager->slug . '/plugin');
