@@ -1058,14 +1058,22 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
 
     if($files = Mecha::eat($take)->chunk($offset, $config->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {
-            $about = File::exist($files[$i] . '/about.txt') ? Text::toPage(File::open($files[$i] . '/about.txt')->read()) : array(
+
+            // Check whether the localized "about" file available
+            if( ! $file = File::exist($files[$i] . '/about.' . $config->language . '.txt')) {
+                $file = $files[$i] . '/about.txt';
+            }
+
+            $about = File::exist($file) ? Text::toPage(File::open($file)->read()) : array(
                 'title' => $speak->unknown,
                 'author' => $speak->unknown,
                 'version' => $speak->unknown,
                 'content' => Config::speak('notify_not_available', array($speak->description))
             );
+
             $pages[$i]['about'] = $about;
             $pages[$i]['slug'] = basename($files[$i]);
+
         }
     } else {
         $pages = false;
@@ -1094,7 +1102,12 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         Shield::abort();
     }
 
-    $about = File::exist(PLUGIN . '/' . $slug . '/about.txt') ? Text::toPage(File::open(PLUGIN . '/' . $slug . '/about.txt')->read()) : array(
+    // Check whether the localized "about" file available
+    if( ! $file = File::exist(PLUGIN . '/' . $slug . '/about.' . $config->language . '.txt')) {
+        $file = PLUGIN . '/' . $slug . '/about.txt';
+    }
+
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read()) : array(
         'title' => $speak->unknown,
         'author' => $speak->unknown,
         'version' => $speak->unknown,
@@ -1172,6 +1185,7 @@ Route::accept($config->manager->slug . '/plugin/kill/(:any)', function($slug = "
         File::open(PLUGIN . '/' . $slug)->delete();
 
         Weapon::fire('on_plugin_destruct');
+        Weapon::fire('on_plugin_' . md5($slug) . '_destruct');
 
         Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
         Guardian::kick($config->manager->slug . '/plugin');
