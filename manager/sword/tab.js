@@ -12,7 +12,7 @@
                     window.location.href = this.href;
                 }
             } else {
-                window.location.href = this.href;            
+                window.location.href = this.href;
             }
         }
         return false;
