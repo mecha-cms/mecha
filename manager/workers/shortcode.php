@@ -21,8 +21,8 @@
       <?php foreach(unserialize(File::open(STATE . '/shortcodes.txt')->read()) as $key => $value): ?>
       <?php if($key !== '{{url}}' && $key !== '{{asset}}'): ?>
       <tr>
-        <td><input name="keys[]" type="text" class="input-block" value="<?php echo $key; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo $value; ?>"></td>
+        <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
+        <td><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"></td>
       </tr>
       <?php endif; ?>
       <?php endforeach; ?>

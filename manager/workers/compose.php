@@ -91,7 +91,7 @@
         echo '<label class="grid-group">';
         echo '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
         echo '<span class="grid span-5">';
-        echo '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($extra[$key]) ? $extra[$key] : "") . '">';
+        echo '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($extra[$key]) ? Text::parse($extra[$key])->to_encoded_html : "") . '">';
         echo '</span>';
         echo '</label>';
     }
@@ -100,7 +100,7 @@
         echo '<label class="grid-group">';
         echo '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
         echo '<span class="grid span-5">';
-        echo '<textarea name="fields[' . $key . '][value]" class="input-block">' . (isset($extra[$key]) ? $extra[$key] : "") . '</textarea>';
+        echo '<textarea name="fields[' . $key . '][value]" class="input-block">' . (isset($extra[$key]) ? Text::parse($extra[$key])->to_encoded_html : "") . '</textarea>';
         echo '</span>';
         echo '</label>';
     }
