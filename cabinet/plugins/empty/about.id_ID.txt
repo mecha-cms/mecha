@@ -1,0 +1,87 @@
+Title: Plugin Kosong
+Author: Taufik Nurrohman
+Version: 1.0.0
+
+====
+
+> Ini cuma sebagai pemulai plugin.
+
+#### Lakukan Sesuatu pada Saat Data Formulir Dikirim
+
+Standar URL pengiriman pada formulir harus diarahkan menuju URL ini:
+
+~~~ .no-highlight
+{{url}}manager/plugin/plugin-folder/update
+~~~
+
+Anda seharusnya bisa membuatnya dengan mudah melalui ini:
+
+~~~ .php
+Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/plugin-folder/update';
+~~~
+
+Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lihat saat ini, maka Anda bisa menggunakan ini:
+
+~~~ .php
+Config::get('url_current') . '/update';
+~~~
+
+##### Formulir
+
+Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi Anda bisa menggunakan variabel pintasan `$config` dan `$speak` dari sini:
+
+~~~ .php
+<form action="<?php echo $config->url_current; ?>/update" method="post">
+
+  <!-- Mohon tambahkan input token -->
+  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+
+  <!-- Elemen-elemen formulir yang lain ada di sini ... -->
+
+  <!-- Tombol eksekusi formulir -->
+  <p><button type="submit">Perbaharui</button></p>
+
+</form>
+~~~
+
+Tempatkan formulir tersebut di dalam berkas `configurator.php`.
+
+##### Rute
+
+Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman muka untuk mengeksekusi `POST` pada formulir:
+
+~~~ .php
+$config = Config::get();
+$speak = Config::speak();
+
+Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function() use($config, $speak) {
+
+    if( ! Guardian::happy()) {
+        Shield::abort(); // [1]
+    }
+
+    if(Request::post()) {
+
+        Guardian::checkToken(Request::post('token')); // [2]
+
+        File::write('test!')->saveTo(PLUGIN . '/empty/states/test-plugin.txt');
+
+        Notify::success('Plugin updated.'); // [3]
+
+        Guardian::kick(basename($config->url_current)); // [4]
+
+    }
+
+});
+~~~
+
+No. | Deskripsi
+--: | -------------------------------------------------------------------------
+1.  | Jangan izinkan pengguna non pilot dan penumpang untuk melakukan submisi.
+2.  | Cek input token. Jika tidak cocok, arahkan pengguna menuju halaman login.
+3.  | Buat sebuah pesan sukses pada saat pengiriman berhasil dilakukan.
+4.  | Arahkan pengguna menuju URL sebelumnya setelah semuanya selesai.
+
+Mengerti?
+
+*[URL]: Uniform Resource Locator

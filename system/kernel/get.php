@@ -146,15 +146,20 @@ class Get {
      */
 
     public static function summary($text, $maxchars = 100, $tail = '&hellip;') {
-        $text = preg_replace(array(
-            '#(<.*?>|[\n\r\s\t\*\_\`>\#])+#',
-            '# +#',
-            '#&nbsp;#'
-        ), array(
-            ' ',
-            ' ',
-            ""
-        ), $text);
+        $text = preg_replace(
+            array(
+                '#(<.*?>|[\n\r\s\t\*\_\`>\#])+#',
+                '# +#',
+                '#\&nbsp\;#',
+                '#[\-\~\=]{2,}#'
+            ),
+            array(
+                ' ',
+                ' ',
+                "",
+                ""
+            ),
+        $text);
         return trim(substr($text, 0, $maxchars) . ($maxchars < strlen($text) ? $tail : ""));
     }
 

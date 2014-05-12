@@ -13,7 +13,7 @@ Route::accept($config->manager->slug . '/plugin/empty/update', function() use($c
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(ROOT . '/test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . '/empty/states/test-plugin.txt');
 
         Notify::success('Plugin updated.'); // [3]
 

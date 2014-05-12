@@ -1,5 +1,6 @@
 Title: Empty Plugin
 Author: Taufik Nurrohman
+Version: 1.0.0
 
 ====
 
@@ -9,7 +10,7 @@ Author: Taufik Nurrohman
 
 The standard submission form URL should be directed to the following URL:
 
-~~~
+~~~ .no-highlight
 {{url}}manager/plugin/plugin-folder/update
 ~~~
 
@@ -29,7 +30,7 @@ Config::get('url_current') . '/update';
 
 This is the basic form. This is a shield item, so you can use that `$config` and `$speak` shortcut from here:
 
-~~~ .html
+~~~ .php
 <form action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Please add a token input -->
@@ -63,7 +64,7 @@ Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function(
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(ROOT . '/test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . '/empty/states/test-plugin.txt');
 
         Notify::success('Plugin updated.'); // [3]
 
@@ -75,7 +76,7 @@ Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function(
 ~~~
 
 No. | Description
---: | ---------------------------------------------------------------------------
+--: | ----------------------------------------------------------------------
 1.  | Do not allow non pilot or passenger user to perform a form submission.
 2.  | Check the token input. If not match, redirect to the login page.
 3.  | Create a success message on success.
