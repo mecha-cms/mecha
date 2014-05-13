@@ -385,23 +385,9 @@ class Get {
         $content = $results['content_raw'];
         $time = Date::format($results['time'], 'Y-m-d-H-i-s');
 
-        list($year, $month, $day, $hour, $minute, $second) = explode('-', $time);
         $results['url'] = $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $results['slug'];
-        $results['date']['unix'] = $results['id'] = (int) Date::format($results['time'], 'U');
-        $results['date']['W3C'] = Date::format($results['time'], 'c');
-        $date_GMT = new DateTime($results['date']['W3C']);
-        $date_GMT->setTimeZone(new DateTimeZone('UTC'));
-        $month_names = (array) $speak->months;
-        $day_names = (array) $speak->days;
-        $results['date']['GMT'] = $date_GMT->format('Y-m-d H:i:s');
-        $results['date']['year'] = $year;
-        $results['date']['month'] = $month_names[(int) $month - 1];
-        $results['date']['day'] = $day_names[Date::format($results['time'], 'w')];
-        $results['date']['month_number'] = $month;
-        $results['date']['day_number'] = $day;
-        $results['date']['hour'] = $hour;
-        $results['date']['minute'] = $minute;
-        $results['date']['second'] = $second;
+        $results['date'] = Date::extract($time);
+        $results['id'] = $results['date']['unix'];
 
         if( ! isset($results['author'])) $results['author'] = $config->author;
 
