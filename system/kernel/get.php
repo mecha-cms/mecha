@@ -41,11 +41,10 @@ class Get {
         for($i = 0, $count = count($reference); $i < $count; ++$i) {
             $base = basename($reference[$i], '.txt');
             $part = explode('_', $base);
-            list($year, $month, $day, $hour, $minute, $second) = explode('-', $part[0]);
             $tree[$i] = array(
                 'file_path' => $reference[$i],
                 'file_name' => $base . '.txt',
-                'time' => isset($part[0]) ? $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':' . $second : '0000-00-00 00:00:00',
+                'time' => isset($part[0]) ? Date::format($part[0], 'Y-m-d H:i:s') : '0000-00-00 00:00:00',
                 'kind' => isset($part[1]) ? explode(',', $part[1]) : array(),
                 'slug' => isset($part[2]) ? $part[2] : ""
             );
@@ -501,6 +500,68 @@ class Get {
 
     /**
      * =========================================================================
+     *  GET MINIMUM DATA OF A PAGE
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    var_dump(Get::pageAnchor('about'));
+     *
+     * -------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ---------------------------------------------------
+     *  $path     | string | The URL path of the page file, or a page slug
+     *  $folder   | string | Folder of the pages
+     *  --------- | ------ | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function pageAnchor($path, $folder = PAGE) {
+        $config = Config::get();
+        if(strpos($path, ROOT) === false) {
+            foreach(glob($folder . '/*.txt') as $file_path) {
+                list($time, $kind, $slug) = explode('_', basename($file_path, '.txt'));
+                if($slug == $path) {
+                    $path = $file_path;
+                    break;
+                }
+            }
+        }
+        $handle = fopen($path, 'r') or die('Cannot open file: ' . $path);
+        $parts = explode(':', fgets($handle), 2);
+        list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
+        fclose($handle);
+        return (object) array(
+            'time' => Date::format($time, 'Y-m-d H:i:s'),
+            'kind' => explode(',', $kind),
+            'slug' => $slug,
+            'title' => isset($parts[1]) ? trim($parts[1]) : '?',
+            'url' => $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $slug
+        );
+    }
+
+    /**
+     * =========================================================================
+     *  GET MINIMUM DATA OF AN ARTICLE
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    var_dump(Get::articleAnchor('lorem-ipsum'));
+     *
+     * -------------------------------------------------------------------------
+     *
+     */
+
+    public static function articleAnchor($path) {
+        return self::pageAnchor($path, ARTICLE);
+    }
+
+    /**
+     * =========================================================================
      *  GET IMAGES URL FROM TEXT SOURCE
      * =========================================================================
      *
@@ -620,11 +681,10 @@ class Get {
 
         foreach(glob(RESPONSE . '/*.txt') as $comment) {
             list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
-            list($year, $month, $day, $hour, $minute, $second) = explode('-', $id);
             $results[] = array(
                 'file_path' => $comment,
                 'file_name' => basename($comment),
-                'time' => $year . '-' . $month . '-' . $day . ' ' . $hour . ':' . $minute . ':' . $second,
+                'time' => Date::format($id, 'Y-m-d H:i:s'),
                 'post' => (int) Date::format($post, 'U'),
                 'id' => (int) Date::format($id, 'U'),
                 'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')

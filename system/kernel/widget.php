@@ -255,6 +255,7 @@ class Widget extends Weapon {
      */
 
     public static function recentPost($total = 7, $class = 'recent') {
+        $config = Config::get();
         if( ! $files = Get::articles('DESC')) return "";
         if($class == 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
@@ -263,8 +264,8 @@ class Widget extends Weapon {
         $html .= '<ul>';
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i == $count) break;
-            $article = Get::article($files[$i], array('content', 'css', 'js', 'comments'));
-            $html .= '<li' . (Config::get('url_current') == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>';
+            $article = Get::articleAnchor($files[$i]);
+            $html .= '<li' . ($config->url_current == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>';
         }
         $html .= '</ul>';
         $html .= '</div>';
