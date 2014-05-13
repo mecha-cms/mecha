@@ -57,8 +57,10 @@ class File {
         self::$cache = "";
         self::$opened = null;
         if(self::exist($path)) {
-            self::$cache = file_get_contents($path);
             self::$opened = $path;
+            if( ! is_dir($path) && $output = file_get_contents($path)) {
+                self::$cache = $output;
+            }
         }
         return new static;
     }
@@ -142,6 +144,17 @@ class File {
         self::$opened = null;
     }
 
+    // Move file or folder to somewhere
+    public static function moveTo($destination = ROOT) {
+        $destination = rtrim($destination, '\\/');
+        if(self::exist(self::$opened)) {
+            if(is_dir($destination)) {
+                $destination .= DS . basename(self::$opened);
+            }
+            rename(self::$opened, $destination);
+        }
+    }
+
     // Copy a file
     public static function copyTo($destination = ROOT) {
         if(self::exist(self::$opened)) {
@@ -164,7 +177,7 @@ class File {
     }
 
     // Upload a file
-    public static function upload($file, $destination = ROOT) {
+    public static function upload($file, $destination = ROOT, $custom_success_message = "") {
 
         $config = Config::get();
         $speak = Config::speak();
@@ -233,24 +246,28 @@ class File {
             $html[] = '<strong>' . $key . ':</strong> ' . $value;
         }
 
-        Notify::success(implode('<br>', $html), "");
+        if( ! empty($custom_success_message)) {
+            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], ($file['size'] / 1024) . ' KB', '<a href="' . $link . '" target="_blank">' . $link . '</a>')));
+        } else {
+            Notify::success(implode('<br>', $html), "");
+        }
 
     }
 
     // Get file size and convert its size into ...
     public static function size($file, $type = "") {
         switch(strtolower($type)) {
-            case '':
-                $size = filesize($file); // bytes
+            case "": // bytes
+                $size = filesize($file);
             break;
-            case 'kb':
-                $size = filesize($file) * .0009765625; // bytes to KB
+            case 'kb': // bytes to KB
+                $size = filesize($file) * .0009765625;
             break;
-            case 'mb':
-                $size = (filesize($file) * .0009765625) * .0009765625; // bytes to MB
+            case 'mb': // bytes to MB
+                $size = (filesize($file) * .0009765625) * .0009765625;
             break;
-            case 'gb':
-                $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; // bytes to GB
+            case 'gb': // bytes to GB
+                $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625;
             break;
         }
         return $size <= 0 ? 'Unknown file size' : trim(round($size, 2) . ' ' . $type);
