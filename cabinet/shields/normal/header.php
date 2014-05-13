@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="ltr" class="page-<?php echo $config->page_type; ?>">
+<html dir="<?php echo strtolower($config->language_direction); ?>" class="page-<?php echo $config->page_type; ?>">
   <head>
 
     <meta charset="<?php echo $config->charset; ?>">
