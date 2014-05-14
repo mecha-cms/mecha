@@ -11,7 +11,7 @@
     <div class="page-header">
       <a class="page-name" href="<?php echo $page->url; ?>" target="_blank"><?php echo $page->title; ?></a>
       <span class="page-time">
-        <time datetime="<?php echo $page->date->W3C; ?>"><?php echo Date::format($page->date->W3C, 'Y/m/d H:i:s'); ?></time>
+        <time datetime="<?php echo Date::format($page->time, 'c'); ?>"><?php echo Date::format($page->time, 'Y/m/d H:i:s'); ?></time>
       </span>
     </div>
     <div class="page-body"><?php echo $page->description; ?></div>

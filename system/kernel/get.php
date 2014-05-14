@@ -7,6 +7,19 @@ class Get {
 
     private static $placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC';
 
+    // Find page's file path by a slug => `page-slug` or by ID => 12345
+    private static function tracePath($detector, $folder = PAGE) {
+        $results = false;
+        foreach(glob($folder . '/*.txt') as $file_path) {
+            list($time, $kind, $slug) = explode('_', basename($file_path, '.txt'));
+            if($slug == $detector || (is_numeric($detector) && (string) Date::format($detector, 'Y-m-d-H-i-s') == (string) $time)) {
+                $results = $file_path;
+                break;
+            }
+        }
+        return $results;
+    }
+
     /**
      * =========================================================================
      *  CONVERT FILE PATH OF ARTICLE/PAGE INTO ARRAY OF INFO
@@ -359,13 +372,7 @@ class Get {
                 $results = self::extract($reference);
             } else {
                 // Get page detail by slug => `page-slug` or by ID => 12345
-                foreach(glob($folder . '/*.txt') as $file) {
-                    $part = explode('_', basename($file, '.txt'));
-                    if($reference == $part[2] || (is_numeric($reference) && (string) Date::format($reference, 'Y-m-d-H-i-s') == (string) $part[0])) {
-                        $results = self::extract($file);
-                        break;
-                    }
-                }
+                $results = self::extract(self::tracePath($reference, $folder));
             }
         }
 
@@ -500,6 +507,96 @@ class Get {
 
     /**
      * =========================================================================
+     *  GET PAGE HEADERS ONLY
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    var_dump(Get::pageHeader('lorem-ipsum'));
+     *
+     * -------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ---------------------------------------------------
+     *  $path     | string | The URL path of the page file, or a page slug
+     *  $folder   | string | Folder of the pages
+     *  --------- | ------ | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function pageHeader($path, $folder = PAGE) {
+        $config = Config::get();
+        if(strpos($path, ROOT) === false) {
+            $path = self::tracePath($path);
+        }
+        if($handle = fopen($path, 'r')) {
+            list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
+            $results = array(
+                'id' => (int) Date::format($time, 'U'),
+                'time' => Date::format($time, 'Y-m-d H:i:s'),
+                'kind' => explode(',', $kind),
+                'slug' => $slug,
+                'url' => $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $slug
+            );
+            while(($buffer = fgets($handle, 4096)) !== false) {
+                if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
+                    fclose($handle);
+                    break;
+                }
+                $field = explode(':', $buffer, 2);
+                $value = trim($field[1]);
+                if(is_numeric($value)) {
+                    $value = (int) $value;
+                }
+                if(preg_match('#^(true|false)$#', strtolower($value))) {
+                    $value = $value == 'true' ? true : false;
+                }
+                $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
+            }
+            $init = array();
+            foreach(unserialize(File::open(STATE . '/fields.txt')->read()) as $key => $value) {
+                $init[$key] = "";
+            }
+            if(isset($results['fields'])) {
+                $extra = Mecha::A(Text::parse($results['fields'])->to_decoded_json);
+                if($results['fields'] != '{}' || ( ! empty($extra) && (string) $extra !== 'null')) {
+                    foreach($extra as $key => $value) {
+                        if($value['type'] == 'boolean') {
+                            $init[$key] = isset($value['value']) && ! empty($value['value']) ? true : false;
+                        } else {
+                            $init[$key] = $value['value'];
+                        }
+                    }
+                }
+            }
+            $results['description'] = isset($results['description']) ? Text::parse($results['description'])->to_decoded_json : "";
+            $results['fields'] = $init;
+            return (object) $results;
+        }
+        return false;
+    }
+
+    /**
+     * =========================================================================
+     *  GET ARTICLE HEADERS ONLY
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    var_dump(Get::articleHeader('lorem-ipsum'));
+     *
+     * -------------------------------------------------------------------------
+     *
+     */
+
+    public static function articleHeader($path) {
+        return self::pageHeader($path, ARTICLE);
+    }
+
+    /**
+     * =========================================================================
      *  GET MINIMUM DATA OF A PAGE
      * =========================================================================
      *
@@ -522,25 +619,22 @@ class Get {
     public static function pageAnchor($path, $folder = PAGE) {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            foreach(glob($folder . '/*.txt') as $file_path) {
-                list($time, $kind, $slug) = explode('_', basename($file_path, '.txt'));
-                if($slug == $path) {
-                    $path = $file_path;
-                    break;
-                }
-            }
+            $path = self::tracePath($path);
         }
-        $handle = fopen($path, 'r') or die('Cannot open file: ' . $path);
-        $parts = explode(':', fgets($handle), 2);
-        list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
-        fclose($handle);
-        return (object) array(
-            'time' => Date::format($time, 'Y-m-d H:i:s'),
-            'kind' => explode(',', $kind),
-            'slug' => $slug,
-            'title' => isset($parts[1]) ? trim($parts[1]) : '?',
-            'url' => $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $slug
-        );
+        if($handle = fopen($path, 'r')) {
+            $parts = explode(':', fgets($handle), 2);
+            list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
+            fclose($handle);
+            return (object) array(
+                'id' => (int) Date::format($time, 'U'),
+                'time' => Date::format($time, 'Y-m-d H:i:s'),
+                'kind' => explode(',', $kind),
+                'slug' => $slug,
+                'title' => isset($parts[1]) ? trim($parts[1]) : '?',
+                'url' => $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $slug
+            );
+        }
+        return false;
     }
 
     /**
