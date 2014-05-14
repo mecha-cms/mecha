@@ -529,7 +529,7 @@ class Get {
     public static function pageHeader($path, $folder = PAGE) {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::tracePath($path);
+            $path = self::tracePath($path, $folder);
         }
         if($handle = fopen($path, 'r')) {
             list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
@@ -619,7 +619,7 @@ class Get {
     public static function pageAnchor($path, $folder = PAGE) {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::tracePath($path);
+            $path = self::tracePath($path, $folder);
         }
         if($handle = fopen($path, 'r')) {
             $parts = explode(':', fgets($handle), 2);
