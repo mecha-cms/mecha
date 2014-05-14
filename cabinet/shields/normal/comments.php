@@ -1,12 +1,12 @@
 <section class="comments">
 
   <h4 class="comment-header">
-    <i class="fa fa-comments"></i> <?php echo $page->page_total_comments_text; ?>
+    <i class="fa fa-comments"></i> <?php echo $article->total_comments_text; ?>
   </h4>
 
   <ol class="comment-list">
-    <?php if($page->page_total_comments > 0): ?>
-    <?php foreach($page->comments as $comment): ?>
+    <?php if($article->total_comments > 0): ?>
+    <?php foreach($article->comments as $comment): ?>
     <li class="comment comment-<?php echo $comment->status; ?>" id="comment-<?php echo $comment->id; ?>">
       <div class="comment-avatar">
         <img alt="<?php echo $comment->name; ?>" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">

@@ -424,8 +424,8 @@ class Get {
         $results['image'] = self::imageURL($content . $custom, 1, (File::exist(ROOT . '/favicon.ico') ? $config->url . '/favicon.ico' : self::$placeholder));
 
         $comments = self::comments($results['id']);
-        $results['article_total_comments'] = $results['page_total_comments'] = $comments !== false ? count($comments) : 0;
-        $results['article_total_comments_text'] = $results['page_total_comments_text'] = ($results['page_total_comments'] . ' ' . ($results['page_total_comments'] > 1 ? $speak->comments : $speak->comment));
+        $results['total_comments'] = $comments !== false ? count($comments) : 0;
+        $results['total_comments_text'] = $results['total_comments'] . ' ' . ($results['total_comments'] > 1 ? $speak->comments : $speak->comment);
 
         if($comments && ! isset($excludes['comments'])) {
             $results['comments'] = array();

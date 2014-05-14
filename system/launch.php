@@ -239,7 +239,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_message)));
         }
 
-        if( ! Guardian::check((int) $request['math'], Session::get(Guardian::$math))->this_is_correct) {
+        if( ! is_numeric($request['math']) || ! Guardian::check((int) $request['math'], Session::get(Guardian::$math))->this_is_correct) {
             Notify::error($speak->notify_invalid_math_answer);
         }
 
