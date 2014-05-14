@@ -32,7 +32,7 @@
     <?php endif; ?>
   </ol>
 
-  <form class="comment-form" action="<?php echo $config->url_current; ?>" id="comment-form" method="post">
+  <form class="comment-form" id="comment-form" action="<?php echo $config->url_current; ?>" method="post">
     <?php echo Notify::read(); ?>
     <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
     <input name="parent" type="hidden" value="">

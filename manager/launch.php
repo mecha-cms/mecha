@@ -90,13 +90,47 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Guardian::memorize($request);
         }
 
+        // Check if slug already exist on static page
+        $slugs = array();
+        if($files = Get::pages()) {
+            foreach($files as $file) {
+                list($time, $kind, $slug) = explode('_', basename($file, '.txt'));
+                $slugs[$slug] = 1;
+            }
+        }
+
+        if(isset($slugs[$request['index']['slug']])) {
+            Notify::error(Config::speak('notify_error_slug_exist', array($request['index']['slug'])));
+            Guardian::memorize($request);
+        }
+
+        if(isset($slugs[$request['tag']['slug']])) {
+            Notify::error(Config::speak('notify_error_slug_exist', array($request['tag']['slug'])));
+            Guardian::memorize($request);
+        }
+
+        if(isset($slugs[$request['archive']['slug']])) {
+            Notify::error(Config::speak('notify_error_slug_exist', array($request['archive']['slug'])));
+            Guardian::memorize($request);
+        }
+
+        if(isset($slugs[$request['search']['slug']])) {
+            Notify::error(Config::speak('notify_error_slug_exist', array($request['search']['slug'])));
+            Guardian::memorize($request);
+        }
+
+        if(isset($slugs[$request['manager']['slug']])) {
+            Notify::error(Config::speak('notify_error_slug_exist', array($request['manager']['slug'])));
+            Guardian::memorize($request);
+        }
+
+        // Check for invalid email address
         if( ! empty($request['author_email']) && ! Guardian::check($request['author_email'])->this_is_email) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }
 
-        // Remove token from request array
-        unset($request['token']);
+        unset($request['token']); // Remove token from request array
 
         if( ! Notify::errors()) {
             File::open(STATE . '/config.txt')->write(serialize($request))->save();
@@ -165,7 +199,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         Shield::abort();
     }
 
-    Weapon::add('sword_after', function() use($config) {
+    Weapon::add('sword_after', function() {
         echo Asset::script('manager/sword/editor.js');
     }, 9);
 
@@ -235,8 +269,16 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         if($files = $path == 'article' ? Get::articles() : Get::pages()) {
             foreach($files as $file) {
                 list($_time, $_kind, $_slug) = explode('_', basename($file, '.txt'));
-                $slugs[] = $_slug;
+                $slugs[$_slug] = 1;
             }
+        }
+
+        if($path == 'page') {
+            $slugs[$config->index->slug] = 1;
+            $slugs[$config->tag->slug] = 1;
+            $slugs[$config->archive->slug] = 1;
+            $slugs[$config->search->slug] = 1;
+            $slugs[$config->manager->slug] = 1;
         }
 
         /**
@@ -276,7 +318,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         /**
          * Check for duplicate slug
          */
-        if(Config::get('editor_mode') == 'ignite' && in_array($slug, $slugs)) {
+        if(Config::get('editor_mode') == 'ignite' && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
             Guardian::memorize($request);
         }
@@ -338,11 +380,9 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
              * Allow users to change their post slug, but make sure they
              * do not type the slug of another post.
              */
-            if(($key = array_search($fields['slug'], $slugs)) !== false) {
-                unset($slugs[$key]); // Remove current slug from filter
-            }
+            unset($slugs[$fields['slug']]); // Remove current slug from filter
 
-            if(in_array($slug, $slugs)) {
+            if(isset($slugs[$slug])) {
                 Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
                 Guardian::memorize($request);
             }
@@ -578,7 +618,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         Shield::abort();
     }
 
-    Weapon::add('sword_after', function() use($config) {
+    Weapon::add('sword_after', function() {
         echo Asset::script('manager/sword/upload.js');
     }, 9);
 
