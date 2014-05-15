@@ -1,6 +1,6 @@
 ### 1. Membuat Menu Sederhana
 
-~~~
+~~~ .no-highlight
 Beranda: /
 Tentang: /tentang
 Kontak: /kontak
@@ -20,7 +20,7 @@ Kontak: /kontak
 
 Gunakan 4 spasi untuk indentasi.
 
-~~~
+~~~ .no-highlight
 Menu:
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
@@ -48,7 +48,7 @@ Menu:
 
 ### 3. Membuat Menu Induk Menjadi Aktif
 
-~~~
+~~~ .no-highlight
 Menu (/suatu-tempat):
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
@@ -69,7 +69,7 @@ Menu (/suatu-tempat):
 
 ### 4. Tautan Eksternal
 
-~~~
+~~~ .no-highlight
 Menu: http://example.org
 ~~~
 

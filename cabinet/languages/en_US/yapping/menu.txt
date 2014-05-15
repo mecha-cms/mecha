@@ -1,6 +1,6 @@
 ### 1. Creating a Simple Menu
 
-~~~
+~~~ .no-highlight
 Home: /
 About: /about
 Contact: /contact
@@ -20,7 +20,7 @@ Contact: /contact
 
 Use 4 spaces for indentation.
 
-~~~
+~~~ .no-highlight
 Menu:
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
@@ -48,7 +48,7 @@ Menu:
 
 ### 3. Make the Parent Menu Active
 
-~~~
+~~~ .no-highlight
 Menu (/some-where):
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
@@ -69,7 +69,7 @@ Menu (/some-where):
 
 ### 4. External Link
 
-~~~
+~~~ .no-highlight
 Menu: http://example.org
 ~~~
 

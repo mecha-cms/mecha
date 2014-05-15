@@ -10,7 +10,7 @@ As HTML link:
 
 As Markdown link:
 
-~~~
+~~~ .markdown
 [your link text goes here](`{{url}}`article/lorem-ipsum)
 ~~~
 
@@ -18,7 +18,7 @@ As Markdown link:
 
 Wrap your _shortcode_ with a backtick character to prevent code parsing:
 
-~~~
+~~~ .markdown
 Parse {{this}} pattern, but not ``{{this}}``
 ~~~
 
