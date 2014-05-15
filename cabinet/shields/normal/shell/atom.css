@@ -115,7 +115,17 @@ mark {
   color:#333;
 }
 
-strong,b,th,dt,kbd {font-weight:bold}
+kbd {
+  font-size:76%;
+  font-weight:bold;
+  padding:.2em .5em;
+  border:2px outset;
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+}
+
+strong,b,th {font-weight:bold}
 caption,dfn,em,figcaption,i,var {font-style:italic}
 ins,u {text-decoration:underline}
 del,strike {text-decoration:line-through}
@@ -130,6 +140,7 @@ sub,sup {
 sub {top:.4em}
 
 blockquote {
+  font-family:Georgia,"URW Bookman L",Serif;
   font-size:110%;
   font-style:italic;
 }
@@ -309,7 +320,7 @@ input[type="submit"]:active,
 .btn-sm,
 .input-sm {
   padding:6px 8px;
-  font-size:11px;
+  font-size:86%;
 }
 
 .btn-sm {
@@ -407,6 +418,8 @@ legend {
   white-space:nowrap;
   text-transform:uppercase;
   font-weight:bold;
+  font-size:76%;
+  overflow:visible;
 }
 
 
@@ -454,7 +467,7 @@ pre {
   white-space:pre;
   white-space:-moz-pre-wrap;
   white-space:pre-wrap;
-  padding:1em;
+  padding:1em 1.2em;
   background-color:#333;
   color:white;
   -webkit-border-radius:3px;
@@ -462,12 +475,15 @@ pre {
   border-radius:3px;
 }
 
+code {font-size:96%}
+
 pre code {
   display:block;
   color:inherit;
+  font-size:100%;
 }
 
-form,blockquote,hr,dl,fieldset,
+form,blockquote,hr,dl,dd,dt,fieldset,
 figcaption,figure,ol,ul,p,pre,
 table,.fluid-video,.grid-group,
 .image-container {margin:1.3846153846153846em 0 0}
@@ -487,15 +503,20 @@ ul {
   list-style:disc outside;
 }
 
-ol ol,ol ul,ul ul,ul ol,dt,dd {
+ol ol,ol ul,ul ul,ul ol {
   margin-left:1em;
   margin-top:0;
 }
+
+dt {font-size:120%}
+dd {margin-left:1em}
 
 form:first-child,
 blockquote:first-child,
 hr:first-child,
 dl:first-child,
+dd:first-child,
+dt:first-child,
 fieldset:first-child,
 figure:first-child,
 ol:first-child,

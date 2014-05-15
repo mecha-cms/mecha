@@ -10,6 +10,7 @@
   height:30px;
   line-height:30px;
   padding:0 14px;
+  font-size:96%;
 }
 
 .widget-manager-menu ul li,
@@ -228,6 +229,8 @@ textarea[name="js"] {
   margin:2px 0 0;
   padding:1em;
 }
+
+.messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
 
 
 /**
