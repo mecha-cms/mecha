@@ -52,7 +52,7 @@ return array(
 
     // Search Page
     'search' => array(
-        'title' => 'Searh Results for',
+        'title' => 'Search Results for',
         'slug' => 'search',
         'per_page' => 7
     ),

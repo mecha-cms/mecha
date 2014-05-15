@@ -137,31 +137,54 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
 
 Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config) {
 
+    $query = Text::parse($query)->to_decoded_url;
+    $keywords = Text::parse($query)->to_slug;
     $pages = array();
 
-    if($files = Mecha::eat(Get::articles('DESC', Text::parse($query)->to_slug))->chunk($offset, $config->search->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+    /**
+     * Matched with all keywords combined
+     */
+    foreach(glob(ARTICLE . '/*.txt') as $file_path) {
+        $anchor = Get::articleAnchor($file_path);
+        if(strpos(strtolower(basename($file_path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
+            $pages[] = $file_path;
         }
+    }
+
+    /**
+     * Matched with a single keyword
+     */
+    foreach(explode('-', $keywords) as $keyword) {
+        foreach(glob(ARTICLE . '/*.txt') as $file_path) {
+            $anchor = Get::articleAnchor($file_path);
+            if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
+                $pages[] = $file_path;
+            }
+        }
+    }
+
+    if( ! empty($pages)) {
+        $_pages = array();
+        foreach(Mecha::eat(array_unique($pages))->chunk($offset, $config->search->per_page)->vomit() as $file_path) {
+            $_pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        }
+        Config::set(array(
+            'page_type' => 'search',
+            'page_title' => $config->search->title . ' &ldquo;' . $query . '&rdquo;' . $config->title_separator . $config->title,
+            'offset' => $offset,
+            'search_query' => $query,
+            'pages' => $_pages,
+            'pagination' => Navigator::extract($pages, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
+        ));
+        Shield::attach('index');
     } else {
         Config::set(array(
             'page_type' => 'search',
-            'page_title' => $config->search->title . ' &ldquo;' . Text::parse($query)->to_encoded_html . '&rdquo;' . $config->title_separator . $config->title,
-            'search_query' => Text::parse($query)->to_decoded_url
+            'page_title' => $config->search->title . ' &ldquo;' . $query . '&rdquo;' . $config->title_separator . $config->title,
+            'search_query' => $query
         ));
         Shield::abort('404-search');
     }
-
-    Config::set(array(
-        'page_type' => 'search',
-        'page_title' => $config->search->title . ' &ldquo;' . $query . '&rdquo;' . $config->title_separator . $config->title,
-        'offset' => $offset,
-        'search_query' => Text::parse($query)->to_decoded_url,
-        'pages' => $pages,
-        'pagination' => Navigator::extract(Get::articles('DESC', Text::parse($query)->to_slug), $offset, $config->search->per_page, $config->search->slug . '/' . $query)
-    ));
-
-    Shield::attach('index');
 
 });
 
