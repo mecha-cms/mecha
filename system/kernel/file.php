@@ -104,12 +104,11 @@ class File {
     public static function delete() {
         if( ! is_null(self::$opened)) {
             if(is_dir(self::$opened)) {
-               $spider = new RecursiveDirectoryIterator(self::$opened);
-               foreach(new RecursiveIteratorIterator($spider, RecursiveIteratorIterator::CHILD_FIRST) as $file) {
-                    if($file->isDir()) {
-                        rmdir($file->getPathname());
-                    } else {
+               foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$opened, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
+                    if($file->isFile()) {
                         unlink($file->getPathname());
+                    } else {
+                        rmdir($file->getPathname());
                     }
                 }
                 rmdir(self::$opened);
