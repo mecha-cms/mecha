@@ -387,6 +387,7 @@ class Get {
          */
 
         $results = $results + Text::toPage(File::open($results['file_path'])->read(), (isset($excludes['content']) ? false : true));
+        $results['content'] = Filter::apply('page', $results['content']);
 
         $content = $results['content_raw'];
         $time = Date::format($results['time'], 'Y-m-d-H-i-s');
@@ -831,7 +832,7 @@ class Get {
 
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
-        $results['message'] = Filter::apply('comment', Text::parse($results['content'])->to_html);
+        $results['message'] = Filter::apply('comment', $results['content']);
         $results['permalink'] = '#';
 
         unset($results['content_raw']);
