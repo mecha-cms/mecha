@@ -68,7 +68,7 @@ Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function(
 
         Notify::success('Plugin updated.'); // [3]
 
-        Guardian::kick(basename($config->url_current)); // [4]
+        Guardian::kick(dirname($config->url_current)); // [4]
 
     }
 
