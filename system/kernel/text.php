@@ -127,7 +127,7 @@ class Text {
                 '-',
                 ""
             ),
-        $text);
+        strip_tags($text));
         if($strip_underscores_and_dots) {
             $text = preg_replace(array('/[\_\.]+/', '/\-+/'), '-', $text);
         }
