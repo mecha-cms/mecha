@@ -283,11 +283,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
 
         /**
-         * Detect spam keywords in comment
+         * Check for spam keywords in comment
          */
-        $keywords = $request['email'] ? $request['email'] . ',' . $config->spam_keywords : $config->spam_keywords;
-        foreach(explode(',', $keywords) as $spam) {
-            if(trim($spam) !== "" && strpos($request['message'], trim($spam)) !== false) {
+        foreach(explode(',', $config->spam_keywords) as $spam) {
+            if((trim($spam) !== "" && $request['email'] == trim($spam)) || (trim($spam) !== "" && strpos($request['message'], trim($spam)) !== false)) {
                 Notify::warning($speak->notify_warning_intruder_detected . ' <mark>' . $spam . '</mark>');
                 break;
             }
@@ -314,10 +313,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
 
             if($config->email_notification) {
-                $header  = "From: " . $request['email'] . " \r\n";
-                $header .= "Reply-To: " . $request['email'] . " \r\n";
-                $header .= "Return-Path: " . $request['email'] . " \r\n";
-                $header .= "X-Mailer: PHP \r\n";
+                $header  = "From: " . $request['email'] . "\r\n";
+                $header .= "Reply-To: " . $request['email'] . "\r\n";
+                $header .= "Return-Path: " . $request['email'] . "\r\n";
+                $header .= "X-Mailer: PHP\r\n";
                 $message  = Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . "\r\n\r\n";
                 $message .= $request['name'] . ": " . $request['message'] . "\r\n\r\n";
                 $message .= Date::format($id, 'Y/m/d H:i:s');
