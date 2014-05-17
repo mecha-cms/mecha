@@ -15,7 +15,7 @@
     <![endif]-->
 
     <?php Weapon::fire('shell_before'); ?>
-    <link href="<?php echo $config->protocol; ?>netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">
+    <link href="<?php echo $config->protocol; ?>netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
     <?php echo Asset::stylesheet(array('shell/atom.css', 'shell/layout.css')); ?>
     <?php if(isset($page->css)) echo $page->css; ?>
     <?php Weapon::fire('shell_after'); ?>

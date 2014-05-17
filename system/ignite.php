@@ -78,8 +78,8 @@ Weapon::add('sword_after', function() {
 /**
  * Include user defined functions
  */
-if(File::exist(SHIELD . '/' . $config->shield . '/functions.php')) {
-    include SHIELD . '/' . $config->shield . '/functions.php';
+if($function = File::exist(SHIELD . '/' . $config->shield . '/functions.php')) {
+    include $function;
 }
 
 /**
@@ -87,7 +87,7 @@ if(File::exist(SHIELD . '/' . $config->shield . '/functions.php')) {
  */
 if(Guardian::happy()) {
     Weapon::add('shell_after', function() use($config) {
-        echo '<link href="' . $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.min.css" rel="stylesheet">';
+        echo '<link href="' . $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">';
         echo Asset::stylesheet('shell/manager.css');
     });
     Weapon::add('cargo_before', function() use($config, $speak) {
