@@ -3,4 +3,4 @@ Author: Michel Fortin <http://michelf.ca/projects/php-markdown/>
 
 ====
 
-Markdown Extra &ndash; A text-to-HTML convertion tool for web writers.
+Markdown Extra &ndash; Alat konversi teks-ke-HTML untuk para penulis web.

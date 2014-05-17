@@ -10,7 +10,7 @@
 
 class Filter {
 
-    protected static $bucket = array();
+    public static $bucket = array();
 
     protected function __construct() {}
 

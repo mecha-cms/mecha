@@ -160,15 +160,19 @@ class Get {
     public static function summary($text, $maxchars = 100, $tail = '&hellip;') {
         $text = preg_replace(
             array(
-                '#(<.*?>|[\n\r\s\t\*\_\`>\#])+#',
+                '#(<.*?>|[\n\r\s\t\*\_\`])+#',
                 '# +#',
                 '#\&nbsp\;#',
-                '#[\-\~\=]{2,}#'
+                '#[\-\~\=\#]{2,}#',
+                '# *\. *([a-z])#i',
+                '#<|>#'
             ),
             array(
                 ' ',
                 ' ',
                 "",
+                "",
+                '. $1',
                 ""
             ),
         $text);
