@@ -1,6 +1,6 @@
 # js-markdown-extra
 
-ver 1.2.3
+ver 1.2.4
 based on PHP Markdown Extra 1.2.5  
 originally developed by [boumankan](http://bmky.net/product/js-markdown-extra/)
 
@@ -23,7 +23,7 @@ You can try in your hand.
 
 ### How to use ###
 
-Load this script in HTML and call ```Markdown``` function.
+Load this script in HTML and call `Markdown` function.
 
 ```javascript
 	//example :
@@ -34,14 +34,12 @@ Load this script in HTML and call ```Markdown``` function.
 
 It has possibility of entering infinite loop by some user input because
 I try to port PHP Markdown Extra with incompatible regular expression test.
-Please stand by to kill your browser process. **I prefer to use it
-under dual core CPU.**
 
 ### Known issues ###
 
 * Emphasis or strong syntax may have a bug.
 * Possible to freeze when incomplete syntax.
-* Bracket nesting more than twice for link is unsupported. (is as standard spec)
+* Bracket nesting is unsupported.
 
 ### Copyright ###
 
@@ -59,35 +57,3 @@ Free for modification, redistribution and embedding if copyright included.
 ### Agreement ###
 
 Shall we not be liable for any damages caused by this software.
-
-### History ###
-
-#### 1.2.3 - 2013-03-08
-
-  * Incompleted string/itaric bug fixed. #24
-  * Unexpectedly separated definition list bug fixed. #23
-
-#### 1.2.2 - 2013-01-10
-
-  * Performance and compatibility improved. #20 #21
-  * Suppoting npm install. #22
-
-#### 1.2.1 - 2012-12-06
-  Bugfix version as 1.2.1 released.
-
-  * README fixed. #15
-  * Problem with tab characters fixed. #16
-  * Redundant comma removed. #17
-  * Multiple code block was concatenated unexpectedly. #18 #19
-
-#### 1.2.0 - 2012-10-16
-  Stable version as 1.2.0 released.
-
-#### 1.2 (beta) - 2012-10-11
-  Completely rewritten based on PHP-Markdown-1.2.5.
-
-#### 1.1 - 2008-05-31
-  BUGFIX: Reference syntax with empty title. (Thanks to reporter)
-
-#### 1.0 - 2006-07-08
-  1st release.

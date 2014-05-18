@@ -22,7 +22,9 @@
         var shortcode = editor.data('shortcodes'),
             toHTML = editor.val();
         for (var i in shortcode) {
-            toHTML = toHTML.replace(new RegExp('(?!`)' + i + '(?!`)', 'g'), shortcode[i]).replace(/`\{\{(.*?)\}\}`/g, '{{$1}}');
+            var pattern = i.replace(/\%s/g, '(.*?)'),
+                replace = shortcode[i].replace(/\\([0-9]+)/g, '$$1');
+            toHTML = toHTML.replace(new RegExp('(?!`)' + pattern + '(?!`)', 'g'), replace).replace(/`\{\{(.*?)\}\}`/g, '{{$1}}');
         }
         preview.html(
             '<div class="inner"><h1 class="preview-title">' +
