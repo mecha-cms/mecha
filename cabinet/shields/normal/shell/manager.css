@@ -10,7 +10,6 @@
   height:30px;
   line-height:30px;
   padding:0 14px;
-  font-size:96%;
 }
 
 .widget-manager-menu ul li,
@@ -214,6 +213,9 @@ textarea[name="js"] {
   height:32px;
   line-height:32px;
   padding:0 1em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .plugin-author a {color:#FFA}
@@ -223,11 +225,15 @@ textarea[name="js"] {
   color:white;
   padding:.5em .8em;
   margin:2px 0 0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
 .plugin-description {
   margin:2px 0 0;
-  padding:1em;
+  border-top:6px solid transparent;
+  padding:1.3846153846153846em;
 }
 
 .messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
