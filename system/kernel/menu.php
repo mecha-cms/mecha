@@ -56,22 +56,18 @@
 class Menu {
 
     public static function get($array = null, $type = 'ul') {
-
         $config = Config::get();
         $current = $config->url_current;
-
-        // Use menu file from cabinet if `$array` is not defined
+        // Use menu file from the cabinet if `$array` is not defined
         if(is_null($array)) {
             $array = Text::toArray(File::open(STATE . '/menus.txt')->read());
         }
-
         $html = '<' . $type . '>';
-
         foreach($array as $key => $value) {
             if(is_array($value)) {
                 if(preg_match('/(.*?)\((.*?)\)$/', $key, $matches)) {
                     $url = trim($matches[2], '/');
-                    // Create full URL from value if the value is not contain a `://`
+                    // Create full URL from value if the value does not contain a `://`
                     if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
                         $url = str_replace('/#', '#', trim($config->url . '/' . $url, '/'));
                     }
@@ -81,16 +77,14 @@ class Menu {
                     $html .= '<li><a href="#">' . $key . '</a>' . self::get($value, $type) . '</li>';
                 }
             } else {
-                // Create full URL from value if the value is not contain a `://`
+                // Create full URL from value if the value does not contain a `://`
                 if(strpos($value, '://') === false && strpos($value, '#') !== 0) {
                     $value = str_replace('/#', '#', trim($config->url . '/' . trim($value, '/'), '/'));
                 }
                 $html .= '<li' . ($value == $current ? ' class="selected"' : "") . '><a href="' . $value . '">' . $key . '</a></li>';
             }
         }
-
         return $html . '</' . $type . '>';
-
     }
 
 }

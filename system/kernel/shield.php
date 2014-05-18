@@ -11,11 +11,11 @@ class Shield {
     private static function checkPath($name) {
         $name = trim($name, '\\/') . '.php';
         $config = Config::get();
-        if(File::exist(SHIELD . DS . $config->shield . DS . $name)) {
-            return SHIELD . DS . $config->shield . DS . $name;
+        if($file = File::exist(SHIELD . DS . $config->shield . DS . $name)) {
+            return $file;
         } else {
-            if(File::exist(ROOT . DS . $name)) {
-                return ROOT . DS . $name;
+            if($file = File::exist(ROOT . DS . $name)) {
+                return $file;
             } else {
                 return $name;
             }
@@ -60,6 +60,7 @@ class Shield {
             return (object) array(
                 'name' => $speak->unknown,
                 'author' => $speak->unknown,
+                'version' => $speak->unknown,
                 'content_raw' => "",
                 'content' => ""
             );

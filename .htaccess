@@ -39,7 +39,7 @@ AddDefaultCharset UTF-8
 <ifModule mod_gzip.c>
     mod_gzip_on Yes
     mod_gzip_dechunk Yes
-    mod_gzip_item_include file \.(css|html?|js|md|php|pl|ttf|txt|woff)$
+    mod_gzip_item_include file \.(css|eot|html?|js|md|php|pl|ttf|txt|woff)$
     mod_gzip_item_include handler ^cgi-script$
     mod_gzip_item_include mime ^text/.*
     mod_gzip_item_include mime ^application/.*
@@ -107,5 +107,5 @@ AddDefaultCharset UTF-8
     RewriteEngine on
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteRule ^(.*)$ index.php?$1 [L]
+    RewriteRule ^(.*)$ index.php?$1 [L,QSA]
 </IfModule>

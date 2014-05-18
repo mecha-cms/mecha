@@ -1,23 +1,24 @@
 <?php
 
 /**
- * ========================
+ * =============================================================
  *  MECHA'S GUARDIAN ANGEL
- * ========================
+ * =============================================================
  */
 
 class Guardian {
 
-    protected static $token = 'mecha_token';
-    protected static $login = 'mecha_login';
-    protected static $cache = 'mecha_form';
-
+    public static $token = 'mecha_token';
+    public static $login = 'mecha_login';
+    public static $cache = 'mecha_form';
     public static $math = 'mecha_math';
 
     protected function __construct() {}
     protected function __clone() {}
 
-    // Get user details
+    /**
+     * Get user details
+     */
     public static function get($key = null) {
         $log = Session::get(self::$login);
         if(is_null($key)) {
@@ -27,7 +28,9 @@ class Guardian {
         }
     }
 
-    // Generate a unique token
+    /**
+     * Generate a unique token
+     */
     public static function makeToken() {
         $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
@@ -35,21 +38,27 @@ class Guardian {
         return $token;
     }
 
-    // Check for invalid security token
-    public static function checkToken($token) {
+    /**
+     * Checks for invalid security token
+     */
+    public static function checkToken($token, $redirect = null) {
         if(Session::get(self::$token) === "" || Session::get(self::$token) !== $token) {
             Notify::error(Config::speak('notify_invalid_token'));
-            self::reject()->kick(Config::get('manager')->slug . '/login');
+            self::reject()->kick(is_null($redirect) ? Config::get('manager')->slug . '/login' : trim($redirect, '/'));
         }
     }
 
-    // Security token delete
+    /**
+     * Security token delete
+     */
     public static function deleteToken() {
         File::open(SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
         Session::kill(self::$token);
     }
 
-    // Input validation check
+    /**
+     * Input validation checks
+     */
     public static function check($input, $compare = "") {
         return (object) array(
             'this_is_IP' => filter_var($input, FILTER_VALIDATE_IP),
@@ -60,7 +69,9 @@ class Guardian {
         );
     }
 
-    // URL redirection
+    /**
+     * URL redirection
+     */
     public static function kick($path = "") {
         if(strpos($path, '://') === false) {
             $path = Config::get('url') . '/' . trim($path, '/');
@@ -69,7 +80,9 @@ class Guardian {
         exit;
     }
 
-    // Store the posted data into session
+    /**
+     * Store the posted data into session
+     */
     public static function memorize($memo = "") {
         if(empty($memo)) {
             $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : "";
@@ -80,28 +93,34 @@ class Guardian {
         Session::set(self::$cache, $memo);
     }
 
-    // Delete the stored post data
+    /**
+     * Delete the stored post data
+     */
     public static function forget() {
         Session::kill(self::$cache);
     }
 
-    // Spell the stored data
+    /**
+     * Spell the stored data
+     */
     public static function wayback($name = null) {
         if(is_null($name)) return Session::get(self::$cache);
         $cache = Session::get(self::$cache);
         $value = isset($cache[$name]) ? $cache[$name] : "";
-        $_SESSION[self::$cache][$name] = ""; // :(
+        Session::set(self::$cache . '.' . $name, ""); // :)
         return $value;
     }
 
-    // Logging in ...
+    /**
+     * Logging in ...
+     */
     public static function authorize() {
-        $users = Text::toArray(File::open(SYSTEM . '/log/users.txt')->read());
-        $authors = array();
         $config = Config::get();
         $speak = Config::speak();
+        $users = Text::toArray(File::open(SYSTEM . '/log/users.txt')->read());
+        $authors = array();
         foreach($users as $user => $detail) {
-            $name = preg_match('#(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)#', $detail, $matches);
+            preg_match('#(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)#', $detail, $matches);
             $authors[$user] = array(
                 'password' => trim($matches[1]),
                 'name' => trim($matches[2]),
@@ -133,27 +152,35 @@ class Guardian {
         return new static;
     }
 
-    // Logging out ...
+    /**
+     * Logging out ...
+     */
     public static function reject() {
         self::deleteToken();
         Session::kill(self::$login);
         return new static;
     }
 
-    // Logged in
+    /**
+     * Logged in
+     */
     public static function happy() {
         $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $auth = Session::get(self::$login);
         return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }
 
-    // Something goes wrong!
+    /**
+     * Something goes wrong
+     */
     public static function abort($reasons = "") {
         echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#3F3F3F;color:#DFC37D;padding:1em 1.2em">' . $reasons . '</div>';
         exit;
     }
 
-    // Math challenge
+    /**
+     * Math challenge
+     */
     public static function math($range = 10, $extra = "") {
         $x = mt_rand(1, $range);
         $y = mt_rand(1, $range);

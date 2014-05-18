@@ -1,19 +1,9 @@
 <?php
 
 /**
- * ===========================================================
+ * =============================================================
  *  SUCH MECHA . VERY ARRAY . MANY FUNCTIONS
- * ===========================================================
- *
- * -- CODE: --------------------------------------------------
- *
- *    // Sort an array ascending by key: 'id'
- *    $test = Mecha::eat($array)->order('ASC', 'id')->vomit();
- *
- *    var_dump($test);
- *
- * -----------------------------------------------------------
- *
+ * =============================================================
  */
 
 class Mecha {
@@ -35,47 +25,50 @@ class Mecha {
     }
 
     /**
-     * Sort array based on its key value
+     * Set array value recursively
      */
-    private static function sabikv($order = 'ASC', $key = null, $array) {
-
-        /**
-         * Inline array
-         */
-        if(is_null($key)) {
-
-            if($order == 'ASC') {
-                asort($array);
-            } else {
-                arsort($array);
+    public static function SVR(&$array, $segments, $value = "") {
+        $segments = explode('.', $segments);
+        while(count($segments) > 1) {
+            $segment = array_shift($segments);
+            if( ! array_key_exists($segment, $array)) {
+                $array[$segment] = array();
             }
-            return $array;
-
-        /**
-         * Multidimensional array
-         */
-        } else {
-
-            $bucket = array();
-            $result = array();
-
-            if($array && (count($array) > 0 || ! empty($array))) {
-                foreach($array as $k => $v) {
-                    $bucket[$k] = strtolower($v[$key]);
-                }
-                if ($order == 'ASC') {
-                    asort($bucket);
-                } else {
-                    arsort($bucket);
-                }
-                foreach($bucket as $k => $v) {
-                    $result[] = $array[$k];
-                }
-                return $result;
-            }
-
+            $array =& $array[$segment];
         }
+        $array[array_shift($segments)] = $value;
+    }
 
+    /**
+     * Get array value recursively
+     */
+    public static function GVR(&$array, $segments = null, $fallback = false) {
+        if(is_null($segments)) {
+            return $array;
+        }
+        foreach(explode('.', $segments) as $segment) {
+            if( ! is_array($array) || ! array_key_exists($segment, $array)) {
+                return $fallback;
+            }
+            $array =& $array[$segment];
+        }
+        return $array;
+    }
+
+    /**
+     * Unset array value recursively
+     */
+    public static function UVR(&$array, $segments) {
+        $segments = explode('.', $segments);
+        while(count($segments) > 1) {
+            $segment = array_shift($segments);
+            if(array_key_exists($segment, $array)) {
+                $array =& $array[$segment];
+            }
+        }
+        if(is_array($array) && array_key_exists($segment = array_shift($segments), $array)) {
+            unset($array[$segment]);
+        }
     }
 
     /**
@@ -87,10 +80,33 @@ class Mecha {
     }
 
     /**
-     * Sort that array in our monster stomach
+     * Sort array based on its value's key
      */
     public static function order($order = 'ASC', $key = null) {
-        self::$stomach = self::sabikv($order, $key, self::$stomach);
+        if(is_null($key)) {
+            if($order == 'ASC') {
+                asort(self::$stomach);
+            } else {
+                arsort(self::$stomach);
+            }
+        } else {
+            $before = array();
+            $after = array();
+            if(self::$stomach && (count(self::$stomach) > 0 || ! empty(self::$stomach))) {
+                foreach(self::$stomach as $k => $v) {
+                    $before[$k] = strtolower($v[$key]);
+                }
+                if ($order == 'ASC') {
+                    asort($before);
+                } else {
+                    arsort($before);
+                }
+                foreach($before as $k => $v) {
+                    $after[] = self::$stomach[$k];
+                }
+            }
+        }
+        self::$stomach = $after;
         return new static;
     }
 
@@ -106,26 +122,9 @@ class Mecha {
      * Then vomit it!
      */
     public static function vomit($param = null, $fallback = false) {
-        $aa = self::$stomach;
-        if(is_null($param)) {
-            self::$stomach = array();
-            return isset($aa) && ! empty($aa) ? $aa : $fallback;
-        } else {
-
-            /**
-             * Support array childrens calls in dot notation styles
-             * Something like => `Mecha::eat($array)->vomit('foo.bar');`
-             */
-            if(strpos($param, '.') !== false) {
-                $segments = explode('.', $param);
-                foreach($segments as $segment) {
-                    $aa = $aa[$segment];
-                }
-                return isset($aa) && ! empty($aa) ? $aa : $fallback;
-            }
-            self::$stomach = array();
-            return isset($aa[$param]) && ! empty($aa[$param]) ? $aa[$param] : $fallback;
-        }
+        $array = self::$stomach;
+        self::$stomach = array();
+        return self::GVR($array, $param, $fallback);
     }
 
     /**

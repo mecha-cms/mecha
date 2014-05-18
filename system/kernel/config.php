@@ -72,7 +72,10 @@ class Config {
 
     public static function get($key = null) {
         if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = false; // handle undefined variable
+            self::$bucket[$key] = false; // handle for undefined variable
+        }
+        if(is_string($key) && strpos($key, '.') !== false) {
+            return Mecha::GVR(self::$bucket, $key);
         }
         return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
     }
@@ -100,9 +103,17 @@ class Config {
 
     public static function merge($key, $array = array()) {
         if( ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = $array;
+            if(strpos($key, '.') !== false) {
+                Mecha::SVR(self::$bucket, $key);
+            } else {
+                self::$bucket[$key] = $array;
+            }
         } else {
-            self::$bucket[$key] = array_merge(self::$bucket[$key], $array);
+            if(strpos($key, '.') !== false) {
+                Mecha::SVR(self::$bucket, $key, $array);
+            } else {
+                self::$bucket[$key] = array_merge(self::$bucket[$key], $array);
+            }
         }
     }
 
@@ -136,32 +147,48 @@ class Config {
      */
 
     public static function speak($key = null, $vars = array()) {
-
-        $word = self::$bucket['speak'];
-
-        if(strpos($key, 'file:') === 0 && File::exist(LANGUAGE . '/' . self::$bucket['language'] . '/yapping/' . str_replace('file:', "", $key) . '.txt')) {
-            $wizard = File::open(LANGUAGE . '/' . self::$bucket['language'] . '/yapping/' . str_replace('file:', "", $key) . '.txt')->read();
-            $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
-            return Filter::apply('content', $wizard);
+        $words = self::$bucket['speak'];
+        if(strpos($key, 'file:') === 0) {
+            if($file = File::exist(LANGUAGE . '/' . self::$bucket['language'] . '/yapping/' . str_replace('file:', "", $key) . '.txt')) {
+                $wizard = File::open($file)->read();
+                $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
+                return Filter::apply('content', $wizard);
+            } else {
+                $wizard = File::open(ROOT . '/' . str_replace('file:', "", $key) . '.txt')->read();
+                $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
+                return Filter::apply('content', $wizard);
+            }
         }
-
         if(is_null($key)) {
-            return Mecha::O($word);
+            if(strpos($key, '.') !== false) {
+                return Mecha::GVR($words, $key, "");
+            }
+            return Mecha::O($words);
         } else {
-            return ! is_array($word[$key]) ? vsprintf($word[$key], $vars) : $word[$key];
+            if(strpos($key, '.') !== false) {
+                $value = Mecha::GVR($words, $key, false);
+                return $value ? vsprintf($value, $vars): "";
+            }
+            return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : $words[$key];
         }
-
     }
 
     /**
      * =============================================================
      *  INJECT ALL CONFIGURATION DATA INTO `$bucket`
      * =============================================================
+     *
+     * -- CODE: ----------------------------------------------------
+     *
+     *    Config::load();
+     *
+     * -------------------------------------------------------------
+     *
      */
 
     public static function load() {
 
-        // Extracting the configuration file
+        // Extract the configuration file
         $config = unserialize(File::open(STATE . '/config.txt')->read());
 
         // Define some default variables
@@ -185,10 +212,10 @@ class Config {
         $config['total_pages'] = count(glob(PAGE . '/*.txt'));
         $config['total_comments'] = count(glob(RESPONSE . '/*.txt'));
 
-        if(File::exist(LANGUAGE . '/' . $config['language'] . '/speak.txt')) {
-            $config['speak'] = Text::toArray(File::open(LANGUAGE . '/' . $config['language'] . '/speak.txt')->read(), ':', '  ');
-        } elseif(File::exist(LANGUAGE . '/en_US/speak.txt')) {
-            $config['speak'] = Text::toArray(File::open(LANGUAGE . '/en_US/speak.txt')->read());
+        if($file = File::exist(LANGUAGE . '/' . $config['language'] . '/speak.txt')) {
+            $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
+        } elseif($file = File::exist(LANGUAGE . '/en_US/speak.txt')) {
+            $config['speak'] = Text::toArray(File::open($file)->read());
         } else {
             Guardian::abort('Language file not found.');
         }
@@ -202,5 +229,4 @@ class Config {
 
 }
 
-// Load here ...
-Config::load();
+Config::load(); // Load here ...
