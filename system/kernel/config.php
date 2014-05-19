@@ -172,7 +172,7 @@ class Config {
                 $value = Mecha::GVR($words, $key, false);
                 return $value ? vsprintf($value, $vars): "";
             }
-            return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : $words[$key];
+            return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : Mecha::O($words[$key]);
         }
     }
 
