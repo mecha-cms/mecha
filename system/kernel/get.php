@@ -5,7 +5,7 @@ class Get {
     protected function __construct() {}
     protected function __clone() {}
 
-    private static $placeholder = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAIAAACQd1PeAAAAA3NCSVQICAjb4U/gAAAADElEQVQImWOor68HAAL+AX7vOF2TAAAAAElFTkSuQmCC';
+    private static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     // Find page's file path by a slug => `page-slug` or by ID => 12345
     private static function tracePath($detector, $folder = PAGE) {
@@ -276,16 +276,13 @@ class Get {
      */
 
     public static function pages($order = 'DESC', $filter = "", $folder = PAGE) {
-
         $results = array();
         $pages = glob($folder . '/*.txt');
-
         if($order == 'DESC') {
             rsort($pages);
         } else {
             sort($pages);
         }
-
         if(empty($filter)) {
             return $pages;
         } else {
@@ -315,7 +312,6 @@ class Get {
                 return $results;
             }
         }
-
         return false;
 
     }
@@ -436,7 +432,7 @@ class Get {
             $custom = "";
         }
 
-        $results['image'] = self::imageURL($content . $custom, 1, (File::exist(ROOT . '/favicon.ico') ? $config->url . '/favicon.ico' : self::$placeholder));
+        $results['image'] = self::imageURL($content . $custom, 1);
 
         $comments = self::comments($results['id']);
         $results['total_comments'] = $comments !== false ? count($comments) : 0;
@@ -544,6 +540,7 @@ class Get {
             $results = array(
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
+                'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
                 'kind' => explode(',', $kind),
                 'slug' => $slug,
                 'url' => $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $slug
@@ -636,6 +633,7 @@ class Get {
             return (object) array(
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
+                'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
                 'kind' => explode(',', $kind),
                 'slug' => $slug,
                 'title' => isset($parts[1]) ? trim($parts[1]) : '?',
@@ -778,9 +776,7 @@ class Get {
      */
 
     public static function comments($post_time = null, $order = 'ASC', $sorter = 'id') {
-
         $results = array();
-
         foreach(glob(RESPONSE . '/*.txt') as $comment) {
             list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
             $results[] = array(
@@ -793,7 +789,6 @@ class Get {
                 'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')
             );
         }
-
         if( ! is_null($post_time)) {
             $clone = $results;
             $results = array();
@@ -803,9 +798,7 @@ class Get {
                 }
             }
         }
-
         return Mecha::eat($results)->order($order, $sorter)->vomit();
-
     }
 
     /**
@@ -822,10 +815,8 @@ class Get {
      */
 
     public static function comment($id) {
-
         $config = Config::get();
         $results = array();
-
         foreach(self::comments() as $comment) {
             if((int) Date::format($id, 'U') == $comment['id']) {
                 $results = $comment;
@@ -833,19 +824,14 @@ class Get {
                 break;
             }
         }
-
         if( ! File::exist(RESPONSE . '/' . $name)) return false;
-
         $results = $results + Text::toPage(File::open(RESPONSE . '/' . $name)->read());
-
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('comment', $results['content']);
         $results['permalink'] = '#';
-
         unset($results['content_raw']);
         unset($results['content']);
-
         foreach(glob(ARTICLE . '/*.txt') as $posts) {
             list($time, $kind, $slug) = explode('_', basename($posts, '.txt'));
             if((int) Date::format($time, 'U') == $results['post']) {
@@ -853,9 +839,7 @@ class Get {
                 break;
             }
         }
-
         return (object) $results;
-
     }
 
 }
