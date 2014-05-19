@@ -111,6 +111,7 @@ class Get {
                     'dirname' => $info['dirname'],
                     'extension' => strtolower($info['extension']),
                     'last_update' => filemtime($files[$i]),
+                    'update' => Date::format(filemtime($files[$i]), 'Y-m-d H:i:s'),
                     'size' => File::size($files[$i], 'KB')
                 );
             }
@@ -126,6 +127,7 @@ class Get {
                         'dirname' => $info['dirname'],
                         'extension' => strtolower($info['extension']),
                         'last_update' => filemtime($files[$i]),
+                        'update' => Date::format(filemtime($files[$i]), 'Y-m-d H:i:s'),
                         'size' => File::size($files[$i], 'KB')
                     );
                 }
@@ -398,6 +400,7 @@ class Get {
 
         $results['url'] = $config->url . '/' . ($folder == ARTICLE ? $config->index->slug . '/' : "") . $results['slug'];
         $results['date'] = Date::extract($time);
+        $results['update'] = Date::format(filemtime($results['file_path']), 'Y-m-d H:i:s');
         $results['id'] = $results['date']['unix'];
 
         if( ! isset($results['author'])) $results['author'] = $config->author;
@@ -784,6 +787,7 @@ class Get {
                 'file_path' => $comment,
                 'file_name' => basename($comment),
                 'time' => Date::format($id, 'Y-m-d H:i:s'),
+                'update' => Date::format(filemtime($comment), 'Y-m-d H:i:s'),
                 'post' => (int) Date::format($post, 'U'),
                 'id' => (int) Date::format($id, 'U'),
                 'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')
