@@ -72,10 +72,11 @@ class Config {
 
     public static function get($key = null) {
         if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = false; // handle for undefined variable
+            self::$bucket[$key] = false; // handling for undefined variables
         }
         if(is_string($key) && strpos($key, '.') !== false) {
-            return Mecha::GVR(self::$bucket, $key);
+            $output = Mecha::GVR(self::$bucket, $key);
+            return is_array($output) ? Mecha::O($output) : $output;
         }
         return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
     }
@@ -110,9 +111,11 @@ class Config {
             }
         } else {
             if(strpos($key, '.') !== false) {
-                Mecha::SVR(self::$bucket, $key, $array);
+                $cargo = array();
+                Mecha::SVR($cargo, $key, $array);
+                self::$bucket = array_merge_recursive(self::$bucket, $cargo);
             } else {
-                self::$bucket[$key] = array_merge(self::$bucket[$key], $array);
+                self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $array);
             }
         }
     }
