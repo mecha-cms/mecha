@@ -14,8 +14,8 @@
   </article>
 
   <nav class="blog-pager">
-    <span class="pull-left blog-pager-newer-link"><?php echo $pager->prev->link; ?></span>
-    <span class="pull-right blog-pager-older-link"><?php echo $pager->next->link; ?></span>
+    <span class="pull-left blog-pager-prev"><?php echo $pager->prev->link; ?></span>
+    <span class="pull-right blog-pager-next"><?php echo $pager->next->link; ?></span>
   </nav>
 
   <?php if($config->comments) include 'comments.php'; ?>

@@ -19,8 +19,8 @@
   <?php endif; ?>
 
   <nav class="blog-pager">
-    <span class="pull-left"><?php echo $pager->prev->link; ?></span>
-    <span class="pull-right"><?php echo $pager->next->link; ?></span>
+    <span class="pull-left blog-pager-prev"><?php echo $pager->prev->link; ?></span>
+    <span class="pull-right blog-pager-next"><?php echo $pager->next->link; ?></span>
   </nav>
 
 </div>
