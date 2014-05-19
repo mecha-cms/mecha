@@ -220,11 +220,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     ));
 
     /**
-     * Submitting a comment...
+     * Submitting a comment ...
      */
     if($request = Request::post()) {
 
-        Guardian::checkToken($request['token']);
+        Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
 
         if(empty($request['name'])) {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
