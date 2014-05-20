@@ -211,7 +211,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
     ));
 
     // Set default fields value...
-    if($page = Get::page($id, array('content', 'tags', 'comments'), ($path == 'article' ? ARTICLE : PAGE))) {
+    if($page = $path == 'article' ? Get::article($id, array('content', 'tags', 'comments')) : Get::page($id, array('content', 'tags', 'comments'))) {
 
         $fields = array(
             'id' => $id,
@@ -449,7 +449,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/(:num)', function($
         Shield::abort();
     }
 
-    if( ! $page = Get::page($id, array('comments'), ($path == 'article' ? ARTICLE : PAGE))) {
+    if( ! $page = $path == 'article' ? Get::article($id, array('comments')) : Get::page($id, array('comments'))) {
         Shield::abort(); // file not found!
     }
 

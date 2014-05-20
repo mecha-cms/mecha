@@ -8,6 +8,7 @@
 Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), function($offset = 1) use($config) {
 
     $pages = array();
+    $offset = (int) $offset;
 
     if($files = Mecha::eat(Get::articles('DESC'))->chunk($offset, $config->index->per_page)->vomit()) {
         foreach($files as $file_path) {
@@ -42,7 +43,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
 
     $pages = array();
 
-    if($files = Mecha::eat(Get::articles('DESC', $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file_path) {
             $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
         }
@@ -56,7 +57,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
         'offset' => $offset,
         'archive_query' => $slug,
         'pages' => $pages,
-        'pagination' => Navigator::extract(Get::articles('DESC', $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
+        'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
 
     Shield::attach('index');
@@ -74,7 +75,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     $slug = $year . '-' . $month;
     $pages = array();
 
-    if($files = Mecha::eat(Get::articles('DESC', $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file_path) {
             $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
         }
@@ -88,7 +89,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
         'offset' => $offset,
         'archive_query' => $slug,
         'pages' => $pages,
-        'pagination' => Navigator::extract(Get::articles('DESC', $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
+        'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
 
     Shield::attach('index');
@@ -106,11 +107,9 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
         Shield::abort('404-tag');
     }
 
-    Config::set('page_type', 'tag'); // Set the page type before looping, special for tag page
-
     $pages = array();
 
-    if($files = Mecha::eat(Get::articles('DESC', $tag->id))->chunk($offset, $config->tag->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::articles('DESC', 'kind:' . $tag->id))->chunk($offset, $config->tag->per_page)->vomit()) {
         foreach($files as $file_path) {
             $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
         }
@@ -119,11 +118,12 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     }
 
     Config::set(array(
+        'page_type' => 'tag',
         'page_title' => $config->tag->title . ' ' . $tag->name . $config->title_separator . $config->title,
         'offset' => $offset,
         'tag_query' => $slug,
         'pages' => $pages,
-        'pagination' => Navigator::extract(Get::articles('DESC', $tag->id), $offset, $config->tag->per_page, $config->tag->slug . '/' . $slug)
+        'pagination' => Navigator::extract(Get::articles('DESC', 'kind:' . $tag->id), $offset, $config->tag->per_page, $config->tag->slug . '/' . $slug)
     ));
 
     Shield::attach('index');
@@ -132,7 +132,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
 
 
 /**
- * Search Page => `search/search-query`, `search/search-query/1`
+ * Search Page => `search/search+query`, `search/search+query/1`
  */
 
 Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config) {
@@ -154,7 +154,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
     /**
      * Matched with a single keyword
      */
-    foreach(explode('-', $keywords) as $keyword) {
+    $keywords = explode('-', $keywords);
+    foreach($keywords as $keyword) {
         foreach(glob(ARTICLE . '/*.txt') as $file_path) {
             $anchor = Get::articleAnchor($file_path);
             if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
@@ -174,7 +175,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'offset' => $offset,
             'search_query' => $query,
             'pages' => $_pages,
-            'pagination' => Navigator::extract($pages, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
+            'pagination' => Navigator::extract(array_unique($pages), $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
         ));
         Shield::attach('index');
     } else {
@@ -233,9 +234,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         if( ! empty($request['email'])) {
 
             if( ! Guardian::check($request['email'])->this_is_email) {
-
                 Notify::error($speak->notify_invalid_email);
-
             } else {
 
                 /**
@@ -245,13 +244,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 if( ! Guardian::happy() && $request['email'] == $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array($request['email'], strtolower($speak->email))));
                 }
-
             }
 
         } else {
-
             Notify::error(Config::speak('notify_error_empty_field', array($speak->email)));
-
         }
 
         if( ! empty($request['url']) && ! Guardian::check($request['url'])->this_is_URL) {
@@ -285,7 +281,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         /**
          * Check for spam keywords in comment
          */
-        foreach(explode(',', $config->spam_keywords) as $spam) {
+        $keywords = explode(',', $config->spam_keywords);
+        foreach($keywords as $spam) {
             if((trim($spam) !== "" && $request['email'] == trim($spam)) || (trim($spam) !== "" && strpos($request['message'], trim($spam)) !== false)) {
                 Notify::warning($speak->notify_warning_intruder_detected . ' <mark>' . $spam . '</mark>');
                 break;
@@ -348,11 +345,9 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
  * XML Sitemap => `sitemap`
  */
 
-Route::accept('sitemap', function() use($config) {
-
+Route::accept('sitemap', function() {
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(str_replace(ROOT, "", SHIELD) . '/sitemap', true, true);
-
 });
 
 
@@ -360,13 +355,10 @@ Route::accept('sitemap', function() use($config) {
  * RSS Feed => `feeds/rss`
  */
 
-Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) use($config) {
-
+Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) {
     Config::set('offset', $offset);
-
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(str_replace(ROOT, "", SHIELD) . '/rss', true, true);
-
 });
 
 
@@ -419,7 +411,7 @@ Route::accept("", function() use($config) {
 
 
 /**
- * 404 PAGE. Fallback to 404 page if nothing matched.
+ * 404 Page - Fallback to 404 Page if Nothing Matched
  */
 
 Shield::abort();

@@ -4,13 +4,13 @@
   <h3><?php echo $page->title; ?></h3>
   <p><?php echo $page->description; ?></p>
   <?php if($config->editor_type == 'article'): ?>
-  <p><strong><?php echo $page->page_total_comments_text; ?></strong></p>
-  <?php if( ! empty($page->css)): ?>
-  <pre><code><?php echo substr(Text::parse($page->css)->to_encoded_html, 0, $config->excerpt_length * 3); ?></code></pre>
+  <p><strong><?php echo $page->total_comments_text; ?></strong></p>
   <?php endif; ?>
   <?php if( ! empty($page->css)): ?>
-  <pre><code><?php echo substr(Text::parse($page->js)->to_encoded_html, 0, $config->excerpt_length * 3); ?></code></pre>
+  <pre><code><?php echo substr(Text::parse($page->css)->to_encoded_html, 0, $config->excerpt_length); ?><?php if(strlen($page->css) > $config->excerpt_length) echo ' &hellip;'; ?></code></pre>
   <?php endif; ?>
+  <?php if( ! empty($page->js)): ?>
+  <pre><code><?php echo substr(Text::parse($page->js)->to_encoded_html, 0, $config->excerpt_length); ?><?php if(strlen($page->js) > $config->excerpt_length) echo ' &hellip;'; ?></code></pre>
   <?php endif; ?>
   <p><button class="btn btn-primary btn-delete" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->yes; ?></button> <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/' . $page->id; ?>" class="btn btn-danger btn-cancel"><i class="fa fa-times-circle"></i> <?php echo $speak->no; ?></a></p>
 </form>
