@@ -164,7 +164,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 
     if($files = Mecha::eat($path == 'article' ? Get::articles() : Get::pages())->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $file_path) {
-            $pages[] = Get::pageHeader($file_path, ($path == 'article' ? ARTICLE : PAGE));
+            $pages[] = $path == 'article' ? Get::articleHeader($file_path) :  Get::pageHeader($file_path);
         }
     } else {
         if($offset !== 1) {
