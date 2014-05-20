@@ -282,28 +282,32 @@ textarea[name="js"] {
 }
 
 @media (max-width:580px) {
-  .grid.form-label {
+  .grid {
     float:none;
     display:block;
+    width:auto;
+    margin:0;
+    padding:0;
+  }
+  .grid.form-label {
     text-align:left;
     line-height:inherit;
     margin:0 0 1.3846153846153846em;
-    padding:0;
-  }
-  .grid.form-label + * {
-    width:100%;
-    margin-left:0;
   }
   .tab-area {
     height:auto;
     line-height:42px;
   }
-  .tab-area .tab {
+  .tab {
     float:none;
     border:none;
-    margin:0;
-    padding:0 14px;
+    margin:0 0 2px;
+    padding:0 16px 0 14px;
   }
-  .tab-area .tab:before,
-  .tab-area .tab:after {display:none}
+  .tab.active {
+    background-color:#365D98;
+    color:white;
+  }
+  .tab.active:before,
+  .tab.active:after {display:none}
 }

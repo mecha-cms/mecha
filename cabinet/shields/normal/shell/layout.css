@@ -347,7 +347,7 @@ body {
   .blog-sidebar-is-visible .blog-sidebar-toggle {
     position:static;
     float:left;
-    margin:5% 0;
+    margin:0 0 5%;
   }
   .blog-footer {text-align:center}
   .blog-footer .pull-left,
@@ -356,7 +356,8 @@ body {
     display:inline;
   }
   .blog-footer .pull-left:after {
-    content:" \2013 ";
+    content:"\2013";
     color:#AAA;
+    margin:0 1em;
   }
 }

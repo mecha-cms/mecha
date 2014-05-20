@@ -12,6 +12,8 @@
     toggle.addEventListener("click", function(e) {
         this.classList.toggle('active');
         body.classList.toggle('blog-sidebar-is-visible');
+        body.scrollTop = 0;
+        body.parentNode.scrollTop = 0;
         e.preventDefault();
     }, false);
 
