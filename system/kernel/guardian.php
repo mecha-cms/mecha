@@ -104,8 +104,8 @@ class Guardian {
      * Spell the stored data
      */
     public static function wayback($name = null) {
-        if(is_null($name)) return Session::get(self::$cache);
         $cache = Session::get(self::$cache);
+        if(is_null($name)) return $cache;
         $value = isset($cache[$name]) ? $cache[$name] : "";
         Session::set(self::$cache . '.' . $name, ""); // :)
         return $value;
@@ -181,9 +181,9 @@ class Guardian {
     /**
      * Math challenge
      */
-    public static function math($range = 10, $extra = "") {
-        $x = mt_rand(1, $range);
-        $y = mt_rand(1, $range);
+    public static function math($min = 1, $max = 10, $extra = "") {
+        $x = mt_rand($min, $max);
+        $y = mt_rand($min, $max);
         if($x - $y > 0) {
             $question = $x . ' - ' . $y;
             Session::set(self::$math, $x - $y);
