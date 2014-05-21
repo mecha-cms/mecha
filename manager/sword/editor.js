@@ -89,7 +89,9 @@
         });
     }
 
-    $.slugger(title, slug, '-');
+    if ($('.btn-delete').length === 0) {
+        $.slugger(title, slug, '-');
+    }
 
     css.on("keyup", function() {
         setTimeout(function() {
