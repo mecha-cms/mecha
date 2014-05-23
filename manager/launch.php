@@ -471,7 +471,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/(:num)', function($
 
         // Deleting comments ...
         foreach(Get::comments(Date::format($id, 'Y-m-d-H-i-s')) as $comment) {
-            File::open($comment['path'])->delete();
+            File::open($comment['file_path'])->delete();
         }
 
         // Deleting custom files ...
@@ -590,7 +590,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         /**
          * Checks for invalid input
          */
-        if(preg_match('#(^|\n)(\t| {2})(?:[^ ])#', $request['content'])) {
+        if(preg_match('#(^|\n)(\t| {1,3})(?:[^ ])#', $request['content'])) {
             Notify::error($speak->notify_invalid_indent_character);
             Guardian::memorize($request);
         }
@@ -658,7 +658,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
  * Cache Manager
  */
 
-Route::accept($config->manager->slug . '/cache', function() use($config, $speak) {
+Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . '/cache/(:num)'), function($offset = 1) use($config, $speak) {
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -1015,14 +1015,19 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
     if($request = Request::post()) {
 
+        $request['id'] = $id;
+        $request['message_raw'] = $request['message'];
+
         Guardian::checkToken($request['token']);
 
         if(empty($request['name'])) {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
+            Guardian::memorize($request);
         }
 
         if( ! empty($request['email']) && ! Guardian::check($request['email'])->this_is_email) {
             Notify::error($speak->notify_invalid_email);
+            Guardian::memorize($request);
         }
 
         if( ! Notify::errors()) {

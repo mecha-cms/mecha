@@ -17,9 +17,9 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <div class="plugin-about">
-    <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($page->author)->to_encoded_html; ?></p>
-    <h3 class="plugin-title"><?php echo $page->title; if(isset($page->version)) echo ' ' . $page->version; ?></h3>
-    <div class="plugin-description"><?php echo $page->content; ?></div>
+      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($page->author)->to_encoded_html; ?></p>
+      <h3 class="plugin-title"><?php echo $page->title; if(isset($page->version)) echo ' ' . $page->version; ?></h3>
+      <div class="plugin-description"><?php echo $page->content; ?></div>
     </div>
   </div>
 </div>

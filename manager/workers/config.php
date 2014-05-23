@@ -122,12 +122,12 @@
         <select name="language" class="input-block">
           <?php
 
-        foreach(glob(LANGUAGE . '/*', GLOB_ONLYDIR) as $file) {
-            $lang = basename($file);
-            echo '<option value="' . $lang . '"' . ($cache['language'] == $lang ? ' selected' : "") . '>' . $lang . '</option>';
-        }
+          foreach(glob(LANGUAGE . '/*', GLOB_ONLYDIR) as $file) {
+              $lang = basename($file);
+              echo '<option value="' . $lang . '"' . ($cache['language'] == $lang ? ' selected' : "") . '>' . $lang . '</option>';
+          }
 
-        ?>
+          ?>
         </select>
       </span>
     </label>
@@ -165,7 +165,7 @@
     </label>
 
     <div class="grid-group">
-      <span class="grid span-2 form-label">&nbsp;</span>
+      <span class="grid span-2"></span>
       <div class="grid span-4">
         <div><label><input name="comments" type="checkbox" value="true"<?php echo $cache['comments'] ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_allow_comment; ?></span></label></div>
         <div><label><input name="email_notification" type="checkbox" value="true"<?php echo $cache['email_notification'] ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_allow_comment_notification; ?></span></label></div>
@@ -183,7 +183,7 @@
     </label>
 
     <div class="grid-group">
-      <span class="grid span-2 form-label">&nbsp;</span>
+      <span class="grid span-2"></span>
       <div class="grid span-4">
         <div><label><input name="widget_year_first" type="checkbox" value="true"<?php echo $cache['widget_year_first'] ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_widget_time; ?></span></label></div>
         <div><label><input name="resource_versioning" type="checkbox" value="true"<?php echo $cache['resource_versioning'] ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_allow_resource_versioning; ?></span></label></div>

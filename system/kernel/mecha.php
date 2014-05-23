@@ -105,8 +105,8 @@ class Mecha {
                     $after[] = self::$stomach[$k];
                 }
             }
+            self::$stomach = $after;
         }
-        self::$stomach = $after;
         return new static;
     }
 

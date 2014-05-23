@@ -23,7 +23,14 @@ class Shield {
     }
 
     /**
-     * Minify HTML output
+     * Do Nothing
+     */
+    private static function desanitize_output($buffer) {
+        return Filter::apply('before_sanitized', Filter::apply('after_sanitized', $buffer));
+    }
+
+    /**
+     * Minify HTML Output
      */
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('before_sanitized', $buffer);
@@ -118,7 +125,7 @@ class Shield {
             exit;
         }
 
-        ob_start($minify ? 'self::sanitize_output' : null);
+        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
         Weapon::fire('before_launch');
 
@@ -168,7 +175,7 @@ class Shield {
 
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
 
-        ob_start($minify ? 'self::sanitize_output' : null);
+        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
         Weapon::fire('before_launch');
 

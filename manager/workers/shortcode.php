@@ -1,7 +1,6 @@
 <form class="form-menu" action="<?php echo $config->url_current; ?>" method="post">
   <?php $cache = Guardian::wayback(); echo Notify::read(); ?>
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
-  <?php if(File::exist(STATE . '/shortcodes.txt')): ?>
   <table class="table-bordered table-full">
     <thead>
       <tr>
@@ -18,7 +17,7 @@
         <td><input name="keys[]" type="text" class="input-block" value="{{asset}}" placeholder="{{<?php echo strtolower($speak->key); ?>}}" readonly></td>
         <td><input name="values[]" type="text" class="input-block" value="<?php echo $config->url; ?>/assets/" readonly></td>
       </tr>
-      <?php foreach(unserialize(File::open(STATE . '/shortcodes.txt')->read()) as $key => $value): ?>
+      <?php foreach($pages as $key => $value): ?>
       <?php if($key !== '{{url}}' && $key !== '{{asset}}'): ?>
       <tr>
         <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
@@ -35,10 +34,9 @@
       </tr>
     </tbody>
   </table>
-  <?php endif; ?>
   <div class="grid-group form-actions">
     <span class="grid span-6"><button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
   </div>
-  <hr>
-  <?php echo Config::speak('file:shortcode'); ?>
 </form>
+<hr>
+<?php echo Config::speak('file:shortcode'); ?>

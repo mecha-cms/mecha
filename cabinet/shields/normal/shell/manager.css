@@ -168,7 +168,7 @@
   width:100%;
 }
 
-.editor-preview {margin:0 0 3em}
+.editor-preview {margin:0}
 .editor-preview .preview-title {margin-top:0}
 
 textarea[name="content"],
@@ -237,6 +237,8 @@ textarea[name="js"] {
   padding:1.3846153846153846em;
 }
 
+.messages + .page-list,
+.messages + .comment-list,
 .messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
 
 

@@ -20,7 +20,7 @@
 
     $tab.on("click", function() {
         if (this.hash.replace('#', "") == 'tab-content-4') { // preview tab only
-            $preview.html('<div class="inner">' + $preview.data('progressText') + '</div>');
+            $preview.html($preview.data('progressText'));
             $.ajax({
                 url: $editor.data('previewUrl'),
                 type: 'POST',

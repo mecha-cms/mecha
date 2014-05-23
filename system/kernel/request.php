@@ -29,7 +29,8 @@ class Request {
                 return $_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET) && ! empty($_GET) ? $_GET : $fallback;
             }
         }
-        return Mecha::eat($type == 'POST' ? $_POST : $_GET)->vomit($param, $fallback);
+        $output = Mecha::eat($type == 'POST' ? $_POST : $_GET)->vomit($param, $fallback);
+        return ! empty($output) ? $output : $fallback;
     }
 
     public static function get($param = null, $fallback = false) {

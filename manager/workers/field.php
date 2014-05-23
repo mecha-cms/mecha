@@ -1,4 +1,4 @@
-<?php $cache = Guardian::wayback(); echo Notify::read(); ?>
+<?php echo Notify::read(); ?>
 <form class="form-field" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered table-full">
@@ -10,9 +10,9 @@
       </tr>
     </thead>
     <tbody>
-      <?php foreach(unserialize(File::open(STATE . '/fields.txt')->read()) as $key => $value): ?>
+      <?php foreach($pages as $key => $value): ?>
       <tr>
-        <td><input name="title[]" type="text" class="input-block" value="<?php echo $value['title']; ?>"></td>
+        <td><input name="title[]" type="text" class="input-block" value="<?php echo $value->title; ?>"></td>
         <td><input name="key[]" type="text" class="input-block" value="<?php echo $key; ?>"></td>
         <td>
           <select name="type[]" class="input-block">
@@ -25,7 +25,7 @@
             );
 
             foreach($options as $k => $v) {
-                echo '<option value="' . $k . '"' . ($k == $value['type'] ? ' selected' : "") . '>' . $v . '</option>';
+                echo '<option value="' . $k . '"' . ($k == $value->type ? ' selected' : "") . '>' . $v . '</option>';
             }
 
             ?>
@@ -44,7 +44,7 @@
           </select>
         </td>
       </tr>
-      <tr class="row-more-less" data-min="1" data-max="9999" data-callback="Zepto(&#39;input[name=&quot;title[]&quot;]').off(&quot;keyup&quot;).each(function(){Zepto.slugger(Zepto(this), Zepto(this).parent().next().find(&#39;input&#39;), &#39;_&#39;)});">
+      <tr class="row-more-less" data-min="1" data-max="9999" data-callback="Zepto(&#39;input[name=&quot;title[]&quot;]').off(&quot;keyup&quot;).each(function(){Zepto.slugger(Zepto(this),Zepto(this).parent().next().find(&#39;input&#39;),&#39;_&#39;)});">
         <td colspan="3"><a class="btn btn-sm btn-more" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-less" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>

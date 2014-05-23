@@ -1,7 +1,7 @@
 <?php echo Notify::read(); ?>
+<?php if($pages): ?>
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
-  <?php if($files = Get::files(CACHE, '*', 'DESC', 'last_update')): ?>
   <table class="table-bordered">
     <thead>
       <tr>
@@ -12,19 +12,23 @@
       </tr>
     </thead>
     <tbody>
-      <?php foreach($files as $file): ?>
+      <?php foreach($pages as $file): ?>
       <tr>
-        <td><input name="selected[]" type="checkbox" value="<?php echo $file['name']; ?>"></td>
-        <td><time datetime="<?php echo Date::format($file['last_update'], 'c'); ?>"><?php echo Date::format($file['last_update'], 'Y/m/d H:i:s'); ?></time></td>
-        <td><span title="<?php echo $file['size']; ?>"><?php echo $file['name']; ?></span></td>
-        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/kill/' . $file['name']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
-        <td><a class="text-success" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/repair/' . $file['name']; ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->edit; ?></a></td>
+        <td><input name="selected[]" type="checkbox" value="<?php echo $file->name; ?>"></td>
+        <td><time datetime="<?php echo Date::format($file->last_update, 'c'); ?>"><?php echo Date::format($file->last_update, 'Y/m/d H:i:s'); ?></time></td>
+        <td><span title="<?php echo $file->size; ?>"><?php echo $file->name; ?></span></td>
+        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/kill/' . $file->name; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
+        <td><a class="text-success" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/repair/' . $file->name; ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->edit; ?></a></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
   </table>
   <p><button class="btn btn-danger btn-delete" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
-  <?php else: ?>
-  <p><?php echo Config::speak('notify_empty', array(strtolower($speak->caches))); ?></p>
-  <?php endif; ?>
 </form>
+<nav class="blog-pager">
+  <span class="pull-left"><?php echo $pager->prev->link; ?></span>
+  <span class="pull-right"><?php echo $pager->next->link; ?></span>
+</nav>
+<?php else: ?>
+<p><?php echo Config::speak('notify_empty', array(strtolower($speak->caches))); ?></p>
+<?php endif; ?>

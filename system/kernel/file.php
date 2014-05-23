@@ -246,7 +246,7 @@ class File {
         }
 
         if( ! empty($custom_success_message)) {
-            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], ($file['size'] / 1024) . ' KB', '<a href="' . $link . '" target="_blank">' . $link . '</a>')));
+            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], ($file['size'] / 1024) . ' KB', $link)));
         } else {
             Notify::success(implode('<br>', $html), "");
         }

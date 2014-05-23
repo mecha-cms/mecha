@@ -1,5 +1,5 @@
 <form class="form-tag" action="<?php echo $config->url_current; ?>" method="post">
-  <?php $ids = array(); $cache = Guardian::wayback(); echo Notify::read(); ?>
+  <?php $ids = array(); echo Notify::read(); ?>
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered table-full">
     <thead>
@@ -17,7 +17,7 @@
         <td><input name="slug[]" type="text" class="input-block" value="<?php echo Text::parse($speak->untagged)->to_slug; ?>" readonly></td>
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Text::parse(Get::tagsBy(0)->description)->to_encoded_html; ?>"></td>
       </tr>
-      <?php foreach(Get::tags('ASC', 'id') as $tag): ?>
+      <?php foreach($pages as $tag): ?>
       <?php $ids[] = $tag->id; if($tag->id !== 0): ?>
       <tr>
         <td class="text-right"><input name="id[]" type="hidden" value="<?php echo $tag->id; ?>"><?php echo $tag->id; ?></td>

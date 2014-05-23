@@ -97,7 +97,6 @@ if(Guardian::happy()) {
         echo Asset::script(array(
             'manager/sword/editor/editor.min.js',
             'manager/sword/editor/mte.min.js',
-            'manager/sword/markdown/markdown.js',
             'manager/sword/zepto.min.js',
             'manager/sword/slug.js',
             'manager/sword/tab.js',

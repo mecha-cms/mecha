@@ -38,8 +38,10 @@
   </table>
   <p><button class="btn btn-danger" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
 </form>
-<?php endif; ?>
 <nav class="blog-pager">
   <span class="pull-left"><?php echo $pager->prev->link; ?></span>
   <span class="pull-right"><?php echo $pager->next->link; ?></span>
 </nav>
+<?php else: ?>
+<p><?php echo Config::speak('notify_empty', array(strtolower($speak->assets))); ?></p>
+<?php endif; ?>
