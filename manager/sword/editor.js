@@ -1,45 +1,43 @@
 (function($) {
 
-    var body = $(document.body),
-        form = $('.form-compose').first(),
-        title = $('[name="title"]', form),
-        slug = $('[name="slug"]', form),
-        editor = $('[name="content"]', form),
-        preview = $('.editor-preview'),
-        tab = $('.tab-area a'),
-        check = $('input[type="checkbox"]', form),
-        css = $('[name="css"]', form),
-        js = $('[name="js"]', form),
-        css_check = $('[name="css_live_check"]', form),
-        js_check = $('[name="js_live_check"]', form);
+    var $zone = $(document.body),
+        $editor = $('.form-compose').first(),
+        $preview = $('.editor-preview'),
+        $title = $('[name="title"]', $editor),
+        $slug = $('[name="slug"]', $editor),
+        $content = $('[name="content"]', $editor),
+        $tab = $('.tab-area a'),
+        $check = $('input[type="checkbox"]', $editor),
+        $css = $('[name="css"]', $editor),
+        $javascript = $('[name="js"]', $editor),
+        $cssCheck = $('[name="css_live_check"]', $editor),
+        $javascriptCheck = $('[name="js_live_check"]', $editor);
 
-    body.removeClass('no-js').addClass('js');
+    $zone.removeClass('no-js').addClass('js');
 
-    var css_preview = $('<div id="live-preview-css"></div>').appendTo(body);
-    var js_preview = $('<div id="live-preview-js"></div>').appendTo(body);
+    var $cssPreview = $('<div id="live-preview-css"></div>').appendTo($zone);
+    var $javascriptPreview = $('<div id="live-preview-js"></div>').appendTo($zone);
 
-    tab.on("click", function() {
-        var shortcode = editor.data('shortcodes'),
-            toHTML = editor.val();
-        for (var i in shortcode) {
-            var pattern = i.replace(/\%s/g, '(.*?)'),
-                replace = shortcode[i].replace(/\\([0-9]+)/g, '$$1');
-            toHTML = toHTML.replace(new RegExp('(?!`)' + pattern + '(?!`)', 'g'), replace).replace(/`\{\{(.*?)\}\}`/g, '{{$1}}');
+    $tab.on("click", function() {
+        if (this.hash.replace('#', "") == 'tab-content-4') { // preview tab only
+            $preview.html('<div class="inner">' + $preview.data('progressText') + '</div>');
+            $.ajax({
+                url: $editor.data('previewUrl'),
+                type: 'POST',
+                data: $editor.serializeArray(),
+                success: function(data, textStatus, jqXHR) {
+                    $preview.html(data);
+                },
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $preview.html($preview.data('errorText'));
+                }
+            });
         }
-        preview.html(
-            '<div class="inner"><h1 class="preview-title">' +
-            (title.val().length ? title.val() : '&nbsp;') +
-            '</h1><div class="p">' +
-            Markdown(toHTML)
-                .replace(/<table>/gi, '<table border="1">')
-                .replace(/<t(d|h) align="(.*?)">/gi, '<t$1 style="text-align:$2;">') +
-            '</div></div>'
-        );
         return false;
     });
 
-    if (editor.length) {
-        var mte = new MTE(editor[0], {
+    if ($content.length) {
+        var mte = new MTE($content[0], {
             tabSize: '    ',
             toolbarClass: 'editor-toolbar',
             toolbars: {
@@ -79,41 +77,41 @@
                 listOL: 'List Item'
             }
         });
-        new MTE($('[name="css"]', form)[0], {
+        new MTE($('[name="css"]', $editor)[0], {
             tabSize: '  ',
             toolbar: false
         });
-        new MTE($('[name="js"]', form)[0], {
+        new MTE($('[name="js"]', $editor)[0], {
             tabSize: '    ',
             toolbar: false
         });
     }
 
     if ($('.btn-delete').length === 0) {
-        $.slugger(title, slug, '-');
+        $.slugger($title, $slug, '-');
     }
 
-    css.on("keyup", function() {
+    $css.on("keyup", function() {
         setTimeout(function() {
-            if (css_check.is(':checked')) {
-                css_preview.html(css.val());
+            if ($cssCheck.is(':checked')) {
+                $cssPreview.html($css.val());
             }
         }, 15);
     });
 
-    js.on("keyup", function() {
+    $javascript.on("keyup", function() {
         setTimeout(function() {
-            if (js_check.is(':checked')) {
-                js_preview.html(js.val());
+            if ($javascriptCheck.is(':checked')) {
+                $javascriptPreview.html($javascript.val());
             }
         }, 15);
     });
 
-    css_check.add(js_check).on("change", function() {
+    $cssCheck.add($javascriptCheck).on("change", function() {
         if (this.checked) {
-            css.add(js).trigger("keyup");
+            $css.add($javascript).trigger("keyup");
         } else {
-            css_preview.add(js_preview).html("");
+            $cssPreview.add($javascriptPreview).html("");
         }
     });
 

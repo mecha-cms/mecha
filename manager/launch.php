@@ -210,7 +210,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         'cargo' => DECK . '/workers/compose.php'
     ));
 
-    // Set default fields value...
+    // Set default fields value ...
     if($page = $path == 'article' ? Get::article($id, array('content', 'tags', 'comments')) : Get::page($id, array('content', 'tags', 'comments'))) {
 
         $fields = array(
@@ -253,8 +253,6 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         Config::set('page_title', ($path == 'article' ? $speak->manager->title_new_article : $speak->manager->title_new_page) . $config->title_separator . $config->manager->title);
 
     }
-
-    Guardian::memorize($fields);
 
     if($request = Request::post()) {
 
@@ -432,6 +430,10 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
         }
 
+    } else {
+
+        Guardian::memorize($fields);
+
     }
 
     Shield::attach('manager', false);
@@ -508,6 +510,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
+        'pages' => Get::tags('ASC', 'id'),
         'cargo' => DECK . '/workers/tag.php'
     ));
 
@@ -580,8 +583,6 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
 </script>';
     }, 9);
 
-    Guardian::memorize(array('content' => File::open(STATE . '/menus.txt')->read()));
-
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token']);
@@ -600,6 +601,10 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
             Guardian::kick($config->url_current);
         }
+
+    } else {
+
+        Guardian::memorize(array('content' => File::open(STATE . '/menus.txt')->read()));
 
     }
 
@@ -630,7 +635,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $pages = array();
     $take = Get::files(ASSET, '*', 'DESC', 'last_update');
 
-    if($files = Mecha::eat($take)->chunk($offset, 200)->vomit()) {
+    if($files = Mecha::eat($take)->chunk($offset, 100)->vomit()) {
         foreach($files as $file) $pages[] = $file;
     } else {
         $pages = false;
@@ -640,8 +645,40 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'page_type' => 'manager',
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,
         'pages' => $pages,
-        'pagination' => Navigator::extract($take, $offset, 200, $config->manager->slug . '/asset'),
+        'pagination' => Navigator::extract($take, $offset, 100, $config->manager->slug . '/asset'),
         'cargo' => DECK . '/workers/asset.php'
+    ));
+
+    Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Cache Manager
+ */
+
+Route::accept($config->manager->slug . '/cache', function() use($config, $speak) {
+
+    if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
+
+    $pages = array();
+    $take = Get::files(CACHE, '*', 'DESC', 'last_update');
+
+    if($files = Mecha::eat($take)->chunk($offset, 100)->vomit()) {
+        foreach($files as $file) $pages[] = $file;
+    } else {
+        $pages = false;
+    }
+
+    Config::set(array(
+        'page_type' => 'manager',
+        'page_title' => $speak->cache . $config->title_separator . $config->manager->title,
+        'pages' => $pages,
+        'pagination' => Navigator::extract($take, $offset, 100, $config->manager->slug . '/cache'),
+        'cargo' => DECK . '/workers/cache.php'
     ));
 
     Shield::attach('manager', false);
@@ -701,7 +738,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/(:any)', function($p
 
 
 /**
- * Asset Renaming
+ * Asset Renamer
  */
 
 Route::accept($config->manager->slug . '/asset/repair/(:any)', function($old = "") use($config, $speak) {
@@ -731,6 +768,7 @@ Route::accept($config->manager->slug . '/asset/repair/(:any)', function($old = "
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
         } else {
+
             /**
              * Missing file extension
              */
@@ -749,6 +787,10 @@ Route::accept($config->manager->slug . '/asset/repair/(:any)', function($old = "
             Notify::success(Config::speak('notify_success_updated', array($old)));
             Guardian::kick($config->manager->slug . '/asset');
         }
+
+    } else {
+
+        Guardian::memorize(array('name' => $old));
 
     }
 
@@ -770,10 +812,9 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,
+        'pages' => unserialize(File::open(STATE . '/shortcodes.txt')->read()),
         'cargo' => DECK . '/workers/shortcode.php'
     ));
-
-    Guardian::memorize(array('content' => unserialize(File::open(STATE . '/shortcodes.txt')->read())));
 
     if($request = Request::post()) {
 
@@ -794,28 +835,11 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Guardian::kick($config->url_current);
 
+    } else {
+
+        Guardian::memorize(array('content' => unserialize(File::open(STATE . '/shortcodes.txt')->read())));
+
     }
-
-    Shield::attach('manager', false);
-
-});
-
-
-/**
- * Cache Manager
- */
-
-Route::accept($config->manager->slug . '/cache', function() use($config, $speak) {
-
-    if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
-
-    Config::set(array(
-        'page_type' => 'manager',
-        'page_title' => $speak->cache . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . '/workers/cache.php'
-    ));
 
     Shield::attach('manager', false);
 
@@ -839,8 +863,6 @@ Route::accept($config->manager->slug . '/cache/repair/(:any)', function($name = 
         'cargo' => DECK . '/workers/repair.cache.php'
     ));
 
-    Guardian::memorize(array('content' => File::open(CACHE . '/' . $name)->read()));
-
     if($request = Request::post()) {
 
         Guardian::checkToken(Request::post('token'));
@@ -851,6 +873,10 @@ Route::accept($config->manager->slug . '/cache/repair/(:any)', function($name = 
 
         Notify::success(Config::speak('notify_success_updated', array($speak->cache)));
         Guardian::kick($config->manager->slug . '/cache');
+
+    } else {
+
+        Guardian::memorize(array('content' => File::open(CACHE . '/' . $name)->read()));
 
     }
 
@@ -987,8 +1013,6 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
         'cargo' => DECK . '/workers/repair.comment.php'
     ));
 
-    Guardian::memorize($comment);
-
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token']);
@@ -999,7 +1023,6 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
         if( ! empty($request['email']) && ! Guardian::check($request['email'])->this_is_email) {
             Notify::error($speak->notify_invalid_email);
-            Guardian::memorize();
         }
 
         if( ! Notify::errors()) {
@@ -1019,6 +1042,10 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
         }
 
+    } else {
+
+        Guardian::memorize($comment);
+
     }
 
     Shield::attach('manager', false);
@@ -1027,7 +1054,7 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
 
 /**
- * Field Manager
+ * Fields Manager
  */
 
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
@@ -1039,6 +1066,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
+        'pages' => unserialize(File::open(STATE . '/fields.txt')->read()),
         'cargo' => DECK . '/workers/field.php'
     ));
 
@@ -1238,5 +1266,30 @@ Route::accept($config->manager->slug . '/plugin/kill/(:any)', function($slug = "
     }
 
     Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Page/Article Preview
+ */
+
+Route::accept($config->manager->slug . '/(article|page)/preview', function($path = "") {
+
+    Weapon::fire('preview_content_before');
+    echo '<div class="inner">';
+
+    if(Request::post()) {
+        $content = Request::post('content');
+        $content = Filter::apply('shortcode', $content);
+        $content = Filter::apply('content', Text::parse($content)->to_html);
+        echo '<h1 class="preview-title">' . Request::post('title') . '</h1>';
+        echo '<div class="p">' . Filter::apply('page', $content) . '</div>';
+    }
+
+    echo '</div>';
+    Weapon::fire('preview_content_after');
+
+    exit;
 
 });

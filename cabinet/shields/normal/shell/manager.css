@@ -169,6 +169,7 @@
 }
 
 .editor-preview {margin:0 0 3em}
+.editor-preview .preview-title {margin-top:0}
 
 textarea[name="content"],
 textarea[name="css"],
