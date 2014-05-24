@@ -1,5 +1,5 @@
-<form class="form-menu" action="<?php echo $config->url_current; ?>" method="post">
-  <?php $cache = Guardian::wayback(); echo Notify::read(); ?>
+<form class="form-shortcode" action="<?php echo $config->url_current; ?>" method="post">
+  <?php echo Notify::read(); ?>
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered table-full">
     <thead>

@@ -192,7 +192,11 @@ class Config {
     public static function load() {
 
         // Extract the configuration file
-        $config = unserialize(File::open(STATE . '/config.txt')->read());
+        if($file = File::exist(STATE . '/config.txt')) {
+            $config = unserialize(File::open($file)->read());
+        } else {
+            $config = include STATE . '/repair.config.php';
+        }
 
         // Define some default variables
         $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';

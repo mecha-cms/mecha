@@ -40,7 +40,7 @@
 
       foreach(Get::tags() as $tag) {
           if($tag && $tag->id !== 0) {
-              $tags[] = '<div><label' . (in_array($tag->id, $cache['tags']) ? ' class="selected"' : "") . '><input type="checkbox" name="tags[]" value="' . $tag->id . '"' . (in_array($tag->id, $cache['tags']) ? ' checked' : "") . '> <span>' . $tag->name . '</span></label></div>';
+              $tags[] = '<div><label><input type="checkbox" name="tags[]" value="' . $tag->id . '"' . (in_array($tag->id, $cache['tags']) ? ' checked' : "") . '> <span>' . $tag->name . '</span></label></div>';
           }
       }
 
@@ -74,7 +74,7 @@
       </label>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
-    <?php $fields = unserialize(File::open(STATE . '/fields.txt')->read()); if( ! empty($fields)): ?>
+    <?php $fields = File::exist(STATE . '/fields.txt') ? unserialize(File::open(STATE . '/fields.txt')->read()) : array(); if( ! empty($fields)): ?>
     <?php foreach($fields as $key => $value): ?>
     <?php
 

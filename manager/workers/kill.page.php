@@ -1,5 +1,5 @@
 <?php echo Notify::read(); ?>
-<form class="form-kill" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-kill form-page" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <h3><?php echo $page->title; ?></h3>
   <p><?php echo $page->description; ?></p>

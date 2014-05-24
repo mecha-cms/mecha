@@ -1,5 +1,5 @@
 <?php echo Notify::read(); ?>
-<form class="form-comment" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-comment" action="<?php echo $config->url_current; ?>" method="post">
   <?php $cache = Guardian::wayback(); ?>
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <label class="grid-group">

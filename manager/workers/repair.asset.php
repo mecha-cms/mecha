@@ -1,5 +1,5 @@
 <?php echo Notify::read(); ?>
-<form class="form-rename" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-asset" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <p><?php echo $speak->from; ?> <strong><?php echo $config->asset_name; ?></strong> <?php echo strtolower($speak->to); ?>&hellip;</p>
   <p><input name="name" type="text" value="<?php echo Guardian::wayback('name'); ?>" placeholder="<?php echo $speak->manager->placeholder_asset_name; ?>" autofocus></p>

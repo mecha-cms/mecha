@@ -208,8 +208,14 @@ class Get {
      */
 
     public static function rawTags($order = 'ASC', $sorter = 'name') {
-        return Mecha::eat(unserialize(File::open(STATE . '/tags.txt')->read()))
-            ->order($order, $sorter)->vomit();
+        $config = Config::get();
+        $speak = Config::speak();
+        if($file = File::exist(STATE . '/tags.txt')) {
+            $tags = unserialize(File::open($file)->read());
+        } else {
+            $tags = include STATE . '/repair.tags.php';
+        }
+        return Mecha::eat($tags)->order($order, $sorter)->vomit();
     }
 
     /**
@@ -523,8 +529,13 @@ class Get {
              * to prevent error messages because of the object key that
              * is not available in the old posts.
              */
+            if($file = File::exist(STATE . '/fields.txt')) {
+                $fields = unserialize(File::open($file)->read());
+            } else {
+                $fields = array();
+            }
             $init = array();
-            foreach(unserialize(File::open(STATE . '/fields.txt')->read()) as $key => $value) {
+            foreach($fields as $key => $value) {
                 $init[$key] = "";
             }
 
@@ -627,8 +638,13 @@ class Get {
                 }
                 $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
             }
+            if($file = File::exist(STATE . '/fields.txt')) {
+                $fields = unserialize(File::open($file)->read());
+            } else {
+                $fields = array();
+            }
             $init = array();
-            foreach(unserialize(File::open(STATE . '/fields.txt')->read()) as $key => $value) {
+            foreach($fields as $key => $value) {
                 $init[$key] = "";
             }
             if(isset($results['fields'])) {

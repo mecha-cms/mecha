@@ -133,7 +133,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         unset($request['token']); // Remove token from request array
 
         if( ! Notify::errors()) {
-            File::open(STATE . '/config.txt')->write(serialize($request))->save();
+            File::write(serialize($request))->saveTo(STATE . '/config.txt');
             Weapon::fire('on_config_update');
             Notify::success(Config::speak('notify_success_updated', array($speak->config)));
             Guardian::kick($request['manager']['slug'] . '/config');
@@ -510,7 +510,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
-        'pages' => Get::tags('ASC', 'id'),
+        'pages' => Get::rawTags('ASC', 'id'),
         'cargo' => DECK . '/workers/tag.php'
     ));
 
@@ -542,7 +542,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
             }
         }
 
-        File::open(STATE . '/tags.txt')->write(serialize($data))->save();
+        File::write(serialize($data))->saveTo(STATE . '/tags.txt');
 
         Weapon::fire('on_tag_update');
 
@@ -561,6 +561,12 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
  */
 
 Route::accept($config->manager->slug . '/menu', function() use($config, $speak) {
+
+    if($file = File::exist(STATE . '/menus.txt')) {
+        $menus = File::open($file)->read();
+    } else {
+        $menus = "Home: /\nAbout: /about";
+    }
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -596,7 +602,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         }
 
         if( ! Notify::errors()) {
-            File::open(STATE . '/menus.txt')->write(trim($request['content']))->save();
+            File::write(trim($request['content']))->saveTo(STATE . '/menus.txt');
             Weapon::fire('on_menu_update');
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
             Guardian::kick($config->url_current);
@@ -604,7 +610,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
 
     } else {
 
-        Guardian::memorize(array('content' => File::open(STATE . '/menus.txt')->read()));
+        Guardian::memorize(array('content' => $menus));
 
     }
 
@@ -805,6 +811,12 @@ Route::accept($config->manager->slug . '/asset/repair/(:any)', function($old = "
 
 Route::accept($config->manager->slug . '/shortcode', function() use($config, $speak) {
 
+    if($file = File::exist(STATE . '/shortcodes.txt')) {
+        $shortcodes = unserialize(File::open($file)->read());
+    } else {
+        $shortcodes = array();
+    }
+
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
@@ -812,7 +824,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,
-        'pages' => unserialize(File::open(STATE . '/shortcodes.txt')->read()),
+        'pages' => $shortcodes,
         'cargo' => DECK . '/workers/shortcode.php'
     ));
 
@@ -828,16 +840,12 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
             }
         }
 
-        File::open(STATE . '/shortcodes.txt')->write(serialize($data))->save();
+        File::write(serialize($data))->saveTo(STATE . '/shortcodes.txt');
 
         Weapon::fire('on_shortcode_update');
 
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Guardian::kick($config->url_current);
-
-    } else {
-
-        Guardian::memorize(array('content' => unserialize(File::open(STATE . '/shortcodes.txt')->read())));
 
     }
 
@@ -1064,6 +1072,12 @@ Route::accept($config->manager->slug . '/comment/repair/(:num)', function($id = 
 
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
 
+    if($file = File::exist(STATE . '/fields.txt')) {
+        $fields = unserialize(File::open($file)->read());
+    } else {
+        $fields = array();
+    }
+
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
@@ -1071,7 +1085,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
-        'pages' => unserialize(File::open(STATE . '/fields.txt')->read()),
+        'pages' => $fields,
         'cargo' => DECK . '/workers/field.php'
     ));
 
@@ -1102,7 +1116,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
             }
         }
 
-        File::open(STATE . '/fields.txt')->write(serialize($fields))->save();
+        File::write(serialize($fields))->saveTo(STATE . '/fields.txt');
 
         Weapon::fire('on_field_update');
 

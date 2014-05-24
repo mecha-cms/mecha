@@ -1,5 +1,5 @@
 <?php echo Notify::read(); ?>
-<form class="form-kill" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-kill form-asset" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered">
     <?php $i = 1; foreach($config->asset_name as $name): ?>
