@@ -416,11 +416,11 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 Weapon::fire('on_page_update');
 
                 // Rename comment files if article date has been changed
-                if(((string) $date != $fields['date']) && $comments = Get::comments(Date::format($id, 'Y-m-d-H-i-s'))) {
+                if(((string) $date != $fields['date']) && $comments = Get::comments($id)) {
                     foreach($comments as $comment) {
-                        $parts = explode('_', $comment['name']);
+                        $parts = explode('_', $comment['file_name']);
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
-                        File::open($comment['path'])->renameTo(implode('_', $parts));
+                        File::open($comment['file_path'])->renameTo(implode('_', $parts));
                     }
                 }
 
@@ -470,7 +470,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/(:num)', function($
         File::open($page->file_path)->delete();
 
         // Deleting comments ...
-        foreach(Get::comments(Date::format($id, 'Y-m-d-H-i-s')) as $comment) {
+        foreach(Get::comments($id) as $comment) {
             File::open($comment['file_path'])->delete();
         }
 

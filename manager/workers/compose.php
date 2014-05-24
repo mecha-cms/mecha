@@ -107,9 +107,9 @@
     if($value['type'] == 'boolean') {
         echo '<div class="grid-group">';
         echo '<span class="grid span-1"></span>';
-        echo '<label class="grid span-5">';
-        echo '<input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($extra[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span>';
-        echo '</label>';
+        echo '<span class="grid span-5">';
+        echo '<label><input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($extra[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span></label>';
+        echo '</span>';
         echo '</div>';
     }
 
