@@ -56,6 +56,7 @@ class File {
     public static function open($path) {
         self::$cache = "";
         self::$opened = null;
+        $path = str_replace(array('\\', '/'), DS, $path);
         if(self::exist($path)) {
             self::$opened = $path;
             if( ! is_dir($path) && $output = file_get_contents($path)) {
@@ -212,12 +213,12 @@ class File {
             return Notify::error(Config::speak('notify_error_file_extension', array($info['extension'])));
         }
 
-        // Too large!
+        // Too large
         if($file['size'] > $settings['max']) {
             return Notify::error(Config::speak('notify_error_file_size', array(self::size($settings['max'], 'KB'))));
         }
 
-        // Something goes wrong!
+        // Something goes wrong
         if($file['error'] > 0) {
             return Notify::error($speak->error . ': <code>' . $file['error'] . '</code>');
         }
@@ -253,7 +254,7 @@ class File {
 
     }
 
-    // Get file size and convert its size into ...
+    // Get the file size then convert it to ...
     public static function size($file, $type = "") {
         switch(strtolower($type)) {
             case "": // bytes
