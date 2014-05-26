@@ -71,6 +71,9 @@ class Package {
     private static $map = null;
 
     public static function take($files = null) {
+        if( ! extension_loaded('zip')) {
+            Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip extension</a> is not installed on your web server.');
+        }
         self::$opened = null;
         self::$map = null;
         if(is_array($files)) {
@@ -85,9 +88,6 @@ class Package {
             }
         } else {
             self::$opened = str_replace(array('\\', '/'), DS, $files);
-        }
-        if( ! extension_loaded('zip') || ! File::exist(self::$opened)) {
-            self::$opened = false;
         }
         return new static;
     }
@@ -108,7 +108,6 @@ class Package {
      */
 
     public static function pack($destination = null, $bucket = false) {
-        if( ! self::$opened) return false;
         $zip = new ZipArchive();
         if(is_dir(self::$opened)) {
             $root = rtrim(self::$opened, '\\/');
@@ -187,7 +186,6 @@ class Package {
      */
 
     public static function extractTo($destination = null, $bucket = false) {
-        if( ! self::$opened) return false;
         $zip = new ZipArchive();
         if(is_null($destination)) {
             $destination = dirname(self::$opened);
@@ -233,7 +231,6 @@ class Package {
      */
 
     public static function addFiles($files = array(), $destination = null) {
-        if( ! self::$opened) return false;
         $zip = new ZipArchive();
         if($zip->open(self::$opened)) {
             if( ! is_array($files)) {
@@ -301,7 +298,6 @@ class Package {
      */
 
     public static function deleteFiles($files = array()) {
-        if( ! self::$opened) return false;
         $zip = new ZipArchive();
         if( ! is_array($files)) {
             $files = array($files);
@@ -336,7 +332,6 @@ class Package {
      */
 
     public static function getContent($file) {
-        if( ! self::$opened) return "";
         $zip = new ZipArchive();
         $results = false;
         if($zip->open(self::$opened)) {
@@ -364,7 +359,6 @@ class Package {
      */
 
     public static function getInfo($key = null, $fallback = false) {
-        if( ! self::$opened) return false;
         $results = array();
         $zip = new ZipArchive();
         if($zip->open(self::$opened)) {
@@ -372,7 +366,7 @@ class Package {
             $results['file_name'] = basename($zip->filename);
             $results['last_update'] = filemtime(self::$opened);
             $results['update'] = Date::format(filemtime(self::$opened), 'Y-m-d H:i:s');
-            $results['size'] = File::size(self::$opened, 'KB');
+            $results['size'] = (int) File::size(self::$opened);
             $results['status'] = $zip->status;
             $results['total'] = $zip->numFiles;
             for($i = 0; $i < $results['total']; ++$i) {
