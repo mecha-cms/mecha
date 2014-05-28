@@ -5,7 +5,7 @@ Weapon::add('before', function() {
     $config = Config::get();
 
     echo "<!-- Start Facebook Open Graph -->\n";
-    echo "    <meta property=\"og:title\" content=\"" . $config->page_title . "\">\n";
+    echo "    <meta property=\"og:title\" content=\"" . strip_tags($config->page_title) . "\">\n";
     echo "    <meta property=\"og:type\" content=\"website\">\n";
     echo "    <meta property=\"og:url\" content=\"" . $config->url_current . "\">\n";
     if(isset($config->page->image)) echo "    <meta property=\"og:image\" content=\"" . $config->page->image . "\">\n";
