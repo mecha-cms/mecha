@@ -607,6 +607,7 @@ table:first-child,
 .align-right {margin:.5em 0 .5em 1.3846153846153846em}
 
 .align-center {
+  display:block;
   margin-left:auto;
   margin-right:auto;
   text-align:center;
