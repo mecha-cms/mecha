@@ -258,7 +258,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_message)));
         }
 
-        if( ! is_numeric($request['math']) || ! Guardian::check((int) $request['math'], Session::get(Guardian::$math))->this_is_correct) {
+        if( ! Guardian::checkMath($request['math'])) {
             Notify::error($speak->notify_invalid_math_answer);
         }
 
@@ -347,7 +347,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
 Route::accept('sitemap', function() {
     header('Content-Type: text/xml; charset=UTF-8');
-    Shield::attach(str_replace(ROOT, "", SHIELD) . '/sitemap', true, true);
+    Shield::attach(SHIELD . DS . 'sitemap', true, true);
 });
 
 
@@ -358,7 +358,57 @@ Route::accept('sitemap', function() {
 Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) {
     Config::set('offset', $offset);
     header('Content-Type: text/xml; charset=UTF-8');
-    Shield::attach(str_replace(ROOT, "", SHIELD) . '/rss', true, true);
+    Shield::attach(SHIELD . DS . 'rss', true, true);
+});
+
+
+/**
+ * Captcha Image => `captcha.png`
+ */
+
+Route::accept('captcha.png', function() {
+
+    header('Content-Type: image/png');
+    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+    header('Cache-Control: post-check=0, pre-check=0', false);
+    header('Pragma: no-cache');
+
+    $bg = Request::get('bg', '333333');
+    $color = Request::get('color', 'FFFFAA');
+    $width = (int) Request::get('width', 100);
+    $height = (int) Request::get('height', 30);
+    $padding = (int) Request::get('padding', 7);
+    $size = (int) Request::get('size', 16);
+    $length = (int) Request::get('length', 7);
+    $font = Request::get('font', 'special-elite-regular.ttf');
+    $text = Session::get(Guardian::$captcha, "");
+
+    if($bg !== 'false' && $bg = Converter::HEX2RGB($bg)) {
+        $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
+    } else {
+        $bg = $bg !== 'false' ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
+    }
+
+    if($color = Converter::HEX2RGB($color)) {
+        $color = array($color['r'], $color['g'], $color['b'], $color['a']);
+    } else {
+        $color = array(255, 255, 170, 1);
+    }
+
+    $image = imagecreatetruecolor($width, $height);
+
+    imagefill($image, 0, 0, 0x7fff0000);
+    imagealphablending($image, true);
+    imagesavealpha($image, true);
+
+    $bg = imagecolorallocatealpha($image, $bg[0], $bg[1], $bg[2], 127 - ($bg[3] * 127));
+    $color = imagecolorallocatealpha($image, $color[0], $color[1], $color[2], 127 - ($color[3] * 127));
+
+    imagefilledrectangle($image, 0, 0, $width, $height, $bg);
+    imagettftext($image, $size, 0, $padding, $size + $padding, $color, ASSET . DS . '__captcha' . DS . $font, $text);
+    imagepng($image);
+    imagedestroy($image);
+
 });
 
 

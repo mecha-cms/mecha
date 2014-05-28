@@ -1,24 +1,31 @@
 <?php
 
-/**
- * =============================================================
- *  MECHA'S GUARDIAN ANGEL
- * =============================================================
- */
-
 class Guardian {
 
     public static $token = 'mecha_token';
     public static $login = 'mecha_login';
     public static $cache = 'mecha_form';
     public static $math = 'mecha_math';
+    public static $captcha = 'mecha_captcha';
 
     protected function __construct() {}
     protected function __clone() {}
 
     /**
-     * Get user details
+     * ============================================================
+     *  GET USER DETAILS
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::get('name');
+     *
+     *    var_dump(Guardian::get());
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function get($key = null) {
         $log = Session::get(self::$login);
         if(is_null($key)) {
@@ -29,8 +36,18 @@ class Guardian {
     }
 
     /**
-     * Generate a unique token
+     * ============================================================
+     *  GENERATE A UNIQUE TOKEN
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::makeToken();
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function makeToken() {
         $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
@@ -39,8 +56,20 @@ class Guardian {
     }
 
     /**
-     * Checks for invalid security token
+     * ============================================================
+     *  CHECKS FOR INVALID SECURITY TOKEN
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if($req = Request::post()) {
+     *        Guardian::checkToken($req['token']);
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function checkToken($token, $redirect = null) {
         if(Session::get(self::$token) === "" || Session::get(self::$token) !== $token) {
             Notify::error(Config::speak('notify_invalid_token'));
@@ -49,16 +78,81 @@ class Guardian {
     }
 
     /**
-     * Security token delete
+     * ============================================================
+     *  CHECKS FOR INVALID MATH ANSWER
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Guardian::checkMath('your answer goes here')) {
+     *        echo 'OK.';
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
+    public static function checkMath($answer = "") {
+        return is_numeric($answer) && Guardian::check((int) $answer, Session::get(self::$math))->this_is_correct;
+    }
+
+    /**
+     * ============================================================
+     *  CHECKS FOR INVALID CAPTCHA ANSWER
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Guardian::checkCaptcha('your answer goes here')) {
+     *        echo 'OK.';
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function checkCaptcha($answer = "", $case_sensitive = true) {
+        $answer = (string) $answer;
+        $answer_key = (string) Session::get(self::$captcha);
+        if( ! $case_sensitive) {
+            return Guardian::check(strtolower($answer), strtolower($answer_key))->this_is_correct;
+        }
+        return Guardian::check($answer, $answer_key)->this_is_correct;
+    }
+
+    /**
+     * ============================================================
+     *  DELETE SECURITY TOKEN
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    Guardian::deleteToken();
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
     public static function deleteToken() {
         File::open(SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
         Session::kill(self::$token);
     }
 
     /**
-     * Input validation checks
+     * ============================================================
+     *  INPUT VALIDATION CHECKS
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Guardian::check('email@domain.com')->this_is_email) {
+     *        echo 'OK.';
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function check($input, $compare = "") {
         return (object) array(
             'this_is_IP' => filter_var($input, FILTER_VALIDATE_IP),
@@ -70,8 +164,18 @@ class Guardian {
     }
 
     /**
-     * URL redirection
+     * ============================================================
+     *  URL REDIRECTION
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    Guardian::kick('manager/login');
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function kick($path = "") {
         if(strpos($path, '://') === false) {
             $path = Config::get('url') . '/' . trim($path, '/');
@@ -81,8 +185,21 @@ class Guardian {
     }
 
     /**
-     * Store the posted data into session
+     * ============================================================
+     *  STORE THE POSTED DATA INTO SESSION
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Request::post()) {
+     *        Guardian::memorize();
+     *        // do another stuff ...
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function memorize($memo = "") {
         if(empty($memo)) {
             $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : "";
@@ -94,15 +211,35 @@ class Guardian {
     }
 
     /**
-     * Delete the stored post data
+     * ============================================================
+     *  DELETE THE STORED POST DATA
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    Guardian::forget();
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function forget() {
         Session::kill(self::$cache);
     }
 
     /**
-     * Spell the stored data
+     * ============================================================
+     *  SPELL THE STORED DATA
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::wayback('name');
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function wayback($name = null) {
         $cache = Session::get(self::$cache);
         if(is_null($name)) return $cache;
@@ -112,8 +249,20 @@ class Guardian {
     }
 
     /**
-     * Logging in ...
+     * ============================================================
+     *  LOGGING IN ...
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Request::post()) {
+     *        Guardian::authorize()->kick('manager/article');
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function authorize() {
         $config = Config::get();
         $speak = Config::speak();
@@ -153,8 +302,20 @@ class Guardian {
     }
 
     /**
-     * Logging out ...
+     * ============================================================
+     *  LOGGING OUT ...
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if($user_is_invalid) {
+     *        Guardian::reject()->kick('manager/login');
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function reject() {
         self::deleteToken();
         Session::kill(self::$login);
@@ -162,8 +323,20 @@ class Guardian {
     }
 
     /**
-     * Logged in
+     * ============================================================
+     *  LOGGED IN
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if(Guardian::happy()) {
+     *        echo 'You are logged in.';
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function happy() {
         $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $auth = Session::get(self::$login);
@@ -171,16 +344,36 @@ class Guardian {
     }
 
     /**
-     * Something goes wrong
+     * ============================================================
+     *  SOMETHING GOES WRONG
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    Guardian::abort('Configuration file not found.');
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function abort($reasons = "") {
         echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#3F3F3F;color:#DFC37D;padding:1em 1.2em">' . $reasons . '</div>';
         exit;
     }
 
     /**
-     * Math challenge
+     * ============================================================
+     *  MATH CHALLENGE
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::math();
+     *
+     * ------------------------------------------------------------
+     *
      */
+
     public static function math($min = 1, $max = 10, $extra = "") {
         $x = mt_rand($min, $max);
         $y = mt_rand($min, $max);
@@ -192,6 +385,34 @@ class Guardian {
             Session::set(self::$math, $x + $y);
         }
         return $question . $extra;
+    }
+
+    /**
+     * ============================================================
+     *  CAPTCHA IMAGE
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::captcha();
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function captcha($bg = '333333', $color = 'FFFFFF', $width = 100, $height = 30, $padding = 7, $size = 16, $length = 7, $font = 'special-elite-regular.ttf') {
+        $str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        Session::set(self::$captcha, substr(str_shuffle($str), 0, $length));
+        $params = array();
+        if($bg != '333333') $params[] = $bg === false ? 'bg=false' : 'bg=' . (string) $bg;
+        if($color != 'FFFFFF') $params[] = 'color=' . (string) $color;
+        if($width !== 100) $params[] = 'width=' . (string) $width;
+        if($height !== 30) $params[] = 'height=' . (string) $height;
+        if($padding !== 7) $params[] = 'padding=' . (string) $padding;
+        if($size !== 16) $params[] = 'size=' . (string) $size;
+        if($length !== 7) $params[] = 'length=' . (string) $length;
+        if($font != 'special-elite-regular.ttf') $params[] = 'font=' . (string) $font;
+        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($params) ? '?' . implode('&amp;', $params) : "") . '" alt="captcha">';
     }
 
 }

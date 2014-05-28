@@ -449,6 +449,7 @@ notify_file_deleted: Berkas %s berhasil dihapus.
 notify_success_created: <strong>%s</strong> berhasil dibuat.
 notify_success_submitted: <strong>%s</strong> berhasil dikirim.
 notify_success_updated: <strong>%s</strong> berhasil diperbaharui.
+notify_success_uploaded: <strong>%s</strong> berhasil diunggah.
 notify_success_deleted: <strong>%s</strong> berhasil dihapus.
 
 notify_error_no_file_selected: Mohon pilih sebuah berkas.
@@ -474,6 +475,7 @@ notify_invalid_indent_character: Gunakan 4 spasi untuk indentasi.
 notify_invalid_email: Alamat email tidak valid.
 notify_invalid_url: URL tidak valid.
 notify_invalid_math_answer: Jawaban matematika salah.
+notify_invalid_captcha_answer: Jawaban <em>captcha</em> salah.
 
 notify_confirm: Anda yakin?
 notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?

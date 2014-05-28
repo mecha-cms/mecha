@@ -257,21 +257,12 @@ class File {
     // Get the file size then convert it to ...
     public static function size($file, $type = "") {
         switch(strtolower($type)) {
-            case "": // bytes
-                $size = filesize($file);
-            break;
-            case 'kb': // bytes to KB
-                $size = filesize($file) * .0009765625;
-            break;
-            case 'mb': // bytes to MB
-                $size = (filesize($file) * .0009765625) * .0009765625;
-            break;
-            case 'gb': // bytes to GB
-                $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625;
-            break;
+            case "": $size = filesize($file); break; // bytes
+            case 'kb': $size = filesize($file) * .0009765625; break; // bytes to KB
+            case 'mb': $size = (filesize($file) * .0009765625) * .0009765625; break; // bytes to MB
+            case 'gb': $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; break; // bytes to GB
         }
         return $size <= 0 ? 'Unknown file size' : trim(round($size, 2) . ' ' . $type);
-
     }
 
 }

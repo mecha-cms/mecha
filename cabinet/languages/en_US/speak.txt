@@ -449,6 +449,7 @@ notify_file_deleted: File %s successfully deleted.
 notify_success_created: <strong>%s</strong> created.
 notify_success_submitted: <strong>%s</strong> submitted.
 notify_success_updated: <strong>%s</strong> updated.
+notify_success_uploaded: <strong>%s</strong> successfully uploaded.
 notify_success_deleted: <strong>%s</strong> successfully deleted.
 
 notify_error_no_file_selected: Please select a file.
@@ -474,6 +475,7 @@ notify_invalid_indent_character: Use 4 spaces for indentation.
 notify_invalid_email: Invalid email address.
 notify_invalid_url: Invalid URL.
 notify_invalid_math_answer: Wrong math answer.
+notify_invalid_captcha_answer: Wrong captcha answer.
 
 notify_confirm: Are your sure?
 notify_confirm_page_leave: Are you sure you want to leave this page?

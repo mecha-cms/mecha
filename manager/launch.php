@@ -1302,7 +1302,7 @@ Route::accept($config->manager->slug . '/(article|page)/preview', function($path
         $content = Request::post('content');
         $content = Filter::apply('shortcode', $content);
         $content = Filter::apply('content', Text::parse($content)->to_html);
-        echo '<h1 class="preview-title">' . Request::post('title') . '</h1>';
+        echo '<h2 class="preview-title">' . Request::post('title') . '</h2>';
         echo '<div class="p">' . Filter::apply('page', $content) . '</div>';
     }
 

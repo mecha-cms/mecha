@@ -8,18 +8,17 @@
 
 class Shield {
 
-    private static function checkPath($name) {
-        $name = trim($name, '\\/') . '.php';
+    private static function checkPath($file_name) {
+        $file_name = trim($file_name, '\\/') . '.php';
         $config = Config::get();
-        if($file = File::exist(SHIELD . DS . $config->shield . DS . $name)) {
+        if($file = File::exist(SHIELD . DS . $config->shield . DS . $file_name)) {
             return $file;
         } else {
-            if($file = File::exist(ROOT . DS . $name)) {
+            if($file = File::exist(ROOT . DS . $file_name)) {
                 return $file;
-            } else {
-                return $name;
             }
         }
+        return $file_name;
     }
 
     /**

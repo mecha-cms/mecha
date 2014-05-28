@@ -1,0 +1,1 @@
+I have removed some of the glyphs in this "Special Elite" font to make it only contains "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ" to reduce the file size.
