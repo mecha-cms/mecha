@@ -15,8 +15,9 @@
       </tr>
       <tr>
         <td><input name="keys[]" type="text" class="input-block" value="{{asset}}" placeholder="{{<?php echo strtolower($speak->key); ?>}}" readonly></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo $config->url; ?>/assets/" readonly></td>
+        <td><input name="values[]" type="text" class="input-block" value="<?php echo $config->url; ?>/cabinet/assets/" readonly></td>
       </tr>
+      <?php if($pages): ?>
       <?php foreach($pages as $key => $value): ?>
       <?php if($key !== '{{url}}' && $key !== '{{asset}}'): ?>
       <tr>
@@ -25,6 +26,7 @@
       </tr>
       <?php endif; ?>
       <?php endforeach; ?>
+      <?php endif; ?>
       <tr>
         <td><input name="keys[]" type="text" class="input-block" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
         <td><input name="values[]" type="text" class="input-block"></td>

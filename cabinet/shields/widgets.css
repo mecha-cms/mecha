@@ -37,12 +37,15 @@
 .widget-archive-hierarchy .archive-date .collapsed {display:none}
 .widget-archive-hierarchy .archive-date ul {margin-left:1.2em}
 
-.widget .selected a {
+.widget .selected > a {
   color:inherit;
   text-decoration:none;
 }
 
-.widget-tag-cloud .tag-size {margin-left:.25em}
+.widget-tag-cloud .tag-size {
+  margin:0 .25em;
+  vertical-align:middle;
+}
 .widget-tag-cloud .tag-size-0 {font-size:80%}
 .widget-tag-cloud .tag-size-1 {font-size:90%}
 .widget-tag-cloud .tag-size-2 {font-size:100%}
@@ -55,4 +58,50 @@
 .widget-tag-list .selected a {
   color:inherit;
   text-decoration:none;
+}
+
+.widget-recent-comment li {overflow:hidden}
+
+.widget-recent-comment .recent-comment-avatar {
+  display:block;
+  float:left;
+  width:50px;
+  overflow:hidden;
+}
+
+.widget-recent-comment .recent-comment-avatar img {
+  display:block;
+  width:50px;
+  height:50px;
+  max-width:none;
+  max-height:none;
+  margin:.2em 0 0;
+}
+
+.widget-recent-comment .recent-comment-header,
+.widget-recent-comment .recent-comment-body {
+  margin:0 0 .5em;
+  overflow:hidden;
+}
+
+.widget-recent-comment .recent-comment-name {
+  display:block;
+  font-weight:bold;
+}
+
+.widget-recent-comment .recent-comment-time {
+  display:block;
+  color:#AAA;
+  font-size:70%;
+  text-transform:uppercase;
+  letter-spacing:2px;
+}
+
+.widget-recent-comment .recent-comment-footer {clear:both}
+
+.widget-recent-comment .recent-comment-avatar + .recent-comment-header,
+.widget-recent-comment .recent-comment-avatar + .recent-comment-header + .recent-comment-body,
+.widget-recent-comment .recent-comment-avatar + .recent-comment-header + .recent-comment-body + .recent-comment-footer {
+  margin-left:50px;
+  padding-left:1em;
 }

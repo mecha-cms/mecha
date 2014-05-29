@@ -49,7 +49,7 @@ class Guardian {
      */
 
     public static function makeToken() {
-        $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
+        $file = SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
         Session::set(self::$token, $token);
         return $token;
@@ -134,7 +134,7 @@ class Guardian {
      */
 
     public static function deleteToken() {
-        File::open(SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
+        File::open(SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
         Session::kill(self::$token);
     }
 
@@ -266,7 +266,7 @@ class Guardian {
     public static function authorize() {
         $config = Config::get();
         $speak = Config::speak();
-        $users = Text::toArray(File::open(SYSTEM . '/log/users.txt')->read());
+        $users = Text::toArray(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read());
         $authors = array();
         foreach($users as $user => $detail) {
             preg_match('#(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)#', $detail, $matches);
@@ -287,7 +287,7 @@ class Guardian {
                     'author' => $authors[$_POST['username']]['name'],
                     'status' => $authors[$_POST['username']]['status']
                 ));
-                File::write($token)->saveTo(SYSTEM . '/log/' . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt');
+                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt');
                 chmod(SYSTEM . DS . 'log' . DS . 'users.txt', 0600);
                 chmod(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt', 0600);
             } else {
@@ -338,7 +338,7 @@ class Guardian {
      */
 
     public static function happy() {
-        $file = SYSTEM . '/log/' . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
+        $file = SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $auth = Session::get(self::$login);
         return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }
@@ -357,7 +357,7 @@ class Guardian {
      */
 
     public static function abort($reasons = "") {
-        echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#3F3F3F;color:#DFC37D;padding:1em 1.2em">' . $reasons . '</div>';
+        echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em">' . $reasons . '</div>';
         exit;
     }
 

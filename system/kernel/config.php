@@ -152,12 +152,12 @@ class Config {
     public static function speak($key = null, $vars = array()) {
         $words = self::$bucket['speak'];
         if(strpos($key, 'file:') === 0) {
-            if($file = File::exist(LANGUAGE . '/' . self::$bucket['language'] . '/yapping/' . str_replace('file:', "", $key) . '.txt')) {
+            if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
                 $wizard = File::open($file)->read();
                 $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
                 return Filter::apply('content', $wizard);
             } else {
-                $wizard = File::open(ROOT . '/' . str_replace('file:', "", $key) . '.txt')->read();
+                $wizard = File::open(ROOT . DS . str_replace('file:', "", $key) . '.txt')->read();
                 $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
                 return Filter::apply('content', $wizard);
             }
@@ -192,16 +192,17 @@ class Config {
     public static function load() {
 
         // Extract the configuration file
-        if($file = File::exist(STATE . '/config.txt')) {
+        if($file = File::exist(STATE . DS . 'config.txt')) {
             $config = unserialize(File::open($file)->read());
         } else {
-            $config = include STATE . '/repair.config.php';
+            $config = include STATE . DS . 'repair.config.php';
         }
 
         // Define some default variables
         $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+        $config['host'] = $_SERVER['HTTP_HOST'];
         $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
-        $config['url'] = rtrim($config['protocol'] . $_SERVER['HTTP_HOST'] . '/' . $config['base'], '/');
+        $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
         $config['url_current'] = rtrim($config['url'] . '/' . preg_replace('#\?.*$#', "", trim($_SERVER['QUERY_STRING'], '/')), '/');
 
         $config['page_title'] = $config['title'];
@@ -215,13 +216,13 @@ class Config {
         $config['pages'] = false;
         $config['pagination'] = false;
         $config['cargo'] = $config['page'] ? $config['page']->content : false;
-        $config['total_articles'] = count(glob(ARTICLE . '/*.txt'));
-        $config['total_pages'] = count(glob(PAGE . '/*.txt'));
-        $config['total_comments'] = count(glob(RESPONSE . '/*.txt'));
+        $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
+        $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));
+        $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt'));
 
-        if($file = File::exist(LANGUAGE . '/' . $config['language'] . '/speak.txt')) {
+        if($file = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
             $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
-        } elseif($file = File::exist(LANGUAGE . '/en_US/speak.txt')) {
+        } elseif($file = File::exist(LANGUAGE . DS . 'en_US' . DS . 'speak.txt')) {
             $config['speak'] = Text::toArray(File::open($file)->read());
         } else {
             Guardian::abort('Language file not found.');

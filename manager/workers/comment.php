@@ -16,7 +16,7 @@
     </div>
     <div class="comment-body"><?php echo $comment->message; ?></div>
     <div class="comment-footer">
-      <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/repair/' . $comment->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/kill/' . $comment->id; ?>"><?php echo $speak->delete; ?></a>
+      <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id; ?>"><?php echo $speak->delete; ?></a>
     </div>
   </li>
   <?php endforeach; ?>

@@ -32,7 +32,7 @@ if(get_magic_quotes_gpc()) {
  */
 
 function prepare_to_launch($workers) {
-    foreach(glob(SYSTEM . '/kernel/*.php') as $workers) {
+    foreach(glob(SYSTEM . DS . 'kernel' . DS . '*.php') as $workers) {
         include_once $workers;
     }
 }
@@ -42,7 +42,7 @@ spl_autoload_register('prepare_to_launch');
 $config = Config::get();
 $speak = Config::speak();
 
-if(File::exist(ROOT . '/install.php')) {
+if(File::exist(ROOT . DS . 'install.php')) {
     Guardian::kick('install.php');
 }
 
@@ -71,7 +71,7 @@ Weapon::add('sword_after', function() {
  * Include user defined functions
  */
 
-if($function = File::exist(SHIELD . '/' . $config->shield . '/functions.php')) {
+if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
     include $function;
 }
 
@@ -79,6 +79,7 @@ if($function = File::exist(SHIELD . '/' . $config->shield . '/functions.php')) {
 /**
  * Inject some required asset for managers
  */
+
 if(Guardian::happy()) {
     Weapon::add('shell_after', function() use($config) {
         echo '<link href="' . $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">';
@@ -104,7 +105,7 @@ if(Guardian::happy()) {
  * Loading plugins ...
  */
 
-foreach(glob(PLUGIN . '/*/launch.php') as $plugin) {
+foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $plugin) {
     include $plugin;
 }
 
@@ -114,7 +115,7 @@ foreach(glob(PLUGIN . '/*/launch.php') as $plugin) {
  */
 
 Filter::add('shortcode', function($content) {
-    if($file = File::exist(STATE . '/shortcodes.txt')) {
+    if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $shortcodes = unserialize(File::open($file)->read());
     } else {
         $shortcodes = array();
@@ -138,21 +139,21 @@ Filter::add('shortcode', function($content) {
 /**
  * I'm trying to not touching the source code of the Markdown plugin at all.
  *
- * [1]. Add bordered class for tables in page and comment.
- * [2]. Add `rel="nofollow"` attribute in comment links.
+ * [1]. Add bordered class for tables in contents.
+ * [2]. Add `rel="nofollow"` attribute in external links.
  */
 
-Filter::add('content', function($content) {
-    return str_replace('<table>', '<table class="table-bordered">', $content);
-});
-
-Filter::add('comment', function($comment) {
-    return str_replace(array(
-        '<a href="'
-    ),
-    array(
-        '<a rel="nofollow" href="'
-    ), $comment);
+Filter::add('content', function($content) use($config) {
+    return preg_replace(
+        array(
+            '#<table>#',
+            '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host) . ')#'
+        ),
+        array(
+            '<table class="table-bordered">',
+            '<a rel="nofollow" href="$1'
+        ),
+    $content);
 });
 
 
@@ -162,7 +163,7 @@ Filter::add('comment', function($comment) {
 
 Weapon::add('on_page_update', function() use($config) {
     $root = ( ! empty($config->base) ? str_replace('/', '.', $config->base) . '.' : "");
-    File::open(CACHE . '/' . $root . 'sitemap.cache.txt')->delete();
-    File::open(CACHE . '/' . $root . 'feeds.cache.txt')->delete();
-    File::open(CACHE . '/' . $root . 'feeds.rss.cache.txt')->delete();
+    File::open(CACHE . DS . $root . 'sitemap.cache.txt')->delete();
+    File::open(CACHE . DS . $root . 'feeds.cache.txt')->delete();
+    File::open(CACHE . DS . $root . 'feeds.rss.cache.txt')->delete();
 });

@@ -60,7 +60,7 @@ class Menu {
         $current = $config->url_current;
         // Use menu file from the cabinet if `$array` is not defined
         if(is_null($array)) {
-            if($file = File::exist(STATE . '/menus.txt')) {
+            if($file = File::exist(STATE . DS . 'menus.txt')) {
                 $array = Text::toArray(File::open($file)->read());
             } else {
                 $array = array('Home' => '/', 'About' => '/about');

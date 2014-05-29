@@ -14,7 +14,7 @@
     </div>
     <div class="page-body"><?php echo $page->description; ?></div>
     <div class="page-footer">
-      <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/' . $page->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/' . $page->id; ?>"><?php echo $speak->delete; ?></a>
+      <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/id:' . $page->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $page->id; ?>"><?php echo $speak->delete; ?></a>
     </div>
   </li>
   <?php endforeach; ?>

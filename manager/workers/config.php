@@ -122,7 +122,7 @@
         <select name="language" class="input-block">
           <?php
 
-          foreach(glob(LANGUAGE . '/*', GLOB_ONLYDIR) as $file) {
+          foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $file) {
               $lang = basename($file);
               echo '<option value="' . $lang . '"' . ($cache['language'] == $lang ? ' selected' : "") . '>' . $lang . '</option>';
           }
@@ -148,7 +148,7 @@
         <select name="shield" class="input-block">
         <?php
 
-        foreach(glob(SHIELD . '/*', GLOB_ONLYDIR) as $folder) {
+        foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
             $shield = basename($folder);
             $info = Shield::info($shield);
             echo '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . ', ' . strtolower($speak->by) . ' ' . $info->author . '</option>';

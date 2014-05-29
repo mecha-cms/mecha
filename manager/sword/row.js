@@ -19,7 +19,7 @@
                 $(this).closest('tr').before(clone);
             }
         } else {
-            if (length > min + 1) {
+            if (length > min + 1 && $(this).closest('tr').prev().find('input:not([type="hidden"])').val() === "") {
                 $(this).closest('tr').prev().remove();
             }
         }

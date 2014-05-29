@@ -5,19 +5,20 @@ class Get {
     protected function __construct() {}
     protected function __clone() {}
 
-    /**
-     * 1 x 1 pixel transparent image
-     */
-
     private static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     /**
-     * Find page's file path by a slug => `page-slug` or by ID => 12345
+     * =========================================================================
+     *  FIND PAGE FILE PATH
+     *
+     *  [1]. By page slug => `page-slug`
+     *  [2]. By page ID => `123456789`
+     * =========================================================================
      */
 
     private static function tracePath($detector, $folder = PAGE) {
         $results = false;
-        foreach(glob($folder . '/*.txt') as $file_path) {
+        foreach(glob($folder . DS . '*.txt') as $file_path) {
             list($time, $kind, $slug) = explode('_', basename($file_path, '.txt'));
             if($slug == $detector || (is_numeric($detector) && (string) Date::format($detector, 'Y-m-d-H-i-s') == (string) $time)) {
                 $results = $file_path;
@@ -74,12 +75,24 @@ class Get {
 
     /**
      * =========================================================================
-     *  BASIC FILE LISTER
+     *  FIND ALL EXISTING FILES IN A FOLDER
+     *
+     *  [1]. `whole` => All files including the hidden files.
+     *  [2]. `recursive` => All files without the hidden files.
+     *  [3]. `adjacent` => All files without the hidden files that placed
+     *  close to the selected folder.
      * =========================================================================
      *
      * -- CODE: ----------------------------------------------------------------
      *
-     *    $files = Get::files('some/path', 'txt', 'ASC', 'last_update');
+     *    $files = Get::allFiles(
+     *        'some/path',
+     *        'txt',
+     *        'ASC',
+     *        'last_update',
+     *        '.cache',
+     *        'recursive'
+     *    );
      *
      *    foreach($files as $data) {
      *        var_dump($data);
@@ -90,7 +103,7 @@ class Get {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter   | Type   | Detail
      *  ----------- | ------ | -------------------------------------------------
-     *  $folder     | string | The folder path of files to be listed
+     *  $folder     | string | Path to folder of files you want to be listed
      *  $extensions | string | The file extensions
      *  $order      | string | Ascending or descending? ASC/DESC?
      *  $sorter     | string | The key of array item as sorting reference
@@ -100,50 +113,111 @@ class Get {
      *
      */
 
-    public static function files($folder = CACHE, $extensions = 'txt', $order = 'DESC', $sorter = 'path', $filter = "") {
-        if(strpos($extensions, ',') !== false) {
-            $files = glob($folder . '/*.{' . $extensions . '}', GLOB_BRACE);
-        } else {
-            $files = glob($folder . '/*.' . $extensions);
-        }
-        $tree = array();
+    public static function allFiles($folder = CACHE, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $output = 'all') {
         $config = Config::get();
-        $total_files = count($files);
-        if($total_files === 0) return false;
-        if(empty($filter)) {
-            for($i = 0; $i < $total_files; ++$i) {
-                $info = pathinfo($files[$i]);
-                $tree[] = array(
-                    'path' => $files[$i],
-                    'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $files[$i]),
+        $tree = array();
+        // Example: `*`, `txt`, `gif,jpg,jpeg,png`
+        $extensions = $extensions == '*' ? '.*?' : preg_replace('# *\, *#', '|', $extensions);
+        $dir = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS));
+        foreach(new RegexIterator($dir, '#.*?' . preg_quote($filter) . '.*?\.(' . $extensions . ')$#i') as $file => $object) {
+            $info = pathinfo($file);
+            $tree['whole'][] = array(
+                'path' => $file,
+                'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
+                'name' => $info['basename'],
+                'dirname' => $info['dirname'],
+                'extension' => strtolower($info['extension']),
+                'last_update' => filemtime($file),
+                'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
+                'size' => File::size($file, 'KB')
+            );
+            if(
+                // Exclude file from results if the file name begins with
+                // two underscores. Example: `__file-name.txt`
+                strpos(basename($info['basename']), '__') !== 0 &&
+                // Exclude all files in a folder from results if the
+                // folder name begins with two underscores. Example: `__folder-name`
+                strpos(basename($info['dirname']), '__') !== 0 &&
+                // Linux?
+                strpos(basename($info['basename']), '.') !== 0 &&
+                strpos(basename($info['dirname']), '.') !== 0
+            ) {
+                $tree['recursive'][] = array(
+                    'path' => $file,
+                    'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
                     'name' => $info['basename'],
                     'dirname' => $info['dirname'],
                     'extension' => strtolower($info['extension']),
-                    'last_update' => filemtime($files[$i]),
-                    'update' => Date::format(filemtime($files[$i]), 'Y-m-d H:i:s'),
-                    'size' => File::size($files[$i], 'KB')
+                    'last_update' => filemtime($file),
+                    'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
+                    'size' => File::size($file, 'KB')
                 );
-            }
-            return Mecha::eat($tree)->order($order, $sorter)->vomit();
-        } else {
-            for($i = 0; $i < $total_files; ++$i) {
-                $info = pathinfo($files[$i]);
-                if(strpos($info['filename'], $filter) !== false) {
-                    $tree[] = array(
-                        'path' => $files[$i],
-                        'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $files[$i]),
+                if(rtrim(dirname($file), '\\/') === rtrim($folder, '\\/')) {
+                    $tree['adjacent'][] = array(
+                        'path' => $file,
+                        'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
                         'name' => $info['basename'],
                         'dirname' => $info['dirname'],
                         'extension' => strtolower($info['extension']),
-                        'last_update' => filemtime($files[$i]),
-                        'update' => Date::format(filemtime($files[$i]), 'Y-m-d H:i:s'),
-                        'size' => File::size($files[$i], 'KB')
+                        'last_update' => filemtime($file),
+                        'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
+                        'size' => File::size($file, 'KB')
                     );
                 }
             }
-            return Mecha::eat($tree)->order($order, $sorter)->vomit();
         }
-        return false;
+        return ! empty($tree[$output]) ? Mecha::eat($tree[$output])->order($order, $sorter)->vomit() : false;
+    }
+
+    /**
+     * =========================================================================
+     *  RECURSIVE FILE LISTER
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    $files = Get::files(
+     *        'some/path',
+     *        'txt',
+     *        'ASC',
+     *        'last_update'
+     *    );
+     *
+     *    $files = Get::files(
+     *        'some/path',
+     *        'gif,jpg,jpeg,png',
+     *        'ASC',
+     *        'last_update'
+     *    );
+     *
+     * -------------------------------------------------------------------------
+     *
+     */
+
+    public static function files($folder = CACHE, $extensions = 'txt', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::allFiles($folder, $extensions, $order, $sorter, $filter, 'recursive');
+    }
+
+    /**
+     * =========================================================================
+     *  ADJACENT FILE LISTER
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    $files = Get::adjacentFiles(
+     *        'some/path',
+     *        'txt',
+     *        'ASC',
+     *        'last_update'
+     *    );
+     *
+     * -------------------------------------------------------------------------
+     *
+     */
+
+    public static function adjacentFiles($folder = CACHE, $extensions = 'txt', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::allFiles($folder, $extensions, $order, $sorter, $filter, 'adjacent');
     }
 
     /**
@@ -210,10 +284,10 @@ class Get {
     public static function rawTags($order = 'ASC', $sorter = 'name') {
         $config = Config::get();
         $speak = Config::speak();
-        if($file = File::exist(STATE . '/tags.txt')) {
+        if($file = File::exist(STATE . DS . 'tags.txt')) {
             $tags = unserialize(File::open($file)->read());
         } else {
-            $tags = include STATE . '/repair.tags.php';
+            $tags = include STATE . DS . 'repair.tags.php';
         }
         return Mecha::eat($tags)->order($order, $sorter)->vomit();
     }
@@ -313,7 +387,7 @@ class Get {
 
     public static function pages($order = 'DESC', $filter = "", $folder = PAGE) {
         $results = array();
-        $pages = glob($folder . '/*.txt');
+        $pages = glob($folder . DS . '*.txt');
         $total_pages = count($pages);
         if($total_pages === 0) return false;
         if($order == 'DESC') {
@@ -452,9 +526,9 @@ class Get {
             }
         }
 
-        $results = $results[0];
+        $results = $results ? $results[0] : false;
 
-        if( ! File::exist($results['file_path'])) return false;
+        if( ! $results || ! File::exist($results['file_path'])) return false;
 
         /**
          * RULES: Do not do any tags looping, content Markdown-ing and
@@ -521,6 +595,7 @@ class Get {
         /**
          * Custom fields ...
          */
+
         if( ! isset($excludes['fields'])) {
 
             /**
@@ -529,7 +604,8 @@ class Get {
              * to prevent error messages because of the object key that
              * is not available in the old posts.
              */
-            if($file = File::exist(STATE . '/fields.txt')) {
+
+            if($file = File::exist(STATE . DS . 'fields.txt')) {
                 $fields = unserialize(File::open($file)->read());
             } else {
                 $fields = array();
@@ -542,6 +618,7 @@ class Get {
             /**
              * Start re-writing ...
              */
+
             if(isset($results['fields'])) {
                 $extra = Mecha::A(Text::parse($results['fields'])->to_decoded_json);
                 if($results['fields'] != '{}' || ( ! empty($extra) && (string) $extra !== 'null')) {
@@ -560,6 +637,7 @@ class Get {
         /**
          * Exclude some fields from results
          */
+
         foreach($results as $key => $value) {
             if(isset($excludes[$key])) {
                 unset($results[$key]);
@@ -613,7 +691,7 @@ class Get {
         if(strpos($path, ROOT) === false) {
             $path = self::tracePath($path, $folder);
         }
-        if($handle = fopen($path, 'r')) {
+        if($path && $handle = fopen($path, 'r')) {
             list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
             $results = array(
                 'id' => (int) Date::format($time, 'U'),
@@ -638,7 +716,7 @@ class Get {
                 }
                 $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
             }
-            if($file = File::exist(STATE . '/fields.txt')) {
+            if($file = File::exist(STATE . DS . 'fields.txt')) {
                 $fields = unserialize(File::open($file)->read());
             } else {
                 $fields = array();
@@ -661,7 +739,7 @@ class Get {
             }
             $results['description'] = isset($results['description']) ? Text::parse($results['description'])->to_decoded_json : "";
             $results['fields'] = $init;
-            return (object) $results;
+            return Mecha::O($results);
         }
         return false;
     }
@@ -709,7 +787,7 @@ class Get {
         if(strpos($path, ROOT) === false) {
             $path = self::tracePath($path, $folder);
         }
-        if($handle = fopen($path, 'r')) {
+        if($path && $handle = fopen($path, 'r')) {
             $parts = explode(':', fgets($handle), 2);
             list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
             fclose($handle);
@@ -860,7 +938,7 @@ class Get {
 
     public static function comments($post_time = null, $order = 'ASC', $sorter = 'id') {
         $results = array();
-        foreach(glob(RESPONSE . '/*.txt') as $comment) {
+        foreach(glob(RESPONSE . DS . '*.txt') as $comment) {
             list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
             $results[] = array(
                 'file_path' => $comment,
@@ -897,17 +975,21 @@ class Get {
      *
      */
 
-    public static function comment($id, $excludes = array(), $folder = RESPONSE, $response_to = ARTICLE, $connector = null) {
+    public static function comment($reference, $excludes = array(), $folder = RESPONSE, $response_to = ARTICLE, $connector = null) {
         $config = Config::get();
         $results = array();
+        $name = false;
         foreach(self::comments() as $comment) {
-            if((int) Date::format($id, 'U') == $comment['id']) {
+            if(
+                (int) Date::format($reference, 'U') === $comment['id'] || // By comment ID
+                ! is_numeric($reference) && (string) basename($reference) === (string) $comment['file_name'] // By comment name
+            ) {
                 $results = $comment;
                 $name = $comment['file_name'];
                 break;
             }
         }
-        if( ! $file = File::exist($folder . '/' . $name)) return false;
+        if( ! $name || ! $file = File::exist($folder . DS . $name)) return false;
         $results = $results + Text::toPage(File::open($file)->read());
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
@@ -915,7 +997,7 @@ class Get {
         $results['permalink'] = '#';
         unset($results['content_raw']);
         unset($results['content']);
-        foreach(glob($response_to . '/*.txt') as $posts) {
+        foreach(glob($response_to . DS . '*.txt') as $posts) {
             list($time, $kind, $slug) = explode('_', basename($posts, '.txt'));
             if((int) Date::format($time, 'U') == $results['post']) {
                 $results['permalink'] = $config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'];

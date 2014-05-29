@@ -10,6 +10,7 @@
       </tr>
     </thead>
     <tbody>
+      <?php if($pages): ?>
       <?php foreach($pages as $key => $value): ?>
       <tr>
         <td><input name="title[]" type="text" class="input-block" value="<?php echo $value->title; ?>"></td>
@@ -33,6 +34,7 @@
         </td>
       </tr>
       <?php endforeach; ?>
+      <?php endif; ?>
       <tr>
         <td><input name="title[]" type="text" class="input-block" value=""></td>
         <td><input name="key[]" type="text" class="input-block" value=""></td>

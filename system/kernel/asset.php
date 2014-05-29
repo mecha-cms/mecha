@@ -37,10 +37,9 @@ class Asset {
         } else {
             if($_path = File::exist(ROOT . DS . $path)) {
                 return $_path;
-            } else {
-                return '## FILE NOT FOUND: ' . $path . ' ##';
             }
         }
+        return $path;
     }
 
     // Get public asset URL

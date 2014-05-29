@@ -74,7 +74,7 @@
       </label>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
-    <?php $fields = File::exist(STATE . '/fields.txt') ? unserialize(File::open(STATE . '/fields.txt')->read()) : array(); if( ! empty($fields)): ?>
+    <?php $fields = File::exist(STATE . DS . 'fields.txt') ? unserialize(File::open(STATE . DS . 'fields.txt')->read()) : array(); if( ! empty($fields)): ?>
     <?php foreach($fields as $key => $value): ?>
     <?php
 
@@ -128,8 +128,11 @@
       <?php if($config->editor_mode == 'ignite'): ?>
       <button class="btn btn-success btn-publish" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->publish; ?></button>
       <?php else: ?>
+      <?php if($config->editor_type == 'page'): ?>
+      <input name="date" type="hidden" value="<?php echo $cache['date']; ?>">
+      <?php endif; ?>
       <button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button>
-      <a class="btn btn-danger btn-delete" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/' . $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+      <a class="btn btn-danger btn-delete" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
       <?php endif; ?>
     </p>
   </form>

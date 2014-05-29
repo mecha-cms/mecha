@@ -5,6 +5,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Manager
+     * --------------
      *
      * [1]. echo Widget::manager();
      *
@@ -39,12 +40,12 @@ class Widget extends Weapon {
             '<i class="fa fa-fw fa-clock-o"></i> ' . $speak->cache => '/' . $config->manager->slug . '/cache'
         );
         if($config->page_type == 'article') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/repair/' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/kill/' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/repair/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/kill/id:' . $config->page->id;
         }
         if($config->page_type == 'page') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/repair/' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/kill/' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
         }
 
         /**
@@ -79,6 +80,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Archive
+     * --------------
      *
      * [1]. Widget::archive('HIERARCHY');
      * [2]. Widget::archive('HIERARCHY', 'ASC');
@@ -87,11 +89,14 @@ class Widget extends Weapon {
 
     public static function archive($type = 'HIERARCHY', $sort = 'DESC') {
         $config = Config::get();
+        $speak = Config::speak();
         $year_first = $config->widget_year_first;
         $query = $config->archive_query;
-        $months_array = (array) Config::speak('months');
+        $months_array = (array) $speak->months;
         $archives = array();
-        if( ! $files = Get::articles($sort)) return "";
+        if( ! $files = Get::articles($sort)) {
+            return '<div class="widget widget-archive">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+        }
         if($type == 'HIERARCHY') {
             $i = 0;
             foreach($files as $file_name) {
@@ -103,7 +108,7 @@ class Widget extends Weapon {
             foreach($archives as $year => $months) {
                 if(is_array($months)) {
                     $posts_count_per_year = 0;
-                    if(empty($query) || ! isset($query)) {
+                    if(empty($query)) {
                         $expand = $i === 0;
                     } else {
                         $expand = (int) substr($query, 0, 4) == (int) $year ? true : false;
@@ -111,7 +116,7 @@ class Widget extends Weapon {
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
-                    $html .= '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . '"><a href="javascript:;" class="toggle"><span class="zippy' . ($expand ? ' toggle-open' : "") . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a><span class="counter">' . $posts_count_per_year . '</span>';
+                    $html .= '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . ($query == $year ? ' selected' : "") . '"><a href="javascript:;" class="toggle"><span class="zippy' . ($expand ? ' toggle-open' : "") . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a><span class="counter">' . $posts_count_per_year . '</span>';
                     $html .= '<ul class="' . ($expand ? 'expanded' : 'collapsed') . '">';
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
@@ -162,6 +167,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Tag
+     * ----------
      *
      * [1]. Widget::tag('LIST');
      * [2]. Widget::tag('LIST', 'ASC');
@@ -172,9 +178,12 @@ class Widget extends Weapon {
 
     public static function tag($type = 'LIST', $order = 'ASC', $sorter = 'name', $max_level = 6) {
         $config = Config::get();
+        $speak = Config::speak();
         $counters = array();
         $tags = array();
-        if( ! $files = Get::articles()) return "";
+        if( ! $files = Get::articles()) {
+            return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+        }
         foreach(Get::extract($files) as $file) {
             foreach($file['kind'] as $kind) {
                 $counters[] = $kind;
@@ -193,10 +202,11 @@ class Widget extends Weapon {
                 $i++;
             }
         }
-        if(empty($tags)) return "";
+        if(empty($tags)) {
+            return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+        }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
         if($type == 'LIST') {
-            $lists = array();
             $html  = '<div class="widget widget-tag widget-tag-list">';
             $html .= '<ul>';
             foreach($tags as $tag) {
@@ -212,11 +222,11 @@ class Widget extends Weapon {
                 $tags_counter[] = $tag['count'];
             }
             $highest_count = max($tags_counter);
-            $html  = '<div class="widget widget-tag widget-tag-cloud">';
-            for($i = 0, $counts = count($tags); $i < $counts; ++$i) {
+            $html = '<div class="widget widget-tag widget-tag-cloud">';
+            for($i = 0, $count = count($tags); $i < $count; ++$i) {
                 $normalized = $tags[$i]['count'] / $highest_count;
                 $size = ceil($normalized * $max_level);
-                $html .= '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tags[$i]['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tags[$i]['slug'] . '">' . $tags[$i]['name'] . '</a><span class="counter">' . $tags[$i]['count'] . '</span></span>';
+                $html .= '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tags[$i]['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tags[$i]['slug'] . '" rel="tag">' . $tags[$i]['name'] . '</a><span class="counter">' . $tags[$i]['count'] . '</span></span>';
             }
             $html .= '</div>';
             return Filter::apply('widget_tag_CLOUD', $html);
@@ -226,6 +236,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Search Box
+     * -----------------
      *
      * [1]. Widget::search();
      * [2]. Widget::search('Search query...');
@@ -248,6 +259,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Recent Post
+     * ------------------
      *
      * [1]. Widget::recentPost();
      * [2]. Widget::recentPost(5);
@@ -256,14 +268,16 @@ class Widget extends Weapon {
 
     public static function recentPost($total = 7, $class = 'recent') {
         $config = Config::get();
-        if( ! $files = Get::articles('DESC')) return "";
+        if( ! $files = Get::articles('DESC')) {
+            return '<div class="widget widget-' . $class . '">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+        }
         if($class == 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
         }
         $html  = '<div class="widget widget-' . $class . ' widget-' . $class . '-post">';
         $html .= '<ul>';
         for($i = 0, $count = count($files); $i < $total; ++$i) {
-            if($i == $count) break;
+            if($i === $count) break;
             $article = Get::articleAnchor($files[$i]);
             $html .= '<li' . ($config->url_current == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>';
         }
@@ -275,6 +289,7 @@ class Widget extends Weapon {
 
     /**
      * Widget Random Post
+     * ------------------
      *
      * [1]. Widget::randomPost();
      * [2]. Widget::randomPost(5);
@@ -287,7 +302,97 @@ class Widget extends Weapon {
 
 
     /**
-     * This is just an alias for `Weapon::fire()` !!!
+     * Widget Related Post
+     * -------------------
+     *
+     * [1]. Widget::relatedPost();
+     * [2]. Widget::relatedPost(10);
+     *
+     */
+
+    public static function relatedPost($total = 7) {
+        $config = Config::get();
+        if($config->page_type != 'article') {
+            return self::randomPost($total);
+        } else {
+            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', (array) $config->page->kind))) {
+                return '<div class="widget widget-related widget-related-post">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+            }
+            if(count($files) <= 1) {
+                return self::randomPost($total);
+            }
+            $files = Mecha::eat($files)->shake()->vomit();
+            $html  = '<div class="widget widget-related widget-related-post">';
+            $html .= '<ul>';
+            for($i = 0, $count = count($files); $i < $total; ++$i) {
+                if($i === $count) break;
+                if($files[$i] != $config->page->file_path) {
+                    $article = Get::articleAnchor($files[$i]);
+                    $html .= '<li><a href="' . $article->url . '">' . $article->title . '</a></li>';
+                }
+            }
+            $html .= '</ul>';
+            $html .= '</div>';
+            return Filter::apply('widget_related_post', $html);
+        }
+    }
+
+
+    /**
+     * Widget Recent Comment
+     * ---------------------
+     *
+     * [1]. Widget::recentComment();
+     * [2]. Widget::recentComment(10);
+     *
+     */
+
+    public static function recentComment($total = 7, $avatar_size = 50, $summary = 100) {
+        $config = Config::get();
+        $speak = Config::speak();
+        $html = '<div class="widget widget-recent widget-recent-comment">';
+        if($comments = Get::comments()) {
+            $html .= '<ul>';
+            foreach($comments as $comment) {
+                $comment = Get::comment($comment['id']);
+                $article = Get::articleAnchor($comment->post);
+                $html .= '<li class="recent-comment-item">';
+                if($avatar_size !== false && $avatar_size > 0) {
+                    $html .= '<div class="recent-comment-avatar">';
+                    $html .= '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '">';
+                    $html .= '</div>';
+                }
+                $html .= '<div class="recent-comment-header">';
+                if($comment->url != '#') {
+                    $html .= '<a class="recent-comment-name" href="' . $comment->url . '" rel="nofollow">' . $comment->name . '</a>';
+                } else {
+                    $html .= '<span class="recent-comment-name">' . $comment->name . '</span>';
+                }
+                $html .= '</div>';
+                $html .= '<div class="recent-comment-body">' . Get::summary($comment->message, $summary, '&hellip;') . '</div>';
+                $html .= '<div class="recent-comment-footer">';
+                $html .= '<span class="recent-comment-time">';
+                $html .= '<time datetime="' . Date::format($comment->time, 'c') . '">' . Date::format($comment->time, 'Y/m/d H:i:s') . '</time>';
+                $html .= ' <a title="' . ($article ? $speak->permalink . ' ' . strtolower($speak->to) . ' &ldquo;' . $article->title . '&rdquo;' : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>';
+                $html .= '</span>';
+                $html .= '</div>';
+                $html .= '</li>';
+            }
+            $html .= '</ul>';
+        } else {
+            $html .= Config::speak('notify_empty', array(strtolower($speak->comments)));
+        }
+        $html .= '</div>';
+        return Filter::apply('widget_recent_comment', $html);
+    }
+
+
+    /**
+     * Custom Widget
+     * -------------
+     *
+     * [1]. Widget::call('my_custom_widget');
+     *
      */
 
     public static function call($name, $arguments = array()) {

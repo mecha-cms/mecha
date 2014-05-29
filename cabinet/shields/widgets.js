@@ -9,15 +9,16 @@ Widget.archive = function(type, elem) {
             click = function(ref) {
                 var arrow = ['&#9660;', '&#9658;'];
                 ref.onclick = function() {
+                    var s = / selected$/i.test(this.parentNode.className) ? ' selected' : "";
                     if (this.children[0].className == 'zippy') {
                         this.children[0].className = 'zippy toggle-open';
                         this.children[0].innerHTML = arrow[0];
-                        this.parentNode.className = 'archive-date expanded';
+                        this.parentNode.className = 'archive-date expanded' + s;
                         this.parentNode.getElementsByTagName('ul')[0].className = 'expanded';
                     } else {
                         this.children[0].className = 'zippy';
                         this.children[0].innerHTML = arrow[1];
-                        this.parentNode.className = 'archive-date collapsed';
+                        this.parentNode.className = 'archive-date collapsed' + s;
                         this.parentNode.getElementsByTagName('ul')[0].className = 'collapsed';
                     }
                     return false;

@@ -2,7 +2,12 @@
 
 
 /**
- * Index Page => `article`, `article/1`
+ * Index Page
+ * ----------
+ *
+ * [1]. article
+ * [2]. article/1
+ *
  */
 
 Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), function($offset = 1) use($config) {
@@ -36,7 +41,12 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
 
 
 /**
- * Archive Page => `archive/2014`, `archive/2014/1`
+ * Archive Page
+ * ------------
+ *
+ * [1]. archive/2014
+ * [2]. archive/2014/1
+ *
  */
 
 Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config) {
@@ -66,7 +76,12 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
 
 
 /**
- * Archive Page => `archive/2014-04`, `archive/2014-04/1`
+ * Archive Page
+ * ------------
+ *
+ * [1]. archive/2014-04
+ * [2]. archive/2014-04/1
+ *
  */
 
 Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak) {
@@ -98,7 +113,12 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
 
 
 /**
- * Tag Page => `tagged/tag-slug`, `tagged/tag-slug/1`
+ * Tag Page
+ * --------
+ *
+ * [1]. tagged/tag-slug
+ * [2]. tagged/tag-slug/1
+ *
  */
 
 Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config) {
@@ -132,41 +152,61 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
 
 
 /**
- * Search Page => `search/search+query`, `search/search+query/1`
+ * Search Page
+ * -----------
+ *
+ * [1]. search/search+query
+ * [2]. search/search+query/1
+ *
  */
 
 Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config) {
 
+    $pages = array();
     $query = Text::parse($query)->to_decoded_url;
     $keywords = Text::parse($query)->to_slug;
-    $pages = array();
 
-    /**
-     * Matched with all keywords combined
-     */
-    foreach(glob(ARTICLE . '/*.txt') as $file_path) {
-        $anchor = Get::articleAnchor($file_path);
-        if(strpos(strtolower(basename($file_path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
-            $pages[] = $file_path;
-        }
-    }
+    if(Session::get('search_query') == $query) {
 
-    /**
-     * Matched with a single keyword
-     */
-    $keywords = explode('-', $keywords);
-    foreach($keywords as $keyword) {
-        foreach(glob(ARTICLE . '/*.txt') as $file_path) {
+        $pages = Session::get('search_results');
+
+    } else {
+
+        /**
+         * Matched with all keywords combined
+         */
+
+        foreach(glob(ARTICLE . DS . '*.txt') as $file_path) {
             $anchor = Get::articleAnchor($file_path);
-            if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
+            if(strpos(strtolower(basename($file_path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
                 $pages[] = $file_path;
             }
         }
+
+        /**
+         * Matched with a single keyword
+         */
+
+        $keywords = explode('-', $keywords);
+        foreach($keywords as $keyword) {
+            foreach(glob(ARTICLE . DS . '*.txt') as $file_path) {
+                $anchor = Get::articleAnchor($file_path);
+                if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
+                    $pages[] = $file_path;
+                }
+            }
+        }
+
+        $pages = array_unique($pages); // Remove duplicate in search results
+
+        Session::set('search_query', $query);
+        Session::set('search_results', $pages);
+
     }
 
     if( ! empty($pages)) {
         $_pages = array();
-        foreach(Mecha::eat(array_unique($pages))->chunk($offset, $config->search->per_page)->vomit() as $file_path) {
+        foreach(Mecha::eat($pages)->chunk($offset, $config->search->per_page)->vomit() as $file_path) {
             $_pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
         }
         Config::set(array(
@@ -175,7 +215,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'offset' => $offset,
             'search_query' => $query,
             'pages' => $_pages,
-            'pagination' => Navigator::extract(array_unique($pages), $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
+            'pagination' => Navigator::extract($pages, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
         ));
         Shield::attach('index');
     } else {
@@ -184,6 +224,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'page_title' => $config->search->title . ' &ldquo;' . $query . '&rdquo;' . $config->title_separator . $config->title,
             'search_query' => $query
         ));
+        Session::kill('search_query');
+        Session::kill('search_results');
         Shield::abort('404-search');
     }
 
@@ -192,6 +234,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
 /**
  * Ignite Search ...
+ * -----------------
  */
 
 Route::accept($config->search->slug, function() use($config) {
@@ -204,7 +247,11 @@ Route::accept($config->search->slug, function() use($config) {
 
 
 /**
- * Article Page => `article/article-slug`
+ * Article Page
+ * ------------
+ *
+ * [1]. article/article-slug
+ *
  */
 
 Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config, $speak) {
@@ -223,6 +270,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     /**
      * Submitting a comment ...
      */
+
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
@@ -241,6 +289,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                  * Do not allow passengers to enter your
                  * email address in the comment email field
                  */
+
                 if( ! Guardian::happy() && $request['email'] == $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array($request['email'], strtolower($speak->email))));
                 }
@@ -279,8 +328,9 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
 
         /**
-         * Check for spam keywords in comment
+         * Checks for spam keywords in comment
          */
+
         $keywords = explode(',', $config->spam_keywords);
         foreach($keywords as $spam) {
             if((trim($spam) !== "" && $request['email'] == trim($spam)) || (trim($spam) !== "" && strpos($request['message'], trim($spam)) !== false)) {
@@ -302,7 +352,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= 'Status: ' . $status . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
 
-            File::write($data)->saveTo(RESPONSE . '/' . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt');
+            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt');
 
             Weapon::fire('on_comment_submit');
             Weapon::fire('on_comment_update');
@@ -321,6 +371,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 /**
                  * Sending email notification ...
                  */
+
                 if( ! Guardian::happy()) {
                     mail($config->author_email, $speak->comment_notification_subject, $message, $header);
                 }
@@ -342,7 +393,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
 
 /**
- * XML Sitemap => `sitemap`
+ * XML Sitemap
+ * -----------
+ *
+ * [1]. Sitemap
+ *
  */
 
 Route::accept('sitemap', function() {
@@ -352,7 +407,11 @@ Route::accept('sitemap', function() {
 
 
 /**
- * RSS Feed => `feeds/rss`
+ * RSS Feed
+ * --------
+ *
+ * [1]. feeds/rss
+ *
  */
 
 Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) {
@@ -363,7 +422,11 @@ Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset 
 
 
 /**
- * Captcha Image => `captcha.png`
+ * Captcha Image
+ * -------------
+ *
+ * [1]. captcha.png
+ *
  */
 
 Route::accept('captcha.png', function() {
@@ -414,6 +477,10 @@ Route::accept('captcha.png', function() {
 
 /**
  * Page Static
+ * -----------
+ *
+ * [1]. page-slug
+ *
  */
 
 Route::accept('(:any)', function($slug = "") use($config) {
@@ -434,10 +501,17 @@ Route::accept('(:any)', function($slug = "") use($config) {
 
 
 /**
- * Home Page => ``
+ * Home Page
+ * ---------
+ *
+ * [1]. /
+ *
  */
 
 Route::accept("", function() use($config) {
+
+    Session::kill('search_query');
+    Session::kill('search_results');
 
     $pages = array();
 
@@ -461,7 +535,11 @@ Route::accept("", function() use($config) {
 
 
 /**
- * 404 Page - Fallback to 404 Page if Nothing Matched
+ * 404 Page
+ * --------
+ *
+ * Fallback to 404 page if nothing matched.
+ *
  */
 
 Shield::abort();

@@ -23,14 +23,18 @@ class Shield {
 
     /**
      * Do Nothing
+     * ----------
      */
+
     private static function desanitize_output($buffer) {
         return Filter::apply('before_sanitized', Filter::apply('after_sanitized', $buffer));
     }
 
     /**
      * Minify HTML Output
+     * ------------------
      */
+
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('before_sanitized', $buffer);
         $str = array(

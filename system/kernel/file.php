@@ -254,7 +254,7 @@ class File {
 
     }
 
-    // Get the file size then convert it to ...
+    // Get file size then convert it to ...
     public static function size($file, $type = "") {
         switch(strtolower($type)) {
             case "": $size = filesize($file); break; // bytes
@@ -262,7 +262,7 @@ class File {
             case 'mb': $size = (filesize($file) * .0009765625) * .0009765625; break; // bytes to MB
             case 'gb': $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; break; // bytes to GB
         }
-        return $size <= 0 ? 'Unknown file size' : trim(round($size, 2) . ' ' . $type);
+        return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $type);
     }
 
 }

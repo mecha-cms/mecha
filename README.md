@@ -18,6 +18,7 @@ Mecha CMS
  9. Custom fields
  10. Sitemap
  11. RSS
+ 12. Easy to use and well documented API
 
 ### System Requirements
 
@@ -45,5 +46,6 @@ http://mecha-cms.com
  2. Share this CMS project page to your friends
  3. Make some shields for Mecha
  4. Make some [plugins](https://github.com/mecha-cms/plugin "Mecha CMS Plugins") for Mecha
- 5. Make a donation 
- 6. Say thanks, for motivation purpose :)
+ 5. Make a donation
+ 6. Give me a star!
+ 7. Say thanks, for motivation purpose :)

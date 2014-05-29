@@ -7,6 +7,7 @@
  *
  * -- CODE: ----------------------------------------------
  *
+ *    // Basic parser
  *    echo Text::parse('some text')->to_slug;
  *
  *    // Perform a test
