@@ -129,4 +129,47 @@ class Converter {
         return false;
     }
 
+    /**
+     * ====================================================================
+     *  CONVERT STRING OF VALUE INTO THEIR APPROPRIATE TYPE/FORMAT
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | mixed  | The string or array of string to be converted
+     *  --------- | ------ | ----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function strEval($input) {
+        $results = false;
+        if(is_string($input) && preg_match('#^(true|false|yes|no|on|off|null|ok|okay)$#i', $input, $matches)) {
+            switch(strtolower($matches[1])) {
+                case 'true': $results = true; break;
+                case 'false': $results = false; break;
+                case 'yes': $results = true; break;
+                case 'no': $results = false; break;
+                case 'on': $results = true; break;
+                case 'off': $results = false; break;
+                case 'null': $results = null; break;
+                case 'ok': $results = true; break;
+                case 'okay': $results = true; break;
+            }
+        } elseif(is_string($input) && ! is_null(json_decode($input, true))) {
+            $results = self::strEval(json_decode($input, true));
+        } elseif(is_numeric($input)) {
+            $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
+        } elseif(is_array($input)) {
+            $results = array();
+            foreach($input as $key => $value) {
+                $results[$key] = self::strEval($value);
+            }
+        } else {
+            $results = $input;
+        }
+        return $results;
+    }
+
 }

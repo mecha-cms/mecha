@@ -21,7 +21,7 @@ class Image {
         }
         $file = is_array(self::$opened) ? self::$opened[0] : self::$opened;
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        self::$placeholder = dirname($file) . DS . 'p-l-a-c-e-h-o-l-d-e-r--i-m-a-g-e.' . $extension;
+        self::$placeholder = dirname($file) . DS . '__p-l-a-c-e-h-o-l-d-e-r--i-m-a-g-e.' . $extension;
         self::$original = basename($file);
         File::open(self::$placeholder)->delete();
         File::open($file)->copyTo(self::$placeholder);

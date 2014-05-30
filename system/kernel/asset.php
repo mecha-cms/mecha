@@ -29,7 +29,7 @@ class Asset {
 
     private function __construct() {}
 
-    private static function checkPath($path) {
+    private static function tracePath($path) {
         $path = ltrim($path, '\\/');
         $config = Config::get();
         if($_path = File::exist(SHIELD . DS . $config->shield . DS . $path)) {
@@ -45,7 +45,7 @@ class Asset {
     // Get public asset URL
     public static function url($path) {
         $config = Config::get();
-        return str_replace(array(ROOT, '\\'), array($config->url, '/'), self::checkPath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::checkPath($path)) : "");
+        return str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : "");
     }
 
     // Return HTML script of asset

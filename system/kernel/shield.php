@@ -8,7 +8,7 @@
 
 class Shield {
 
-    private static function checkPath($file_name) {
+    private static function tracePath($file_name) {
         $file_name = trim($file_name, '\\/') . '.php';
         $config = Config::get();
         if($file = File::exist(SHIELD . DS . $config->shield . DS . $file_name)) {
@@ -64,7 +64,7 @@ class Shield {
         $speak = Config::speak();
         $info = SHIELD . DS . ( ! is_null($folder) ? $folder : Config::get('shield')) . DS . 'about.txt';
         if(File::exist($info)) {
-            $results = Text::toPage(File::open($info)->read());
+            $results = Text::toPage(File::open($info)->read(), true, 'shield:');
             return Mecha::O($results);
         } else {
             return (object) array(
@@ -113,12 +113,12 @@ class Shield {
             $article = $page; // Create page alias for article
         }
 
-        if(File::exist(self::checkPath($name))) {
-            $shield = self::checkPath($name);
-        } elseif(File::exist(self::checkPath($base[0]))) {
-            $shield = self::checkPath($base[0]);
+        if(File::exist(self::tracePath($name))) {
+            $shield = self::tracePath($name);
+        } elseif(File::exist(self::tracePath($base[0]))) {
+            $shield = self::tracePath($base[0]);
         } else {
-            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::checkPath($name) . '</code>')));
+            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::tracePath($name) . '</code>')));
         }
 
         $cache = CACHE . DS . str_replace('/', '.', trim($_SERVER['REQUEST_URI'], '\\/')) . '.cache.txt';

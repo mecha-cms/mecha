@@ -67,25 +67,24 @@ class Menu {
             }
         }
         $html = '<' . $type . '>';
-        foreach($array as $key => $value) {
-            if(is_array($value)) {
-                if(preg_match('/(.*?)\((.*?)\)$/', $key, $matches)) {
-                    $url = trim($matches[2], '/');
+        foreach($array as $text => $url) {
+            if(is_array($url)) {
+                if(preg_match('/(.*?)\((.*?)\)$/', $text, $matches)) {
+                    $_url = trim($matches[2], '/');
                     // Create full URL from value if the value does not contain a `://`
-                    if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
-                        $url = str_replace('/#', '#', trim($config->url . '/' . $url, '/'));
+                    if(strpos($_url, '://') === false && strpos($_url, '#') !== 0) {
+                        $_url = str_replace('/#', '#', trim($config->url . '/' . $_url, '/'));
                     }
-                    $html .= '<li' . ($value == $current ? ' class="selected"' : "") . '><a href="' . $url . '">' . trim($matches[1]) . '</a>' . self::get($value, $type) . '</li>';
-
+                    $html .= '<li' . ($_url == $current ? ' class="selected"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . self::get($url, $type) . '</li>';
                 } else {
-                    $html .= '<li><a href="#">' . $key . '</a>' . self::get($value, $type) . '</li>';
+                    $html .= '<li><a href="#">' . $text . '</a>' . self::get($url, $type) . '</li>';
                 }
             } else {
                 // Create full URL from value if the value does not contain a `://`
-                if(strpos($value, '://') === false && strpos($value, '#') !== 0) {
-                    $value = str_replace('/#', '#', trim($config->url . '/' . trim($value, '/'), '/'));
+                if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
+                    $url = str_replace('/#', '#', trim($config->url . '/' . trim($url, '/'), '/'));
                 }
-                $html .= '<li' . ($value == $current ? ' class="selected"' : "") . '><a href="' . $value . '">' . $key . '</a></li>';
+                $html .= '<li' . ($url == $current ? ' class="selected"' : "") . '><a href="' . $url . '">' . $text . '</a></li>';
             }
         }
         return $html . '</' . $type . '>';

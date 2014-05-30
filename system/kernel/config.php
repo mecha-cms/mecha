@@ -154,12 +154,12 @@ class Config {
         if(strpos($key, 'file:') === 0) {
             if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
                 $wizard = File::open($file)->read();
-                $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
-                return Filter::apply('content', $wizard);
+                $wizard = Text::parse(Filter::apply('wizard:shortcode', Filter::apply('shortcode', $wizard)))->to_html;
+                return Filter::apply('wizard:content', Filter::apply('content', $wizard));
             } else {
                 $wizard = File::open(ROOT . DS . str_replace('file:', "", $key) . '.txt')->read();
-                $wizard = Text::parse(Filter::apply('shortcode', $wizard))->to_html;
-                return Filter::apply('content', $wizard);
+                $wizard = Text::parse(Filter::apply('wizard:shortcode', Filter::apply('shortcode', $wizard)))->to_html;
+                return Filter::apply('wizard:content', Filter::apply('content', $wizard));
             }
         }
         if(is_null($key)) {

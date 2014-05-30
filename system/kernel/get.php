@@ -9,10 +9,10 @@ class Get {
 
     /**
      * =========================================================================
-     *  FIND PAGE FILE PATH
+     *  FIND THE FILE PATH OF THE PAGE BY ITS SLUG OR ID
      *
-     *  [1]. By page slug => `page-slug`
-     *  [2]. By page ID => `123456789`
+     *  [1]. `page-slug`
+     *  [2]. `123456789`
      * =========================================================================
      */
 
@@ -66,7 +66,7 @@ class Get {
                 'file_path' => $reference[$i],
                 'file_name' => $base . '.txt',
                 'time' => isset($part[0]) ? Date::format($part[0], 'Y-m-d H:i:s') : '0000-00-00 00:00:00',
-                'kind' => isset($part[1]) ? explode(',', $part[1]) : array(),
+                'kind' => isset($part[1]) ? Converter::strEval(explode(',', $part[1])) : array(),
                 'slug' => isset($part[2]) ? $part[2] : ""
             );
         }
@@ -77,10 +77,10 @@ class Get {
      * =========================================================================
      *  EXTRACT FILE PATH FROM ALL OF THE EXISTING FILES IN A FOLDER
      *
-     *  [1]. `all` => All files including the hidden files.
-     *  [2]. `recursive` => All files without the hidden files.
-     *  [3]. `adjacent` => All files without the hidden files that placed
-     *  close to the selected folder.
+     *  [1]. all => All files including the hidden files.
+     *  [2]. recursive => All files without the hidden files.
+     *  [3]. adjacent => All files without the hidden files that placed
+     *       close to the selected folder.
      * =========================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -91,6 +91,7 @@ class Get {
      *  $order      | string | Ascending or descending? ASC/DESC?
      *  $sorter     | string | The key of array item as sorting reference
      *  $filter     | string | Filter the resulted array by keyword
+     *  $output     | string | `all`, `recursive` or `adjacent` ?
      *  ----------- | ------ | -------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -210,7 +211,7 @@ class Get {
      *
      * -- CODE: ----------------------------------------------------------------
      *
-     *    $files = Get::allFiles(
+     *    $files = Get::inclusiveFiles(
      *        'some/path',
      *        'txt',
      *        'ASC',
@@ -227,7 +228,7 @@ class Get {
      *
      */
 
-    public static function allFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+    public static function inclusiveFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
         return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'all');
     }
 
@@ -516,7 +517,7 @@ class Get {
      *
      */
 
-    public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/') {
+    public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
 
         $config = Config::get();
         $speak = Config::speak();
@@ -547,8 +548,7 @@ class Get {
          * fields. For better performance.
          */
 
-        $results = $results + Text::toPage(File::open($results['file_path'])->read(), (isset($excludes['content']) ? false : true));
-        $results['content'] = Filter::apply('page', $results['content']);
+        $results = $results + Text::toPage(File::open($results['file_path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
 
         $content = $results['content_raw'];
         $time = Date::format($results['time'], 'Y-m-d-H-i-s');
@@ -578,9 +578,15 @@ class Get {
             if($file = File::exist(CUSTOM . DS . $time . '.txt')) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $results['css_raw'] = isset($custom[0]) ? trim($custom[0]) : "";
-                $results['css'] = Filter::apply('custom_css', Filter::apply('shortcode', $results['css_raw']));
+                $css_raw = Filter::apply('shortcode', $results['css_raw']);
+                $css_raw = Filter::apply('custom:shortcode', $css_raw);
+                $css_raw = Filter::apply('css', $css_raw);
+                $results['css'] = Filter::apply('custom:css', $css_raw);
                 $results['js_raw'] = isset($custom[1]) ? trim($custom[1]) : "";
-                $results['js'] = Filter::apply('custom_js', Filter::apply('shortcode', $results['js_raw']));
+                $js_raw = Filter::apply('shortcode', $results['js_raw']);
+                $js_raw = Filter::apply('custom:shortcode', $js_raw);
+                $js_raw = Filter::apply('javascript', $js_raw);
+                $results['js'] = Filter::apply('custom:javascript', $js_raw);
             } else {
                 $results['css'] = $results['css_raw'] = "";
                 $results['js'] = $results['js_raw'] = "";
@@ -621,7 +627,9 @@ class Get {
             } else {
                 $fields = array();
             }
+
             $init = array();
+
             foreach($fields as $key => $value) {
                 $init[$key] = "";
             }
@@ -631,18 +639,13 @@ class Get {
              */
 
             if(isset($results['fields'])) {
-                $extra = Mecha::A(Text::parse($results['fields'])->to_decoded_json);
-                if($results['fields'] != '{}' || ( ! empty($extra) && (string) $extra !== 'null')) {
-                    foreach($extra as $key => $value) {
-                        if($value['type'] == 'boolean') {
-                            $init[$key] = isset($value['value']) && ! empty($value['value']) ? true : false;
-                        } else {
-                            $init[$key] = $value['value'];
-                        }
-                    }
+                foreach(Converter::strEval($results['fields']) as $key => $value) {
+                    $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
                 }
             }
+
             $results['fields'] = $init;
+
         }
 
         /**
@@ -673,7 +676,7 @@ class Get {
      */
 
     public static function article($reference, $excludes = array()) {
-        return self::page($reference, $excludes, ARTICLE, '/' . Config::get('index')->slug . '/');
+        return self::page($reference, $excludes, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
     }
 
     /**
@@ -697,7 +700,7 @@ class Get {
      *
      */
 
-    public static function pageHeader($path, $folder = PAGE, $connector = '/') {
+    public static function pageHeader($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::tracePath($path, $folder);
@@ -708,7 +711,7 @@ class Get {
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
                 'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
-                'kind' => explode(',', $kind),
+                'kind' => Converter::strEval(explode(',', $kind)),
                 'slug' => $slug,
                 'url' => $config->url . $connector . $slug
             );
@@ -718,15 +721,12 @@ class Get {
                     break;
                 }
                 $field = explode(':', $buffer, 2);
-                $value = trim($field[1]);
-                if(is_numeric($value)) {
-                    $value = (int) $value;
-                }
-                if(preg_match('#^(true|false)$#', strtolower($value))) {
-                    $value = $value == 'true' ? true : false;
-                }
-                $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
+                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                $value = Converter::strEval(trim($field[1]));
+                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
+                $results[$key] = $value;
             }
+            if( ! isset($results['author'])) $results['author'] = $config->author;
             if($file = File::exist(STATE . DS . 'fields.txt')) {
                 $fields = unserialize(File::open($file)->read());
             } else {
@@ -737,19 +737,12 @@ class Get {
                 $init[$key] = "";
             }
             if(isset($results['fields'])) {
-                $extra = Mecha::A(Text::parse($results['fields'])->to_decoded_json);
-                if($results['fields'] != '{}' || ( ! empty($extra) && (string) $extra !== 'null')) {
-                    foreach($extra as $key => $value) {
-                        if($value['type'] == 'boolean') {
-                            $init[$key] = isset($value['value']) && ! empty($value['value']) ? true : false;
-                        } else {
-                            $init[$key] = $value['value'];
-                        }
-                    }
+                foreach($results['fields'] as $key => $value) {
+                    $init[$key] = isset($value['value']) ? $value['value'] : false;
                 }
             }
-            $results['description'] = isset($results['description']) ? Text::parse($results['description'])->to_decoded_json : "";
             $results['fields'] = $init;
+            $results['description'] = isset($results['description']) ? Text::parse($results['description'])->to_decoded_json : "";
             return Mecha::O($results);
         }
         return false;
@@ -769,7 +762,7 @@ class Get {
      */
 
     public static function articleHeader($path) {
-        return self::pageHeader($path, ARTICLE, '/' . Config::get('index')->slug . '/');
+        return self::pageHeader($path, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
     }
 
     /**
@@ -793,7 +786,7 @@ class Get {
      *
      */
 
-    public static function pageAnchor($path, $folder = PAGE, $connector = '/') {
+    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::tracePath($path, $folder);
@@ -806,7 +799,7 @@ class Get {
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
                 'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
-                'kind' => explode(',', $kind),
+                'kind' => Converter::strEval(explode(',', $kind)),
                 'slug' => $slug,
                 'title' => isset($parts[1]) ? trim($parts[1]) : '?',
                 'url' => $config->url . $connector . $slug
@@ -829,7 +822,7 @@ class Get {
      */
 
     public static function articleAnchor($path) {
-        return self::pageAnchor($path, ARTICLE, '/' . Config::get('index')->slug . '/');
+        return self::pageAnchor($path, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
     }
 
     /**
@@ -961,7 +954,8 @@ class Get {
 
     public static function comments($post_time = null, $order = 'ASC', $sorter = 'id') {
         $results = array();
-        foreach(glob(RESPONSE . DS . '*.txt') as $comment) {
+        $take = is_null($post_time) ? glob(RESPONSE . DS . '*.txt') : glob(RESPONSE . DS . Date::format($post_time, 'Y-m-d-H-i-s') . '_*.txt');
+        foreach($take as $comment) {
             list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
             $results[] = array(
                 'file_path' => $comment,
@@ -972,15 +966,6 @@ class Get {
                 'id' => (int) Date::format($id, 'U'),
                 'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')
             );
-        }
-        if( ! is_null($post_time)) {
-            $clone = $results;
-            $results = array();
-            foreach($clone as $comment) {
-                if((int) Date::format($post_time, 'U') == $comment['post']) {
-                    $results[] = $comment;
-                }
-            }
         }
         return Mecha::eat($results)->order($order, $sorter)->vomit();
     }
@@ -1002,21 +987,26 @@ class Get {
         $config = Config::get();
         $results = array();
         $name = false;
-        foreach(self::comments() as $comment) {
-            if(
-                (int) Date::format($reference, 'U') === $comment['id'] || // By comment ID
-                ! is_numeric($reference) && (string) basename($reference) === (string) $comment['file_name'] // By comment name
-            ) {
-                $results = $comment;
-                $name = $comment['file_name'];
-                break;
+        if(strpos(ROOT, $reference) === 0) {
+            $name = basename($reference);
+        } else {
+            foreach(self::comments() as $comment) {
+                if(
+                    (int) Date::format($reference, 'U') === $comment['id'] || // By comment ID
+                    ! is_numeric($reference) && (string) basename($reference) === (string) $comment['file_name'] // By comment name
+                ) {
+                    $results = $comment;
+                    $name = $comment['file_name'];
+                    break;
+                }
             }
         }
         if( ! $name || ! $file = File::exist($folder . DS . $name)) return false;
-        $results = $results + Text::toPage(File::open($file)->read());
+        $results = $results + Text::toPage(File::open($file)->read(), true, 'comment:');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
-        $results['message'] = Filter::apply('comment', $results['content']);
+        $results['message'] = Filter::apply('message', $results['content']);
+        $results['message'] = Filter::apply('comment:message', $results['message']);
         $results['permalink'] = '#';
         unset($results['content_raw']);
         unset($results['content']);

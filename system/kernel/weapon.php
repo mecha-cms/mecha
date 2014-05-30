@@ -10,7 +10,8 @@
 
 class Weapon {
 
-    public static $armaments = array();
+    private static $armaments = array();
+    private static $mounters = array();
 
     /**
      * ==============================================================
@@ -66,7 +67,7 @@ class Weapon {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
      *  ---------- | ------- | --------------------------------------
-     *  $name      | string  | Function name
+     *  $name      | string  | Action name
      *  $arguments | array   | Function arguments
      *  $return    | boolean | Return data or not?
      *  ---------- | ------- | --------------------------------------
@@ -77,6 +78,7 @@ class Weapon {
     public static function fire($name, $arguments = array(), $return = false) {
         $name = (string) $name;
         $return = (bool) $return;
+        self::$mounters[$name] = true;
         if(count(self::$armaments) > 0) {
             // Sort by priority
             self::$armaments = Mecha::eat(self::$armaments)->order('DESC', 'priority')->vomit();
@@ -100,4 +102,69 @@ class Weapon {
             }
         }
     }
+
+    /**
+     * ==============================================================
+     *  EJECT
+     * ==============================================================
+     *
+     * -- CODE: -----------------------------------------------------
+     *
+     *    Weapon::eject('bazooka');
+     *
+     * --------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------
+     *  $name     | string | Action name
+     *  --------- | ------ | ----------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function eject($name = null) {
+        if(is_null($name)) {
+            self::$armaments = array();
+        } else {
+            foreach(self::$armaments as $armament) {
+                if($armament['name'] == (string) $name) {
+                    unset($armament);
+                }
+            }
+            unset(self::$mounters[$name]);
+        }
+    }
+
+    /**
+     * ==============================================================
+     *  CHECK IF WEAPON ALREADY EXIST/MOUNTED
+     * ==============================================================
+     *
+     * -- CODE: -----------------------------------------------------
+     *
+     *    if(Weapon::exist('bazooka')) {
+     *        echo 'You are safe. And you are a terrorist.';
+     *    }
+     *
+     *    var_dump(Weapon::exist()); // inspect!
+     *
+     * --------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------
+     *  $name     | string | Action name
+     *  --------- | ------ | ----------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function exist($name = null) {
+        if(is_null($name)) {
+            return ! empty(self::$mounters) ? array_keys(self::$mounters) : false;
+        }
+        return isset(self::$mounters[$name]) ? self::$mounters[$name] : false;
+    }
+
 }

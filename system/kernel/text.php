@@ -161,7 +161,7 @@ class Text {
     /**
      * Parser output
      */
-    public static function parse($input) {
+    public static function parse($input, $option = false) {
         $parser = new MarkdownExtra;
         $parser->empty_element_suffix = ">"; // HTML5 self closing tag
         $parser->table_align_class_tmpl = 'text-%%'; // Define table alignment class, example: `<td class="text-right">`
@@ -174,7 +174,7 @@ class Text {
                 'to_decoded_html' => html_entity_decode($input, ENT_QUOTES, 'UTF-8'),
                 'to_html' => trim($parser->transform($input)),
                 'to_encoded_json' => json_encode($input),
-                'to_decoded_json' => ! is_null(json_decode($input)) ? json_decode($input) : $input,
+                'to_decoded_json' => ! is_null(json_decode($input, $option)) ? json_decode($input, $option) : $input,
                 'to_slug' => self::text_to_slug($input),
                 'to_slug_moderate' => self::text_to_slug($input, true, false),
                 'to_text' => self::slug_to_text($input),
@@ -200,7 +200,7 @@ class Text {
     /**
      * Convert formatted text file into page array
      */
-    public static function toPage($text, $parse_contents = true) {
+    public static function toPage($text, $parse_contents = true, $filter_prefix = 'page:') {
         $results = array();
         $parts = explode(SEPARATOR, trim($text), 2);
         $headers = isset($parts[0]) ? explode("\n", trim($parts[0])) : array();
@@ -209,23 +209,19 @@ class Text {
             $field = explode(':', $field, 2);
             $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
             $value = trim($field[1]);
-            if(is_numeric($value)) {
-                $value = (int) $value;
-            }
-            if(preg_match('#^(true|false)$#', strtolower($value))) {
-                $value = $value == 'true' ? true : false;
-            }
-            if(is_string($value)) {
-                $value = Filter::apply($key, $value);
-            }
+            $value = Converter::strEval($value);
+            $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
             $results[$key] = $value;
         }
         $results['content_raw'] = $contents;
         $contents = Filter::apply('shortcode', $contents);
+        $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
         if($parse_contents) {
             $results['content'] = Filter::apply('content', Text::parse($contents)->to_html);
+            $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
         } else {
             $results['content'] = Filter::apply('content', $contents);
+            $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
         }
         return $results;
     }

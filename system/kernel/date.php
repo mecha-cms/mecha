@@ -7,7 +7,10 @@
  *
  * -- CODE: -------------------------------------------------------------
  *
+ *    $input = '2014-05-30 09:22:42';
+ *
  *    echo Date::format($input, 'Y/m/d');
+ *
  *    var_dump(Date::extract($input));
  *
  * ----------------------------------------------------------------------
@@ -22,7 +25,7 @@ class Date {
             $date = $m[1] . '-' . $m[2] . '-' . $m[3] . ' ' . $m[4] . ':' . $m[5] . ':' . $m[6];
         }
 
-        return preg_match('#^\d+$#', (string) $date) ? date($format, $date) : date($format, strtotime($date));
+        return is_numeric($date) ? date($format, $date) : date($format, strtotime($date));
 
     }
 

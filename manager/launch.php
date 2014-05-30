@@ -1203,7 +1203,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 $file = $files[$i] . DS . 'about.txt';
             }
 
-            $about = File::exist($file) ? Text::toPage(File::open($file)->read()) : array(
+            $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
                 'title' => $speak->unknown,
                 'author' => $speak->unknown,
                 'version' => $speak->unknown,
@@ -1247,7 +1247,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
 
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read()) : array(
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
         'title' => $speak->unknown,
         'author' => $speak->unknown,
         'version' => $speak->unknown,
@@ -1311,7 +1311,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id\:(:any)', function($slug
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
 
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read()) : array(
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
         'title' => $speak->unknown,
         'author' => $speak->unknown,
         'version' => $speak->unknown,
@@ -1361,11 +1361,16 @@ Route::accept($config->manager->slug . '/(article|page)/preview', function($path
     echo '<div class="inner">';
 
     if(Request::post()) {
+        $title = Request::post('title');
+        $title = Filter::apply('title', $title);
+        $title = Filter::apply($path . ':title', $title);
         $content = Request::post('content');
         $content = Filter::apply('shortcode', $content);
+        $content = Filter::apply($path . ':shortcode', $content);
         $content = Filter::apply('content', Text::parse($content)->to_html);
-        echo '<h2 class="preview-title">' . Request::post('title') . '</h2>';
-        echo '<div class="p">' . Filter::apply('page', $content) . '</div>';
+        $content = Filter::apply($path . ':content', Text::parse($content)->to_html);
+        echo '<h2 class="preview-title">' . $title . '</h2>';
+        echo '<div class="p">' . $content . '</div>';
     }
 
     echo '</div>';

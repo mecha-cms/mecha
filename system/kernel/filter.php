@@ -10,7 +10,8 @@
 
 class Filter {
 
-    public static $bucket = array();
+    private static $bucket = array();
+    private static $filters = array();
 
     protected function __construct() {}
 
@@ -88,6 +89,8 @@ class Filter {
         $name = (string) $name;
         $args = array_slice(func_get_args(), 2);
 
+        self::$filters[$name] = true;
+
         if ( ! isset(self::$bucket[$name])) return $value;
 
         foreach(self::$bucket[$name] as $priority => $functions) {
@@ -112,6 +115,66 @@ class Filter {
 
         return $value;
 
+    }
+
+    /**
+     * ===================================================================
+     *  REMOVE FILTER
+     * ===================================================================
+     *
+     * -- CODE: ----------------------------------------------------------
+     *
+     *    Filter::remove('content');
+     *
+     * -------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ---------------------------------------------
+     *  $name     | string | The name of the filter hook
+     *  --------- | ------ | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function remove($name = null) {
+        if(is_null($name)) {
+            self::$bucket = array();
+        } else {
+            unset(self::$bucket[$name]);
+            unset(self::$filters[$name]);
+        }
+    }
+
+    /**
+     * ===================================================================
+     *  CHECK IF FILTER ALREADY EXIST/APPLIED
+     * ===================================================================
+     *
+     * -- CODE: ----------------------------------------------------------
+     *
+     *    if(Filter::exist('content')) {
+     *        echo 'OK.';
+     *    }
+     *
+     *    var_dump(Filter::exist()); // inspect!
+     *
+     * -------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ---------------------------------------------
+     *  $name     | string | The name of the filter hook
+     *  --------- | ------ | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function exist($name = null) {
+        if(is_null($name)) {
+            return ! empty(self::$filters) ? array_keys(self::$filters) : false;
+        }
+        return isset(self::$filters[$name]) ? self::$filters[$name] : false;
     }
 
 }

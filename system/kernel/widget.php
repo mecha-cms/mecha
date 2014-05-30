@@ -74,7 +74,8 @@ class Widget extends Weapon {
         $html  = '<div class="widget widget-manager widget-manager-menu">';
         $html .= Menu::get($menus);
         $html .= '</div>';
-        return Filter::apply('widget_manager_menu', $html);
+        $html  = Filter::apply('widget', $html);
+        return Filter::apply('widget:manager', Filter::apply('widget:manager.menu', $html));
     }
 
 
@@ -130,7 +131,8 @@ class Widget extends Weapon {
             }
             $html .= '</ul>';
             $html .= '</div>';
-            return Filter::apply('widget_archive_HIERARCHY', $html);
+            $html  = Filter::apply('widget', $html);
+            return Filter::apply('widget:archive', Filter::apply('widget:archive.hierarchy', $html));
         }
         if($type == 'LIST' || $type == 'DROPDOWN') {
             foreach($files as $file_name) {
@@ -149,7 +151,8 @@ class Widget extends Weapon {
                 }
                 $html .= '</ul>';
                 $html .= '</div>';
-                return Filter::apply('widget_archive_LIST', $html);
+                $html  = Filter::apply('widget', $html);
+                return Filter::apply('widget:archive', Filter::apply('widget:archive.list', $html));
             } else {
                 $html  = '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown">';
                 $html .= '<select>';
@@ -159,7 +162,8 @@ class Widget extends Weapon {
                 }
                 $html .= '</select>';
                 $html .= '</div>';
-                return Filter::apply('widget_archive_DROPDOWN', $html);
+                $html  = Filter::apply('widget', $html);
+                return Filter::apply('widget:archive', Filter::apply('widget:archive.dropdown', $html));
             }
         }
     }
@@ -214,7 +218,8 @@ class Widget extends Weapon {
             }
             $html .= '</ul>';
             $html .= '</div>';
-            return Filter::apply('widget_tag_LIST', $html);
+            $html  = Filter::apply('widget', $html);
+            return Filter::apply('widget:tag', Filter::apply('widget:tag.list', $html));
         }
         if($type == 'CLOUD') {
             $tags_counter = array();
@@ -229,7 +234,8 @@ class Widget extends Weapon {
                 $html .= '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tags[$i]['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tags[$i]['slug'] . '" rel="tag">' . $tags[$i]['name'] . '</a><span class="counter">' . $tags[$i]['count'] . '</span></span>';
             }
             $html .= '</div>';
-            return Filter::apply('widget_tag_CLOUD', $html);
+            $html  = Filter::apply('widget', $html);
+            return Filter::apply('widget:tag', Filter::apply('widget:tag.cloud', $html));
         }
     }
 
@@ -253,7 +259,8 @@ class Widget extends Weapon {
         $html .= '<button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>';
         $html .= '</form>';
         $html .= '</div>';
-        return Filter::apply('widget_search', $html);
+        $html  = Filter::apply('widget', $html);
+        return Filter::apply('widget:search', $html);
     }
 
 
@@ -283,7 +290,8 @@ class Widget extends Weapon {
         }
         $html .= '</ul>';
         $html .= '</div>';
-        return Filter::apply('widget_' . $class . '_post', $html);
+        $html  = Filter::apply('widget', $html);
+        return Filter::apply('widget:' . $class, Filter::apply('widget:' . $class . '.post', $html));
     }
 
 
@@ -333,7 +341,8 @@ class Widget extends Weapon {
             }
             $html .= '</ul>';
             $html .= '</div>';
-            return Filter::apply('widget_related_post', $html);
+            $html  = Filter::apply('widget', $html);
+            return Filter::apply('widget:related', Filter::apply('widget:related.post', $html));
         }
     }
 
@@ -383,7 +392,8 @@ class Widget extends Weapon {
             $html .= Config::speak('notify_empty', array(strtolower($speak->comments)));
         }
         $html .= '</div>';
-        return Filter::apply('widget_recent_comment', $html);
+        $html  = Filter::apply('widget', $html);
+        return Filter::apply('widget:recent', Filter::apply('widget:recent.comment', $html));
     }
 
 
@@ -396,7 +406,9 @@ class Widget extends Weapon {
      */
 
     public static function call($name, $arguments = array()) {
-        return self::fire($name, $arguments, true);
+        $html = self::fire($name, $arguments, true);
+        $html = Filter::apply('widget', $html);
+        return Filter::apply('widget:custom', Filter::apply('widget:custom.' . $name, $html));
     }
 
 }
