@@ -75,30 +75,13 @@ class Get {
 
     /**
      * =========================================================================
-     *  FIND ALL EXISTING FILES IN A FOLDER
+     *  EXTRACT FILE PATH FROM ALL OF THE EXISTING FILES IN A FOLDER
      *
-     *  [1]. `whole` => All files including the hidden files.
+     *  [1]. `all` => All files including the hidden files.
      *  [2]. `recursive` => All files without the hidden files.
      *  [3]. `adjacent` => All files without the hidden files that placed
      *  close to the selected folder.
      * =========================================================================
-     *
-     * -- CODE: ----------------------------------------------------------------
-     *
-     *    $files = Get::allFiles(
-     *        'some/path',
-     *        'txt',
-     *        'ASC',
-     *        'last_update',
-     *        '.cache',
-     *        'recursive'
-     *    );
-     *
-     *    foreach($files as $data) {
-     *        var_dump($data);
-     *    }
-     *
-     * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter   | Type   | Detail
@@ -113,7 +96,7 @@ class Get {
      *
      */
 
-    public static function allFiles($folder = CACHE, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $output = 'all') {
+    private static function traceFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $output = 'all') {
         $config = Config::get();
         $tree = array();
         // Example: `*`, `txt`, `gif,jpg,jpeg,png`
@@ -121,7 +104,7 @@ class Get {
         $dir = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS));
         foreach(new RegexIterator($dir, '#.*?' . preg_quote($filter) . '.*?\.(' . $extensions . ')$#i') as $file => $object) {
             $info = pathinfo($file);
-            $tree['whole'][] = array(
+            $tree['all'][] = array(
                 'path' => $file,
                 'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
                 'name' => $info['basename'],
@@ -171,7 +154,7 @@ class Get {
 
     /**
      * =========================================================================
-     *  RECURSIVE FILE LISTER
+     *  GET ALL FILES RECURSIVELY
      * =========================================================================
      *
      * -- CODE: ----------------------------------------------------------------
@@ -194,13 +177,13 @@ class Get {
      *
      */
 
-    public static function files($folder = CACHE, $extensions = 'txt', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::allFiles($folder, $extensions, $order, $sorter, $filter, 'recursive');
+    public static function files($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'recursive');
     }
 
     /**
      * =========================================================================
-     *  ADJACENT FILE LISTER
+     *  GET ADJACENT FILES
      * =========================================================================
      *
      * -- CODE: ----------------------------------------------------------------
@@ -216,8 +199,36 @@ class Get {
      *
      */
 
-    public static function adjacentFiles($folder = CACHE, $extensions = 'txt', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::allFiles($folder, $extensions, $order, $sorter, $filter, 'adjacent');
+    public static function adjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'adjacent');
+    }
+
+    /**
+     * =========================================================================
+     *  GET ALL FILES RECURSIVELY INCLUDING THE HIDDEN FILES
+     * =========================================================================
+     *
+     * -- CODE: ----------------------------------------------------------------
+     *
+     *    $files = Get::allFiles(
+     *        'some/path',
+     *        'txt',
+     *        'ASC',
+     *        'last_update',
+     *        '.cache',
+     *        'recursive'
+     *    );
+     *
+     *    foreach($files as $data) {
+     *        var_dump($data);
+     *    }
+     *
+     * -------------------------------------------------------------------------
+     *
+     */
+
+    public static function allFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'all');
     }
 
     /**
@@ -846,9 +857,13 @@ class Get {
 
         /**
          * Matched with ...
-         * 1. `![alt text](IMAGE URL)`
-         * 2. `![alt text](IMAGE URL "optional title")`
+         * ----------------
+         *
+         * [1]. `![alt text](IMAGE URL)`
+         * [2]. `![alt text](IMAGE URL "optional title")`
+         *
          * ... and the single-quoted version of them
+         *
          */
 
         if(preg_match_all('#\!\[.*?\]\((.*?)(| +\'.[^\']*?\'| +".[^"]*?")\)#', $source, $matches)) {
@@ -857,16 +872,20 @@ class Get {
 
         /**
          * Matched with ...
-         * 1. `<img src="IMAGE URL">`
-         * 2. `<img foo="bar" src="IMAGE URL">`
-         * 3. `<img src="IMAGE URL" foo="bar">`
-         * 4. `<img src="IMAGE URL"/>`
-         * 5. `<img foo="bar" src="IMAGE URL"/>`
-         * 6. `<img src="IMAGE URL" foo="bar"/>`
-         * 7. `<img src="IMAGE URL" />`
-         * 8. `<img foo="bar" src="IMAGE URL" />`
-         * 9. `<img src="IMAGE URL" foo="bar" />`
+         * ----------------
+         *
+         * [1]. `<img src="IMAGE URL">`
+         * [2]. `<img foo="bar" src="IMAGE URL">`
+         * [3]. `<img src="IMAGE URL" foo="bar">`
+         * [4]. `<img src="IMAGE URL"/>`
+         * [5]. `<img foo="bar" src="IMAGE URL"/>`
+         * [6]. `<img src="IMAGE URL" foo="bar"/>`
+         * [7]. `<img src="IMAGE URL" />`
+         * [8]. `<img foo="bar" src="IMAGE URL" />`
+         * [9]. `<img src="IMAGE URL" foo="bar" />`
+         *
          * ... and the uppercased version of them, and the single-quoted version of them
+         *
          */
 
         if(preg_match_all('#<img (.*?)?src=(\'(.[^\']*?)\'|"(.[^"]*?)")(.*?)? ?\/?>#i', $source, $matches)) {
@@ -875,15 +894,19 @@ class Get {
 
         /**
          * Matched with ...
-         * 1. `background:url("IMAGE URL")`
-         * 2. `background-image:url("IMAGE URL")`
-         * 3. `background: url("IMAGE URL")`
-         * 4. `background-image: url("IMAGE URL")`
-         * 5. `background: foo url("IMAGE URL")`
-         * 6. `background-image: foo url("IMAGE URL")`
-         * 7. `content:url("IMAGE URL")`
-         * 8. `content: url("IMAGE URL")`
+         * ----------------
+         *
+         * [1]. `background:url("IMAGE URL")`
+         * [2]. `background-image:url("IMAGE URL")`
+         * [3]. `background: url("IMAGE URL")`
+         * [4]. `background-image: url("IMAGE URL")`
+         * [5]. `background: foo url("IMAGE URL")`
+         * [6]. `background-image: foo url("IMAGE URL")`
+         * [7]. `content:url("IMAGE URL")`
+         * [8]. `content: url("IMAGE URL")`
+         *
          * ... and the uppercased version of them, and the single-quoted version of them, and the un-quoted version of them
+         *
          */
 
         if(preg_match_all('#(background|background-image|content)\:(.*?)?url\((\'(.[^\']*?)\'|"(.[^"]*?)")\)#i', $source, $matches)) {

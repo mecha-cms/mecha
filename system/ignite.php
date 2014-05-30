@@ -68,16 +68,7 @@ Weapon::add('sword_after', function() {
 
 
 /**
- * Include user defined functions
- */
-
-if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
-    include $function;
-}
-
-
-/**
- * Inject some required asset for managers
+ * Inject some required assets for managers
  */
 
 if(Guardian::happy()) {
@@ -107,6 +98,15 @@ if(Guardian::happy()) {
 
 foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $plugin) {
     include $plugin;
+}
+
+
+/**
+ * Include user defined functions
+ */
+
+if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
+    include $function;
 }
 
 

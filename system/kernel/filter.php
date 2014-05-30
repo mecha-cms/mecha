@@ -56,7 +56,7 @@ class Filter {
             'accepted_args' => $accepted_args
         );
 
-        ksort(self::$bucket[$name][$priority]);
+        self::$bucket[$name] = Mecha::eat(self::$bucket[$name])->order('DESC')->vomit();
 
         return true;
 

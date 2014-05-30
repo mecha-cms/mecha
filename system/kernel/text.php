@@ -207,6 +207,7 @@ class Text {
         $contents = isset($parts[1]) ? trim($parts[1]) : "";
         foreach($headers as $field) {
             $field = explode(':', $field, 2);
+            $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
             $value = trim($field[1]);
             if(is_numeric($value)) {
                 $value = (int) $value;
@@ -214,7 +215,10 @@ class Text {
             if(preg_match('#^(true|false)$#', strtolower($value))) {
                 $value = $value == 'true' ? true : false;
             }
-            $results[Text::parse(strtolower(trim($field[0])))->to_array_key] = $value;
+            if(is_string($value)) {
+                $value = Filter::apply($key, $value);
+            }
+            $results[$key] = $value;
         }
         $results['content_raw'] = $contents;
         $contents = Filter::apply('shortcode', $contents);
