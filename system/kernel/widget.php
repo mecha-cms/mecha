@@ -75,7 +75,7 @@ class Widget extends Weapon {
         $html .= Menu::get($menus);
         $html .= '</div>';
         $html  = Filter::apply('widget', $html);
-        return Filter::apply('widget:manager', Filter::apply('widget:manager.menu', $html));
+        return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));
     }
 
 
@@ -132,7 +132,7 @@ class Widget extends Weapon {
             $html .= '</ul>';
             $html .= '</div>';
             $html  = Filter::apply('widget', $html);
-            return Filter::apply('widget:archive', Filter::apply('widget:archive.hierarchy', $html));
+            return Filter::apply('widget:archive.hierarchy', Filter::apply('widget:archive', $html));
         }
         if($type == 'LIST' || $type == 'DROPDOWN') {
             foreach($files as $file_name) {
@@ -152,7 +152,7 @@ class Widget extends Weapon {
                 $html .= '</ul>';
                 $html .= '</div>';
                 $html  = Filter::apply('widget', $html);
-                return Filter::apply('widget:archive', Filter::apply('widget:archive.list', $html));
+                return Filter::apply('widget:archive.list', Filter::apply('widget:archive', $html));
             } else {
                 $html  = '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown">';
                 $html .= '<select>';
@@ -163,7 +163,7 @@ class Widget extends Weapon {
                 $html .= '</select>';
                 $html .= '</div>';
                 $html  = Filter::apply('widget', $html);
-                return Filter::apply('widget:archive', Filter::apply('widget:archive.dropdown', $html));
+                return Filter::apply('widget:archive.dropdown', Filter::apply('widget:archive', $html));
             }
         }
     }
@@ -219,7 +219,7 @@ class Widget extends Weapon {
             $html .= '</ul>';
             $html .= '</div>';
             $html  = Filter::apply('widget', $html);
-            return Filter::apply('widget:tag', Filter::apply('widget:tag.list', $html));
+            return Filter::apply('widget:tag.list', Filter::apply('widget:tag', $html));
         }
         if($type == 'CLOUD') {
             $tags_counter = array();
@@ -235,7 +235,7 @@ class Widget extends Weapon {
             }
             $html .= '</div>';
             $html  = Filter::apply('widget', $html);
-            return Filter::apply('widget:tag', Filter::apply('widget:tag.cloud', $html));
+            return Filter::apply('widget:tag.cloud', Filter::apply('widget:tag', $html));
         }
     }
 
@@ -291,7 +291,7 @@ class Widget extends Weapon {
         $html .= '</ul>';
         $html .= '</div>';
         $html  = Filter::apply('widget', $html);
-        return Filter::apply('widget:' . $class, Filter::apply('widget:' . $class . '.post', $html));
+        return Filter::apply('widget:' . $class . '.post', Filter::apply('widget:' . $class, $html));
     }
 
 
@@ -342,7 +342,7 @@ class Widget extends Weapon {
             $html .= '</ul>';
             $html .= '</div>';
             $html  = Filter::apply('widget', $html);
-            return Filter::apply('widget:related', Filter::apply('widget:related.post', $html));
+            return Filter::apply('widget:related.post', Filter::apply('widget:related', $html));
         }
     }
 
@@ -393,7 +393,7 @@ class Widget extends Weapon {
         }
         $html .= '</div>';
         $html  = Filter::apply('widget', $html);
-        return Filter::apply('widget:recent', Filter::apply('widget:recent.comment', $html));
+        return Filter::apply('widget:recent.comment', Filter::apply('widget:recent', $html));
     }
 
 
@@ -408,7 +408,7 @@ class Widget extends Weapon {
     public static function call($name, $arguments = array()) {
         $html = self::fire($name, $arguments, true);
         $html = Filter::apply('widget', $html);
-        return Filter::apply('widget:custom', Filter::apply('widget:custom.' . $name, $html));
+        return Filter::apply('widget:custom.' . $name, Filter::apply('widget:custom', $html));
     }
 
 }
