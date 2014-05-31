@@ -6,12 +6,13 @@
     <span class="grid span-6">
       <span class="input-wrapper btn">
         <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-        <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="&lt;i class=&quot;fa fa-check&quot;&gt;&lt;/i&gt;&nbsp;">
+        <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="&lt;i class=&quot;fa fa-check&quot;&gt;&lt;/i&gt;&nbsp;" data-icon-error="&lt;i class=&quot;fa fa-times&quot;&gt;&lt;/i&gt;&nbsp;">
       </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
     </span>
   </div>
 </form>
 <?php if($pages): ?>
+<hr>
 <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <h4><?php echo $speak->assets; ?></h4>

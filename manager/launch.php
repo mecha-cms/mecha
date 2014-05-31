@@ -206,7 +206,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
     Weapon::add('sword_after', function() {
         echo Asset::script('manager/sword/editor.js');
-    }, 9);
+    }, 11);
 
     Config::set(array(
         'page_type' => 'manager',
@@ -544,7 +544,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     });
 })(Zepto);
 </script>';
-    }, 9);
+    }, 11);
 
     if($request = Request::post()) {
 
@@ -610,7 +610,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     });
 })(Zepto);
 </script>';
-    }, 9);
+    }, 11);
 
     if($request = Request::post()) {
 
@@ -656,7 +656,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
 
     Weapon::add('sword_after', function() {
         echo Asset::script('manager/sword/upload.js');
-    }, 9);
+    }, 11);
 
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
@@ -851,7 +851,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $shortcodes = unserialize(File::open($file)->read());
     } else {
-        $shortcodes = false;
+        $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     }
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
@@ -1062,7 +1062,7 @@ Route::accept($config->manager->slug . '/comment/repair/id\:(:num)', function($i
     new MTE($(\'textarea[name="content"]\')[0]);
 })(Zepto);
 </script>';
-    }, 9);
+    }, 11);
 
     Config::set(array(
         'page_type' => 'manager',
@@ -1148,7 +1148,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     });
 })(Zepto);
 </script>';
-    }, 9);
+    }, 11);
 
     if($request = Request::post()) {
 
@@ -1190,6 +1190,61 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
 
     if( ! Guardian::happy()) {
         Shield::abort();
+    }
+
+    Weapon::add('sword_after', function() {
+        echo Asset::script('manager/sword/upload.js');
+    }, 11);
+
+    if(isset($_FILES) && ! empty($_FILES)) {
+        Guardian::checkToken(Request::post('token'));
+        $accepted_mimes = array(
+            'application/download',
+            'application/octet-stream',
+            'application/x-compressed',
+            'application/x-zip-compressed',
+            'application/zip',
+            'multipart/x-zip',
+        );
+        $accepted_extensions = array(
+            'zip',
+            'rar'
+        );
+        $name = $_FILES['file']['name'];
+        $type = $_FILES['file']['type'];
+        $extension = pathinfo($name, PATHINFO_EXTENSION);
+        $path = basename($name, '.' . $extension);
+        if( ! empty($name)) {
+            if(File::exist(PLUGIN . DS . $path)) {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '/&hellip;</code>')));
+            } else {
+                if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
+                    Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+                }
+            }
+        } else {
+            Notify::error($speak->notify_error_no_file_selected);
+        }
+        if( ! Notify::errors()) {
+            File::upload($_FILES['file'], PLUGIN, Config::speak('notify_success_uploaded', array($speak->plugin)));
+            if($uploaded = File::exist(PLUGIN . DS . $name)) {
+                Package::take($uploaded)->extract(); // Extract the ZIP file
+                File::open($uploaded)->delete(); // Delete the ZIP file
+                if(File::exist(PLUGIN . DS . $path . DS . 'launch.php')) {
+                    Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
+                } else {
+                    Guardian::kick($config->manager->slug . '/plugin');
+                }
+            }
+        } else {
+            Weapon::add('sword_after', function() {
+                echo '<script>
+(function($) {
+    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
+})(Zepto);
+</script>';
+            }, 11);
+        }
     }
 
     $pages = array();

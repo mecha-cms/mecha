@@ -188,7 +188,7 @@ class File {
                 'css', 'html', 'js', 'md', 'txt',
                 'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
                 'eot', 'ttf', 'woff',
-                'rar', 'tar', 'zip'
+                'gz', 'rar', 'tar', 'zip', 'zipx'
             )
         );
 
