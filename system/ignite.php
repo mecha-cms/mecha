@@ -75,10 +75,10 @@ if(Guardian::happy()) {
     Weapon::add('shell_after', function() use($config) {
         echo '<link href="' . $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">';
         echo Asset::stylesheet('shell/manager.css');
-    });
+    }, 10);
     Weapon::add('cargo_before', function() use($config, $speak) {
         echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->logout . '</a></div>';
-    });
+    }, 10);
     Weapon::add('sword_after', function() {
         echo Asset::script(array(
             'manager/sword/editor/editor.min.js',
@@ -88,7 +88,7 @@ if(Guardian::happy()) {
             'manager/sword/tab.js',
             'manager/sword/row.js'
         ));
-    });
+    }, 10);
 }
 
 
@@ -114,11 +114,11 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
  * Handle shortcode in contents ...
  */
 
-Filter::add('shortcode', function($content) {
+Filter::add('shortcode', function($content) use($config, $speak) {
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $shortcodes = unserialize(File::open($file)->read());
     } else {
-        $shortcodes = array();
+        $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     }
     $regex = array();
     foreach($shortcodes as $key => $value) {
@@ -141,6 +141,7 @@ Filter::add('shortcode', function($content) {
  *
  * [1]. Add bordered class for tables in contents.
  * [2]. Add `rel="nofollow"` attribute in external links.
+ *
  */
 
 Filter::add('content', function($content) use($config) {

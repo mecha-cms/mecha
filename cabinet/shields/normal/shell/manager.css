@@ -1,5 +1,6 @@
 /**
  * For Manager Page
+ * ----------------
  */
 
 .author-banner {
@@ -208,6 +209,18 @@ textarea[name="js"] {
 
 .tab-content-area .grid-group:first-child {margin-top:0}
 
+.plugin-item {
+  border-top:1px dashed;
+  padding:1.3846153846153846em 0;
+}
+
+.plugin-item h4 {
+  margin:0 0 -.3em;
+  line-height:1;
+}
+
+.plugin-headline + .plugin-item {margin-top:1.3846153846153846em}
+
 .plugin-author {
   background-color:#333;
   color:white;
@@ -241,14 +254,19 @@ textarea[name="js"] {
 .messages + .comment-list,
 .messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
 
+.messages ~ .tab-content h3:first-child {margin-top:18px}
+
 
 /**
- * Page listing ... I set the appearance as the
- * same as the comment list layout on the shield.
+ * Page Listing
+ * ------------
  *
- *    `.comment-list` => `.page-list`
- *    `.comment-header` => `.page-header`
- *    ... etc.
+ * I set the appearance as the same as
+ * the comment list layout on the shield.
+ *
+ * `.comment-list` => `.page-list`
+ * `.comment-header` => `.page-header`
+ * ... etc.
  *
  */
 

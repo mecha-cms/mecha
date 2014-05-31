@@ -428,6 +428,9 @@ manager:
   title_defaults_page_custom_css: Default Page <abbr title="Cascade Style Sheet">CSS</abbr>
   title_defaults_page_custom_js: Default Page JavaScript
 
+  title_plugin_list: Your Plugins
+  title_plugin_upload: Upload a Plugin Package
+
   this_article: This Article
   this_page: This Page
 
@@ -476,6 +479,8 @@ notify_invalid_email: Invalid email address.
 notify_invalid_url: Invalid URL.
 notify_invalid_math_answer: Wrong math answer.
 notify_invalid_captcha_answer: Wrong captcha answer.
+
+notify_invalid_file_extension: The file you are trying to upload is not a valid <code>%s</code> file.
 
 notify_confirm: Are your sure?
 notify_confirm_page_leave: Are you sure you want to leave this page?

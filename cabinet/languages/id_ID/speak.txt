@@ -428,6 +428,9 @@ manager:
   title_defaults_page_custom_css: <abbr title="Cascade Style Sheet">CSS</abbr> Halaman Standar
   title_defaults_page_custom_js: JavaScript Halaman Standar
 
+  title_plugin_list: Plugin-Plugin Anda
+  title_plugin_upload: Unggah Sebuah Plugin
+
   this_article: Artikel Ini
   this_page: Halaman Ini
 
@@ -476,6 +479,8 @@ notify_invalid_email: Alamat email tidak valid.
 notify_invalid_url: URL tidak valid.
 notify_invalid_math_answer: Jawaban matematika salah.
 notify_invalid_captcha_answer: Jawaban <em>captcha</em> salah.
+
+notify_invalid_file_extension: Berkas yang sedang Anda coba unggah bukan merupakan berkas <code>%s</code> yang valid.
 
 notify_confirm: Anda yakin?
 notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?

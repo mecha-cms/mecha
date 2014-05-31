@@ -9,22 +9,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td><input name="keys[]" type="text" class="input-block" value="{{url}}" placeholder="{{<?php echo strtolower($speak->key); ?>}}" readonly></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo $config->url; ?>/" readonly></td>
-      </tr>
-      <tr>
-        <td><input name="keys[]" type="text" class="input-block" value="{{asset}}" placeholder="{{<?php echo strtolower($speak->key); ?>}}" readonly></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo $config->url; ?>/cabinet/assets/" readonly></td>
-      </tr>
       <?php if($pages): ?>
       <?php foreach($pages as $key => $value): ?>
-      <?php if($key !== '{{url}}' && $key !== '{{asset}}'): ?>
       <tr>
-        <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"></td>
+        <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"<?php echo ($key === '{{url}}' || $key === '{{asset}}') ? ' readonly' : ""; ?>></td>
+        <td><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"<?php echo ($key === '{{url}}' || $key === '{{asset}}') ? ' readonly' : ""; ?>></td>
       </tr>
-      <?php endif; ?>
       <?php endforeach; ?>
       <?php endif; ?>
       <tr>

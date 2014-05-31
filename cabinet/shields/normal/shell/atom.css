@@ -10,7 +10,7 @@
  *  Change the colors, font sizes and font families as you want.
  *
  *  PS: Excuse me with my CSS writing style. I like to keep it compact like this.
- * ===============================================================================
+ * ==============================================================================
  *
  *  Base    | +8%     | -8%
  *  ------- | ------- | -------
@@ -511,6 +511,12 @@ ol ol,ol ul,ul ul,ul ol {
 dt {font-size:120%}
 dd {margin-left:1em}
 
+h1:first-child,
+h2:first-child,
+h3:first-child,
+h4:first-child,
+h5:first-child,
+h6:first-child,
 form:first-child,
 blockquote:first-child,
 hr:first-child,

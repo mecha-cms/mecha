@@ -81,7 +81,7 @@ class Weapon {
         self::$mounters[$name] = true;
         if(count(self::$armaments) > 0) {
             // Sort by priority
-            self::$armaments = Mecha::eat(self::$armaments)->order('DESC', 'priority')->vomit();
+            self::$armaments = Mecha::eat(self::$armaments)->order('ASC', 'priority')->vomit();
             foreach(self::$armaments as $weapon) {
                 if($weapon['name'] == $name) {
                     if(isset($arguments)) {
