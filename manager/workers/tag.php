@@ -2,9 +2,15 @@
   <?php $ids = array(); echo Notify::read(); ?>
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered table-full">
+    <colgroup>
+      <col style="width:4em;">
+      <col>
+      <col>
+      <col>
+    </colgroup>
     <thead>
       <tr>
-        <th style="width:2.5em;" class="text-right"><?php echo $speak->id; ?></th>
+        <th class="text-right"><?php echo $speak->id; ?></th>
         <th><?php echo $speak->name; ?></th>
         <th><?php echo $speak->slug; ?></th>
         <th><?php echo $speak->description; ?></th>

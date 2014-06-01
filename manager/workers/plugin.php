@@ -5,15 +5,15 @@
 <div class="tab-content-area">
   <?php echo Notify::read(); ?>
   <div class="tab-content" id="tab-content-1">
-    <h3 class="plugin-headline"><?php echo $speak->manager->title_plugin_list; ?></h3>
+    <h3 class="media-headline"><?php echo $speak->manager->title_plugin_list; ?></h3>
     <?php if($pages): ?>
     <?php foreach($pages as $plugin): ?>
-    <div class="plugin-item">
-      <h4><?php echo $plugin->about->title; ?></h4>
+    <div class="media-item">
+      <h4><i class="fa <?php echo File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'fa-unlock-alt' : 'fa-lock'; ?>"></i> <?php echo $plugin->about->title; ?></h4>
       <p><?php echo Get::summary($plugin->about->content); ?></p>
       <p>
         <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-        <a class="btn btn-sm btn-success btn-manage" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-primary btn-uninstall" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
+        <a class="btn btn-sm btn-success btn-manage" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-primary btn-uninstall" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
         <?php else: ?>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
           <a class="btn btn-sm btn-primary btn-install" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
@@ -36,14 +36,14 @@
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <h3 class="plugin-headline"><?php echo $speak->manager->title_plugin_upload; ?></h3>
+    <h3 class="media-headline"><?php echo $speak->manager->title_plugin_upload; ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/plugin" method="post" enctype="multipart/form-data">
       <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
       <div class="grid-group">
         <span class="grid span-6">
           <span class="input-wrapper btn">
             <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="&lt;i class=&quot;fa fa-check&quot;&gt;&lt;/i&gt;&nbsp;" data-icon-error="&lt;i class=&quot;fa fa-times&quot;&gt;&lt;/i&gt;&nbsp;" data-accepted-extensions="zip,rar">
+            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip,rar">
           </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
         </span>
       </div>

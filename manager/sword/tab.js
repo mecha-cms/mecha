@@ -1,3 +1,8 @@
+/**
+ * Tabs
+ * ----
+ */
+
 (function($) {
 
     var $tabs = $('.tab-area a');

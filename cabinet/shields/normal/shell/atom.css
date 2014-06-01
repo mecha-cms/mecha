@@ -157,7 +157,7 @@ q:after {
 /* FONT AWESOME */
 
 .fa {
-  font-size:14px;
+  font-size:107.6923076923077%;
   line-height:inherit;
 }
 
@@ -319,7 +319,7 @@ input[type="submit"]:active,
 
 .btn-sm,
 .input-sm {
-  padding:6px 8px;
+  padding:7px 8px;
   font-size:86%;
 }
 

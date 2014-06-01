@@ -3,6 +3,13 @@
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <table class="table-bordered">
+    <colgroup>
+      <col style="width:3em;">
+      <col style="width:11em;">
+      <col>
+      <col style="width:7em;">
+      <col style="width:7em;">
+    </colgroup>
     <?php if( ! empty($pager->next->link)): ?>
     <tfoot>
       <tr>

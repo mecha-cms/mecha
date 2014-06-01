@@ -6,17 +6,24 @@
     <span class="grid span-6">
       <span class="input-wrapper btn">
         <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-        <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="&lt;i class=&quot;fa fa-check&quot;&gt;&lt;/i&gt;&nbsp;" data-icon-error="&lt;i class=&quot;fa fa-times&quot;&gt;&lt;/i&gt;&nbsp;">
+        <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
       </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
     </span>
   </div>
 </form>
 <?php if($pages): ?>
 <hr>
+<h3 class="asset-headline"><?php echo $speak->assets; ?></h3>
 <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <h4><?php echo $speak->assets; ?></h4>
   <table class="table-bordered">
+    <colgroup>
+      <col style="width:3em;">
+      <col style="width:11em;">
+      <col>
+      <col style="width:7em;">
+      <col style="width:7em;">
+    </colgroup>
     <?php if( ! empty($pager->next->link)): ?>
     <tfoot>
       <tr>
@@ -31,7 +38,7 @@
       <tr>
         <th>&nbsp;</th>
         <th><?php echo Config::speak('last_', array($speak->uploaded)); ?></th>
-        <th style="min-width:42%;"><?php echo $speak->file; ?></th>
+        <th><?php echo $speak->file; ?></th>
         <th colspan="2"><?php echo $speak->actions; ?></th>
       </tr>
     </thead>

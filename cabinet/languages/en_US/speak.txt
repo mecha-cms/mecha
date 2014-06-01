@@ -330,9 +330,17 @@ select: Select
 selecting: Selecting
 selected: Selected
 
+apply: Apply
+applying: Applying
+applied: Applied
+
 upload: Upload
 uploading: Uploading
 uploaded: Uploaded
+
+download: Download
+downloading: Downloading
+downloaded: Downloaded
 
 load: Load
 loading: Loading
@@ -364,6 +372,14 @@ managed: Managed
 disable: Disable
 disabling: Disabling
 disabled: Disabled
+
+backup: Backup
+backuping: Backing up
+backuped: Backed up
+
+restore: Restore
+restoring: Restoring
+restored: Restored
 
 
 # ---------------
@@ -410,6 +426,8 @@ manager:
   title_page_manager: Manager Page
   title_other: Other
 
+  title_whole_site: Whole Site
+
   title_page_excerpt: Excerpt
   title_page_excerpt_length: Excerpt Length
   title_page_excerpt_tail: Excerpt Tail
@@ -430,6 +448,9 @@ manager:
 
   title_plugin_list: Your Plugins
   title_plugin_upload: Upload a Plugin Package
+
+  title_shield_list: Your Shields
+  title_shield_upload: Upload a Shield Package
 
   this_article: This Article
   this_page: This Page

@@ -1,5 +1,6 @@
 /**
- * Custom file input
+ * Custom File Input
+ * -----------------
  */
 
 (function($) {
@@ -10,7 +11,8 @@
 
     $uploader.on("change", function() {
 
-        var extension = this.value.split('.')[1].toLowerCase(),
+        var segments = this.value.split('.'),
+            extension = segments[segments.length - 1].toLowerCase(),
             ok = $.inArray(extension, accepted) !== -1,
             status = ok ? 'btn-success' : 'btn-danger',
             statusIcon = ok ? 'iconReady' : 'iconError';
@@ -25,9 +27,10 @@
 
             $(this).attr('title', this.value)
                 .prev()
-                    .html($(this).data(statusIcon) + this.value)
+                    .html('<i class="' + $(this).data(statusIcon) + '"></i> ' + this.value)
                         .parent()
-                            .addClass(status);
+                            .removeClass('btn-success btn-danger')
+                                .addClass(status);
 
         }
 

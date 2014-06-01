@@ -209,17 +209,17 @@ textarea[name="js"] {
 
 .tab-content-area .grid-group:first-child {margin-top:0}
 
-.plugin-item {
+.media-item {
   border-top:1px dashed;
   padding:1.3846153846153846em 0;
 }
 
-.plugin-item h4 {
+.media-item h4 {
   margin:0 0 -.3em;
   line-height:1;
 }
 
-.plugin-headline + .plugin-item {margin-top:1.3846153846153846em}
+.media-headline + .media-item {margin-top:1.3846153846153846em}
 
 .plugin-author {
   background-color:#333;

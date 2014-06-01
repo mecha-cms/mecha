@@ -1,5 +1,6 @@
 /**
- * Table Rows More-Less
+ * Table Row More-Less
+ * -------------------
  */
 
 (function($) {

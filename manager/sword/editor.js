@@ -1,3 +1,8 @@
+/**
+ * Article/Page Editor
+ * -------------------
+ */
+
 (function($) {
 
     var $zone = $(document.body),

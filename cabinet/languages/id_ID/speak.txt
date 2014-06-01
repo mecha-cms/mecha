@@ -330,9 +330,17 @@ select: Pilih
 selecting: Memilih
 selected: Berhasil dipilih
 
+apply: Terapkan
+applying: Menerapkan
+applied: Diterapkan
+
 upload: Unggah
 uploading: Mengunggah
 uploaded: Terunggah
+
+download: Unduh
+downloading: Mengunduh
+downloaded: Diunduh
 
 load: Muat
 loading: Memuat
@@ -364,6 +372,14 @@ managed: Berhasil dikelola
 disable: Nonaktifkan
 disabling: Menonaktifkan
 disabled: Berhasil dinonaktifkan
+
+backup: Backup
+backuping: Membackup
+backuped: Dibackup
+
+restore: Restore
+restoring: Merestore
+restored: Direstore
 
 
 # ---------------
@@ -410,6 +426,8 @@ manager:
   title_page_manager: Halaman Pengelola
   title_other: Lainnya
 
+  title_whole_site: Seluruh Situs
+
   title_page_excerpt: Ringkasan
   title_page_excerpt_length: Panjang Ringkasan
   title_page_excerpt_tail: Ekor Ringkasan
@@ -430,6 +448,9 @@ manager:
 
   title_plugin_list: Plugin-Plugin Anda
   title_plugin_upload: Unggah Sebuah Plugin
+
+  title_shield_list: Tameng-Tameng Anda
+  title_shield_upload: Unggah Sebuah Tameng
 
   this_article: Artikel Ini
   this_page: Halaman Ini

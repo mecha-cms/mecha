@@ -36,8 +36,10 @@ class Widget extends Weapon {
             '<i class="fa fa-fw fa-briefcase"></i> ' . $speak->asset => '/' . $config->manager->slug . '/asset',
             '<i class="fa fa-fw fa-th-list"></i> ' . $speak->field => '/' . $config->manager->slug . '/field',
             '<i class="fa fa-fw fa-coffee"></i> ' . $speak->shortcode => '/' . $config->manager->slug . '/shortcode',
+            '<i class="fa fa-fw fa-shield"></i> ' . $speak->shield => '/' . $config->manager->slug . '/shield',
             '<i class="fa fa-fw fa-magic"></i> ' . $speak->plugin => '/' . $config->manager->slug . '/plugin',
-            '<i class="fa fa-fw fa-clock-o"></i> ' . $speak->cache => '/' . $config->manager->slug . '/cache'
+            '<i class="fa fa-fw fa-clock-o"></i> ' . $speak->cache => '/' . $config->manager->slug . '/cache',
+            '<i class="fa fa-fw fa-life-ring"></i> ' . $speak->backup => '/' . $config->manager->slug . '/backup'
         );
         if($config->page_type == 'article') {
             $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/repair/id:' . $config->page->id;

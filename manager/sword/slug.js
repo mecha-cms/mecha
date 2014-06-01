@@ -1,5 +1,6 @@
 /**
- * Generate slug from title input
+ * Slug Generator
+ * --------------
  */
 
 (function($) {

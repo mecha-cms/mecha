@@ -198,7 +198,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
  * -----------------------------------
  */
 
-Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->manager->slug . '/(article|page)/repair/id\:(:num)'), function($path = "", $id = "") use($config, $speak) {
+Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->manager->slug . '/(article|page)/repair/id:(:num)'), function($path = "", $id = "") use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
@@ -466,7 +466,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
  * -----------
  */
 
-Route::accept($config->manager->slug . '/(article|page)/kill/id\:(:num)', function($path = "", $id = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', function($path = "", $id = "") use($config, $speak) {
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -723,7 +723,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
  * ----------------------
  */
 
-Route::accept($config->manager->slug . '/(asset|cache)/kill/files?\:(.*?)', function($path = "", $name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', function($path = "", $name = "") use($config, $speak) {
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -776,7 +776,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?\:(.*?)', func
  * -------------
  */
 
-Route::accept($config->manager->slug . '/asset/repair/files?\:(.*?)', function($old = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($old = "") use($config, $speak) {
 
     $dirname = dirname(str_replace(array('\\', '/'), DS, $old));
     $basename = basename($old);
@@ -896,7 +896,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
  * -------------
  */
 
-Route::accept($config->manager->slug . '/cache/repair/files?\:(:any)', function($name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($name = "") use($config, $speak) {
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -1000,7 +1000,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
  * --------------
  */
 
-Route::accept($config->manager->slug . '/comment/kill/id\:(:num)', function($id = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id = "") use($config, $speak) {
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -1046,7 +1046,7 @@ Route::accept($config->manager->slug . '/comment/kill/id\:(:num)', function($id 
  * ---------------
  */
 
-Route::accept($config->manager->slug . '/comment/repair/id\:(:num)', function($id = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id = "") use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
@@ -1175,6 +1175,71 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
         Guardian::kick($config->url_current);
 
     }
+
+    Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Shields Manager
+ * ---------------
+ */
+
+Route::accept($config->manager->slug . '/shield', function() use($config, $speak) {
+
+    if( ! Guardian::happy()) {
+        Shield::abort();
+    }
+
+    Weapon::add('sword_after', function() {
+        echo Asset::script('manager/sword/upload.js');
+    }, 11);
+
+    if(isset($_FILES) && ! empty($_FILES)) {
+        Guardian::checkToken(Request::post('token'));
+        $accepted_mimes = array(
+            'application/download',
+            'application/octet-stream',
+            'application/x-compressed',
+            'application/x-zip-compressed',
+            'application/zip',
+            'multipart/x-zip',
+        );
+        $accepted_extensions = array(
+            'zip',
+            'rar'
+        );
+        $name = $_FILES['file']['name'];
+        $type = $_FILES['file']['type'];
+        $extension = pathinfo($name, PATHINFO_EXTENSION);
+        $path = basename($name, '.' . $extension);
+        if( ! empty($name)) {
+            if(File::exist(SHIELD . DS . $path)) {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '/&hellip;</code>')));
+            } else {
+                if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
+                    Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+                }
+            }
+        } else {
+            Notify::error($speak->notify_error_no_file_selected);
+        }
+        if( ! Notify::errors()) {
+            File::upload($_FILES['file'], SHIELD, Config::speak('notify_success_uploaded', array($speak->shield)));
+            if($uploaded = File::exist(SHIELD . DS . $name)) {
+                Package::take($uploaded)->extract(); // Extract the ZIP file
+                File::open($uploaded)->delete(); // Delete the ZIP file
+                Guardian::kick($config->manager->slug . '/shield');
+            }
+        }
+    }
+
+    Config::set(array(
+        'page_type' => 'manager',
+        'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'shield.php'
+    ));
 
     Shield::attach('manager', false);
 
@@ -1328,14 +1393,14 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
  * ----------------------
  */
 
-Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id\:(:any)', function($path = "", $slug = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
     }
 
     /**
-     * Toggle file naming from `launch.php` to `pending.php` or ... you know.
+     * Toggle file name from `launch.php` to `pending.php` or ... you know.
      */
 
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
@@ -1355,7 +1420,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id\:(:any)', funct
  * -------------
  */
 
-Route::accept($config->manager->slug . '/plugin/kill/id\:(:any)', function($slug = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
@@ -1401,6 +1466,146 @@ Route::accept($config->manager->slug . '/plugin/kill/id\:(:any)', function($slug
     }
 
     Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Backup/Restore Manager
+ * ----------------------
+ */
+
+Route::accept($config->manager->slug . '/(backup|restore)', function() use($config, $speak) {
+
+    if( ! Guardian::happy()) {
+        Shield::abort();
+    }
+
+    Weapon::add('sword_after', function() {
+        echo Asset::script('manager/sword/upload.js');
+    }, 11);
+
+    if(isset($_FILES) && ! empty($_FILES)) {
+        Guardian::checkToken(Request::post('token'));
+        $destination = Request::post('destination', ROOT);
+        $title = Request::post('title', $speak->files);
+        $accepted_mimes = array(
+            'application/download',
+            'application/octet-stream',
+            'application/x-compressed',
+            'application/x-zip-compressed',
+            'application/zip',
+            'multipart/x-zip',
+        );
+        $accepted_extensions = array(
+            'zip',
+            'rar'
+        );
+        $name = $_FILES['file']['name'];
+        $type = $_FILES['file']['type'];
+        $extension = pathinfo($name, PATHINFO_EXTENSION);
+        if( ! empty($name)) {
+            if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
+                Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+            }
+        } else {
+            Notify::error($speak->notify_error_no_file_selected);
+        }
+        if( ! Notify::errors()) {
+            File::upload($_FILES['file'], $destination, Config::speak('notify_success_uploaded', array($title)));
+            if($uploaded = File::exist($destination . DS . $name)) {
+                Package::take($uploaded)->extract(); // Extract the ZIP file
+                File::open($uploaded)->delete(); // Delete the ZIP file
+                Config::load(); // Refresh the configuration data ...
+                Guardian::kick(Config::get('manager')->slug . '/backup');
+            }
+        } else {
+            Weapon::add('sword_after', function() {
+                echo '<script>
+(function($) {
+    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
+})(Zepto);
+</script>';
+            }, 11);
+        }
+    }
+
+    Config::set(array(
+        'page_type' => 'manager',
+        'page_title' => $speak->backup . '/' . $speak->restore . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'backup.php'
+    ));
+
+    Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Backup Actions
+ * --------------
+ */
+
+Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin = "") use($config, $speak) {
+
+    $time = date('Y-m-d-H-i-s');
+    $site = Text::parse($config->title)->to_slug;
+
+    if( ! Guardian::happy()) {
+        Shield::abort();
+    }
+
+    if($origin == 'root') {
+        $name = $site . '_' . $time . '.zip';
+        Package::take(ROOT)->pack(ROOT . DS . $name);
+    } else {
+        $name = $site . '.' . $origin . '_' . $time . '.zip';
+        Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
+        if($origin == 'states') {
+            Package::take(ROOT . DS . $name)->deleteFiles(array(
+                'repair.config.php',
+                'repair.shortcodes.php',
+                'repair.tags.php'
+            ));
+        }
+        if($origin == 'shields') {
+            Package::take(ROOT . DS . $name)->deleteFiles(array(
+                'rss.php',
+                'sitemap.php',
+                'widgets.css',
+                'widgets.js'
+            ));
+        }
+    }
+
+    Guardian::kick($config->manager->slug . '/backup/send:' . $name);
+
+});
+
+
+/**
+ * Downloading Backup Files
+ * ------------------------
+ */
+
+Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
+
+    if( ! Guardian::happy()) {
+        Shield::abort();
+    }
+
+    if($backup = File::exist(ROOT . DS . $file)) {
+        header('Content-type: application/zip');
+        header('Content-Length: ' . filesize($backup));
+        header('Content-Disposition: attachment; filename=' . $file);
+        readfile($backup);
+        ignore_user_abort(true);
+        File::open($backup)->delete();
+    } else {
+        Shield::abort();
+    }
+
+    exit;
 
 });
 
