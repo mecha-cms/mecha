@@ -6,7 +6,7 @@ Version: 1.0.0
 
 > This is just a plugin starter.
 
-#### Do Something on Form Submit
+### Do Something on Form Submit
 
 The standard submission form URL should be directed to the following URL:
 
@@ -26,11 +26,11 @@ Or, since you already have the plugin URL path in the current page, you could si
 Config::get('url_current') . '/update';
 ~~~
 
-##### The Form
+#### The Form
 
 This is the basic form. This is a shield item, so you can use that `$config` and `$speak` shortcut from here:
 
-~~~ .php
+~~~ .html
 <form action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Please add a token input -->
@@ -46,7 +46,7 @@ This is the basic form. This is a shield item, so you can use that `$config` and
 
 Place the form inside your `configurator.php` file.
 
-##### The Route
+#### The Route
 
 Create a new route to the plugin manager path + `/update` relative to the home URL to execute a post submit:
 

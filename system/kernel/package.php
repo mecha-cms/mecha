@@ -349,11 +349,11 @@ class Package {
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type  | Description
-     *  --------- | ----- | -----------------------------------------------
-     *  $key      | mixed | Key of the resulted array data
-     *  $fallback | mixed | Fallback value if array value is not available
-     *  --------- | ----- | -----------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $key      | string | Key of the resulted array data
+     *  $fallback | mixed  | Fallback value if array value is not available
+     *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */

@@ -131,6 +131,11 @@ Filter::add('shortcode', function($content) use($config, $speak) {
             ),
         preg_quote($key)) . '(?!`)#'] = $value;
     }
+    if(strpos($content, '{{php}}') !== false) {
+        $content = preg_replace_callback('#(?!`)\{\{php\}\}([\s\S]+?)\{\{\/php\}\}(?!`)#m', function($matches) {
+            return Converter::phpEval($matches[1]);
+        }, $content);
+    }
     $regex['#`\{\{(.*?)\}\}`#'] = '{{$1}}'; // the escaped shortcode
     return preg_replace(array_keys($regex), array_values($regex), $content);
 });

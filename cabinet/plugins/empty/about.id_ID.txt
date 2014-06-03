@@ -6,18 +6,18 @@ Version: 1.0.0
 
 > Ini cuma sebagai pemulai plugin.
 
-#### Lakukan Sesuatu pada Saat Data Formulir Dikirim
+### Lakukan Sesuatu Pada Saat Data Formulir Dikirim
 
 Standar URL pengiriman pada formulir harus diarahkan menuju URL ini:
 
 ~~~ .no-highlight
-{{url}}manager/plugin/plugin-folder/update
+{{url}}manager/plugin/folder-plugin/update
 ~~~
 
 Anda seharusnya bisa membuatnya dengan mudah melalui ini:
 
 ~~~ .php
-Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/plugin-folder/update';
+Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/folder-plugin/update';
 ~~~
 
 Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lihat saat ini, maka Anda bisa menggunakan ini:
@@ -26,11 +26,11 @@ Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lih
 Config::get('url_current') . '/update';
 ~~~
 
-##### Formulir
+#### Formulir
 
 Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi Anda bisa menggunakan variabel pintasan `$config` dan `$speak` dari sini:
 
-~~~ .php
+~~~ .html
 <form action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Mohon tambahkan input token -->
@@ -46,7 +46,7 @@ Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi An
 
 Tempatkan formulir tersebut di dalam berkas `configurator.php`.
 
-##### Rute
+#### Rute
 
 Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman muka untuk mengeksekusi `POST` pada formulir:
 
@@ -54,7 +54,7 @@ Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman
 $config = Config::get();
 $speak = Config::speak();
 
-Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/folder-plugin/update', function() use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
