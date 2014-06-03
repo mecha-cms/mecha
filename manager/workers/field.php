@@ -17,19 +17,19 @@
         <td><input name="key[]" type="text" class="input-block" value="<?php echo $key; ?>"></td>
         <td>
           <select name="type[]" class="input-block">
-            <?php
+          <?php
 
-            $options = array(
-                'text' => $speak->text,
-                'summary' => $speak->summary,
-                'boolean' => $speak->boolean
-            );
+          $options = array(
+              'text' => $speak->text,
+              'summary' => $speak->summary,
+              'boolean' => $speak->boolean
+          );
 
-            foreach($options as $k => $v) {
-                echo '<option value="' . $k . '"' . ($k == $value->type ? ' selected' : "") . '>' . $v . '</option>';
-            }
+          foreach($options as $k => $v) {
+              echo '<option value="' . $k . '"' . ($k == $value->type ? ' selected' : "") . '>' . $v . '</option>';
+          }
 
-            ?>
+          ?>
           </select>
         </td>
       </tr>

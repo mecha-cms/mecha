@@ -5,15 +5,15 @@
 <div class="tab-content-area">
   <?php echo Notify::read(); ?>
   <div class="tab-content" id="tab-content-1">
-    <?php
+  <?php
 
-    if($page->configurator) {
-        include $page->configurator;
-    } else {
-        echo '<p>' . Config::speak('notify_not_available', array($speak->config)) . '</p>';
-    }
+  if($page->configurator) {
+      include $page->configurator;
+  } else {
+      echo '<p>' . Config::speak('notify_not_available', array($speak->config)) . '</p>';
+  }
 
-    ?>
+  ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <div class="plugin-about">

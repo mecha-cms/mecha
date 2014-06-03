@@ -1056,20 +1056,20 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         Shield::abort(); // file not found!
     }
 
-    Weapon::add('cargo_after', function() {
-        echo '<script>
-(function($) {
-    new MTE($(\'textarea[name="content"]\')[0]);
-})(Zepto);
-</script>';
-    }, 11);
-
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'page' => $comment,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
+
+    Weapon::add('sword_after', function() {
+        echo '<script>
+(function($) {
+    new MTE($(\'textarea[name="content"]\')[0]);
+})(Zepto);
+</script>';
+    }, 11);
 
     if($request = Request::post()) {
 
@@ -1232,14 +1232,93 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
                 File::open($uploaded)->delete(); // Delete the ZIP file
                 Guardian::kick($config->manager->slug . '/shield');
             }
+        } else {
+            Weapon::add('sword_after', function() {
+                echo '<script>
+(function($) {
+    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
+})(Zepto);
+</script>';
+            }, 11);
         }
+    }
+
+    $pages = array();
+
+    if($files = Get::files(SHIELD . DS . $config->shield, 'css,html,js,php,txt', 'ASC', 'name')) {
+        foreach($files as $file) {
+            $pages[] = $file;
+        }
+    } else {
+        $pages = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
+        'pages' => $pages,
         'cargo' => DECK . DS . 'workers' . DS . 'shield.php'
     ));
+
+    Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Shield Repairs
+ * --------------
+ */
+
+Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($name = "") use($config, $speak) {
+
+    $name = str_replace('/', DS, $name);
+
+    if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
+
+    if( ! $file = File::exist(SHIELD . DS . $config->shield . DS . $name)) {
+        Shield::abort(); // file not found!
+    }
+
+    $info = pathinfo($file);
+
+    Config::set(array(
+        'page_type' => 'manager',
+        'page_title' => $speak->editing . ' &ldquo;' . basename($name) . '&rdquo;' . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
+    ));
+
+    Weapon::add('sword_after', function() use($info) {
+        echo '<script>
+(function($) {
+    new MTE($(\'textarea[name="content"]\')[0], {
+        tabSize: \'' . (strtolower($info['extension']) == 'js' ? '    ' : '  ') . '\',
+        toolbar: false
+    });
+})(Zepto);
+</script>';
+    }, 11);
+
+    if(Request::post()) {
+
+        Guardian::checkToken(Request::post('token'));
+
+        if( ! Notify::errors()) {
+            File::open($file)->write(Request::post('content'))->save();
+            Weapon::fire('on_shield_update');
+            Notify::success(Config::speak('notify_success_updated', array(basename($name))));
+            Guardian::kick($config->url_current);
+        }
+
+    } else {
+
+        Guardian::memorize(array(
+            'content' => Text::parse(File::open($file)->read())->to_encoded_html
+        ));
+
+    }
 
     Shield::attach('manager', false);
 

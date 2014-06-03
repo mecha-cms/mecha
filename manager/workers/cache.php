@@ -34,8 +34,8 @@
         <td class="text-center"><input name="selected[]" type="checkbox" value="<?php echo str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"></td>
         <td><time datetime="<?php echo Date::format($file->last_update, 'c'); ?>"><?php echo Date::format($file->last_update, 'Y/m/d H:i:s'); ?></time></td>
         <td><span title="<?php echo $file->size; ?>"><?php echo $file->name; ?></span></td>
-        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/kill/file:' . str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
         <td><a class="text-success" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/repair/file:' . str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->edit; ?></a></td>
+        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/kill/file:' . str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
       </tr>
       <?php endforeach; ?>
     </tbody>

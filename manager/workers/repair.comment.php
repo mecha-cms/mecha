@@ -18,13 +18,13 @@
     <span class="grid span-1 form-label"><?php echo $speak->comment_status; ?></span>
     <span class="grid span-5">
       <select name="status">
-        <?php
+      <?php
 
-        foreach(array('pilot' => $speak->pilot, 'passenger' => $speak->passenger, 'intruder' => $speak->intruder) as $key => $value) {
-            echo '<option value="' . $key . '"' . ($cache['status'] == $key ? ' selected' : "") . '>' . $value . '</option>';
-        }
+      foreach(array('pilot' => $speak->pilot, 'passenger' => $speak->passenger, 'intruder' => $speak->intruder) as $key => $value) {
+          echo '<option value="' . $key . '"' . ($cache['status'] == $key ? ' selected' : "") . '>' . $value . '</option>';
+      }
 
-        ?>
+      ?>
       </select>
     </span>
   </label>

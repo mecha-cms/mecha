@@ -48,8 +48,8 @@
         <td class="text-center"><input name="selected[]" type="checkbox" value="<?php echo str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>"></td>
         <td><time datetime="<?php echo date('c', $file->last_update); ?>"><?php echo date('Y/m/d H:i:s', $file->last_update); ?></time></td>
         <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo $file->name; ?></a></td>
-        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
         <td><a class="text-success" href="<?php echo $config->url . '/' . $config->manager->slug . '/asset/repair/file:' . str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->rename; ?></a></td>
+        <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
       </tr>
       <?php endforeach; ?>
     </tbody>
