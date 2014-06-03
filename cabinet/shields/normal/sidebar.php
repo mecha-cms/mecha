@@ -25,6 +25,7 @@
     </div>
   </div>
 </aside>
+
 <a href="#toggle" class="blog-sidebar-toggle" id="toggle">
   <i class="fa fa-bars"></i>
 </a>

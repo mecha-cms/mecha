@@ -2,7 +2,7 @@
 <html dir="<?php echo strtolower($config->language_direction); ?>" class="page-<?php echo $config->page_type; ?>">
   <head>
 
-    <meta charset="<?php echo $config->charset; ?>">
+    <meta charset="<?php echo strtolower($config->charset); ?>">
     <meta name="viewport" content="width=device-width">
     <?php Weapon::fire('before'); ?>
     <meta name="description" content="<?php echo Text::parse(isset($page->description) ? $page->description : $config->description)->to_encoded_html; ?>">

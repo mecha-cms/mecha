@@ -11,7 +11,7 @@ Mecha CMS
  2. Live preview Markdown to HTML
  3. Widgets
  4. Plugins
- 5. Multi languages
+ 5. Multi-languages
  6. Built-In comment system
  7. Shortcodes
  8. Custom CSS and JavaScript (for art direction site)
@@ -19,6 +19,7 @@ Mecha CMS
  10. Sitemap
  11. RSS
  12. Easy to use and well documented API
+ 13. Site backup and restore
 
 ### System Requirements
 

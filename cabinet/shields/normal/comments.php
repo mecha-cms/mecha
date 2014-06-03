@@ -18,7 +18,7 @@
         <span class="comment-name"><?php echo $comment->name; ?></span>
         <?php endif; ?>
         <span class="comment-time">
-          <time datetime="<?php echo $comment->time; ?>"><?php echo Date::format($comment->time, 'Y/m/d H:i:s'); ?></time> <a href="<?php echo $article->url . '#comment-' . $comment->id; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>
+          <time datetime="<?php echo $comment->time; ?>"><?php echo Date::format($comment->time, 'Y/m/d H:i:s'); ?></time> <a href="<?php echo $comment->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>
         </span>
       </div>
       <div class="comment-body"><?php echo $comment->message; ?></div>
@@ -57,7 +57,7 @@
       <span class="grid span-5"><input name="math" type="text" value="" autocomplete="off"></span>
     </label>
     <div class="grid-group">
-      <span class="grid span-1 form-label">&nbsp;</span>
+      <span class="grid span-1"></span>
       <div class="grid span-5">
         <p><button class="btn btn-success btn-publish" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->publish; ?></button></p>
         <p><?php echo $speak->comment_guide; ?></p>

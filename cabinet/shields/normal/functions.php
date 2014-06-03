@@ -12,6 +12,6 @@ function tag_links($source, $connector) {
                 $tag_links[] = '<a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag->slug . '" rel="tag">' . $tag->name . '</a>';
             }
         }
-        echo count($tag_links) > 0 ? $speak->tags . ': ' . implode($connector, $tag_links) : "";
+        return count($tag_links) > 0 ? $speak->tags . ': ' . implode($connector, $tag_links) : "";
     }
 }

@@ -2,6 +2,7 @@
 <?php include 'sidebar.php'; ?>
 
 <div class="blog-posts">
+
   <?php if($config->total_articles > 0): ?>
   <?php foreach($pages as $article): ?>
   <article class="post post-index" id="post-<?php echo $article->id; ?>">

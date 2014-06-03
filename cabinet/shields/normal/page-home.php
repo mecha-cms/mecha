@@ -5,6 +5,6 @@
  * change the content with your homepage markup if you want.
  */
 
-include SHIELD . '/' . $config->shield . '/index.php';
+include SHIELD . DS . $config->shield . DS . 'index.php';
 
 ?>

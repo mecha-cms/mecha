@@ -2,7 +2,7 @@
 <?php include 'sidebar.php'; ?>
 
 <div class="blog-posts">
-  <article class="post" id="post-0">
+  <article class="post">
     <h2 class="post-title">:(</h2>
     <div class="post-body"><?php echo $speak->page . ' ' . strtolower($speak->notify_error_not_found); ?></div>
   </article>

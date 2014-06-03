@@ -315,6 +315,23 @@ body {
   }
 }
 
+@media (max-width:580px) {
+  .grid {
+    float:none;
+    display:block;
+    width:auto;
+    margin:0;
+    padding:0;
+  }
+  .grid.form-label {
+    text-align:left;
+    line-height:inherit;
+    margin:0 0 1.3846153846153846em;
+  }
+  .grid:empty {display:none}
+  .comment-form {margin-right:0}
+}
+
 @media (max-width:690px) {
   body {padding-top:30px}
   .blog-header {text-align:center}
