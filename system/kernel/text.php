@@ -63,21 +63,17 @@ class Text {
             ),
         $text);
         foreach(explode("\n", trim($validated)) as $line) {
-
             // Get depth and labels
             $depth = 0;
             $is_multi = strpos($line, $splitter) !== false;
-
             while(substr($line, 0, strlen($indent)) === $indent) {
                 $depth += 1;
                 $line = rtrim(substr($line, strlen($indent)));
             }
-
             // Truncate paths if needed
             while($depth < count($path)) {
                 array_pop($path);
             }
-
             // Keep lines (at depth)
             if($is_multi) {
                 $part = explode($splitter, $line, 2);
@@ -85,7 +81,6 @@ class Text {
             } else {
                 $path[$depth] = $line;
             }
-
             // Traverse paths and add labels to result
             $parent =& $result;
             foreach($path as $depth => $key) {
@@ -93,13 +88,7 @@ class Text {
                     if($is_multi) {
                         $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('/^`|`$/', "", trim($part[1])) : array();
                         // Convert string of `true` and `false` into booleans
-                        if(is_string($values) && preg_match('/^(true|false)$/i', $values)) {
-                            $values = $values == 'true' ? true : false;
-                        }
-                        // Convert string of numbers into numbers
-                        if(is_numeric($values)) {
-                            $values = (int) $values;
-                        }
+                        $values = Converter::strEval($values);
                         $parent[rtrim($part[0])] = $values;
                     } else {
                         $parent[$key] = array();
@@ -208,8 +197,7 @@ class Text {
         foreach($headers as $field) {
             $field = explode(':', $field, 2);
             $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-            $value = trim($field[1]);
-            $value = Converter::strEval($value);
+            $value = Converter::strEval(trim($field[1]));
             $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
             $results[$key] = $value;
         }

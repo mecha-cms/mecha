@@ -198,6 +198,9 @@ category: Kategori
 categories: Kategori-Kategori
 uncategorised: Tak Berkategori
 
+archive: Arsip
+archives: Arsip-Arsip
+
 asset: Aset
 assets: Aset-Aset
 

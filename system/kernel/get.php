@@ -206,7 +206,7 @@ class Get {
 
     /**
      * =========================================================================
-     *  GET ALL FILES RECURSIVELY INCLUDING THE HIDDEN FILES
+     *  GET ALL FILES RECURSIVELY INCLUDING THE EXCLUDED FILES
      * =========================================================================
      *
      * -- CODE: ----------------------------------------------------------------
@@ -216,8 +216,7 @@ class Get {
      *        'txt',
      *        'ASC',
      *        'last_update',
-     *        '.cache',
-     *        'recursive'
+     *        '.cache'
      *    );
      *
      *    foreach($files as $data) {
@@ -507,12 +506,14 @@ class Get {
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | --------------------------------------------------
-     *  $reference | mixed  | Slug, ID, file path or array of `Get::extract()`
-     *  $excludes  | array  | Exclude some fields from results
-     *  $folder    | string | Folder of the pages
-     *  ---------- | ------ | --------------------------------------------------
+     *  Parameter      | Type   | Description
+     *  -------------- | ------ | ----------------------------------------------
+     *  $reference     | mixed  | Slug, ID, path or array of `Get::extract()`
+     *  $excludes      | array  | Exclude some fields from results
+     *  $folder        | string | Folder of the pages
+     *  $connector     | string | Path connector for page URL
+     *  $filter_prefix | string | Filter prefix for `Text::toPage()`
+     *  -------------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -691,11 +692,13 @@ class Get {
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------------------
-     *  $path     | string | The URL path of the page file, or a page slug
-     *  $folder   | string | Folder of the pages
-     *  --------- | ------ | ---------------------------------------------------
+     *  Parameter      | Type   | Description
+     *  -------------- | ------ | ----------------------------------------------
+     *  $path          | string | The URL path of the page file, or a page slug
+     *  $folder        | string | Folder of the pages
+     *  $connector     | string | See `Get::pages()`
+     *  $filter_prefix | string | See `Get::pages()`
+     *  -------------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -777,11 +780,13 @@ class Get {
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------------------
-     *  $path     | string | The URL path of the page file, or a page slug
-     *  $folder   | string | Folder of the pages
-     *  --------- | ------ | ---------------------------------------------------
+     *  Parameter      | Type   | Description
+     *  -------------- | ------ | ----------------------------------------------
+     *  $path          | string | The URL path of the page file, or a page slug
+     *  $folder        | string | Folder of the pages
+     *  $connector     | string | See `Get::pages()`
+     *  $filter_prefix | string | See `Get::pages()`
+     *  -------------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */

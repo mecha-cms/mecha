@@ -537,13 +537,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     ));
 
     Weapon::add('sword_after', function() {
-        echo '<script>
-(function($) {
-    $(\'input[name="name[]"]\').each(function() {
-        $.slugger($(this), $(this).parent().next().find(\'input\'), \'-\');
-    });
-})(Zepto);
-</script>';
+        echo Asset::script('manager/sword/row-tag.js');
     }, 11);
 
     if($request = Request::post()) {

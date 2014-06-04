@@ -198,6 +198,9 @@ category: Category
 categories: Categories
 uncategorised: Uncategorised
 
+archive: Archive
+archives: Archives
+
 asset: Asset
 assets: Assets
 
