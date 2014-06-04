@@ -46,6 +46,8 @@ class Filter {
         $priority = (int) $priority;
         $accepted_args = (int) $accepted_args;
 
+        self::$filters[$name] = true;
+
         if(isset(self::$bucket[$name][$priority])) {
             foreach(self::$bucket[$name][$priority] as $filter) {
                 if($filter['function'] == $function) return true;
@@ -78,7 +80,7 @@ class Filter {
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------------
      *  $name     | string | The name of the filter hook
-     *  $value    | mixed  | The value on which the filters hooked
+     *  $value    | string | String of value to be manipulated
      *  --------- | ------ | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -88,8 +90,6 @@ class Filter {
 
         $name = (string) $name;
         $args = array_slice(func_get_args(), 2);
-
-        self::$filters[$name] = true;
 
         if ( ! isset(self::$bucket[$name])) return $value;
 
@@ -148,7 +148,7 @@ class Filter {
 
     /**
      * ===================================================================
-     *  CHECK IF FILTER ALREADY EXIST/APPLIED
+     *  CHECK IF FILTER ALREADY EXIST/ADDED
      * ===================================================================
      *
      * -- CODE: ----------------------------------------------------------

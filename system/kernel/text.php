@@ -31,8 +31,10 @@ class Text {
     private function __clone() {}
 
     /**
-     * Convert text to ASCII characters
+     * Convert Text into ASCII Characters
+     * ----------------------------------
      */
+
     private static function text_to_ASCII($text) {
         $result = "";
         for($i = 0, $length = strlen($text); $i < $length; ++$i) {
@@ -42,8 +44,10 @@ class Text {
     }
 
     /**
-     * Convert nested strings into multi-dimensional arrays
+     * Convert Nested Strings into Multidimensional Arrays
+     * ---------------------------------------------------
      */
+
     private static function text_to_array($text, $splitter, $indent) {
         $result = array();
         $path = array();
@@ -102,8 +106,10 @@ class Text {
     }
 
     /**
-     * Convert text into slug URL
+     * Convert Text into Slug URL
+     * --------------------------
      */
+
     private static function text_to_slug($text, $lower = true, $strip_underscores_and_dots = true) {
         if($lower) $text = strtolower($text);
         $text = preg_replace(
@@ -125,8 +131,10 @@ class Text {
     }
 
     /**
-     * Convert slug URL into plain text
+     * Convert Slug URL into Plain Text
+     * --------------------------------
      */
+
     private static function slug_to_text($slug) {
         // 1. Replace `+` to ` `
         // 2. Replace `-` to ` `
@@ -148,8 +156,10 @@ class Text {
     }
 
     /**
-     * Parser output
+     * Parser Output
+     * -------------
      */
+
     public static function parse($input, $option = false) {
         $parser = new MarkdownExtra;
         $parser->empty_element_suffix = ">"; // HTML5 self closing tag
@@ -187,8 +197,10 @@ class Text {
     }
 
     /**
-     * Convert formatted text file into page array
+     * Convert Formatted Text File into Page Data
+     * ------------------------------------------
      */
+
     public static function toPage($text, $parse_contents = true, $filter_prefix = 'page:') {
         $results = array();
         $parts = explode(SEPARATOR, trim($text), 2);

@@ -26,13 +26,12 @@ class Guardian {
      *
      */
 
-    public static function get($key = null) {
+    public static function get($key = null, $fallback = "") {
         $log = Session::get(self::$login);
-        if(is_null($key)) {
-            return $log;
-        } else {
-            return isset($log[$key]) ? $log[$key] : "";
+        if( ! is_null($key)) {
+            return isset($log[$key]) ? $log[$key] : $fallback;
         }
+        return $log;
     }
 
     /**
@@ -240,10 +239,10 @@ class Guardian {
      *
      */
 
-    public static function wayback($name = null) {
+    public static function wayback($name = null, $fallback = "") {
         $cache = Session::get(self::$cache);
         if(is_null($name)) return $cache;
-        $value = isset($cache[$name]) ? $cache[$name] : "";
+        $value = isset($cache[$name]) ? $cache[$name] : $fallback;
         Session::set(self::$cache . '.' . $name, ""); // :)
         return $value;
     }
@@ -278,7 +277,7 @@ class Guardian {
         }
         self::checkToken($_POST['token']);
         if(isset($_POST['username']) && isset($_POST['password']) && ! empty($_POST['username']) && ! empty($_POST['password'])) {
-            if(isset($authors[$_POST['username']]) && $_POST['password'] == $authors[$_POST['username']]['password']) {
+            if(isset($authors[$_POST['username']]) && $_POST['password'] === $authors[$_POST['username']]['password']) {
                 $token = self::makeToken();
                 Session::set(self::$login, array(
                     'token' => $token,

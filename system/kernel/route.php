@@ -60,10 +60,12 @@ class Route {
 
         if(is_array($patterns)) {
             foreach($patterns as $pattern) {
+                $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
                 self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
             }
         } else {
-            self::$routes['#^' . self::fix($patterns) . '$#'] = $callback;
+            $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
+            self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
         }
 
         if(strpos($url, $base) === 0) {

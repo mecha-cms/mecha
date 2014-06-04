@@ -39,7 +39,7 @@ class Get {
      *
      *    [1]. var_dump(Get::extract('2014-04-12-07-00-05_1,2,3,4_page.txt'));
      *
-     *    [2]. var_dump(Get::extract(glob(ARTICLE . '/*.txt')));
+     *    [2]. var_dump(Get::extract(glob(ARTICLE . DS . '*.txt')));
      *
      * -------------------------------------------------------------------------
      *
@@ -90,7 +90,7 @@ class Get {
      *  $extensions | string | The file extensions
      *  $order      | string | Ascending or descending? ASC/DESC?
      *  $sorter     | string | The key of array item as sorting reference
-     *  $filter     | string | Filter the resulted array by keyword
+     *  $filter     | string | Filter the resulted array by a keyword
      *  $output     | string | `all`, `recursive` or `adjacent` ?
      *  ----------- | ------ | -------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -215,13 +215,8 @@ class Get {
      *        'some/path',
      *        'txt',
      *        'ASC',
-     *        'last_update',
-     *        '.cache'
+     *        'last_update'
      *    );
-     *
-     *    foreach($files as $data) {
-     *        var_dump($data);
-     *    }
      *
      * -------------------------------------------------------------------------
      *
@@ -362,7 +357,7 @@ class Get {
      *        echo $path . '<br>';
      *    }
      *
-     *    // [1]. Filter by Tags ID
+     *    // [1]. Filter by Tag(s) ID
      *    Get::pages('DESC', 'kind:2');
      *    Get::pages('DESC', 'kind:2,3,4');
      *
@@ -389,7 +384,7 @@ class Get {
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------------------
      *  $order    | string | Ascending or descending? ASC/DESC?
-     *  $filter   | string | Filter the resulted array by keyword
+     *  $filter   | string | Filter the resulted array by a keyword
      *  $folder   | string | Folder of the pages
      *  --------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -559,7 +554,7 @@ class Get {
         $results['update'] = Date::format(filemtime($results['file_path']), 'Y-m-d H:i:s');
         $results['id'] = $results['date']['unix'];
 
-        if( ! isset($results['author'])) $results['author'] = $config->author;
+        if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
 
         if( ! isset($results['description'])) {
             $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
@@ -729,7 +724,7 @@ class Get {
                 $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
                 $results[$key] = $value;
             }
-            if( ! isset($results['author'])) $results['author'] = $config->author;
+            if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
             if($file = File::exist(STATE . DS . 'fields.txt')) {
                 $fields = unserialize(File::open($file)->read());
             } else {
@@ -741,7 +736,7 @@ class Get {
             }
             if(isset($results['fields'])) {
                 foreach($results['fields'] as $key => $value) {
-                    $init[$key] = isset($value['value']) ? $value['value'] : false;
+                    $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
                 }
             }
             $results['fields'] = $init;
@@ -806,7 +801,7 @@ class Get {
                 'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
                 'kind' => Converter::strEval(explode(',', $kind)),
                 'slug' => $slug,
-                'title' => isset($parts[1]) ? trim($parts[1]) : '?',
+                'title' => Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?'))),
                 'url' => $config->url . $connector . $slug
             );
         }

@@ -65,14 +65,15 @@ class Config {
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------
      *  $key      | string | Key of variable to call
+     *  $fallback | mixed  | Fallback value if key does not exist
      *  --------- | ------ | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function get($key = null) {
+    public static function get($key = null, $fallback = false) {
         if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = false; // handling for undefined variables
+            self::$bucket[$key] = $fallback; // handling for undefined variables
         }
         if(is_string($key) && strpos($key, '.') !== false) {
             $output = Mecha::GVR(self::$bucket, $key);
@@ -163,9 +164,6 @@ class Config {
             }
         }
         if(is_null($key)) {
-            if(strpos($key, '.') !== false) {
-                return Mecha::GVR($words, $key, "");
-            }
             return Mecha::O($words);
         } else {
             if(strpos($key, '.') !== false) {
@@ -223,7 +221,7 @@ class Config {
         if($file = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
             $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
         } elseif($file = File::exist(LANGUAGE . DS . 'en_US' . DS . 'speak.txt')) {
-            $config['speak'] = Text::toArray(File::open($file)->read());
+            $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
         } else {
             Guardian::abort('Language file not found.');
         }

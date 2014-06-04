@@ -255,9 +255,9 @@ class File {
     }
 
     // Get file size then convert it to ...
-    public static function size($file, $type = "") {
+    public static function size($file, $type = 'Bytes') {
         switch(strtolower($type)) {
-            case "": $size = filesize($file); break; // bytes
+            case 'bytes': $size = filesize($file); break; // bytes
             case 'kb': $size = filesize($file) * .0009765625; break; // bytes to KB
             case 'mb': $size = (filesize($file) * .0009765625) * .0009765625; break; // bytes to MB
             case 'gb': $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; break; // bytes to GB

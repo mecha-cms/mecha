@@ -224,7 +224,7 @@ class Package {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter    | Type   | Description
      *  ------------ | ------ | -------------------------------------------
-     *  $files       | array  | Array of files and its destination
+     *  $files       | array  | Array of files and its destinations
      *  ------------ | ------ | -------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -366,7 +366,7 @@ class Package {
             $results['file_name'] = basename($zip->filename);
             $results['last_update'] = filemtime(self::$opened);
             $results['update'] = Date::format(filemtime(self::$opened), 'Y-m-d H:i:s');
-            $results['size'] = (int) File::size(self::$opened);
+            $results['size'] = filesize(self::$opened);
             $results['status'] = $zip->status;
             $results['total'] = $zip->numFiles;
             for($i = 0; $i < $results['total']; ++$i) {

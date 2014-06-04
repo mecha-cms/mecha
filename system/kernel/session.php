@@ -26,11 +26,11 @@ class Session {
         return Mecha::SVR($_SESSION, $session, $value);
     }
 
-    public static function get($session = null) {
+    public static function get($session = null, $fallback = "") {
         if(is_null($session)) {
             return $_SESSION;
         }
-        return Mecha::GVR($_SESSION, $session, "");
+        return Mecha::GVR($_SESSION, $session, $fallback);
     }
 
     public static function kill($session = null) {

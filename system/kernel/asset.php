@@ -30,12 +30,11 @@ class Asset {
     private function __construct() {}
 
     private static function tracePath($path) {
-        $path = ltrim($path, '\\/');
         $config = Config::get();
-        if($_path = File::exist(SHIELD . DS . $config->shield . DS . $path)) {
+        if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
             return $_path;
         } else {
-            if($_path = File::exist(ROOT . DS . $path)) {
+            if($_path = File::exist(ROOT . DS . ltrim($path, '\\/'))) {
                 return $_path;
             }
         }

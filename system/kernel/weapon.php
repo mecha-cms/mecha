@@ -43,6 +43,7 @@ class Weapon {
      */
 
     public static function add($name, $function, $priority = 10, array $arguments = null) {
+        self::$mounters[$name] = true;
         self::$armaments[] = array(
             'name' => (string) $name,
             'function' => $function,
@@ -78,7 +79,6 @@ class Weapon {
     public static function fire($name, $arguments = array(), $return = false) {
         $name = (string) $name;
         $return = (bool) $return;
-        self::$mounters[$name] = true;
         if(count(self::$armaments) > 0) {
             // Sort by priority
             self::$armaments = Mecha::eat(self::$armaments)->order('ASC', 'priority')->vomit();
@@ -127,9 +127,9 @@ class Weapon {
         if(is_null($name)) {
             self::$armaments = array();
         } else {
-            foreach(self::$armaments as $armament) {
-                if($armament['name'] == (string) $name) {
-                    unset($armament);
+            for($i = 0, $count = count(self::$armaments); $i < $count; ++$i) {
+                if(self::$armaments[$i]['name'] == $name) {
+                    unset(self::$armaments[$i]);
                 }
             }
             unset(self::$mounters[$name]);

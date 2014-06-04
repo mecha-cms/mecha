@@ -9,12 +9,12 @@
 class Shield {
 
     private static function tracePath($file_name) {
-        $file_name = trim($file_name, '\\/') . '.php';
+        $file_name = rtrim($file_name, '\\/') . '.php';
         $config = Config::get();
-        if($file = File::exist(SHIELD . DS . $config->shield . DS . $file_name)) {
+        if($file = File::exist(SHIELD . DS . $config->shield . DS . ltrim($file_name, '\\/'))) {
             return $file;
         } else {
-            if($file = File::exist(ROOT . DS . $file_name)) {
+            if($file = File::exist(ROOT . DS . ltrim($file_name, '\\/'))) {
                 return $file;
             }
         }
@@ -40,7 +40,7 @@ class Shield {
         $str = array(
             '#<\!--(?!\[if)([\s\S]+?)-->#' => "", // remove comments in HTML
             '#>[^\S ]+#s' => '>', // strip whitespaces after tags, except space
-            '#[^\S ]+\<#s' => '<', // strip whitespaces before tags, except space
+            '#[^\S ]+<#s' => '<', // strip whitespaces before tags, except space
             '#>\s{2,}<#s' => '><' // strip multiple whitespaces between closing and opening tag
         );
         $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
@@ -61,8 +61,15 @@ class Shield {
      */
 
     public static function info($folder = null) {
+        $config = Config::get();
         $speak = Config::speak();
-        $info = SHIELD . DS . ( ! is_null($folder) ? $folder : Config::get('shield')) . DS . 'about.txt';
+        if(is_null($folder)) {
+            $folder = $config->shield;
+        }
+        // Check whether the localized "about" file is available
+        if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
+            $info = SHIELD . DS . $folder . DS . 'about.txt';
+        }
         if(File::exist($info)) {
             $results = Text::toPage(File::open($info)->read(), true, 'shield:');
             return Mecha::O($results);
@@ -113,10 +120,10 @@ class Shield {
             $article = $page; // Create page alias for article
         }
 
-        if(File::exist(self::tracePath($name))) {
-            $shield = self::tracePath($name);
-        } elseif(File::exist(self::tracePath($base[0]))) {
-            $shield = self::tracePath($base[0]);
+        if($file = File::exist(self::tracePath($name))) {
+            $shield = $file;
+        } elseif($file = File::exist(self::tracePath($base[0]))) {
+            $shield = $file;
         } else {
             Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::tracePath($name) . '</code>')));
         }
@@ -166,7 +173,7 @@ class Shield {
         $config = Config::get();
         $speak = Config::speak();
         $page = $config->page;
-        $pages = array($page);
+        $pages = $config->pages;
         $pager = $config->pagination;
         $manager = Guardian::happy();
 
