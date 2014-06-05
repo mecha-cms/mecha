@@ -46,7 +46,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->config . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . '/workers/config.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'config.php'
     ));
 
     if( ! Guardian::happy() || Guardian::get('status') != 'pilot') {
@@ -138,7 +138,8 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         if( ! Notify::errors()) {
             File::write(serialize($request))->saveTo(STATE . DS . 'config.txt');
             Weapon::fire('on_config_update');
-            Notify::success(Config::speak('notify_success_updated', array($speak->config)));
+            Config::load(); // Refresh the configuration data ...
+            Notify::success(Config::speak('notify_success_updated', array(Config::speak('config'))));
             Guardian::kick($request['manager']['slug'] . '/config');
         }
 
@@ -542,7 +543,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
 
     if($request = Request::post()) {
 
-        Guardian::checkToken(Request::post('token'));
+        Guardian::checkToken($request['token']);
 
         $data = array();
 
@@ -857,7 +858,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
 
     if($request = Request::post()) {
 
-        Guardian::checkToken(Request::post('token'));
+        Guardian::checkToken($request['token']);
 
         $data = array();
 
@@ -905,9 +906,9 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
 
     if($request = Request::post()) {
 
-        Guardian::checkToken(Request::post('token'));
+        Guardian::checkToken($request['token']);
 
-        File::open($file)->write(Request::post('content'))->save();
+        File::open($file)->write($request['content'])->save();
 
         Weapon::fire('on_cache_update');
 
@@ -1394,7 +1395,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 'title' => $speak->unknown,
                 'author' => $speak->unknown,
                 'version' => $speak->unknown,
-                'content' => Config::speak('notify_not_available', array($speak->description))
+                'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
             );
 
             $pages[$i]['about'] = $about;
@@ -1438,7 +1439,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         'title' => $speak->unknown,
         'author' => $speak->unknown,
         'version' => $speak->unknown,
-        'content' => Config::speak('notify_not_available', array($speak->description))
+        'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
     );
 
     $about['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
@@ -1502,7 +1503,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         'title' => $speak->unknown,
         'author' => $speak->unknown,
         'version' => $speak->unknown,
-        'content' => Config::speak('notify_not_available', array($speak->description))
+        'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
     );
 
     $about['slug'] = $slug;
@@ -1682,6 +1683,8 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
  */
 
 Route::accept($config->manager->slug . '/(article|page)/preview', function($path = "") {
+
+    if( ! Guardian::happy()) exit;
 
     Weapon::fire('preview_content_before');
     echo '<div class="inner">';

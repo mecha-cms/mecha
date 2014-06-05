@@ -410,7 +410,9 @@ Route::accept('sitemap', function() {
  * RSS Feed
  * --------
  *
- * [1]. feeds/rss
+ * [1]. feeds
+ * [2]. feeds/rss
+ * [3]. feeds/rss/1
  *
  */
 
