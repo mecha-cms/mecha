@@ -1197,8 +1197,7 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
             'multipart/x-zip',
         );
         $accepted_extensions = array(
-            'zip',
-            'rar'
+            'zip'
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];
@@ -1341,8 +1340,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             'multipart/x-zip',
         );
         $accepted_extensions = array(
-            'zip',
-            'rar'
+            'zip'
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];
@@ -1567,8 +1565,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function() use($conf
             'multipart/x-zip',
         );
         $accepted_extensions = array(
-            'zip',
-            'rar'
+            'zip'
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];

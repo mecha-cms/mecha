@@ -43,7 +43,7 @@
         <span class="grid span-6">
           <span class="input-wrapper btn">
             <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip,rar">
+            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
           </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
         </span>
       </div>
