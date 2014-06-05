@@ -22,6 +22,7 @@ class Widget extends Weapon {
         } else {
             if($total > (int) Session::get('mecha_total_comments_diff')) {
                 $n = '<span class="counter">' . ($total - (int) Session::get('mecha_total_comments_diff')) . '</span>';
+                Session::set('mecha_total_comments_diff', $total);
             } else {
                 $n = "";
             }
