@@ -91,7 +91,6 @@ class Text {
                 if( ! isset($parent[$key])) {
                     if($is_multi) {
                         $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('/^`|`$/', "", trim($part[1])) : array();
-                        // Convert string of `true` and `false` into booleans
                         $values = Converter::strEval($values);
                         $parent[rtrim($part[0])] = $values;
                     } else {
