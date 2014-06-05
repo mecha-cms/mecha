@@ -209,7 +209,7 @@ class Widget extends Weapon {
             }
         }
         if(empty($tags)) {
-            return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
+            return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->tags))) . '</div>';
         }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
         if($type == 'LIST') {

@@ -47,7 +47,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         unlink(ROOT . DS . 'install.php');
         unset($_SESSION['meet_mecha']);
         unset($_SESSION['token']);
-        header('Location: http://' . $_SERVER['HTTP_HOST'] . '/' . trim(dirname($_SERVER['SCRIPT_NAME']), '\\/') . '/manager/login');
+        $base = trim(dirname($_SERVER['SCRIPT_NAME']), '\\/');
+        header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login');
         exit;
     }
 
