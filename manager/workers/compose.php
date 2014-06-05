@@ -48,7 +48,7 @@
       <?php if($config->editor_type == 'article' && count($tags) > 1): ?>
       <div class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->tags; ?></span>
-        <span class="grid span-5 tags cf"><?php echo implode("", $tags); ?></span>
+        <span class="grid span-5"><?php echo implode("", $tags); ?></span>
       </div>
       <?php endif; ?>
       <label class="grid-group">

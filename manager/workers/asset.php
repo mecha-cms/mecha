@@ -54,7 +54,7 @@
       <?php endforeach; ?>
     </tbody>
   </table>
-  <p><button class="btn btn-danger" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
+  <p><button class="btn btn-danger btn-delete btn-delete-multiple" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
 </form>
 <?php else: ?>
 <p><?php echo Config::speak('notify_empty', array(strtolower($speak->assets))); ?></p>

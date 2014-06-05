@@ -82,11 +82,11 @@
                 listOL: 'List Item'
             }
         });
-        new MTE($('[name="css"]', $editor)[0], {
+        new MTE($css[0], {
             tabSize: '  ',
             toolbar: false
         });
-        new MTE($('[name="js"]', $editor)[0], {
+        new MTE($javascript[0], {
             tabSize: '    ',
             toolbar: false
         });

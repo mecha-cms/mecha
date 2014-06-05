@@ -799,29 +799,25 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
             Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
         } else {
             // Missing file extension
-            if( ! preg_match('#^.*?\..*?$#', Request::post('name'))) {
+            if( ! preg_match('#^.*?\.(.+?)$#', Request::post('name'))) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
-        }
-
-        $name = explode('.', Request::post('name'));
-        $parts = array();
-        foreach($name as $part) {
-            $parts[] = Text::parse($part)->to_slug_moderate;
-        }
-
-        $new_name = implode('.', $parts);
-
-        // File name already exist
-        if($basename !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
-            Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));
-        }
-
-        if( ! Notify::errors()) {
-            File::open($file)->renameTo($new_name);
-            Weapon::fire('on_asset_update');
-            Notify::success(Config::speak('notify_success_updated', array($basename)));
-            Guardian::kick($config->manager->slug . '/asset');
+            $name = explode('.', Request::post('name'));
+            $parts = array();
+            foreach($name as $part) {
+                $parts[] = Text::parse($part)->to_slug_moderate;
+            }
+            $new_name = implode('.', $parts);
+            // File name already exist
+            if($basename !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));
+            }
+            if( ! Notify::errors()) {
+                File::open($file)->renameTo($new_name);
+                Weapon::fire('on_asset_update');
+                Notify::success(Config::speak('notify_success_updated', array($basename)));
+                Guardian::kick($config->manager->slug . '/asset');
+            }
         }
 
     } else {
@@ -1701,7 +1697,7 @@ Route::accept($config->manager->slug . '/(article|page)/preview', function($path
         $content = Filter::apply('shortcode', $content);
         $content = Filter::apply($path . ':shortcode', $content);
         $content = Filter::apply('content', Text::parse($content)->to_html);
-        $content = Filter::apply($path . ':content', Text::parse($content)->to_html);
+        $content = Filter::apply($path . ':content', $content);
         echo '<h2 class="preview-title">' . $title . '</h2>';
         echo '<div class="p">' . $content . '</div>';
     }

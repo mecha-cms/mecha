@@ -21,7 +21,7 @@
 
             $(this).prev().html(cache)
                 .parent()
-                    .removeClass(status);
+                    .removeClass('btn-success btn-danger');
 
         } else {
 

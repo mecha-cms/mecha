@@ -18,7 +18,7 @@
         <span class="comment-name"><?php echo $comment->name; ?></span>
         <?php endif; ?>
         <span class="comment-time">
-          <time datetime="<?php echo $comment->time; ?>"><?php echo Date::format($comment->time, 'Y/m/d H:i:s'); ?></time> <a href="<?php echo $comment->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>
+          <time datetime="<?php echo Date::format($comment->time, 'c'); ?>"><?php echo Date::format($comment->time, 'Y/m/d H:i:s'); ?></time> <a href="<?php echo $comment->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>
         </span>
       </div>
       <div class="comment-body"><?php echo $comment->message; ?></div>

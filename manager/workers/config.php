@@ -122,8 +122,8 @@
         <select name="language" class="input-block">
         <?php
 
-        foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $file) {
-            $lang = basename($file);
+        foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
+            $lang = basename($folder);
             echo '<option value="' . $lang . '"' . ($cache['language'] == $lang ? ' selected' : "") . '>' . $lang . '</option>';
         }
 
