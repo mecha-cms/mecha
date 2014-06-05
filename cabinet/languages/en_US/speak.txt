@@ -471,24 +471,29 @@ notify_not_available: %s is not available.
 
 notify_file_exist: File %s already exist.
 notify_file_not_exist: File %s does not exist.
+
+notify_file_created: File %s successfully created.
+notify_file_submitted: File %s successfully submitted.
+notify_file_updated: File %s successfully updated.
+notify_file_uploaded: File %s successfully uploaded.
 notify_file_deleted: File %s successfully deleted.
 
-notify_success_created: <strong>%s</strong> created.
-notify_success_submitted: <strong>%s</strong> submitted.
-notify_success_updated: <strong>%s</strong> updated.
+notify_success_created: <strong>%s</strong> successfully created.
+notify_success_submitted: <strong>%s</strong> successfully submitted.
+notify_success_updated: <strong>%s</strong> successfully updated.
 notify_success_uploaded: <strong>%s</strong> successfully uploaded.
 notify_success_deleted: <strong>%s</strong> successfully deleted.
 
 notify_error_no_file_selected: Please select a file.
 notify_error_no_files_selected: Please select at least one file.
-notify_error_file_extension: Extension <code>%s</code> not allowed.
+notify_error_file_extension: Extension <code>%s</code> is not allowed.
 notify_error_file_extension_missing: Please include the file extension. Example: <code>file.jpg</code>
 notify_error_file_size: File size must be under <code>%s</code>.
 notify_error_username_or_password: Invalid username or password.
-notify_error_empty_fields: Please fill out all the required fields.
+notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
 notify_error_slug_exist: Slug <code>%s</code> already exist.
-notify_error_slug_missing_letter: Slug URI should contain at least one letter, from <code>A</code> to <code>Z</code>.
+notify_error_slug_missing_letter: Slug URI should contains at least one letter, from <code>A</code> to <code>Z</code>.
 notify_error_post_content_empty: Post content cannot be empty.
 notify_error_too_short: <strong>%s</strong> too short.
 notify_error_too_long: <strong>%s</strong> too long.

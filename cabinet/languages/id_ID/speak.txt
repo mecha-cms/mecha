@@ -471,6 +471,11 @@ notify_not_available: %s tidak tersedia.
 
 notify_file_exist: Berkas %s sudah ada.
 notify_file_not_exist: Berkas %s sudah tidak ada.
+
+notify_file_created: Berkas %s berhasil dibuat.
+notify_file_submitted: Berkas %s berhasil dikirim.
+notify_file_updated: Berkas %s berhasil diperbaharui.
+notify_file_uploaded: Berkas %s berhasil diunggah.
 notify_file_deleted: Berkas %s berhasil dihapus.
 
 notify_success_created: <strong>%s</strong> berhasil dibuat.
