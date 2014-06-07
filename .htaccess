@@ -32,7 +32,7 @@ AddDefaultCharset UTF-8
 <FilesMatch "(^#.*#|\.(md|txt|htaccess)|~)$">
     Order allow,deny
     Deny from all
-    Satisfy All
+    Satisfy all
 </FilesMatch>
 
 # gzip

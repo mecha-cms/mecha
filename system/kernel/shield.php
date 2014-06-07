@@ -38,10 +38,10 @@ class Shield {
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('before_sanitized', $buffer);
         $str = array(
-            '#<\!--(?!\[if)([\s\S]+?)-->#' => "", // remove comments in HTML
-            '#>[^\S ]+#s' => '>', // strip whitespaces after tags, except space
-            '#[^\S ]+<#s' => '<', // strip whitespaces before tags, except space
-            '#>\s{2,}<#s' => '><' // strip multiple whitespaces between closing and opening tag
+            '#\<\!--(?!\[if)([\s\S]+?)--\>#' => "", // remove comments in HTML
+            '#\>[^\S ]+#s' => '>', // strip whitespaces after tags, except space
+            '#[^\S ]+\<#s' => '<', // strip whitespaces before tags, except space
+            '#\>\s{2,}\<#s' => '><' // strip multiple whitespaces between closing and opening tag
         );
         $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
         return Filter::apply('after_sanitized', $buffer);
