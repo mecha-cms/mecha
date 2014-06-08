@@ -5,12 +5,13 @@
 
 (function($) {
 
-    var $btn = $('.tag-row-more-less .btn'),
-        callback = function() {
-            $('input[name="name[]"]').each(function() {
-                $.slugger($(this), $(this).parent().next().find('input'), '-');
-            });
-        };
+    var $btn = $('.tag-row-more-less .btn');
+    
+    function callback() {
+        $('input[name="name[]"]').each(function() {
+            $.slugger($(this), $(this).parent().next().find('input'), '-');
+        });
+    }
 
     $btn.on("click", function() {
 
@@ -22,11 +23,12 @@
             '</tr>',
             max = $(this).closest('tr').data('max'),
             min = $(this).closest('tr').data('min'),
-            length = $(this).closest('tbody').find('tr').length;
+            length = $(this).closest('tbody').find('tr').length,
+            id = parseInt($(this).closest('tr').prev().find('input[type="hidden"]').val(), 10);
 
         if ($(this).is('.btn-more')) {
             if (length < max + 1) {
-                $(this).closest('tr').before(clone.replace(/%s/g, length - 1));
+                $(this).closest('tr').before(clone.replace(/%s/g, id + 1));
             }
         } else {
             if (length > min + 1 && $(this).closest('tr').prev().find('input:not([type="hidden"])').val() === "") {
