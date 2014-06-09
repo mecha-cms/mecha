@@ -14,7 +14,7 @@
     </div>
     <div class="page-body"><?php echo $page->description; ?></div>
     <div class="page-footer">
-      <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/id:' . $page->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $page->id; ?>"><?php echo $speak->delete; ?></a>
+      <?php Weapon::fire($config->editor_type . '_footer', array($page)); ?>
     </div>
   </li>
   <?php endforeach; ?>

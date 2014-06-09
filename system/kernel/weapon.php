@@ -1,17 +1,8 @@
 <?php
 
-/**
- * ==================================================================
- *  FUNCTION HOOKS
- *
- *  Stealed from this monster => https://github.com/Awilum/morfy-cms
- * ==================================================================
- */
-
 class Weapon {
 
-    private static $armaments = array();
-    private static $mounters = array();
+    protected static $armaments = array();
 
     /**
      * ==============================================================
@@ -35,17 +26,15 @@ class Weapon {
      *  ---------- | ------- | --------------------------------------
      *  $name      | string  | Action name
      *  $function  | mixed   | Added function
-     *  $priority  | integer | Function's priority
-     *  $arguments | array   | Function's arguments
+     *  $priority  | integer | Function priority
+     *  $arguments | array   | Function arguments
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10, array $arguments = null) {
-        self::$mounters[$name] = true;
-        self::$armaments[] = array(
-            'name' => (string) $name,
+    public static function add($name, $function, $priority = 10, $arguments = null) {
+        self::$armaments[$name][] = array(
             'function' => $function,
             'priority' => ! is_null($priority) ? (int) $priority : 10,
             'arguments' => $arguments
@@ -77,29 +66,21 @@ class Weapon {
      */
 
     public static function fire($name, $arguments = array(), $return = false) {
-        $name = (string) $name;
-        $return = (bool) $return;
-        if(count(self::$armaments) > 0) {
-            // Sort by priority
-            self::$armaments = Mecha::eat(self::$armaments)->order('ASC', 'priority')->vomit();
-            foreach(self::$armaments as $weapon) {
-                if($weapon['name'] == $name) {
-                    if(isset($arguments)) {
-                        // Return or render specific action results?
-                        if($return) {
-                            return call_user_func_array($weapon['function'], $arguments);
-                        } else {
-                            call_user_func_array($weapon['function'], $arguments);
-                        }
-                    } else {
-                        if($return) {
-                            return call_user_func_array($weapon['function'], $weapon['arguments']);
-                        } else {
-                            call_user_func_array($weapon['function'], $weapon['arguments']);
-                        }
-                    }
+        if(isset(self::$armaments[$name])) {
+            $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'priority')->vomit();
+            foreach($weapons as $weapon => $cargo) {
+                if( ! is_null($cargo['arguments'])) {
+                    $arguments = $cargo['arguments'];
+                }
+                if($return) {
+                    return call_user_func_array($cargo['function'], $arguments);
+                } else {
+                    call_user_func_array($cargo['function'], $arguments);
                 }
             }
+        } else {
+            self::$armaments[$name] = false;
+            if($return) return false;
         }
     }
 
@@ -127,12 +108,7 @@ class Weapon {
         if(is_null($name)) {
             self::$armaments = array();
         } else {
-            for($i = 0, $count = count(self::$armaments); $i < $count; ++$i) {
-                if(self::$armaments[$i]['name'] == $name) {
-                    unset(self::$armaments[$i]);
-                }
-            }
-            unset(self::$mounters[$name]);
+            unset(self::$armaments[$name]);
         }
     }
 
@@ -155,6 +131,7 @@ class Weapon {
      *  Parameter | Type   | Description
      *  --------- | ------ | ----------------------------------------
      *  $name     | string | Action name
+     *  $fallback | mixed  | Fallback value if name does not exist
      *  --------- | ------ | ----------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -162,9 +139,9 @@ class Weapon {
 
     public static function exist($name = null, $fallback = false) {
         if(is_null($name)) {
-            return ! empty(self::$mounters) ? array_keys(self::$mounters) : $fallback;
+            return ! empty(self::$armaments) ? self::$armaments : $fallback;
         }
-        return isset(self::$mounters[$name]) ? self::$mounters[$name] : $fallback;
+        return isset(self::$armaments[$name]) ? self::$armaments[$name] : $fallback;
     }
 
 }

@@ -4,9 +4,6 @@ class Config {
 
     protected static $bucket = array();
 
-    private function __construct() {}
-    private function __clone() {}
-
     /**
      * =============================================================
      *  REGISTER NEW VARIABLE(S)
@@ -35,10 +32,15 @@ class Config {
      */
 
     public static function set($key, $value = "") {
+        if(is_object($key)) {
+            $key = Mecha::A($key);
+        }
         if(is_array($key)) {
-            self::$bucket = array_merge(self::$bucket, $key);
+            foreach($key as $k => $v) {
+                self::$bucket[$k] = Filter::apply('config:' . $k, Filter::apply($k, $v));
+            }
         } else {
-            self::$bucket[$key] = $value;
+            self::$bucket[$key] = Filter::apply('config:' . $key, Filter::apply($key, $value));
         }
     }
 
@@ -72,12 +74,12 @@ class Config {
      */
 
     public static function get($key = null, $fallback = false) {
-        if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = $fallback; // handling for undefined variables
-        }
         if(is_string($key) && strpos($key, '.') !== false) {
-            $output = Mecha::GVR(self::$bucket, $key);
+            $output = Mecha::GVR(self::$bucket, $key, $fallback);
             return is_array($output) ? Mecha::O($output) : $output;
+        }
+        if( ! isset(self::$bucket[$key])) {
+            self::$bucket[$key] = $fallback;
         }
         return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
     }
@@ -104,6 +106,9 @@ class Config {
      */
 
     public static function merge($key, $array = array()) {
+        if(is_object($array)) {
+            $array = Mecha::A($array);
+        }
         if( ! isset(self::$bucket[$key])) {
             if(strpos($key, '.') !== false) {
                 Mecha::SVR(self::$bucket, $key);
@@ -118,6 +123,9 @@ class Config {
             } else {
                 self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $array);
             }
+        }
+        foreach(self::$bucket[$key] as $k => $v) {
+            self::$bucket[$key][$k] = Filter::apply('config:' . $k, Filter::apply($k, $v));
         }
     }
 
@@ -158,7 +166,7 @@ class Config {
                 $wizard = Text::parse(Filter::apply('wizard:shortcode', Filter::apply('shortcode', $wizard)))->to_html;
                 return Filter::apply('wizard:content', Filter::apply('content', $wizard));
             } else {
-                $wizard = File::open(ROOT . DS . str_replace('file:', "", $key) . '.txt')->read();
+                $wizard = File::open(ROOT . DS . str_replace(array('file:', '\\', '/'), array("", DS, DS), $key) . '.txt')->read();
                 $wizard = Text::parse(Filter::apply('wizard:shortcode', Filter::apply('shortcode', $wizard)))->to_html;
                 return Filter::apply('wizard:content', Filter::apply('content', $wizard));
             }
@@ -228,6 +236,11 @@ class Config {
 
         $config['speak']['months'] = explode(',', $config['speak']['months']);
         $config['speak']['days'] = explode(',', $config['speak']['days']);
+
+        // Apply filters
+        foreach($config as $key => $value) {
+            $config[$key] = Filter::apply('config:' . $key, Filter::apply($key, $value));
+        }
 
         self::$bucket = $config;
 

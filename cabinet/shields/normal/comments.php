@@ -23,9 +23,7 @@
       </div>
       <div class="comment-body"><?php echo $comment->message; ?></div>
       <div class="comment-footer">
-        <?php if($manager): ?>
-        <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id; ?>"><?php echo $speak->edit; ?></a> / <a href="<?php echo $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id; ?>"><?php echo $speak->delete; ?></a>
-        <?php endif; ?>
+        <?php Weapon::fire('comment_footer', array($comment, $article)); ?>
       </div>
     </li>
     <?php endforeach; ?>
@@ -64,5 +62,7 @@
       </div>
     </div>
   </form>
+
+  <?php Weapon::fire('comments_footer', array($article)); ?>
 
 </section>

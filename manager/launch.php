@@ -1452,11 +1452,24 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
 
 
 /**
+ * Empty Plugin Page
+ * -----------------
+ */
+
+$e_plugin_page = "Title: " . $speak->unknown . "\n" .
+     "Author: " . $speak->unknown . "\n" .
+     "URL: #\n" .
+     "Version: " . $speak->unknown . "\n" .
+     "\n" . SEPARATOR . "\n" .
+     "\n" . Config::speak('notify_not_available', array($speak->description));
+
+
+/**
  * Plugins Manager
  * ---------------
  */
 
-Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak) {
+Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak, $e_plugin_page) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
@@ -1538,12 +1551,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 $file = $files[$i] . DS . 'about.txt';
             }
 
-            $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
-                'title' => $speak->unknown,
-                'author' => $speak->unknown,
-                'version' => $speak->unknown,
-                'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
-            );
+            $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
 
             $pages[$i]['about'] = $about;
             $pages[$i]['slug'] = basename($files[$i]);
@@ -1571,7 +1579,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * ------------------------
  */
 
-Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
 
     if( ! Guardian::happy() || ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
@@ -1582,12 +1590,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
 
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
-        'title' => $speak->unknown,
-        'author' => $speak->unknown,
-        'version' => $speak->unknown,
-        'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
-    );
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
 
     $about['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
 
@@ -1646,7 +1649,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  * -------------
  */
 
-Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
 
     if( ! Guardian::happy()) {
         Shield::abort();
@@ -1657,12 +1660,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
 
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : array(
-        'title' => $speak->unknown,
-        'author' => $speak->unknown,
-        'version' => $speak->unknown,
-        'content' => '<p>' . Config::speak('notify_not_available', array($speak->description)) . '</p>'
-    );
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
 
     $about['slug'] = $slug;
 

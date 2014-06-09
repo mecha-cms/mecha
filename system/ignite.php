@@ -6,7 +6,8 @@
 
 
 /**
- * Start the session launch ...
+ * Start the Session Launch
+ * ------------------------
  */
 
 session_start();
@@ -14,6 +15,7 @@ session_start();
 
 /**
  * => `http://www.php.net/manual/en/security.magicquotes.disabling.php`
+ * --------------------------------------------------------------------
  */
 
 if(get_magic_quotes_gpc()) {
@@ -28,7 +30,8 @@ if(get_magic_quotes_gpc()) {
 
 
 /**
- * Loading workers ...
+ * Loading Workers
+ * ---------------
  */
 
 function prepare_to_launch($workers) {
@@ -48,14 +51,16 @@ if(File::exist(ROOT . DS . 'install.php')) {
 
 
 /**
- * Set default timezone before launch ...
+ * Set Default TimeZone Before Launch
+ * ----------------------------------
  */
 
 date_default_timezone_set($config->timezone);
 
 
 /**
- * Inject widget's CSS and JavaScript
+ * Inject Widget's CSS and JavaScript
+ * ----------------------------------
  */
 
 Weapon::add('shell_before', function() {
@@ -68,7 +73,8 @@ Weapon::add('sword_after', function() {
 
 
 /**
- * Inject some required assets for managers
+ * Inject the Required Assets for Manager
+ * --------------------------------------
  */
 
 if(Guardian::happy()) {
@@ -93,7 +99,8 @@ if(Guardian::happy()) {
 
 
 /**
- * Loading plugins ...
+ * Loading Plugins
+ * ---------------
  */
 
 foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $plugin) {
@@ -102,7 +109,8 @@ foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $plugin) {
 
 
 /**
- * Include user defined functions
+ * Include User Defined Functions
+ * ------------------------------
  */
 
 if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
@@ -111,7 +119,8 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 
 /**
- * Handle shortcode in contents ...
+ * Handle Shortcode in Contents
+ * ----------------------------
  */
 
 Filter::add('shortcode', function($content) use($config, $speak) {
@@ -138,10 +147,13 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     }
     $regex['#`\{\{(.*?)\}\}`#'] = '{{$1}}'; // the escaped shortcode
     return preg_replace(array_keys($regex), array_values($regex), $content);
-});
+}, 10);
 
 
 /**
+ * Others
+ * ------
+ *
  * I'm trying to not touching the source code of the Markdown plugin at all.
  *
  * [1]. Add bordered class for tables in contents.
@@ -160,11 +172,12 @@ Filter::add('content', function($content) use($config) {
             '<a rel="nofollow" href="$1'
         ),
     $content);
-});
+}, 10);
 
 
 /**
- * Add global cache killer for posts
+ * Add Global Cache Killer for Articles and Pages
+ * ----------------------------------------------
  */
 
 function kill_cache() {
@@ -175,5 +188,37 @@ function kill_cache() {
     File::open(CACHE . DS . $root . 'feeds.rss.cache.txt')->delete();
 }
 
-Weapon::add('on_article_update', 'kill_cache');
-Weapon::add('on_page_update', 'kill_cache');
+Weapon::add('on_article_update', 'kill_cache', 10);
+Weapon::add('on_page_update', 'kill_cache', 10);
+
+
+/**
+ * Add Default Article and Page Footer Links
+ * -----------------------------------------
+ */
+
+function page_footer_armaments($page) {
+    $config = Config::get();
+    $speak = Config::speak();
+    if(Guardian::happy()) {
+        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+    }
+}
+
+
+/**
+ * Add Default Comment Footer Links
+ * --------------------------------
+ */
+
+function comment_footer_armaments($comment, $article) {
+    $config = Config::get();
+    $speak = Config::speak();
+    if(Guardian::happy()) {
+        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+    }
+}
+
+Weapon::add('article_footer', 'page_footer_armaments', 10);
+Weapon::add('page_footer', 'page_footer_armaments', 10);
+Weapon::add('comment_footer', 'comment_footer_armaments', 10);

@@ -70,18 +70,14 @@ class Shield {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        if(File::exist($info)) {
-            $results = Text::toPage(File::open($info)->read(), true, 'shield:');
-            return Mecha::O($results);
-        } else {
-            return (object) array(
-                'name' => $speak->unknown,
-                'author' => $speak->unknown,
-                'version' => $speak->unknown,
-                'content_raw' => "",
-                'content' => ""
-            );
-        }
+        $e_shield_page = "Name: " . $speak->unknown . "\n" .
+             "Author: " . $speak->unknown . "\n" .
+             "URL: #\n" .
+             "Version: " . $speak->unknown . "\n" .
+             "\n" . SEPARATOR . "\n" .
+             "\n" . Config::speak('notify_not_available', array($speak->description));
+        $shield_info = File::exist($info) ? Text::toPage(File::open($info)->read(), true, 'shield:') : Text::toPage($e_shield_page, true, 'shield:');
+        return Mecha::O($shield_info);
     }
 
     /**

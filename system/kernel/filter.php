@@ -1,19 +1,8 @@
 <?php
 
-/**
- * =================================================================
- *  FILTER HOOKS
- *
- *  Stealed from this monster => https://github.com/Awilum/morfy-cms
- * =================================================================
- */
-
 class Filter {
 
-    private static $bucket = array();
-    private static $filters = array();
-
-    protected function __construct() {}
+    protected static $filters = array();
 
     /**
      * ===================================================================
@@ -40,29 +29,17 @@ class Filter {
      *
      */
 
-    public static function add($name, $function, $priority = 10, $accepted_args = 1) {
-
-        $name = (string) $name;
-        $priority = ! is_null($priority) ? (int) $priority : 10;
-        $accepted_args = (int) $accepted_args;
-
-        self::$filters[$name] = true;
-
-        if(isset(self::$bucket[$name][$priority])) {
-            foreach(self::$bucket[$name][$priority] as $filter) {
+    public static function add($name, $function, $priority = 10) {
+        // Kill duplicate filters
+        if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
+            foreach(self::$filters[$name] as $filter) {
                 if($filter['function'] == $function) return true;
             }
         }
-
-        self::$bucket[$name][$priority][] = array(
+        self::$filters[$name][] = array(
             'function' => $function,
-            'accepted_args' => $accepted_args
+            'priority' => ! is_null($priority) ? (int) $priority : 10
         );
-
-        self::$bucket[$name] = Mecha::eat(self::$bucket[$name])->order('DESC')->vomit();
-
-        return true;
-
     }
 
     /**
@@ -87,34 +64,15 @@ class Filter {
      */
 
     public static function apply($name, $value) {
-
-        $name = (string) $name;
-        $args = array_slice(func_get_args(), 2);
-
-        if ( ! isset(self::$bucket[$name])) return $value;
-
-        foreach(self::$bucket[$name] as $priority => $functions) {
-            if( ! is_null($functions)) {
-                foreach($functions as $function) {
-                    $all_args = array_merge(array($value), $args);
-                    $function_name = $function['function'];
-                    $accepted_args = $function['accepted_args'];
-                    if($accepted_args === 1) {
-                        $the_args = array($value);
-                    } elseif($accepted_args > 1) {
-                        $the_args = array_slice($all_args, 0, $accepted_args);
-                    } elseif($accepted_args === 0) {
-                        $the_args = null;
-                    } else {
-                        $the_args = $all_args;
-                    }
-                    $value = call_user_func_array($function_name, $the_args);
-                }
-            }
+        if( ! isset(self::$filters[$name])) {
+            self::$filters[$name] = false;
+            return $value;
         }
-
+        $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
+        foreach($filters as $filter => $cargo) {
+            $value = call_user_func($cargo['function'], $value);
+        }
         return $value;
-
     }
 
     /**
@@ -139,9 +97,8 @@ class Filter {
 
     public static function remove($name = null) {
         if(is_null($name)) {
-            self::$bucket = array();
+            self::$filters = array();
         } else {
-            unset(self::$bucket[$name]);
             unset(self::$filters[$name]);
         }
     }
@@ -165,6 +122,7 @@ class Filter {
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------------
      *  $name     | string | The name of the filter hook
+     *  $fallback | mixed  | Fallback value if name does not exist
      *  --------- | ------ | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -172,7 +130,7 @@ class Filter {
 
     public static function exist($name = null, $fallback = false) {
         if(is_null($name)) {
-            return ! empty(self::$filters) ? array_keys(self::$filters) : $fallback;
+            return ! empty(self::$filters) ? self::$filters : $fallback;
         }
         return isset(self::$filters[$name]) ? self::$filters[$name] : $fallback;
     }
