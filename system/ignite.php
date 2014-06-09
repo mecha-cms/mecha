@@ -167,9 +167,13 @@ Filter::add('content', function($content) use($config) {
  * Add global cache killer for posts
  */
 
-Weapon::add('on_page_update', function() use($config) {
+function kill_cache() {
+    global $config;
     $root = ( ! empty($config->base) ? str_replace('/', '.', $config->base) . '.' : "");
     File::open(CACHE . DS . $root . 'sitemap.cache.txt')->delete();
     File::open(CACHE . DS . $root . 'feeds.cache.txt')->delete();
     File::open(CACHE . DS . $root . 'feeds.rss.cache.txt')->delete();
-});
+}
+
+Weapon::add('on_article_update', 'kill_cache');
+Weapon::add('on_page_update', 'kill_cache');

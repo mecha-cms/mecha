@@ -6,7 +6,7 @@
 (function($) {
 
     var $btn = $('.tag-row-more-less .btn');
-    
+
     function callback() {
         $('input[name="name[]"]').each(function() {
             $.slugger($(this), $(this).parent().next().find('input'), '-');

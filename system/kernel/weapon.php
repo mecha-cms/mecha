@@ -47,7 +47,7 @@ class Weapon {
         self::$armaments[] = array(
             'name' => (string) $name,
             'function' => $function,
-            'priority' => (int) $priority,
+            'priority' => ! is_null($priority) ? (int) $priority : 10,
             'arguments' => $arguments
         );
     }
@@ -160,11 +160,11 @@ class Weapon {
      *
      */
 
-    public static function exist($name = null) {
+    public static function exist($name = null, $fallback = false) {
         if(is_null($name)) {
-            return ! empty(self::$mounters) ? array_keys(self::$mounters) : false;
+            return ! empty(self::$mounters) ? array_keys(self::$mounters) : $fallback;
         }
-        return isset(self::$mounters[$name]) ? self::$mounters[$name] : false;
+        return isset(self::$mounters[$name]) ? self::$mounters[$name] : $fallback;
     }
 
 }

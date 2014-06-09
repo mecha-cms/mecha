@@ -49,7 +49,7 @@ class Notify {
     }
 
     public static function errors() {
-        return self::$errors > 0;
+        return self::$errors > 0 ? self::$errors : false;
     }
 
     public static function read() {

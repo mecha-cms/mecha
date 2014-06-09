@@ -43,7 +43,7 @@ class Filter {
     public static function add($name, $function, $priority = 10, $accepted_args = 1) {
 
         $name = (string) $name;
-        $priority = (int) $priority;
+        $priority = ! is_null($priority) ? (int) $priority : 10;
         $accepted_args = (int) $accepted_args;
 
         self::$filters[$name] = true;
@@ -170,11 +170,11 @@ class Filter {
      *
      */
 
-    public static function exist($name = null) {
+    public static function exist($name = null, $fallback = false) {
         if(is_null($name)) {
-            return ! empty(self::$filters) ? array_keys(self::$filters) : false;
+            return ! empty(self::$filters) ? array_keys(self::$filters) : $fallback;
         }
-        return isset(self::$filters[$name]) ? self::$filters[$name] : false;
+        return isset(self::$filters[$name]) ? self::$filters[$name] : $fallback;
     }
 
 }

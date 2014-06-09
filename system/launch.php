@@ -344,20 +344,36 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $post = Date::format($article->time, 'Y-m-d-H-i-s');
             $id = date('Y-m-d-H-i-s');
             $parent = Request::post('parent');
-            $status = Guardian::happy() ? 'pilot' : 'passenger';
+            $message = strip_tags($request['message'], '<br>');
 
-            $data  = 'Name: ' . strip_tags($request['name']) . "\n";
-            $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
-            $data .= 'URL: ' . Request::post('url', '#') . "\n";
-            $data .= 'Status: ' . $status . "\n";
-            $data .= "\n" . SEPARATOR . "\n\n" . strip_tags($request['message'], '<br>');
+            $info = array(
+                'data' => array(
+                    'post' => $article->id,
+                    'id' => (int) Date::format($id, 'U'),
+                    'parent' => $parent ? (int) Date::format($parent, 'U') : null,
+                    'name' => strip_tags($request['name']),
+                    'email' => $request['email'],
+                    'url' => Request::post('url', '#'),
+                    'status' => Guardian::happy() ? 'pilot' : 'passenger',
+                    'message_raw' => $message,
+                    'message' => Text::parse($message)->to_html
+                ),
+                'execution_time' => time(),
+                'error' => Notify::errors()
+            );
+
+            $data  = 'Name: ' . $info['data']['name'] . "\n";
+            $data .= 'Email: ' . Text::parse($info['data']['email'])->to_ascii . "\n";
+            $data .= 'URL: ' . $info['data']['url'] . "\n";
+            $data .= 'Status: ' . $info['data']['status'] . "\n";
+            $data .= "\n" . SEPARATOR . "\n\n" . $message;
 
             File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt');
 
-            Weapon::fire('on_comment_submit');
-            Weapon::fire('on_comment_update');
-
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
+
+            Weapon::fire('on_comment_update', array($info));
+            Weapon::fire('on_comment_construct', array($info));
 
             if($config->email_notification) {
                 $header  = "From: " . $request['email'] . "\r\n";
