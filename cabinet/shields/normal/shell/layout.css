@@ -12,7 +12,7 @@ body {
 }
 
 .footnotes {margin-top:1.3846153846153846em}
-.form-login {max-width:350px}
+.form-login {padding:10% 0}
 
 
 /* WRAPPER */
@@ -329,6 +329,7 @@ body {
     margin:0 0 1.3846153846153846em;
   }
   .grid:empty {display:none}
+  .form-login {padding:0}
   .comment-form {margin-right:0}
 }
 
