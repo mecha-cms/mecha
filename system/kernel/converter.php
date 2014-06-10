@@ -209,7 +209,7 @@ class Converter {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------------
-     *  $input    | string  | The element string markup to be converted
+     *  $input    | string  | The string element to be converted
      *  $element  | array   | Tag open, tag close, tag separator
      *  $attr     | array   | Value open, value close, attribute separator
      *  $str_eval | boolean | Convert value with `Converter::strEval()` ?
@@ -219,23 +219,18 @@ class Converter {
      */
 
     public static function attr($input, $element = array('<', '>', ' '), $attr = array('"', '"', '='), $str_eval = true) {
-        $tag_connect = preg_quote($element[2], '#');
-        $tag_open = preg_quote($element[0], '#');
-        $tag_close = preg_quote($element[1], '#');
-        $value_open = preg_quote($attr[0], '#');
-        $value_close = preg_quote($attr[1], '#');
-        if( ! preg_match('#' . $tag_open . '(([a-zA-Z0-9\-\:]+' . $tag_connect . ')?(.*?))' . $tag_close . '#', $input, $matches)) {
+        if( ! preg_match('#' . preg_quote($element[0], '#') . '(([a-zA-Z0-9\-\:]+' . preg_quote($element[2], '#') . ')?(.*?))' . preg_quote($element[1], '#') . '#', $input, $matches)) {
             return false;
         }
         $results = array();
         $attributes = array();
-        $element = rtrim($matches[2], $tag_connect);
-        $parts = explode($tag_connect, trim($matches[3]));
+        $name = rtrim($matches[2], $element[2]);
+        $parts = explode($element[2], trim($matches[3]));
         foreach($parts as $part) {
             $part = explode($attr[2], $part, 2);
-            $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . $value_open . '|' . $value_close . '$#', "", $part[1]) : "";
+            $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
         }
-        $results['element'] = ! empty($element) ? $element : null;
+        $results['element'] = ! empty($name) ? $name : null;
         $results['attributes'] = $str_eval ? self::strEval($attributes) : $attributes;
         return $results;
     }
