@@ -195,4 +195,49 @@ class Converter {
         return $output;
     }
 
+    /**
+     * ====================================================================
+     *  CONVERT ATTRIBUTES OF ELEMENT INTO ARRAY OF DATA
+     * ====================================================================
+     *
+     * -- CODE: -----------------------------------------------------------
+     *
+     *    var_dump(Converter::attr('<div class="foo">'));
+     *
+     * --------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | string  | The element string markup to be converted
+     *  $element  | array   | Tag open, tag close, tag separator
+     *  $attr     | array   | Value open, value close, attribute separator
+     *  $str_eval | boolean | Convert value with `Converter::strEval()` ?
+     *  --------- | ------- | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function attr($input, $element = array('<', '>', ' '), $attr = array('"', '"', '='), $str_eval = true) {
+        $tag_connect = preg_quote($element[2], '#');
+        $tag_open = preg_quote($element[0], '#');
+        $tag_close = preg_quote($element[1], '#');
+        $value_open = preg_quote($attr[0], '#');
+        $value_close = preg_quote($attr[1], '#');
+        if( ! preg_match('#' . $tag_open . '(([a-zA-Z0-9\-\:]+' . $tag_connect . ')?(.*?))' . $tag_close . '#', $input, $matches)) {
+            return false;
+        }
+        $results = array();
+        $attributes = array();
+        $element = rtrim($matches[2], $tag_connect);
+        $parts = explode($tag_connect, trim($matches[3]));
+        foreach($parts as $part) {
+            $part = explode($attr[2], $part, 2);
+            $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . $value_open . '|' . $value_close . '$#', "", $part[1]) : "";
+        }
+        $results['element'] = ! empty($element) ? $element : null;
+        $results['attributes'] = $str_eval ? self::strEval($attributes) : $attributes;
+        return $results;
+    }
+
 }
