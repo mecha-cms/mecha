@@ -20,7 +20,7 @@
       <?php endif; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo $cache['title']; ?>" placeholder="<?php echo $speak->manager->placeholder_title; ?>"></span>
+        <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse($cache['title'])->to_encoded_html; ?>" placeholder="<?php echo $speak->manager->placeholder_title; ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->slug; ?></span>

@@ -91,9 +91,12 @@ for: Untuk
 to: Ke
 by: Oleh
 as: Sebagai
+posted_by: Diposting oleh
+
 at: Pada
 on: Pada
-posted_by: Diposting oleh
+of: Dari
+in: Dalam
 
 comment: Komentar
 comments: Komentar
@@ -174,6 +177,20 @@ date: Tanggal
 dates: Tanggal-Tanggal
 
 time: Waktu
+ago: Yang Lalu
+
+year: Tahun
+month: Bulan
+day: Hari
+hour: Jam
+minute: Menit
+second: Detik
+year_p: Tahun
+month_p: Bulan
+day_p: Hari
+hour_p: Jam
+minute_p: Menit
+second_p: Detik
 
 timezone: Zona Waktu
 timezones: Zona-Zona Waktu

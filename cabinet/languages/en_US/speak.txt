@@ -91,9 +91,12 @@ for: For
 to: To
 by: By
 as: As
+posted_by: Posted by
+
 at: At
 on: On
-posted_by: Posted by
+of: Of
+in: In
 
 comment: Comment
 comments: Comments
@@ -174,6 +177,20 @@ date: Date
 dates: Dates
 
 time: Time
+ago: Ago
+
+year: Year
+month: Month
+day: Day
+hour: Hour
+minute: Minute
+second: Second
+year_p: Years
+month_p: Months
+day_p: Days
+hour_p: Hours
+minute_p: Minutes
+second_p: Seconds
 
 timezone: Timezone
 timezones: Timezones

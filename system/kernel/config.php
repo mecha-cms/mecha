@@ -36,11 +36,9 @@ class Config {
             $key = Mecha::A($key);
         }
         if(is_array($key)) {
-            foreach($key as $k => $v) {
-                self::$bucket[$k] = Filter::apply('config:' . $k, Filter::apply($k, $v));
-            }
+            self::$bucket = array_merge(self::$bucket, $key);
         } else {
-            self::$bucket[$key] = Filter::apply('config:' . $key, Filter::apply($key, $value));
+            self::$bucket[$key] = $value;
         }
     }
 
@@ -123,9 +121,6 @@ class Config {
             } else {
                 self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $array);
             }
-        }
-        foreach(self::$bucket[$key] as $k => $v) {
-            self::$bucket[$key][$k] = Filter::apply('config:' . $k, Filter::apply($k, $v));
         }
     }
 
@@ -236,11 +231,6 @@ class Config {
 
         $config['speak']['months'] = explode(',', $config['speak']['months']);
         $config['speak']['days'] = explode(',', $config['speak']['days']);
-
-        // Apply filters
-        foreach($config as $key => $value) {
-            $config[$key] = Filter::apply('config:' . $key, Filter::apply($key, $value));
-        }
 
         self::$bucket = $config;
 
