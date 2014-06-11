@@ -5,7 +5,7 @@
 <div class="tab-content-area">
   <?php echo Notify::read(); ?>
   <div class="tab-content" id="tab-content-1">
-    <h3><?php echo $speak->backup; ?></h3>
+    <h3 class="media-head"><?php echo $speak->backup; ?></h3>
     <table class="table-bordered table-full">
       <colgroup>
         <col>
@@ -37,9 +37,8 @@
     </table>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <h3><?php echo $speak->restore; ?></h3>
+    <h3 class="media-head"><?php echo $speak->restore; ?></h3>
     <?php echo Config::speak('file:restore'); ?>
-    <hr>
     <?php
 
     $destinations = array(
@@ -55,22 +54,19 @@
 
     ?>
     <?php foreach($destinations as $title => $destination): ?>
-    <h4><?php echo $title; ?></h4>
-    <p><code><?php echo $destination; ?></code></p>
-    <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
-      <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
-      <input name="destination" type="hidden" value="<?php echo $destination; ?>">
-      <input name="title" type="hidden" value="<?php echo $title; ?>">
-      <div class="grid-group">
-        <span class="grid span-6">
-          <span class="input-wrapper btn">
-            <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
-          </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
-        </span>
-      </div>
-    </form>
-    <hr>
+    <div class="media-item">
+      <h4><?php echo $title; ?></h4>
+      <p><code><?php echo $destination; ?></code></p>
+      <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
+        <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+        <input name="destination" type="hidden" value="<?php echo $destination; ?>">
+        <input name="title" type="hidden" value="<?php echo $title; ?>">
+        <span class="input-wrapper btn">
+          <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
+          <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
+        </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
+      </form>
+    </div>
     <?php endforeach; ?>
   </div>
 </div>

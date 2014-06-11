@@ -1,0 +1,60 @@
+.editor-toolbar {
+  height:26px;
+  line-height:26px;
+  overflow:hidden;
+  margin:0 0 2px;
+}
+
+.editor-toolbar a {
+  display:block;
+  float:left;
+  width:26px;
+  height:inherit;
+  line-height:inherit;
+  text-align:center;
+  margin:0 2px 0 0;
+  background-color:#333;
+  color:#FFA;
+}
+
+.editor-toolbar a:focus,
+.editor-toolbar a:hover {background-color:#373737}
+.editor-toolbar a:active {background-color:#2F2F2F}
+
+.custom-modal-overlay {
+  position:fixed !important;
+  position:absolute;
+  top:0;
+  right:0;
+  bottom:0;
+  left:0;
+  z-index:9999;
+  background-color:black;
+  opacity:.7;
+}
+
+.custom-modal {
+  position:fixed !important;
+  position:absolute;
+  top:25%;
+  left:50%;
+  z-index:9999;
+  background-color:white;
+  border:1px solid;
+  width:250px;
+  padding:1em;
+  margin-left:-125px;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-box-shadow:0 1px 2px rgba(0,0,0,.4);
+  -moz-box-shadow:0 1px 2px rgba(0,0,0,.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.4);
+}
+
+.custom-modal-header {font-weight:bold}
+.custom-modal-content {margin:1em 0}
+.custom-modal-content input {
+  display:block;
+  width:100%;
+}

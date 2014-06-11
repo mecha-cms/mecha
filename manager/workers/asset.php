@@ -2,18 +2,14 @@
 <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset" method="post" enctype="multipart/form-data">
   <?php $token = Guardian::makeToken(); ?>
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <div class="grid-group">
-    <span class="grid span-6">
-      <span class="input-wrapper btn">
-        <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-        <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
-      </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
-    </span>
-  </div>
+  <span class="input-wrapper btn">
+    <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
+    <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
+  </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
 </form>
 <?php if($pages): ?>
 <hr>
-<h3 class="asset-headline"><?php echo $speak->assets; ?></h3>
+<h3 class="media-head"><?php echo $speak->assets; ?></h3>
 <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered">

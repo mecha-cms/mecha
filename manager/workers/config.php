@@ -371,17 +371,17 @@
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_content]" class="input-block"><?php echo $cache['defaults']['page_content']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_content]" class="input-block code"><?php echo $cache['defaults']['page_content']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="input-block"><?php echo $cache['defaults']['page_custom_css']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="input-block code"><?php echo $cache['defaults']['page_custom_css']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="input-block"><?php echo $cache['defaults']['page_custom_js']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="input-block code"><?php echo $cache['defaults']['page_custom_js']; ?></textarea></span>
     </label>
 
   </fieldset>

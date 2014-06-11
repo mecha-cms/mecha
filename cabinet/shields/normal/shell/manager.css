@@ -66,137 +66,38 @@
 
 .widget-manager-menu .separator {border-top:1px solid}
 
-.tab-area {
-  height:32px;
-  line-height:30px;
-  font-weight:bold;
-  overflow:hidden;
-}
-
 .tab {
-  display:block;
-  float:left;
-  margin:0 0 0 5px;
-  padding:0 10px 0 8px;
-  border:1px solid transparent;
-  border-bottom:none;
   background-color:#333;
+  border-color:transparent; 
   color:white;
-  position:relative;
 }
 
 .tab:focus,
-.tab:hover {color:white}
+.tab:hover,
+.tab:active {color:white}
+
 .tab.active {
   background:none;
   border-color:inherit;
   color:inherit;
 }
 
-.tab.active:before,
-.tab.active:after {
-  content:"";
-  display:block;
-  position:absolute;
-  bottom:-1px;
-  z-index:4;
-  width:999em;
-  height:0;
-  border-bottom:1px solid;
-  pointer-events:none;
-}
+.checkbox:focus,
+.checkbox:hover,
+label:hover .checkbox {color:#519F48}
+.radio:focus,
+.radio:hover,
+label:hover .radio {color:#3A64A4}
 
-.tab.active:before {right:100%}
-.tab.active:after {left:100%}
-.tab-content {clear:both}
-
-.editor-toolbar {
-  height:26px;
-  line-height:26px;
-  overflow:hidden;
-  margin:0 0 2px;
-}
-
-.editor-toolbar a {
-  display:block;
-  float:left;
-  width:26px;
-  height:inherit;
-  line-height:inherit;
-  text-align:center;
-  margin:0 2px 0 0;
-  background-color:#333;
-  color:#FFA;
-}
-
-.editor-toolbar a:focus,
-.editor-toolbar a:hover {background-color:#373737}
-.editor-toolbar a:active {background-color:#2F2F2F}
-
-.custom-modal-overlay {
-  position:fixed !important;
-  position:absolute;
-  top:0;
-  right:0;
-  bottom:0;
-  left:0;
-  z-index:9999;
-  background-color:black;
-  opacity:.7;
-}
-
-.custom-modal {
-  position:fixed !important;
-  position:absolute;
-  top:25%;
-  left:50%;
-  z-index:9999;
-  background-color:white;
-  border:1px solid;
-  width:250px;
-  padding:1em;
-  margin-left:-125px;
-  -webkit-box-sizing:border-box;
-  -moz-box-sizing:border-box;
-  box-sizing:border-box;
-  -webkit-box-shadow:0 1px 2px rgba(0,0,0,.4);
-  -moz-box-shadow:0 1px 2px rgba(0,0,0,.4);
-  box-shadow:0 1px 2px rgba(0,0,0,.4);
-}
-
-.custom-modal-header {font-weight:bold}
-.custom-modal-content {margin:1em 0}
-.custom-modal-content input {
-  display:block;
-  width:100%;
-}
+.checkbox.checked {color:#4B9343}
+.radio.checked {color:#365D98}
 
 .editor-preview {margin:0}
 .editor-preview .preview-title {margin-top:0}
 
 textarea[name="content"],
 textarea[name="css"],
-textarea[name="js"] {
-  height:300px;
-  font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,Monospace;
-}
-
-.form-upload .input-wrapper {
-  position:relative;
-  overflow:hidden;
-}
-
-.form-upload .input-wrapper input {
-  display:block;
-  position:absolute;
-  top:0;
-  left:0;
-  margin:0;
-  padding:0;
-  width:200%;
-  height:200%;
-  opacity:0;
-}
+textarea[name="js"] {height:300px}
 
 .main-actions {
   padding:1em 0;
@@ -204,24 +105,18 @@ textarea[name="js"] {
   text-align:right;
 }
 
-.tab-content-area {
-  margin-top:0;
-  padding-top:1.3846153846153846em;
-}
-
-.tab-content-area .grid-group:first-child {margin-top:0}
-
 .media-item {
   border-top:1px dashed;
   padding:1.3846153846153846em 0;
+  margin:1.3846153846153846em 0 0;
 }
+
+.media-item + .media-item {margin-top:0}
 
 .media-item h4 {
   margin:0 0 -.3em;
   line-height:1;
 }
-
-.media-headline + .media-item {margin-top:1.3846153846153846em}
 
 .plugin-author {
   background-color:#333;
@@ -254,9 +149,7 @@ textarea[name="js"] {
 
 .messages + .page-list,
 .messages + .comment-list,
-.messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
-
-.messages ~ .tab-content h3:first-child {margin-top:18px}
+.tab-content-area .messages {margin-top:1.3846153846153846em}
 
 .help {cursor:help}
 
@@ -307,20 +200,8 @@ textarea[name="js"] {
 }
 
 @media (max-width:580px) {
-  .tab-area {
-    height:auto;
-    line-height:42px;
-  }
-  .tab {
-    float:none;
-    border:none;
-    margin:0 0 2px;
-    padding:0 16px 0 14px;
-  }
   .tab.active {
     background-color:#365D98;
     color:white;
   }
-  .tab.active:before,
-  .tab.active:after {display:none}
 }

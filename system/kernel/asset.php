@@ -27,8 +27,6 @@ class Asset {
 
     private static $root = "";
 
-    private function __construct() {}
-
     private static function tracePath($path) {
         $config = Config::get();
         if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
@@ -44,6 +42,9 @@ class Asset {
     // Get public asset URL
     public static function url($path) {
         $config = Config::get();
+        if(strpos(self::tracePath($path), ROOT) === false) {
+            return self::tracePath($path);
+        }
         return str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : "");
     }
 

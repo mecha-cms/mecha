@@ -16,7 +16,7 @@
     </div>
     <div class="comment-body"><?php echo $comment->message; ?></div>
     <div class="comment-footer">
-      <?php Weapon::fire('comment_footer', array($comment, $article = "")); ?>
+      <?php Weapon::fire('comment_footer', array($comment, $article = false)); ?>
     </div>
   </li>
   <?php endforeach; ?>

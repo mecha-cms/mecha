@@ -708,10 +708,6 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         Shield::abort();
     }
 
-    Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/upload.js');
-    }, 11);
-
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         File::upload($_FILES['file'], ASSET);
@@ -1302,10 +1298,6 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
         Shield::abort();
     }
 
-    Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/upload.js');
-    }, 11);
-
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $accepted_mimes = array(
@@ -1474,10 +1466,6 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     if( ! Guardian::happy()) {
         Shield::abort();
     }
-
-    Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/upload.js');
-    }, 11);
 
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
@@ -1713,10 +1701,6 @@ Route::accept($config->manager->slug . '/(backup|restore)', function() use($conf
     if( ! Guardian::happy()) {
         Shield::abort();
     }
-
-    Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/upload.js');
-    }, 11);
 
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));

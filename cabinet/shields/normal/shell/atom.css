@@ -61,7 +61,7 @@ time,mark,audio,video {
 ::-webkit-input-placeholder {
   color:#AAA;
   opacity:1;
-  overflow:visible; /* Webkit only :( */
+  overflow:visible; /* WebKit only :( */
   line-height:normal;
 }
 
@@ -186,17 +186,18 @@ a:focus,
 a:hover {color:#666}
 a img {border:none}
 
-h1,h2,h3,h4,h5,h6 {
+h1,h2,h3,h4,h5,h6,
+.h1,.h2,.h3,.h4,.h5,.h6 {
   line-height:normal;
   margin:18px 0 6px;
 }
 
-h1 {font-size:200%}
-h2 {font-size:180%}
-h3 {font-size:160%}
-h4 {font-size:140%}
-h5 {font-size:120%}
-h6 {font-size:100%}
+h1,.h1 {font-size:200%}
+h2,.h2 {font-size:180%}
+h3,.h3 {font-size:160%}
+h4,.h4 {font-size:140%}
+h5,.h5 {font-size:120%}
+h6,.h6 {font-size:100%}
 
 hr {border-top:1px dashed}
 
@@ -251,6 +252,7 @@ input::-moz-focus-inner {
 textarea {
   overflow:auto;
   height:90px;
+  min-height:90px;
   line-height:inherit;
   resize:vertical;
 }
@@ -344,36 +346,7 @@ input[type="radio"] {
   padding:0;
   position:relative;
   top:-1px;
-  -webkit-appearance:none;
-  -moz-appearance:none;
-  appearance:none;
 }
-
-input[type="checkbox"]:before,
-input[type="radio"]:before {
-  content:"\f0c8";
-  display:block;
-  margin-top:-1px;
-  font:normal normal 14px/14px "FontAwesome";
-  color:#333;
-}
-
-input[type="checkbox"]:checked:before {
-  content:"\f14a";
-  color:#4B9343;
-}
-
-input[type="checkbox"]:focus:before,
-input[type="checkbox"]:hover:before {color:#519F48}
-input[type="radio"]:before {content:"\f10c"}
-
-input[type="radio"]:checked:before {
-  content:"\f192";
-  color:#365D98;
-}
-
-input[type="radio"]:focus:before,
-input[type="radio"]:hover:before {color:#3A64A4}
 
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {height:auto}
@@ -461,6 +434,8 @@ code,pre {
   color:inherit;
 }
 
+.code {font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,Monospace}
+
 pre {
   overflow:auto;
   word-wrap:break-word;
@@ -534,7 +509,13 @@ pre:first-child,
 table:first-child,
 .fluid-video:first-child,
 .image-container:first-child,
-.p:first-child {margin-top:0}
+.p:first-child,
+.h1:first-child,
+.h2:first-child,
+.h3:first-child,
+.h4:first-child,
+.h5:first-child,
+.h6:first-child {margin-top:0}
 
 
 /* HELPERS */

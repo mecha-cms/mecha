@@ -28,7 +28,7 @@
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->content; ?></span>
-        <span class="grid span-5"><textarea name="content" class="input-block" placeholder="<?php echo $speak->manager->placeholder_content; ?>"><?php echo Text::parse($cache['content'])->to_encoded_html; ?></textarea></span>
+        <span class="grid span-5"><textarea name="content" class="input-block code" placeholder="<?php echo $speak->manager->placeholder_content; ?>"><?php echo Text::parse($cache['content'])->to_encoded_html; ?></textarea></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
@@ -66,11 +66,11 @@
       </div>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
-        <span class="grid span-5"><textarea name="css" class="input-block"><?php echo $cache['css']; ?></textarea></span>
+        <span class="grid span-5"><textarea name="css" class="input-block code"><?php echo $cache['css']; ?></textarea></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_js; ?></span>
-        <span class="grid span-5"><textarea name="js" class="input-block"><?php echo $cache['js']; ?></textarea></span>
+        <span class="grid span-5"><textarea name="js" class="input-block code"><?php echo $cache['js']; ?></textarea></span>
       </label>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
