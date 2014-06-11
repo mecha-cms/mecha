@@ -189,7 +189,7 @@ class Converter {
 
     public static function phpEval($input) {
         ob_start();
-        eval(preg_replace('#;+$#', "", $input) . ';');
+        eval($input);
         $output = ob_get_contents();
         ob_end_clean();
         return $output;
@@ -202,7 +202,9 @@ class Converter {
      *
      * -- CODE: -----------------------------------------------------------
      *
-     *    var_dump(Converter::attr('<div class="foo">'));
+     *    var_dump(Converter::attr('<div id="foo">'));
+     *
+     *    var_dump(Converter::attr('<div id="foo">test content</div>'));
      *
      * --------------------------------------------------------------------
      *
@@ -219,20 +221,28 @@ class Converter {
      */
 
     public static function attr($input, $element = array('<', '>', ' '), $attr = array('"', '"', '='), $str_eval = true) {
-        if( ! preg_match('#' . preg_quote($element[0], '#') . '(([a-zA-Z0-9\-\:]+' . preg_quote($element[2], '#') . ')?(.*?))' . preg_quote($element[1], '#') . '#', $input, $matches)) {
+        if( ! preg_match('#^' . preg_quote($element[0], '#') . '([a-zA-Z0-9\-\:\_]+)?(' . preg_quote($element[2], '#') . '(.*?))?\/?' . preg_quote($element[1], '#') . '(([\s\S]*?)(' . preg_quote($element[0], '#') . '\/\1' . preg_quote($element[1], '#') . '))?$#m', $input, $matches)) {
             return false;
         }
-        $results = array();
-        $attributes = array();
-        $name = rtrim($matches[2], $element[2]);
-        $parts = explode($element[2], trim($matches[3]));
-        foreach($parts as $part) {
-            $part = explode($attr[2], $part, 2);
-            $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
+        $name = $matches[1];
+        $attributes = null;
+        if(isset($matches[3])) {
+            $matches[3] = trim($matches[3], $element[2]);
+            if( ! empty($matches[3])) {
+                $attributes = array();
+                $parts = explode($element[2], $matches[3]);
+                foreach($parts as $part) {
+                    $part = explode($attr[2], $part, 2);
+                    $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
+                }
+                unset($attributes[""]);
+            }
         }
-        $results['element'] = ! empty($name) ? $name : null;
-        $results['attributes'] = $str_eval ? self::strEval($attributes) : $attributes;
-        return $results;
+        return array(
+            'element' => ! empty($name) ? $name : null,
+            'attributes' => $str_eval ? self::strEval($attributes) : $attributes,
+            'content' => isset($matches[6]) ? $matches[5] : null
+        );
     }
 
 }
