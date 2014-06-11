@@ -104,6 +104,8 @@ class Shield {
 
     public static function attach($name, $minify = true, $cacheable = false) {
 
+        Weapon::fire('before_shield_config_redefine', array($name, $minify, $cacheable));
+
         $config = Config::get();
         $speak = Config::speak();
         $page = $config->page;
@@ -115,6 +117,8 @@ class Shield {
         if($config->page_type == 'article') {
             $article = $page; // Create page alias for article
         }
+
+        Weapon::fire('after_shield_config_redefine', array($name, $minify, $cacheable));
 
         if($file = File::exist(self::tracePath($name))) {
             $shield = $file;
@@ -166,12 +170,16 @@ class Shield {
 
     public static function abort($name = null, $minify = true) {
 
+        Weapon::fire('before_shield_config_redefine', array($name, $minify));
+
         $config = Config::get();
         $speak = Config::speak();
         $page = $config->page;
         $pages = $config->pages;
         $pager = $config->pagination;
         $manager = Guardian::happy();
+
+        Weapon::fire('after_shield_config_redefine', array($name, $minify));
 
         if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
             $shield = SHIELD . DS . $config->shield . DS . $name . '.php';

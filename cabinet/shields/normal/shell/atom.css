@@ -619,6 +619,10 @@ table:first-child,
   text-align:center;
 }
 
+.align-top {vertical-align:top}
+.align-bottom {vertical-align:bottom}
+.align-middle {vertical-align:middle}
+
 .text-left {text-align:left}
 .text-right {text-align:right}
 .text-center {text-align:center}

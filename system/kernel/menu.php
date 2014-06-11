@@ -55,7 +55,7 @@
 
 class Menu {
 
-    public static function get($array = null, $type = 'ul') {
+    public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:') {
         $config = Config::get();
         $current = $config->url_current;
         // Use menu file from the cabinet if `$array` is not defined
@@ -65,6 +65,7 @@ class Menu {
             } else {
                 $array = array('Home' => '/', 'About' => '/about');
             }
+            $filter_prefix = 'navigation:';
         }
         $html = '<' . $type . '>';
         foreach($array as $text => $url) {
@@ -75,19 +76,19 @@ class Menu {
                     if(strpos($_url, '://') === false && strpos($_url, '#') !== 0) {
                         $_url = str_replace('/#', '#', trim($config->url . '/' . $_url, '/'));
                     }
-                    $html .= '<li' . ($_url == $current ? ' class="selected"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . self::get($url, $type) . '</li>';
+                    $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($_url == $current ? ' class="selected"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . self::get($url, $type, $filter_prefix) . '</li>');
                 } else {
-                    $html .= '<li><a href="#">' . $text . '</a>' . self::get($url, $type) . '</li>';
+                    $html .= Filter::apply($filter_prefix . 'list.item', '<li><a href="#">' . $text . '</a>' . self::get($url, $type, $filter_prefix) . '</li>');
                 }
             } else {
                 // Create full URL from value if the value does not contain a `://`
                 if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
                     $url = str_replace('/#', '#', trim($config->url . '/' . trim($url, '/'), '/'));
                 }
-                $html .= '<li' . ($url == $current ? ' class="selected"' : "") . '><a href="' . $url . '">' . $text . '</a></li>';
+                $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($url == $current ? ' class="selected"' : "") . '><a href="' . $url . '">' . $text . '</a></li>');
             }
         }
-        return $html . '</' . $type . '>';
+        return Filter::apply($filter_prefix . 'list', $html . '</' . $type . '>');
     }
 
 }

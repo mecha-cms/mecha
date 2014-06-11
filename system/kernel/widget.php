@@ -71,11 +71,15 @@ class Widget extends Weapon {
          */
 
         if($more_menus = Mecha::A(Config::get('manager_menu'))) {
-            $menus = $menus + $more_menus;
+            $menus = $menus + array('{{separator}}' => "") + $more_menus;
         }
 
+        Filter::add('manager:list.item', function($menu) {
+            return preg_replace('#<li.*?><a .*?>\{\{separator\}\}<\/a><\/li>#', '<li class="separator"></li>', $menu);
+        }, 10);
+
         $html  = '<div class="widget widget-manager widget-manager-menu">';
-        $html .= Menu::get($menus);
+        $html .= Menu::get($menus, 'ul', 'manager:');
         $html .= '</div>';
         $html  = Filter::apply('widget', $html);
         return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));

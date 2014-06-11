@@ -64,6 +64,8 @@
   border-radius:2px;
 }
 
+.widget-manager-menu .separator {border-top:1px solid}
+
 .tab-area {
   height:32px;
   line-height:30px;
@@ -255,6 +257,8 @@ textarea[name="js"] {
 .messages + .tab-content + .tab-content .plugin-author {margin-top:1.3846153846153846em}
 
 .messages ~ .tab-content h3:first-child {margin-top:18px}
+
+.help {cursor:help}
 
 
 /**
