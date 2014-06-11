@@ -179,6 +179,12 @@ class Guardian {
         if(strpos($path, '://') === false) {
             $path = Config::get('url') . '/' . trim($path, '/');
         }
+        $info = array(
+            'url' => $path,
+            'execution_time' => time(),
+            'error' => Notify::errors()
+        );
+        Weapon::fire('before_kick', array($info));
         header('Location: ' . $path);
         exit;
     }

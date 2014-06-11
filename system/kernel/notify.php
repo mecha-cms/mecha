@@ -23,7 +23,7 @@ class Notify {
     private static $notify = 'mecha_notification';
     private static $errors = 0;
 
-    public static function add($type = 'info', $text = "", $icon = "", $tag = 'p') {
+    public static function add($type = 'info', $text = "", $icon = '<i class="fa fa-fw fa-quote-left"></i> ', $tag = 'p') {
         Session::set(self::$notify, Session::get(self::$notify) . '<' . $tag . ' class="message message-' . $type . ' cl cf">' . $icon . $text . '</' . $tag . '>');
     }
 
