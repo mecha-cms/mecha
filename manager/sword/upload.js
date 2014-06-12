@@ -17,6 +17,8 @@
         accepted = $uploader.attr('data-accepted-extensions') ? $uploader.data('acceptedExtensions').split(',') : 'css,html,js,md,txt,bmp,cur,gif,ico,jpg,jpeg,png,eot,ttf,woff,gz,rar,tar,zip,zipx'.split(','),
         cache = $uploader.prev().html();
 
+    if (!$uploader.length) return;
+
     $uploader.on("change", function() {
 
         var segments = this.value.split('.'),

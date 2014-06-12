@@ -15,6 +15,8 @@
 
     var $btn = $('.row-more-less .btn');
 
+    if (!$btn.length) return;
+
     $btn.on("click", function() {
 
         var clone = $(this).closest('tr').prev().clone(true),

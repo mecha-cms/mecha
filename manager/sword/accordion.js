@@ -17,6 +17,8 @@
 
     $accordion = $('.accordion-area');
 
+    if (!$accordion.length) return;
+
     $accordion.find('.accordion-header').on("click", function() {
         var active = $(this).is('.active');
         $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');

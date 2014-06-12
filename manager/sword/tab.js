@@ -19,6 +19,8 @@
 
     var $tabs = $('.tab-area a');
 
+    if (!$tabs.length) return;
+
     $tabs.on("click", function() {
         if (this.href.match(/\#.*$/)) {
             $(this).addClass('active').siblings().removeClass('active');

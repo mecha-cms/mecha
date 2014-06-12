@@ -8,12 +8,12 @@ class Get {
     private static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     /**
-     * =========================================================================
-     *  FIND THE FILE PATH OF THE PAGE BY ITS SLUG OR ID
+     * Get Full Path of Page File by its Slug or ID
+     * --------------------------------------------
      *
-     *  [1]. `page-slug`
-     *  [2]. `123456789`
-     * =========================================================================
+     * [1]. page-slug
+     * [2]. 123456789
+     *
      */
 
     private static function tracePath($detector, $folder = PAGE) {
@@ -41,21 +41,34 @@ class Get {
      *
      *    [2]. var_dump(Get::extract(glob(ARTICLE . DS . '*.txt')));
      *
+     *    [3]. var_dump(Get::extract('articles', 'DESC', 'file_path'));
+     *
+     *    [4]. var_dump(Get::extract('articles', 'DESC', 'time', 'kind:1'));
+     *
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Detail
+     *  Parameter  | Type   | Description
      *  ---------- | ------ | --------------------------------------------------
-     *  $reference | string | The file path
+     *  $reference | string | The file path, or keyword of specific method
      *  $reference | array  | Array of file path
      *  ---------- | ------ | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function extract($reference) {
+    public static function extract($reference, $order = 'DESC', $sorter = 'file_path', $filter = "") {
         $tree = array();
         if( ! $reference) return false;
+        if(is_string($reference)) {
+            if($reference == 'articles') {
+                $reference = self::articles($order, $filter);
+            } elseif($reference == 'pages') {
+                $reference = self::pages($order, $filter);
+            } elseif($reference == 'comments') {
+                return self::comments(null, $order, $sorter);
+            }
+        }
         if( ! is_array($reference)) {
             $reference = array($reference);
         }
@@ -66,11 +79,12 @@ class Get {
                 'file_path' => $reference[$i],
                 'file_name' => $base . '.txt',
                 'time' => isset($part[0]) ? Date::format($part[0], 'Y-m-d H:i:s') : '0000-00-00 00:00:00',
+                'update' => File::exist($reference[$i]) ? Date::format(filemtime($reference[$i]), 'Y-m-d H:i:s') : null,
                 'kind' => isset($part[1]) ? Converter::strEval(explode(',', $part[1])) : array(),
                 'slug' => isset($part[2]) ? $part[2] : ""
             );
         }
-        return ! empty($tree) ? $tree : false;
+        return ! empty($tree) ? Mecha::eat($tree)->order($order, $sorter)->vomit() : false;
     }
 
     /**
@@ -84,7 +98,7 @@ class Get {
      * =========================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type   | Detail
+     *  Parameter   | Type   | Desription
      *  ----------- | ------ | -------------------------------------------------
      *  $folder     | string | Path to folder of files you want to be listed
      *  $extensions | string | The file extensions
@@ -238,7 +252,7 @@ class Get {
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type    | Detail
+     *  Parameter   | Type    | Description
      *  ----------- | ------- | ------------------------------------------------
      *  $text       | string  | The source text
      *  $maxchars   | integer | The maximum length of summary

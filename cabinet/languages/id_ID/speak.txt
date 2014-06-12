@@ -181,12 +181,14 @@ ago: Yang Lalu
 
 year: Tahun
 month: Bulan
+week: Minggu
 day: Hari
 hour: Jam
 minute: Menit
 second: Detik
 year_p: Tahun
 month_p: Bulan
+week_p: Minggu
 day_p: Hari
 hour_p: Jam
 minute_p: Menit
