@@ -11,6 +11,7 @@
     <div class="post-body">
       <div class="post-description"><?php echo $article->description; ?></div>
     </div>
+    <div><?php Weapon::fire('article_footer', array($article)); ?></div>
   </article>
   <?php endforeach; ?>
   <?php else: ?>

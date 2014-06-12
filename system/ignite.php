@@ -211,13 +211,21 @@ Weapon::add('on_page_update', 'kill_cache', 10);
  * -----------------------------------------
  */
 
-function page_footer_armaments($page) {
+Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
-    if(Guardian::happy()) {
-        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+    if(Guardian::happy() && $config->page_type == 'manager') {
+        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
-}
+}, 20);
+
+Weapon::add('page_footer', function($page) {
+    $config = Config::get();
+    $speak = Config::speak();
+    if(Guardian::happy() && $config->page_type == 'manager') {
+        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+    }
+}, 20);
 
 
 /**
@@ -225,14 +233,10 @@ function page_footer_armaments($page) {
  * --------------------------------
  */
 
-function comment_footer_armaments($comment, $article) {
+Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
     if(Guardian::happy()) {
         echo '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
     }
-}
-
-Weapon::add('article_footer', 'page_footer_armaments', 20);
-Weapon::add('page_footer', 'page_footer_armaments', 20);
-Weapon::add('comment_footer', 'comment_footer_armaments', 20);
+}, 20);

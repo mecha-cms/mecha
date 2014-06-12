@@ -10,6 +10,7 @@
     <footer class="post-footer">
       <div><?php echo $speak->posted_by; ?> <a href="<?php echo $config->author_profile_url; ?>" rel="author"><?php echo $article->author; ?></a> <?php echo strtolower($speak->on) . ' ' . $article->date->hour . ':' . $article->date->minute; ?></div>
       <div><?php echo tag_links($article->tags, ', '); ?></div>
+      <div><?php Weapon::fire('article_footer', array($article)); ?></div>
     </footer>
   </article>
 
