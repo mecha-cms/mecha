@@ -43,9 +43,9 @@ class Asset {
     public static function url($path) {
         $config = Config::get();
         if(strpos(self::tracePath($path), ROOT) === false) {
-            return self::tracePath($path);
+            return Filter::apply('asset:url', self::tracePath($path));
         }
-        return str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : "");
+        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : ""));
     }
 
     // Return HTML script of asset

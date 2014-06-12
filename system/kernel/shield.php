@@ -104,7 +104,17 @@ class Shield {
 
     public static function attach($name, $minify = true, $cacheable = false) {
 
-        Weapon::fire('before_shield_config_redefine', array($name, $minify, $cacheable));
+        $info = array(
+            'data' => array(
+                'name' => $name,
+                'minify' => $minify,
+                'cacheable' => $cacheable
+            ),
+            'execution_time' => time(),
+            'error' => Notify::errors()
+        );
+
+        Weapon::fire('before_shield_config_redefine', array($info));
 
         $config = Config::get();
         $speak = Config::speak();
@@ -118,7 +128,7 @@ class Shield {
             $article = $page; // Create page alias for article
         }
 
-        Weapon::fire('after_shield_config_redefine', array($name, $minify, $cacheable));
+        Weapon::fire('after_shield_config_redefine', array($info));
 
         if($file = File::exist(self::tracePath($name))) {
             $shield = $file;
@@ -144,7 +154,9 @@ class Shield {
         Weapon::fire('after_launch');
 
         if($cacheable) {
+            $info['data']['cache'] = $cache;
             File::write(ob_get_contents())->saveTo($cache);
+            Weapon::fire('on_cache_construct', array($info));
         }
 
         ob_end_flush();
@@ -170,7 +182,16 @@ class Shield {
 
     public static function abort($name = null, $minify = true) {
 
-        Weapon::fire('before_shield_config_redefine', array($name, $minify));
+        $info = array(
+            'data' => array(
+                'name' => $name,
+                'minify' => $minify
+            ),
+            'execution_time' => time(),
+            'error' => Notify::errors()
+        );
+
+        Weapon::fire('before_shield_config_redefine', array($info));
 
         $config = Config::get();
         $speak = Config::speak();
@@ -179,7 +200,7 @@ class Shield {
         $pager = $config->pagination;
         $manager = Guardian::happy();
 
-        Weapon::fire('after_shield_config_redefine', array($name, $minify));
+        Weapon::fire('after_shield_config_redefine', array($info));
 
         if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
             $shield = SHIELD . DS . $config->shield . DS . $name . '.php';
