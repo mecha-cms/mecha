@@ -6,10 +6,7 @@
 
 /* GENERALS */
 
-body {
-  border-top:5px solid;
-  position:relative;
-}
+body {border-top:5px solid}
 
 .footnotes {margin-top:1.3846153846153846em}
 .form-login {padding:10% 0}
@@ -53,7 +50,7 @@ body {
 
 .blog-sidebar-toggle {
   position:absolute;
-  top:4px;
+  top:8px;
   left:4px;
   padding:0 5px;
   height:30px;

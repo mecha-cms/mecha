@@ -43,11 +43,11 @@
             var width = $tooltip.width(),
                 height = $tooltip.height(),
                 pos = $this.offset(),
-                top = pos.top - height - (distance.vertical * 1.5),
+                top = pos.top - height - distance.vertical,
                 left = pos.left - (width / 2) + ($this.width() / 2);
 
             if (top - $window.scrollTop() <= 0) {
-                top = pos.top + $this.height();
+                top = pos.top + $this.height() + distance.vertical;
                 $tooltip.removeClass('t').addClass('b');
             } else {
                 $tooltip.removeClass('b').addClass('t');
