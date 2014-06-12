@@ -181,12 +181,14 @@ ago: Ago
 
 year: Year
 month: Month
+week: Week
 day: Day
 hour: Hour
 minute: Minute
 second: Second
 year_p: Years
 month_p: Months
+week_p: Weeks
 day_p: Days
 hour_p: Hours
 minute_p: Minutes
