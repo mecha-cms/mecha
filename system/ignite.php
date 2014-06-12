@@ -86,6 +86,8 @@ if(Guardian::happy()) {
             'manager/shell/upload.css',
             'manager/shell/tab.css',
             'manager/shell/tooltip.css',
+            'manager/shell/sortable.css',
+            'manager/shell/accordion.css',
             'shell/manager.css'
         ));
     }, 10);
@@ -95,14 +97,16 @@ if(Guardian::happy()) {
     Weapon::add('sword_after', function() use($config) {
         echo Asset::script(array(
             $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',
-            'manager/sword/slug.js',
             'manager/sword/editor/editor.min.js',
             'manager/sword/editor/mte.min.js',
             'manager/sword/check.js',
             'manager/sword/upload.js',
             'manager/sword/tab.js',
             'manager/sword/tooltip.js',
-            'manager/sword/row.js'
+            'manager/sword/sortable.js',
+            'manager/sword/accordion.js',
+            'manager/sword/row.js',
+            'manager/sword/slug.js'
         ));
     }, 10);
 }
@@ -229,6 +233,6 @@ function comment_footer_armaments($comment, $article) {
     }
 }
 
-Weapon::add('article_footer', 'page_footer_armaments', 10);
-Weapon::add('page_footer', 'page_footer_armaments', 10);
-Weapon::add('comment_footer', 'comment_footer_armaments', 10);
+Weapon::add('article_footer', 'page_footer_armaments', 20);
+Weapon::add('page_footer', 'page_footer_armaments', 20);
+Weapon::add('comment_footer', 'comment_footer_armaments', 20);

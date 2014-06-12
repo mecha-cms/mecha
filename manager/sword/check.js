@@ -27,10 +27,14 @@
         $(this).addClass('checked').html('<i class="fa fa-check-circle"></i>').siblings().removeClass('checked').html('<i class="fa fa-circle"></i>');
         $(this).next().prop('checked', true).trigger("change").siblings('[name="' + $(this).next().attr('name') + '"]').prop('checked', false).trigger("change");
         return false;
+    }).on("mousedown", function() {
+        return false;
     });
 
     $('.checkbox').on("click", function() {
         $(this).toggleClass('checked').html('<i class="fa fa-' + ($(this).is('.checked') ? 'check-' : "") + 'square"></i>').next().prop('checked', $(this).is('.checked')).trigger("change");
+        return false;
+    }).on("mousedown", function() {
         return false;
     });
 

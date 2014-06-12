@@ -1,0 +1,9 @@
+.accordion-area {margin-top:1.3846153846153846em}
+.accordion-area:first-child {margin-top:0}
+.accordion-header {cursor:pointer}
+.accordion-header .fa {margin-right:.4em}
+
+.accordion-content {
+  margin:1.3846153846153846em 0 0 1em;
+  padding-bottom:.2em;
+}

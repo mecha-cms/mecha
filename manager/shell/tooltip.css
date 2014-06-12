@@ -3,8 +3,10 @@
  * padding horizontal = 8
  */
 
+.help {cursor:help}
+
 .tooltip {
-  max-width:200px;
+  max-width:250px;
   background-color:#333;
   border-color:#333;
   color:white;
@@ -29,9 +31,11 @@
   margin-left:-6px;
 }
 
+.tooltip.t .tooltip-arrow {border-bottom:none}
+
 .tooltip.b .tooltip-arrow {
   border-bottom-color:inherit;
-  border-top-color:transparent;
+  border-top:none;
   top:auto;
   bottom:100%;
 }

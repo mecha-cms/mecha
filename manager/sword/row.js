@@ -1,6 +1,14 @@
 /**
  * Table Row More-Less
  * -------------------
+ *
+ *    <tr class="row-more-less" data-min="3" data-max="9999" data-callback="alert('OK!');">
+ *      <td>
+ *        <a class="btn btn-sm btn-more" href="#add">More</a>
+ *        <a class="btn btn-sm btn-less" href="#remove">Less</a>
+ *      </td>
+ *    </tr>
+ *
  */
 
 (function($) {

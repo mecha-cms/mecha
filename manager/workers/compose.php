@@ -1,4 +1,4 @@
-<div class="tab-area cf">
+<div class="tab-area">
   <?php if($config->editor_mode != 'ignite'): ?>
   <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type; ?>/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><i class="fa fa-fw fa-plus-square"></i> <?php echo $speak->new; ?></a>
   <?php endif; ?>

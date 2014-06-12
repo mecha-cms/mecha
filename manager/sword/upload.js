@@ -1,6 +1,14 @@
 /**
  * Custom File Input
  * -----------------
+ *
+ *    <form class="form-upload">
+ *      <span class="input-wrapper btn">
+ *        <span><i class="fa fa-folder-open"></i> Select a file&hellip;</span>
+ *        <input type="file" name="file" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
+ *      </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> Upload</button>
+ *    </form>
+ *
  */
 
 (function($) {

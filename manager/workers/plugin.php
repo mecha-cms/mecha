@@ -1,4 +1,4 @@
-<div class="tab-area cf">
+<div class="tab-area">
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-magic"></i> <?php echo $speak->plugins; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-file-archive-o"></i> <?php echo $speak->upload; ?></a>
 </div>

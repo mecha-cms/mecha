@@ -1,0 +1,34 @@
+.sortable-area {margin-top:1.3846153846153846em}
+.sortable-area:first-child {margin-top:0}
+
+.sortable {
+  border:1px solid;
+  border-left-width:4px;
+  padding:.8em 1em;
+  margin-left:1.5em;
+  position:relative;
+}
+
+.sortable + .sortable {margin-top:2px}
+
+.sortable .handle {
+  position:absolute;
+  top:0;
+  right:100%;
+  bottom:0;
+  margin-right:.5em;
+  width:1em;
+}
+
+.sort {display:block}
+
+.sortable .handle .sort {
+  position:absolute;
+  top:0;
+  left:0;
+}
+
+.sortable .handle .sort + .sort {
+  top:auto;
+  bottom:0;
+}

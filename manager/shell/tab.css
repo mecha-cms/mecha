@@ -3,6 +3,13 @@
   line-height:30px;
   font-weight:bold;
   overflow:hidden;
+  zoom:1;
+}
+
+.tab-area:after {
+  content:" ";
+  display:table;
+  clear:both;
 }
 
 .tab {

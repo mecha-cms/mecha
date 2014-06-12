@@ -1,4 +1,4 @@
-<div class="tab-area cf">
+<div class="tab-area">
   <a class="tab active" href="#tab-content-1"><i class="fa fa-cog"></i> <?php echo $speak->config; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-user"></i> <?php echo $speak->about; ?></a>
 </div>
