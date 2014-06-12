@@ -264,7 +264,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         'page_type' => 'article',
         'page_title' => $article->title . $config->title_separator . $config->index->title . $config->title_separator . $config->title,
         'page' => $article,
-        'pagination' => Navigator::extract(Get::extract(Get::articles()), $slug, 1, $config->index->slug)
+        'pagination' => Navigator::extract(Get::extract('articles'), $slug, 1, $config->index->slug)
     ));
 
     /**
