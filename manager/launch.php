@@ -1057,7 +1057,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         Shield::abort();
     }
 
-    Session::set('mecha_total_comments_diff', $config->total_comments);
+    Session::set(md5($config->host) . ':mecha_total_comments_diff', $config->total_comments);
 
     $pages = array();
 
@@ -1118,7 +1118,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         File::open($comment->file_path)->delete();
 
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
-        Session::set('mecha_total_comments_diff', $config->total_comments);
+        Session::set(md5($config->host) . ':mecha_total_comments_diff', $config->total_comments);
         Weapon::fire('on_comment_update', array($info));
         Weapon::fire('on_comment_destruct', array($info));
         Guardian::kick($config->manager->slug . '/comment');

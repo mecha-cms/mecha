@@ -16,15 +16,14 @@ class Widget extends Weapon {
         $speak = Config::speak();
         if( ! Guardian::happy()) return "";
         $total = $config->total_comments;
-        if(Session::get('mecha_total_comments_diff') === "") {
+        $n = "";
+        if(Session::get(md5($config->host) . ':mecha_total_comments_diff') === "") {
             $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
-            Session::set('mecha_total_comments_diff', $total);
+            Session::set(md5($config->host) . ':mecha_total_comments_diff', $total);
         } else {
-            if($total > (int) Session::get('mecha_total_comments_diff')) {
-                $n = '<span class="counter">' . ($total - (int) Session::get('mecha_total_comments_diff')) . '</span>';
-                Session::set('mecha_total_comments_diff', $total);
-            } else {
-                $n = "";
+            if($total > (int) Session::get(md5($config->host) . ':mecha_total_comments_diff')) {
+                $n = '<span class="counter">' . ($total - (int) Session::get(md5($config->host) . ':mecha_total_comments_diff')) . '</span>';
+                Session::set(md5($config->host) . ':mecha_total_comments_diff', $total);
             }
         }
         $menus = array(
