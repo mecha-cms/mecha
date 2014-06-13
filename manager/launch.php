@@ -237,7 +237,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
             'author' => isset($page->author) ? $page->author : Guardian::get('author'),
             'css' => isset($page->css) ? $page->css_raw : "",
             'js' => isset($page->js) ? $page->js_raw : "",
-            'fields' => isset($page->fields) ? $page->fields : array()
+            'fields' => isset($page->fields) ? Mecha::A($page->fields) : array()
         );
 
         Config::set('page_title', $speak->editing . ' &ldquo;' . $fields['title'] . '&rdquo;' . $config->title_separator . $config->manager->title);
@@ -310,7 +310,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $tags = Request::post('tags', false);
         $css = rtrim(Request::post('css', ""));
         $js = rtrim(Request::post('js', ""));
-        $field = Mecha::O(Request::post('fields', array()));
+        $field = Request::post('fields', array());
 
         /**
          * Handling for page without tags
@@ -1057,7 +1057,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         Shield::abort();
     }
 
-    Session::set(md5($config->host) . ':mecha_total_comments_diff', $config->total_comments);
+    File::write($config->total_comments)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
 
     $pages = array();
 
@@ -1116,9 +1116,8 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         );
 
         File::open($comment->file_path)->delete();
-
+        File::write($config->total_comments)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
-        Session::set(md5($config->host) . ':mecha_total_comments_diff', $config->total_comments);
         Weapon::fire('on_comment_update', array($info));
         Weapon::fire('on_comment_destruct', array($info));
         Guardian::kick($config->manager->slug . '/comment');

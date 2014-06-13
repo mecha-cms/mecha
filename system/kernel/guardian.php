@@ -292,9 +292,8 @@ class Guardian {
                     'author' => $authors[$_POST['username']]['name'],
                     'status' => $authors[$_POST['username']]['status']
                 ));
-                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt');
-                chmod(SYSTEM . DS . 'log' . DS . 'users.txt', 0600);
-                chmod(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt', 0600);
+                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt', 0600);
+                File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
                 self::kick($config->manager->slug . '/login');

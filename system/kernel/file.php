@@ -117,21 +117,26 @@ class File {
                 unlink(self::$opened);
             }
         }
-        self::$opened = null;
     }
 
     // Save the written data
-    public static function save() {
-        self::saveTo(self::$opened);
+    public static function save($permission = null) {
+        self::saveTo(self::$opened, $permission);
         return new static;
     }
 
     // Save the written data to somewhere
-    public static function saveTo($path) {
+    public static function saveTo($path, $permission = null) {
         $path = str_replace(array('\\', '/'), DS, $path);
+        if( ! self::exist(dirname($path))) {
+            mkdir(dirname($path), 0777, true);
+        }
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
         fwrite($handle, self::$cache);
         fclose($handle);
+        if( ! is_null($permission)) {            
+            chmod($path, $permission);
+        }
     }
 
     // Rename a file
@@ -141,7 +146,6 @@ class File {
         if($new_name != $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
-        self::$opened = null;
     }
 
     // Move file or folder to somewhere
@@ -176,12 +180,15 @@ class File {
         }
     }
 
+    // Set file permission
+    public static function setPermission($permission) {
+        chmod(self::$opened, $permission);
+    }
+
     // Upload a file
     public static function upload($file, $destination = ROOT, $custom_success_message = "") {
-
         $config = Config::get();
         $speak = Config::speak();
-
         $settings = array(
             'max' => 2097152, // Maximum allowed file size
             'allow' => array( // List of allowed file extensions
@@ -191,67 +198,53 @@ class File {
                 'gz', 'rar', 'tar', 'zip', 'zipx'
             )
         );
-
         // Create a safe file name
         $renamed = array();
         $parts = explode('.', $file['name']);
-
         foreach($parts as $part) {
             $renamed[] = Text::parse($part)->to_slug_moderate;
         }
-
         $info = pathinfo($file['name']);
         $file['name'] = implode('.', $renamed);
-
         // No file selected
         if(empty($file['name'])) {
             return Notify::error($speak->notify_error_no_file_selected);
         }
-
         // Bad file extension
         if( ! in_array(strtolower($info['extension']), $settings['allow'])) {
             return Notify::error(Config::speak('notify_error_file_extension', array($info['extension'])));
         }
-
         // Too large
         if($file['size'] > $settings['max']) {
             return Notify::error(Config::speak('notify_error_file_size', array(self::size($settings['max'], 'KB'))));
         }
-
         // Something goes wrong
         if($file['error'] > 0) {
             return Notify::error($speak->error . ': <code>' . $file['error'] . '</code>');
         }
-
         // Move the uploaded file to the destination folder
         if( ! self::exist($destination . DS . $file['name'])) {
             move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
         } else {
             return Notify::error(Config::speak('notify_file_exist', array('<code>' . $file['name'] . '</code>')));
         }
-
         // Create public asset link to show on file uploaded
         $link = str_replace(array(ROOT, '\\'), array($config->url, '/'), $destination) . '/' . $file['name'];
-
         $uploaded = array(
             $speak->uploaded => $file['name'],
             $speak->type => $file['type'],
             $speak->size => ($file['size'] / 1024) . ' KB',
             $speak->link => '<a href="' . $link . '" target="_blank">' . $link . '</a>'
         );
-
         $html = array();
-
         foreach($uploaded as $key => $value) {
             $html[] = '<strong>' . $key . ':</strong> ' . $value;
         }
-
         if( ! empty($custom_success_message)) {
             Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], ($file['size'] / 1024) . ' KB', $link)));
         } else {
             Notify::success(implode('<br>', $html), "");
         }
-
     }
 
     // Get file size then convert it to ...

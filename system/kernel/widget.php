@@ -16,15 +16,13 @@ class Widget extends Weapon {
         $speak = Config::speak();
         if( ! Guardian::happy()) return "";
         $total = $config->total_comments;
-        $n = "";
-        if(Session::get(md5($config->host) . ':mecha_total_comments_diff') === "") {
-            $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
-            Session::set(md5($config->host) . ':mecha_total_comments_diff', $total);
+        $destination = SYSTEM . DS . 'log' . DS . 'comments.total.txt';
+        $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
+        if($file = File::exist($destination)) {
+            $old = (int) File::open($file)->read();
+            $n = ($total > $old) ? '<span class="counter">' . ($total - $old) . '</span>' : "";
         } else {
-            if($total > (int) Session::get(md5($config->host) . ':mecha_total_comments_diff')) {
-                $n = '<span class="counter">' . ($total - (int) Session::get(md5($config->host) . ':mecha_total_comments_diff')) . '</span>';
-                Session::set(md5($config->host) . ':mecha_total_comments_diff', $total);
-            }
+            File::write($total)->saveTo($destination, 0600);
         }
         $menus = array(
             '<i class="fa fa-fw fa-cogs"></i> ' . $speak->config => '/' . $config->manager->slug . '/config',
