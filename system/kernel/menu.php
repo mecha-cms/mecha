@@ -70,7 +70,7 @@ class Menu {
         $html = '<' . $type . '>';
         foreach($array as $text => $url) {
             if(is_array($url)) {
-                if(preg_match('/(.*?)\((.*?)\)$/', $text, $matches)) {
+                if(preg_match('#(.*?)\((.*?)\)$#', $text, $matches)) {
                     $_url = trim($matches[2], '/');
                     // Create full URL from value if the value does not contain a `://`
                     if(strpos($_url, '://') === false && strpos($_url, '#') !== 0) {

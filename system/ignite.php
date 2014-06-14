@@ -94,6 +94,9 @@ if(Guardian::happy()) {
     Weapon::add('cargo_before', function() use($config, $speak) {
         echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->logout . '</a></div>';
     }, 10);
+    Weapon::add('sword_before', function() {
+        echo Asset::script('manager/sword/dashboard.js');
+    }, 10);
     Weapon::add('sword_after', function() use($config) {
         echo Asset::script(array(
             $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',

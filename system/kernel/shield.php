@@ -27,7 +27,8 @@ class Shield {
      */
 
     private static function desanitize_output($buffer) {
-        return Filter::apply('before_sanitized', Filter::apply('after_sanitized', $buffer));
+        $buffer = Filter::apply('before_sanitized', $buffer);
+        return Filter::apply('after_sanitized', $buffer);
     }
 
     /**

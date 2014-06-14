@@ -25,8 +25,6 @@
 
 class Asset {
 
-    private static $root = "";
-
     private static function tracePath($path) {
         $config = Config::get();
         if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {

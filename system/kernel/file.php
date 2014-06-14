@@ -134,7 +134,7 @@ class File {
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
         fwrite($handle, self::$cache);
         fclose($handle);
-        if( ! is_null($permission)) {            
+        if( ! is_null($permission)) {
             chmod($path, $permission);
         }
     }

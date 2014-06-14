@@ -44,8 +44,8 @@ class Text {
     }
 
     /**
-     * Convert Nested Strings into Multidimensional Arrays
-     * ---------------------------------------------------
+     * Convert Nested Strings into Associative Arrays
+     * ----------------------------------------------
      */
 
     private static function text_to_array($text, $splitter, $indent) {
@@ -90,7 +90,7 @@ class Text {
             foreach($path as $depth => $key) {
                 if( ! isset($parent[$key])) {
                     if($is_multi) {
-                        $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('/^`|`$/', "", trim($part[1])) : array();
+                        $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('#^`|`$#', "", trim($part[1])) : array();
                         $values = Converter::strEval($values);
                         $parent[rtrim($part[0])] = $values;
                     } else {
@@ -124,7 +124,7 @@ class Text {
             ),
         strip_tags($text));
         if($strip_underscores_and_dots) {
-            $text = preg_replace(array('/[\_\.]+/', '/\-+/'), '-', $text);
+            $text = preg_replace(array('#[\_\.]+#', '#\-+#'), '-', $text);
         }
         return $text;
     }
@@ -178,9 +178,12 @@ class Text {
                 'to_text' => self::slug_to_text($input),
                 'to_array_key' => str_replace('-', '_', self::text_to_slug($input, false))
             );
-        } else {
-            return $input;
+        } elseif(is_array($input) || is_object($input)) {
+            return (object) array(
+                'to_encoded_json' => json_encode($input)
+            );
         }
+        return $input;
     }
 
     public static function toArray($text = "", $splitter = ':', $indent = '    ') {

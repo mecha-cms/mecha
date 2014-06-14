@@ -11,22 +11,28 @@ class Mecha {
     private static $stomach = array();
 
     /**
-     * Convert array into object
+     * Convert Array into Object
+     * -------------------------
      */
+
     public static function O($array) {
         return is_array($array) ? (object) array_map('self::O', $array) : $array;
     }
 
     /**
-     * Convert object into array
+     * Convert Object into Array
+     * -------------------------
      */
+
     public static function A($object) {
         return is_object($object) ? array_map('self::A', (array) $object) : $object;
     }
 
     /**
-     * Set array value recursively
+     * Set Array Value Recursively
+     * ---------------------------
      */
+
     public static function SVR(&$array, $segments, $value = "") {
         $segments = explode('.', $segments);
         while(count($segments) > 1) {
@@ -40,8 +46,10 @@ class Mecha {
     }
 
     /**
-     * Get array value recursively
+     * Get Array Value Recursively
+     * ---------------------------
      */
+
     public static function GVR(&$array, $segments = null, $fallback = false) {
         if(is_null($segments)) {
             return $array;
@@ -56,8 +64,10 @@ class Mecha {
     }
 
     /**
-     * Unset array value recursively
+     * Unset Array Value Recursively
+     * -----------------------------
      */
+
     public static function UVR(&$array, $segments) {
         $segments = explode('.', $segments);
         while(count($segments) > 1) {
@@ -72,16 +82,20 @@ class Mecha {
     }
 
     /**
-     * Initialize with eating ...
+     * Initialize with Eating
+     * ----------------------
      */
+
     public static function eat($array) {
         self::$stomach = $array;
         return new static;
     }
 
     /**
-     * Sort array based on its value's key
+     * Sort Array Based on Its Value's Key
+     * -----------------------------------
      */
+
     public static function order($order = 'ASC', $key = null) {
         if(is_null($key)) {
             if($order == 'ASC') {
@@ -92,7 +106,7 @@ class Mecha {
         } else {
             $before = array();
             $after = array();
-            if(self::$stomach && (count(self::$stomach) > 0 || ! empty(self::$stomach))) {
+            if(self::$stomach && ! empty(self::$stomach)) {
                 foreach(self::$stomach as $k => $v) {
                     $before[$k] = strtolower($v[$key]);
                 }
@@ -111,16 +125,20 @@ class Mecha {
     }
 
     /**
-     * Shake that array
+     * Array Shake
+     * -----------
      */
+
     public static function shake() {
         shuffle(self::$stomach);
         return new static;
     }
 
     /**
-     * Then vomit it!
+     * Vomit! BLARGH!
+     * --------------
      */
+
     public static function vomit($param = null, $fallback = false) {
         $array = self::$stomach;
         self::$stomach = array();
@@ -128,8 +146,10 @@ class Mecha {
     }
 
     /**
-     * Generate chunks of array
+     * Generate Chunks of Array
+     * ------------------------
      */
+
     public static function chunk($index = 1, $count = 10) {
         if( ! self::$stomach) return new static;
         $results = array();

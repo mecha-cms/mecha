@@ -363,7 +363,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $data  = 'Title: ' . $title . "\n";
         $data .= ! empty($description) ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
-        $data .= 'Fields: ' . json_encode($field) . "\n";
+        $data .= 'Fields: ' . Text::parse($field)->to_encoded_json . "\n";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
 
         $info = array(
@@ -380,7 +380,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 'tags' => Converter::strEval($tags),
                 'css' => $css,
                 'js' => $js,
-                'fields' => json_encode($field)
+                'fields' => Text::parse($field)->to_encoded_json
             ),
             'execution_time' => time(),
             'error' => Notify::errors(),
@@ -1158,7 +1158,14 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     Weapon::add('sword_after', function() {
         echo '<script>
 (function($) {
-    new MTE($(\'textarea[name="content"]\')[0]);
+    var $area = $(\'textarea[name="message"]\'), languages = $area.data(\'mteLanguages\');
+    new MTE($area[0], {
+        tabSize: \'    \',
+        shortcut: true,
+        buttons: languages.buttons,
+        prompt: languages.prompt,
+        placeholder: languages.placeholder
+    });
 })(Zepto);
 </script>';
     }, 11);

@@ -7,7 +7,7 @@ class Widget extends Weapon {
      * Widget Manager
      * --------------
      *
-     * [1]. echo Widget::manager();
+     * [1]. Widget::manager();
      *
      */
 
@@ -249,8 +249,8 @@ class Widget extends Weapon {
      * -----------------
      *
      * [1]. Widget::search();
-     * [2]. Widget::search('Search query...');
-     * [3]. Widget::search('Search query...', '<i class="icon icon-search"></i>');
+     * [2]. Widget::search('search query...');
+     * [3]. Widget::search('search query...', '<i class="icon icon-search"></i>');
      *
      */
 
