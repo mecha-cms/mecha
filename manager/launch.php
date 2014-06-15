@@ -2,6 +2,51 @@
 
 
 /**
+ * Inject the Required Assets for Manager
+ * --------------------------------------
+ */
+
+if(Guardian::happy()) {
+    Weapon::add('shell_after', function() use($config) {
+        echo Asset::stylesheet(array(
+            $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
+            'manager/shell/editor.css',
+            'manager/shell/check.css',
+            'manager/shell/upload.css',
+            'manager/shell/tab.css',
+            'manager/shell/modal.css',
+            'manager/shell/tooltip.css',
+            'manager/shell/sortable.css',
+            'manager/shell/accordion.css',
+            'shell/manager.css'
+        ));
+    }, 10);
+    Weapon::add('cargo_before', function() use($config, $speak) {
+        echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->logout . '</a></div>';
+    }, 10);
+    Weapon::add('sword_before', function() {
+        echo Asset::script('manager/sword/dashboard.js');
+    }, 10);
+    Weapon::add('sword_after', function() use($config) {
+        echo Asset::script(array(
+            $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',
+            'manager/sword/editor/editor.min.js',
+            'manager/sword/editor/mte.min.js',
+            'manager/sword/check.js',
+            'manager/sword/upload.js',
+            'manager/sword/tab.js',
+            'manager/sword/modal.js',
+            'manager/sword/tooltip.js',
+            'manager/sword/sortable.js',
+            'manager/sword/accordion.js',
+            'manager/sword/row.js',
+            'manager/sword/slug.js'
+        ));
+    }, 10);
+}
+
+
+/**
  * Login
  * -----
  */
@@ -825,7 +870,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
             'error' => Notify::errors()
         );
 
-        Notify::success(Config::speak('notify_success_deleted', array(implode(', ', $deletes))));
+        Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
         Weapon::fire('on_' . $path . '_update', array($info));
         Weapon::fire('on_' . $path . '_destruct', array($info));
         Guardian::kick($config->manager->slug . '/' . $path);
@@ -899,7 +944,7 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
             );
             if( ! Notify::errors()) {
                 File::open($file)->renameTo($new_name);
-                Notify::success(Config::speak('notify_success_updated', array($basename)));
+                Notify::success(Config::speak('notify_file_updated', array('<code>' . $basename . '</code>')));
                 Weapon::fire('on_asset_update', array($info));
                 Weapon::fire('on_asset_repair', array($info));
                 Guardian::kick($config->manager->slug . '/asset');
@@ -1430,7 +1475,7 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
 
         if( ! Notify::errors()) {
             File::open($file)->write($info['data']['content'])->save();
-            Notify::success(Config::speak('notify_success_updated', array(basename($name))));
+            Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($name) . '</code>')));
             Weapon::fire('on_shield_update', array($info));
             Weapon::fire('on_shield_repair', array($info));
             Guardian::kick($config->url_current);

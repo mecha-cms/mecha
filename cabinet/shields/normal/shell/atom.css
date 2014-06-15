@@ -29,7 +29,7 @@
  *  #8EAB1A |         |
  *  #6AAAC2 |         |
  *  #CF3030 |         |
- *  #EC5F2F |         |
+ *  #FFDE76 |         |
  *
  */
 
@@ -478,8 +478,13 @@ ul {
   list-style:disc outside;
 }
 
-ol ol,ol ul,ul ul,ul ol {
+ol ul,ul ul {
   margin-left:1em;
+  margin-top:0;
+}
+
+ol ol,ul ol {
+  margin-left:1.4em;
   margin-top:0;
 }
 
@@ -663,4 +668,7 @@ img {
 .message-info {background-color:#6AAAC2}
 .message-success {background-color:#8EAB1A}
 .message-error {background-color:#CF3030}
-.message-warning {background-color:#EC5F2F}
+.message-warning {
+  background-color:#FFDE76;
+  color:#333;
+}

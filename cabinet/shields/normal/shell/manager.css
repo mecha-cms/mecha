@@ -66,6 +66,12 @@
 
 .widget-manager-menu .separator {border-top:1px solid}
 
+.tooltip {
+  background-color:#333;
+  border-color:#333;
+  color:white;
+}
+
 .tab {
   background-color:#333;
   border-color:transparent; 
@@ -96,6 +102,15 @@ label:hover .radio {color:#3A64A4}
 .table-sortable tr.active {background-color:#FFA}
 
 .accordion-header.active .fa {color:#4B9343}
+
+.editor-toolbar a {
+  background-color:#333;
+  color:#FFA;
+}
+
+.editor-toolbar a:focus,
+.editor-toolbar a:hover {background-color:#373737}
+.editor-toolbar a:active {background-color:#2F2F2F}
 
 .editor-preview {margin:0}
 .editor-preview .preview-title {margin-top:0}

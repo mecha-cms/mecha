@@ -73,49 +73,6 @@ Weapon::add('sword_after', function() {
 
 
 /**
- * Inject the Required Assets for Manager
- * --------------------------------------
- */
-
-if(Guardian::happy()) {
-    Weapon::add('shell_after', function() use($config) {
-        echo Asset::stylesheet(array(
-            $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
-            'manager/shell/editor.css',
-            'manager/shell/check.css',
-            'manager/shell/upload.css',
-            'manager/shell/tab.css',
-            'manager/shell/tooltip.css',
-            'manager/shell/sortable.css',
-            'manager/shell/accordion.css',
-            'shell/manager.css'
-        ));
-    }, 10);
-    Weapon::add('cargo_before', function() use($config, $speak) {
-        echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->logout . '</a></div>';
-    }, 10);
-    Weapon::add('sword_before', function() {
-        echo Asset::script('manager/sword/dashboard.js');
-    }, 10);
-    Weapon::add('sword_after', function() use($config) {
-        echo Asset::script(array(
-            $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',
-            'manager/sword/editor/editor.min.js',
-            'manager/sword/editor/mte.min.js',
-            'manager/sword/check.js',
-            'manager/sword/upload.js',
-            'manager/sword/tab.js',
-            'manager/sword/tooltip.js',
-            'manager/sword/sortable.js',
-            'manager/sword/accordion.js',
-            'manager/sword/row.js',
-            'manager/sword/slug.js'
-        ));
-    }, 10);
-}
-
-
-/**
  * Loading Plugins
  * ---------------
  */
