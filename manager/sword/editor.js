@@ -34,11 +34,11 @@
                 data: $editor.serializeArray(),
                 success: function(data, textStatus, jqXHR) {
                     $preview.html(data);
-                    base.call('on_preview_complete', [data, textStatus, jqXHR]);
+                    base.fire('on_preview_complete', [data, textStatus, jqXHR]);
                 },
                 error: function(jqXHR, textStatus, errorThrown) {
                     $preview.html($preview.data('errorText'));
-                    base.call('on_preview_failure', [jqXHR, textStatus, errorThrown]);
+                    base.fire('on_preview_failure', [jqXHR, textStatus, errorThrown]);
                 }
             });
         }

@@ -5,7 +5,7 @@
 
 window.DASHBOARD = {
     hooks: [],
-    register: function(name, callback, priority) {
+    add: function(name, callback, priority) {
         if (typeof DASHBOARD.hooks[name] == "undefined") {
             DASHBOARD.hooks[name] = [];
         }
@@ -19,11 +19,20 @@ window.DASHBOARD = {
             DASHBOARD.hooks[name].push(callback);
         }
     },
-    call: function(name, arguments) {
+    fire: function(name, arguments) {
         if (typeof DASHBOARD.hooks[name] != "undefined") {
             for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
                 DASHBOARD.hooks[name][i](arguments);
             }
         }
+    },
+    remove: function(name) {
+        delete DASHBOARD.hooks[name];
+    },
+    exist: function(name) {
+        if (typeof name == "undefined") {
+            return DASHBOARD.hooks;
+        }
+        return typeof DASHBOARD.hooks[name] != "undefined";
     }
 };
