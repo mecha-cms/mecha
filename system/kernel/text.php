@@ -57,7 +57,7 @@ class Text {
                 '#\r#',
                 '#(^|\n)( *\#.[^\n]*)#',
                 '#\n+#',
-                '#\#+\n#'
+                '#^\#+\n#'
             ),
             array(
                 "",
@@ -91,8 +91,7 @@ class Text {
                 if( ! isset($parent[$key])) {
                     if($is_multi) {
                         $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('#^`|`$#', "", trim($part[1])) : array();
-                        $values = Converter::strEval($values);
-                        $parent[rtrim($part[0])] = $values;
+                        $parent[rtrim($part[0])] = Converter::strEval($values);
                     } else {
                         $parent[$key] = array();
                     }

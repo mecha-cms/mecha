@@ -76,7 +76,7 @@ class Config {
             $output = Mecha::GVR(self::$bucket, $key, $fallback);
             return is_array($output) ? Mecha::O($output) : $output;
         }
-        if( ! isset(self::$bucket[$key])) {
+        if( ! is_null($key) && ! isset(self::$bucket[$key])) {
             self::$bucket[$key] = $fallback;
         }
         return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
@@ -193,10 +193,9 @@ class Config {
     public static function load() {
 
         // Extract the configuration file
+        $config = include STATE . DS . 'repair.config.php';
         if($file = File::exist(STATE . DS . 'config.txt')) {
-            $config = unserialize(File::open($file)->read());
-        } else {
-            $config = include STATE . DS . 'repair.config.php';
+            $config = array_replace_recursive($config, unserialize(File::open($file)->read()));
         }
 
         // Define some default variables
