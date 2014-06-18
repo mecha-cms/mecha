@@ -32,12 +32,12 @@
 
             /**
              * padding vertical = 6
-             * padding horizontal = 8
+             * padding horizontal = 10
              */
 
             var distance = {
                 vertical: 6,
-                horizontal: 8
+                horizontal: 10
             };
 
             var width = $tooltip.width(),

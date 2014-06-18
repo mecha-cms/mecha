@@ -1,8 +1,5 @@
 <?php
 
-$config = Config::get();
-$speak = Config::speak();
-
 Route::accept($config->manager->slug . '/plugin/empty/update', function() use($config, $speak) {
 
     if( ! Guardian::happy()) {
@@ -13,7 +10,7 @@ Route::accept($config->manager->slug . '/plugin/empty/update', function() use($c
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(PLUGIN . '/empty/states/test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . DS . 'empty' . DS . 'states' . DS . 'test-plugin.txt');
 
         Notify::success('Plugin updated.'); // [3]
 

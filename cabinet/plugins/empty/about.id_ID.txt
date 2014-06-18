@@ -64,7 +64,7 @@ Route::accept($config->manager->slug . '/plugin/folder-plugin/update', function(
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(PLUGIN . '/empty/states/test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . DS . 'folder-plugin' . DS . 'states' . DS . 'test-plugin.txt');
 
         Notify::success('Plugin updated.'); // [3]
 
