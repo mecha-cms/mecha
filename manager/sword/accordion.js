@@ -13,17 +13,19 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     $accordion = $('.accordion-area');
 
     if (!$accordion.length) return;
 
-    $accordion.find('.accordion-header').on("click", function() {
+    $accordion.find('.accordion-header').on("click", function(e) {
         var active = $(this).is('.active');
         $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');
         $(this).next().toggleClass('hidden').siblings('.accordion-content').addClass('hidden');
         $(this).find('.fa').removeClass('fa-' + (active ? 'minus' : 'plus') + '-square').addClass('fa-' + (active ? 'plus' : 'minus') + '-square').closest('.accordion-header').siblings().find('.fa').removeClass('fa-minus-square').addClass('fa-plus-square');
+        base.fire('on_accordion_change', [e, this]);
+        base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), [e, this]);
         return false;
     }).on("mousedown", function() {
         return false;
@@ -32,4 +34,4 @@
     $accordion.find('.accordion-header:not(.active)').prepend('<i class="fa fa-fw fa-plus-square"></i>');
     $accordion.find('.accordion-header.active').prepend('<i class="fa fa-fw fa-minus-square"></i>');
 
-})(Zepto);
+})(Zepto, DASHBOARD);

@@ -7,10 +7,10 @@ home: Beranda
 about: Tentang
 
 author: Penulis
-authors: Penulis-Penulis
+authors: Penulis
 
 profile: Profil
-profiles: Profil-Profil
+profiles: Profil
 
 name: Nama
 names: Nama-Nama
@@ -19,50 +19,50 @@ anon: Anonim
 
 unknown: Tidak diketahui
 
-admin: Administrator
-admins: Para Administrator
+admin: Pengurus
+admins: Pengurus
 
 guest: Tamu
-guests: Para Tamu
+guests: Tamu
 
 pilot: Pilot
-pilots: Pilots
+pilots: Pilot
 
 passenger: Penumpang
-passengers: Para Penumpang
+passengers: Penumpang
 
 intruder: Penyusup
-intruders: Para Penyusup
+intruders: Penyusup
 
 visitor: Pengunjung
-visitors: Para Pengunjung
+visitors: Pengunjung
 
 shield: Tameng
-shields: Tameng-Tameng
+shields: Tameng
 
 username: Nama Pengguna
-usernames: Nama-Nama Pengguna
+usernames: Nama Pengguna
 
 password: Kata Kunci
-passwords: Kata-Kata Kunci
+passwords: Kata Kunci
 
 status: Status
-statuses: Status-Status
+statuses: Status
 
 photo: Foto
-photos: Foto-Foto
+photos: Foto
 
 id: ID
-ids: ID-ID
+ids: ID
 
 email: Email
-emails: Email-Email
+emails: Email
 
 url: URL
-urls: URL-URL
+urls: URL
 
 message: Pesan
-messages: Pesan-Pesan
+messages: Pesan
 
 prev: Sebelumnya
 next: Berikutnya
@@ -92,6 +92,13 @@ to: Ke
 by: Oleh
 as: Sebagai
 posted_by: Diposting oleh
+
+and: Dan
+or: Atau
+not: Bukan
+all: Semua
+none: Tak Satupun
+both: Keduanya
 
 at: Pada
 on: Pada
@@ -142,6 +149,9 @@ summaries: Ringkasan
 boolean: Boolean
 booleans: Boolean
 
+option: Pilihan
+options: Pilihan
+
 slogan: Slogan
 slogans: Slogan
 
@@ -152,29 +162,29 @@ action: Aksi
 actions: Aksi
 
 keyword: Kata Kunci
-keywords: Kata-Kata Kunci
+keywords: Kata Kunci
 
 captcha: Captcha
 captchas: Captcha
 
 spam: Sampah
-spams: Sampah-Sampah
+spams: Sampah
 
 post: Pos
-posts: Pos-Pos
+posts: Pos
 
 page: Halaman
-pages: Halaman-Halaman
+pages: Halaman
 
 article: Artikel
-articles: Artikel-Artikel
+articles: Artikel
 
 title: Judul
-titles: Judul-Judul
+titles: Judul
 untitled: Tanpa Judul
 
 date: Tanggal
-dates: Tanggal-Tanggal
+dates: Tanggal
 
 time: Waktu
 ago: Yang Lalu
@@ -195,42 +205,42 @@ minute_p: Menit
 second_p: Detik
 
 timezone: Zona Waktu
-timezones: Zona-Zona Waktu
+timezones: Zona Waktu
 
 charset: Charset
 charsets: Charset
 
 language: Bahasa
-languages: Bahasa-Bahasa
+languages: Bahasa
 
 help: Bantuan
 
 content: Konten
-contents: Konten-Konten
+contents: Konten
 
 tag: Label
-tags: Label-Label
+tags: Label
 tagged: Ditandai sebagai
 untagged: Tak Berlabel
 
 category: Kategori
-categories: Kategori-Kategori
+categories: Kategori
 uncategorised: Tak Berkategori
 
 archive: Arsip
-archives: Arsip-Arsip
+archives: Arsip
 
 asset: Aset
-assets: Aset-Aset
+assets: Aset
 
 menu: Menu
-menus: Menu-Menu
+menus: Menu
 
 config: Konfigurasi
-configs: Konfigurasi-Konfigurasi
+configs: Konfigurasi
 
 setting: Pengaturan
-settings: Pengaturan-Pengaturan
+settings: Pengaturan
 
 cache: Cache
 caches: Cache
@@ -241,34 +251,37 @@ feeds: Umpan
 sitemap: Peta Situs
 
 shortcode: Kode Pintasan
-shortcodes: Kode-Kode Pintasan
+shortcodes: Kode Pintasan
 
 plugin: Plugin
-plugins: Plugin-Plugin
+plugins: Plugin
 
 install: Pasang
 uninstall: Lepas
 
 file: Berkas
-files: Berkas-Bekas
+files: Berkas
 
 last: Terakhir
 last_: Terakhir %s
 
 size: Ukuran
-sizes: Ukuran-Ukuran
+sizes: Ukuran
 
 type: Tipe
-types: Tipe-Tipe
+types: Tipe
 
 error: Kesalahan
-errors: Kesalahan-Kesalahan
+errors: Kesalahan
 
 key: Kunci
-keys: Kunci-Kunci
+keys: Kunci
 
 value: Nilai
-values: Nilai-Nilai
+values: Nilai
+
+scope: Cakupan
+scopes: Cakupan
 
 
 # -----------------------------------
@@ -424,6 +437,7 @@ manager:
 
   title_new_article: Artikel Baru
   title_new_page: Halaman Baru
+  title_new_field: Bidang Baru
 
   title_compose: Tulis
 
@@ -445,7 +459,7 @@ manager:
   title_page_tag: Halaman Label
   title_page_archive: Halaman Arsip
   title_page_search: Halaman Pencarian
-  title_page_manager: Halaman Pengelola
+  title_page_manager: Halaman Pengurus
   title_other: Lainnya
 
   title_whole_site: Seluruh Situs
@@ -456,10 +470,11 @@ manager:
 
   title_per_page: Per Halaman
   title_language_direction: Direksi Bahasa
+  title_spam_keywords: Kata Kunci Sampah
 
   title_allow_comment: Izinkan komentar
   title_allow_comment_notification: Notifikasi untuk komentar baru
-  title_allow_resource_versioning: Aktifkan versi sumber
+  title_allow_resource_versioning: Aktifkan versi sumber daya
 
   title_widget_time: Waktu widget sebagai <var>YYYY-MM</var> (tahun sebelum bulan)
 
@@ -468,14 +483,14 @@ manager:
   title_defaults_page_custom_css: <abbr title="Cascade Style Sheet">CSS</abbr> Halaman Standar
   title_defaults_page_custom_js: JavaScript Halaman Standar
 
-  title_plugin_list: Plugin-Plugin Anda
+  title_plugin_list: Plugin Anda
   title_plugin_upload: Unggah Sebuah Plugin
 
-  title_shield_list: Tameng-Tameng Anda
+  title_shield_list: Tameng Anda
   title_shield_upload: Unggah Sebuah Tameng
 
-  this_article: Artikel Ini
-  this_page: Halaman Ini
+  _this_article: %s Artikel Ini
+  _this_page: %s Halaman Ini
 
 
 # ---------------
@@ -544,4 +559,4 @@ notify_warning_forbidden_input: Anda tidak diperbolehkan untuk menggunakan %s pa
 #  FOR MARKDOWN TEXT EDITOR
 # --------------------------
 
-MTE: {"buttons":{"ok":"Oke","yes":"Ya","no":"Tidak","cancel":"Batal","bold":"Tebal","italic":"Miring","code": "Kode","quote":"Kutipan","heading":"H1 \u2013 H6","link":"Tautan","image":"Gambar","ol":"Daftar Berangka","ul":"Daftar Tak Berangka","rule":"Garis Horizontal","undo":"Batal Melakukan","redo":"Lakukan Lagi"},"prompt":{"link_title":"judul tautan di sini...","link_title_title":"Judul Tautan","link_url":"http:\/\/","link_url_title":"URL Tautan","image_url": "http:\/\/","image_url_title":"URL Gambar"},"placeholder":{"heading_text":"Judul","link_text":"teks tautan","list_ul_text":"Item Daftar","list_ol_text":"Item Daftar","image_alt":"Gambar"},"others":{"help_title":"Bantuan","table_title":"Tabel","table_text":"Judul Tabel 1 | Judul Tabel 2\n------------- | -------------\nSel Tabel 1.1 | Sel Tabel 1.2\nSel Tabel 2.1 | Sel Tabel 2.2\nSel Tabel 3.1 | Sel Tabel 3.2"}}
+MTE: {"buttons":{"ok":"Oke","yes":"Ya","no":"Tidak","cancel":"Batal","bold":"Tebal","italic":"Miring","code": "Kode","quote":"Kutipan","heading":"H1 \u2013 H6","link":"Tautan","image":"Gambar","ol":"Daftar Berangka","ul":"Daftar Tak Berangka","rule":"Garis Horizontal","undo":"Batal Melakukan","redo":"Lakukan Lagi"},"prompt":{"link_title":"judul tautan di sini...","link_title_title":"Judul Tautan","link_url":"http:\/\/","link_url_title":"URL Tautan","image_url": "http:\/\/","image_url_title":"URL Gambar"},"placeholder":{"heading_text":"Judul","link_text":"teks tautan","list_ul_text":"Item Daftar","list_ol_text":"Item Daftar","image_alt":"Gambar"},"others":{"help":"Bantuan","table":"Tabel","table_text":"Judul Tabel 1 | Judul Tabel 2\n------------- | -------------\nSel Tabel 1.1 | Sel Tabel 1.2\nSel Tabel 2.1 | Sel Tabel 2.2\nSel Tabel 3.1 | Sel Tabel 3.2"}}

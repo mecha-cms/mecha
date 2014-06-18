@@ -360,7 +360,7 @@
     <legend><?php echo $speak->manager->title_other; ?></legend>
 
     <label class="grid-group">
-      <span class="grid span-2 form-label">Spam Keywords</span>
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_spam_keywords; ?></span>
       <span class="grid span-4"><textarea name="spam_keywords" class="input-block" placeholder="<?php echo $speak->manager->placeholder_spam_keywords; ?>"><?php echo $cache['spam_keywords']; ?></textarea></span>
     </label>
 

@@ -1,4 +1,4 @@
-### 1. Membuat Menu Sederhana
+### Membuat Menu Sederhana
 
 ~~~ .no-highlight
 Beranda: /
@@ -6,7 +6,7 @@ Tentang: /tentang
 Kontak: /kontak
 ~~~
 
-**Hasil:**
+Hasil:
 
 ~~~ .html
 <ul>
@@ -16,7 +16,7 @@ Kontak: /kontak
 </ul>
 ~~~
 
-### 2. Menu Dropdown
+### Menu Dropdown
 
 Gunakan 4 spasi untuk indentasi.
 
@@ -28,7 +28,7 @@ Menu:
         Submenu 3.1: /submenu-3-1
 ~~~
 
-**Hasil:**
+Hasil:
 
 ~~~ .html
 <ul>
@@ -46,7 +46,7 @@ Menu:
 </ul>
 ~~~
 
-### 3. Membuat Menu Induk Menjadi Aktif
+### Membuat Menu Induk Menjadi Aktif
 
 ~~~ .no-highlight
 Menu (/suatu-tempat):
@@ -54,7 +54,7 @@ Menu (/suatu-tempat):
     Submenu 2: /submenu-2
 ~~~
 
-**Hasil:**
+Hasil:
 
 ~~~ .html
 <ul>
@@ -67,13 +67,13 @@ Menu (/suatu-tempat):
 </ul>
 ~~~
 
-### 4. Tautan Eksternal
+### Tautan Eksternal
 
 ~~~ .no-highlight
 Menu: http://example.org
 ~~~
 
-**Hasil:**
+Hasil:
 
 ~~~ .html
 <ul>

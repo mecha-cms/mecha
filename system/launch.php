@@ -2,6 +2,57 @@
 
 
 /**
+ * Manager Page(s)
+ * ---------------
+ */
+
+if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
+    include $deck;
+}
+
+
+/**
+ * Login Page
+ * ----------
+ *
+ * [1]. manager/login
+ *
+ */
+
+Route::accept($config->manager->slug . '/login', function() use($config, $speak) {
+
+    Config::set(array(
+        'page_type' => 'manager',
+        'page_title' => $speak->login . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'login.php'
+    ));
+
+    if(Request::post()) {
+        Guardian::authorize()->kick($config->manager->slug . '/article');
+    } else {
+        Guardian::reject();
+    }
+
+    Shield::attach('manager', false);
+
+});
+
+
+/**
+ * Logout Page
+ * -----------
+ *
+ * [1]. manager/logout
+ *
+ */
+
+Route::accept($config->manager->slug . '/logout', function() use($config, $speak) {
+    Notify::success($speak->logged_out . '.');
+    Guardian::reject()->kick($config->manager->slug . '/login');
+});
+
+
+/**
  * Index Page
  * ----------
  *

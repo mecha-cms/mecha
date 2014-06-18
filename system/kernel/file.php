@@ -59,40 +59,33 @@ class File {
         $path = str_replace(array('\\', '/'), DS, $path);
         if(self::exist($path)) {
             self::$opened = $path;
-            if( ! is_dir($path) && $output = file_get_contents($path)) {
-                self::$cache = $output;
-            }
         }
         return new static;
     }
 
     // Append some data to the opened file
     public static function append($data) {
-        self::$cache .= $data;
+        self::$cache = file_get_contents(self::$opened) . $data;
         return new static;
     }
 
     // Prepend some data to the opened file
     public static function prepend($data) {
-        self::$cache = $data . self::$cache;
+        self::$cache = $data . file_get_contents(self::$opened);
         return new static;
     }
 
     // Show the opened file to screen
     public static function read() {
-        $cache = self::$cache;
-        $opened = self::$opened;
-        self::$cache = "";
-        self::$opened = null;
         $image_extensions = array('gif', 'ico', 'jpg', 'jpeg', 'png');
-        $file = pathinfo($opened);
+        $file = pathinfo(self::$opened);
         if( ! isset($file['extension'])) {
             $file['extension'] = "";
         }
         if(in_array(strtolower($file['extension']), $image_extensions)) {
-            return '<img alt="' . basename($opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), $opened) . '">';
+            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '">';
         }
-        return $cache;
+        return file_get_contents(self::$opened);
     }
 
     // Write something before saving

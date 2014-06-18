@@ -3,7 +3,7 @@
  * -------------------------
  */
 
-(function($) {
+(function($, base) {
 
     var $checkbox = $('input[type="checkbox"]'),
         $radio = $('input[type="radio"]');
@@ -22,17 +22,19 @@
         $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked').html('<i class="fa fa-' + (this.checked ? 'check-' : "") + 'square"></i>');
     });
 
-    $('.radio').on("click", function() {
+    $('.radio').on("click", function(e) {
         if ($(this).is('.checked')) return false;
         $(this).addClass('checked').html('<i class="fa fa-check-circle"></i>').siblings().removeClass('checked').html('<i class="fa fa-circle"></i>');
         $(this).next().prop('checked', true).trigger("change").siblings('[name="' + $(this).next().attr('name') + '"]').prop('checked', false).trigger("change");
+        base.fire('on_radio_change', [e, this]);
         return false;
     }).on("mousedown", function() {
         return false;
     });
 
-    $('.checkbox').on("click", function() {
+    $('.checkbox').on("click", function(e) {
         $(this).toggleClass('checked').html('<i class="fa fa-' + ($(this).is('.checked') ? 'check-' : "") + 'square"></i>').next().prop('checked', $(this).is('.checked')).trigger("change");
+        base.fire('on_checkbox_change', [e, this]);
         return false;
     }).on("mousedown", function() {
         return false;
@@ -41,4 +43,4 @@
     $radio.addClass('hidden');
     $checkbox.addClass('hidden');
 
-})(Zepto);
+})(Zepto, DASHBOARD);

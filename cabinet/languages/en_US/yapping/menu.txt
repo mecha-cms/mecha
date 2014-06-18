@@ -1,4 +1,4 @@
-### 1. Creating a Simple Menu
+### Creating a Simple Menu
 
 ~~~ .no-highlight
 Home: /
@@ -6,7 +6,7 @@ About: /about
 Contact: /contact
 ~~~
 
-**Result:**
+Result:
 
 ~~~ .html
 <ul>
@@ -16,7 +16,7 @@ Contact: /contact
 </ul>
 ~~~
 
-### 2. Dropdown Menu
+### Dropdown Menu
 
 Use 4 spaces for indentation.
 
@@ -28,7 +28,7 @@ Menu:
         Submenu 3.1: /submenu-3-1
 ~~~
 
-**Result:**
+Result:
 
 ~~~ .html
 <ul>
@@ -46,7 +46,7 @@ Menu:
 </ul>
 ~~~
 
-### 3. Make the Parent Menu Active
+### Make the Parent Menu Becomes Active
 
 ~~~ .no-highlight
 Menu (/some-where):
@@ -54,7 +54,7 @@ Menu (/some-where):
     Submenu 2: /submenu-2
 ~~~
 
-**Result:**
+Result:
 
 ~~~ .html
 <ul>
@@ -67,13 +67,13 @@ Menu (/some-where):
 </ul>
 ~~~
 
-### 4. External Link
+### External Link
 
 ~~~ .no-highlight
 Menu: http://example.org
 ~~~
 
-**Result:**
+Result:
 
 ~~~ .html
 <ul>

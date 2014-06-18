@@ -40,12 +40,12 @@ class Widget extends Weapon {
             '<i class="fa fa-fw fa-life-ring"></i> ' . $speak->backup => '/' . $config->manager->slug . '/backup'
         );
         if($config->page_type == 'article') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_article] = '/' . $config->manager->slug . '/article/kill/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> ' . Config::speak('manager._this_article', array($speak->edit))] = '/' . $config->manager->slug . '/article/repair/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . Config::speak('manager._this_article', array($speak->delete))] = '/' . $config->manager->slug . '/article/kill/id:' . $config->page->id;
         }
         if($config->page_type == 'page') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> ' . $speak->edit . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . $speak->delete . ' ' . $speak->manager->this_page] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> ' . Config::speak('manager._this_page', array($speak->edit))] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . Config::speak('manager._this_page', array($speak->delete))] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
         }
 
         /**

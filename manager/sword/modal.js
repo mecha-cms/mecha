@@ -17,7 +17,7 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $body = $(document.body),
         $modal = $('.modal'),
@@ -25,8 +25,9 @@
 
     if (!$modal.length) return;
 
-    $close.on("click", function() {
+    $close.on("click", function(e) {
         $(this).closest('.modal').hide().prev().hide();
+        base.fire('on_modal_hide', [e, this]);
         return false;
     });
 
@@ -35,11 +36,12 @@
         $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).insertBefore($this);
         var $trigger = $this.attr('data-trigger') ? $this.data('trigger') : false;
         if ($trigger) {
-            $body.on("click", $trigger, function() {
+            $body.on("click", $trigger, function(e) {
                 $this.show().prev().show();
+                base.fire('on_modal_show', [e, this]);
                 return false;
             });
         }
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);

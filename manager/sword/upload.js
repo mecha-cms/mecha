@@ -11,7 +11,7 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $uploader = $('input[type="file"]'),
         accepted = $uploader.attr('data-accepted-extensions') ? $uploader.data('acceptedExtensions').split(',') : 'css,html,js,md,txt,bmp,cur,gif,ico,jpg,jpeg,png,eot,ttf,woff,gz,rar,tar,zip,zipx'.split(','),
@@ -19,7 +19,7 @@
 
     if (!$uploader.length) return;
 
-    $uploader.on("change", function() {
+    $uploader.on("change", function(e) {
 
         var segments = this.value.split('.'),
             extension = segments[segments.length - 1].toLowerCase(),
@@ -44,6 +44,8 @@
 
         }
 
+        base.fire('on_file_change', [e, this]);
+
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);

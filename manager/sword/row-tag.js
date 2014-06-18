@@ -3,19 +3,13 @@
  * -----------------------------------
  */
 
-(function($) {
+(function($, base) {
 
     var $btn = $('.tag-row-more-less .btn');
 
     if (!$btn.length) return;
 
-    function callback() {
-        $('input[name="name[]"]').each(function() {
-            $.slugger($(this), $(this).parent().next().find('input'), '-');
-        });
-    }
-
-    $btn.on("click", function() {
+    $btn.on("click", function(e) {
 
         var clone = '<tr>' +
                 '<td class="text-right"><input name="id[]" type="hidden" value="%s">%s</td>' +
@@ -31,19 +25,19 @@
         if ($(this).is('.btn-more')) {
             if (length < max + 1) {
                 $(this).closest('tr').before(clone.replace(/%s/g, id + 1));
+                base.fire('on_row_increase', [e, this]);
             }
         } else {
             if (length > min + 1 && $(this).closest('tr').prev().find('input:not([type="hidden"])').val() === "") {
                 $(this).closest('tr').prev().remove();
+                base.fire('on_row_decrease', [e, this]);
             }
         }
 
-        callback();
+        base.fire('on_row_update', [e, this]);
 
         return false;
 
     });
 
-    callback();
-
-})(Zepto);
+})(Zepto, DASHBOARD);

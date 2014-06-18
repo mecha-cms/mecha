@@ -7,7 +7,7 @@
 
     $.slugger = function(input, output, connector) {
 
-        input.on("keyup", function() {
+        input.off("keyup").on("keyup", function() {
 
             output.val(
                 this.value
@@ -19,7 +19,7 @@
                     .replace(/\-/g, connector)
             );
 
-        });
+        }).trigger("keyup");
 
         return input;
 

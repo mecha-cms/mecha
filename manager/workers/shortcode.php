@@ -21,7 +21,7 @@
         <td><input name="keys[]" type="text" class="input-block" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
         <td><input name="values[]" type="text" class="input-block"></td>
       </tr>
-      <tr class="row-more-less" data-min="3" data-max="9999" data-callback="Zepto(&#39;input[name=&quot;title[]&quot;]').off(&quot;keyup&quot;).each(function(){Zepto.slugger(Zepto(this),Zepto(this).parent().next().find(&#39;input&#39;),&#39;_&#39;)});">
+      <tr class="row-more-less" data-min="3" data-max="9999">
         <td colspan="2"><a class="btn btn-sm btn-more" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-less" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>

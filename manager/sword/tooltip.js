@@ -6,7 +6,7 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $window = $(window),
         $document = $(document),
@@ -17,11 +17,11 @@
 
     if (!$target.length) return;
 
-    $target.on("mouseenter", function() {
+    $target.on("mouseenter", function(e) {
 
-        if (!$(this).data('title')) return;
+        var _this = this, $this = $(_this);
 
-        var $this = $(this);
+        if (!$this.data('title')) return;
 
         timer = window.setTimeout(function() {
 
@@ -66,29 +66,37 @@
                 left: left
             });
 
+            base.fire('on_tooltip_show', [e, _this]);
+
         }, 400);
 
-    }).on("mouseleave", function() {
+    }).on("mouseleave", function(e) {
+        var _this = this;
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
             $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
+            base.fire('on_tooltip_hide', [e, _this]);
         }, 400);
     }).data('title', function() {
         return this.title ? this.title : false;
     }).removeAttr('title');
 
-    $tooltip.on("mouseenter", function() {
+    $tooltip.on("mouseenter", function(e) {
         window.clearTimeout(timer);
-    }).on("mouseleave", function() {
+        base.fire('on_tooltip_enter', [e, this]);
+    }).on("mouseleave", function(e) {
+        var _this = this;
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
             $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
+            base.fire('on_tooltip_exit', [e, _this]);
         }, 400);
     });
 
-    $window.on("resize", function() {
+    $window.on("resize", function(e) {
         window.clearTimeout(timer);
         $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
+        base.fire('on_tooltip_hide', [e, this]);
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);

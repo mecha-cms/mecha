@@ -29,13 +29,13 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $tbody = $('.table-sortable tbody');
 
     if (!$tbody) return;
 
-    $tbody.on("click", 'td > .sort', function() {
+    $tbody.on("click", 'td > .sort', function(e) {
         var $tr = $(this).closest('tr');
         $tr.addClass('active').siblings().removeClass('active');
         if (this.hash.replace('#', "") == 'move-up') {
@@ -47,12 +47,13 @@
                 $tr.insertAfter($tr.next());
             }
         }
+        base.fire('on_row_sort', [e, this]);
         return false;
     }).find('tr').on("click", function() {
         $(this).siblings().removeClass('active');
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);
 
 
 /**
@@ -71,14 +72,14 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $sortable = $('.sortable'),
         $zone = $sortable.parent();
 
     if (!$sortable) return;
 
-    $sortable.on("click", '.sort', function() {
+    $sortable.on("click", '.sort', function(e) {
         var $elem = $(this).closest('.sortable');
         $elem.addClass('active').siblings().removeClass('active');
         if (this.hash.replace('#', "") == 'move-up') {
@@ -90,9 +91,10 @@
                 $elem.insertAfter($elem.next());
             }
         }
+        base.fire('on_item_sort', [e, this]);
         return false;
     }).not('.active').on("click", function() {
         $(this).siblings().removeClass('active');
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);

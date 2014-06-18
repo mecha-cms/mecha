@@ -27,7 +27,9 @@ window.DASHBOARD = {
         }
     },
     eject: function(name) {
-        delete DASHBOARD.hooks[name];
+        if (typeof DASHBOARD.hooks[name] != "undefined") {
+            delete DASHBOARD.hooks[name];
+        }
     },
     exist: function(name) {
         if (typeof name == "undefined") {

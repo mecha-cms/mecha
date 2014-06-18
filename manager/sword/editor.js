@@ -55,7 +55,7 @@
             placeholder: languages.placeholder
         });
         base.composer.button('table', {
-            'title': languages.others.table_title,
+            'title': languages.others.table,
             'position': 8,
             'click': function(e, editor) {
                 var s = editor.grip.selection(),
@@ -68,7 +68,7 @@
             }
         });
         base.composer.button('question-circle', {
-            'title': languages.others.help_title,
+            'title': languages.others.help,
             'click': function() {
                 window.open('http://mecha-cms.com/article/markdown-syntax');
             }

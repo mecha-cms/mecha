@@ -8,7 +8,7 @@
     <h3 class="media-head"><?php echo $speak->manager->title_plugin_list; ?></h3>
     <?php if($pages): ?>
     <?php foreach($pages as $plugin): ?>
-    <div class="media-item">
+    <div class="media-item" id="plugin:<?php echo $plugin->slug; ?>">
       <h4><i class="fa <?php echo File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'fa-unlock-alt' : 'fa-lock'; ?>"></i> <?php echo $plugin->about->title; ?></h4>
       <p><?php echo Get::summary($plugin->about->content); ?></p>
       <p>

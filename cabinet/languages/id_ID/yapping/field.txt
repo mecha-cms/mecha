@@ -1,3 +1,39 @@
+Untuk bidang bertipe _Pilihan_, tulis beberapa baris teks pada bidang **Nilai** sebagai representasi dari setiap pilihan:
+
+~~~ .no-highlight
+Opsi 1
+Opsi 2
+Opsi 3
+~~~
+
+Hasil:
+
+~~~ .html
+<select>
+  <option value="Opsi 1">Opsi 1</option>
+  <option value="Opsi 2">Opsi 2</option>
+  <option value="Opsi 3">Opsi 3</option>
+</select>
+~~~
+
+Ini juga bisa diterima:
+
+~~~ .no-highlight
+Label 1: Nilai 1
+Label 2: Nilai 2
+Label 3: Nilai 3
+~~~
+
+Hasil:
+
+~~~ .html
+<select>
+  <option value="Nilai 1">Label 1</option>
+  <option value="Nilai 2">Label 2</option>
+  <option value="Nilai 3">Label 3</option>
+</select>
+~~~
+
 Semua bidang kustom akan tersedia di dalam artikel dan halaman statis melalui variabel ini:
 
 #### Untuk Artikel

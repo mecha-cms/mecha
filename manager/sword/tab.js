@@ -15,13 +15,13 @@
  *
  */
 
-(function($) {
+(function($, base) {
 
     var $tabs = $('.tab-area a');
 
     if (!$tabs.length) return;
 
-    $tabs.on("click", function() {
+    $tabs.on("click", function(e) {
         if (this.href.match(/\#.*$/)) {
             $(this).addClass('active').siblings().removeClass('active');
             $('#' + this.hash.replace('#', "")).removeClass('hidden').siblings('.tab-content').addClass('hidden');
@@ -34,7 +34,8 @@
                 window.location.href = this.href;
             }
         }
+        base.fire('on_tab_change', [e, this]);
         return false;
     });
 
-})(Zepto);
+})(Zepto, DASHBOARD);

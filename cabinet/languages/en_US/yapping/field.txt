@@ -1,4 +1,40 @@
-All custom fields will be available in the article pages and static pages through this variable:
+For the _Options_ field type, write some lines of text in the **Value** field as a representation of each option:
+
+~~~ .no-highlight
+Option 1
+Option 2
+Option 3
+~~~
+
+Result:
+
+~~~ .html
+<select>
+  <option value="Option 1">Option 1</option>
+  <option value="Option 2">Option 2</option>
+  <option value="Option 3">Option 3</option>
+</select>
+~~~
+
+This also accepted:
+
+~~~ .no-highlight
+Label 1: Value 1
+Label 2: Value 2
+Label 3: Value 3
+~~~
+
+Result:
+
+~~~ .html
+<select>
+  <option value="Value 1">Label 1</option>
+  <option value="Value 2">Label 2</option>
+  <option value="Value 3">Label 3</option>
+</select>
+~~~
+
+All custom fields will be available in the articles and pages through this variable:
 
 #### For Articles
 

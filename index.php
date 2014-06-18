@@ -25,5 +25,4 @@ define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
 define('SEPARATOR', '====');
 
 include SYSTEM . DS . 'ignite.php';
-include DECK . DS . 'launch.php';
 include SYSTEM . DS . 'launch.php';
