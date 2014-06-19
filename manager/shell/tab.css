@@ -1,4 +1,5 @@
 .tab-area {
+  margin:1.3846153846153846em 0 0;
   height:32px;
   line-height:30px;
   font-weight:bold;
@@ -16,12 +17,14 @@
   display:block;
   float:left;
   margin:0 0 0 5px;
-  padding:0 10px 0 8px;
+  padding:0 10px;
   border:1px solid;
   color:inherit;
   border-bottom-width:0;
   position:relative;
 }
+
+.tab .fa {margin-left:-2px}
 
 .tab:focus,
 .tab:hover,
@@ -44,7 +47,7 @@
 .tab.active:after {left:100%}
 
 .tab-content {
-  margin-top:1.3846153846153846em;
+  margin:1.3846153846153846em 0 0;
   clear:both;
 }
 

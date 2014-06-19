@@ -563,6 +563,14 @@ class Get {
         $content = $results['content_raw'];
         $time = Date::format($results['time'], 'Y-m-d-H-i-s');
 
+        if($php_file = File::exist(dirname($results['file_path']) . DS . $results['slug'] . '.php')) {
+            ob_start();
+            include $php_file;
+            $php_rendered = ob_get_contents();
+            ob_end_clean();
+            $results['content'] = $php_rendered;
+        }
+
         $results['url'] = $config->url . $connector . $results['slug'];
         $results['date'] = Date::extract($time);
         $results['update'] = Date::format(filemtime($results['file_path']), 'Y-m-d H:i:s');

@@ -3,3 +3,11 @@
   color:inherit;
   cursor:pointer;
 }
+
+.checkbox.disabled,
+.radio.disabled {
+  color:inherit !important;
+  opacity:.8;
+  cursor:default;
+  cursor:not-allowed;
+}

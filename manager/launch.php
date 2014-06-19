@@ -259,8 +259,8 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 
 
 /**
- * Article or Page Composer or Updater
- * -----------------------------------
+ * Article/Page Composer/Updater
+ * -----------------------------
  */
 
 Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->manager->slug . '/(article|page)/repair/id:(:num)'), function($path = "", $id = "") use($config, $speak) {
@@ -294,7 +294,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
             'fields' => isset($page->fields) ? Mecha::A($page->fields) : array()
         );
 
-        Config::set('page_title', $speak->editing . ': ' . ($path == 'article' ? $speak->article : $speak->page) . $config->title_separator . $config->manager->title);
+        Config::set('page_title', $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title);
 
     } else {
 
@@ -512,6 +512,10 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                     }
                 }
 
+                if($page->slug != $slug && $php_file = File::exist(dirname($page->file_path) . DS . $page->slug . '.php')) {
+                    File::open($php_file)->renameTo($slug . '.php');
+                }
+
                 Notify::success(Config::speak('notify_success_updated', array($title)) . ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>');
 
                 Weapon::fire('on_' . $path . '_update', array($info));
@@ -544,8 +548,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
 
 /**
- * Page Killer
- * -----------
+ * Article/Page Killer
+ * -------------------
  */
 
 Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', function($path = "", $id = "") use($config, $speak) {
@@ -560,7 +564,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->deleting . ': ' . ($path == 'article' ? $speak->article : $speak->page) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . $page->title . $config->title_separator . $config->manager->title,
         'page' => $page,
         'editor_type' => $path,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.page.php'
@@ -580,7 +584,7 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
             'tags' => (array) $page->kind,
             'css' => $page->css,
             'js' => $page->js,
-            'fields' => json_encode($page->fields)
+            'fields' => Text::parse($page->fields)->to_encoded_json
         ),
         'execution_time' => time(),
         'error' => Notify::errors()
@@ -599,6 +603,9 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
 
         // Deleting custom CSS and JavaScript files ...
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
+
+        // Deleting custom PHP file of article/page ...
+        File::open(dirname($page->file_path) . DS . $page->slug . '.php')->delete();
 
         Notify::success(Config::speak('notify_success_deleted', array($page->title)));
 
@@ -858,7 +865,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->deleting . ': ' . ($path == 'asset' ? $speak->asset : $speak->cache) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($deletes[0]) : ($path == 'asset' ? $speak->assets : $speak->caches)) . $config->title_separator . $config->manager->title,
         'asset_name' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php',
         'editor_type' => $path
@@ -921,7 +928,7 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->renaming . ': ' . $speak->asset . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->renaming . ': ' . $basename . $config->title_separator . $config->manager->title,
         'asset_name' => $basename,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
     ));
@@ -1341,7 +1348,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 
         $data = $fields[$key];
 
-        Config::set('page_title', $speak->editing . ': ' . $speak->field . $config->title_separator . $config->manager->title);
+        Config::set('page_title', $speak->editing . ': ' . $data['title'] . $config->title_separator . $config->manager->title);
 
     }
 
@@ -1372,9 +1379,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             $request['key'] = $request['title'];
         }
 
-        $new_key = Text::parse(strtolower($request['key']))->to_array_key;
-
-        $fields[$new_key] = array(
+        $fields[Text::parse(strtolower($request['key']))->to_array_key] = array(
             'title' => $request['title'],
             'type' => $request['type'],
             'value' => $request['value'],
@@ -1395,7 +1400,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 
         if( ! Notify::errors()) {
             File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt');
-            Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($speak->field . ' <code>' . $new_key . '</code>')));
+            Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
             Weapon::fire('on_field_update', array($info));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($info));
             Guardian::kick($config->manager->slug . '/field');
@@ -1433,7 +1438,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->deleting . ': ' . $speak->field . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . $data['title'] . $config->title_separator . $config->manager->title,
         'page' => $data,
         'key' => $key,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.field.php'
@@ -1455,11 +1460,13 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
             'error' => Notify::errors()
         );
 
+        $deleted_field = $fields[$key]['title'];
+
         unset($fields[$key]);
 
         File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt');
 
-        Notify::success(Config::speak('notify_success_deleted', array($speak->field . ' <code>' . $key . '</code>')));
+        Notify::success(Config::speak('notify_success_deleted', array($deleted_field)));
         Weapon::fire('on_field_update', array($info));
         Weapon::fire('on_field_destruct', array($info));
         Guardian::kick($config->manager->slug . '/field');
@@ -1765,7 +1772,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->managing . ' &ldquo;' . $about['title'] . '&rdquo;' . $config->title_separator . $speak->plugin . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->managing . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
         'page' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
@@ -1827,7 +1834,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->deleting . ': ' . $speak->plugin . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
         'page' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
     ));

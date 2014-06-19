@@ -14,9 +14,9 @@
   padding:6px 10px;
   position:absolute;
   z-index:9999;
-  -webkit-box-shadow:0 1px 5px rgba(0,0,0,.3);
-  -moz-box-shadow:0 1px 5px rgba(0,0,0,.3);
-  box-shadow:0 1px 5px rgba(0,0,0,.3);
+  -webkit-box-shadow:0 5px 15px rgba(0,0,0,.5);
+  -moz-box-shadow:0 5px 15px rgba(0,0,0,.5);
+  box-shadow:0 5px 15px rgba(0,0,0,.5);
 }
 
 .tooltip-arrow {

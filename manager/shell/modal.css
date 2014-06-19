@@ -21,15 +21,19 @@
   margin-left:-300px;
   background-color:white;
   border:1px solid;
-  -webkit-box-shadow:0 1px 2px rgba(0,0,0,.4);
-  -moz-box-shadow:0 1px 2px rgba(0,0,0,.4);
-  box-shadow:0 1px 2px rgba(0,0,0,.4);
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  -webkit-box-shadow:0 5px 15px rgba(0,0,0,.5);
+  -moz-box-shadow:0 5px 15px rgba(0,0,0,.5);
+  box-shadow:0 5px 15px rgba(0,0,0,.5);
   display:none;
 }
 
 .modal-header {
   padding:0 1em;
   font:inherit;
+  font-weight:bold;
   height:36px;
   line-height:36px;
 }
@@ -85,6 +89,23 @@
     top:5%;
     bottom:5%;
   }
+}
+
+.modal-small {
+  top:20%;
+  bottom:20%;
+  width:300px;
+  margin-left:-150px;
+}
+
+.modal-large {
+  width:auto;
+  height:auto;
+  top:10%;
+  right:10%;
+  bottom:10%;
+  left:10%;
+  margin:0;
 }
 
 .modal-full-screen {
