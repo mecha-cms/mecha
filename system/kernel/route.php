@@ -54,10 +54,8 @@ class Route {
     }
 
     public static function accept($patterns, $callback) {
-
         $url = preg_replace('#\?.*$#', "", $_SERVER['REQUEST_URI']);
         $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-
         if(is_array($patterns)) {
             foreach($patterns as $pattern) {
                 $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
@@ -67,20 +65,16 @@ class Route {
             $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
             self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
         }
-
         if(strpos($url, $base) === 0) {
             $url = substr($url, strlen($base));
         }
-
         $url = trim($url, '/');
-
         foreach(self::$routes as $pattern => $callback) {
             if(preg_match($pattern, $url, $params)) {
                 array_shift($params);
                 return call_user_func_array($callback, array_values($params));
             }
         }
-
     }
 
     public static function reject($patterns, $status = 'HTTP/1.0 403 Forbidden') {

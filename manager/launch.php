@@ -271,9 +271,9 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
     Config::set(array(
         'page_type' => 'manager',
+        'cargo' => DECK . DS . 'workers' . DS . 'compose.php',
         'editor_mode' => $config->url_current == $config->url . '/' . $config->manager->slug . '/' . $path . '/ignite' ? 'ignite' : 'repair',
-        'editor_type' => $path,
-        'cargo' => DECK . DS . 'workers' . DS . 'compose.php'
+        'editor_type' => $path
     ));
 
     // Set default fields value ...
@@ -417,7 +417,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $data  = 'Title: ' . $title . "\n";
         $data .= ! empty($description) ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
-        $data .= 'Fields: ' . Text::parse($field)->to_encoded_json . "\n";
+        $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
 
         $info = array(
@@ -705,7 +705,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     if($file = File::exist(STATE . DS . 'menus.txt')) {
         $menus = File::open($file)->read();
     } else {
-        $menus = "Home: /\nAbout: /about";
+        $menus = $speak->home . ": /\n" . $speak->about . ": /about";
     }
 
     if(Guardian::get('status') != 'pilot') {
@@ -1751,8 +1751,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
 
 
 /**
- * Plugin Configurator Page
- * ------------------------
+ * Plugin Configuration Page
+ * -------------------------
  */
 
 Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
@@ -1767,6 +1767,11 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     }
 
     $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
+
+    if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
+        $about['author'] = $matches[1];
+        $about['url'] = $matches[2] . $matches[3];
+    }
 
     $about['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
 

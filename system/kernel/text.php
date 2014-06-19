@@ -22,8 +22,11 @@
 
 use \Michelf\Markdown;
 use \Michelf\MarkdownExtra;
-include PLUGIN . '/markdown/Michelf/Markdown.php';
-include PLUGIN . '/markdown/Michelf/MarkdownExtra.php';
+
+spl_autoload_register(function() {
+    include PLUGIN . DS . 'markdown' . DS . 'Michelf' . DS . 'Markdown.php';
+    include PLUGIN . DS . 'markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
+});
 
 class Text {
 

@@ -57,13 +57,14 @@ class Menu {
 
     public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:') {
         $config = Config::get();
+        $speak = Config::speak();
         $current = $config->url_current;
         // Use menu file from the cabinet if `$array` is not defined
         if(is_null($array)) {
             if($file = File::exist(STATE . DS . 'menus.txt')) {
                 $array = Text::toArray(File::open($file)->read());
             } else {
-                $array = array('Home' => '/', 'About' => '/about');
+                $array = array($speak->home => '/', $speak->about => '/about');
             }
             $filter_prefix = 'navigation:';
         }

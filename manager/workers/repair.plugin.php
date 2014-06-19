@@ -17,7 +17,7 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <div class="plugin-about">
-      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($page->author)->to_encoded_html; ?></p>
+      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($page->author)->to_encoded_html; ?><?php if(isset($page->url) && $page->url != '#'): ?> <a class="help" href="<?php echo $page->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
       <h3 class="plugin-title"><?php echo $page->title; if(isset($page->version)) echo ' ' . $page->version; ?></h3>
       <div class="plugin-description"><?php echo $page->content; ?></div>
     </div>

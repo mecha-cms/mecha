@@ -52,7 +52,7 @@ class File {
         return file_exists($path) ? $path : false;
     }
 
-    // Open a file, then cache its contents to `$cache`
+    // Open a file
     public static function open($path) {
         self::$cache = "";
         self::$opened = null;
@@ -160,7 +160,7 @@ class File {
             }
             foreach($destination as $dest) {
                 if(is_dir($dest)) {
-                    $dest = rtrim($dest, '\\/') . DS . ltrim(basename(self::$opened), '\\/');
+                    $dest = rtrim($dest, '\\/') . DS . basename(self::$opened);
                 }
                 if( ! self::exist($dest) && ! self::exist(preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest))) {
                     self::$increment = 0;

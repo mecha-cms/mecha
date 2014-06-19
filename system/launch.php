@@ -227,7 +227,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
          * Matched with all keywords combined
          */
 
-        foreach(glob(ARTICLE . DS . '*.txt') as $file_path) {
+        foreach(Get::articles() as $file_path) {
             $anchor = Get::articleAnchor($file_path);
             if(strpos(strtolower(basename($file_path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
                 $pages[] = $file_path;
@@ -240,7 +240,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
-            foreach(glob(ARTICLE . DS . '*.txt') as $file_path) {
+            foreach(Get::articles() as $file_path) {
                 $anchor = Get::articleAnchor($file_path);
                 if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
                     $pages[] = $file_path;

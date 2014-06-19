@@ -143,13 +143,22 @@ textarea[name="js"] {height:300px}
   color:white;
   height:32px;
   line-height:32px;
-  padding:0 1em;
+  padding:0 2.5em 0 1em;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  position:relative;
 }
 
-.plugin-author a {color:#FFA}
+.plugin-author a {
+  display:block;
+  position:absolute;
+  top:0;
+  right:1em;
+  color:#FFA;
+  height:inherit;
+  line-height:inherit;
+}
 
 .plugin-title {
   background-color:#365D98;

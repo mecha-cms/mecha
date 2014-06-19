@@ -34,13 +34,11 @@ if(get_magic_quotes_gpc()) {
  * ---------------
  */
 
-function prepare_to_launch($workers) {
-    foreach(glob(SYSTEM . DS . 'kernel' . DS . '*.php') as $workers) {
+foreach(glob(SYSTEM . DS . 'kernel' . DS . '*.php') as $workers) {
+    spl_autoload_register(function() use($workers) {
         include_once $workers;
-    }
+    });
 }
-
-spl_autoload_register('prepare_to_launch');
 
 $config = Config::get();
 $speak = Config::speak();
