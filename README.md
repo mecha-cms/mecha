@@ -50,3 +50,7 @@ http://mecha-cms.com
  5. Make a donation
  6. Give me a star!
  7. Say thanks, for motivation purpose :)
+
+### PS
+
+I use [Zepto](https://github.com/madrobby/zepto "Zepto") and [Font Awesome](http://fortawesome.github.io/Font-Awesome "Font Awesome") resources through the public CDN from [here](http://cdnjs.com/libraries/zepto "CDNJS") and [here](http://www.bootstrapcdn.com/#fontawesome_tab "Bootstrap CDN"). I just don&rsquo;t like to create a commit that only contains version updates of external resources. It was a waste.

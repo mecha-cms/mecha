@@ -8,7 +8,7 @@
 
 Weapon::add('shell_after', function() use($config) {
     echo Asset::stylesheet(array(
-        $config->protocol . 'netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
+        $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
         'manager/shell/editor.css',
         'manager/shell/check.css',
         'manager/shell/upload.css',

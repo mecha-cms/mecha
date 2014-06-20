@@ -33,7 +33,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
         Guardian::reject();
     }
 
-    Shield::attach('manager', false);
+    Shield::attach('manager');
 
 });
 

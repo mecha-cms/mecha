@@ -68,5 +68,5 @@ if( ! empty($fields)) {
     }
     echo ! empty($html) ? $html : '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 } else {
-    $html .= '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
+    echo '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 }
