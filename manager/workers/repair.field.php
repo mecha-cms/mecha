@@ -41,7 +41,7 @@
       $options = array(
           'article' => $speak->article,
           'page' => $speak->page,
-          'all' => $speak->article . ' ' . strtolower($speak->and) . ' ' . $speak->page
+          'all' => $speak->both
       );
 
       foreach($options as $k => $v) {

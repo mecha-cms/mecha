@@ -271,7 +271,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
     Config::set(array(
         'page_type' => 'manager',
-        'cargo' => DECK . DS . 'workers' . DS . 'compose.php',
+        'cargo' => DECK . DS . 'workers' . DS . 'repair.page.php',
         'editor_mode' => $config->url_current == $config->url . '/' . $config->manager->slug . '/' . $path . '/ignite' ? 'ignite' : 'repair',
         'editor_type' => $path
     ));

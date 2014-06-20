@@ -168,6 +168,11 @@ body {border-top:5px solid}
 .post-title {margin:0 0 .7em}
 .post-footer {margin:5% 0 0}
 
+.page-404 .post-body {
+  padding:20% 0;
+  text-align:center;
+}
+
 
 /* BLOG PAGER */
 

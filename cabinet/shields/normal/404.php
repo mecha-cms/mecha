@@ -3,8 +3,7 @@
 
 <div class="blog-posts">
   <article class="post">
-    <h2 class="post-title">:(</h2>
-    <div class="post-body"><?php echo $speak->page . ' ' . strtolower($speak->notify_error_not_found); ?></div>
+    <div class="post-body"><p><?php echo $speak->page . ' ' . strtolower($speak->notify_error_not_found); ?></p></div>
   </article>
 </div>
 

@@ -2,6 +2,11 @@
 
 $fields = File::exist(STATE . DS . 'fields.txt') ? unserialize(File::open(STATE . DS . 'fields.txt')->read()) : array();
 
+if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
+    $extra_fields = include $e;
+    $fields = $fields + $extra_fields;
+}
+
 if( ! empty($fields)) {
     $html = "";
     foreach($fields as $key => $value) {

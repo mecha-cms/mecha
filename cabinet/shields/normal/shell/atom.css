@@ -672,3 +672,5 @@ img {
   background-color:#FFDE76;
   color:#333;
 }
+
+.message + .message {margin-top:2px}

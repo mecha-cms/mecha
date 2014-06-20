@@ -271,7 +271,6 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
         Shield::attach('index');
     } else {
         Config::set(array(
-            'page_type' => 'search',
             'page_title' => $config->search->title . ' &ldquo;' . $query . '&rdquo;' . $config->title_separator . $config->title,
             'search_query' => $query
         ));

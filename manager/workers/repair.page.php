@@ -12,13 +12,13 @@
   <form class="form-compose" action="<?php $cache = Guardian::wayback(); echo $config->url_current; ?>" method="post" data-preview-url="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/preview'; ?>">
     <input type="hidden" name="token" value="<?php echo Guardian::makeToken(); ?>">
     <div class="tab-content" id="tab-content-1">
-      <?php include 'editor.page.php'; ?>
+      <?php include 'repair.page.page.php'; ?>
     </div>
     <div class="tab-content hidden" id="tab-content-2">
-      <?php include 'editor.custom.php'; ?>
+      <?php include 'repair.page.custom.php'; ?>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
-      <?php include 'editor.field.php'; ?>
+      <?php include 'repair.page.field.php'; ?>
     </div>
     <div class="tab-content hidden" id="tab-content-4">
       <div class="editor-preview" data-progress-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>."></div>
