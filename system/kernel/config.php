@@ -203,7 +203,7 @@ class Config {
         $config['host'] = $_SERVER['HTTP_HOST'];
         $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-        $config['url_current'] = rtrim($config['url'] . '/' . preg_replace('#\?.*$#', "", trim($_SERVER['QUERY_STRING'], '/')), '/');
+        $config['url_current'] = rtrim($config['url'] . '/' . preg_replace('#(\?|\&).*$#', "", trim($_SERVER['QUERY_STRING'], '/')), '/');
 
         $config['page_title'] = $config['title'];
         $config['page_type'] = '404';

@@ -20,16 +20,6 @@
       <col style="width:7em;">
       <col style="width:7em;">
     </colgroup>
-    <?php if( ! empty($pager->next->link)): ?>
-    <tfoot>
-      <tr>
-        <td colspan="5">
-          <span class="pull-left"><?php echo $pager->prev->link; ?></span>
-          <span class="pull-right"><?php echo $pager->next->link; ?></span>
-        </td>
-      </tr>
-    </tfoot>
-    <?php endif; ?>
     <thead>
       <tr>
         <th>&nbsp;</th>
@@ -50,6 +40,10 @@
       <?php endforeach; ?>
     </tbody>
   </table>
+  <p class="cf">
+    <span class="pull-left"><?php echo $pager->prev->link; ?></span>
+    <span class="pull-right"><?php echo $pager->next->link; ?></span>
+  </p>
   <p><button class="btn btn-danger btn-delete btn-delete-multiple" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
 </form>
 <?php else: ?>
