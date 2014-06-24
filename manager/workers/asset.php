@@ -14,11 +14,11 @@
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered table-full">
     <colgroup>
-      <col style="width:2.5em;">
+      <col style="width:2.6em;">
       <col style="width:11em;">
       <col>
-      <col style="width:2.5em;">
-      <col style="width:2.5em;">
+      <col style="width:2.6em;">
+      <col style="width:2.6em;">
     </colgroup>
     <thead>
       <tr>

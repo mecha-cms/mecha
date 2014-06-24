@@ -11,7 +11,7 @@
     <table class="table-bordered table-full">
       <colgroup>
         <col>
-        <col style="width:2.5em;">
+        <col style="width:2.6em;">
       </colgroup>
       <tbody>
         <?php foreach($pages as $file): ?>
