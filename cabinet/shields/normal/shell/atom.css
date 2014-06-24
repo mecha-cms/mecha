@@ -361,7 +361,7 @@ input[type="submit"]:active,
 
 .input-sm,
 .textarea-sm {
-  padding:7px 8px;
+  padding:7px;
   font-size:86%;
 }
 

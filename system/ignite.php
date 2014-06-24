@@ -18,15 +18,17 @@ session_start();
  * --------------------------------------------------------------------
  */
 
-if(get_magic_quotes_gpc()) {
-    function stripslashes_gpc(&$value) {
+function clean_request(&$value) {
+    $value = str_replace("\r", "", $value);
+    if(get_magic_quotes_gpc()) {
         $value = stripslashes($value);
     }
-    array_walk_recursive($_GET, 'stripslashes_gpc');
-    array_walk_recursive($_POST, 'stripslashes_gpc');
-    array_walk_recursive($_COOKIE, 'stripslashes_gpc');
-    array_walk_recursive($_REQUEST, 'stripslashes_gpc');
 }
+
+array_walk_recursive($_GET, 'clean_request');
+array_walk_recursive($_POST, 'clean_request');
+array_walk_recursive($_COOKIE, 'clean_request');
+array_walk_recursive($_REQUEST, 'clean_request');
 
 
 /**

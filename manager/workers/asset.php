@@ -12,6 +12,7 @@
 <h3 class="media-head"><?php echo $speak->assets; ?></h3>
 <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <p><button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
   <table class="table-bordered table-full">
     <colgroup>
       <col style="width:2.6em;">
@@ -40,11 +41,7 @@
       <?php endforeach; ?>
     </tbody>
   </table>
-  <p class="cf">
-    <span class="pull-left"><?php echo $pager->prev->link; ?></span>
-    <span class="pull-right"><?php echo $pager->next->link; ?></span>
-  </p>
-  <p><button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
+  <p class="pager cf"><?php echo $pager->step->link; ?></p>
 </form>
 <?php else: ?>
 <p><?php echo Config::speak('notify_empty', array(strtolower($speak->assets))); ?></p>

@@ -784,7 +784,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $pages = array();
     $take = Get::files(ASSET, '*', 'DESC', 'last_update');
 
-    if($files = Mecha::eat($take)->chunk($offset, 50)->vomit()) {
+    if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
         foreach($files as $file) $pages[] = $file;
     } else {
         $pages = false;
@@ -794,7 +794,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'page_type' => 'manager',
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,
         'pages' => $pages,
-        'pagination' => Navigator::extract($take, $offset, 50, $config->manager->slug . '/asset'),
+        'pagination' => Navigator::extract($take, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => DECK . DS . 'workers' . DS . 'asset.php'
     ));
 
@@ -817,7 +817,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     $pages = array();
     $take = Get::files(CACHE, '*', 'DESC', 'last_update');
 
-    if($files = Mecha::eat($take)->chunk($offset, 50)->vomit()) {
+    if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
         foreach($files as $file) $pages[] = $file;
     } else {
         $pages = false;
@@ -827,7 +827,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         'page_type' => 'manager',
         'page_title' => $speak->cache . $config->title_separator . $config->manager->title,
         'pages' => $pages,
-        'pagination' => Navigator::extract($take, $offset, 50, $config->manager->slug . '/cache'),
+        'pagination' => Navigator::extract($take, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
         'cargo' => DECK . DS . 'workers' . DS . 'cache.php'
     ));
 
@@ -847,8 +847,8 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
         Shield::abort();
     }
 
-    if(strpos($name, ',') !== false) {
-        $deletes = explode(',', $name);
+    if(strpos($name, ';') !== false) {
+        $deletes = explode(';', $name);
     } else {
         if( ! File::exist(($path == 'asset' ? ASSET : CACHE) . DS . str_replace(array('\\', '/'), DS, $name))) {
             Shield::abort(); // file not found!
@@ -1100,7 +1100,7 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill', function($path = "
             Guardian::kick($config->manager->slug . '/' . $path);
         }
 
-        Guardian::kick($config->manager->slug . '/' . $path . '/kill/files:' . implode(',', Request::post('selected')));
+        Guardian::kick($config->manager->slug . '/' . $path . '/kill/files:' . implode(';', Request::post('selected')));
 
     }
 

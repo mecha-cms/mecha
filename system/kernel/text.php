@@ -52,8 +52,8 @@ class Text {
      */
 
     private static function text_to_array($text, $splitter, $indent) {
-        $result = array();
-        $path = array();
+        $results = array();
+        $data = array();
         // Remove all comments and empty line breaks
         $validated = preg_replace(
             array(
@@ -78,23 +78,23 @@ class Text {
                 $line = rtrim(substr($line, strlen($indent)));
             }
             // Truncate paths if needed
-            while($depth < count($path)) {
-                array_pop($path);
+            while($depth < count($data)) {
+                array_pop($data);
             }
             // Keep lines (at depth)
             if($is_multi) {
-                $part = explode($splitter, $line, 2);
-                $path[$depth] = rtrim($part[0]);
+                $parts = explode($splitter, $line, 2);
+                $data[$depth] = rtrim($parts[0]);
             } else {
-                $path[$depth] = $line;
+                $data[$depth] = $line;
             }
             // Traverse paths and add labels to result
-            $parent =& $result;
-            foreach($path as $depth => $key) {
+            $parent =& $results;
+            foreach($data as $depth => $key) {
                 if( ! isset($parent[$key])) {
                     if($is_multi) {
-                        $values = isset($part[1]) && ! empty($part[1]) ? preg_replace('#^`|`$#', "", trim($part[1])) : array();
-                        $parent[rtrim($part[0])] = Converter::strEval($values);
+                        $values = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
+                        $parent[rtrim($parts[0])] = Converter::strEval($values);
                     } else {
                         $parent[$key] = array();
                     }
@@ -103,7 +103,7 @@ class Text {
                 $parent =& $parent[$key];
             }
         }
-        return $result;
+        return $results;
     }
 
     /**
@@ -128,7 +128,7 @@ class Text {
         if($strip_underscores_and_dots) {
             $text = preg_replace(array('#[\_\.]+#', '#\-+#'), '-', $text);
         }
-        return $text;
+        return ! empty($text) ? $text : '--';
     }
 
     /**

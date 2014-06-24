@@ -9,7 +9,7 @@
     <table class="table-bordered table-full">
       <colgroup>
         <col>
-        <col style="width:8em;">
+        <col style="width:2.6em;">
       </colgroup>
       <tbody>
         <?php
@@ -30,7 +30,7 @@
         <?php foreach($origins as $title => $origin): ?>
         <tr>
           <th><?php echo $title; ?></th>
-          <td><a href="<?php echo $config->url_current; ?>/origin:<?php echo $origin; ?>"><i class="fa fa-download"></i> <?php echo $speak->download; ?></a></td>
+          <td class="text-center"><a href="<?php echo $config->url_current; ?>/origin:<?php echo $origin; ?>" title="<?php echo $speak->download; ?>"><i class="fa fa-download"></i></a></td>
         </tr>
         <?php endforeach; ?>
       </tbody>

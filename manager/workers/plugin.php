@@ -27,10 +27,7 @@
       </p>
     </div>
     <?php endforeach; ?>
-    <p class="pager cf">
-      <span class="pull-left"><?php echo $pager->prev->link; ?></span>
-      <span class="pull-right"><?php echo $pager->next->link; ?></span>
-    </p>
+    <p class="pager cf"><?php echo $pager->step->link; ?></p>
     <?php else: ?>
     <p><?php echo Config::speak('notify_empty', array(strtolower($speak->plugins))); ?></p>
     <?php endif; ?>

@@ -1,8 +1,28 @@
 .checkbox,
 .radio {
+  display:inline-block;
   color:inherit;
   cursor:pointer;
 }
+
+.checkbox + input,
+.radio + input {display:none}
+
+.checkbox:before,
+.radio:before {
+  content:"\f0c8";
+  display:inherit;
+  font-style:normal;
+  font-weight:normal;
+  font-family:"FontAwesome";
+  font-size:107.6923076923077%;
+  line-height:inherit;
+}
+
+.radio:before {content:"\f111"}
+
+.checkbox.checked:before {content:"\f14a"}
+.radio.checked:before {content:"\f058"}
 
 .checkbox.disabled,
 .radio.disabled {

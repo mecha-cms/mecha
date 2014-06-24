@@ -8,10 +8,7 @@ a.help {cursor:pointer}
 
 .fa.help {
   display:inline;
-  vertical-align:baseline;
   font-size:100%;
-  position:relative;
-  top:1px;
 }
 
 .tooltip {
