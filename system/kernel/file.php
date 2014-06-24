@@ -47,9 +47,9 @@ class File {
     private function __clone() {}
 
     // Check if file already exist
-    public static function exist($path) {
+    public static function exist($path, $fallback = false) {
         $path = str_replace(array('\\', '/'), DS, $path);
-        return file_exists($path) ? $path : false;
+        return file_exists($path) ? $path : $fallback;
     }
 
     // Open a file

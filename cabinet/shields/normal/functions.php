@@ -14,4 +14,5 @@ function tag_links($source, $connector) {
         }
         return count($tag_links) > 0 ? $speak->tags . ': ' . implode($connector, $tag_links) : "";
     }
+    return "";
 }

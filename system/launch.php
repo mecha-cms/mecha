@@ -325,11 +325,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
         Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
 
-        if(empty($request['name'])) {
+        if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
         }
 
-        if( ! empty($request['email'])) {
+        if(trim($request['email']) !== "") {
 
             if( ! Guardian::check($request['email'])->this_is_email) {
                 Notify::error($speak->notify_invalid_email);
@@ -349,11 +349,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_empty_field', array($speak->email)));
         }
 
-        if( ! empty($request['url']) && ! Guardian::check($request['url'])->this_is_URL) {
+        if(trim($request['url']) !== "" && ! Guardian::check($request['url'])->this_is_URL) {
             Notify::error($speak->notify_invalid_url);
         }
 
-        if(empty($request['message'])) {
+        if(trim($request['message']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_message)));
         }
 
@@ -418,7 +418,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= 'Status: ' . $info['data']['status'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $message;
 
-            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt');
+            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt', 0600);
 
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
 

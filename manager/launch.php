@@ -190,7 +190,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         }
 
         // Checks for invalid email address
-        if( ! empty($request['author_email']) && ! Guardian::check($request['author_email'])->this_is_email) {
+        if(trim($request['author_email']) !== "" && ! Guardian::check($request['author_email'])->this_is_email) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }
@@ -204,7 +204,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         );
 
         if( ! Notify::errors()) {
-            File::write(serialize($request))->saveTo(STATE . DS . 'config.txt');
+            File::write(serialize($request))->saveTo(STATE . DS . 'config.txt', 0600);
             Config::load(); // Refresh the configuration data ...
             Notify::success(Config::speak('notify_success_updated', array(Config::speak('config'))));
             Weapon::fire('on_config_update', array($info));
@@ -362,8 +362,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $description = $request['description'];
         $author = strip_tags($request['author']);
         $tags = Request::post('tags', false);
-        $css = rtrim(Request::post('css', ""));
-        $js = rtrim(Request::post('js', ""));
+        $css = trim(Request::post('css', ""));
+        $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
 
         /**
@@ -409,13 +409,13 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
          * Checks for empty post content
          */
 
-        if(empty($content)) {
+        if(trim($content) === "") {
             Notify::error($speak->notify_error_post_content_empty);
             Guardian::memorize($request);
         }
 
         $data  = 'Title: ' . $title . "\n";
-        $data .= ! empty($description) ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
+        $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
         $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
@@ -449,10 +449,10 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
             if( ! Notify::errors()) {
 
-                File::write($data)->saveTo(($path == 'article' ? ARTICLE : PAGE) . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt');
+                File::write($data)->saveTo(($path == 'article' ? ARTICLE : PAGE) . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt', 0600);
 
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                    File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt');
+                    File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt', 0600);
                 }
 
                 Notify::success(Config::speak('notify_success_created', array($title)) . ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>');
@@ -489,10 +489,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
             if( ! Notify::errors()) {
 
-                File::open($page->file_path)
-                    ->write($data)
-                    ->save()
-                    ->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt');
+                File::open($page->file_path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt');
 
                 $custom = CUSTOM . DS . Date::format($fields['date'], 'Y-m-d-H-i-s') . '.txt';
 
@@ -501,14 +498,11 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom)->delete();
                     } else {
-                        File::open($custom)
-                            ->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)
-                            ->save()
-                            ->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '.txt');
+                        File::open($custom)->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '.txt');
                     }
                 } else {
                     if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt');
+                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt', 0600);
                     }
                 }
 
@@ -666,8 +660,8 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         $data = array();
 
         for($i = 0, $keys = $request['id'], $count = count($keys); $i < $count; ++$i) {
-            if( ! empty($request['name'][$i])) {
-                $slug = ! empty($request['slug'][$i]) ? $request['slug'][$i] : $request['name'][$i];
+            if(trim($request['name'][$i]) !== "") {
+                $slug = trim($request['slug'][$i]) !== "" ? $request['slug'][$i] : $request['name'][$i];
                 $data[] = array(
                     'id' => (int) $keys[$i],
                     'name' => $request['name'][$i],
@@ -683,7 +677,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
             'error' => Notify::errors()
         );
 
-        File::write(serialize($data))->saveTo(STATE . DS . 'tags.txt');
+        File::write(serialize($data))->saveTo(STATE . DS . 'tags.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
         Weapon::fire('on_tag_update', array($info));
         Guardian::kick($config->url_current);
@@ -751,7 +745,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         );
 
         if( ! Notify::errors()) {
-            File::write($info['data']['content'])->saveTo(STATE . DS . 'menus.txt');
+            File::write($info['data']['content'])->saveTo(STATE . DS . 'menus.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
             Weapon::fire('on_menu_update', array($info));
             Guardian::kick($config->url_current);
@@ -1015,7 +1009,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
         $data = array();
 
         for($i = 0, $keys = $request['keys'], $count = count($keys); $i < $count; ++$i) {
-            if( ! empty($keys[$i])) {
+            if(trim($keys[$i]) !== "") {
                 $data[$keys[$i]] = $request['values'][$i];
             }
         }
@@ -1026,7 +1020,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
             'error' => Notify::errors()
         );
 
-        File::write(serialize($data))->saveTo(STATE . DS . 'shortcodes.txt');
+        File::write(serialize($data))->saveTo(STATE . DS . 'shortcodes.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Weapon::fire('on_shortcode_update', array($info));
         Guardian::kick($config->url_current);
@@ -1073,7 +1067,7 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
             'error' => Notify::errors()
         );
 
-        File::open($file)->write($request['content'])->save();
+        File::open($file)->write($request['content'])->save(0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->cache)));
         Weapon::fire('on_cache_update', array($info));
         Weapon::fire('on_cache_repair', array($info));
@@ -1236,12 +1230,12 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
 
         Guardian::checkToken($request['token']);
 
-        if(empty($request['name'])) {
+        if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
             Guardian::memorize($request);
         }
 
-        if( ! empty($request['email']) && ! Guardian::check($request['email'])->this_is_email) {
+        if(trim($request['email']) !== "" && ! Guardian::check($request['email'])->this_is_email) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }
@@ -1262,7 +1256,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $data .= 'Status: ' . $request['status'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];
 
-            File::open($comment->file_path)->write($data)->save();
+            File::open($comment->file_path)->write($data)->save(0600);
 
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
             Weapon::fire('on_comment_update', array($info));
@@ -1371,11 +1365,11 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 
         Guardian::checkToken($request['token']);
 
-        if(empty($request['title'])) {
+        if(trim($request['title']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->title)));
         }
 
-        if(empty($request['key'])) {
+        if(trim($request['key']) === "") {
             $request['key'] = $request['title'];
         }
 
@@ -1399,7 +1393,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         );
 
         if( ! Notify::errors()) {
-            File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt');
+            File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
             Weapon::fire('on_field_update', array($info));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($info));
@@ -1464,7 +1458,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
 
         unset($fields[$key]);
 
-        File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt');
+        File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt', 0600);
 
         Notify::success(Config::speak('notify_success_deleted', array($deleted_field)));
         Weapon::fire('on_field_update', array($info));
@@ -1614,7 +1608,7 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
         );
 
         if( ! Notify::errors()) {
-            File::open($file)->write($info['data']['content'])->save();
+            File::open($file)->write($info['data']['content'])->save(0600);
             Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($name) . '</code>')));
             Weapon::fire('on_shield_update', array($info));
             Weapon::fire('on_shield_repair', array($info));

@@ -77,7 +77,10 @@ class Route {
         }
     }
 
-    public static function reject($patterns, $status = 'HTTP/1.0 403 Forbidden') {
+    public static function reject($patterns, $status = null) {
+        if(is_null($status)) {
+            $status = $_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden';
+        }
         return self::accept($patterns, function() use($status) {
             header($status);
             exit;
