@@ -4,8 +4,8 @@
  *
  *    <tr class="row-more-less" data-min="3" data-max="9999">
  *      <td>
- *        <a class="btn btn-sm btn-more" href="#add">More</a>
- *        <a class="btn btn-sm btn-less" href="#remove">Less</a>
+ *        <a class="btn btn-sm btn-default btn-increase" href="#add">More</a>
+ *        <a class="btn btn-sm btn-default btn-decrease" href="#remove">Less</a>
  *      </td>
  *    </tr>
  *
@@ -24,7 +24,7 @@
             min = $(this).closest('tr').data('min'),
             length = $(this).closest('tbody').find('tr').length;
 
-        if ($(this).is('.btn-more')) {
+        if ($(this).is('.btn-increase')) {
             if (length < max + 1) {
                 $(this).closest('tr').before(clone);
                 base.fire('on_row_increase', [e, this]);

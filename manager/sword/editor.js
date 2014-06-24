@@ -83,7 +83,7 @@
         });
     }
 
-    if ($('.btn-delete').length === 0) {
+    if ($('.btn-destruct').length === 0) {
         $.slugger($title, $slug, '-');
     }
 

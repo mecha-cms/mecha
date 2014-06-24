@@ -21,22 +21,33 @@
   position:relative;
 }
 
-.widget-manager-menu a {
+.widget-manager-menu a,
+.accordion-header {
   display:block;
   background-color:#333;
   color:white;
+  font-style:normal;
   font-weight:bold;
-  height:30px;
+  font-size:100%;
   line-height:30px;
+  height:30px;
   overflow:hidden;
+  margin:0;
   padding:0 8px;
 }
 
-.widget-manager-menu a:focus,
-.widget-manager-menu a:hover {background-color:#373737}
-.widget-manager-menu a:active {background-color:#2F2F2F}
+.accordion-header {margin-bottom:2px}
 
-.widget-manager-menu a .fa {
+.widget-manager-menu a:focus,
+.widget-manager-menu a:hover,
+.accordion-header:focus,
+.accordion-header:hover {background-color:#373737}
+.widget-manager-menu a:active,
+.accordion-header:active {background-color:#2F2F2F}
+
+.widget-manager-menu a .fa,
+.accordion-header:before {
+  font-style:normal;
   font-weight:normal;
   color:#FFA;
 }
@@ -64,7 +75,7 @@
   border-radius:2px;
 }
 
-.widget-manager-menu .separator {border-top:1px solid}
+.widget-manager-menu .separator {display:none}
 
 .tooltip {
   background-color:#333;
@@ -185,12 +196,7 @@ textarea[name="js"] {height:300px}
  * Page Listing
  * ------------
  *
- * I set the appearance as the same as
- * the comment list layout on the shield.
- *
- * `.comment-list` => `.page-list`
- * `.comment-header` => `.page-header`
- * ... etc.
+ * I set the appearance as the same as the comment list layout on the `normal` shield.
  *
  */
 

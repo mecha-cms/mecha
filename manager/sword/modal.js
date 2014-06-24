@@ -4,14 +4,14 @@
  *
  *    <div class="modal" data-trigger="#my-button">
  *      <h3 class="modal-header">Modal Title</h3>
- *      <a href="#" class="modal-close-x">&times;</a>
+ *      <a class="modal-close-x" href="#">&times;</a>
  *      <div class="modal-content">
  *        <div class="modal-content-inner">
  *          <p>Test content.</p>
  *        </div>
  *      </div>
  *      <div class="modal-footer">
- *        <button class="btn modal-close">Close Modal</button>
+ *        <button class="btn btn-default modal-close">Close Modal</button>
  *      </div>
  *    </div>
  *

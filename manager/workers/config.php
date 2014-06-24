@@ -10,7 +10,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->timezone; ?></span>
       <span class="grid span-4">
-        <select name="timezone" class="input-block">
+        <select name="timezone" class="select-block">
         <?php
 
         $options = array(
@@ -119,7 +119,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->language; ?></span>
       <span class="grid span-4">
-        <select name="language" class="input-block">
+        <select name="language" class="select-block">
         <?php
 
         foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
@@ -135,7 +135,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_language_direction; ?></span>
       <span class="grid span-4">
-        <select name="language_direction" class="input-block">
+        <select name="language_direction" class="select-block">
           <option value="LTR"<?php echo ($cache['language_direction'] == 'LTR' ? ' selected' : ""); ?>>Left to Right (LTR)</option>
           <option value="RTL"<?php echo ($cache['language_direction'] == 'RTL' ? ' selected' : ""); ?>>Right to Left (RTL)</option>
         </select>
@@ -145,13 +145,13 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->shield; ?></span>
       <span class="grid span-4">
-        <select name="shield" class="input-block">
+        <select name="shield" class="select-block">
         <?php
 
         foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
             $shield = basename($folder);
             $info = Shield::info($shield);
-            echo '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . ', ' . strtolower($speak->by) . ' ' . $info->author . '</option>';
+            echo '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . '</option>';
         }
 
         ?>
@@ -208,12 +208,12 @@
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->slogan; ?></span>
-      <span class="grid span-4"><textarea name="slogan" class="input-block"><?php echo $cache['slogan']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="slogan" class="textarea-block"><?php echo $cache['slogan']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->description; ?></span>
-      <span class="grid span-4"><textarea name="description" class="input-block"><?php echo $cache['description']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="description" class="textarea-block"><?php echo $cache['description']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
@@ -361,7 +361,7 @@
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_spam_keywords; ?></span>
-      <span class="grid span-4"><textarea name="spam_keywords" class="input-block" placeholder="<?php echo $speak->manager->placeholder_spam_keywords; ?>"><?php echo $cache['spam_keywords']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_spam_keywords; ?>"><?php echo $cache['spam_keywords']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
@@ -371,23 +371,23 @@
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_content]" class="input-block code"><?php echo $cache['defaults']['page_content']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code"><?php echo $cache['defaults']['page_content']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="input-block code"><?php echo $cache['defaults']['page_custom_css']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code"><?php echo $cache['defaults']['page_custom_css']; ?></textarea></span>
     </label>
 
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="input-block code"><?php echo $cache['defaults']['page_custom_js']; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code"><?php echo $cache['defaults']['page_custom_js']; ?></textarea></span>
     </label>
 
   </fieldset>
 
   <div class="grid-group">
-    <span class="grid span-6"><button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
+    <span class="grid span-6"><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
   </div>
 
 </form>

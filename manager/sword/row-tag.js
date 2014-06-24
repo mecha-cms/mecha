@@ -22,7 +22,7 @@
             length = $(this).closest('tbody').find('tr').length,
             id = parseInt($(this).closest('tr').prev().find('input[type="hidden"]').val(), 10);
 
-        if ($(this).is('.btn-more')) {
+        if ($(this).is('.btn-increase')) {
             if (length < max + 1) {
                 $(this).closest('tr').before(clone.replace(/%s/g, id + 1));
                 base.fire('on_row_increase', [e, this]);

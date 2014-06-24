@@ -1,9 +1,26 @@
 .accordion-area {margin-top:1.3846153846153846em}
 .accordion-area:first-child {margin-top:0}
-.accordion-header {cursor:pointer}
-.accordion-header .fa {margin-right:.4em}
+.accordion-header {
+  display:block;
+  cursor:pointer;
+}
+
+.accordion-header:before {
+  content:"\f0fe";
+  display:inline-block;
+  width:1.28571429em;
+  text-align:center;
+  font-style:normal;
+  font-weight:normal;
+  font-family:"FontAwesome";
+  font-size:107.6923076923077%;
+  line-height:inherit;
+  margin-right:.3076923076923077em;
+}
+
+.accordion-header.active:before {content:"\f146"}
 
 .accordion-content {
-  margin:1.3846153846153846em 0 0 1em;
-  padding-bottom:.2em;
+  margin:0 0 2px;
+  padding:1.3846153846153846em;
 }

@@ -1,5 +1,5 @@
 <div class="main-actions">
-  <a class="btn btn-success btn-new" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/field/ignite"><i class="fa fa-plus-square"></i> <?php echo $speak->manager->title_new_field; ?></a>
+  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/field/ignite"><i class="fa fa-plus-square"></i> <?php echo $speak->manager->title_new_field; ?></a>
 </div>
 <?php echo Notify::read(); ?>
 <?php if($pages): ?>
@@ -7,14 +7,14 @@
   <colgroup>
     <col>
     <col>
-    <col style="width:7em;">
-    <col style="width:7em;">
+    <col style="width:2.5em;">
+    <col style="width:2.5em;">
   </colgroup>
   <thead>
     <tr>
       <th><?php echo $speak->title; ?></th>
       <th><?php echo $speak->key; ?></th>
-      <th colspan="2"><?php echo $speak->actions; ?></th>
+      <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>
     </tr>
   </thead>
   <tbody>
@@ -22,8 +22,8 @@
     <tr>
       <td><?php echo $value->title; ?></td>
       <td><?php echo $key; ?></td>
-      <td><a class="text-success" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key; ?>"><i class="fa fa-pencil-square"></i> <?php echo $speak->edit; ?></a></td>
-      <td><a class="text-error" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></td>
+      <td class="text-center"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key; ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
+      <td class="text-center"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key; ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
     </tr>
     <?php endforeach; ?>
   </tbody>

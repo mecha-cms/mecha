@@ -32,7 +32,7 @@ if( ! empty($fields)) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
-            $html .= '<textarea name="fields[' . $key . '][value]" class="input-block">' . (isset($field[$key]) ? Text::parse($field[$key])->to_encoded_html : $value['value']) . '</textarea>';
+            $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key])->to_encoded_html : $value['value']) . '</textarea>';
             $html .= '</span>';
             $html .= '</label>';
         }
@@ -48,7 +48,7 @@ if( ! empty($fields)) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
-            $html .= '<select name="fields[' . $key . '][value]" class="input-block">';
+            $html .= '<select name="fields[' . $key . '][value]" class="select-block">';
             foreach(explode("\n", $value['value']) as $v) {
                 $v = trim($v);
                 if(strpos($v, ':') !== false) {

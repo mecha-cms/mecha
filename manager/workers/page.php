@@ -1,5 +1,5 @@
 <div class="main-actions">
-  <a href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type; ?>/ignite" class="btn btn-success btn-new"><i class="fa fa-plus-square"></i> <?php echo $config->editor_type == 'article' ? $speak->manager->title_new_article : $speak->manager->title_new_page; ?></a>
+  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type; ?>/ignite"><i class="fa fa-plus-square"></i> <?php echo $config->editor_type == 'article' ? $speak->manager->title_new_article : $speak->manager->title_new_page; ?></a>
 </div>
 <?php echo Notify::read(); ?>
 <?php if($pages): ?>
@@ -19,10 +19,10 @@
   </li>
   <?php endforeach; ?>
 </ol>
-<nav class="blog-pager">
+<p class="pager cf">
   <span class="pull-left"><?php echo $pager->prev->link; ?></span>
   <span class="pull-right"><?php echo $pager->next->link; ?></span>
-</nav>
+</p>
 <?php else: ?>
 <p><?php echo Config::speak('notify_empty', array(strtolower($config->editor_type == 'article' ? $speak->articles : $speak->pages))); ?></p>
 <?php endif; ?>

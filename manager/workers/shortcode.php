@@ -22,12 +22,12 @@
         <td><input name="values[]" type="text" class="input-block"></td>
       </tr>
       <tr class="row-more-less" data-min="3" data-max="9999">
-        <td colspan="2"><a class="btn btn-sm btn-more" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-less" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
+        <td colspan="2"><a class="btn btn-sm btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>
   </table>
-  <div class="grid-group form-actions">
-    <span class="grid span-6"><button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
+  <div class="grid-group">
+    <span class="grid span-6"><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
   </div>
 </form>
 <hr>

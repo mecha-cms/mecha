@@ -53,3 +53,16 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
   display:block;
   width:100%;
 }
+
+.custom-modal-action {overflow:hidden}
+
+.custom-modal-action button {
+  display:block;
+  float:left;
+  outline:none;
+  -webkit-box-shadow:none;
+  -moz-box-shadow:none;
+  box-shadow:none;
+}
+
+.custom-modal-action button + button {margin:0 0 0 .3076923076923077em}

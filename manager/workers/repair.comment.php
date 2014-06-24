@@ -30,10 +30,10 @@
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
-    <span class="grid span-5"><textarea name="message" class="input-block code" data-mte-languages='<?php echo Text::parse($speak->MTE)->to_encoded_json; ?>'><?php echo Text::parse($cache['message_raw'])->to_encoded_html; ?></textarea></span>
+    <span class="grid span-5"><textarea name="message" class="textarea-block code" data-mte-languages='<?php echo Text::parse($speak->MTE)->to_encoded_json; ?>'><?php echo Text::parse($cache['message_raw'])->to_encoded_html; ?></textarea></span>
   </label>
   <div class="grid-group">
     <span class="grid span-1"></span>
-    <span class="grid span-5"><button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <a class="btn btn-danger btn-delete" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/comment/kill/id:<?php echo $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></span>
+    <span class="grid span-5"><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/comment/kill/id:<?php echo $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></span>
   </div>
 </form>

@@ -26,10 +26,10 @@
     <hr>
     <p>
       <?php if($config->editor_mode == 'ignite'): ?>
-      <button class="btn btn-success btn-publish" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->publish; ?></button>
+      <button class="btn btn-construct" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->publish; ?></button>
       <?php else: ?>
-      <button class="btn btn-primary btn-update" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button>
-      <a class="btn btn-danger btn-delete" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+      <button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button>
+      <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/' . $config->editor_type . '/kill/id:' . $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
       <?php endif; ?>
     </p>
   </form>

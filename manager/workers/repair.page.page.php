@@ -14,11 +14,11 @@
 </label>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->content; ?></span>
-  <span class="grid span-5"><textarea name="content" class="input-block code" placeholder="<?php echo $speak->manager->placeholder_content; ?>" data-mte-languages='<?php echo Text::parse($speak->MTE)->to_encoded_json; ?>'><?php echo Text::parse($cache['content'])->to_encoded_html; ?></textarea></span>
+  <span class="grid span-5"><textarea name="content" class="textarea-block code" placeholder="<?php echo $speak->manager->placeholder_content; ?>" data-mte-languages='<?php echo Text::parse($speak->MTE)->to_encoded_json; ?>'><?php echo Text::parse($cache['content'])->to_encoded_html; ?></textarea></span>
 </label>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
-  <span class="grid span-5"><textarea name="description" class="input-block" placeholder="<?php echo $speak->manager->placeholder_description; ?>"><?php echo Text::parse($cache['description'])->to_encoded_html; ?></textarea></span>
+  <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_description; ?>"><?php echo Text::parse($cache['description'])->to_encoded_html; ?></textarea></span>
 </label>
 <?php
 

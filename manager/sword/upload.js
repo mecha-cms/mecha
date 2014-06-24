@@ -3,10 +3,10 @@
  * -----------------
  *
  *    <form class="form-upload">
- *      <span class="input-wrapper btn">
+ *      <span class="input-wrapper btn btn-default">
  *        <span><i class="fa fa-folder-open"></i> Select a file&hellip;</span>
  *        <input type="file" name="file" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
- *      </span> <button class="btn btn-primary btn-upload" type="submit"><i class="fa fa-cloud-upload"></i> Upload</button>
+ *      </span> <button class="btn btn-action" type="submit"><i class="fa fa-cloud-upload"></i> Upload</button>
  *    </form>
  *
  */
@@ -24,14 +24,14 @@
         var segments = this.value.split('.'),
             extension = segments[segments.length - 1].toLowerCase(),
             ok = $.inArray(extension, accepted) !== -1,
-            status = ok ? 'btn-success' : 'btn-danger',
+            status = ok ? 'btn-accept' : 'btn-reject',
             statusIcon = ok ? 'iconReady' : 'iconError';
 
         if (this.value === "") {
 
             $(this).prev().html(cache)
                 .parent()
-                    .removeClass('btn-success btn-danger');
+                    .removeClass('btn-accept btn-reject');
 
         } else {
 
@@ -39,7 +39,7 @@
                 .prev()
                     .html('<i class="' + $(this).data(statusIcon) + '"></i> ' + this.value)
                         .parent()
-                            .removeClass('btn-success btn-danger')
+                            .removeClass('btn-accept btn-reject')
                                 .addClass(status);
 
         }
