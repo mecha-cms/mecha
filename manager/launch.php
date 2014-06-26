@@ -26,11 +26,11 @@ Weapon::add('cargo_before', function() use($config, $speak) {
 }, 10);
 
 Weapon::add('sword_before', function() {
-    echo Asset::script('manager/sword/dashboard.js');
+    echo Asset::javascript('manager/sword/dashboard.js');
 }, 10);
 
 Weapon::add('sword_after', function() use($config) {
-    echo Asset::script(array(
+    echo Asset::javascript(array(
         $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
@@ -73,7 +73,7 @@ Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
+        echo ($article->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -81,7 +81,7 @@ Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+        echo ($page->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -94,7 +94,7 @@ Weapon::add('page_footer', function($page) {
 Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
-    echo '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+    echo ($comment->status == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
 }, 20);
 
 
@@ -122,6 +122,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         // Fixes for checkbox input
         $request['widget_year_first'] = Request::post('widget_year_first') ? true : false;
         $request['comments'] = Request::post('comments') ? true : false;
+        $request['comment_moderation'] = Request::post('comment_moderation') ? true : false;
         $request['email_notification'] = Request::post('email_notification') ? true : false;
         $request['resource_versioning'] = Request::post('resource_versioning') ? true : false;
 
@@ -157,9 +158,9 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
         // Check if slug already exist on static pages
         $slugs = array();
-        if($files = Get::pages()) {
+        if($files = Get::pages('DESC', "", true)) {
             foreach($files as $file) {
-                list($time, $kind, $slug) = explode('_', basename($file, '.txt'));
+                list($time, $kind, $slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
                 $slugs[$slug] = 1;
             }
         }
@@ -223,17 +224,17 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
 
 /**
- * Article and Page Manager
- * ------------------------
+ * Article/Page Manager
+ * --------------------
  */
 
 Route::accept(array($config->manager->slug . '/(article|page)', $config->manager->slug . '/(article|page)/(:num)'), function($path = "", $offset = 1) use($config, $speak) {
 
     $pages = array();
 
-    if($files = Mecha::eat($path == 'article' ? Get::articles() : Get::pages())->chunk($offset, $config->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = $path == 'article' ? Get::articleHeader($file_path) : Get::pageHeader($file_path);
+    if($files = Mecha::eat($path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true))->chunk($offset, $config->per_page)->vomit()) {
+        foreach($files as $_path) {
+            $pages[] = $path == 'article' ? Get::articleHeader($_path) : Get::pageHeader($_path);
         }
     } else {
         if($offset !== 1) {
@@ -248,7 +249,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
         'page_title' => ($path == 'article' ? $speak->articles : $speak->pages) . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'pages' => $pages,
-        'pagination' => Navigator::extract(($path == 'article' ? Get::articles() : Get::pages()), $offset, $config->per_page, $config->manager->slug . '/' . $path),
+        'pagination' => Navigator::extract(($path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true)), $offset, $config->per_page, $config->manager->slug . '/' . $path),
         'cargo' => DECK . DS . 'workers' . DS . 'page.php',
         'editor_type' => $path
     ));
@@ -266,7 +267,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->manager->slug . '/(article|page)/repair/id:(:num)'), function($path = "", $id = "") use($config, $speak) {
 
     Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/editor.js');
+        echo Asset::javascript('manager/sword/editor.js');
     }, 11);
 
     Config::set(array(
@@ -281,7 +282,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
         $fields = array(
             'id' => $id,
-            'file_path' => $page->file_path,
+            'path' => $page->path,
+            'status' => $page->status,
             'date' => $page->date->W3C,
             'title' => $page->title,
             'slug' => $page->slug,
@@ -304,6 +306,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
         $fields = array(
             'id' => "",
+            'path' => "",
+            'status' => 'draft',
             'date' => "",
             'title' => $config->defaults->page_title,
             'slug' => "",
@@ -325,15 +329,18 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         Guardian::checkToken($request['token']);
 
         $request['id'] = $fields['id'];
+        $request['path'] = $fields['path'];
+        $request['status'] = $fields['status'];
+        $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
 
         /**
          * Collect all available slug to prevent duplicate
          */
 
         $slugs = array();
-        if($files = $path == 'article' ? Get::articles() : Get::pages()) {
+        if($files = $path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true)) {
             foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.txt'));
+                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
                 $slugs[$_slug] = 1;
             }
         }
@@ -436,6 +443,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 'js' => $js,
                 'fields' => Text::parse($field)->to_encoded_json
             ),
+            'action' => $request['action'],
             'execution_time' => time(),
             'error' => Notify::errors(),
             'editor_mode' => Config::get('editor_mode')
@@ -449,13 +457,13 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
             if( ! Notify::errors()) {
 
-                File::write($data)->saveTo(($path == 'article' ? ARTICLE : PAGE) . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt', 0600);
+                File::write($data)->saveTo(($path == 'article' ? ARTICLE : PAGE) . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . $extension, 0600);
 
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                    File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt', 0600);
+                    File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
                 }
 
-                Notify::success(Config::speak('notify_success_created', array($title)) . ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>');
+                Notify::success(Config::speak('notify_success_created', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
 
                 Weapon::fire('on_' . $path . '_update', array($info));
                 Weapon::fire('on_' . $path . '_construct', array($info));
@@ -489,28 +497,28 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
             if( ! Notify::errors()) {
 
-                File::open($page->file_path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . '.txt');
+                File::open($page->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . $extension);
 
-                $custom = CUSTOM . DS . Date::format($fields['date'], 'Y-m-d-H-i-s') . '.txt';
+                $custom = CUSTOM . DS . Date::format($fields['date'], 'Y-m-d-H-i-s') . $extension;
 
                 if(File::exist($custom)) {
                     if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js))) {
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom)->delete();
                     } else {
-                        File::open($custom)->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '.txt');
+                        File::open($custom)->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
                     if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . '.txt', 0600);
+                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
                     }
                 }
 
-                if($page->slug != $slug && $php_file = File::exist(dirname($page->file_path) . DS . $page->slug . '.php')) {
+                if($page->slug != $slug && $php_file = File::exist(dirname($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
 
-                Notify::success(Config::speak('notify_success_updated', array($title)) . ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>');
+                Notify::success(Config::speak('notify_success_updated', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
 
                 Weapon::fire('on_' . $path . '_update', array($info));
                 Weapon::fire('on_' . $path . '_repair', array($info));
@@ -518,9 +526,9 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 // Rename all comment files related to article if article date has been changed
                 if(((string) $date !== (string) $fields['date']) && $comments = Get::comments($id)) {
                     foreach($comments as $comment) {
-                        $parts = explode('_', $comment['file_name']);
+                        $parts = explode('_', basename($comment['path']));
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
-                        File::open($comment['file_path'])->renameTo(implode('_', $parts));
+                        File::open($comment['path'])->renameTo(implode('_', $parts));
                     }
                 }
 
@@ -588,18 +596,19 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
 
         Guardian::checkToken(Request::post('token'));
 
-        File::open($page->file_path)->delete();
+        File::open($page->path)->delete();
 
         // Deleting comments ...
-        foreach(Get::comments($id) as $comment) {
-            File::open($comment['file_path'])->delete();
+        foreach(Get::comments($id, 'DESC', 'path', true) as $comment) {
+            File::open($comment['path'])->delete();
         }
 
         // Deleting custom CSS and JavaScript files ...
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
+        File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();
 
         // Deleting custom PHP file of article/page ...
-        File::open(dirname($page->file_path) . DS . $page->slug . '.php')->delete();
+        File::open(dirname($page->path) . DS . $page->slug . '.php')->delete();
 
         Notify::success(Config::speak('notify_success_deleted', array($page->title)));
 
@@ -640,7 +649,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     ));
 
     Weapon::add('sword_after', function() {
-        echo Asset::script('manager/sword/row-tag.js');
+        echo Asset::javascript('manager/sword/row-tag.js');
         echo '<script>
 (function($, base) {
     base.add(\'on_row_increase\', function() {
@@ -782,7 +791,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     }
 
     $pages = array();
-    $take = Get::files(ASSET, '*', 'DESC', 'last_update');
+    $take = Get::files(ASSET, '*', 'DESC', 'update');
 
     if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
         foreach($files as $file) $pages[] = $file;
@@ -815,7 +824,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     }
 
     $pages = array();
-    $take = Get::files(CACHE, '*', 'DESC', 'last_update');
+    $take = Get::files(CACHE, '*', 'DESC', 'update');
 
     if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
         foreach($files as $file) $pages[] = $file;
@@ -871,9 +880,9 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
 
         $info_path = array();
         foreach($deletes as $file_to_delete) {
-            $file_path = ($path == 'asset' ? ASSET : CACHE) . DS . str_replace(array('\\', '/'), DS, $file_to_delete);
-            $info_path[] = $file_path;
-            File::open($file_path)->delete();
+            $path = ($path == 'asset' ? ASSET : CACHE) . DS . str_replace(array('\\', '/'), DS, $file_to_delete);
+            $info_path[] = $path;
+            File::open($path)->delete();
         }
 
         $info = array(
@@ -951,9 +960,9 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
             }
             $info = array(
                 'data' => array(
-                    'file_path' => $file,
-                    'old_name' => dirname($file) . DS . $basename,
-                    'new_name' => dirname($file) . DS . $new_name
+                    'path' => $file,
+                    'name:old' => dirname($file) . DS . $basename,
+                    'name:new' => dirname($file) . DS . $new_name
                 ),
                 'execution_time' => time(),
                 'error' => Notify::errors()
@@ -1060,7 +1069,7 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
 
         $info = array(
             'data' => array(
-                'file_path' => $file,
+                'path' => $file,
                 'content' => $request['content']
             ),
             'execution_time' => time(),
@@ -1114,13 +1123,13 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill', function($path = "
 
 Route::accept(array($config->manager->slug . '/comment', $config->manager->slug . '/comment/(:num)'), function($offset = 1) use($config, $speak) {
 
-    File::write($config->total_comments)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
+    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
 
     $pages = array();
 
-    if($files = Mecha::eat(Get::comments(null, 'DESC'))->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::comments(null, 'DESC', 'id', true))->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
-            $pages[] = Get::comment($comment['id']);
+            $pages[] = Get::comment($comment['path']);
         }
     } else {
         $pages = false;
@@ -1172,8 +1181,8 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
             'error' => Notify::errors()
         );
 
-        File::open($comment->file_path)->delete();
-        File::write($config->total_comments)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
+        File::open($comment->path)->delete();
+        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
         Weapon::fire('on_comment_update', array($info));
         Weapon::fire('on_comment_destruct', array($info));
@@ -1227,6 +1236,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
 
         $request['id'] = $id;
         $request['message_raw'] = $request['message'];
+        $extension = $request['action'] == 'publish' ? '.txt' : '.hold';
 
         Guardian::checkToken($request['token']);
 
@@ -1242,6 +1252,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
 
         $info = array(
             'data' => $request,
+            'action' => $request['action'],
             'execution_time' => time(),
             'error' => Notify::errors()
         );
@@ -1256,7 +1267,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $data .= 'Status: ' . $request['status'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];
 
-            File::open($comment->file_path)->write($data)->save(0600);
+            File::open($comment->path)->write($data)->save(0600)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
 
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
             Weapon::fire('on_comment_update', array($info));
@@ -1600,7 +1611,7 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
 
         $info = array(
             'data' => array(
-                'file_path' => $file,
+                'path' => $file,
                 'content' => Request::post('content')
             ),
             'execution_time' => time(),
@@ -1973,7 +1984,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
 
     $info = array(
         'data' => array(
-            'file_path' => ROOT . DS . $name
+            'path' => ROOT . DS . $name
         ),
         'execution_time' => time(),
         'error' => Notify::errors()
@@ -2000,7 +2011,7 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
         readfile($backup);
         $info = array(
             'data' => array(
-                'file_path' => $backup
+                'path' => $backup
             ),
             'execution_time' => time(),
             'error' => Notify::errors()
@@ -2045,7 +2056,7 @@ Route::accept($config->manager->slug . '/(article|page)/preview', function($path
         $content = Filter::apply('content', Text::parse($content)->to_html);
         $content = Filter::apply($path . ':content', $content);
         echo '<h2 class="preview-title">' . $title . '</h2>';
-        echo '<div class="p">' . $content . '</div>';
+        echo '<div class="preview-body p">' . $content . '</div>';
     }
 
     echo '</div>';

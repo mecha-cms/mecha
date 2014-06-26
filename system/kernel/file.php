@@ -83,7 +83,7 @@ class File {
             $file['extension'] = "";
         }
         if(in_array(strtolower($file['extension']), $image_extensions)) {
-            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '">';
+            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '"' . EE_SUFFIX;
         }
         return file_get_contents(self::$opened);
     }

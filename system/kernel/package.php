@@ -362,10 +362,9 @@ class Package {
         $results = array();
         $zip = new ZipArchive();
         if($zip->open(self::$opened)) {
-            $results['file_path'] = self::$opened;
-            $results['file_name'] = basename($zip->filename);
-            $results['last_update'] = filemtime(self::$opened);
-            $results['update'] = Date::format(filemtime(self::$opened), 'Y-m-d H:i:s');
+            $results['path'] = self::$opened;
+            $results['name'] = basename($zip->filename);
+            $results['update'] = filemtime(self::$opened);
             $results['size'] = filesize(self::$opened);
             $results['status'] = $zip->status;
             $results['total'] = $zip->numFiles;

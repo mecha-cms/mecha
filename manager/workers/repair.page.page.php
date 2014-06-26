@@ -1,8 +1,10 @@
 <?php if($config->editor_mode != 'ignite' && $config->editor_type != 'page'): ?>
+<?php if($cache['status'] == 'published'): ?>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->date; ?></span>
   <span class="grid span-5"><input name="date" type="text" class="input-block" value="<?php echo $cache['date']; ?>" placeholder="0000-00-00T00:00:00+00:00"></span>
 </label>
+<?php endif; ?>
 <?php endif; ?>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
@@ -23,6 +25,7 @@
 <?php
 
 $tags = array();
+
 foreach(Get::tags() as $tag) {
     if($tag && $tag->id !== 0) {
         $tags[] = '<div><label><input type="checkbox" name="tags[]" value="' . $tag->id . '"' . (in_array($tag->id, $cache['tags']) ? ' checked' : "") . '> <span>' . $tag->name . '</span></label></div>';

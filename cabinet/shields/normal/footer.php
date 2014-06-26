@@ -14,7 +14,7 @@
     </div> <!-- .blog-wrapper -->
 
     <?php Weapon::fire('sword_before'); ?>
-    <?php echo Asset::script('sword/main.js'); ?>
+    <?php echo Asset::javascript('sword/main.js'); ?>
     <?php if(isset($page->js)) echo $page->js; ?>
     <?php Weapon::fire('sword_after'); ?>
     <?php Weapon::fire('cargo_after'); ?>

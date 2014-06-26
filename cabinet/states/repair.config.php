@@ -10,6 +10,7 @@ return array(
     'shield' => 'normal',
     'per_page' => 7,
     'comments' => true,
+    'comment_moderation' => false,
     'email_notification' => true,
     'resource_versioning' => true,
     'excerpt_length' => 300,

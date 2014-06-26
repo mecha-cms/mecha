@@ -216,9 +216,14 @@ class Config {
         $config['pages'] = false;
         $config['pagination'] = false;
         $config['cargo'] = $config['page'] ? $config['page']->content : false;
+
         $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
         $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));
         $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt'));
+
+        $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft}', GLOB_BRACE));
+        $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft}', GLOB_BRACE));
+        $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
 
         if($file = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
             $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');

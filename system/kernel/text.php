@@ -163,7 +163,7 @@ class Text {
 
     public static function parse($input, $option = false) {
         $parser = new MarkdownExtra;
-        $parser->empty_element_suffix = ">"; // HTML5 self closing tag
+        $parser->empty_element_suffix = EE_SUFFIX;
         $parser->table_align_class_tmpl = 'text-%%'; // Define table alignment class, example: `<td class="text-right">`
         if(is_string($input)) {
             return (object) array(

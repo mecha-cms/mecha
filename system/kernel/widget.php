@@ -15,7 +15,7 @@ class Widget extends Weapon {
         $config = Config::get();
         $speak = Config::speak();
         if( ! Guardian::happy()) return "";
-        $total = $config->total_comments;
+        $total = $config->total_comments_backend;
         $destination = SYSTEM . DS . 'log' . DS . 'comments.total.txt';
         $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
         if($file = File::exist($destination)) {
@@ -104,8 +104,8 @@ class Widget extends Weapon {
         }
         if($type == 'HIERARCHY') {
             $i = 0;
-            foreach($files as $file_name) {
-                list($year, $month, $day) = explode('-', basename($file_name, '.txt'));
+            foreach($files as $name) {
+                list($year, $month, $day) = explode('-', basename($name, '.txt'));
                 $archives[$year][$month][] = $day;
             }
             $html  = '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy">';
@@ -139,8 +139,8 @@ class Widget extends Weapon {
             return Filter::apply('widget:archive.hierarchy', Filter::apply('widget:archive', $html));
         }
         if($type == 'LIST' || $type == 'DROPDOWN') {
-            foreach($files as $file_name) {
-                $archives[] = substr(basename($file_name, '.txt'), 0, 7);
+            foreach($files as $name) {
+                $archives[] = substr(basename($name, '.txt'), 0, 7);
             }
             $counter = array_count_values($archives);
             $archives = array_unique($archives);
@@ -259,7 +259,7 @@ class Widget extends Weapon {
         $speak = Config::speak();
         $html  = '<div class="widget widget-search">';
         $html .= '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">';
-        $html .= '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off">';
+        $html .= '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . EE_SUFFIX;
         $html .= '<button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>';
         $html .= '</form>';
         $html .= '</div>';
@@ -338,7 +338,7 @@ class Widget extends Weapon {
             $html .= '<ul>';
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
-                if($files[$i] != $config->page->file_path) {
+                if($files[$i] != $config->page->path) {
                     $article = Get::articleAnchor($files[$i]);
                     $html .= '<li><a href="' . $article->url . '">' . $article->title . '</a></li>';
                 }
@@ -372,7 +372,7 @@ class Widget extends Weapon {
                 $html .= '<li class="recent-comment-item">';
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= '<div class="recent-comment-avatar">';
-                    $html .= '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '">';
+                    $html .= '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '"' . EE_SUFFIX;
                     $html .= '</div>';
                 }
                 $html .= '<div class="recent-comment-header">';

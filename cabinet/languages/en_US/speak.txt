@@ -73,8 +73,8 @@ last: Last
 old: Old
 new: New
 
-older: Older <i class="fa fa-arrow-circle-right"></i>
-newer: <i class="fa fa-arrow-circle-left"></i> Newer
+older: Older <i class="fa fa-chevron-circle-right"></i>
+newer: <i class="fa fa-chevron-circle-left"></i> Newer
 
 oldest: Oldest
 newest: Newest
@@ -283,6 +283,8 @@ values: Values
 scope: Scope
 scopes: Scopes
 
+pending: Pending
+
 
 # -----------------------------------
 #  MONTHS AND DAY NAMES LOCALIZATION
@@ -312,6 +314,14 @@ saved: Saved
 publish: Publish
 publishing: Publishing
 published: Published
+
+unpublish: Unpublish
+unpublishing: Unpublishing
+unpublished: Unpublished
+
+draft: Draft
+drafting: Drafting
+drafted: Drafted
 
 submit: Submit
 submitting: Submitting
@@ -368,6 +378,18 @@ selected: Selected
 apply: Apply
 applying: Applying
 applied: Applied
+
+accept: Accept
+accepting: Accepting
+accepted: Accepted
+
+reject: Reject
+rejecting: Rejecting
+rejected: Rejected
+
+approve: Approve
+approving: Approving
+approved: Approved
 
 upload: Upload
 uploading: Uploading
@@ -433,7 +455,7 @@ manager:
   placeholder_css: Write your custom CSS here&hellip;
   placeholder_file: Select a file&hellip;
   placeholder_asset_name: example-asset-name.jpg
-  placeholder_spam_keywords: Comma separated list of keywords to be blacklisted.
+  placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
 
   title_new_article: New Article
   title_new_page: New Page
@@ -470,11 +492,12 @@ manager:
 
   title_per_page: Per Page
   title_language_direction: Language Direction
-  title_spam_keywords: Spam Keywords
+  title_keyword_spam: Spam Keywords
 
-  title_allow_comment: Allow comments
-  title_allow_comment_notification: Notification for new comments
-  title_allow_resource_versioning: Enable resource versioning
+  title_comment_allow: Allow comments
+  title_comment_moderation: Comment moderation
+  title_comment_notification: Notification for new comments
+  title_resource_versioning: Enable resource versioning
 
   title_widget_time: Widget time as <var>YYYY-MM</var> (year first)
 

@@ -18,10 +18,10 @@ class Get {
 
     private static function tracePath($detector, $folder = PAGE) {
         $results = false;
-        foreach(glob($folder . DS . '*.txt') as $file_path) {
-            list($time, $kind, $slug) = explode('_', basename($file_path, '.txt'));
+        foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
+            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)));
             if($slug == $detector || (is_numeric($detector) && (string) Date::format($detector, 'Y-m-d-H-i-s') == (string) $time)) {
-                $results = $file_path;
+                $results = $path;
                 break;
             }
         }
@@ -41,7 +41,7 @@ class Get {
      *
      *    [2]. var_dump(Get::extract(glob(ARTICLE . DS . '*.txt')));
      *
-     *    [3]. var_dump(Get::extract('articles', 'DESC', 'file_path'));
+     *    [3]. var_dump(Get::extract('articles', 'DESC', 'path'));
      *
      *    [4]. var_dump(Get::extract('articles', 'DESC', 'time', 'kind:1'));
      *
@@ -57,7 +57,7 @@ class Get {
      *
      */
 
-    public static function extract($reference, $order = 'DESC', $sorter = 'file_path', $filter = "") {
+    public static function extract($reference, $order = 'DESC', $sorter = 'path', $filter = "") {
         $tree = array();
         if( ! $reference) return false;
         if(is_string($reference)) {
@@ -73,15 +73,16 @@ class Get {
             $reference = array($reference);
         }
         for($i = 0, $count = count($reference); $i < $count; ++$i) {
-            $base = basename($reference[$i], '.txt');
+            $extension = pathinfo($reference[$i], PATHINFO_EXTENSION);
+            $base = basename($reference[$i], '.' . $extension);
             $part = explode('_', $base);
             $tree[$i] = array(
-                'file_path' => $reference[$i],
-                'file_name' => $base . '.txt',
+                'path' => $reference[$i],
                 'time' => isset($part[0]) ? Date::format($part[0], 'Y-m-d H:i:s') : '0000-00-00 00:00:00',
                 'update' => File::exist($reference[$i]) ? Date::format(filemtime($reference[$i]), 'Y-m-d H:i:s') : null,
                 'kind' => isset($part[1]) ? Converter::strEval(explode(',', $part[1])) : array(),
-                'slug' => isset($part[2]) ? $part[2] : ""
+                'slug' => isset($part[2]) ? $part[2] : "",
+                'status' => $extension == 'txt' ? 'published' : 'draft'
             );
         }
         return ! empty($tree) ? Mecha::eat($tree)->order($order, $sorter)->vomit() : false;
@@ -125,7 +126,6 @@ class Get {
                 'name' => $info['basename'],
                 'dirname' => $info['dirname'],
                 'extension' => strtolower($info['extension']),
-                'last_update' => filemtime($file),
                 'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
                 'size' => File::size($file, 'KB')
             );
@@ -133,7 +133,7 @@ class Get {
                 // Exclude file from results if the file name begins with
                 // two underscores. Example: `__file-name.txt`
                 strpos(basename($info['basename']), '__') !== 0 &&
-                // Exclude all files in a folder from results if the
+                // Exclude all files inside a folder from results if the
                 // folder name begins with two underscores. Example: `__folder-name`
                 strpos(basename($info['dirname']), '__') !== 0 &&
                 // Linux?
@@ -146,7 +146,6 @@ class Get {
                     'name' => $info['basename'],
                     'dirname' => $info['dirname'],
                     'extension' => strtolower($info['extension']),
-                    'last_update' => filemtime($file),
                     'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
                     'size' => File::size($file, 'KB')
                 );
@@ -157,7 +156,6 @@ class Get {
                         'name' => $info['basename'],
                         'dirname' => $info['dirname'],
                         'extension' => strtolower($info['extension']),
-                        'last_update' => filemtime($file),
                         'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
                         'size' => File::size($file, 'KB')
                     );
@@ -178,14 +176,14 @@ class Get {
      *        'some/path',
      *        'txt',
      *        'ASC',
-     *        'last_update'
+     *        'update'
      *    );
      *
      *    $files = Get::files(
      *        'some/path',
      *        'gif,jpg,jpeg,png',
      *        'ASC',
-     *        'last_update'
+     *        'update'
      *    );
      *
      * -------------------------------------------------------------------------
@@ -207,7 +205,7 @@ class Get {
      *        'some/path',
      *        'txt',
      *        'ASC',
-     *        'last_update'
+     *        'update'
      *    );
      *
      * -------------------------------------------------------------------------
@@ -229,7 +227,7 @@ class Get {
      *        'some/path',
      *        'txt',
      *        'ASC',
-     *        'last_update'
+     *        'update'
      *    );
      *
      * -------------------------------------------------------------------------
@@ -395,19 +393,20 @@ class Get {
      * -------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------------------
-     *  $order    | string | Ascending or descending? ASC/DESC?
-     *  $filter   | string | Filter the resulted array by a keyword
-     *  $folder   | string | Folder of the pages
-     *  --------- | ------ | ---------------------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | --------------------------------------------------
+     *  $order    | string  | Ascending or descending? ASC/DESC?
+     *  $filter   | string  | Filter the resulted array by a keyword
+     *  $all      | boolean | Include draft pages to results
+     *  $folder   | string  | Folder of the pages
+     *  --------- | ------- | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pages($order = 'DESC', $filter = "", $folder = PAGE) {
+    public static function pages($order = 'DESC', $filter = "", $all = false, $folder = PAGE) {
         $results = array();
-        $pages = glob($folder . DS . '*.txt');
+        $pages = $all ? glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) : glob($folder . DS . '*.txt');
         $total_pages = count($pages);
         if($total_pages === 0) return false;
         if($order == 'DESC') {
@@ -420,7 +419,7 @@ class Get {
             list($key, $value) = explode(':', $filter, 2);
             if($key == 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.txt'));
+                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
                     if(strpos($time, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -430,7 +429,7 @@ class Get {
                 if(strpos($value, ',') !== false) {
                     $kinds = explode(',', $value);
                     for($i = 0; $i < $total_pages; ++$i) {
-                        $name = basename($pages[$i], '.txt');
+                        $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
                         foreach($kinds as $kind) {
                             if(
                                 strpos($name, '_' . $kind . '_') !== false ||
@@ -445,7 +444,7 @@ class Get {
                     return ! empty($results) ? array_unique($results) : false;
                 } else {
                     for($i = 0; $i < $total_pages; ++$i) {
-                        $name = basename($pages[$i], '.txt');
+                        $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
                         if(
                             strpos($name, '_' . $value . '_') !== false ||
                             strpos($name, ',' . $value . ',') !== false ||
@@ -459,7 +458,7 @@ class Get {
                 }
             } elseif($key == 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.txt'));
+                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
                     if(strpos($slug, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -467,7 +466,7 @@ class Get {
                 return ! empty($results) ? $results : false;
             } else { // if($key == 'keyword') ...
                 for($i = 0; $i < $total_pages; ++$i) {
-                    if(strpos(basename($pages[$i], '.txt'), $value) !== false) {
+                    if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $value) !== false) {
                         $results[] = $pages[$i];
                     }
                 }
@@ -475,7 +474,7 @@ class Get {
             }
         } else {
             for($i = 0; $i < $total_pages; ++$i) {
-                if(strpos(basename($pages[$i], '.txt'), $filter) !== false) {
+                if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $filter) !== false) {
                     $results[] = $pages[$i];
                 }
             }
@@ -499,8 +498,8 @@ class Get {
      *
      */
 
-    public static function articles($order = 'DESC', $filter = "") {
-        return self::pages($order, $filter, ARTICLE);
+    public static function articles($order = 'DESC', $filter = "", $all = false) {
+        return self::pages($order, $filter, $all, ARTICLE);
     }
 
     /**
@@ -550,7 +549,7 @@ class Get {
 
         $results = $results ? $results[0] : false;
 
-        if( ! $results || ! File::exist($results['file_path'])) return false;
+        if( ! $results || ! File::exist($results['path'])) return false;
 
         /**
          * RULES: Do not do any tags looping, content Markdown-ing and
@@ -558,12 +557,12 @@ class Get {
          * fields. For better performance.
          */
 
-        $results = $results + Text::toPage(File::open($results['file_path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
 
         $content = $results['content_raw'];
         $time = Date::format($results['time'], 'Y-m-d-H-i-s');
 
-        if($php_file = File::exist(dirname($results['file_path']) . DS . $results['slug'] . '.php')) {
+        if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
             include $php_file;
             $php_rendered = ob_get_contents();
@@ -573,7 +572,7 @@ class Get {
 
         $results['url'] = $config->url . $connector . $results['slug'];
         $results['date'] = Date::extract($time);
-        $results['update'] = Date::format(filemtime($results['file_path']), 'Y-m-d H:i:s');
+        $results['update'] = Date::format(filemtime($results['path']), 'Y-m-d H:i:s');
         $results['id'] = $results['date']['unix'];
 
         if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
@@ -616,7 +615,7 @@ class Get {
 
         $results['image'] = self::imageURL($content . $custom, 1);
 
-        $comments = self::comments($results['id']);
+        $comments = self::comments($results['id'], 'ASC', 'id', Guardian::happy());
         $results['total_comments'] = $comments !== false ? count($comments) : 0;
         $results['total_comments_text'] = $results['total_comments'] . ' ' . ($results['total_comments'] > 1 ? $speak->comments : $speak->comment);
 
@@ -726,13 +725,17 @@ class Get {
             $path = self::tracePath($path, $folder);
         }
         if($path && $handle = fopen($path, 'r')) {
-            list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            list($time, $kind, $slug) = explode('_', basename($path, '.' . $extension));
             $results = array(
+                'path' => $path,
+                'name' => basename($path),
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
                 'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
                 'kind' => Converter::strEval(explode(',', $kind)),
                 'slug' => $slug,
+                'status' => $extension == 'txt' ? 'published' : 'draft',
                 'url' => $config->url . $connector . $slug
             );
             while(($buffer = fgets($handle, 4096)) !== false) {
@@ -815,16 +818,20 @@ class Get {
         }
         if($path && $handle = fopen($path, 'r')) {
             $parts = explode(':', fgets($handle), 2);
-            list($time, $kind, $slug) = explode('_', basename($path, '.txt'));
+            $extension = pathinfo($path, PATHINFO_EXTENSION);
+            list($time, $kind, $slug) = explode('_', basename($path, '.' . $extension));
             fclose($handle);
             return (object) array(
+                'path' => $path,
+                'name' => basename($path),
                 'id' => (int) Date::format($time, 'U'),
                 'time' => Date::format($time, 'Y-m-d H:i:s'),
                 'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
                 'kind' => Converter::strEval(explode(',', $kind)),
                 'slug' => $slug,
-                'title' => Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?'))),
-                'url' => $config->url . $connector . $slug
+                'status' => $extension == 'txt' ? 'published' : 'draft',
+                'url' => $config->url . $connector . $slug,
+                'title' => Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?')))
             );
         }
         return false;
@@ -964,29 +971,36 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
-     *  $post_time | string | Post time as results filter
-     *  $order     | string | Order results by ascending or descending? ASC/DESC?
-     *  $sorter    | string | The key of array item as sorting reference
-     *  ---------- | ------ | ---------------------------------------------------
+     *  Parameter  | Type    | Description
+     *  ---------- | ------- | --------------------------------------------------
+     *  $post_time | string  | Post time as results filter
+     *  $order     | string  | Ascending or descending? ASC/DESC?
+     *  $sorter    | string  | The key of array item as sorting reference
+     *  $all       | boolean | Include unpublished comments to results
+     *  ---------- | ------- | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function comments($post_time = null, $order = 'ASC', $sorter = 'id') {
+    public static function comments($post_time = null, $order = 'ASC', $sorter = 'id', $all = false) {
         $results = array();
-        $take = is_null($post_time) ? glob(RESPONSE . DS . '*.txt') : glob(RESPONSE . DS . Date::format($post_time, 'Y-m-d-H-i-s') . '_*.txt');
-        foreach($take as $comment) {
-            list($post, $id, $parent) = explode('_', basename($comment, '.txt'));
+        if( ! is_null($post_time)) {
+            $post_time_slug = Date::format($post_time, 'Y-m-d-H-i-s');
+            $files = $all ? glob(RESPONSE . DS . $post_time_slug . '_*.{txt,hold}', GLOB_BRACE) : glob(RESPONSE . DS . $post_time_slug . '_*.txt');
+        } else {
+            $files = $all ? glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE) : glob(RESPONSE . DS . '*.txt');
+        }
+        foreach($files as $comment) {
+            $extension = pathinfo($comment, PATHINFO_EXTENSION);
+            list($post, $id, $parent) = explode('_', basename($comment, '.' . $extension));
             $results[] = array(
-                'file_path' => $comment,
-                'file_name' => basename($comment),
+                'path' => $comment,
                 'time' => Date::format($id, 'Y-m-d H:i:s'),
                 'update' => Date::format(filemtime($comment), 'Y-m-d H:i:s'),
                 'post' => (int) Date::format($post, 'U'),
                 'id' => (int) Date::format($id, 'U'),
-                'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U')
+                'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'),
+                'status' => $extension == 'txt' ? 'approved' : 'pending'
             );
         }
         return Mecha::eat($results)->order($order, $sorter)->vomit();
@@ -1005,26 +1019,26 @@ class Get {
      *
      */
 
-    public static function comment($reference, $excludes = array(), $folder = RESPONSE, $response_to = ARTICLE, $connector = null) {
+    public static function comment($reference, $excludes = array(), $response_to = ARTICLE, $connector = null) {
         $config = Config::get();
         $results = array();
         $name = false;
         if(strpos(ROOT, $reference) === 0) {
-            $name = basename($reference);
+            $name = $reference;
         } else {
-            foreach(self::comments() as $comment) {
+            foreach(self::comments(null, 'DESC', 'id', true) as $comment) {
                 if(
                     (int) Date::format($reference, 'U') === $comment['id'] || // By comment ID
-                    ! is_numeric($reference) && (string) basename($reference) === (string) $comment['file_name'] // By comment name
+                    ! is_numeric($reference) && (string) basename($reference) === (string) basename($comment['path']) // By comment name
                 ) {
                     $results = $comment;
-                    $name = $comment['file_name'];
+                    $name = $comment['path'];
                     break;
                 }
             }
         }
-        if( ! $name || ! $file = File::exist($folder . DS . $name)) return false;
-        $results = $results + Text::toPage(File::open($file)->read(), true, 'comment:');
+        if( ! $name || ! File::exist($name)) return false;
+        $results = $results + Text::toPage(File::open($name)->read(), true, 'comment:');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('message', $results['content']);
@@ -1033,7 +1047,7 @@ class Get {
         unset($results['content_raw']);
         unset($results['content']);
         foreach(glob($response_to . DS . '*.txt') as $posts) {
-            list($time, $kind, $slug) = explode('_', basename($posts, '.txt'));
+            list($time, $kind, $slug) = explode('_', basename($posts, '.' . pathinfo($posts, PATHINFO_EXTENSION)));
             if((int) Date::format($time, 'U') == $results['post']) {
                 $results['permalink'] = $config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'];
                 break;

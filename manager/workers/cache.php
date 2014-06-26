@@ -23,7 +23,7 @@
       <?php $editable = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml'); foreach($pages as $file): ?>
       <tr>
         <td class="text-center"><input name="selected[]" type="checkbox" value="<?php echo str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"></td>
-        <td><time datetime="<?php echo Date::format($file->last_update, 'c'); ?>"><?php echo Date::format($file->last_update, 'Y/m/d H:i:s'); ?></time></td>
+        <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
         <td><span title="<?php echo $file->size; ?>"><?php echo $file->name; ?></span></td>
         <?php if(in_array($file->extension, $editable)): ?>
         <td class="text-center"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/cache/repair/file:' . str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>

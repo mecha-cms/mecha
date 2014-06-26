@@ -46,28 +46,33 @@ class Asset {
         return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : ""));
     }
 
-    // Return HTML script of asset
-    public static function script($path, $addon = "") {
+    // Return the HTML JavaScript of asset
+    public static function javascript($path, $addon = "") {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 $html .= '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>';
             }
-            return $html;
+            return Filter::apply('asset:javascript', $html);
         }
-        return '<script src="' . self::url($path) . '"' . $addon . '></script>';
+        return Filter::apply('asset:javascript', '<script src="' . self::url($path) . '"' . $addon . '></script>');
     }
 
-    // Return HTML stylesheet of asset
+    // DEPRECATED !!! Please use `Asset::javascript()`
+    public static function script($path, $addon = "") {
+        return self::javascript($path, $addon);
+    }
+
+    // Return the HTML stylesheet of asset
     public static function stylesheet($path, $addon = "") {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . '>';
+                $html .= '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . EE_SUFFIX;
             }
-            return $html;
+            return Filter::apply('asset:css', $html);
         }
-        return '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . '>';
+        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . EE_SUFFIX);
     }
 
     // Return HTML image of asset
@@ -75,11 +80,11 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '>';
+                $html .= '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . EE_SUFFIX;
             }
-            return $html;
+            return Filter::apply('asset:image', $html);
         }
-        return '<img src="' . self::url($path) . '"' . $addon . '>';
+        return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . EE_SUFFIX);
     }
 
 }

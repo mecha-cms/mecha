@@ -8,17 +8,17 @@
 
 class Shield {
 
-    private static function tracePath($file_name) {
-        $file_name = rtrim($file_name, '\\/') . '.php';
+    private static function tracePath($name) {
+        $name = rtrim($name, '\\/') . '.php';
         $config = Config::get();
-        if($file = File::exist(SHIELD . DS . $config->shield . DS . ltrim($file_name, '\\/'))) {
+        if($file = File::exist(SHIELD . DS . $config->shield . DS . ltrim($name, '\\/'))) {
             return $file;
         } else {
-            if($file = File::exist(ROOT . DS . ltrim($file_name, '\\/'))) {
+            if($file = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
                 return $file;
             }
         }
-        return $file_name;
+        return $name;
     }
 
     /**

@@ -67,8 +67,8 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
     $offset = (int) $offset;
 
     if($files = Mecha::eat(Get::articles('DESC'))->chunk($offset, $config->index->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach($files as $path) {
+            $pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
     } else {
         if($offset !== 1) {
@@ -105,8 +105,8 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
     $pages = array();
 
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach($files as $path) {
+            $pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
     } else {
         Shield::abort('404-archive');
@@ -142,8 +142,8 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     $pages = array();
 
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach($files as $path) {
+            $pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
     } else {
         Shield::abort('404-archive');
@@ -181,8 +181,8 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     $pages = array();
 
     if($files = Mecha::eat(Get::articles('DESC', 'kind:' . $tag->id))->chunk($offset, $config->tag->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach($files as $path) {
+            $pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
     } else {
         Shield::abort('404-tag');
@@ -227,10 +227,10 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
          * Matched with all keywords combined
          */
 
-        foreach(Get::articles() as $file_path) {
-            $anchor = Get::articleAnchor($file_path);
-            if(strpos(strtolower(basename($file_path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
-                $pages[] = $file_path;
+        foreach(Get::articles() as $path) {
+            $anchor = Get::articleAnchor($path);
+            if(strpos(strtolower(basename($path, '.txt')), $keywords) !== false || strpos(strtolower($anchor->title), str_replace('-', ' ', $keywords)) !== false) {
+                $pages[] = $path;
             }
         }
 
@@ -240,10 +240,10 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
-            foreach(Get::articles() as $file_path) {
-                $anchor = Get::articleAnchor($file_path);
-                if(strpos(strtolower(basename($file_path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
-                    $pages[] = $file_path;
+            foreach(Get::articles() as $path) {
+                $anchor = Get::articleAnchor($path);
+                if(strpos(strtolower(basename($path, '.txt')), $keyword) !== false || strpos(strtolower($anchor->title), $keyword) !== false) {
+                    $pages[] = $path;
                 }
             }
         }
@@ -257,8 +257,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
     if( ! empty($pages)) {
         $_pages = array();
-        foreach(Mecha::eat($pages)->chunk($offset, $config->search->per_page)->vomit() as $file_path) {
-            $_pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach(Mecha::eat($pages)->chunk($offset, $config->search->per_page)->vomit() as $path) {
+            $_pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
         Config::set(array(
             'page_type' => 'search',
@@ -310,6 +310,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         Shield::abort('404-article');
     }
 
+    if($article->status == 'draft') {
+        Shield::abort('404-article');
+    }
+
     Config::set(array(
         'page_type' => 'article',
         'page_title' => $article->title . $config->title_separator . $config->index->title . $config->title_separator . $config->title,
@@ -324,6 +328,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
+
+        $extension = $config->comment_moderation ? '.hold' : '.txt';
 
         if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
@@ -418,7 +424,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= 'Status: ' . $info['data']['status'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $message;
 
-            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . '.txt', 0600);
+            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . $id . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension, 0600);
 
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
 
@@ -557,6 +563,10 @@ Route::accept('(:any)', function($slug = "") use($config) {
         Shield::abort('404-page');
     }
 
+    if($page->status == 'draft') {
+        Shield::abort('404-page');
+    }
+
     Config::set(array(
         'page_type' => 'page',
         'page_title' => $page->title . $config->title_separator . $config->title,
@@ -584,8 +594,8 @@ Route::accept("", function() use($config) {
     $pages = array();
 
     if($files = Mecha::eat(Get::articles())->chunk(1, $config->index->per_page)->vomit()) {
-        foreach($files as $file_path) {
-            $pages[] = Get::article($file_path, array('content', 'tags', 'css', 'js', 'comments'));
+        foreach($files as $path) {
+            $pages[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments'));
         }
     } else {
         $pages = false;

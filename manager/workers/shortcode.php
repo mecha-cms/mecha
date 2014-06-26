@@ -26,9 +26,7 @@
       </tr>
     </tbody>
   </table>
-  <div class="grid-group">
-    <span class="grid span-6"><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></span>
-  </div>
+  <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></p>
 </form>
 <hr>
 <?php echo Config::speak('file:shortcode'); ?>

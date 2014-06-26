@@ -7,6 +7,8 @@
     var body = document.body,
         toggle = document.querySelector('.blog-sidebar-toggle');
 
+    body.spellcheck = false;
+
     if (!toggle) return;
 
     toggle.addEventListener("click", function(e) {

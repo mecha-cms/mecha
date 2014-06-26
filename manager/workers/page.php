@@ -7,7 +7,11 @@
   <?php foreach($pages as $page): ?>
   <li class="page" id="page-<?php echo $page->id; ?>">
     <div class="page-header">
+      <?php if($page->status == 'draft'): ?>
+      <span class="page-name"><?php echo $page->title; ?></span>
+      <?php else: ?>
       <a class="page-name" href="<?php echo $page->url; ?>" target="_blank"><?php echo $page->title; ?></a>
+      <?php endif; ?>
       <span class="page-time">
         <time datetime="<?php echo Date::format($page->time, 'c'); ?>"><?php echo Date::format($page->time, 'Y/m/d H:i:s'); ?></time>
       </span>

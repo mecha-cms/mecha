@@ -8,7 +8,7 @@
  */
 
 define('DS', DIRECTORY_SEPARATOR);
-define('MECHA_VERSION', '1.0.4');
+define('MECHA_VERSION', '1.1.0');
 define('ROOT', rtrim(__DIR__, '\\/'));
 define('SYSTEM', ROOT . DS . 'system');
 define('DECK', ROOT . DS . 'manager');
@@ -22,7 +22,11 @@ define('ASSET', ROOT . DS . 'cabinet' . DS . 'assets');
 define('PLUGIN', ROOT . DS . 'cabinet' . DS . 'plugins');
 define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
 define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
+
 define('SEPARATOR', '====');
+define('DOCTYPE', '<!DOCTYPE html>');
+define('INDENT', '  ');
+define('EE_SUFFIX', '>');
 
 include SYSTEM . DS . 'ignite.php';
 include SYSTEM . DS . 'launch.php';

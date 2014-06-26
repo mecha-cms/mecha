@@ -68,7 +68,7 @@ Weapon::add('shell_before', function() {
 });
 
 Weapon::add('sword_after', function() {
-    echo Asset::script('cabinet/shields/widgets.js');
+    echo Asset::javascript('cabinet/shields/widgets.js');
 });
 
 
@@ -147,3 +147,31 @@ Filter::add('content', function($content) use($config) {
         ),
     $content);
 }, 10);
+
+
+/**
+ * Set Page Metadata
+ * -----------------
+ */
+
+Weapon::add('meta', function() {
+    $config = Config::get();
+    $html  = str_repeat(INDENT, 2) . "<meta charset=\"" . strtolower($config->charset) . "\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<meta name=\"viewport\" content=\"width=device-width\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<meta name=\"description\" content=\"" . Text::parse(isset($config->page->description) ? $config->page->description : $config->description)->to_encoded_html . "\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<meta name=\"author\" content=\"" . $config->author . "\"" . EE_SUFFIX . "\n";
+    echo Filter::apply('meta', $html);
+}, 10);
+
+Weapon::add('meta', function() {
+    echo Filter::apply('meta', str_repeat(INDENT, 2) . "<title>" . strip_tags(Config::get('page_title')) . "</title>\n");
+}, 20);
+
+Weapon::add('meta', function() use($speak) {
+    $config = Config::get();
+    $html  = str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/favicon.ico\" rel=\"shortcut icon\" type=\"image/x-icon\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url_current . "\" rel=\"canonical\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/sitemap\" rel=\"sitemap\"" . EE_SUFFIX . "\n";
+    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/feeds/rss\" rel=\"alternate\" type=\"application/rss+xml\" title=\"" . $config->title . $config->title_separator . $speak->feeds . "\"" . EE_SUFFIX . "\n";
+    echo Filter::apply('meta', $html);
+}, 30);
