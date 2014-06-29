@@ -83,7 +83,7 @@ class File {
             $file['extension'] = "";
         }
         if(in_array(strtolower($file['extension']), $image_extensions)) {
-            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '"' . EE_SUFFIX;
+            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '"' . ES;
         }
         return file_get_contents(self::$opened);
     }
@@ -92,6 +92,17 @@ class File {
     public static function write($data) {
         self::$cache = $data;
         return new static;
+    }
+
+    // Serialize the data before saving
+    public static function serialize($data) {
+        self::$cache = serialize($data);
+        return new static;
+    }
+
+    // Unserialize the serialized data to output
+    public static function unserialize() {
+        return unserialize(file_get_contents(self::$opened));
     }
 
     // Delete the opened file
@@ -241,14 +252,14 @@ class File {
     }
 
     // Get file size then convert it to ...
-    public static function size($file, $type = 'Bytes') {
-        switch(strtolower($type)) {
+    public static function size($file, $unit = 'Bytes') {
+        switch(strtolower($unit)) {
             case 'bytes': $size = filesize($file); break; // bytes
             case 'kb': $size = filesize($file) * .0009765625; break; // bytes to KB
             case 'mb': $size = (filesize($file) * .0009765625) * .0009765625; break; // bytes to MB
             case 'gb': $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; break; // bytes to GB
         }
-        return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $type);
+        return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $unit);
     }
 
 }
