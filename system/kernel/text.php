@@ -163,7 +163,7 @@ class Text {
 
     public static function parse($input, $option = false) {
         $parser = new MarkdownExtra;
-        $parser->empty_element_suffix = EE_SUFFIX;
+        $parser->empty_element_suffix = ES;
         $parser->table_align_class_tmpl = 'text-%%'; // Define table alignment class, example: `<td class="text-right">`
         if(is_string($input)) {
             return (object) array(
@@ -205,26 +205,40 @@ class Text {
      * ------------------------------------------
      */
 
-    public static function toPage($text, $parse_contents = true, $filter_prefix = 'page:') {
+    public static function toPage($text, $content = true, $filter_prefix = 'page:') {
         $results = array();
-        $parts = explode(SEPARATOR, trim($text), 2);
-        $headers = isset($parts[0]) ? explode("\n", trim($parts[0])) : array();
-        $contents = isset($parts[1]) ? trim($parts[1]) : "";
-        foreach($headers as $field) {
-            $field = explode(':', $field, 2);
-            $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-            $value = Converter::strEval(trim($field[1]));
-            $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
-            $results[$key] = $value;
+        if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) { // By file path
+            $by_path = true;
+            while(($buffer = fgets($handle, 4096)) !== false) {
+                if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
+                    fclose($handle);
+                    break;
+                }
+                $field = explode(':', $buffer, 2);
+                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
+                $results[$key] = $value;
+            }
+        } else { // By file content
+            $by_path = false;
+            $parts = explode(SEPARATOR, trim($text), 2);
+            $headers = explode("\n", trim($parts[0]));
+            foreach($headers as $field) {
+                $field = explode(':', $field, 2);
+                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
+                $results[$key] = $value;
+            }
+            $results['content'] = $results['content_raw'] = trim($parts[1]);
         }
-        $results['content_raw'] = $contents;
-        $contents = Filter::apply('shortcode', $contents);
-        $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
-        if($parse_contents) {
+        if($content) {
+            if($by_path) $text = File::open($text)->read();
+            $parts = explode(SEPARATOR, trim($text), 2);
+            $contents = isset($parts[1]) ? trim($parts[1]) : "";
+            $results['content_raw'] = $contents;
+            $contents = Filter::apply('shortcode', $contents);
+            $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
             $results['content'] = Filter::apply('content', Text::parse($contents)->to_html);
-            $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
-        } else {
-            $results['content'] = Filter::apply('content', $contents);
             $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
         }
         return $results;

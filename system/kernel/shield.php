@@ -10,8 +10,7 @@ class Shield {
 
     private static function tracePath($name) {
         $name = rtrim($name, '\\/') . '.php';
-        $config = Config::get();
-        if($file = File::exist(SHIELD . DS . $config->shield . DS . ltrim($name, '\\/'))) {
+        if($file = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
             return $file;
         } else {
             if($file = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
@@ -27,8 +26,8 @@ class Shield {
      */
 
     private static function desanitize_output($buffer) {
-        $buffer = Filter::apply('before_sanitized', $buffer);
-        return Filter::apply('after_sanitized', $buffer);
+        $buffer = Filter::apply('sanitize:input', $buffer);
+        return Filter::apply('sanitize:output', $buffer);
     }
 
     /**
@@ -37,7 +36,7 @@ class Shield {
      */
 
     private static function sanitize_output($buffer) {
-        $buffer = Filter::apply('before_sanitized', $buffer);
+        $buffer = Filter::apply('sanitize:input', $buffer);
         $str = array(
             '#\<\!--(?!\[if)([\s\S]+?)--\>#' => "", // remove comments in HTML
             '#\>[^\S ]+#s' => '>', // strip whitespaces after tags, except space
@@ -45,7 +44,7 @@ class Shield {
             '#\>\s{2,}\<#s' => '><' // strip multiple whitespaces between closing and opening tag
         );
         $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
-        return Filter::apply('after_sanitized', $buffer);
+        return Filter::apply('sanitize:output', $buffer);
     }
 
     /**
@@ -119,22 +118,24 @@ class Shield {
 
         $config = Config::get();
         $speak = Config::speak();
-        $page = $config->page;
+        $articles = $config->articles;
+        $article = $config->article;
         $pages = $config->pages;
+        $page = $config->page;
+        $responses = $config->responses;
+        $response = $config->response;
+        $files = $config->files;
+        $file = $config->file;
         $pager = $config->pagination;
         $manager = Guardian::happy();
         $base = explode('-', $name, 2);
 
-        if($config->page_type == 'article') {
-            $article = $page; // Create page alias for article
-        }
-
         Weapon::fire('after_shield_config_redefine', array($info));
 
-        if($file = File::exist(self::tracePath($name))) {
-            $shield = $file;
-        } elseif($file = File::exist(self::tracePath($base[0]))) {
-            $shield = $file;
+        if($_file = File::exist(self::tracePath($name))) {
+            $shield = $_file;
+        } elseif($_file = File::exist(self::tracePath($base[0]))) {
+            $shield = $_file;
         } else {
             Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::tracePath($name) . '</code>')));
         }
@@ -148,11 +149,11 @@ class Shield {
 
         ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
-        Weapon::fire('before_launch');
+        Weapon::fire('shield_before');
 
         require $shield;
 
-        Weapon::fire('after_launch');
+        Weapon::fire('shield_after');
 
         if($cacheable) {
             $info['data']['cache'] = $cache;
@@ -196,8 +197,14 @@ class Shield {
 
         $config = Config::get();
         $speak = Config::speak();
-        $page = $config->page;
+        $articles = $config->articles;
+        $article = $config->article;
         $pages = $config->pages;
+        $page = $config->page;
+        $responses = $config->responses;
+        $response = $config->response;
+        $files = $config->files;
+        $file = $config->file;
         $pager = $config->pagination;
         $manager = Guardian::happy();
 
@@ -213,11 +220,11 @@ class Shield {
 
         ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
-        Weapon::fire('before_launch');
+        Weapon::fire('shield_before');
 
         require $shield;
 
-        Weapon::fire('after_launch');
+        Weapon::fire('shield_after');
 
         ob_end_flush();
 

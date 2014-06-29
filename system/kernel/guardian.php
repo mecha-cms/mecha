@@ -158,7 +158,8 @@ class Guardian {
             'this_is_URL' => filter_var($input, FILTER_VALIDATE_URL),
             'this_is_email' => filter_var($input, FILTER_VALIDATE_EMAIL),
             'this_is_boolean' => filter_var($input, FILTER_VALIDATE_BOOLEAN),
-            'this_is_correct' => $input === $compare ? true : false
+            'this_is_correct' => $input === $compare ? true : false,
+            'this_is_regex' => preg_match('#^((?:(?:[^?+*{}()[\]\\|]+|\\.|\[(?:\^?\\.|\^[^\\]|[^\\^])(?:[^\]\\]+|\\.)*\]|\((?:\?[:=!]|\?<[=!]|\?>)?(?1)??\)|\(\?(?:R|[+-]?\d+)\))(?:(?:[?+*]|\{\d+(?:,\d*)?\})[?+]?)?|\|)*)$#', $input)
         );
     }
 
@@ -416,7 +417,7 @@ class Guardian {
         if($size !== 16) $params[] = 'size=' . (string) $size;
         if($length !== 7) $params[] = 'length=' . (string) $length;
         if($font != 'special-elite-regular.ttf') $params[] = 'font=' . (string) $font;
-        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($params) ? '?' . implode('&amp;', $params) : "") . '" alt="captcha"' . EE_SUFFIX;
+        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($params) ? '?' . implode('&amp;', $params) : "") . '" alt="captcha"' . ES;
     }
 
 }
