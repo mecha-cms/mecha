@@ -99,7 +99,7 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 Filter::add('shortcode', function($content) use($config, $speak) {
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $shortcodes = unserialize(File::open($file)->read());
+        $shortcodes = File::open($file)->unserialize();
     } else {
         $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     }
@@ -156,22 +156,37 @@ Filter::add('content', function($content) use($config) {
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = str_repeat(INDENT, 2) . "<meta charset=\"" . strtolower($config->charset) . "\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<meta name=\"viewport\" content=\"width=device-width\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<meta name=\"description\" content=\"" . Text::parse(isset($config->page->description) ? $config->page->description : $config->description)->to_encoded_html . "\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<meta name=\"author\" content=\"" . $config->author . "\"" . EE_SUFFIX . "\n";
+    $speak = Config::speak();
+    $html  = '<meta charset="' . $config->charset . '"' . ES;
+    $html .= '<meta name="viewport" content="width=device-width"' . ES;
+    if(isset($config->article->description)) {
+        $html .= '<meta name="description" content="' . Text::parse($config->article->description)->to_encoded_html . '"' . ES;
+    } elseif(isset($config->page->description)) {
+        $html .= '<meta name="description" content="' . Text::parse($config->page->description)->to_encoded_html . '"' . ES;
+    } else {
+        $html .= '<meta name="description" content="' . Text::parse($config->description)->to_encoded_html . '"' . ES;
+    }
+    $html .= '<meta name="author" content="' . $config->author . '"' . ES;
     echo Filter::apply('meta', $html);
 }, 10);
 
 Weapon::add('meta', function() {
-    echo Filter::apply('meta', str_repeat(INDENT, 2) . "<title>" . strip_tags(Config::get('page_title')) . "</title>\n");
+    $config = Config::get();
+    $html  = '<title>' . strip_tags($config->page_title) . '</title>';
+    $html .= '<!--[if IE]><script src="' . $config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->';
+    echo Filter::apply('meta', $html);
 }, 20);
 
-Weapon::add('meta', function() use($speak) {
+Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/favicon.ico\" rel=\"shortcut icon\" type=\"image/x-icon\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url_current . "\" rel=\"canonical\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/sitemap\" rel=\"sitemap\"" . EE_SUFFIX . "\n";
-    $html .= str_repeat(INDENT, 2) . "<link href=\"" . $config->url . "/feeds/rss\" rel=\"alternate\" type=\"application/rss+xml\" title=\"" . $config->title . $config->title_separator . $speak->feeds . "\"" . EE_SUFFIX . "\n";
+    $speak = Config::speak();
+    $html  = '<link href="' . $config->url . '/favicon.ico" rel="shortcut icon" type="image/x-icon"' . ES;
+    $html .= '<link href="' . $config->url_current . '" rel="canonical"' . ES;
+    $html .= '<link href="' . $config->url . '/sitemap" rel="sitemap"' . ES;
+    $html .= '<link href="' . $config->url . '/feeds/rss" rel="alternate" type="application/rss+xml" title="' . $speak->feeds . $config->title_separator . $config->title . '"' . ES;
     echo Filter::apply('meta', $html);
 }, 30);
+
+Weapon::add('before', function() {
+    Weapon::fire('meta');
+}, 10);

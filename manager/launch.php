@@ -22,7 +22,7 @@ Weapon::add('shell_after', function() use($config) {
 }, 10);
 
 Weapon::add('cargo_before', function() use($config, $speak) {
-    echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->logout . '</a></div>';
+    echo '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &bull; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>';
 }, 10);
 
 Weapon::add('sword_before', function() {
@@ -52,7 +52,7 @@ Weapon::add('sword_after', function() use($config) {
  * ----------------------------------------------
  */
 
-function kill_cache() {
+function kill_article_cache() {
     global $config;
     $root = ( ! empty($config->base) ? str_replace('/', '.', $config->base) . '.' : "");
     File::open(CACHE . DS . $root . 'sitemap.cache.txt')->delete();
@@ -60,8 +60,8 @@ function kill_cache() {
     File::open(CACHE . DS . $root . 'feeds.rss.cache.txt')->delete();
 }
 
-Weapon::add('on_article_update', 'kill_cache', 10);
-Weapon::add('on_page_update', 'kill_cache', 10);
+Weapon::add('on_article_update', 'kill_article_cache', 10);
+Weapon::add('on_page_update', 'kill_article_cache', 10);
 
 
 /**
@@ -73,7 +73,7 @@ Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($article->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
+        echo ($article->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -81,7 +81,7 @@ Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($page->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+        echo ($page->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -94,7 +94,9 @@ Weapon::add('page_footer', function($page) {
 Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
-    echo ($comment->status == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &bull; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+    if(Guardian::happy()) {
+        echo ($comment->status == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+    }
 }, 20);
 
 
@@ -120,10 +122,10 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         Guardian::checkToken($request['token']);
 
         // Fixes for checkbox input
-        $request['widget_year_first'] = Request::post('widget_year_first') ? true : false;
         $request['comments'] = Request::post('comments') ? true : false;
         $request['comment_moderation'] = Request::post('comment_moderation') ? true : false;
         $request['email_notification'] = Request::post('email_notification') ? true : false;
+        $request['widget_year_first'] = Request::post('widget_year_first') ? true : false;
         $request['resource_versioning'] = Request::post('resource_versioning') ? true : false;
 
         // Fixes for slug pattern input
@@ -158,10 +160,9 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
         // Check if slug already exist on static pages
         $slugs = array();
-        if($files = Get::pages('DESC', "", true)) {
+        if($files = Get::pages('DESC', 'time', "", true)) {
             foreach($files as $file) {
-                list($time, $kind, $slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
-                $slugs[$slug] = 1;
+                $slugs[$file['slug']] = 1;
             }
         }
 
@@ -198,23 +199,20 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
 
         unset($request['token']); // Remove token from request array
 
-        $info = array(
-            'data' => $request,
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $G = array('data' => Mecha::A($config));
+        $P = array('data' => $request);
 
         if( ! Notify::errors()) {
-            File::write(serialize($request))->saveTo(STATE . DS . 'config.txt', 0600);
+            File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
             Config::load(); // Refresh the configuration data ...
             Notify::success(Config::speak('notify_success_updated', array(Config::speak('config'))));
-            Weapon::fire('on_config_update', array($info));
+            Weapon::fire('on_config_update', array($G, $P));
             Guardian::kick($request['manager']['slug'] . '/config');
         }
 
     } else {
 
-        Guardian::memorize(Config::get());
+        Guardian::memorize($config);
 
     }
 
@@ -232,9 +230,9 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 
     $pages = array();
 
-    if($files = Mecha::eat($path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true))->chunk($offset, $config->per_page)->vomit()) {
-        foreach($files as $_path) {
-            $pages[] = $path == 'article' ? Get::articleHeader($_path) : Get::pageHeader($_path);
+    if($files = Mecha::eat($path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true))->chunk($offset, $config->per_page)->vomit()) {
+        foreach($files as $file) {
+            $pages[] = $path == 'article' ? Get::articleHeader($file['path']) : Get::pageHeader($file['path']);
         }
     } else {
         if($offset !== 1) {
@@ -248,10 +246,11 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
         'page_type' => 'manager',
         'page_title' => ($path == 'article' ? $speak->articles : $speak->pages) . $config->title_separator . $config->manager->title,
         'offset' => $offset,
+        'articles' => $pages,
         'pages' => $pages,
-        'pagination' => Navigator::extract(($path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true)), $offset, $config->per_page, $config->manager->slug . '/' . $path),
+        'pagination' => Navigator::extract(($path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true)), $offset, $config->per_page, $config->manager->slug . '/' . $path),
         'cargo' => DECK . DS . 'workers' . DS . 'page.php',
-        'editor_type' => $path
+        'file_type' => $path
     ));
 
     Shield::attach('manager', false);
@@ -273,34 +272,28 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
     Config::set(array(
         'page_type' => 'manager',
         'cargo' => DECK . DS . 'workers' . DS . 'repair.page.php',
-        'editor_mode' => $config->url_current == $config->url . '/' . $config->manager->slug . '/' . $path . '/ignite' ? 'ignite' : 'repair',
-        'editor_type' => $path
+        'action_state' => $config->url_current == $config->url . '/' . $config->manager->slug . '/' . $path . '/ignite' ? 'ignite' : 'repair',
+        'file_type' => $path
     ));
 
     // Set default fields value ...
     if($page = $path == 'article' ? Get::article($id, array('content', 'tags', 'comments')) : Get::page($id, array('content', 'tags', 'comments'))) {
 
-        $fields = array(
-            'id' => $id,
-            'path' => $page->path,
-            'status' => $page->status,
-            'date' => $page->date->W3C,
-            'title' => $page->title,
-            'slug' => $page->slug,
-            'content' => $page->content_raw,
-            'description' => $page->description,
-            'tags' => (array) $page->kind,
-            'author' => isset($page->author) ? $page->author : Guardian::get('author'),
-            'css' => isset($page->css) ? $page->css_raw : "",
-            'js' => isset($page->js) ? $page->js_raw : "",
-            'fields' => isset($page->fields) ? Mecha::A($page->fields) : array()
-        );
+        $fields = Mecha::A($page);
+        $fields['date'] = $page->date->W3C;
+        $fields['tags'] = (array) $page->kind;
+        $fields['content'] = $fields['content_raw'];
+        $fields['css'] = $fields['css_raw'];
+        $fields['js'] = $fields['js_raw'];
+        if( ! isset($page->fields)) {
+            $fields['fields'] = array();
+        }
 
         Config::set('page_title', $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title);
 
     } else {
 
-        if(Config::get('editor_mode') == 'repair') {
+        if(Config::get('action_state') == 'repair') {
             Shield::abort(); // file not found!
         }
 
@@ -324,6 +317,11 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
     }
 
+    $G = array('data' => $fields);
+    $G['data']['fields'] = Text::parse($G['data']['fields'])->to_encoded_json;
+    $G['action_state'] = Config::get('action_state');
+    $G['file_type'] = $path;
+
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token']);
@@ -338,11 +336,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
          */
 
         $slugs = array();
-        if($files = $path == 'article' ? Get::articles('DESC', "", true) : Get::pages('DESC', "", true)) {
-            foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
-                $slugs[$_slug] = 1;
-            }
+        if($files = $path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true)) {
+            foreach($files as $file) $slugs[$file['slug']] = 1;
         }
 
         if($path == 'page') {
@@ -395,7 +390,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
          * Checks for duplicate slug
          */
 
-        if(Config::get('editor_mode') == 'ignite' && isset($slugs[$slug])) {
+        if(Config::get('action_state') == 'ignite' && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
             Guardian::memorize($request);
         }
@@ -427,10 +422,9 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
 
-        $info = array(
+        $P = array(
             'data' => array(
                 'id' => ! empty($id) ? $id : (int) Date::format($date, 'U'),
-                'type' => $path,
                 'date' => $date,
                 'title' => $title,
                 'slug' => $slug,
@@ -444,16 +438,15 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 'fields' => Text::parse($field)->to_encoded_json
             ),
             'action' => $request['action'],
-            'execution_time' => time(),
-            'error' => Notify::errors(),
-            'editor_mode' => Config::get('editor_mode')
+            'action_state' => Config::get('action_state'),
+            'file_type' => $path
         );
 
         /**
          * New article/page
          */
 
-        if(Config::get('editor_mode') == 'ignite') {
+        if(Config::get('action_state') == 'ignite') {
 
             if( ! Notify::errors()) {
 
@@ -465,8 +458,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
                 Notify::success(Config::speak('notify_success_created', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
 
-                Weapon::fire('on_' . $path . '_update', array($info));
-                Weapon::fire('on_' . $path . '_construct', array($info));
+                Weapon::fire('on_' . $path . '_update', array($G, $P));
+                Weapon::fire('on_' . $path . '_construct', array($G, $P));
 
                 Guardian::kick($config->manager->slug . '/' . $path . '/repair/id:' . Date::format($date, 'U'));
 
@@ -520,8 +513,8 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
                 Notify::success(Config::speak('notify_success_updated', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . ($path == 'article' ? $config->index->slug . '/' : "") . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
 
-                Weapon::fire('on_' . $path . '_update', array($info));
-                Weapon::fire('on_' . $path . '_repair', array($info));
+                Weapon::fire('on_' . $path . '_update', array($G, $P));
+                Weapon::fire('on_' . $path . '_repair', array($G, $P));
 
                 // Rename all comment files related to article if article date has been changed
                 if(((string) $date !== (string) $fields['date']) && $comments = Get::comments($id)) {
@@ -567,30 +560,14 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->deleting . ': ' . $page->title . $config->title_separator . $config->manager->title,
+        'article' => $page,
         'page' => $page,
-        'editor_type' => $path,
+        'file_type' => $path,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.page.php'
     ));
 
-    $info = array(
-        'data' => array(
-            'id' => $page->id,
-            'type' => $path,
-            'date' => $page->date->W3C,
-            'title' => $page->title,
-            'slug' => $page->slug,
-            'content_raw' => $page->content_raw,
-            'content' => $page->content,
-            'description' => $page->description,
-            'author' => $page->author,
-            'tags' => (array) $page->kind,
-            'css' => $page->css,
-            'js' => $page->js,
-            'fields' => Text::parse($page->fields)->to_encoded_json
-        ),
-        'execution_time' => time(),
-        'error' => Notify::errors()
-    );
+    $G = array('data' => Mecha::A($page));
+    $G['data']['fields'] = Text::parse($G['data']['fields'])->to_encoded_json;
 
     if(Request::post()) {
 
@@ -612,8 +589,8 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
 
         Notify::success(Config::speak('notify_success_deleted', array($page->title)));
 
-        Weapon::fire('on_' . $path . '_update', array($info));
-        Weapon::fire('on_' . $path . '_destruct', array($info));
+        Weapon::fire('on_' . $path . '_update', array($G, $G));
+        Weapon::fire('on_' . $path . '_destruct', array($G, $G));
 
         Guardian::kick($config->manager->slug . '/' . $path);
 
@@ -644,9 +621,11 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
-        'pages' => Get::rawTags('ASC', 'id'),
+        'files' => Get::rawTags('ASC', 'id'),
         'cargo' => DECK . DS . 'workers' . DS . 'tag.php'
     ));
+
+    $G = array('data' => Config::get('files'));
 
     Weapon::add('sword_after', function() {
         echo Asset::javascript('manager/sword/row-tag.js');
@@ -680,15 +659,11 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
             }
         }
 
-        $info = array(
-            'data' => $data,
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => $data);
 
-        File::write(serialize($data))->saveTo(STATE . DS . 'tags.txt', 0600);
+        File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
-        Weapon::fire('on_tag_update', array($info));
+        Weapon::fire('on_tag_update', array($G, $P));
         Guardian::kick($config->url_current);
 
     }
@@ -732,6 +707,8 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
 </script>';
     }, 11);
 
+    $G = array('data' => array('content' => $menus));
+
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token']);
@@ -745,24 +722,18 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
             Guardian::memorize($request);
         }
 
-        $info = array(
-            'data' => array(
-                'content' => trim($request['content'])
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => array('content' => trim($request['content'])));
 
         if( ! Notify::errors()) {
-            File::write($info['data']['content'])->saveTo(STATE . DS . 'menus.txt', 0600);
+            File::write($P['data']['content'])->saveTo(STATE . DS . 'menus.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
-            Weapon::fire('on_menu_update', array($info));
+            Weapon::fire('on_menu_update', array($G, $P));
             Guardian::kick($config->url_current);
         }
 
     } else {
 
-        Guardian::memorize(array('content' => $menus));
+        Guardian::memorize($G['data']);
 
     }
 
@@ -781,28 +752,24 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         File::upload($_FILES['file'], ASSET);
-        $info = array(
-            'data' => $_FILES,
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
-        Weapon::fire('on_asset_update', array($info));
-        Weapon::fire('on_asset_construct', array($info));
+        $P = array('data' => $_FILES);
+        Weapon::fire('on_asset_update', array($P, $P));
+        Weapon::fire('on_asset_construct', array($P, $P));
     }
 
-    $pages = array();
+    $files = array();
     $take = Get::files(ASSET, '*', 'DESC', 'update');
 
-    if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
-        foreach($files as $file) $pages[] = $file;
+    if($_files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
+        foreach($_files as $_file) $files[] = $_file;
     } else {
-        $pages = false;
+        $files = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,
-        'pages' => $pages,
+        'files' => $files,
         'pagination' => Navigator::extract($take, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => DECK . DS . 'workers' . DS . 'asset.php'
     ));
@@ -823,19 +790,19 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         Shield::abort();
     }
 
-    $pages = array();
+    $files = array();
     $take = Get::files(CACHE, '*', 'DESC', 'update');
 
-    if($files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
-        foreach($files as $file) $pages[] = $file;
+    if($_files = Mecha::eat($take)->chunk($offset, $config->per_page * 2)->vomit()) {
+        foreach($_files as $_file) $files[] = $_file;
     } else {
-        $pages = false;
+        $files = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->cache . $config->title_separator . $config->manager->title,
-        'pages' => $pages,
+        'files' => $files,
         'pagination' => Navigator::extract($take, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
         'cargo' => DECK . DS . 'workers' . DS . 'cache.php'
     ));
@@ -850,7 +817,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
  * ----------------------
  */
 
-Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', function($path = "", $name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(:all)', function($path = "", $name = "") use($config, $speak) {
 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -869,9 +836,9 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($deletes[0]) : ($path == 'asset' ? $speak->assets : $speak->caches)) . $config->title_separator . $config->manager->title,
-        'asset_name' => $deletes,
+        'name' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php',
-        'editor_type' => $path
+        'file_type' => $path
     ));
 
     if(Request::post()) {
@@ -880,24 +847,16 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
 
         $info_path = array();
         foreach($deletes as $file_to_delete) {
-            $path = ($path == 'asset' ? ASSET : CACHE) . DS . str_replace(array('\\', '/'), DS, $file_to_delete);
-            $info_path[] = $path;
-            File::open($path)->delete();
+            $_path = ($path == 'asset' ? ASSET : CACHE) . DS . str_replace(array('\\', '/'), DS, $file_to_delete);
+            $info_path[] = $_path;
+            File::open($_path)->delete();
         }
 
-        $info = array(
-            'data' => array(
-                'type' => $path,
-                'file' => $info_path[0],
-                'files' => $info_path
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => array('type' => $path, 'file' => $info_path[0], 'files' => $info_path));
 
         Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
-        Weapon::fire('on_' . $path . '_update', array($info));
-        Weapon::fire('on_' . $path . '_destruct', array($info));
+        Weapon::fire('on_' . $path . '_update', array($P, $P));
+        Weapon::fire('on_' . $path . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/' . $path);
 
     } else {
@@ -916,23 +875,23 @@ Route::accept($config->manager->slug . '/(asset|cache)/kill/files?:(.*?)', funct
  * -------------
  */
 
-Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($old = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($old = "") use($config, $speak) {
 
-    $dirname = rtrim(dirname(str_replace(array('\\', '/'), DS, $old)), '\\/');
-    $basename = ltrim(basename($old), '\\/');
+    $dir_name = rtrim(dirname(str_replace(array('\\', '/'), DS, $old)), '\\/');
+    $old_name = ltrim(basename($old), '\\/');
 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
 
-    if( ! $file = File::exist(ASSET . DS . $dirname . DS . $basename)) {
+    if( ! $file = File::exist(ASSET . DS . $dir_name . DS . $old_name)) {
         Shield::abort(); // file not found!
     }
 
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->renaming . ': ' . $basename . $config->title_separator . $config->manager->title,
-        'asset_name' => $basename,
+        'page_title' => $speak->renaming . ': ' . $old_name . $config->title_separator . $config->manager->title,
+        'name' => $old_name,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
     ));
 
@@ -955,30 +914,22 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
             }
             $new_name = implode('.', $parts);
             // File name already exist
-            if($basename !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
+            if($old_name !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));
             }
-            $info = array(
-                'data' => array(
-                    'path' => $file,
-                    'name:old' => dirname($file) . DS . $basename,
-                    'name:new' => dirname($file) . DS . $new_name
-                ),
-                'execution_time' => time(),
-                'error' => Notify::errors()
-            );
+            $P = array('data' => array('path' => $file, 'name_old' => $old_name, 'name_new' => $new_name));
             if( ! Notify::errors()) {
                 File::open($file)->renameTo($new_name);
-                Notify::success(Config::speak('notify_file_updated', array('<code>' . $basename . '</code>')));
-                Weapon::fire('on_asset_update', array($info));
-                Weapon::fire('on_asset_repair', array($info));
+                Notify::success(Config::speak('notify_file_updated', array('<code>' . $old_name . '</code>')));
+                Weapon::fire('on_asset_update', array($P, $P));
+                Weapon::fire('on_asset_repair', array($P, $P));
                 Guardian::kick($config->manager->slug . '/asset');
             }
         }
 
     } else {
 
-        Guardian::memorize(array('name' => $basename));
+        Guardian::memorize(array('name' => $old_name));
 
     }
 
@@ -995,10 +946,12 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(.*?)', function($o
 Route::accept($config->manager->slug . '/shortcode', function() use($config, $speak) {
 
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $shortcodes = unserialize(File::open($file)->read());
+        $shortcodes = File::open($file)->unserialize();
     } else {
         $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     }
+
+    $G = array('data' => $shortcodes);
 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -1007,7 +960,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,
-        'pages' => $shortcodes,
+        'files' => $shortcodes,
         'cargo' => DECK . DS . 'workers' . DS . 'shortcode.php'
     ));
 
@@ -1023,15 +976,11 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
             }
         }
 
-        $info = array(
-            'data' => $data,
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => $data);
 
-        File::write(serialize($data))->saveTo(STATE . DS . 'shortcodes.txt', 0600);
+        File::serialize($data)->saveTo(STATE . DS . 'shortcodes.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
-        Weapon::fire('on_shortcode_update', array($info));
+        Weapon::fire('on_shortcode_update', array($G, $P));
         Guardian::kick($config->url_current);
 
     }
@@ -1056,10 +1005,12 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
         Shield::abort(); // file not found!
     }
 
+    $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
+
     Config::set(array(
         'page_type' => 'manager',
-        'page_title' => $speak->editing . ' &ldquo;' . $name . '&rdquo;' . $config->title_separator . $speak->cache . $config->title_separator . $config->manager->title,
-        'cache_name' => $name,
+        'page_title' => $speak->editing . ': ' . $name . $config->title_separator . $speak->cache . $config->title_separator . $config->manager->title,
+        'name' => $name,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.cache.php'
     ));
 
@@ -1067,24 +1018,17 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
 
         Guardian::checkToken($request['token']);
 
-        $info = array(
-            'data' => array(
-                'path' => $file,
-                'content' => $request['content']
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => array('path' => $file, 'content' => $request['content']));
 
         File::open($file)->write($request['content'])->save(0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->cache)));
-        Weapon::fire('on_cache_update', array($info));
-        Weapon::fire('on_cache_repair', array($info));
+        Weapon::fire('on_cache_update', array($G, $P));
+        Weapon::fire('on_cache_repair', array($G, $P));
         Guardian::kick($config->manager->slug . '/cache/repair/file:' . $name);
 
     } else {
 
-        Guardian::memorize(array('content' => File::open($file)->read()));
+        Guardian::memorize($G['data']);
 
     }
 
@@ -1125,21 +1069,21 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
 
-    $pages = array();
+    $comments = array();
 
     if($files = Mecha::eat(Get::comments(null, 'DESC', 'id', true))->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
-            $pages[] = Get::comment($comment['path']);
+            $comments[] = Get::comment($comment['path']);
         }
     } else {
-        $pages = false;
+        $comments = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->comments . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'pages' => $pages,
+        'responses' => $comments,
         'pagination' => Navigator::extract(Get::comments(), $offset, $config->per_page, $config->manager->slug . '/comment'),
         'cargo' => DECK . DS . 'workers' . DS . 'comment.php'
     ));
@@ -1164,28 +1108,26 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         Shield::abort(); // file not found!
     }
 
+    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
+
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'page' => $comment,
+        'response' => $comment,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
     ));
 
     if(Request::post()) {
 
-        Guardian::checkToken(Request::post('token'));
+        $P = array('data' => Mecha::A($comment));
 
-        $info = array(
-            'data' => Mecha::A($comment),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        Guardian::checkToken(Request::post('token'));
 
         File::open($comment->path)->delete();
         File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
-        Weapon::fire('on_comment_update', array($info));
-        Weapon::fire('on_comment_destruct', array($info));
+        Weapon::fire('on_comment_update', array($P, $P));
+        Weapon::fire('on_comment_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/comment');
 
     } else {
@@ -1210,10 +1152,14 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         Shield::abort(); // file not found!
     }
 
+    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
+
+    $G = array('data' => Mecha::A($comment));
+
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'page' => $comment,
+        'response' => $comment,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
 
@@ -1235,6 +1181,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if($request = Request::post()) {
 
         $request['id'] = $id;
+        $request['ua'] = isset($comment->ua) ? $comment->ua : 'N/A';
         $request['message_raw'] = $request['message'];
         $extension = $request['action'] == 'publish' ? '.txt' : '.hold';
 
@@ -1250,28 +1197,23 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Guardian::memorize($request);
         }
 
-        $info = array(
-            'data' => $request,
-            'action' => $request['action'],
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
-
-        $info['data']['url'] = Request::post('url', '#');
+        $P = array('data' => $request, 'action' => $request['action']);
+        $P['data']['url'] = Request::post('url', '#');
 
         if( ! Notify::errors()) {
 
             $data  = 'Name: ' . $request['name'] . "\n";
             $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
-            $data .= 'URL: ' . Request::post('url', '#') . "\n";
+            $data .= 'URL: ' . $P['data']['url'] . "\n";
             $data .= 'Status: ' . $request['status'] . "\n";
+            $data .= 'UA:' . $request['ua'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];
 
             File::open($comment->path)->write($data)->save(0600)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
 
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
-            Weapon::fire('on_comment_update', array($info));
-            Weapon::fire('on_comment_repair', array($info));
+            Weapon::fire('on_comment_update', array($G, $P));
+            Weapon::fire('on_comment_repair', array($G, $P));
             Guardian::kick($config->manager->slug . '/comment/repair/id:' . $id);
 
         }
@@ -1295,10 +1237,8 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
 
     if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = unserialize(File::open($file)->read());
+        $fields = File::open($file)->unserialize();
         ksort($fields);
-    } else {
-        $fields = array();
     }
 
     if(Guardian::get('status') != 'pilot') {
@@ -1308,7 +1248,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
-        'pages' => ! empty($fields) ? $fields : false,
+        'files' => isset($fields) ? $fields : false,
         'cargo' => DECK . DS . 'workers' . DS . 'field.php'
     ));
 
@@ -1325,7 +1265,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
 Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak) {
 
     if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = unserialize(File::open($file)->read());
+        $fields = File::open($file)->unserialize();
     } else {
         $fields = array();
     }
@@ -1357,9 +1297,12 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 
     }
 
+    $G = array('data' => $data);
+    $G['data']['key'] = $key;
+
     Config::set(array(
         'page_type' => 'manager',
-        'page' => $data,
+        'file' => $data,
         'key' => $key,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
     ));
@@ -1391,23 +1334,21 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             'scope' => $request['scope']
         );
 
-        $info = array(
+        $P = array(
             'data' => array(
-                'key' => $key,
                 'title' => $request['title'],
                 'type' => $request['type'],
                 'value' => $request['value'],
-                'scope' => $request['scope']
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
+                'scope' => $request['scope'],
+                'key' => $key
+            )
         );
 
         if( ! Notify::errors()) {
-            File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt', 0600);
+            File::serialize($fields)->saveTo(STATE . DS . 'fields.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
-            Weapon::fire('on_field_update', array($info));
-            Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($info));
+            Weapon::fire('on_field_update', array($G, $P));
+            Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($G, $P));
             Guardian::kick($config->manager->slug . '/field');
         }
 
@@ -1426,7 +1367,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key = "") use($config, $speak) {
 
     if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = unserialize(File::open($file)->read());
+        $fields = File::open($file)->unserialize();
     } else {
         $fields = array();
     }
@@ -1444,7 +1385,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->deleting . ': ' . $data['title'] . $config->title_separator . $config->manager->title,
-        'page' => $data,
+        'file' => $data,
         'key' => $key,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.field.php'
     ));
@@ -1453,27 +1394,18 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
 
         Guardian::checkToken($request['token']);
 
-        $info = array(
-            'data' => array(
-                'key' => $key,
-                'title' => $fields[$key]['title'],
-                'type' => $fields[$key]['type'],
-                'value' => $fields[$key]['value'],
-                'scope' => $fields[$key]['scope']
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => $data);
+        $P['data']['key'] = $key;
 
         $deleted_field = $fields[$key]['title'];
 
         unset($fields[$key]);
 
-        File::write(serialize($fields))->saveTo(STATE . DS . 'fields.txt', 0600);
+        File::serialize($fields)->saveTo(STATE . DS . 'fields.txt', 0600);
 
         Notify::success(Config::speak('notify_success_deleted', array($deleted_field)));
-        Weapon::fire('on_field_update', array($info));
-        Weapon::fire('on_field_destruct', array($info));
+        Weapon::fire('on_field_update', array($P, $P));
+        Weapon::fire('on_field_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/field');
 
     } else {
@@ -1524,13 +1456,9 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
         }
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], SHIELD, Config::speak('notify_success_uploaded', array($speak->shield)));
-            $info = array(
-                'data' => $_FILES,
-                'execution_time' => time(),
-                'error' => Notify::errors()
-            );
-            Weapon::fire('on_shield_update', array($info));
-            Weapon::fire('on_shield_construct', array($info));
+            $P = array('data' => $_FILES);
+            Weapon::fire('on_shield_update', array($P, $P));
+            Weapon::fire('on_shield_construct', array($P, $P));
             if($uploaded = File::exist(SHIELD . DS . $name)) {
                 Package::take($uploaded)->extract(); // Extract the ZIP file
                 File::open($uploaded)->delete(); // Delete the ZIP file
@@ -1547,20 +1475,18 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
         }
     }
 
-    $pages = array();
+    $files = array();
 
-    if($files = Get::files(SHIELD . DS . $config->shield, 'css,html,js,php,txt', 'ASC', 'name')) {
-        foreach($files as $file) {
-            $pages[] = $file;
-        }
+    if($_files = Get::files(SHIELD . DS . $config->shield, 'css,html,js,php,txt', 'ASC', 'name')) {
+        foreach($_files as $_file) $files[] = $_file;
     } else {
-        $pages = false;
+        $files = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
-        'pages' => $pages,
+        'files' => $files,
         'cargo' => DECK . DS . 'workers' . DS . 'shield.php'
     ));
 
@@ -1574,7 +1500,7 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
  * -------------
  */
 
-Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/shield/repair/file:(:all)', function($name = "") use($config, $speak) {
 
     $name = str_replace('/', DS, $name);
 
@@ -1586,7 +1512,7 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
         Shield::abort(); // file not found!
     }
 
-    $info = pathinfo($file);
+    $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
 
     Config::set(array(
         'page_type' => 'manager',
@@ -1594,11 +1520,11 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
 
-    Weapon::add('sword_after', function() use($info) {
+    Weapon::add('sword_after', function() use($file) {
         echo '<script>
 (function($) {
     new MTE($(\'textarea[name="content"]\')[0], {
-        tabSize: \'' . (strtolower($info['extension']) == 'js' ? '    ' : '  ') . '\',
+        tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
         toolbar: false
     });
 })(Zepto);
@@ -1609,29 +1535,19 @@ Route::accept($config->manager->slug . '/shield/repair/file:(.*?)', function($na
 
         Guardian::checkToken(Request::post('token'));
 
-        $info = array(
-            'data' => array(
-                'path' => $file,
-                'content' => Request::post('content')
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => array('path' => $file, 'content' => Request::post('content')));
 
         if( ! Notify::errors()) {
-            File::open($file)->write($info['data']['content'])->save(0600);
+            File::open($file)->write($P['data']['content'])->save(0600);
             Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($name) . '</code>')));
-            Weapon::fire('on_shield_update', array($info));
-            Weapon::fire('on_shield_repair', array($info));
+            Weapon::fire('on_shield_update', array($G, $P));
+            Weapon::fire('on_shield_repair', array($G, $P));
             Guardian::kick($config->url_current);
         }
 
     } else {
 
-        Guardian::memorize(array(
-            'name' => basename($name),
-            'content' => File::open($file)->read()
-        ));
+        Guardian::memorize($G['data']);
 
     }
 
@@ -1690,15 +1606,11 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         }
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], PLUGIN, Config::speak('notify_success_uploaded', array($speak->plugin)));
-            $info = array(
-                'data' => $_FILES,
-                'execution_time' => time(),
-                'error' => Notify::errors()
-            );
-            Weapon::fire('on_plugin_update', array($info));
-            Weapon::fire('on_plugin_construct', array($info));
-            Weapon::fire('on_plugin_' . md5($path) . '_update', array($info));
-            Weapon::fire('on_plugin_' . md5($path) . '_construct', array($info));
+            $P = array('data' => $_FILES);
+            Weapon::fire('on_plugin_update', array($P, $P));
+            Weapon::fire('on_plugin_construct', array($P, $P));
+            Weapon::fire('on_plugin_' . md5($path) . '_update', array($P, $P));
+            Weapon::fire('on_plugin_' . md5($path) . '_construct', array($P, $P));
             if($uploaded = File::exist(PLUGIN . DS . $name)) {
                 Package::take($uploaded)->extract(); // Extract the ZIP file
                 File::open($uploaded)->delete(); // Delete the ZIP file
@@ -1721,7 +1633,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         }
     }
 
-    $pages = array();
+    $plugins = array();
     $take = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
 
     if($files = Mecha::eat($take)->chunk($offset, $config->per_page)->vomit()) {
@@ -1734,18 +1646,18 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
 
             $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
 
-            $pages[$i]['about'] = $about;
-            $pages[$i]['slug'] = basename($files[$i]);
+            $plugins[$i]['about'] = $about;
+            $plugins[$i]['slug'] = basename($files[$i]);
 
         }
     } else {
-        $pages = false;
+        $files = false;
     }
 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
-        'pages' => $pages,
+        'files' => $plugins,
         'pagination' => Navigator::extract($take, $offset, $config->per_page, $config->manager->slug . '/plugin'),
         'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
     ));
@@ -1783,7 +1695,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->managing . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
-        'page' => $about,
+        'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
 
@@ -1806,21 +1718,15 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
 
-    $info = array(
-        'data' => array(
-            'id' => $slug
-        ),
-        'execution_time' => time(),
-        'error' => Notify::errors()
-    );
+    $P = array('data' => array('id' => $slug, 'action' => $path));
 
     $mode = $path == 'freeze' ? 'eject' : 'mounted';
 
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
-    Weapon::fire('on_plugin_update', array($info));
-    Weapon::fire('on_plugin_' . $mode, array($info));
-    Weapon::fire('on_plugin_' . md5($slug) . '_update', array($info));
-    Weapon::fire('on_plugin_' . md5($slug) . '_' . $mode, array($info));
+    Weapon::fire('on_plugin_update', array($P, $P));
+    Weapon::fire('on_plugin_' . $mode, array($P, $P));
+    Weapon::fire('on_plugin_' . md5($slug) . '_update', array($P, $P));
+    Weapon::fire('on_plugin_' . md5($slug) . '_' . $mode, array($P, $P));
     Guardian::kick($config->manager->slug . '/plugin');
 
 });
@@ -1845,7 +1751,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
-        'page' => $about,
+        'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
     ));
 
@@ -1855,19 +1761,13 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
 
         File::open(PLUGIN . DS . $slug)->delete();
 
-        $info = array(
-            'data' => array(
-                'id' => $slug
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $P = array('data' => array('id' => $slug));
 
         Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
-        Weapon::fire('on_plugin_update', array($info));
-        Weapon::fire('on_plugin_destruct', array($info));
-        Weapon::fire('on_plugin_' . md5($slug) . '_update', array($info));
-        Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($info));
+        Weapon::fire('on_plugin_update', array($P, $P));
+        Weapon::fire('on_plugin_destruct', array($P, $P));
+        Weapon::fire('on_plugin_' . md5($slug) . '_update', array($P, $P));
+        Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/plugin');
 
     } else {
@@ -1915,12 +1815,8 @@ Route::accept($config->manager->slug . '/(backup|restore)', function() use($conf
         }
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, Config::speak('notify_success_uploaded', array($title)));
-            $info = array(
-                'data' => $_FILES,
-                'execution_time' => time(),
-                'error' => Notify::errors()
-            );
-            Weapon::fire('on_restore_construct', array($info));
+            $P = array('data' => $_FILES);
+            Weapon::fire('on_restore_construct', array($P, $P));
             if($uploaded = File::exist($destination . DS . $name)) {
                 Package::take($uploaded)->extract(); // Extract the ZIP file
                 File::open($uploaded)->delete(); // Delete the ZIP file
@@ -1982,15 +1878,9 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
         }
     }
 
-    $info = array(
-        'data' => array(
-            'path' => ROOT . DS . $name
-        ),
-        'execution_time' => time(),
-        'error' => Notify::errors()
-    );
+    $G = array('data' => array('path' => ROOT . DS . $name));
 
-    Weapon::fire('on_backup_construct', array($info));
+    Weapon::fire('on_backup_construct', array($G, $G));
 
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);
 
@@ -2009,16 +1899,10 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
         header('Content-Length: ' . filesize($backup));
         header('Content-Disposition: attachment; filename=' . $file);
         readfile($backup);
-        $info = array(
-            'data' => array(
-                'path' => $backup
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $G = array('data' => array('path' => $backup));
         ignore_user_abort(true);
         File::open($backup)->delete();
-        Weapon::fire('on_backup_destruct', array($info));
+        Weapon::fire('on_backup_destruct', array($G, $G));
     } else {
         Shield::abort();
     }
@@ -2035,15 +1919,10 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
 
 Route::accept($config->manager->slug . '/(article|page)/preview', function($path = "") {
 
-    $info = array(
-        'data' => array(
-            'mode' => $path
-        ),
-        'execution_time' => time(),
-        'error' => Notify::errors()
-    );
+    $P = array('data' => Request::post());
+    $P['data']['type'] = $path;
 
-    Weapon::fire('preview_content_before', array($info));
+    Weapon::fire('preview_content_before', array($P, $P));
     echo '<div class="inner">';
 
     if(Request::post()) {
@@ -2056,11 +1935,11 @@ Route::accept($config->manager->slug . '/(article|page)/preview', function($path
         $content = Filter::apply('content', Text::parse($content)->to_html);
         $content = Filter::apply($path . ':content', $content);
         echo '<h2 class="preview-title">' . $title . '</h2>';
-        echo '<div class="preview-body p">' . $content . '</div>';
+        echo '<div class="preview-content p">' . $content . '</div>';
     }
 
     echo '</div>';
-    Weapon::fire('preview_content_after', array($info));
+    Weapon::fire('preview_content_after', array($P, $P));
 
     exit;
 
