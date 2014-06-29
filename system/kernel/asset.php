@@ -68,23 +68,23 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . EE_SUFFIX;
+                $html .= '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES;
             }
             return Filter::apply('asset:css', $html);
         }
-        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . EE_SUFFIX);
+        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES);
     }
 
-    // Return HTML image of asset
+    // Return the HTML image of asset
     public static function image($path, $addon = "") {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . EE_SUFFIX;
+                $html .= '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES;
             }
             return Filter::apply('asset:image', $html);
         }
-        return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . EE_SUFFIX);
+        return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . ES);
     }
 
 }
