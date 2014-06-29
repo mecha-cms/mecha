@@ -7,16 +7,7 @@ class Get {
 
     private static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-    /**
-     * Get Full Path of Page File by its Slug or ID
-     * --------------------------------------------
-     *
-     * [1]. page-slug
-     * [2]. 123456789
-     *
-     */
-
-    private static function tracePath($detector, $folder = PAGE) {
+    private static function pathTrace($detector, $folder = PAGE) {
         $results = false;
         foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)));
@@ -28,149 +19,58 @@ class Get {
         return $results;
     }
 
-    /**
-     * =========================================================================
-     *  CONVERT FILE PATH OF ARTICLE/PAGE INTO ARRAY OF INFO
-     *
-     *  File name pattern => `0000-00-00-00-00-00_1,2,3,4_page-slug.txt`
-     * =========================================================================
-     *
-     * -- CODE: ----------------------------------------------------------------
-     *
-     *    [1]. var_dump(Get::extract('2014-04-12-07-00-05_1,2,3,4_page.txt'));
-     *
-     *    [2]. var_dump(Get::extract(glob(ARTICLE . DS . '*.txt')));
-     *
-     *    [3]. var_dump(Get::extract('articles', 'DESC', 'path'));
-     *
-     *    [4]. var_dump(Get::extract('articles', 'DESC', 'time', 'kind:1'));
-     *
-     * -------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | --------------------------------------------------
-     *  $reference | string | The file path, or keyword of specific method
-     *  $reference | array  | Array of file path
-     *  ---------- | ------ | --------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
+    public static function pageExtract($input) {
+        if( ! $input) return false;
+        $extension = pathinfo($input, PATHINFO_EXTENSION);
+        list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension));
+        return array(
+            'path' => $input,
+            'time' => Date::format($time),
+            'last_update' => File::exist($input) ? filemtime($input) : null,
+            'update' => File::exist($input) ? Date::format(filemtime($input)) : null,
+            'kind' => Converter::strEval(explode(',', $kind)),
+            'slug' => $slug,
+            'status' => $extension == 'txt' ? 'published' : 'draft'
+        );
+    }
 
-    public static function extract($reference, $order = 'DESC', $sorter = 'path', $filter = "") {
-        $tree = array();
-        if( ! $reference) return false;
-        if(is_string($reference)) {
-            if($reference == 'articles') {
-                $reference = self::articles($order, $filter);
-            } elseif($reference == 'pages') {
-                $reference = self::pages($order, $filter);
-            } elseif($reference == 'comments') {
-                return self::comments(null, $order, $sorter);
-            }
-        }
-        if( ! is_array($reference)) {
-            $reference = array($reference);
-        }
-        for($i = 0, $count = count($reference); $i < $count; ++$i) {
-            $extension = pathinfo($reference[$i], PATHINFO_EXTENSION);
-            $base = basename($reference[$i], '.' . $extension);
-            $part = explode('_', $base);
-            $tree[$i] = array(
-                'path' => $reference[$i],
-                'time' => isset($part[0]) ? Date::format($part[0], 'Y-m-d H:i:s') : '0000-00-00 00:00:00',
-                'update' => File::exist($reference[$i]) ? Date::format(filemtime($reference[$i]), 'Y-m-d H:i:s') : null,
-                'kind' => isset($part[1]) ? Converter::strEval(explode(',', $part[1])) : array(),
-                'slug' => isset($part[2]) ? $part[2] : "",
-                'status' => $extension == 'txt' ? 'published' : 'draft'
-            );
-        }
-        return ! empty($tree) ? Mecha::eat($tree)->order($order, $sorter)->vomit() : false;
+    public static function commentExtract($input) {
+        if( ! $input) return false;
+        $extension = pathinfo($input, PATHINFO_EXTENSION);
+        list($post, $id, $parent) = explode('_', basename($input, '.' . $extension));
+        return array(
+            'path' => $input,
+            'time' => Date::format($id),
+            'last_update' => File::exist($input) ? filemtime($input) : null,
+            'update' => File::exist($input) ? Date::format(filemtime($input)) : null,
+            'post' => (int) Date::format($post, 'U'),
+            'id' => (int) Date::format($id, 'U'),
+            'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'),
+            'status' => $extension == 'txt' ? 'approved' : 'pending'
+        );
+    }
+
+    public static function fileExtract($input) {
+        if( ! $input) return false;
+        $extension = pathinfo($input, PATHINFO_EXTENSION);
+        return array(
+            'path' => $input,
+            'name' => basename($input, '.' . $extension),
+            'url' => str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), $input),
+            'extension' => strtolower($extension),
+            'last_update' => File::exist($input) ? filemtime($input) : null,
+            'update' => File::exist($input) ? Date::format(filemtime($input)) : null,
+            'size_raw' => File::exist($input) ? filesize($input) : null,
+            'size' => File::size($input, 'KB')
+        );
     }
 
     /**
-     * =========================================================================
-     *  EXTRACT FILE PATH FROM ALL OF THE EXISTING FILES IN A FOLDER
-     *
-     *  [1]. all => All files including the hidden files.
-     *  [2]. recursive => All files without the hidden files.
-     *  [3]. adjacent => All files without the hidden files that placed
-     *       close to the selected folder.
-     * =========================================================================
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type   | Desription
-     *  ----------- | ------ | -------------------------------------------------
-     *  $folder     | string | Path to folder of files you want to be listed
-     *  $extensions | string | The file extensions
-     *  $order      | string | Ascending or descending? ASC/DESC?
-     *  $sorter     | string | The key of array item as sorting reference
-     *  $filter     | string | Filter the resulted array by a keyword
-     *  $output     | string | `all`, `recursive` or `adjacent` ?
-     *  ----------- | ------ | -------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    private static function traceFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $output = 'all') {
-        $config = Config::get();
-        $tree = array();
-        // Example: `*`, `txt`, `gif,jpg,jpeg,png`
-        $extensions = $extensions == '*' ? '.*?' : preg_replace('# *\, *#', '|', $extensions);
-        $dir = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS));
-        foreach(new RegexIterator($dir, '#.*?' . preg_quote($filter) . '.*?\.(' . $extensions . ')$#i') as $file => $object) {
-            $info = pathinfo($file);
-            $tree['all'][] = array(
-                'path' => $file,
-                'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
-                'name' => $info['basename'],
-                'dirname' => $info['dirname'],
-                'extension' => strtolower($info['extension']),
-                'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
-                'size' => File::size($file, 'KB')
-            );
-            if(
-                // Exclude file from results if the file name begins with
-                // two underscores. Example: `__file-name.txt`
-                strpos(basename($info['basename']), '__') !== 0 &&
-                // Exclude all files inside a folder from results if the
-                // folder name begins with two underscores. Example: `__folder-name`
-                strpos(basename($info['dirname']), '__') !== 0 &&
-                // Linux?
-                strpos(basename($info['basename']), '.') !== 0 &&
-                strpos(basename($info['dirname']), '.') !== 0
-            ) {
-                $tree['recursive'][] = array(
-                    'path' => $file,
-                    'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
-                    'name' => $info['basename'],
-                    'dirname' => $info['dirname'],
-                    'extension' => strtolower($info['extension']),
-                    'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
-                    'size' => File::size($file, 'KB')
-                );
-                if(rtrim(dirname($file), '\\/') === rtrim($folder, '\\/')) {
-                    $tree['adjacent'][] = array(
-                        'path' => $file,
-                        'url' => str_replace(array(ROOT, '\\'), array($config->url, '/'), $file),
-                        'name' => $info['basename'],
-                        'dirname' => $info['dirname'],
-                        'extension' => strtolower($info['extension']),
-                        'update' => Date::format(filemtime($file), 'Y-m-d H:i:s'),
-                        'size' => File::size($file, 'KB')
-                    );
-                }
-            }
-        }
-        return ! empty($tree[$output]) ? Mecha::eat($tree[$output])->order($order, $sorter)->vomit() : false;
-    }
-
-    /**
-     * =========================================================================
+     * ==========================================================================
      *  GET ALL FILES RECURSIVELY
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    $files = Get::files(
      *        'some/path',
@@ -186,20 +86,68 @@ class Get {
      *        'update'
      *    );
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter   | Type    | Desription
+     *  ----------- | ------- | -------------------------------------------------
+     *  $folder     | string  | Path to folder of files you want to be listed
+     *  $extensions | string  | The file extensions
+     *  $order      | string  | Ascending or descending? ASC/DESC?
+     *  $sorter     | string  | The key of array item as sorting reference
+     *  $filter     | string  | Filter the resulted array by a keyword
+     *  $inclusive  | boolean | Include hidden files to results?
+     *  ----------- | ------- | -------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function files($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'recursive');
+    public static function files($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+        $results = array();
+        $results_inclusive = array();
+        $extension = $extensions == '*' ? '.*?' : str_replace(array(', ', ','), '|', $extensions);
+        $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+        foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
+            if(empty($filter)) {
+                $results_inclusive[] = self::fileExtract($file);
+            } else {
+                if(strpos($file, $filter) !== false) {
+                    $results_inclusive[] = self::fileExtract($file);
+                }
+            }
+            if(
+                // Exclude all files inside a folder from results if the
+                // folder name begins with two underscores. Example: `__folder-name`
+                strpos(basename(dirname($file)), '__') !== 0 &&
+                // Exclude file from results if the file name begins with
+                // two underscores. Example: `__file-name.txt`
+                strpos(basename($file), '__') !== 0 &&
+                // Linux?
+                strpos(basename(dirname($file)), '.') !== 0 &&
+                strpos(basename($file), '.') !== 0
+            ) {
+                if(empty($filter)) {
+                    $results[] = self::fileExtract($file);
+                } else {
+                    if(strpos($file, $filter) !== false) {
+                        $results[] = self::fileExtract($file);
+                    }
+                }
+            }
+        }
+        if($inclusive) {
+            return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
+        } else {
+            return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
+        }
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET ADJACENT FILES
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    $files = Get::adjacentFiles(
      *        'some/path',
@@ -208,55 +156,84 @@ class Get {
      *        'update'
      *    );
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
-    public static function adjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'adjacent');
+    public static function adjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+        $results = array();
+        $results_inclusive = array();
+        $extension = str_replace(', ', ',', $extensions);
+        $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
+        foreach($files as $file) {
+            if(empty($filter)) {
+                $results_inclusive[] = self::fileExtract($file);
+            } else {
+                if(strpos($file, $filter) !== false) {
+                    $results_inclusive[] = self::fileExtract($file);
+                }
+            }
+            if(
+                strpos(basename(dirname($file)), '__') !== 0 &&
+                strpos(basename($file), '__') !== 0 &&
+                strpos(basename(dirname($file)), '.') !== 0 &&
+                strpos(basename($file), '.') !== 0
+            ) {
+                if(empty($filter)) {
+                    $results[] = self::fileExtract($file);
+                } else {
+                    if(strpos($file, $filter) !== false) {
+                        $results[] = self::fileExtract($file);
+                    }
+                }
+            }
+        }
+        if($inclusive) {
+            return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
+        } else {
+            return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
+        }
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET ALL FILES RECURSIVELY INCLUDING THE EXCLUDED FILES
-     * =========================================================================
-     *
-     * -- CODE: ----------------------------------------------------------------
-     *
-     *    $files = Get::inclusiveFiles(
-     *        'some/path',
-     *        'txt',
-     *        'ASC',
-     *        'update'
-     *    );
-     *
-     * -------------------------------------------------------------------------
-     *
+     * ==========================================================================
      */
 
     public static function inclusiveFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::traceFiles($folder, $extensions, $order, $sorter, $filter, 'all');
+        return self::files($folder, $extensions, $order, $sorter, $filter, true);
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
+     *  GET ADJACENT FILES INCLUDING THE EXCLUDED FILES
+     * ==========================================================================
+     */
+
+    public static function inclusiveAdjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::adjacentFiles($folder, $extensions, $order, $sorter, $filter, true);
+    }
+
+    /**
+     * ==========================================================================
      *  CREATE SUMMARY FROM LONG TEXT SOURCE
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    $summary = Get::summary('Very very long text...');
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter   | Type    | Description
-     *  ----------- | ------- | ------------------------------------------------
+     *  ----------- | ------- | -------------------------------------------------
      *  $text       | string  | The source text
      *  $maxchars   | integer | The maximum length of summary
      *  $tail       | string  | Character that follows at the end of the summary
-     *  ----------- | ------- | ------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ----------- | ------- | -------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -283,11 +260,11 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  EXTRACT ARRAY OF TAGS FROM TAG FILES
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    $tags = Get::rawTags();
      *
@@ -295,7 +272,7 @@ class Get {
      *        echo $tag['name'] . '<br>';
      *    }
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
@@ -303,7 +280,7 @@ class Get {
         $config = Config::get();
         $speak = Config::speak();
         if($file = File::exist(STATE . DS . 'tags.txt')) {
-            $tags = unserialize(File::open($file)->read());
+            $tags = File::open($file)->unserialize();
         } else {
             $tags = include STATE . DS . 'repair.tags.php';
         }
@@ -311,18 +288,18 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  RETURN SPECIFIC TAG ITEM FILTERED BY ITS AVAILABLE DATA
      *
      *  It can be an ID, name or slug.
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    $tag = Get::rawTagsBy('lorem-ipsum');
      *    echo $tag['name'] . '<br>';
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
@@ -339,9 +316,9 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  `Get::rawTags()` AS OBJECT
-     * =========================================================================
+     * ==========================================================================
      */
 
     public static function tags($order = 'ASC', $sorter = 'name') {
@@ -349,9 +326,9 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  `Get::rawTagsBy()` AS OBJECT
-     * =========================================================================
+     * ==========================================================================
      */
 
     public static function tagsBy($id_or_name_or_slug) {
@@ -359,52 +336,52 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET LIST OF PAGE FILES
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    foreach(Get::pages() as $path) {
      *        echo $path . '<br>';
      *    }
      *
      *    // [1]. Filter by Tag(s) ID
-     *    Get::pages('DESC', 'kind:2');
-     *    Get::pages('DESC', 'kind:2,3,4');
+     *    Get::pages('DESC', 'time', 'kind:2');
+     *    Get::pages('DESC', 'time', 'kind:2,3,4');
      *
      *    // [2]. Filter by Time
-     *    Get::pages('DESC', 'time:2014');
-     *    Get::pages('DESC', 'time:2014-11');
-     *    Get::pages('DESC', 'time:2014-11-10');
+     *    Get::pages('DESC', 'time', 'time:2014');
+     *    Get::pages('DESC', 'time', 'time:2014-11');
+     *    Get::pages('DESC', 'time', 'time:2014-11-10');
      *
      *    // [3]. Filter by Slug
-     *    Get::pages('DESC', 'slug:lorem');
-     *    Get::pages('DESC', 'slug:lorem-ipsum');
+     *    Get::pages('DESC', 'time', 'slug:lorem');
+     *    Get::pages('DESC', 'time', 'slug:lorem-ipsum');
      *
      *    // [4]. The Old Ways
-     *    Get::pages('DESC', 'lorem');
-     *    Get::pages('DESC', 'lorem-ipsum');
+     *    Get::pages('DESC', 'time', 'lorem');
+     *    Get::pages('DESC', 'time', 'lorem-ipsum');
      *
      *    // [5]. The Old Ways' Alias
-     *    Get::pages('DESC', 'keyword:lorem');
-     *    Get::pages('DESC', 'keyword:lorem-ipsum');
+     *    Get::pages('DESC', 'time', 'keyword:lorem');
+     *    Get::pages('DESC', 'time', 'keyword:lorem-ipsum');
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type    | Description
-     *  --------- | ------- | --------------------------------------------------
+     *  --------- | ------- | ---------------------------------------------------
      *  $order    | string  | Ascending or descending? ASC/DESC?
      *  $filter   | string  | Filter the resulted array by a keyword
-     *  $all      | boolean | Include draft pages to results
+     *  $all      | boolean | Include draft pages to results?
      *  $folder   | string  | Folder of the pages
-     *  --------- | ------- | --------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  --------- | ------- | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pages($order = 'DESC', $filter = "", $all = false, $folder = PAGE) {
+    public static function pages($order = 'DESC', $sorter = 'time', $filter = "", $all = false, $folder = PAGE) {
         $results = array();
         $pages = $all ? glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) : glob($folder . DS . '*.txt');
         $total_pages = count($pages);
@@ -414,14 +391,19 @@ class Get {
         } else {
             sort($pages);
         }
-        if(empty($filter)) return $pages;
+        if(empty($filter)) {
+            foreach($pages as $page) {
+                $results[] = self::pageExtract($page);
+            }
+            return ! empty($results) ? $results : false;
+        }
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
             if($key == 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
                     if(strpos($time, $value) !== false) {
-                        $results[] = $pages[$i];
+                        $results[] = self::pageExtract($pages[$i]);
                     }
                 }
                 return ! empty($results) ? $results : false;
@@ -437,7 +419,7 @@ class Get {
                                 strpos($name, '_' . $kind . ',') !== false ||
                                 strpos($name, ',' . $kind . '_') !== false
                             ) {
-                                $results[] = $pages[$i];
+                                $results[] = self::pageExtract($pages[$i]);
                             }
                         }
                     }
@@ -451,7 +433,7 @@ class Get {
                             strpos($name, '_' . $value . ',') !== false ||
                             strpos($name, ',' . $value . '_') !== false
                         ) {
-                            $results[] = $pages[$i];
+                            $results[] = self::pageExtract($pages[$i]);
                         }
                     }
                     return ! empty($results) ? $results : false;
@@ -460,14 +442,14 @@ class Get {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
                     if(strpos($slug, $value) !== false) {
-                        $results[] = $pages[$i];
+                        $results[] = self::pageExtract($pages[$i]);
                     }
                 }
                 return ! empty($results) ? $results : false;
             } else { // if($key == 'keyword') ...
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $value) !== false) {
-                        $results[] = $pages[$i];
+                        $results[] = self::pageExtract($pages[$i]);
                     }
                 }
                 return ! empty($results) ? $results : false;
@@ -475,7 +457,7 @@ class Get {
         } else {
             for($i = 0; $i < $total_pages; ++$i) {
                 if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $filter) !== false) {
-                    $results[] = $pages[$i];
+                    $results[] = self::pageExtract($pages[$i]);
                 }
             }
             return ! empty($results) ? $results : false;
@@ -484,45 +466,45 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET LIST OF ARTICLE FILES
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    foreach(Get::articles() as $path) {
      *        echo $path . '<br>';
      *    }
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
-    public static function articles($order = 'DESC', $filter = "", $all = false) {
-        return self::pages($order, $filter, $all, ARTICLE);
+    public static function articles($order = 'DESC', $sorter = 'time', $filter = "", $all = false) {
+        return self::pages($order, $sorter, $filter, $all, ARTICLE);
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  EXTRACT PAGE FILE INTO LIST OF PAGE DATA FROM ITS SLUG/FILE PATH
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::page('about'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter      | Type   | Description
-     *  -------------- | ------ | ----------------------------------------------
-     *  $reference     | mixed  | Slug, ID, path or array of `Get::extract()`
+     *  -------------- | ------ | -----------------------------------------------
+     *  $reference     | mixed  | Slug, ID, path or array of `Get::pageExtract()`
      *  $excludes      | array  | Exclude some fields from results
      *  $folder        | string | Folder of the pages
      *  $connector     | string | Path connector for page URL
      *  $filter_prefix | string | Filter prefix for `Text::toPage()`
-     *  -------------- | ------ | ----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  -------------- | ------ | -----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -534,20 +516,18 @@ class Get {
         $excludes = array_flip($excludes);
         $results = false;
 
-        // From `Get::extract('root:cabinet/pages/0000-00-00-00-00-00_1,2,3,4_page-slug.txt')`
+        // From `Get::pages()`
         if(is_array($reference)) {
             $results = $reference;
         } else {
-            // By path => `root:cabinet/pages/0000-00-00-00-00-00_1,2,3,4_page-slug.txt`
+            // By path => `root:cabinet/pages/0000-00-00-00-00-00_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
-                $results = self::extract($reference);
+                $results = self::pageExtract($reference);
             } else {
                 // By slug => `page-slug` or by ID => 12345
-                $results = self::extract(self::tracePath($reference, $folder));
+                $results = self::pageExtract(self::pathTrace($reference, $folder));
             }
         }
-
-        $results = $results ? $results[0] : false;
 
         if( ! $results || ! File::exist($results['path'])) return false;
 
@@ -559,28 +539,24 @@ class Get {
 
         $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
 
-        $content = $results['content_raw'];
-        $time = Date::format($results['time'], 'Y-m-d-H-i-s');
+        $content = isset($results['content_raw']) ? $results['content_raw'] : "";
+        $time = substr($results['path'], strpos($results['path'], '_'));
 
         if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
             include $php_file;
-            $php_rendered = ob_get_contents();
-            ob_end_clean();
-            $results['content'] = $php_rendered;
+            $results['content'] = ob_get_clean();
         }
 
+        $results['date'] = Date::extract($results['time']);
         $results['url'] = $config->url . $connector . $results['slug'];
-        $results['date'] = Date::extract($time);
-        $results['update'] = Date::format(filemtime($results['path']), 'Y-m-d H:i:s');
         $results['id'] = $results['date']['unix'];
 
         if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
 
         if( ! isset($results['description'])) {
-            $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
-        } else {
-            $results['description'] = Text::parse($results['description'])->to_decoded_json;
+            $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
+            $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
         }
 
         if( ! isset($excludes['tags'])) {
@@ -605,8 +581,7 @@ class Get {
                 $js_raw = Filter::apply('javascript', $js_raw);
                 $results['js'] = Filter::apply('custom:javascript', $js_raw);
             } else {
-                $results['css'] = $results['css_raw'] = "";
-                $results['js'] = $results['js_raw'] = "";
+                $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
             }
             $custom = $results['css'] . $results['js'];
         } else {
@@ -630,7 +605,7 @@ class Get {
          * Custom fields ...
          */
 
-        if( ! isset($excludes['fields'])) {
+        if( ! isset($excludes['fields']) && isset($results['fields'])) {
 
             /**
              * Initialize custom fields with empty values so that users
@@ -640,7 +615,7 @@ class Get {
              */
 
             if($file = File::exist(STATE . DS . 'fields.txt')) {
-                $fields = unserialize(File::open($file)->read());
+                $fields = File::open($file)->unserialize();
             } else {
                 $fields = array();
             }
@@ -655,10 +630,8 @@ class Get {
              * Start re-writing ...
              */
 
-            if(isset($results['fields'])) {
-                foreach(Converter::strEval($results['fields']) as $key => $value) {
-                    $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
-                }
+            foreach(Converter::strEval($results['fields']) as $key => $value) {
+                $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
             }
 
             $results['fields'] = $init;
@@ -680,15 +653,15 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  EXTRACT ARTICLE FILE INTO LIST OF ARTICLE DATA FROM ITS SLUG/FILE PATH
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::article('lorem-ipsum'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
@@ -697,61 +670,43 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET PAGE HEADERS ONLY
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::pageHeader('lorem-ipsum'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter      | Type   | Description
-     *  -------------- | ------ | ----------------------------------------------
+     *  -------------- | ------ | -----------------------------------------------
      *  $path          | string | The URL path of the page file, or a page slug
      *  $folder        | string | Folder of the pages
-     *  $connector     | string | See `Get::pages()`
-     *  $filter_prefix | string | See `Get::pages()`
-     *  -------------- | ------ | ----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  $connector     | string | See `Get::page()`
+     *  $filter_prefix | string | See `Get::page()`
+     *  -------------- | ------ | -----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function pageHeader($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::tracePath($path, $folder);
+            $path = self::pathTrace($path, $folder);
         }
-        if($path && $handle = fopen($path, 'r')) {
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
-            list($time, $kind, $slug) = explode('_', basename($path, '.' . $extension));
-            $results = array(
-                'path' => $path,
-                'name' => basename($path),
-                'id' => (int) Date::format($time, 'U'),
-                'time' => Date::format($time, 'Y-m-d H:i:s'),
-                'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
-                'kind' => Converter::strEval(explode(',', $kind)),
-                'slug' => $slug,
-                'status' => $extension == 'txt' ? 'published' : 'draft',
-                'url' => $config->url . $connector . $slug
-            );
-            while(($buffer = fgets($handle, 4096)) !== false) {
-                if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
-                    fclose($handle);
-                    break;
-                }
-                $field = explode(':', $buffer, 2);
-                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                $value = Converter::strEval(trim($field[1]));
-                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, $value));
-                $results[$key] = $value;
-            }
-            if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
+        if( ! $path) return false;
+        $results = self::pageExtract($path) + Text::toPage($path, false, $filter_prefix);
+        $results['date'] = Date::extract($results['time']);
+        $results['id'] = (int) Date::format($results['time'], 'U');
+        $results['url'] = $config->url . $connector . $results['slug'];
+        if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
+        if( ! isset($results['description'])) $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', ""));
+        if(isset($results['fields'])) {
             if($file = File::exist(STATE . DS . 'fields.txt')) {
-                $fields = unserialize(File::open($file)->read());
+                $fields = File::open($file)->unserialize();
             } else {
                 $fields = array();
             }
@@ -759,28 +714,24 @@ class Get {
             foreach($fields as $key => $value) {
                 $init[$key] = "";
             }
-            if(isset($results['fields'])) {
-                foreach($results['fields'] as $key => $value) {
-                    $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
-                }
+            foreach($results['fields'] as $key => $value) {
+                $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
             }
             $results['fields'] = $init;
-            $results['description'] = isset($results['description']) ? Text::parse($results['description'])->to_decoded_json : "";
-            return Mecha::O($results);
         }
-        return false;
+        return Mecha::O($results);
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET ARTICLE HEADERS ONLY
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::articleHeader('lorem-ipsum'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
@@ -789,64 +740,56 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET MINIMUM DATA OF A PAGE
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::pageAnchor('about'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter      | Type   | Description
-     *  -------------- | ------ | ----------------------------------------------
+     *  -------------- | ------ | -----------------------------------------------
      *  $path          | string | The URL path of the page file, or a page slug
      *  $folder        | string | Folder of the pages
-     *  $connector     | string | See `Get::pages()`
-     *  $filter_prefix | string | See `Get::pages()`
-     *  -------------- | ------ | ----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  $connector     | string | See `Get::page()`
+     *  $filter_prefix | string | See `Get::page()`
+     *  -------------- | ------ | -----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function pageAnchor($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::tracePath($path, $folder);
+            $path = self::pathTrace($path, $folder);
         }
         if($path && $handle = fopen($path, 'r')) {
-            $parts = explode(':', fgets($handle), 2);
-            $extension = pathinfo($path, PATHINFO_EXTENSION);
-            list($time, $kind, $slug) = explode('_', basename($path, '.' . $extension));
+            $results = self::pageExtract($path);
+            $parts = explode(':', fgets($handle, 4096), 2);
             fclose($handle);
-            return (object) array(
-                'path' => $path,
-                'name' => basename($path),
-                'id' => (int) Date::format($time, 'U'),
-                'time' => Date::format($time, 'Y-m-d H:i:s'),
-                'update' => Date::format(filemtime($path), 'Y-m-d H:i:s'),
-                'kind' => Converter::strEval(explode(',', $kind)),
-                'slug' => $slug,
-                'status' => $extension == 'txt' ? 'published' : 'draft',
-                'url' => $config->url . $connector . $slug,
-                'title' => Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?')))
-            );
+            $results['date'] = Date::extract($results['time']);
+            $results['id'] = (int) Date::format($results['time'], 'U');
+            $results['url'] = $config->url . $connector . $results['slug'];
+            $results['title'] = Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?')));
+            return Mecha::O($results);
         }
         return false;
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET MINIMUM DATA OF AN ARTICLE
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::articleAnchor('lorem-ipsum'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
      */
 
@@ -855,23 +798,23 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET IMAGES URL FROM TEXT SOURCE
-     * =========================================================================
+     * ==========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: -----------------------------------------------------------------
      *
      *    var_dump(Get::imagesURL('some text', 'no-image.png'));
      *
-     * -------------------------------------------------------------------------
+     * --------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
-     *  ---------- | ------ | --------------------------------------------------
+     *  ---------- | ------ | ---------------------------------------------------
      *  $source    | string | The source text
      *  $fallback  | string | Fallback image URL if nothing matched
-     *  ---------- | ------ | --------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ---------- | ------ | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -940,18 +883,18 @@ class Get {
     }
 
     /**
-     * =========================================================================
+     * ==========================================================================
      *  GET IMAGE URL FROM TEXT SOURCE
-     * =========================================================================
+     * ==========================================================================
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
-     *  ---------- | ------- | -------------------------------------------------
+     *  ---------- | ------- | --------------------------------------------------
      *  $source    | string  | The source text
      *  $sequence  | integer | Sequence of available image URLs
      *  $fallback  | string  | Fallback image URL if nothing matched
-     *  ---------- | ------- | -------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  ---------- | ------- | --------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      */
 
     public static function imageURL($source, $sequence = 1, $fallback = '?') {
@@ -960,25 +903,25 @@ class Get {
     }
 
     /**
-     * ==========================================================================
+     * ===========================================================================
      *  GET COMMENTS BY PAGE TIME
-     * ==========================================================================
+     * ===========================================================================
      *
-     * -- CODE: -----------------------------------------------------------------
+     * -- CODE: ------------------------------------------------------------------
      *
      *    var_dump(Get::comments('2014-04-02-15-15-15'));
      *
-     * --------------------------------------------------------------------------
+     * ---------------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
-     *  ---------- | ------- | --------------------------------------------------
+     *  ---------- | ------- | ---------------------------------------------------
      *  $post_time | string  | Post time as results filter
      *  $order     | string  | Ascending or descending? ASC/DESC?
      *  $sorter    | string  | The key of array item as sorting reference
-     *  $all       | boolean | Include unpublished comments to results
-     *  ---------- | ------- | --------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  $all       | boolean | Include unpublished comments to results?
+     *  ---------- | ------- | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
@@ -993,38 +936,37 @@ class Get {
         foreach($files as $comment) {
             $extension = pathinfo($comment, PATHINFO_EXTENSION);
             list($post, $id, $parent) = explode('_', basename($comment, '.' . $extension));
-            $results[] = array(
-                'path' => $comment,
-                'time' => Date::format($id, 'Y-m-d H:i:s'),
-                'update' => Date::format(filemtime($comment), 'Y-m-d H:i:s'),
-                'post' => (int) Date::format($post, 'U'),
-                'id' => (int) Date::format($id, 'U'),
-                'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'),
-                'status' => $extension == 'txt' ? 'approved' : 'pending'
-            );
+            $results[] = self::commentExtract($comment);
         }
         return Mecha::eat($results)->order($order, $sorter)->vomit();
     }
 
     /**
-     * =========================================================================
+     * ===========================================================================
      *  EXTRACT COMMENT FILE INTO LIST OF COMMENT DATA FROM ITS TIME/ID
-     * =========================================================================
+     * ===========================================================================
      *
-     * -- CODE: ----------------------------------------------------------------
+     * -- CODE: ------------------------------------------------------------------
      *
      *    var_dump(Get::comment(1399334470));
      *
-     * -------------------------------------------------------------------------
+     * ---------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter  | Type    | Description
+     *  ---------- | ------- | ---------------------------------------------------
+     *  $reference | string  | Comment ID, time or name
+     *  ---------- | ------- | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function comment($reference, $excludes = array(), $response_to = ARTICLE, $connector = null) {
+    public static function comment($reference, $response_to = ARTICLE, $connector = null) {
         $config = Config::get();
         $results = array();
-        $name = false;
+        $path = false;
         if(strpos(ROOT, $reference) === 0) {
-            $name = $reference;
+            $path = $reference;
         } else {
             foreach(self::comments(null, 'DESC', 'id', true) as $comment) {
                 if(
@@ -1032,13 +974,14 @@ class Get {
                     ! is_numeric($reference) && (string) basename($reference) === (string) basename($comment['path']) // By comment name
                 ) {
                     $results = $comment;
-                    $name = $comment['path'];
+                    $path = $comment['path'];
                     break;
                 }
             }
         }
-        if( ! $name || ! File::exist($name)) return false;
-        $results = $results + Text::toPage(File::open($name)->read(), true, 'comment:');
+        if( ! $path || ! File::exist($path)) return false;
+        $results['date'] = Date::extract($results['time']);
+        $results = $results + Text::toPage($path, true, 'comment:');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('message', $results['content']);
@@ -1053,7 +996,7 @@ class Get {
                 break;
             }
         }
-        return (object) $results;
+        return Mecha::O($results);
     }
 
 }
