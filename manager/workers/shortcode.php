@@ -9,8 +9,8 @@
       </tr>
     </thead>
     <tbody>
-      <?php if($pages): ?>
-      <?php foreach($pages as $key => $value): ?>
+      <?php if($files): ?>
+      <?php foreach($files as $key => $value): ?>
       <tr>
         <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"<?php echo ($key === '{{url}}' || $key === '{{asset}}') ? ' readonly' : ""; ?>></td>
         <td><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"<?php echo ($key === '{{url}}' || $key === '{{asset}}') ? ' readonly' : ""; ?>></td>

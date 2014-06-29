@@ -3,7 +3,7 @@
   <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo $page->title; ?>"></span>
+    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo $file->title; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
@@ -23,7 +23,7 @@
       );
 
       foreach($options as $k => $v) {
-          echo '<option value="' . $k . '"' . ($k == $page->type ? ' selected' : "") . '>' . $v . '</option>';
+          echo '<option value="' . $k . '"' . ($k == $file->type ? ' selected' : "") . '>' . $v . '</option>';
       }
 
       ?>
@@ -36,7 +36,7 @@
       <select name="scope">
       <?php
 
-      if( ! isset($page->scope)) $page->scope = 'all';
+      if( ! isset($file->scope)) $file->scope = 'all';
 
       $options = array(
           'article' => $speak->article,
@@ -45,7 +45,7 @@
       );
 
       foreach($options as $k => $v) {
-          echo '<option value="' . $k . '"' . ($k == $page->scope ? ' selected' : "") . '>' . $v . '</option>';
+          echo '<option value="' . $k . '"' . ($k == $file->scope ? ' selected' : "") . '>' . $v . '</option>';
       }
 
       ?>
@@ -54,7 +54,7 @@
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
-    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo isset($page->value) ? $page->value : ""; ?></textarea></span>
+    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo isset($file->value) ? $file->value : ""; ?></textarea></span>
   </label>
   <div class="grid-group">
     <span class="grid span-1"></span>

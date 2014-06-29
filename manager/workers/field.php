@@ -2,12 +2,12 @@
   <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/field/ignite"><i class="fa fa-plus-square"></i> <?php echo $speak->manager->title_new_field; ?></a>
 </div>
 <?php echo Notify::read(); ?>
-<?php if($pages): ?>
+<?php if($files): ?>
 <table class="table-bordered table-full">
   <colgroup>
     <col>
     <col>
-    <col style="width:5.2em;">
+    <col style="width:6.4em;">
     <col style="width:2.6em;">
     <col style="width:2.6em;">
   </colgroup>
@@ -20,7 +20,7 @@
     </tr>
   </thead>
   <tbody>
-    <?php foreach($pages as $key => $value): ?>
+    <?php foreach($files as $key => $value): ?>
     <tr>
       <td><?php echo $value->title; ?></td>
       <td><?php echo $key; ?></td>

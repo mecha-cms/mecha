@@ -5,21 +5,17 @@
 <div class="tab-content-area">
   <?php echo Notify::read(); ?>
   <div class="tab-content" id="tab-content-1">
-  <?php
-
-  if($page->configurator) {
-      include $page->configurator;
-  } else {
-      echo '<p>' . Config::speak('notify_not_available', array($speak->config)) . '</p>';
-  }
-
-  ?>
+  <?php if($file->configurator): ?>
+  <?php include $file->configurator; ?>
+  <?php else: ?>
+  <p><?php echo Config::speak('notify_not_available', array($speak->config)); ?></p>
+  <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <div class="plugin-about">
-      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($page->author)->to_encoded_html; ?><?php if(isset($page->url) && $page->url != '#'): ?> <a class="help" href="<?php echo $page->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
-      <h3 class="plugin-title"><?php echo $page->title; if(isset($page->version)) echo ' ' . $page->version; ?></h3>
-      <div class="plugin-description"><?php echo $page->content; ?></div>
+      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($file->author)->to_encoded_html; ?><?php if(isset($file->url) && $file->url != '#'): ?> <a class="help" href="<?php echo $file->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
+      <h3 class="plugin-title"><?php echo $file->title; if(isset($file->version)) echo ' ' . $file->version; ?></h3>
+      <div class="plugin-description"><?php echo $file->content; ?></div>
     </div>
   </div>
 </div>

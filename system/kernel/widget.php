@@ -40,8 +40,8 @@ class Widget extends Weapon {
             '<i class="fa fa-fw fa-life-ring"></i> ' . $speak->backup => '/' . $config->manager->slug . '/backup'
         );
         if($config->page_type == 'article') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> ' . Config::speak('manager._this_article', array($speak->edit))] = '/' . $config->manager->slug . '/article/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . Config::speak('manager._this_article', array($speak->delete))] = '/' . $config->manager->slug . '/article/kill/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> ' . Config::speak('manager._this_article', array($speak->edit))] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
+            $menus['<i class="fa fa-fw fa-trash-o"></i> ' . Config::speak('manager._this_article', array($speak->delete))] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
         }
         if($config->page_type == 'page') {
             $menus['<i class="fa fa-fw fa-pencil"></i> ' . Config::speak('manager._this_page', array($speak->edit))] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
@@ -97,15 +97,15 @@ class Widget extends Weapon {
         $speak = Config::speak();
         $year_first = $config->widget_year_first;
         $query = $config->archive_query;
-        $months_array = (array) $speak->months;
+        $months_array = explode(',', $speak->months);
         $archives = array();
         if( ! $files = Get::articles($sort)) {
             return '<div class="widget widget-archive">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
         }
         if($type == 'HIERARCHY') {
             $i = 0;
-            foreach($files as $name) {
-                list($year, $month, $day) = explode('-', basename($name, '.txt'));
+            foreach($files as $file) {
+                list($year, $month, $day) = explode('-', basename($file['path'], '.txt'));
                 $archives[$year][$month][] = $day;
             }
             $html  = '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy">';
@@ -192,7 +192,7 @@ class Widget extends Weapon {
         if( ! $files = Get::articles()) {
             return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
         }
-        foreach(Get::extract($files) as $file) {
+        foreach($files as $file) {
             foreach($file['kind'] as $kind) {
                 $counters[] = $kind;
             }
@@ -259,7 +259,7 @@ class Widget extends Weapon {
         $speak = Config::speak();
         $html  = '<div class="widget widget-search">';
         $html .= '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">';
-        $html .= '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . EE_SUFFIX;
+        $html .= '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES;
         $html .= '<button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>';
         $html .= '</form>';
         $html .= '</div>';
@@ -289,7 +289,7 @@ class Widget extends Weapon {
         $html .= '<ul>';
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i === $count) break;
-            $article = Get::articleAnchor($files[$i]);
+            $article = Get::articleAnchor($files[$i]['path']);
             $html .= '<li' . ($config->url_current == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>';
         }
         $html .= '</ul>';
@@ -327,7 +327,7 @@ class Widget extends Weapon {
         if($config->page_type != 'article') {
             return self::randomPost($total);
         } else {
-            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', (array) $config->page->kind))) {
+            if( ! $files = Get::articles('DESC', 'time', 'kind:' . implode(',', (array) $config->article->kind))) {
                 return '<div class="widget widget-related widget-related-post">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
             }
             if(count($files) <= 1) {
@@ -338,8 +338,8 @@ class Widget extends Weapon {
             $html .= '<ul>';
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
-                if($files[$i] != $config->page->path) {
-                    $article = Get::articleAnchor($files[$i]);
+                if($files[$i]['path'] != $config->article->path) {
+                    $article = Get::articleAnchor($files[$i]['path']);
                     $html .= '<li><a href="' . $article->url . '">' . $article->title . '</a></li>';
                 }
             }
@@ -372,7 +372,7 @@ class Widget extends Weapon {
                 $html .= '<li class="recent-comment-item">';
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= '<div class="recent-comment-avatar">';
-                    $html .= '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '"' . EE_SUFFIX;
+                    $html .= '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES;
                     $html .= '</div>';
                 }
                 $html .= '<div class="recent-comment-header">';
@@ -385,7 +385,7 @@ class Widget extends Weapon {
                 $html .= '<div class="recent-comment-body">' . Get::summary($comment->message, $summary, '&hellip;') . '</div>';
                 $html .= '<div class="recent-comment-footer">';
                 $html .= '<span class="recent-comment-time">';
-                $html .= '<time datetime="' . Date::format($comment->time, 'c') . '">' . Date::format($comment->time, 'Y/m/d H:i:s') . '</time>';
+                $html .= '<time datetime="' . $comment->date->W3C . '">' . $comment->date->FORMAT_3 . '</time>';
                 $html .= ' <a title="' . ($article ? $speak->permalink . ' ' . strtolower($speak->to) . ' &ldquo;' . $article->title . '&rdquo;' : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>';
                 $html .= '</span>';
                 $html .= '</div>';

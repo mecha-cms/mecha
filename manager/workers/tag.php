@@ -23,7 +23,7 @@
         <td><input name="slug[]" type="text" class="input-block" value="<?php echo Text::parse($speak->untagged)->to_slug; ?>" readonly></td>
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Text::parse(Get::tagsBy(0)->description)->to_encoded_html; ?>"></td>
       </tr>
-      <?php foreach($pages as $tag): ?>
+      <?php foreach($files as $tag): ?>
       <?php $ids[] = $tag->id; if($tag->id !== 0): ?>
       <tr>
         <td class="text-right"><input name="id[]" type="hidden" value="<?php echo $tag->id; ?>"><?php echo $tag->id; ?></td>

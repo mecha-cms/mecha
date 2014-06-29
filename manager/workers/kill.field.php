@@ -11,9 +11,9 @@
     </thead>
     <tbody>
       <tr>
-        <td><?php echo $page->title; ?></td>
+        <td><?php echo $file->title; ?></td>
         <td><?php echo $config->key; ?></td>
-        <td><?php echo $page->type; ?></td>
+        <td><?php echo $file->type; ?></td>
       </tr>
     </tbody>
   </table>

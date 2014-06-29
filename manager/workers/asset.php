@@ -7,7 +7,7 @@
     <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times">
   </span> <button class="btn btn-action" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
 </form>
-<?php if($pages): ?>
+<?php if($files): ?>
 <hr>
 <h3 class="media-head"><?php echo $speak->assets; ?></h3>
 <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
@@ -30,11 +30,11 @@
       </tr>
     </thead>
     <tbody>
-      <?php foreach($pages as $file): ?>
+      <?php foreach($files as $file): ?>
       <tr>
         <td class="text-center"><input name="selected[]" type="checkbox" value="<?php echo str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>"></td>
-        <td><time datetime="<?php echo date('c', $file->update); ?>"><?php echo date('Y/m/d H:i:s', $file->update); ?></time></td>
-        <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo $file->name; ?></a></td>
+        <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
+        <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo basename($file->path); ?></a></td>
         <td class="text-center"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/asset/repair/file:' . str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>" title="<?php echo $speak->rename; ?>"><i class="fa fa-pencil"></i></a></td>
         <td class="text-center"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . str_replace(array(ASSET . DS, '\\'), array("", '/'), $file->path); ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
       </tr>

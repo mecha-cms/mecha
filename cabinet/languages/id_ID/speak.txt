@@ -293,10 +293,15 @@ pending: Tertunda
 months: Januari,Februari,Maret,April,Mei,Juni,Juli,Agustus,September,Oktober,November,Desember
 days: Minggu,Senin,Selasa,Rabu,Kamis,Jum&rsquo;at,Sabtu
 
+months_short: Jan,Feb,Mar,Apr,Mei,Jun,Jul,Agt,Sep,Okt,Nov,Des
+days_short: Min,Sen,Sel,Rab,Kam,Jum,Sab
+
 
 # ---------
 #  ACTIONS
 # ---------
+
+compose: Tulis
 
 ok: Oke
 cancel: Batal
@@ -460,8 +465,6 @@ manager:
   title_new_article: Artikel Baru
   title_new_page: Halaman Baru
   title_new_field: Bidang Baru
-
-  title_compose: Tulis
 
   title_custom_css_and_js: CSS dan JavaScript Kustom
 

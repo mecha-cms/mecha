@@ -7,16 +7,16 @@
   <div class="tab-content" id="tab-content-1">
     <h3 class="media-head"><?php $shield = Shield::info($config->shield); echo $speak->shield; ?>: <?php echo $shield->name; ?></h3>
     <p><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($shield->author)->to_encoded_html; ?></p>
-    <?php if($pages): ?>
+    <?php if($files): ?>
     <table class="table-bordered table-full">
       <colgroup>
         <col>
         <col style="width:2.6em;">
       </colgroup>
       <tbody>
-        <?php foreach($pages as $file): ?>
+        <?php foreach($files as $file): ?>
         <tr>
-          <td><?php echo $file->name; ?></td>
+          <td><?php echo basename($file->path); ?></td>
           <td class="text-center"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/repair/file:' . str_replace(array(SHIELD . DS . $config->shield . DS, '\\'), array("", '/'), $file->path); ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
         </tr>
         <?php endforeach; ?>

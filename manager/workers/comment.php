@@ -1,22 +1,22 @@
 <?php echo Notify::read(); ?>
-<?php if($pages): ?>
+<?php if($responses): ?>
 <ol class="comment-list">
-  <?php foreach($pages as $comment): ?>
-  <li class="comment" id="comment-<?php echo $comment->id; ?>">
+  <?php foreach($responses as $response): ?>
+  <li class="comment" id="comment-<?php echo $response->id; ?>">
     <div class="comment-header">
-      <?php if($comment->url != '#'): ?>
-      <a class="comment-name" href="<?php echo $comment->url; ?>" rel="nofollow" target="_blank"><?php echo $comment->name; ?></a>
+      <?php if($response->url != '#'): ?>
+      <a class="comment-name" href="<?php echo $response->url; ?>" rel="nofollow" target="_blank"><?php echo $response->name; ?></a>
       <?php else: ?>
-      <span class="comment-name"><?php echo $comment->name; ?></span>
+      <span class="comment-name"><?php echo $response->name; ?></span>
       <?php endif; ?>
       <span class="comment-time">
-        <time datetime="<?php echo Date::format($comment->time, 'c'); ?>"><?php echo Date::format($comment->time, 'Y/m/d H:i:s'); ?></time>
-        <a href="<?php echo $comment->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow" target="_blank">#</a>
+        <time datetime="<?php echo $response->date->W3C; ?>"><?php echo Date::format($response->time, 'Y/m/d H:i:s'); ?></time>
+        <a href="<?php echo $response->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow" target="_blank">#</a>
       </span>
     </div>
-    <div class="comment-body"><?php echo $comment->message; ?></div>
+    <div class="comment-body"><?php echo $response->message; ?></div>
     <div class="comment-footer">
-      <?php Weapon::fire('comment_footer', array($comment, $article = false)); ?>
+      <?php Weapon::fire('comment_footer', array($response, $article = false)); ?>
     </div>
   </li>
   <?php endforeach; ?>

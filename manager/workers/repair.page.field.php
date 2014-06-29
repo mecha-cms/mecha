@@ -15,12 +15,12 @@ if( ! empty($fields)) {
             $value['value'] = "";
         }
         if( ! isset($value['scope']) || isset($value['scope']) && $value['scope'] == 'all') {
-            $value['scope'] = $config->editor_type;
+            $value['scope'] = $config->file_type;
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
-        if($value['type'] == 'text' && $value['scope'] == $config->editor_type) {
+        if($value['type'] == 'text' && $value['scope'] == $config->file_type) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -28,7 +28,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'summary' && $value['scope'] == $config->editor_type) {
+        if($value['type'] == 'summary' && $value['scope'] == $config->file_type) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -36,7 +36,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'boolean' && $value['scope'] == $config->editor_type) {
+        if($value['type'] == 'boolean' && $value['scope'] == $config->file_type) {
             $html .= '<div class="grid-group">';
             $html .= '<span class="grid span-1"></span>';
             $html .= '<span class="grid span-5">';
@@ -44,7 +44,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</div>';
         }
-        if($value['type'] == 'option' && $value['scope'] == $config->editor_type) {
+        if($value['type'] == 'option' && $value['scope'] == $config->file_type) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -62,7 +62,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['scope'] == $config->editor_type) {
+        if($value['scope'] == $config->file_type) {
             $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
         }
     }

@@ -171,7 +171,7 @@ class Config {
         } else {
             if(strpos($key, '.') !== false) {
                 $value = Mecha::GVR($words, $key, false);
-                return $value ? vsprintf($value, $vars): "";
+                return $value ? vsprintf($value, $vars) : "";
             }
             return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : Mecha::O($words[$key]);
         }
@@ -195,7 +195,7 @@ class Config {
         // Extract the configuration file
         $config = include STATE . DS . 'repair.config.php';
         if($file = File::exist(STATE . DS . 'config.txt')) {
-            $config = array_replace_recursive($config, unserialize(File::open($file)->read()));
+            $config = array_replace_recursive($config, File::open($file)->unserialize());
         }
 
         // Define some default variables
@@ -212,10 +212,12 @@ class Config {
         $config['tag_query'] = "";
         $config['archive_query'] = "";
         $config['search_query'] = "";
-        $config['page'] = false;
-        $config['pages'] = false;
+        $config['articles'] = $config['article'] = false;
+        $config['pages'] = $config['page'] = false;
+        $config['responses'] = $config['response'] = false;
+        $config['files'] = $config['file'] = false;
         $config['pagination'] = false;
-        $config['cargo'] = $config['page'] ? $config['page']->content : false;
+        $config['cargo'] = false;
 
         $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
         $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));
@@ -232,9 +234,6 @@ class Config {
         } else {
             Guardian::abort('Language file not found.');
         }
-
-        $config['speak']['months'] = explode(',', $config['speak']['months']);
-        $config['speak']['days'] = explode(',', $config['speak']['days']);
 
         self::$bucket = $config;
 

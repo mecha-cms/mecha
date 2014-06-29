@@ -4,9 +4,9 @@ return array(
 
     // General
     'timezone' => 'Asia/Jakarta',
-    'charset' => 'UTF-8',
+    'charset' => 'utf-8',
     'language' => 'en_US',
-    'language_direction' => 'LTR',
+    'language_direction' => 'ltr',
     'shield' => 'normal',
     'per_page' => 7,
     'comments' => true,
@@ -72,4 +72,5 @@ return array(
         'page_custom_css' => "<style media=\"screen\">\n\n</style>",
         'page_custom_js' => "<script>\n\n</script>"
     )
+
 );

@@ -24,9 +24,7 @@ define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
 define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
 
 define('SEPARATOR', '====');
-define('DOCTYPE', '<!DOCTYPE html>');
-define('INDENT', '  ');
-define('EE_SUFFIX', '>');
+define('ES', '>');
 
 include SYSTEM . DS . 'ignite.php';
 include SYSTEM . DS . 'launch.php';

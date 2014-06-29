@@ -293,10 +293,15 @@ pending: Pending
 months: January,February,March,April,May,June,July,August,September,October,November,December
 days: Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday
 
+months_short: Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
+days_short: Sun,Mon,Tue,Wed,Thu,Fri,Sat
+
 
 # ---------
 #  ACTIONS
 # ---------
+
+compose: Compose
 
 ok: OK
 cancel: Cancel
@@ -460,8 +465,6 @@ manager:
   title_new_article: New Article
   title_new_page: New Page
   title_new_field: New Field
-
-  title_compose: Compose
 
   title_custom_css_and_js: Custom CSS and JavaScript
 

@@ -1,4 +1,4 @@
-<?php if($config->editor_mode != 'ignite' && $config->editor_type != 'page'): ?>
+<?php if($config->action_state != 'ignite' && $config->file_type != 'page'): ?>
 <?php if($cache['status'] == 'published'): ?>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->date; ?></span>
@@ -33,7 +33,7 @@ foreach(Get::tags() as $tag) {
 }
 
 ?>
-<?php if($config->editor_type == 'article' && count($tags) > 1): ?>
+<?php if($config->file_type == 'article' && count($tags) > 1): ?>
 <div class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->tags; ?></span>
   <span class="grid span-5"><?php echo implode("", $tags); ?></span>
@@ -43,6 +43,6 @@ foreach(Get::tags() as $tag) {
   <span class="grid span-1 form-label"><?php echo $speak->author; ?></span>
   <span class="grid span-5"><input name="author" type="text" value="<?php echo $cache['author']; ?>"></span>
 </label>
-<?php if($config->editor_type == 'page'): ?>
+<?php if($config->file_type == 'page'): ?>
 <input name="date" type="hidden" value="<?php echo $cache['date']; ?>">
 <?php endif; ?>
