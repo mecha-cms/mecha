@@ -28,7 +28,7 @@ body {border-top:5px solid}
 
 /* HEADER */
 
-.blog-header {padding:5% 0}
+.blog-header {margin:5% 0}
 .blog-title {margin:0}
 .blog-description {margin:1.3846153846153846em 0 0}
 
@@ -99,14 +99,14 @@ body {border-top:5px solid}
   text-overflow:ellipsis;
 }
 
-.blog-navigation .selected a {
+.blog-navigation .selected > a {
   background-color:#365D98;
   color:white;
 }
 
-.blog-navigation .selected a:focus,
-.blog-navigation .selected a:hover {background-color:#3A64A4}
-.blog-navigation .selected a:active {background-color:#32568C}
+.blog-navigation .selected > a:focus,
+.blog-navigation .selected > a:hover {background-color:#3A64A4}
+.blog-navigation .selected > a:active {background-color:#32568C}
 
 .blog-navigation li ul {
   line-height:34px;
@@ -151,6 +151,9 @@ body {border-top:5px solid}
   overflow:hidden;
 }
 
+.post {overflow:hidden}
+.post + .post {margin-top:5%}
+
 .post-time {
   margin:0 0 1.3846153846153846em;
   text-transform:uppercase;
@@ -158,12 +161,7 @@ body {border-top:5px solid}
   color:#AAA;
 }
 
-.post-time-index {font-size:80%}
-
-.post {
-  margin:0 0 5%;
-  overflow:hidden;
-}
+.post-index .post-time {font-size:80%}
 
 .post-title {margin:0 0 .7em}
 .post-footer {margin:5% 0 0}
@@ -178,8 +176,11 @@ body {border-top:5px solid}
 
 .blog-pager {
   overflow:hidden;
-  padding-top:5%;
+  margin-top:5%;
 }
+
+.blog-pager-prev {float:left}
+.blog-pager-next {float:right}
 
 
 /* COMMENTS */
@@ -255,10 +256,14 @@ body {border-top:5px solid}
 /* FOOTER */
 
 .blog-footer {
-  padding:5% 0;
+  margin:5% 0;
   clear:both;
   overflow:hidden;
 }
+
+.blog-footer-left {float:left}
+.blog-footer-right {float:right}
+
 
 /* WIDGET OVERRIDES */
 
@@ -385,12 +390,12 @@ body {border-top:5px solid}
     margin:0 0 5%;
   }
   .blog-footer {text-align:center}
-  .blog-footer .pull-left,
-  .blog-footer .pull-right {
+  .blog-footer-left,
+  .blog-footer-right {
     float:none;
     display:inline;
   }
-  .blog-footer .pull-left:after {
+  .blog-footer-left:after {
     content:"\2013";
     color:#AAA;
     margin:0 1em;

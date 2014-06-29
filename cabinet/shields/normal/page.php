@@ -1,6 +1,5 @@
 <?php include 'header.php'; ?>
 <?php include 'sidebar.php'; ?>
-
 <div class="blog-posts">
   <article class="post" id="post-<?php echo $page->id; ?>">
     <h2 class="post-title"><?php echo $page->title; ?></h2>
@@ -10,5 +9,4 @@
     </footer>
   </article>
 </div>
-
 <?php include 'footer.php'; ?>

@@ -30,6 +30,8 @@
  *  #8EAB1A |         |
  *  #CF3030 |         |
  *  #FFDE76 |         |
+ *          |         |
+ *  #00A2D1 |         |
  *
  */
 
@@ -296,7 +298,12 @@ button:active,
 input[type="button"]:active,
 input[type="reset"]:active,
 input[type="submit"]:active,
-.btn:active {background-color:#2F2F2F}
+.btn:active {
+  background-color:#2F2F2F;
+  -webkit-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+  -moz-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+  box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+}
 
 .btn-action,
 .btn-primary {background-color:#365D98}
@@ -657,7 +664,7 @@ table:first-child,
 .text-begin,
 .text-construct,
 .text-success {color:#4B9343}
-.text-info {color:#6AAAC2}
+.text-info {color:#00A2D1}
 .text-warning {color:#DB582C}
 .text-danger,
 .text-destruct,
@@ -699,6 +706,8 @@ img {
   color:white;
   overflow:hidden;
 }
+
+.message > .fa.fa-fw:first-child {margin-left:-.2em}
 
 .message code {
   color:inherit;
