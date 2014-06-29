@@ -1,6 +1,7 @@
 Title: Facebook Open Graph
-Author: Taufik Nurrohman <http://latitudu.com>
-Version: 1.0.0
+Author: Taufik Nurrohman
+URL: http://latitudu.com
+Version: 1.1.0
 
 ====
 
