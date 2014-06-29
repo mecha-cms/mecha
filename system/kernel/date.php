@@ -26,10 +26,12 @@ class Date {
      */
 
     public static function format($date, $format = 'Y-m-d H:i:s') {
-        if(preg_match('#^([0-9]{4,})\-([0-9]{2})\-([0-9]{2})-([0-9]{2})\-([0-9]{2})\-([0-9]{2})$#', $date, $m)) {
-            $date = $m[1] . '-' . $m[2] . '-' . $m[3] . ' ' . $m[4] . ':' . $m[5] . ':' . $m[6];
+        if(is_numeric($date)) return date($format, $date);
+        $m = explode('-', $date);
+        if(strlen($date) >= 19 && count($m) == 6) {
+            $date = $m[0] . '-' . $m[1] . '-' . $m[2] . ' ' . $m[3] . ':' . $m[4] . ':' . $m[5];
         }
-        return is_numeric($date) ? date($format, $date) : date($format, strtotime($date));
+        return date($format, strtotime($date));
     }
 
     /**
@@ -54,26 +56,47 @@ class Date {
      *
      */
 
-    public static function extract($date) {
+    public static function extract($date, $output = null) {
         $speak = Config::speak();
-        list($year, $month, $day, $hour, $minute, $second) = explode('.', self::format($date, 'Y.m.d.H.i.s'));
-        $month_names = (array) $speak->months;
-        $day_names = (array) $speak->days;
+        $month_names = explode(',', $speak->months);
+        $day_names = explode(',', $speak->days);
+        $month_names_short = explode(',', $speak->months_short);
+        $day_names_short = explode(',', $speak->days_short);
+        list($year, $year_short, $month, $month_number, $day, $day_number, $hour_24, $hour_12, $minute, $second, $am_pm) = explode('.', self::format($date, 'Y.y.m.n.d.j.H.h.i.s.A'));
         $date_GMT = new DateTime(self::format($date, 'c'));
         $date_GMT->setTimeZone(new DateTimeZone('UTC'));
-        return array(
+        $month_name = $month_names[(int) $month - 1];
+        $day_name = $day_names[(int) self::format($date, 'w')];
+        $month_name_short = $month_names_short[(int) $month - 1];
+        $day_name_short = $day_names_short[(int) self::format($date, 'w')];
+        $results = array(
             'unix' => (int) self::format($date, 'U'),
             'W3C' => self::format($date, 'c'),
             'GMT' => $date_GMT->format('Y-m-d H:i:s'),
             'year' => $year,
-            'month' => $month_names[(int) $month - 1],
-            'day' => $day_names[self::format($date, 'w')],
-            'month_number' => $month,
-            'day_number' => $day,
-            'hour' => $hour,
+            'year_short' => $year_short,
+            'month' => $month,
+            'day' => $day,
+            'month_number' => (int) $month_number,
+            'day_number' => (int) $day_number,
+            'month_name' => $month_name,
+            'day_name' => $day_name,
+            'month_name_short' => $month_name_short,
+            'day_name_short' => $day_name_short,
+            'hour' => $hour_24,
+            'hour_12' => $hour_12,
+            'hour_24' => $hour_24, // alias for `hour`
             'minute' => $minute,
-            'second' => $second
+            'second' => $second,
+            'AM_PM' => $am_pm,
+            'FORMAT_1' => $day_name . ', ' . $day . ' ' . $month_name . ' ' . $year,
+            'FORMAT_2' => $month_name . ' ' . $day . ', ' . $year,
+            'FORMAT_3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
+            'FORMAT_4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $am_pm,
+            'FORMAT_5' => $hour_24 . ':' . $minute,
+            'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $am_pm
         );
+        return ! is_null($output) ? $results[$output] : $results;
     }
 
     /**
