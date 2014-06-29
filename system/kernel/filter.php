@@ -30,7 +30,7 @@ class Filter {
      */
 
     public static function add($name, $function, $priority = 10) {
-        // Kill duplicate filters
+        // Kill duplicates
         if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
             foreach(self::$filters[$name] as $filter) {
                 if($filter['function'] == $function) return true;
@@ -64,13 +64,14 @@ class Filter {
      */
 
     public static function apply($name, $value) {
+        $args = array_slice(func_get_args(), 1);
         if( ! isset(self::$filters[$name])) {
             self::$filters[$name] = false;
             return $value;
         }
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
         foreach($filters as $filter => $cargo) {
-            $value = call_user_func($cargo['function'], $value);
+            $value = call_user_func_array($cargo['function'], $args);
         }
         return $value;
     }
