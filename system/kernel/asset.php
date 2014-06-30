@@ -25,7 +25,7 @@
 
 class Asset {
 
-    private static function tracePath($path) {
+    private static function pathTrace($path) {
         $config = Config::get();
         if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
             return $_path;
@@ -40,10 +40,10 @@ class Asset {
     // Get public asset URL
     public static function url($path) {
         $config = Config::get();
-        if(strpos(self::tracePath($path), ROOT) === false) {
-            return Filter::apply('asset:url', self::tracePath($path));
+        if(strpos(self::pathTrace($path), ROOT) === false) {
+            return Filter::apply('asset:url', self::pathTrace($path));
         }
-        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::tracePath($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::tracePath($path)) : ""));
+        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::pathTrace($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::pathTrace($path)) : ""));
     }
 
     // Return the HTML JavaScript of asset

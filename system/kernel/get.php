@@ -630,7 +630,7 @@ class Get {
              * Start re-writing ...
              */
 
-            foreach(Converter::strEval($results['fields']) as $key => $value) {
+            foreach($results['fields'] as $key => $value) {
                 $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
             }
 
@@ -771,7 +771,6 @@ class Get {
             $results = self::pageExtract($path);
             $parts = explode(':', fgets($handle, 4096), 2);
             fclose($handle);
-            $results['date'] = Date::extract($results['time']);
             $results['id'] = (int) Date::format($results['time'], 'U');
             $results['url'] = $config->url . $connector . $results['slug'];
             $results['title'] = Filter::apply($filter_prefix . 'title', Filter::apply('title', (isset($parts[1]) ? trim($parts[1]) : '?')));
@@ -981,7 +980,7 @@ class Get {
         }
         if( ! $path || ! File::exist($path)) return false;
         $results['date'] = Date::extract($results['time']);
-        $results = $results + Text::toPage($path, true, 'comment:');
+        $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
         $results['message'] = Filter::apply('message', $results['content']);

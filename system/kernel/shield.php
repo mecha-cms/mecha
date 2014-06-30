@@ -8,7 +8,7 @@
 
 class Shield {
 
-    private static function tracePath($name) {
+    private static function pathTrace($name) {
         $name = rtrim($name, '\\/') . '.php';
         if($file = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
             return $file;
@@ -104,17 +104,9 @@ class Shield {
 
     public static function attach($name, $minify = true, $cacheable = false) {
 
-        $info = array(
-            'data' => array(
-                'name' => $name,
-                'minify' => $minify,
-                'cacheable' => $cacheable
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $G = array('data' => array('name' => $name, 'minify' => $minify, 'cacheable' => $cacheable));
 
-        Weapon::fire('before_shield_config_redefine', array($info));
+        Weapon::fire('before_shield_config_redefine', array($G, $G));
 
         $config = Config::get();
         $speak = Config::speak();
@@ -130,14 +122,14 @@ class Shield {
         $manager = Guardian::happy();
         $base = explode('-', $name, 2);
 
-        Weapon::fire('after_shield_config_redefine', array($info));
+        Weapon::fire('after_shield_config_redefine', array($G, $G));
 
-        if($_file = File::exist(self::tracePath($name))) {
+        if($_file = File::exist(self::pathTrace($name))) {
             $shield = $_file;
-        } elseif($_file = File::exist(self::tracePath($base[0]))) {
+        } elseif($_file = File::exist(self::pathTrace($base[0]))) {
             $shield = $_file;
         } else {
-            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::tracePath($name) . '</code>')));
+            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::pathTrace($name) . '</code>')));
         }
 
         $cache = CACHE . DS . str_replace('/', '.', trim($_SERVER['REQUEST_URI'], '\\/')) . '.cache.txt';
@@ -149,16 +141,16 @@ class Shield {
 
         ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
-        Weapon::fire('shield_before');
+        Weapon::fire('shield_before', array($G, $G));
 
-        require $shield;
+        require Filter::apply('shield:path', $shield);
 
-        Weapon::fire('shield_after');
+        Weapon::fire('shield_after', array($G, $G));
 
         if($cacheable) {
-            $info['data']['cache'] = $cache;
-            File::write(ob_get_contents())->saveTo($cache);
-            Weapon::fire('on_cache_construct', array($info));
+            $G['data']['cache'] = ob_get_contents();
+            File::write($G['data']['cache'])->saveTo($cache);
+            Weapon::fire('on_cache_construct', array($G, $G));
         }
 
         ob_end_flush();
@@ -184,16 +176,9 @@ class Shield {
 
     public static function abort($name = null, $minify = true) {
 
-        $info = array(
-            'data' => array(
-                'name' => $name,
-                'minify' => $minify
-            ),
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
+        $G = array('data' => array('name' => $name, 'minify' => $minify));
 
-        Weapon::fire('before_shield_config_redefine', array($info));
+        Weapon::fire('before_shield_config_redefine', array($G, $G));
 
         $config = Config::get();
         $speak = Config::speak();
@@ -208,7 +193,7 @@ class Shield {
         $pager = $config->pagination;
         $manager = Guardian::happy();
 
-        Weapon::fire('after_shield_config_redefine', array($info));
+        Weapon::fire('after_shield_config_redefine', array($G, $G));
 
         if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
             $shield = SHIELD . DS . $config->shield . DS . $name . '.php';
@@ -220,11 +205,11 @@ class Shield {
 
         ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
-        Weapon::fire('shield_before');
+        Weapon::fire('shield_before', array($G, $G));
 
-        require $shield;
+        require Filter::apply('shield:path', $shield);
 
-        Weapon::fire('shield_after');
+        Weapon::fire('shield_after', array($G, $G));
 
         ob_end_flush();
 

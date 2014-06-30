@@ -159,7 +159,7 @@ class Guardian {
             'this_is_email' => filter_var($input, FILTER_VALIDATE_EMAIL),
             'this_is_boolean' => filter_var($input, FILTER_VALIDATE_BOOLEAN),
             'this_is_correct' => $input === $compare ? true : false,
-            'this_is_regex' => preg_match('#^((?:(?:[^?+*{}()[\]\\|]+|\\.|\[(?:\^?\\.|\^[^\\]|[^\\^])(?:[^\]\\]+|\\.)*\]|\((?:\?[:=!]|\?<[=!]|\?>)?(?1)??\)|\(\?(?:R|[+-]?\d+)\))(?:(?:[?+*]|\{\d+(?:,\d*)?\})[?+]?)?|\|)*)$#', $input)
+            'this_is_regex' => @preg_match($input, null) !== false
         );
     }
 

@@ -66,6 +66,7 @@ class Weapon {
      */
 
     public static function fire($name, $arguments = array(), $return = false) {
+        $results = "";
         if(isset(self::$armaments[$name])) {
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'priority')->vomit();
             foreach($weapons as $weapon => $cargo) {
@@ -73,11 +74,14 @@ class Weapon {
                     $arguments = $cargo['arguments'];
                 }
                 if($return) {
-                    return call_user_func_array($cargo['function'], $arguments);
+                    $output = call_user_func_array($cargo['function'], $arguments);
+                    if(is_array($output) || is_object($output)) return $output;
+                    $results .= $output;
                 } else {
                     call_user_func_array($cargo['function'], $arguments);
                 }
             }
+            if($return && ! empty($results)) return $results;
         } else {
             self::$armaments[$name] = false;
             if($return) return false;
