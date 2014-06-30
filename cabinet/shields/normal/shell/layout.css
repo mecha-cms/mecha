@@ -51,7 +51,7 @@ body {border-top:5px solid}
 }
 
 .blog-sidebar .widget {margin:0 0 1.3846153846153846em}
-.blog-sidebar h4 {margin:0 0 .5em}
+.blog-sidebar h4 {margin:0}
 
 .blog-sidebar-toggle {
   position:absolute;
@@ -144,7 +144,7 @@ body {border-top:5px solid}
 
 /* POSTS */
 
-.blog-posts {
+.blog-sidebar + .blog-posts {
   float:left;
   width:70%;
   padding:0 0 0 5%;
@@ -275,11 +275,12 @@ body {border-top:5px solid}
 }
 
 .widget ul li {
-  padding:5px 0;
+  padding:.38461538461538464em 0;
   border-bottom:1px solid;
 }
 
 .widget ul li:first-child {border-top:1px solid}
+.widget-content {margin-top:.6em}
 .widget-archive ul li,
 .widget-archive ul li:first-child {
   padding:0;
@@ -366,6 +367,9 @@ body {border-top:5px solid}
     min-width:0;
     background:none;
     border:none;
+    -webkit-box-shadow:none;
+    -moz-box-shadow:none;
+    box-shadow:none;
   }
   .blog-navigation li ul a {
     margin:2px 0 0;

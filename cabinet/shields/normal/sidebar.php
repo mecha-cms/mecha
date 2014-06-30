@@ -1,3 +1,6 @@
+<a href="#toggle" class="blog-sidebar-toggle" id="toggle">
+  <i class="fa fa-bars"></i>
+</a>
 <aside class="blog-sidebar">
   <div class="widget-wrapper">
     <div class="widget-content">
@@ -31,6 +34,3 @@
     </div>
   </div>
 </aside>
-<a href="#toggle" class="blog-sidebar-toggle" id="toggle">
-  <i class="fa fa-bars"></i>
-</a>

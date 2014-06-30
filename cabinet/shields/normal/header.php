@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html dir="<?php echo $config->language_direction; ?>" class="page-<?php echo $config->page_type; ?>">
   <head>
-    <?php Weapon::fire('before'); ?>
+    <?php Weapon::fire('SHIPMENT_REGION_TOP'); ?>
     <?php Weapon::fire('shell_before'); ?>
-    <link href="<?php echo $config->protocol; ?>maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
-    <?php echo Asset::stylesheet(array('shell/atom.css', 'shell/layout.css')); ?>
+    <?php echo Asset::stylesheet(array(
+        $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
+        'shell/atom.css',
+        'shell/layout.css'
+    )); ?>
     <?php if(isset($page->css)) echo $page->css; ?>
     <?php Weapon::fire('shell_after'); ?>
   </head>
