@@ -187,6 +187,6 @@ Weapon::add('meta', function() {
     echo Filter::apply('meta', $html);
 }, 30);
 
-Weapon::add('before', function() {
+Weapon::add('SHIPMENT_REGION_TOP', function() {
     Weapon::fire('meta');
 }, 10);

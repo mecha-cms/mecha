@@ -265,7 +265,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 
 Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->manager->slug . '/(article|page)/repair/id:(:num)'), function($path = "", $id = "") use($config, $speak) {
 
-    Weapon::add('sword_after', function() {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/sword/editor.js');
     }, 11);
 
@@ -627,7 +627,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
 
     $G = array('data' => Config::get('files'));
 
-    Weapon::add('sword_after', function() {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/sword/row-tag.js');
         echo '<script>
 (function($, base) {
@@ -696,7 +696,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         'cargo' => DECK . DS . 'workers' . DS . 'menu.php'
     ));
 
-    Weapon::add('sword_after', function() {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($) {
     new MTE($(\'textarea[name="content"]\')[0], {
@@ -1163,7 +1163,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
 
-    Weapon::add('sword_after', function() {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($) {
     var $area = $(\'textarea[name="message"]\'), languages = $area.data(\'mteLanguages\');
@@ -1307,7 +1307,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
     ));
 
-    Weapon::add('sword_after', function() {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($) {
     $.slugger($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
@@ -1465,7 +1465,7 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
                 Guardian::kick($config->manager->slug . '/shield');
             }
         } else {
-            Weapon::add('sword_after', function() {
+            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>
 (function($) {
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
@@ -1520,7 +1520,7 @@ Route::accept($config->manager->slug . '/shield/repair/file:(:all)', function($n
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
 
-    Weapon::add('sword_after', function() use($file) {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
         echo '<script>
 (function($) {
     new MTE($(\'textarea[name="content"]\')[0], {
@@ -1623,7 +1623,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 }
             }
         } else {
-            Weapon::add('sword_after', function() {
+            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>
 (function($) {
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
@@ -1824,7 +1824,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function() use($conf
                 Guardian::kick(Config::get('manager')->slug . '/backup');
             }
         } else {
-            Weapon::add('sword_after', function() {
+            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>
 (function($) {
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
