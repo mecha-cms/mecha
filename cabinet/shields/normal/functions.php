@@ -17,3 +17,5 @@ function article_tag_links($connector) {
     }
     return "";
 }
+
+Widget::add('tagLinks', 'article_tag_links');

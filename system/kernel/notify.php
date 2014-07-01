@@ -21,28 +21,35 @@
 class Notify {
 
     private static $notify = 'mecha_notification';
+
+    private static $config = array();
     private static $errors = 0;
 
-    public static function add($type = 'info', $text = "", $icon = '<i class="fa fa-fw fa-microphone"></i> ', $tag = 'p') {
+    public static function add($type = 'info', $text = "", $icon = null, $tag = 'p') {
+        if(is_null($icon)) $icon = self::$config['icons']['default'];
         Session::set(self::$notify, Session::get(self::$notify) . '<' . $tag . ' class="message message-' . $type . ' cl cf">' . $icon . $text . '</' . $tag . '>');
     }
 
-    public static function success($text = "", $icon = '<i class="fa fa-fw fa-check"></i> ', $tag = 'p') {
+    public static function success($text = "", $icon = null, $tag = 'p') {
+        if(is_null($icon)) $icon = self::$config['icons']['success'];
         self::add('success', $text, $icon, $tag);
         Guardian::forget();
     }
 
-    public static function info($text = "", $icon = '<i class="fa fa-fw fa-info-circle"></i> ', $tag = 'p') {
+    public static function info($text = "", $icon = null, $tag = 'p') {
+        if(is_null($icon)) $icon = self::$config['icons']['info'];
         self::add('info', $text, $icon, $tag);
     }
 
-    public static function warning($text = "", $icon = '<i class="fa fa-fw fa-exclamation-triangle"></i> ', $tag = 'p') {
+    public static function warning($text = "", $icon = null, $tag = 'p') {
+        if(is_null($icon)) $icon = self::$config['icons']['warning'];
         self::add('warning', $text, $icon, $tag);
         Guardian::memorize();
         self::$errors++;
     }
 
-    public static function error($text = "", $icon = '<i class="fa fa-fw fa-times"></i> ', $tag = 'p') {
+    public static function error($text = "", $icon = null, $tag = 'p') {
+        if(is_null($icon)) $icon = self::$config['icons']['error'];
         self::add('error', $text, $icon, $tag);
         Guardian::memorize();
         self::$errors++;
@@ -60,6 +67,13 @@ class Notify {
 
     public static function clear() {
         Session::set(self::$notify, "");
+    }
+
+    public static function configure($key, $value) {
+        if( ! isset(self::$config[$key])) self::$config[$key] = array();
+        foreach($value as $k => $v) {
+            self::$config[$key][$k] = $v;
+        }
     }
 
 }

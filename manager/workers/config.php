@@ -352,7 +352,7 @@
         foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
             $shield = basename($folder);
             $info = Shield::info($shield);
-            echo '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . '</option>';
+            echo strpos($shield, '__') !== 0 ? '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . '</option>' : "";
         }
 
         ?>
@@ -360,7 +360,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?> (Global)</span>
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?> (<?php echo $speak->all; ?>)</span>
       <span class="grid span-4"><input name="per_page" type="number" value="<?php echo $cache['per_page']; ?>"></span>
     </label>
     <div class="grid-group">

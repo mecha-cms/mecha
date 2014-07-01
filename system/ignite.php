@@ -18,17 +18,14 @@ session_start();
  * --------------------------------------------------------------------
  */
 
-function clean_request(&$value) {
+$gpc = array(&$_GET, &$_POST, &$_REQUEST, &$_COOKIE);
+
+array_walk_recursive($gpc, function(&$value) {
     $value = str_replace("\r", "", $value);
     if(get_magic_quotes_gpc()) {
         $value = stripslashes($value);
     }
-}
-
-array_walk_recursive($_GET, 'clean_request');
-array_walk_recursive($_POST, 'clean_request');
-array_walk_recursive($_COOKIE, 'clean_request');
-array_walk_recursive($_REQUEST, 'clean_request');
+});
 
 
 /**
@@ -36,18 +33,46 @@ array_walk_recursive($_REQUEST, 'clean_request');
  * ---------------
  */
 
-foreach(glob(SYSTEM . DS . 'kernel' . DS . '*.php') as $workers) {
-    spl_autoload_register(function() use($workers) {
-        include_once $workers;
-    });
-}
+spl_autoload_register(function($worker) {
+    $path = SYSTEM . DS . 'kernel' . DS . strtolower($worker) . '.php';
+    if(file_exists($path)) include $path;
+});
 
-$config = Config::get();
-$speak = Config::speak();
+
+/**
+ * First Installation
+ * ------------------
+ */
 
 if(File::exist(ROOT . DS . 'install.php')) {
     Guardian::kick('install.php');
 }
+
+
+/**
+ * Load the Configuration Data
+ * ---------------------------
+ */
+
+Config::load();
+
+
+/**
+ * Notification Settings
+ * ---------------------
+ */
+
+Notify::configure('icons', array(
+    'default' => '<i class="fa fa-fw fa-microphone"></i> ',
+    'success' => '<i class="fa fa-fw fa-check"></i> ',
+    'info' => '<i class="fa fa-fw fa-info-circle"></i> ',
+    'warning' => '<i class="fa fa-fw fa-exclamation-triangle"></i> ',
+    'error' => '<i class="fa fa-fw fa-times"></i> '
+));
+
+
+$config = Config::get();
+$speak = Config::speak();
 
 
 /**

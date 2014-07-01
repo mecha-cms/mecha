@@ -153,6 +153,8 @@ class Shield {
             Weapon::fire('on_cache_construct', array($G, $G));
         }
 
+        Guardian::forget();
+
         ob_end_flush();
 
         exit;
@@ -177,6 +179,8 @@ class Shield {
     public static function abort($name = null, $minify = true) {
 
         $G = array('data' => array('name' => $name, 'minify' => $minify));
+
+        Config::set('page_type', '404');
 
         Weapon::fire('before_shield_config_redefine', array($G, $G));
 
@@ -210,6 +214,8 @@ class Shield {
         require Filter::apply('shield:path', $shield);
 
         Weapon::fire('shield_after', array($G, $G));
+
+        Guardian::forget();
 
         ob_end_flush();
 

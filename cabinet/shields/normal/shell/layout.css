@@ -22,7 +22,6 @@ body {border-top:5px solid}
 .blog-wrapper {
   width:900px;
   margin:0 auto;
-  overflow:hidden;
 }
 
 
@@ -178,6 +177,8 @@ body {border-top:5px solid}
   overflow:hidden;
   margin-top:5%;
 }
+
+.blog-pager a .fa {font-size:100%}
 
 .blog-pager-prev {float:left}
 .blog-pager-next {float:right}
@@ -377,7 +378,8 @@ body {border-top:5px solid}
     color:white;
   }
   .blog-sidebar,
-  .blog-posts {
+  .blog-posts,
+  .blog-sidebar + .blog-posts {
     float:none;
     display:block;
     clear:both;

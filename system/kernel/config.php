@@ -103,23 +103,23 @@ class Config {
      *
      */
 
-    public static function merge($key, $array = array()) {
-        if(is_object($array)) {
-            $array = Mecha::A($array);
+    public static function merge($key, $value = array()) {
+        if(is_object($value)) {
+            $value = Mecha::A($value);
         }
         if( ! isset(self::$bucket[$key])) {
             if(strpos($key, '.') !== false) {
-                Mecha::SVR(self::$bucket, $key);
+                Mecha::SVR(self::$bucket, $key, $value);
             } else {
-                self::$bucket[$key] = $array;
+                self::$bucket[$key] = $value;
             }
         } else {
             if(strpos($key, '.') !== false) {
                 $cargo = array();
-                Mecha::SVR($cargo, $key, $array);
+                Mecha::SVR($cargo, $key, $value);
                 self::$bucket = array_merge_recursive(self::$bucket, $cargo);
             } else {
-                self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $array);
+                self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $value);
             }
         }
     }
@@ -168,13 +168,12 @@ class Config {
         }
         if(is_null($key)) {
             return Mecha::O($words);
-        } else {
-            if(strpos($key, '.') !== false) {
-                $value = Mecha::GVR($words, $key, false);
-                return $value ? vsprintf($value, $vars) : "";
-            }
-            return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : Mecha::O($words[$key]);
         }
+        if(strpos($key, '.') !== false) {
+            $value = Mecha::GVR($words, $key, false);
+            return $value ? vsprintf($value, $vars) : "";
+        }
+        return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : Mecha::O($words[$key]);
     }
 
     /**
@@ -240,5 +239,3 @@ class Config {
     }
 
 }
-
-Config::load(); // Load here ...

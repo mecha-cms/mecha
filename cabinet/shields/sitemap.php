@@ -3,10 +3,11 @@
 $bucket = array();
 
 if($config->total_pages > 0) {
-    foreach(Get::extract('pages') as $page) {
+    foreach(Get::pages() as $page) {
+        list($time, $kind, $slug) = explode('_', basename($page, '.' . pathinfo($page, PATHINFO_EXTENSION)));
         $bucket[] = array(
-            'url' => $config->url . '/' . $page['slug'],
-            'date' => Date::format($page['time'], 'c'),
+            'url' => $config->url . '/' . $slug,
+            'date' => Date::format($time, 'c'),
             'changefreq' => 'weekly',
             'priority' => (string) '0.5'
         );
@@ -14,10 +15,11 @@ if($config->total_pages > 0) {
 }
 
 if($config->total_articles > 0) {
-    foreach(Get::extract('articles') as $article) {
+    foreach(Get::articles() as $article) {
+        list($time, $kind, $slug) = explode('_', basename($page, '.' . pathinfo($page, PATHINFO_EXTENSION)));
         $bucket[] = array(
-            'url' => $config->url . '/' . $config->index->slug . '/' . $article['slug'],
-            'date' => Date::format($article['time'], 'c'),
+            'url' => $config->url . '/' . $config->index->slug . '/' . $slug,
+            'date' => Date::format($time, 'c'),
             'changefreq' => 'weekly',
             'priority' => (string) '1.0'
         );

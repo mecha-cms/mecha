@@ -7,7 +7,7 @@
     <div class="post-body"><?php echo $article->content; ?></div>
     <footer class="post-footer">
       <div><?php echo $speak->posted_by; ?> <a href="<?php echo $config->author_profile_url; ?>" rel="author"><?php echo $article->author; ?></a> <?php echo strtolower($speak->on) . ' ' . $article->date->FORMAT_5; ?></div>
-      <div><?php echo article_tag_links(', '); ?></div>
+      <div><?php echo Widget::tagLinks(', '); ?></div>
       <div><?php Weapon::fire('article_footer', array($article)); ?></div>
     </footer>
   </article>

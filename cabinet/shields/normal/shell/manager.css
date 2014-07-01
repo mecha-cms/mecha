@@ -232,6 +232,8 @@ textarea[name="js"] {height:300px}
   color:#AAA;
 }
 
+.pager a .fa {font-size:100%}
+
 @media (max-width:580px) {
   .tab.active {
     background-color:#365D98;
