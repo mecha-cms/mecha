@@ -21,7 +21,7 @@ class Navigator {
      *  ---------- | ------- | ----------------------------------------------------
      *  $pages     | array   | Array of files to be paginated
      *  $current   | integer | The current page offset
-     *  $current   | string  | The current page slug
+     *  $current   | string  | The current page path
      *  $perpage   | integer | Number of files to show per page request
      *  $connector | string  | Extra path to be inserted into URL
      *  ---------- | ------- | ----------------------------------------------------
@@ -88,11 +88,11 @@ class Navigator {
 
             for($i = 0; $i < $total; ++$i) {
 
-                if($current == $pages[$i]['slug']) {
+                if($pages[$i] == $current) {
 
                     // Generate next/previous URL for single page
-                    self::$bucket['prev']['url'] = isset($pages[$i - 1]) ? $base . $connector . $pages[$i - 1]['slug'] : $base;
-                    self::$bucket['next']['url'] = isset($pages[$i + 1]) ? $base . $connector . $pages[$i + 1]['slug'] : $base;
+                    self::$bucket['prev']['url'] = isset($pages[$i - 1]) ? $base . $connector . self::slug($pages[$i - 1]) : $base;
+                    self::$bucket['next']['url'] = isset($pages[$i + 1]) ? $base . $connector . self::slug($pages[$i + 1]) : $base;
 
                     // Generate next/previous text for single page
                     self::$bucket['prev']['text'] = isset($pages[$i - 1]) ? $speak->newer : $speak->home;
@@ -112,6 +112,12 @@ class Navigator {
 
         return Mecha::O(self::$bucket);
 
+    }
+
+    private static function slug($input) {
+        $base = basename($input, '.' . pathinfo($input, PATHINFO_EXTENSION));
+        $parts = explode('_', $base);
+        return isset($parts[2]) ? $parts[2] : $base;
     }
 
 }

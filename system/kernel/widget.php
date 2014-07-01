@@ -1,7 +1,8 @@
 <?php
 
-class Widget extends Weapon {
+class Widget {
 
+    private static $macros = array();
 
     /**
      * Widget Manager
@@ -105,7 +106,7 @@ class Widget extends Weapon {
         if($type == 'HIERARCHY') {
             $i = 0;
             foreach($files as $file) {
-                list($year, $month, $day) = explode('-', basename($file['path'], '.txt'));
+                list($year, $month, $day) = explode('-', basename($file, '.txt'));
                 $archives[$year][$month][] = $day;
             }
             $html  = '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy">';
@@ -193,8 +194,9 @@ class Widget extends Weapon {
             return '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
         }
         foreach($files as $file) {
-            foreach($file['kind'] as $kind) {
-                $counters[] = $kind;
+            list($_time, $_kind, $_name) = explode('_', basename($file));
+            foreach(explode(',', $_kind) as $kind) {
+                $counters[] = (int) $kind;
             }
         }
         $i = 0;
@@ -279,7 +281,7 @@ class Widget extends Weapon {
 
     public static function recentPost($total = 7, $class = 'recent') {
         $config = Config::get();
-        if( ! $files = Get::articles('DESC')) {
+        if( ! $files = Get::articles()) {
             return '<div class="widget widget-' . $class . '">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
         }
         if($class == 'random') {
@@ -289,7 +291,7 @@ class Widget extends Weapon {
         $html .= '<ul>';
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i === $count) break;
-            $article = Get::articleAnchor($files[$i]['path']);
+            $article = Get::articleAnchor($files[$i]);
             $html .= '<li' . ($config->url_current == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>';
         }
         $html .= '</ul>';
@@ -327,7 +329,7 @@ class Widget extends Weapon {
         if($config->page_type != 'article') {
             return self::randomPost($total);
         } else {
-            if( ! $files = Get::articles('DESC', 'time', 'kind:' . implode(',', (array) $config->article->kind))) {
+            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', (array) $config->article->kind))) {
                 return '<div class="widget widget-related widget-related-post">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>';
             }
             if(count($files) <= 1) {
@@ -338,8 +340,8 @@ class Widget extends Weapon {
             $html .= '<ul>';
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
-                if($files[$i]['path'] != $config->article->path) {
-                    $article = Get::articleAnchor($files[$i]['path']);
+                if($files[$i] != $config->article->path) {
+                    $article = Get::articleAnchor($files[$i]);
                     $html .= '<li><a href="' . $article->url . '">' . $article->title . '</a></li>';
                 }
             }
@@ -367,7 +369,7 @@ class Widget extends Weapon {
         if($comments = Get::comments()) {
             $html .= '<ul>';
             foreach($comments as $comment) {
-                $comment = Get::comment($comment['id']);
+                $comment = Get::comment($comment);
                 $article = Get::articleAnchor($comment->post);
                 $html .= '<li class="recent-comment-item">';
                 if($avatar_size !== false && $avatar_size > 0) {
@@ -402,17 +404,49 @@ class Widget extends Weapon {
 
 
     /**
-     * Custom Widget
-     * -------------
+     * Add a Custom Widget
+     * -------------------
      *
-     * [1]. Widget::call('my_custom_widget');
+     * [1]. Widget::add('my_custom_widget', function($a, $b, $c) { ... });
      *
      */
 
-    public static function call($name, $arguments = array()) {
-        $html = self::fire($name, $arguments, true);
+    public static function add($name, $function) {
+        if(isset(self::$macros[$name])) Guardian::abort(Config::speak('notify_exist', array('<code>Widget::' . $name . '()</code>')));
+        self::$macros[$name] = $function;
+    }
+
+
+    /**
+     * Call the Custom Widget
+     * ----------------------
+     *
+     * [1]. Widget::call('my_custom_widget', $a, $b, $c);
+     *
+     */
+
+    public static function call($name) {
+        if( ! isset(self::$macros[$name])) Guardian::abort(Config::speak('notify_not_exist', array('<code>Widget::call(\'' . $name . '\')</code>')));
+        $arguments = array_slice(func_get_args(), 1);
+        $html = call_user_func_array(self::$macros[$name], $arguments);
         $html = Filter::apply('widget', $html);
         return Filter::apply('widget:custom.' . $name, Filter::apply('widget:custom', $html));
+    }
+
+
+    /**
+     * Alternative Method for Calling the Custom Widget
+     * ------------------------------------------------
+     *
+     * [1]. Widget::my_custom_widget($a, $b, $c);
+     *
+     */
+
+    public static function __callStatic($method, $arguments = array()) {
+        if( ! isset(self::$macros[$method])) Guardian::abort(Config::speak('notify_not_exist', array('<code>Widget::' . $method . '()</code>')));
+        $html = call_user_func_array(self::$macros[$method], $arguments);
+        $html = Filter::apply('widget', $html);
+        return Filter::apply('widget:custom.' . $method, Filter::apply('widget:custom', $html));
     }
 
 }

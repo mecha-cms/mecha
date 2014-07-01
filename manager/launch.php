@@ -100,6 +100,9 @@ Weapon::add('comment_footer', function($comment, $article) {
 }, 20);
 
 
+if(strpos($config->url_current, $config->url . '/' . $config->manager->slug) !== 0) return true;
+
+
 /**
  * Configuration Manager
  * ---------------------
@@ -230,9 +233,9 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
 
     $pages = array();
 
-    if($files = Mecha::eat($path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true))->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat($path == 'article' ? Get::articles('DESC', "", 'txt,draft') : Get::pages('DESC', "", 'txt,draft'))->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $file) {
-            $pages[] = $path == 'article' ? Get::articleHeader($file['path']) : Get::pageHeader($file['path']);
+            $pages[] = $path == 'article' ? Get::articleHeader($file) : Get::pageHeader($file);
         }
     } else {
         if($offset !== 1) {
@@ -248,7 +251,7 @@ Route::accept(array($config->manager->slug . '/(article|page)', $config->manager
         'offset' => $offset,
         'articles' => $pages,
         'pages' => $pages,
-        'pagination' => Navigator::extract(($path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true)), $offset, $config->per_page, $config->manager->slug . '/' . $path),
+        'pagination' => Navigator::extract(($path == 'article' ? Get::articles('DESC', "", 'txt,draft') : Get::pages('DESC', "", 'txt,draft')), $offset, $config->per_page, $config->manager->slug . '/' . $path),
         'cargo' => DECK . DS . 'workers' . DS . 'page.php',
         'file_type' => $path
     ));
@@ -336,8 +339,11 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
          */
 
         $slugs = array();
-        if($files = $path == 'article' ? Get::articles('DESC', 'time', "", true) : Get::pages('DESC', 'time', "", true)) {
-            foreach($files as $file) $slugs[$file['slug']] = 1;
+        if($files = $path == 'article' ? Get::articles('DESC', "", 'txt,draft') : Get::pages('DESC', "", 'txt,draft')) {
+            foreach($files as $file) {
+                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
+                $slugs[$_slug] = 1;
+            }
         }
 
         if($path == 'page') {
@@ -517,11 +523,11 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
                 Weapon::fire('on_' . $path . '_repair', array($G, $P));
 
                 // Rename all comment files related to article if article date has been changed
-                if(((string) $date !== (string) $fields['date']) && $comments = Get::comments($id)) {
+                if(((string) $date !== (string) $fields['date']) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
                     foreach($comments as $comment) {
-                        $parts = explode('_', basename($comment['path']));
+                        $parts = explode('_', basename($comment));
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
-                        File::open($comment['path'])->renameTo(implode('_', $parts));
+                        File::open($comment)->renameTo(implode('_', $parts));
                     }
                 }
 
@@ -576,8 +582,8 @@ Route::accept($config->manager->slug . '/(article|page)/kill/id:(:num)', functio
         File::open($page->path)->delete();
 
         // Deleting comments ...
-        foreach(Get::comments($id, 'DESC', 'path', true) as $comment) {
-            File::open($comment['path'])->delete();
+        foreach(Get::comments($id, 'DESC', 'txt,hold') as $comment) {
+            File::open($comment)->delete();
         }
 
         // Deleting custom CSS and JavaScript files ...
@@ -1071,7 +1077,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
     $comments = array();
 
-    if($files = Mecha::eat(Get::comments(null, 'DESC', 'id', true))->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->per_page)->vomit()) {
         foreach($files as $comment) {
             $comments[] = Get::comment($comment['path']);
         }
@@ -1084,7 +1090,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         'page_title' => $speak->comments . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'responses' => $comments,
-        'pagination' => Navigator::extract(Get::comments(), $offset, $config->per_page, $config->manager->slug . '/comment'),
+        'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->per_page, $config->manager->slug . '/comment'),
         'cargo' => DECK . DS . 'workers' . DS . 'comment.php'
     ));
 
@@ -1634,9 +1640,11 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     }
 
     $plugins = array();
-    $take = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
+    $folders = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
 
-    if($files = Mecha::eat($take)->chunk($offset, $config->per_page)->vomit()) {
+    sort($folders);
+
+    if($files = Mecha::eat($folders)->chunk($offset, $config->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {
 
             // Check whether the localized "about" file is available
@@ -1658,7 +1666,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         'page_type' => 'manager',
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'files' => $plugins,
-        'pagination' => Navigator::extract($take, $offset, $config->per_page, $config->manager->slug . '/plugin'),
+        'pagination' => Navigator::extract($folders, $offset, $config->per_page, $config->manager->slug . '/plugin'),
         'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
     ));
 
