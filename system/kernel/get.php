@@ -569,7 +569,7 @@ class Get {
             'update' => File::exist($input) ? date('Y-m-d H:i:s', filemtime($input)) : null,
             'kind' => Converter::strEval(explode(',', $kind)),
             'slug' => $slug,
-            'status' => $extension == 'txt' ? 'published' : 'draft'
+            'state' => $extension == 'txt' ? 'published' : 'draft'
         );
     }
 
@@ -615,7 +615,7 @@ class Get {
             'post' => (int) Date::format($post, 'U'),
             'id' => (int) Date::format($id, 'U'),
             'parent' => $parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'),
-            'status' => $extension == 'txt' ? 'approved' : 'pending'
+            'state' => $extension == 'txt' ? 'approved' : 'pending'
         );
     }
 

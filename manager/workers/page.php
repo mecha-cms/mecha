@@ -7,7 +7,7 @@
   <?php foreach($pages as $page): ?>
   <li class="page" id="page-<?php echo $page->id; ?>">
     <div class="page-header">
-      <?php if($page->status == 'draft'): ?>
+      <?php if($page->state == 'draft'): ?>
       <span class="page-name"><?php echo $page->title; ?></span>
       <?php else: ?>
       <a class="page-name" href="<?php echo $page->url; ?>" target="_blank"><?php echo $page->title; ?></a>

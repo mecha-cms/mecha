@@ -316,7 +316,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         Shield::abort('404-article');
     }
 
-    if($article->status == 'draft') {
+    if($article->state == 'draft') {
         Shield::abort('404-article');
     }
 
@@ -336,7 +336,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
         Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
 
-        $extension = $config->comment_moderation ? '.hold' : '.txt';
+        $extension = $config->comment_moderation && ! Guardian::happy() ? '.hold' : '.txt';
 
         if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
@@ -447,8 +447,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 $message .= $request['name'] . ": " . $request['message'] . "\r\n\r\n";
                 $message .= Date::format($id, 'Y/m/d H:i:s');
 
-                $header = Filter::apply('comment:notification.email_header', $header);
-                $message = Filter::apply('comment:notification.email_message', $message);
+                $header = Filter::apply('comment:notification.email.header', $header);
+                $message = Filter::apply('comment:notification.email.message', $message);
 
                 /**
                  * Sending email notification ...
@@ -575,7 +575,7 @@ Route::accept('(:any)', function($slug = "") use($config) {
         Shield::abort('404-page');
     }
 
-    if($page->status == 'draft') {
+    if($page->state == 'draft') {
         Shield::abort('404-page');
     }
 
@@ -622,6 +622,14 @@ Route::accept("", function() use($config) {
     Shield::attach('page-home');
 
 });
+
+
+/**
+ * Do Routing
+ * ----------
+ */
+
+Route::execute();
 
 
 /**

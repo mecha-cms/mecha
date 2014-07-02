@@ -35,7 +35,7 @@
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
-      <?php if($cache['status'] == 'pending'): ?><button class="btn btn-accept" name="action" type="submit" value="publish"><i class="fa fa-check-circle"></i> <?php echo $speak->approve; ?></button><?php else: ?><button class="btn btn-action" name="action" type="submit" value="publish"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <button class="btn btn-action" name="action" type="submit" value="save"><i class="fa fa-history"></i> <?php echo $speak->unpublish; ?></button><?php endif; ?> <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/comment/kill/id:<?php echo $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+      <?php if($cache['state'] == 'pending'): ?><button class="btn btn-accept" name="action" type="submit" value="publish"><i class="fa fa-check-circle"></i> <?php echo $speak->approve; ?></button><?php else: ?><button class="btn btn-action" name="action" type="submit" value="publish"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <button class="btn btn-action" name="action" type="submit" value="save"><i class="fa fa-history"></i> <?php echo $speak->unpublish; ?></button><?php endif; ?> <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/comment/kill/id:<?php echo $cache['id']; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
     </span>
   </div>
 </form>

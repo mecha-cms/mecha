@@ -73,7 +73,7 @@ Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($article->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
+        echo ($article->state == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -81,7 +81,7 @@ Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($page->status == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+        echo ($page->state == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -95,7 +95,7 @@ Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
     if(Guardian::happy()) {
-        echo ($comment->status == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+        echo ($comment->state == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -303,7 +303,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
         $fields = array(
             'id' => "",
             'path' => "",
-            'status' => 'draft',
+            'state' => 'draft',
             'date' => "",
             'title' => $config->defaults->page_title,
             'slug' => "",
@@ -331,7 +331,7 @@ Route::accept(array($config->manager->slug . '/(article|page)/ignite', $config->
 
         $request['id'] = $fields['id'];
         $request['path'] = $fields['path'];
-        $request['status'] = $fields['status'];
+        $request['state'] = $fields['state'];
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
 
         /**
