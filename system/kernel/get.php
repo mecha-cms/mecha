@@ -849,11 +849,11 @@ class Get {
         $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
         $results['message_raw'] = $results['content_raw'];
+        unset($results['content_raw']);
         $results['message'] = Filter::apply('message', $results['content']);
+        unset($results['content']);
         $results['message'] = Filter::apply('comment:message', $results['message']);
         $results['permalink'] = '#';
-        unset($results['content_raw']);
-        unset($results['content']);
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)));

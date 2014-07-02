@@ -24,10 +24,10 @@ class Weapon {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
      *  ---------- | ------- | --------------------------------------
-     *  $name      | string  | Action name
-     *  $function  | mixed   | Added function
-     *  $priority  | integer | Function priority
-     *  $arguments | array   | Function arguments
+     *  $name      | string  | Hook name
+     *  $function  | mixed   | Hook function
+     *  $priority  | integer | Hook function priority
+     *  $arguments | array   | Hook function arguments
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -57,16 +57,14 @@ class Weapon {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
      *  ---------- | ------- | --------------------------------------
-     *  $name      | string  | Action name
-     *  $arguments | array   | Function arguments
-     *  $return    | boolean | Return data or not?
+     *  $name      | string  | Hook name
+     *  $arguments | array   | Hook function arguments
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function fire($name, $arguments = array()) {
-        $results = "";
         if(isset(self::$armaments[$name])) {
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'priority')->vomit();
             foreach($weapons as $weapon => $cargo) {
@@ -92,19 +90,28 @@ class Weapon {
      * --------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------
-     *  $name     | string | Action name
-     *  --------- | ------ | ----------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------
+     *  $name     | string  | Hook name
+     *  $priority | integer | Hook function priority
+     *  --------- | ------- | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function eject($name = null) {
+    public static function eject($name = null, $priority = null) {
         if(is_null($name)) {
             self::$armaments = array();
         } else {
-            unset(self::$armaments[$name]);
+            if(is_null($priority)) {
+                unset(self::$armaments[$name]);
+            } else {
+                for($i = 0, $length = count(self::$armaments[$name]); $i < $length; ++$i) {
+                    if(self::$armaments[$name][$i]['priority'] === $priority) {
+                        unset(self::$armaments[$name][$i]);
+                    }
+                }
+            }
         }
     }
 
@@ -126,8 +133,8 @@ class Weapon {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ----------------------------------------
-     *  $name     | string | Action name
-     *  $fallback | mixed  | Fallback value if name does not exist
+     *  $name     | string | Hook name
+     *  $fallback | mixed  | Fallback value if hook does not exist
      *  --------- | ------ | ----------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *

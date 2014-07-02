@@ -54,8 +54,6 @@ class Route {
     }
 
     public static function accept($patterns, $callback) {
-        $url = preg_replace('#\?.*$#', "", $_SERVER['REQUEST_URI']);
-        $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
         if(is_array($patterns)) {
             foreach($patterns as $pattern) {
                 $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
@@ -64,16 +62,6 @@ class Route {
         } else {
             $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
             self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
-        }
-        if(strpos($url, $base) === 0) {
-            $url = substr($url, strlen($base));
-        }
-        $url = trim($url, '/');
-        foreach(self::$routes as $pattern => $callback) {
-            if(preg_match($pattern, $url, $params)) {
-                array_shift($params);
-                return call_user_func_array($callback, array_values($params));
-            }
         }
     }
 
@@ -85,6 +73,20 @@ class Route {
             header($status);
             exit;
         });
+    }
+
+    public static function execute() {
+        $url = preg_replace('#(\?|\&).*$#', "", $_SERVER['REQUEST_URI']);
+        $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+        if(strpos($url, $base) === 0) {
+            $url = substr($url, strlen($base));
+        }
+        foreach(self::$routes as $pattern => $callback) {
+            if(preg_match($pattern, trim($url, '/'), $params)) {
+                array_shift($params);
+                return call_user_func_array($callback, array_values($params));
+            }
+        }
     }
 
 }

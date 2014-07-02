@@ -41,9 +41,9 @@ class Asset {
     public static function url($path) {
         $config = Config::get();
         if(strpos(self::pathTrace($path), ROOT) === false) {
-            return Filter::apply('asset:url', self::pathTrace($path));
+            return Filter::apply('asset:url', $path, $path);
         }
-        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::pathTrace($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::pathTrace($path)) : ""));
+        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::pathTrace($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::pathTrace($path)) : ""), $path);
     }
 
     // Return the HTML JavaScript of asset
@@ -51,11 +51,11 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>';
+                $html .= Filter::apply('asset:javascript', '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>', $path[$i]);
             }
-            return Filter::apply('asset:javascript', $html);
+            return $html;
         }
-        return Filter::apply('asset:javascript', '<script src="' . self::url($path) . '"' . $addon . '></script>');
+        return Filter::apply('asset:javascript', '<script src="' . self::url($path) . '"' . $addon . '></script>', $path);
     }
 
     // DEPRECATED !!! Please use `Asset::javascript()`
@@ -68,11 +68,11 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES;
+                $html .= Filter::apply('asset:css', '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
             }
-            return Filter::apply('asset:css', $html);
+            return $html;
         }
-        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES);
+        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES, $path);
     }
 
     // Return the HTML image of asset
@@ -80,11 +80,11 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES;
+                $html .= Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
             }
-            return Filter::apply('asset:image', $html);
+            return $html;
         }
-        return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . ES);
+        return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . ES, $path);
     }
 
 }

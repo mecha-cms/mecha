@@ -17,19 +17,19 @@ class Filter {
      *
      * -------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter      | Type    | Description
-     *  -------------- | ------- | ---------------------------------------
-     *  $name          | string  | The name of the filter to hook
-     *  $function      | mixed   | The name of the function to be called
-     *  $priority      | integer | Priority of function to add
-     *  $accepted_args | integer | The number of arguments function accept
-     *  -------------- | ------- | ---------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter  | Type    | Description
+     *  ---------- | ------- | --------------------------------------
+     *  $name      | string  | Filter name
+     *  $function  | mixed   | Filter function
+     *  $priority  | integer | Filter function priority
+     *  $arguments | array   | Filter function arguments
+     *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10) {
+    public static function add($name, $function, $priority = 10, $arguments = null) {
         // Kill duplicates
         if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
             foreach(self::$filters[$name] as $filter) {
@@ -38,7 +38,8 @@ class Filter {
         }
         self::$filters[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (int) $priority : 10
+            'priority' => ! is_null($priority) ? (int) $priority : 10,
+            'arguments' => $arguments
         );
     }
 
@@ -56,22 +57,25 @@ class Filter {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------------
-     *  $name     | string | The name of the filter hook
-     *  $value    | string | String of value to be manipulated
+     *  $name     | string | Filter name
+     *  $value    | string | String to be manipulated
      *  --------- | ------ | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function apply($name, $value) {
-        $args = array_slice(func_get_args(), 1);
+        $arguments = array_slice(func_get_args(), 1);
         if( ! isset(self::$filters[$name])) {
             self::$filters[$name] = false;
             return $value;
         }
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
         foreach($filters as $filter => $cargo) {
-            $value = call_user_func_array($cargo['function'], $args);
+            if( ! is_null($cargo['arguments'])) {
+                $arguments = $cargo['arguments'];
+            }
+            $value = call_user_func_array($cargo['function'], $arguments);
         }
         return $value;
     }
@@ -88,19 +92,28 @@ class Filter {
      * -------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------------
-     *  $name     | string | The name of the filter hook
-     *  --------- | ------ | ---------------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | --------------------------------------------
+     *  $name     | string  | Filter name
+     *  $priority | integer | Filter function priority
+     *  --------- | ------- | --------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function remove($name = null) {
+    public static function remove($name = null, $priority = null) {
         if(is_null($name)) {
             self::$filters = array();
         } else {
-            unset(self::$filters[$name]);
+            if(is_null($priority)) {
+                unset(self::$filters[$name]);
+            } else {
+                for($i = 0, $length = count(self::$filters[$name]); $i < $length; ++$i) {
+                    if(self::$filters[$name][$i]['priority'] === $priority) {
+                        unset(self::$filters[$name][$i]);
+                    }
+                }
+            }
         }
     }
 
@@ -122,8 +135,8 @@ class Filter {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------------
-     *  $name     | string | The name of the filter hook
-     *  $fallback | mixed  | Fallback value if name does not exist
+     *  $name     | string | Filter name
+     *  $fallback | mixed  | Fallback value if filter does not exist
      *  --------- | ------ | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
