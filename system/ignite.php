@@ -123,6 +123,9 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
  */
 
 Filter::add('shortcode', function($content) use($config, $speak) {
+    if(strpos($content, '{{') === false) {
+        return $content;
+    }
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $shortcodes = File::open($file)->unserialize();
     } else {
