@@ -100,9 +100,6 @@ Weapon::add('comment_footer', function($comment, $article) {
 }, 20);
 
 
-if(strpos($config->url_current, $config->url . '/' . $config->manager->slug) !== 0) return true;
-
-
 /**
  * Configuration Manager
  * ---------------------

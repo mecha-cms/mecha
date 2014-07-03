@@ -6,7 +6,7 @@
  * ---------------
  */
 
-if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
+if(Guardian::happy() && strpos($config->url_current, $config->url . '/' . $config->manager->slug) === 0 && $deck = File::exist(DECK . DS . 'launch.php')) {
     include $deck;
 }
 

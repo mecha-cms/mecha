@@ -195,14 +195,14 @@ Weapon::add('meta', function() {
         $html .= '<meta name="description" content="' . Text::parse($config->description)->to_encoded_html . '"' . ES;
     }
     $html .= '<meta name="author" content="' . $config->author . '"' . ES;
-    echo Filter::apply('meta', $html);
+    echo Filter::apply('meta', $html, 1);
 }, 10);
 
 Weapon::add('meta', function() {
     $config = Config::get();
     $html  = '<title>' . strip_tags($config->page_title) . '</title>';
     $html .= '<!--[if IE]><script src="' . $config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->';
-    echo Filter::apply('meta', $html);
+    echo Filter::apply('meta', $html, 2);
 }, 20);
 
 Weapon::add('meta', function() {
@@ -212,7 +212,7 @@ Weapon::add('meta', function() {
     $html .= '<link href="' . $config->url_current . '" rel="canonical"' . ES;
     $html .= '<link href="' . $config->url . '/sitemap" rel="sitemap"' . ES;
     $html .= '<link href="' . $config->url . '/feeds/rss" rel="alternate" type="application/rss+xml" title="' . $speak->feeds . $config->title_separator . $config->title . '"' . ES;
-    echo Filter::apply('meta', $html);
+    echo Filter::apply('meta', $html, 3);
 }, 30);
 
 Weapon::add('SHIPMENT_REGION_TOP', function() {
