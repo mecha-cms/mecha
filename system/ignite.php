@@ -57,20 +57,6 @@ if(File::exist(ROOT . DS . 'install.php')) {
 Config::load();
 
 
-/**
- * Notification Settings
- * ---------------------
- */
-
-Notify::configure('icons', array(
-    'default' => '<i class="fa fa-fw fa-microphone"></i> ',
-    'success' => '<i class="fa fa-fw fa-check"></i> ',
-    'info' => '<i class="fa fa-fw fa-info-circle"></i> ',
-    'warning' => '<i class="fa fa-fw fa-exclamation-triangle"></i> ',
-    'error' => '<i class="fa fa-fw fa-times"></i> '
-));
-
-
 $config = Config::get();
 $speak = Config::speak();
 
@@ -94,6 +80,14 @@ Weapon::add('shell_before', function() {
 
 Weapon::add('sword_after', function() {
     echo Asset::javascript('cabinet/shields/widgets.js');
+    echo "<script>";
+    for($i = 1; $i < Widget::$ids['archive-hierarchy']; ++$i) {
+        echo "Widget.archive('HIERARCHY'," . $i . ");";
+    }
+    for($i = 1; $i < Widget::$ids['archive-dropdown']; ++$i) {
+        echo "Widget.archive('DROPDOWN'," . $i . ");";
+    }
+    echo "</script>";
 });
 
 
@@ -170,7 +164,7 @@ Filter::add('content', function($content) use($config) {
             '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host) . ')#'
         ),
         array(
-            '<table class="table-bordered">',
+            '<table class="table-bordered table-full">',
             '<a rel="nofollow" href="$1'
         ),
     $content);

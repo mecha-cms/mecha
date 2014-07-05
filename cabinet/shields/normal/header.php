@@ -8,7 +8,6 @@
         'shell/atom.css',
         'shell/layout.css'
     )); ?>
-    <?php if(isset($page->css)) echo $page->css; ?>
     <?php Weapon::fire('shell_after'); ?>
   </head>
   <body>

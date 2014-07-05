@@ -5,4 +5,4 @@ Version: 1.1.0
 
 ====
 
-Tameng normal untuk Mecha CMS.
+Tameng normal untuk CMS Mecha.

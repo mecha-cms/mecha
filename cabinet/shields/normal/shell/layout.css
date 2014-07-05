@@ -11,7 +11,6 @@ body {border-top:5px solid}
 .footnotes {
   font-size:86%;
   margin-top:1.3846153846153846em;
-  padding-left:1em;
 }
 
 .form-login {padding:10% 0}
@@ -117,9 +116,9 @@ body {border-top:5px solid}
   min-width:140px;
   background-color:white;
   border:1px solid;
-  -webkit-box-shadow:0 1px 2px rgba(0,0,0,.5);
-  -moz-box-shadow:0 1px 2px rgba(0,0,0,.5);
-  box-shadow:0 1px 2px rgba(0,0,0,.5);
+  -webkit-box-shadow:0 2px 5px rgba(0,0,0,.3);
+  -moz-box-shadow:0 2px 5px rgba(0,0,0,.3);
+  box-shadow:0 2px 5px rgba(0,0,0,.3);
   display:none;
 }
 
@@ -281,12 +280,13 @@ body {border-top:5px solid}
 }
 
 .widget ul li:first-child {border-top:1px solid}
-.widget-content {margin-top:.6em}
 .widget-archive ul li,
 .widget-archive ul li:first-child {
   padding:0;
   border:none;
 }
+
+.widget-title + .widget-content {margin-top:.6em}
 
 .widget-search {
   background-color:#333;

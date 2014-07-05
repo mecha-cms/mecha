@@ -15,7 +15,7 @@
 
 .widget-manager-menu ul li,
 .widget-manager-menu ul li:first-child {
-  margin:0 0 2px;
+  margin:0;
   padding:0;
   border:none;
   position:relative;
@@ -32,16 +32,15 @@
   line-height:30px;
   height:30px;
   overflow:hidden;
-  margin:0;
+  margin:0 0 2px;
   padding:0 8px;
 }
-
-.accordion-header {margin-bottom:2px}
 
 .widget-manager-menu a:focus,
 .widget-manager-menu a:hover,
 .accordion-header:focus,
 .accordion-header:hover {background-color:#373737}
+
 .widget-manager-menu a:active,
 .accordion-header:active {background-color:#2F2F2F}
 
@@ -52,7 +51,7 @@
   color:#FFA;
 }
 
-.widget-manager-menu .selected a {
+.widget-manager-menu .selected > a {
   background-color:#365D98;
   color:white;
   cursor:default;

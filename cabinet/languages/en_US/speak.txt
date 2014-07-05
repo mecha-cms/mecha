@@ -189,6 +189,9 @@ dates: Dates
 time: Time
 ago: Ago
 
+version: Version
+versions: Versions
+
 year: Year
 month: Month
 week: Week

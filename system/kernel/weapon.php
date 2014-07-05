@@ -15,8 +15,8 @@ class Weapon {
      *        echo 'Tank added!';
      *    });
      *
-     *    Weapon::add('jet', function($color) {
-     *        return $color . ' jet added!';
+     *    Weapon::add('jet', function($color, $version) {
+     *        echo $color . ' version ' . $version . ' jet added!';
      *    });
      *
      * --------------------------------------------------------------
@@ -50,7 +50,7 @@ class Weapon {
      *
      *    Weapon::fire('tank');
      *
-     *    echo Weapon::fire('jet', array('Blue'), true);
+     *    Weapon::fire('jet', array('Blue', '1.1.0'));
      *
      * --------------------------------------------------------------
      *

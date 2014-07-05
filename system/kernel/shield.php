@@ -8,6 +8,8 @@
 
 class Shield {
 
+    private static $defines = array();
+
     private static function pathTrace($name) {
         $name = rtrim($name, '\\/') . '.php';
         if($file = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
@@ -45,6 +47,80 @@ class Shield {
         );
         $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
         return Filter::apply('sanitize:output', $buffer);
+    }
+
+    /**
+     * Default Shortcut Variables
+     * --------------------------
+     */
+
+    private static function defines() {
+        $config = Config::get();
+        $results = array(
+            'config' => $config,
+            'speak' => $config->speak,
+            'articles' => $config->articles,
+            'article' => $config->article,
+            'pages' => $config->pages,
+            'page' => $config->page,
+            'responses' => $config->responses,
+            'response' => $config->response,
+            'files' => $config->files,
+            'file' => $config->file,
+            'pager' => $config->pagination,
+            'manager' => Guardian::happy()
+        );
+        return array_merge($results, self::$defines);
+    }
+
+    /**
+     * ==========================================================
+     *  DEFINE NEW SHORTCUT VARIABLE(S)
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    Shield::define('foo', 'bar')->attach('file');
+     *
+     *    Shield::define(array(
+     *        'foo' => 'bar',
+     *        'baz' => 'qux'
+     *    ))->attach('file');
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function define($key, $value = "") {
+        if(is_array($key)) {
+            self::$defines = array_merge(self::$defines, $key);
+        } else {
+            self::$defines[$key] = $value;
+        }
+        return new static;
+    }
+
+    /**
+     * ==========================================================
+     *  UNDEFINE SHORTCUT VARIABLE(S)
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    Shield::undefine('foo')->attach('file');
+     *
+     *    Shield::undefine(array('foo', 'bar'))->attach('file');
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function undefine($defines) {
+        if( ! is_array($defines)) $defines = array($defines);
+        foreach($defines as $define) {
+            unset(self::$defines[$define]);
+        }
+        return new static;
     }
 
     /**
@@ -108,18 +184,8 @@ class Shield {
 
         Weapon::fire('before_shield_config_redefine', array($G, $G));
 
-        $config = Config::get();
-        $speak = Config::speak();
-        $articles = $config->articles;
-        $article = $config->article;
-        $pages = $config->pages;
-        $page = $config->page;
-        $responses = $config->responses;
-        $response = $config->response;
-        $files = $config->files;
-        $file = $config->file;
-        $pager = $config->pagination;
-        $manager = Guardian::happy();
+        extract(self::defines());
+
         $base = explode('-', $name, 2);
 
         Weapon::fire('after_shield_config_redefine', array($G, $G));
@@ -184,18 +250,7 @@ class Shield {
 
         Weapon::fire('before_shield_config_redefine', array($G, $G));
 
-        $config = Config::get();
-        $speak = Config::speak();
-        $articles = $config->articles;
-        $article = $config->article;
-        $pages = $config->pages;
-        $page = $config->page;
-        $responses = $config->responses;
-        $response = $config->response;
-        $files = $config->files;
-        $file = $config->file;
-        $pager = $config->pagination;
-        $manager = Guardian::happy();
+        extract(self::defines());
 
         Weapon::fire('after_shield_config_redefine', array($G, $G));
 

@@ -189,6 +189,9 @@ dates: Tanggal
 time: Waktu
 ago: Yang Lalu
 
+version: Versi
+versions: Versi
+
 year: Tahun
 month: Bulan
 week: Minggu

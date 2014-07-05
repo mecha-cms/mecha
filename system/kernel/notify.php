@@ -22,8 +22,17 @@ class Notify {
 
     private static $notify = 'mecha_notification';
 
-    private static $config = array();
     private static $errors = 0;
+
+    private static $config = array(
+        'icons' => array(
+            'default' => '<i class="fa fa-fw fa-microphone"></i> ',
+            'success' => '<i class="fa fa-fw fa-check"></i> ',
+            'info' => '<i class="fa fa-fw fa-info-circle"></i> ',
+            'warning' => '<i class="fa fa-fw fa-exclamation-triangle"></i> ',
+            'error' => '<i class="fa fa-fw fa-times"></i> '
+        )
+    );
 
     public static function add($type = 'info', $text = "", $icon = null, $tag = 'p') {
         if(is_null($icon)) $icon = self::$config['icons']['default'];
@@ -69,8 +78,7 @@ class Notify {
         Session::set(self::$notify, "");
     }
 
-    public static function configure($key, $value) {
-        if( ! isset(self::$config[$key])) self::$config[$key] = array();
+    public static function configure($key, $value = "") {
         foreach($value as $k => $v) {
             self::$config[$key][$k] = $v;
         }

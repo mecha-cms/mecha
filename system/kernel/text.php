@@ -229,7 +229,7 @@ class Text {
                 $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
                 $results[$key] = $value;
             }
-            $results['content'] = $results['content_raw'] = trim($parts[1]);
+            $results['content_raw'] = $results['content'] = isset($parts[1]) ? trim($parts[1]) : "";
         }
         if($content) {
             if($by_path) $text = File::open($text)->read();

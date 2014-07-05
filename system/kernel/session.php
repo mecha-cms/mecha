@@ -23,7 +23,7 @@
 class Session {
 
     public static function set($session, $value = "") {
-        return Mecha::SVR($_SESSION, $session, $value);
+        Mecha::SVR($_SESSION, $session, $value);
     }
 
     public static function get($session = null, $fallback = "") {
@@ -35,9 +35,10 @@ class Session {
 
     public static function kill($session = null) {
         if(is_null($session)) {
-            return session_destroy();
+            session_destroy();
+        } else {
+            Mecha::UVR($_SESSION, $session);
         }
-        return Mecha::UVR($_SESSION, $session);
     }
 
 }

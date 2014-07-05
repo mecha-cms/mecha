@@ -4,6 +4,10 @@ class Navigator {
 
     protected static $bucket = array();
 
+    protected static $navigator = array(
+        'step' => 5
+    );
+
     /**
      * ============================================================================
      *  PAGINATION EXTRACTOR FOR LIST OF FILES
@@ -60,7 +64,7 @@ class Navigator {
             // Generate pagination links for index page
             $html = '<span class="pagination">';
             $chunk = ceil($total / $perpage);
-            $step = $chunk > 5 ? 5 : $chunk;
+            $step = $chunk > self::$navigator['step'] ? self::$navigator['step'] : $chunk;
             $left = $current - $step;
             if($left < 1) $left = 1;
             if($current > 1) {
@@ -118,6 +122,14 @@ class Navigator {
         $base = basename($input, '.' . pathinfo($input, PATHINFO_EXTENSION));
         $parts = explode('_', $base);
         return isset($parts[2]) ? $parts[2] : $base;
+    }
+
+    public static function configure($key, $value = "") {
+        if(is_array($key)) {
+            self::$navigator = array_merge(self::$navigator, $key);
+        } else {
+            self::$navigator[$key] = $value;
+        }
     }
 
 }

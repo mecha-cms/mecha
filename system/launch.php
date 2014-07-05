@@ -6,7 +6,7 @@
  * ---------------
  */
 
-if(Guardian::happy() && strpos($config->url_current, $config->url . '/' . $config->manager->slug) === 0 && $deck = File::exist(DECK . DS . 'launch.php')) {
+if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
     include $deck;
 }
 
@@ -328,6 +328,14 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         'pagination' => Navigator::extract(Get::articles(), $article->path, 1, $config->index->slug)
     ));
 
+    Weapon::add('shell_after', function() use($article) {
+        if(isset($article->css)) echo $article->css;
+    });
+
+    Weapon::add('sword_after', function() use($article) {
+        if(isset($article->js)) echo $article->js;
+    });
+
     /**
      * Submitting a comment ...
      */
@@ -578,6 +586,14 @@ Route::accept('(:any)', function($slug = "") use($config) {
     if($page->state == 'draft') {
         Shield::abort('404-page');
     }
+
+    Weapon::add('shell_after', function() use($page) {
+        if(isset($page->css)) echo $page->css;
+    });
+
+    Weapon::add('sword_after', function() use($page) {
+        if(isset($page->js)) echo $page->js;
+    });
 
     Config::set(array(
         'page_type' => 'page',

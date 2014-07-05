@@ -1,4 +1,4 @@
-<a href="#toggle" class="blog-sidebar-toggle" id="toggle">
+<a href="#toggle" class="blog-sidebar-toggle">
   <i class="fa fa-bars"></i>
 </a>
 <aside class="blog-sidebar">

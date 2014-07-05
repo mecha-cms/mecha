@@ -1,10 +1,8 @@
 <?php if($config->action_state != 'ignite' && $config->file_type != 'page'): ?>
-<?php if($cache['state'] == 'published'): ?>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->date; ?></span>
   <span class="grid span-5"><input name="date" type="text" class="input-block" value="<?php echo $cache['date']; ?>" placeholder="0000-00-00T00:00:00+00:00"></span>
 </label>
-<?php endif; ?>
 <?php endif; ?>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>

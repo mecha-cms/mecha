@@ -57,11 +57,11 @@ class Route {
         if(is_array($patterns)) {
             foreach($patterns as $pattern) {
                 $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
-                self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
+                self::$routes[$pattern] = $callback;
             }
         } else {
             $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
-            self::$routes['#^' . self::fix($pattern) . '$#'] = $callback;
+            self::$routes[$pattern] = $callback;
         }
     }
 
@@ -82,8 +82,10 @@ class Route {
             $url = substr($url, strlen($base));
         }
         foreach(self::$routes as $pattern => $callback) {
-            if(preg_match($pattern, trim($url, '/'), $params)) {
+            $url = trim($url, '/');
+            if(preg_match('#^' . self::fix($pattern) . '$#', $url, $params)) {
                 array_shift($params);
+                Weapon::fire('before_route_function_call', array($url, $pattern, array_values($params)));
                 return call_user_func_array($callback, array_values($params));
             }
         }

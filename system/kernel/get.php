@@ -675,7 +675,7 @@ class Get {
         $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
-        $time = substr($results['path'], strpos($results['path'], '_'));
+        $time = str_replace(array(' ', ':'), '-', $results['time']);
 
         if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();

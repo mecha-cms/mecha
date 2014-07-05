@@ -4,6 +4,21 @@ class Widget {
 
     private static $macros = array();
 
+    public static $ids = array(
+        'manager-menu' => 1,
+        'archive-hierarchy' => 1,
+        'archive-list' => 1,
+        'archive-dropdown' => 1,
+        'tag-list' => 1,
+        'tag-cloud' => 1,
+        'search' => 1,
+        'recent-post' => 1,
+        'recent-comment' => 1,
+        'random-post' => 1,
+        'related-post' => 1
+    );
+
+
     /**
      * Widget Manager
      * --------------
@@ -76,7 +91,8 @@ class Widget {
             return preg_replace('#<li.*?><a .*?>\{\{separator\}\}<\/a><\/li>#', '<li class="separator"></li>', $menu);
         }, 10);
 
-        $html  = '<div class="widget widget-manager widget-manager-menu">';
+        $html  = '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$ids['manager-menu'] . '">';
+        self::$ids['manager-menu']++;
         $html .= Menu::get($menus, 'ul', 'manager:');
         $html .= '</div>';
         $html  = Filter::apply('widget', $html);
@@ -107,18 +123,15 @@ class Widget {
             $i = 0;
             foreach($files as $file) {
                 list($year, $month, $day) = explode('-', basename($file, '.txt'));
-                $archives[$year][$month][] = $day;
+                $archives[$year][$month][] = $file;
             }
-            $html  = '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy">';
+            $html  = '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy-' . self::$ids['archive-hierarchy'] . '">';
+            self::$ids['archive-hierarchy']++;
             $html .= '<ul>';
             foreach($archives as $year => $months) {
                 if(is_array($months)) {
                     $posts_count_per_year = 0;
-                    if(empty($query)) {
-                        $expand = $i === 0;
-                    } else {
-                        $expand = (int) substr($query, 0, 4) == (int) $year ? true : false;
-                    }
+                    $expand = empty($query) ? $i === 0 : (int) substr($query, 0, 4) === (int) $year;
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
@@ -147,7 +160,8 @@ class Widget {
             $archives = array_unique($archives);
             $i = 0;
             if($type == 'LIST') {
-                $html  = '<div class="widget widget-archive widget-archive-list">';
+                $html  = '<div class="widget widget-archive widget-archive-list" id="widget-archive-list-' . self::$ids['archive-list'] . '">';
+                self::$ids['archive-list']++;
                 $html .= '<ul>';
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
@@ -159,7 +173,8 @@ class Widget {
                 $html  = Filter::apply('widget', $html);
                 return Filter::apply('widget:archive.list', Filter::apply('widget:archive', $html));
             } else {
-                $html  = '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown">';
+                $html  = '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown-' . self::$ids['archive-dropdown'] . '">';
+                self::$ids['archive-dropdown']++;
                 $html .= '<select>';
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
@@ -217,7 +232,8 @@ class Widget {
         }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
         if($type == 'LIST') {
-            $html  = '<div class="widget widget-tag widget-tag-list">';
+            $html  = '<div class="widget widget-tag widget-tag-list" id="widget-tag-list-' . self::$ids['tag-list'] . '">';
+            self::$ids['tag-list']++;
             $html .= '<ul>';
             foreach($tags as $tag) {
                 $html .= '<li' . ($config->tag_query == $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a><span class="counter">' . $tag['count'] . '</span></li>';
@@ -233,7 +249,8 @@ class Widget {
                 $tags_counter[] = $tag['count'];
             }
             $highest_count = max($tags_counter);
-            $html = '<div class="widget widget-tag widget-tag-cloud">';
+            $html = '<div class="widget widget-tag widget-tag-cloud" id="widget-tag-cloud-' . self::$ids['tag-cloud']. '">';
+            self::$ids['tag-cloud']++;
             for($i = 0, $count = count($tags); $i < $count; ++$i) {
                 $normalized = $tags[$i]['count'] / $highest_count;
                 $size = ceil($normalized * $max_level);
@@ -259,7 +276,8 @@ class Widget {
     public static function search($placeholder = "", $submit = "") {
         $config = Config::get();
         $speak = Config::speak();
-        $html  = '<div class="widget widget-search">';
+        $html  = '<div class="widget widget-search" id="widget-search-' . self::$ids['search'] . '">';
+        self::$ids['search']++;
         $html .= '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">';
         $html .= '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES;
         $html .= '<button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>';
@@ -287,7 +305,8 @@ class Widget {
         if($class == 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
         }
-        $html  = '<div class="widget widget-' . $class . ' widget-' . $class . '-post">';
+        $html  = '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . self::$ids[$class . '-post'] . '">';
+        self::$ids[$class . '-post']++;
         $html .= '<ul>';
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i === $count) break;
@@ -336,7 +355,8 @@ class Widget {
                 return self::randomPost($total);
             }
             $files = Mecha::eat($files)->shake()->vomit();
-            $html  = '<div class="widget widget-related widget-related-post">';
+            $html  = '<div class="widget widget-related widget-related-post" id="widget-related-post-' . self::$ids['related-post'] . '">';
+            self::$ids['related-post']++;
             $html .= '<ul>';
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
@@ -365,7 +385,8 @@ class Widget {
     public static function recentComment($total = 7, $avatar_size = 50, $summary = 100) {
         $config = Config::get();
         $speak = Config::speak();
-        $html = '<div class="widget widget-recent widget-recent-comment">';
+        $html = '<div class="widget widget-recent widget-recent-comment" id="widget-recent-comment-' . self::$ids['recent-comment'] . '">';
+        self::$ids['recent-comment']++;
         if($comments = Get::comments()) {
             $html .= '<ul>';
             foreach($comments as $comment) {

@@ -1,9 +1,10 @@
 var Widget = {};
 
-Widget.archive = function(type, elem) {
+Widget.archive = function(type, id) {
 
     // Widget Archive HIERARCHY
     if (type == 'HIERARCHY') {
+        var elem = document.getElementById('widget-archive-hierarchy-' + id);
         if (!elem) return;
         var toggle = elem.getElementsByTagName('ul')[0].getElementsByTagName('a'),
             click = function(ref) {
@@ -31,6 +32,7 @@ Widget.archive = function(type, elem) {
 
     // Widget Archive DROPDOWN
     if (type == 'DROPDOWN') {
+        elem = document.getElementById('widget-archive-dropdown-' + id);
         if (!elem) return;
         var select = elem.getElementsByTagName('select')[0];
         select.onchange = function() {
@@ -39,6 +41,3 @@ Widget.archive = function(type, elem) {
     }
 
 };
-
-Widget.archive('HIERARCHY', document.getElementById('widget-archive-hierarchy'));
-Widget.archive('DROPDOWN', document.getElementById('widget-archive-dropdown'));
