@@ -85,6 +85,7 @@ class Get {
      */
 
     public static function files($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+        if( ! File::exist($folder)) return false;
         $results = array();
         $results_inclusive = array();
         $extension = $extensions == '*' ? '.*?' : str_replace(array(', ', ','), '|', $extensions);
@@ -143,6 +144,7 @@ class Get {
      */
 
     public static function adjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+        if( ! File::exist($folder)) return false;
         $results = array();
         $results_inclusive = array();
         $extension = str_replace(', ', ',', $extensions);

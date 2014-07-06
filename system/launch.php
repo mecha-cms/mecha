@@ -362,7 +362,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                  */
 
                 if( ! Guardian::happy() && $request['email'] == $config->author_email) {
-                    Notify::warning(Config::speak('notify_warning_forbidden_input', array($request['email'], strtolower($speak->email))));
+                    Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                 }
             }
 
@@ -478,7 +478,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 }
             }
 
-            Guardian::kick($config->url_current . '#comment-' . Date::format($id, 'U'));
+            Guardian::kick($config->url_current . ($config->comment_moderation ? '#comment-form' : '#comment-' . Date::format($id, 'U')));
 
         } else {
 
