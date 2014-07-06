@@ -404,9 +404,16 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
         $fucking_words = explode(',', $config->spam_keywords);
         foreach($fucking_words as $spam) {
-            if((trim($spam) !== "" && $request['email'] == trim($spam)) || (trim($spam) !== "" && strpos($request['message'], trim($spam)) !== false)) {
-                Notify::warning($speak->notify_warning_intruder_detected . ' <mark>' . $spam . '</mark>');
-                break;
+            $fuck = trim($spam);
+            if($fuck !== "") {
+                if(
+                    $request['email'] == $fuck || // Block by email address
+                    Guardian::IP() != 'N/A' && Guardian::IP() == $fuck || // Block by IP address
+                    strpos($request['message'], strtolower($fuck)) !== false // Block by message word(s)
+                ) {
+                    Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
+                    break;
+                }
             }
         }
 
@@ -427,6 +434,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                     'url' => Request::post('url', '#'),
                     'status' => Guardian::happy() ? 'pilot' : 'passenger',
                     'ua' => $_SERVER['HTTP_USER_AGENT'],
+                    'ip' => Guardian::IP(),
                     'message_raw' => $message,
                     'message' => Text::parse($message)->to_html
                 )
@@ -437,6 +445,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $data .= 'URL: ' . $P['data']['url'] . "\n";
             $data .= 'Status: ' . $P['data']['status'] . "\n";
             $data .= 'UA: ' . $P['data']['ua'] . "\n";
+            $data .= 'IP: ' . $P['data']['ip'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $message;
 
             File::write($data)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension, 0600);
