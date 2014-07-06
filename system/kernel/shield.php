@@ -146,7 +146,7 @@ class Shield {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $e_shield_page = "Name: " . $speak->unknown . "\n" .
+        $e_shield_page = "Title: " . ucwords(Text::parse($folder)->to_text) . "\n" .
              "Author: " . $speak->unknown . "\n" .
              "URL: #\n" .
              "Version: " . $speak->unknown . "\n" .
@@ -260,7 +260,7 @@ class Shield {
             $shield = SHIELD . DS . $config->shield . DS . '404.php';
         }
 
-        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
+        Guardian::setResponseStatus(404);
 
         ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 

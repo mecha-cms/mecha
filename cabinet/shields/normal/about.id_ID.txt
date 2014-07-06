@@ -1,4 +1,4 @@
-Name: Normal
+Title: Normal
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
 Version: 1.1.0
