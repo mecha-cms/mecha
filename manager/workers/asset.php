@@ -44,5 +44,5 @@
   <p class="pager cf"><?php echo $pager->step->link; ?></p>
 </form>
 <?php else: ?>
-<p><?php echo Config::speak('notify_empty', array(strtolower($speak->assets))); ?></p>
+<p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->assets))); ?></p>
 <?php endif; ?>

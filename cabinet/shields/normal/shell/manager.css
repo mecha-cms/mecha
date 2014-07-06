@@ -125,113 +125,17 @@
 .editor-preview {margin:0}
 .editor-preview .preview-title {margin-top:0}
 
-textarea[name="content"],
-textarea[name="css"],
-textarea[name="js"] {height:300px}
-
-.main-actions {
-  padding:1.3846153846153846em 0;
-  border-top:4px solid;
-  text-align:right;
-}
-
-.media-item {
-  border-top:1px dashed;
-  padding:1.3846153846153846em 0;
-  margin:1.3846153846153846em 0 0;
-}
-
-.media-item + .media-item {margin-top:0}
-
-.media-item h4 {
-  margin:0 0 -.3em;
-  line-height:1;
-}
-
 .plugin-author {
   background-color:#333;
   color:white;
-  height:32px;
-  line-height:32px;
-  padding:0 2.5em 0 1em;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  position:relative;
 }
 
-.plugin-author a {
-  display:block;
-  position:absolute;
-  top:0;
-  right:1em;
-  color:#FFA;
-  height:inherit;
-  line-height:inherit;
-}
+.plugin-author a {color:#FFA}
 
 .plugin-title {
   background-color:#365D98;
   color:white;
-  padding:.5em .8em;
-  margin:2px 0 0;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
 }
-
-.plugin-description {
-  margin:2px 0 0;
-  border-top:6px solid transparent;
-  padding:1.3846153846153846em;
-}
-
-.messages + .page-list,
-.messages + .comment-list,
-.tab-content-area .messages {margin-top:1.3846153846153846em}
-
-
-/**
- * Page Listing
- * ------------
- *
- * I set the appearance as the same as the comment list layout on the `normal` shield.
- *
- */
-
-.page-list {
-  list-style:none;
-  margin:0;
-  padding:0;
-  position:relative;
-}
-
-.page {
-  margin:2px 0 0;
-  padding:1em 0;
-  overflow:hidden;
-}
-
-.page-header,
-.page-body {
-  margin-bottom:.5em;
-  overflow:hidden;
-}
-
-.page-footer {text-align:right}
-.page-name {
-  display:block;
-  float:left;
-  font-weight:bold;
-}
-
-.page-time {
-  display:block;
-  float:right;
-  color:#AAA;
-}
-
-.pager a .fa {font-size:100%}
 
 @media (max-width:580px) {
   .tab.active {

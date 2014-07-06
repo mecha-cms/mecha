@@ -113,7 +113,7 @@ class Text {
 
     private static function text_to_slug($text, $lower = true, $strip_underscores_and_dots = true) {
         if($lower) $text = strtolower($text);
-        $text = preg_replace(
+        $slug = preg_replace(
             array(
                 '#[^a-z0-9-\_\.]#i',
                 '#-+#',
@@ -126,9 +126,9 @@ class Text {
             ),
         strip_tags($text));
         if($strip_underscores_and_dots) {
-            $text = preg_replace(array('#[\_\.]+#', '#\-+#'), '-', $text);
+            $slug = preg_replace(array('#[\_\.]+#', '#\-+#'), '-', $slug);
         }
-        return ! empty($text) ? $text : '--';
+        return ! empty($slug) ? $slug : '--';
     }
 
     /**

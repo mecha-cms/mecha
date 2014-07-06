@@ -65,12 +65,9 @@ class Route {
         }
     }
 
-    public static function reject($patterns, $status = null) {
-        if(is_null($status)) {
-            $status = $_SERVER['SERVER_PROTOCOL'] . ' 403 Forbidden';
-        }
+    public static function reject($patterns, $status = 403) {
         return self::accept($patterns, function() use($status) {
-            header($status);
+            Guardian::setResponseStatus($status);
             exit;
         });
     }

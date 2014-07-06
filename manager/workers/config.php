@@ -352,7 +352,7 @@
         foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
             $shield = basename($folder);
             $info = Shield::info($shield);
-            echo strpos($shield, '__') !== 0 ? '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->name . '</option>' : "";
+            echo strpos($shield, '__') !== 0 ? '<option value="' . $shield . '"' . ($cache['shield'] == $shield ? ' selected' : "") . '>' . $info->title . '</option>' : "";
         }
 
         ?>

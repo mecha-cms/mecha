@@ -1,11 +1,13 @@
 <?php
 
-$fields = File::exist(STATE . DS . 'fields.txt') ? unserialize(File::open(STATE . DS . 'fields.txt')->read()) : array();
+$fields = File::exist(STATE . DS . 'fields.txt') ? File::open(STATE . DS . 'fields.txt')->unserialize() : array();
 
 if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
     $extra_fields = include $e;
     $fields = $fields + $extra_fields;
 }
+
+Weapon::fire('unit_composer_fields_before', array($FT, $fields));
 
 if( ! empty($fields)) {
     $html = "";
@@ -15,12 +17,12 @@ if( ! empty($fields)) {
             $value['value'] = "";
         }
         if( ! isset($value['scope']) || isset($value['scope']) && $value['scope'] == 'all') {
-            $value['scope'] = $config->file_type;
+            $value['scope'] = $FT;
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
-        if($value['type'] == 'text' && $value['scope'] == $config->file_type) {
+        if($value['type'] == 'text' && $value['scope'] == $FT) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -28,7 +30,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'summary' && $value['scope'] == $config->file_type) {
+        if($value['type'] == 'summary' && $value['scope'] == $FT) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -36,7 +38,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'boolean' && $value['scope'] == $config->file_type) {
+        if($value['type'] == 'boolean' && $value['scope'] == $FT) {
             $html .= '<div class="grid-group">';
             $html .= '<span class="grid span-1"></span>';
             $html .= '<span class="grid span-5">';
@@ -44,7 +46,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</div>';
         }
-        if($value['type'] == 'option' && $value['scope'] == $config->file_type) {
+        if($value['type'] == 'option' && $value['scope'] == $FT) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-1 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-5">';
@@ -62,7 +64,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['scope'] == $config->file_type) {
+        if($value['scope'] == $FT) {
             $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
         }
     }
@@ -70,3 +72,5 @@ if( ! empty($fields)) {
 } else {
     echo '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 }
+
+Weapon::fire('unit_composer_fields_after', array($FT, $fields));

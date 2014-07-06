@@ -32,5 +32,5 @@
   </tbody>
 </table>
 <?php else: ?>
-<p><?php echo Config::speak('notify_empty', array(strtolower($speak->fields))); ?></p>
+<p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->fields))); ?></p>
 <?php endif; ?>

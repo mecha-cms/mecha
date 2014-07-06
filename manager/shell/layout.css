@@ -1,0 +1,102 @@
+textarea[name="content"],
+textarea[name="css"],
+textarea[name="js"] {height:300px}
+
+.main-actions {
+  padding:1.3846153846153846em 0;
+  border-top:4px solid;
+  text-align:right;
+}
+
+.media-item {
+  border-top:1px dashed;
+  padding:1.3846153846153846em 0;
+  margin:1.3846153846153846em 0 0;
+}
+
+.media-item + .media-item {margin-top:0}
+
+.media-item h4 {
+  margin:0 0 -.3em;
+  line-height:1;
+}
+
+.page-list,
+.article-list {
+  list-style:none;
+  margin:0;
+  padding:0;
+  position:relative;
+}
+
+.page,
+.article {
+  margin:2px 0 0;
+  padding:1em 0;
+  overflow:hidden;
+}
+
+.page-header,
+.page-body,
+.article-header,
+.article-body {
+  margin-bottom:.5em;
+  overflow:hidden;
+}
+
+.page-footer,
+.article-footer {text-align:right}
+
+.page-title,
+.article-title {
+  display:block;
+  float:left;
+  font-weight:bold;
+}
+
+.page-time,
+.article-time {
+  display:block;
+  float:right;
+  color:#AAA;
+}
+
+.pager a .fa {font-size:100%}
+
+.plugin-author {
+  height:32px;
+  line-height:32px;
+  padding:0 2.5em 0 1em;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  position:relative;
+}
+
+.plugin-author a {
+  display:block;
+  position:absolute;
+  top:0;
+  right:1em;
+  height:inherit;
+  line-height:inherit;
+}
+
+.plugin-title {
+  padding:.5em .8em;
+  margin:2px 0 0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.plugin-description {
+  margin:2px 0 0;
+  border-top:6px solid transparent;
+  padding:1.3846153846153846em;
+}
+
+.messages + .page-list,
+.messages + .article-list,
+.messages + .comment-list,
+.tab-content-area .messages {margin-top:1.3846153846153846em}

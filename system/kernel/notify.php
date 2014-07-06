@@ -82,6 +82,7 @@ class Notify {
         foreach($value as $k => $v) {
             self::$config[$key][$k] = $v;
         }
+		return new static;
     }
 
 }

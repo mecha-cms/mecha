@@ -29,7 +29,7 @@
     <?php endforeach; ?>
     <p class="pager cf"><?php echo $pager->step->link; ?></p>
     <?php else: ?>
-    <p><?php echo Config::speak('notify_empty', array(strtolower($speak->plugins))); ?></p>
+    <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->plugins))); ?></p>
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
