@@ -101,6 +101,11 @@ Weapon::add('comment_footer', function($comment, $article) {
 }, 20);
 
 
+/**
+ * Load the Routes
+ * ---------------
+ */
+
 $uri_end = str_replace($config->url . '/' . $config->manager->slug . '/', "", $config->url_current);
 $uri_segments = explode('/', $uri_end);
 if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_segments[0] . '.php')) {
