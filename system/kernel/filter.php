@@ -17,29 +17,27 @@ class Filter {
      *
      * -------------------------------------------------------------------
      *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
-     *  ---------- | ------- | --------------------------------------
+     *  ---------- | ------- | -------------------------------------------
      *  $name      | string  | Filter name
      *  $function  | mixed   | Filter function
      *  $priority  | integer | Filter function priority
-     *  $arguments | array   | Filter function arguments
-     *  ---------- | ------- | --------------------------------------
+     *  ---------- | ------- | -------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10, $arguments = null) {
+    public static function add($name, $function, $priority = 10) {
         // Kill duplicates
         if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
             foreach(self::$filters[$name] as $filter) {
-                if($filter['function'] == $function) return true;
+                if($filter['function'] == $function && $filter['priority'] === $priority) return true;
             }
         }
         self::$filters[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (int) $priority : 10,
-            'arguments' => $arguments
+            'priority' => ! is_null($priority) ? (int) $priority : 10
         );
     }
 
@@ -65,16 +63,13 @@ class Filter {
      */
 
     public static function apply($name, $value) {
-        $arguments = array_slice(func_get_args(), 1);
+        $arguments = array(&$value) + array_slice(func_get_args(), 2);
         if( ! isset(self::$filters[$name])) {
             self::$filters[$name] = false;
             return $value;
         }
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
         foreach($filters as $filter => $cargo) {
-            if( ! is_null($cargo['arguments'])) {
-                $arguments = $cargo['arguments'];
-            }
             $value = call_user_func_array($cargo['function'], $arguments);
         }
         return $value;

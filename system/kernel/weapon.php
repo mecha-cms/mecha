@@ -27,17 +27,15 @@ class Weapon {
      *  $name      | string  | Hook name
      *  $function  | mixed   | Hook function
      *  $priority  | integer | Hook function priority
-     *  $arguments | array   | Hook function arguments
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10, $arguments = null) {
+    public static function add($name, $function, $priority = 10) {
         self::$armaments[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (int) $priority : 10,
-            'arguments' => $arguments
+            'priority' => ! is_null($priority) ? (int) $priority : 10
         );
     }
 
@@ -68,9 +66,6 @@ class Weapon {
         if(isset(self::$armaments[$name])) {
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'priority')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                if( ! is_null($cargo['arguments'])) {
-                    $arguments = $cargo['arguments'];
-                }
                 call_user_func_array($cargo['function'], $arguments);
             }
         } else {
