@@ -499,32 +499,4 @@ class Guardian {
         if(isset($messages[$status])) header($_SERVER['SERVER_PROTOCOL'] . ' ' . $status . ' ' . $messages[$status]);
     }
 
-    /**
-     * ============================================================
-     *  GET CLIENT IP ADDRESS
-     * ============================================================
-     *
-     * -- CODE: ---------------------------------------------------
-     *
-     *    echo Guardian::IP();
-     *
-     * ------------------------------------------------------------
-     *
-     */
-
-    public static function IP() {
-        $ip = 'N/A';
-        if(array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && ! empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            if(strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') > 0) {
-                $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $ip = trim($addresses[0]);
-            } else {
-                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            }
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return self::check($ip)->this_is_IP ? $ip : 'N/A';
-    }
-
 }

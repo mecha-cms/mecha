@@ -408,7 +408,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if($fuck !== "") {
                 if(
                     $request['email'] == $fuck || // Block by email address
-                    Guardian::IP() != 'N/A' && Guardian::IP() == $fuck || // Block by IP address
+                    Get::IP() != 'N/A' && Get::IP() == $fuck || // Block by IP address
                     strpos($request['message'], strtolower($fuck)) !== false // Block by message word(s)
                 ) {
                     Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
@@ -433,8 +433,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                     'email' => $request['email'],
                     'url' => Request::post('url', '#'),
                     'status' => Guardian::happy() ? 'pilot' : 'passenger',
-                    'ua' => $_SERVER['HTTP_USER_AGENT'],
-                    'ip' => Guardian::IP(),
+                    'ua' => Get::UA(),
+                    'ip' => Get::IP(),
                     'message_raw' => $message,
                     'message' => Text::parse($message)->to_html
                 )

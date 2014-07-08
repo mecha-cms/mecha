@@ -1143,4 +1143,49 @@ class Get {
         return is_array($images) && isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? self::$placeholder : $fallback);
     }
 
+    /**
+     * ==========================================================================
+     *  GET CLIENT IP ADDRESS
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    echo Get::IP();
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function IP() {
+        $ip = 'N/A';
+        if(array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && ! empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
+            if(strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') > 0) {
+                $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
+                $ip = trim($addresses[0]);
+            } else {
+                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+            }
+        } else {
+            $ip = $_SERVER['REMOTE_ADDR'];
+        }
+        return Guardian::check($ip)->this_is_IP ? $ip : 'N/A';
+    }
+
+    /**
+     * ==========================================================================
+     *  GET CLIENT USER AGENT INFO
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    echo Get::UA();
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function UA() {
+        return $_SERVER['HTTP_USER_AGENT'];
+    }
+
 }
