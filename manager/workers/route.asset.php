@@ -23,6 +23,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     }
     Config::set(array(
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,
+        'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => DECK . DS . 'workers' . DS . 'asset.php'
@@ -37,33 +38,32 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
  */
 
 Route::accept($config->manager->slug . '/asset/kill/files?:(:all)', function($name = "") use($config, $speak) {
-    $name = str_replace(array('\\', '/'), DS, $name);
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    $name = str_replace(array('\\', '/'), DS, $name);
     if(strpos($name, ';') !== false) {
         $deletes = explode(';', $name);
     } else {
         if( ! File::exist(ASSET . DS . $name)) {
-            Shield::abort(); // file not found!
+            Shield::abort(); // File not found!
         } else {
             $deletes = array($name);
         }
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($deletes[0]) : $speak->assets) . $config->title_separator . $config->manager->title,
-        'name' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
     ));
-    if(Request::post()) {
-        Guardian::checkToken(Request::post('token'));
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
         $info_path = array();
         foreach($deletes as $file_to_delete) {
             $_path = ASSET . DS . $file_to_delete;
             $info_path[] = $_path;
             File::open($_path)->delete();
         }
-        $P = array('data' => array('type' => $path, 'file' => $info_path[0], 'files' => $info_path));
+        $P = array('data' => $request);
         Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_destruct', array($P, $P));
@@ -71,7 +71,7 @@ Route::accept($config->manager->slug . '/asset/kill/files?:(:all)', function($na
     } else {
         Notify::warning($speak->notify_confirm_delete);
     }
-    Shield::attach('manager', false);
+    Shield::define('the_name', $deletes)->attach('manager', false);
 });
 
 
@@ -104,11 +104,10 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($
         Shield::abort();
     }
     if( ! $file = File::exist(ASSET . DS . $dir_name . DS . $old_name)) {
-        Shield::abort(); // file not found!
+        Shield::abort(); // File not found!
     }
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $old_name . $config->title_separator . $config->manager->title,
-        'name' => $old_name,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
     ));
     if($request = Request::post()) {
@@ -132,7 +131,7 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($
             if($old_name !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));
             }
-            $P = array('data' => array('path' => $file, 'name_old' => $old_name, 'name_new' => $new_name));
+            $P = array('data' => $request);
             if( ! Notify::errors()) {
                 if(Request::post('content')) {
                     File::open($file)->write($request['content'])->save();
@@ -144,8 +143,6 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($
                 Guardian::kick($config->manager->slug . '/asset');
             }
         }
-    } else {
-        Guardian::memorize(array('name' => $old_name));
     }
-    Shield::attach('manager', false);
+    Shield::define('the_name', $old_name)->attach('manager', false);
 });

@@ -355,7 +355,8 @@ input[type="submit"]:active,
 
 [disabled],
 [readonly],
-.btn-disabled {
+.btn-disabled,
+.disabled {
   cursor:default;
   cursor:not-allowed;
   opacity:.9;
@@ -420,6 +421,8 @@ label input:checked + span {opacity:.8}
   line-height:normal;
   text-align:right;
 }
+
+.form-static {padding-top:10px}
 
 .no-gap .form-label > span {
   display:block;

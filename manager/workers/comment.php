@@ -1,4 +1,4 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <?php if($responses): ?>
 <ol class="comment-list">
   <?php foreach($responses as $response): ?>

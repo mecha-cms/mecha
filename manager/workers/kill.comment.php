@@ -1,6 +1,6 @@
-<?php $aa = Get::articleAnchor($response->post); echo Notify::read(); ?>
+<?php $aa = Get::articleAnchor($response->post); echo $messages; ?>
 <form class="form-kill form-comment" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <p><strong><?php echo $response->name; ?></strong><?php echo $aa ? ' ' . strtolower($speak->to) . ' <a href="' . $response->permalink . '" target="_blank">&ldquo;' . $aa->title . '&rdquo;</a>' : ""; ?></p>
   <p><?php echo $response->message; ?></p>
   <p><strong><?php echo $speak->date; ?>:</strong> <?php echo Date::format($response->time, 'Y/m/d H:i:s'); ?></p>

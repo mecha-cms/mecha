@@ -96,16 +96,6 @@ Weapon::add('sword_after', function() {
  * ---------------
  */
 
-foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $plugin) {
-    include $plugin;
-}
-
-
-/**
- * Merge the Plugin Language Parts
- * -------------------------------
- */
-
 foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $plugin) {
     if( ! $language = File::exist($plugin . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
         $language = $plugin . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
@@ -113,6 +103,7 @@ foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $plugin) {
     if(File::exist($language)) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
     }
+    if($launch = File::exist($plugin . DS . 'launch.php')) include $launch;
 }
 
 

@@ -235,7 +235,7 @@ class Converter {
                     $part = explode($attr[2], $part, 2);
                     $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
                 }
-                unset($attributes[""]); // remove empty array keys
+                unset($attributes[""]); // Remove empty array keys
             }
         }
         return array(

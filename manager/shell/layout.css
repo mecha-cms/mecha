@@ -8,6 +8,8 @@ textarea[name="js"] {height:300px}
   text-align:right;
 }
 
+.main-actions + .tab-area {margin-top:0}
+
 .media-item {
   border-top:1px dashed;
   padding:1.3846153846153846em 0;
@@ -29,8 +31,8 @@ textarea[name="js"] {height:300px}
   position:relative;
 }
 
-.page,
-.article {
+.page-list .page,
+.article-list .article {
   margin:2px 0 0;
   padding:1em 0;
   overflow:hidden;

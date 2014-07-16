@@ -1,7 +1,7 @@
 <div class="main-actions">
-  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/page/ignite"><i class="fa fa-plus-square"></i> <?php echo $speak->manager->title_new_page; ?></a>
+  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/page/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->page)); ?></a>
 </div>
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <?php if($pages): ?>
 <ol class="page-list">
   <?php foreach($pages as $page): ?>

@@ -7,15 +7,15 @@
  */
 
 Route::accept($config->manager->slug . '/shortcode', function() use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $shortcodes = File::open($file)->unserialize();
     } else {
         $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     }
     $G = array('data' => $shortcodes);
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
     Config::set(array(
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,
         'files' => $shortcodes,
@@ -29,7 +29,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
                 $data[$keys[$i]] = $request['values'][$i];
             }
         }
-        $P = array('data' => $data);
+        $P = array('data' => $request);
         File::serialize($data)->saveTo(STATE . DS . 'shortcodes.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Weapon::fire('on_shortcode_update', array($G, $P));

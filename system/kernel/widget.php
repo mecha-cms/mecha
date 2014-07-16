@@ -2,7 +2,7 @@
 
 class Widget {
 
-    private static $macros = array();
+    public static $macros = array();
 
     public static $ids = array(
         'manager-menu' => 1,

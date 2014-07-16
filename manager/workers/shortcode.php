@@ -1,6 +1,6 @@
 <form class="form-shortcode" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Notify::read(); ?>
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <?php echo $messages; ?>
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered table-full">
     <thead>
       <tr>

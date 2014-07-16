@@ -3,7 +3,7 @@
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-recycle"></i> <?php echo $speak->restore; ?></a>
 </div>
 <div class="tab-content-area">
-  <?php echo Notify::read(); ?>
+  <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <h3 class="media-head"><?php echo $speak->backup; ?></h3>
     <table class="table-bordered table-full">
@@ -58,7 +58,7 @@
       <h4><?php echo $title; ?></h4>
       <p><code><?php echo $destination; ?></code></p>
       <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
-        <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+        <input name="token" type="hidden" value="<?php echo $token; ?>">
         <input name="destination" type="hidden" value="<?php echo $destination; ?>">
         <input name="title" type="hidden" value="<?php echo $title; ?>">
         <span class="input-wrapper btn btn-default">

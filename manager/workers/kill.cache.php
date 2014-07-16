@@ -1,8 +1,8 @@
-﻿<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-kill form-cache" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <ul>
-    <?php foreach($config->name as $name): ?>
+    <?php foreach($the_name as $name): ?>
     <li><?php echo CACHE . DS . str_replace(array('\\', '/'), DS, $name); ?></li>
     <?php endforeach; ?>
   </ul>

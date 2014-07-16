@@ -31,34 +31,34 @@ class Notify {
             'info' => '<i class="fa fa-fw fa-info-circle"></i> ',
             'warning' => '<i class="fa fa-fw fa-exclamation-triangle"></i> ',
             'error' => '<i class="fa fa-fw fa-times"></i> '
+        ),
+        'classes' => array(
+            'messages' => 'messages',
+            'message' => 'message message-%s cl cf'
         )
     );
 
-    public static function add($type = 'info', $text = "", $icon = null, $tag = 'p') {
-        if(is_null($icon)) $icon = self::$config['icons']['default'];
-        Session::set(self::$notify, Session::get(self::$notify) . '<' . $tag . ' class="message message-' . $type . ' cl cf">' . $icon . $text . '</' . $tag . '>');
+    public static function add($type = 'default', $text = "", $icon = null, $tag = 'p') {
+        $icon = is_null($icon) ? self::$config['icons'][$type] : $icon;
+        Session::set(self::$notify, Session::get(self::$notify) . '<' . $tag . ' class="' . sprintf(self::$config['classes']['message'], $type) . '">' . $icon . $text . '</' . $tag . '>');
     }
 
     public static function success($text = "", $icon = null, $tag = 'p') {
-        if(is_null($icon)) $icon = self::$config['icons']['success'];
         self::add('success', $text, $icon, $tag);
         Guardian::forget();
     }
 
     public static function info($text = "", $icon = null, $tag = 'p') {
-        if(is_null($icon)) $icon = self::$config['icons']['info'];
         self::add('info', $text, $icon, $tag);
     }
 
     public static function warning($text = "", $icon = null, $tag = 'p') {
-        if(is_null($icon)) $icon = self::$config['icons']['warning'];
         self::add('warning', $text, $icon, $tag);
         Guardian::memorize();
         self::$errors++;
     }
 
     public static function error($text = "", $icon = null, $tag = 'p') {
-        if(is_null($icon)) $icon = self::$config['icons']['error'];
         self::add('error', $text, $icon, $tag);
         Guardian::memorize();
         self::$errors++;
@@ -69,7 +69,7 @@ class Notify {
     }
 
     public static function read() {
-        $results = Session::get(self::$notify) !== "" ? '<div class="messages">' . Session::get(self::$notify) . '</div>' : "";
+        $results = Session::get(self::$notify) !== "" ? '<div class="' . self::$config['classes']['messages'] . '">' . Session::get(self::$notify) . '</div>' : "";
         self::clear();
         return $results;
     }
@@ -78,11 +78,24 @@ class Notify {
         Session::set(self::$notify, "");
     }
 
-    public static function configure($key, $value = "") {
+    public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {
+        $header  = "MIME-Version: 1.0\r\n";
+        $header .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
+        $header .= "From: " . $from . "\r\n";
+        $header .= "Reply-To: " . $from . "\r\n";
+        $header .= "Return-Path: " . $from . "\r\n";
+        $header .= "X-Mailer: PHP/" . phpversion();
+
+        $header = Filter::apply($filter_prefix . 'notification.email.header', $header);
+        $message = Filter::apply($filter_prefix . 'notification.email.message', $message);
+        return mail($to, $subject, $message, $header);
+    }
+
+    public static function configure($key, $value = array()) {
         foreach($value as $k => $v) {
             self::$config[$key][$k] = $v;
         }
-		return new static;
+        return new static;
     }
 
 }

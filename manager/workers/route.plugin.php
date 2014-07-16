@@ -6,7 +6,7 @@
  * -----------------
  */
 
-$e_plugin_page = "Title: " . $speak->unknown . "\n" .
+$e_plugin_page = "Title: %s\n" .
      "Author: " . $speak->unknown . "\n" .
      "URL: #\n" .
      "Version: " . $speak->unknown . "\n" .
@@ -73,7 +73,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
 })(Zepto);
 </script>';
-            }, 11);
+            });
         }
     }
     $plugins = array();
@@ -86,7 +86,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 $file = $files[$i] . DS . 'about.txt';
             }
             $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
-            if($about['title'] == $speak->unknown) {
+            if($about['title'] == '%s') {
                 $about['title'] = ucwords(Text::parse(basename($files[$i]))->to_text);
             }
             $plugins[$i]['about'] = $about;
@@ -97,6 +97,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     }
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
+        'offset' => $offset,
         'files' => $plugins,
         'pagination' => Navigator::extract($folders, $offset, $config->per_page, $config->manager->slug . '/plugin'),
         'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
@@ -119,7 +120,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
     $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
-    if($about['title'] == $speak->unknown) {
+    if($about['title'] == '%s') {
         $about['title'] = ucwords(Text::parse($slug)->to_text);
     }
     if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
@@ -142,17 +143,18 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
  */
 
 Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
+    $page_current = (int) Request::get('o', 1);
     // Toggle file name from `launch.php` to `pending.php` or vice-versa.
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
-    $P = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'freeze' ? 'eject' : 'mounted';
+    $G = array('data' => array('id' => $slug, 'action' => $path));
+    $mode = $path == 'freeze' ? '_eject' : '_mounted';
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
-    Weapon::fire('on_plugin_update', array($P, $P));
-    Weapon::fire('on_plugin_' . $mode, array($P, $P));
-    Weapon::fire('on_plugin_' . md5($slug) . '_update', array($P, $P));
-    Weapon::fire('on_plugin_' . md5($slug) . '_' . $mode, array($P, $P));
-    Guardian::kick($config->manager->slug . '/plugin');
+    Weapon::fire('on_plugin_update', array($G, $G));
+    Weapon::fire('on_plugin_' . $mode, array($G, $G));
+    Weapon::fire('on_plugin_' . md5($slug) . '_update', array($G, $G));
+    Weapon::fire('on_plugin_' . md5($slug) . $mode, array($G, $G));
+    Guardian::kick($config->manager->slug . '/plugin/' . $page_current);
 });
 
 
@@ -166,17 +168,17 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage(sprintf($e_plugin_page, ucwords(Text::parse($slug)->to_text)), true, 'plugin:');
     $about['slug'] = $slug;
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
         'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
     ));
-    if(Request::post()) {
-        Guardian::checkToken(Request::post('token'));
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
         File::open(PLUGIN . DS . $slug)->delete();
-        $P = array('data' => array('id' => $slug));
+        $P = array('data' => $request);
         Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
         Weapon::fire('on_plugin_update', array($P, $P));
         Weapon::fire('on_plugin_destruct', array($P, $P));

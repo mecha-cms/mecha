@@ -1,7 +1,7 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <?php if($files): ?>
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <p><button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
   <table class="table-bordered table-full">
     <colgroup>

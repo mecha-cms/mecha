@@ -130,7 +130,7 @@ class Navigator {
         } else {
             self::$navigator[$key] = $value;
         }
-		return new static;
+        return new static;
     }
 
 }

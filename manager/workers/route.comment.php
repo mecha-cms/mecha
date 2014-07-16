@@ -37,7 +37,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         Shield::abort();
     }
     if( ! $comment = Get::comment($id)) {
-        Shield::abort(); // file not found!
+        Shield::abort(); // File not found!
     }
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     Config::set(array(
@@ -46,7 +46,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
     ));
     if($request = Request::post()) {
-        $P = array('data' => Mecha::A($comment));
+        $P = array('data' => $request);
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
         File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
@@ -68,7 +68,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
 
 Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id = "") use($config, $speak) {
     if( ! $comment = Get::comment($id)) {
-        Shield::abort(); // file not found!
+        Shield::abort(); // File not found!
     }
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     $G = array('data' => Mecha::A($comment));
@@ -90,7 +90,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     });
 })(Zepto);
 </script>';
-    }, 11);
+    });
     if($request = Request::post()) {
         $request['id'] = $id;
         $request['ua'] = isset($comment->ua) ? $comment->ua : 'N/A';
@@ -109,7 +109,6 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Guardian::memorize($request);
         }
         $P = array('data' => $request, 'action' => $request['action']);
-        $P['data']['url'] = Request::post('url', '#');
         if( ! Notify::errors()) {
             $data  = 'Name: ' . $request['name'] . "\n";
             $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
@@ -124,8 +123,6 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Weapon::fire('on_comment_repair', array($G, $P));
             Guardian::kick($config->manager->slug . '/comment/repair/id:' . $id);
         }
-    } else {
-        Guardian::memorize($comment);
     }
-    Shield::attach('manager', false);
+    Shield::define('default', $comment)->attach('manager', false);
 });

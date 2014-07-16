@@ -7,12 +7,12 @@
  */
 
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if($file = File::exist(STATE . DS . 'fields.txt')) {
         $fields = File::open($file)->unserialize();
         ksort($fields);
-    }
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
     }
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
@@ -29,13 +29,13 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
  */
 
 Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if($file = File::exist(STATE . DS . 'fields.txt')) {
         $fields = File::open($file)->unserialize();
     } else {
         $fields = array();
-    }
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
     }
     if($key === false) {
         $data = array(
@@ -44,7 +44,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             'value' => "",
             'scope' => 'article'
         );
-        Config::set('page_title', $speak->manager->title_new_field . $config->title_separator . $config->manager->title);
+        Config::set('page_title', Config::speak('manager.title_new_', array($speak->field)) . $config->title_separator . $config->manager->title);
     } else {
         if( ! isset($fields[$key])) {
             Shield::abort();
@@ -57,7 +57,6 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     Config::set(array(
         'page_type' => 'manager',
         'file' => $data,
-        'key' => $key,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
     ));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
@@ -66,7 +65,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     $.slugger($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
 })(Zepto);
 </script>';
-    }, 11);
+    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Empty title field
@@ -84,15 +83,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             'value' => $request['value'],
             'scope' => $request['scope']
         );
-        $P = array(
-            'data' => array(
-                'title' => $request['title'],
-                'type' => $request['type'],
-                'value' => $request['value'],
-                'scope' => $request['scope'],
-                'key' => $r_key
-            )
-        );
+        $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::serialize($fields)->saveTo(STATE . DS . 'fields.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
@@ -101,7 +92,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             Guardian::kick($config->manager->slug . '/field');
         }
     }
-    Shield::attach('manager', false);
+    Shield::define('the_key', $key)->attach('manager', false);
 });
 
 
@@ -111,13 +102,13 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
  */
 
 Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if($file = File::exist(STATE . DS . 'fields.txt')) {
         $fields = File::open($file)->unserialize();
     } else {
         $fields = array();
-    }
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
     }
     if( ! isset($fields[$key])) {
         Shield::abort();
@@ -127,12 +118,11 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $data['title'] . $config->title_separator . $config->manager->title,
         'file' => $data,
-        'key' => $key,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.field.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $P = array('data' => $data);
+        $P = array('data' => $request);
         $P['data']['key'] = $key;
         $deleted_field = $fields[$key]['title'];
         unset($fields[$key]); // delete ...
@@ -144,5 +134,5 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     } else {
         Notify::warning($speak->notify_confirm_delete);
     }
-    Shield::attach('manager', false);
+    Shield::define('the_key', $key)->attach('manager', false);
 });

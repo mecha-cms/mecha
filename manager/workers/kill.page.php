@@ -1,6 +1,6 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-kill form-page" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <h3><?php echo $page->title; ?></h3>
   <p><?php echo $page->description; ?></p>
   <?php if( ! empty($page->css)): ?>

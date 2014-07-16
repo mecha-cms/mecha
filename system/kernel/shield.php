@@ -40,10 +40,10 @@ class Shield {
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
         $str = array(
-            '#\<\!--(?!\[if)([\s\S]+?)--\>#' => "", // remove comments in HTML
-            '#\>[^\S ]+#s' => '>', // strip whitespaces after tags, except space
-            '#[^\S ]+\<#s' => '<', // strip whitespaces before tags, except space
-            '#\>\s{2,}\<#s' => '><' // strip multiple whitespaces between closing and opening tag
+            '#\<\!--(?!\[if)([\s\S]+?)--\>#' => "", // Remove comments in HTML
+            '#\>[^\S ]+#s' => '>', // Strip whitespaces after tags, except space
+            '#[^\S ]+\<#s' => '<', // Strip whitespaces before tags, except space
+            '#\>\s{2,}\<#s' => '><' // Strip multiple whitespaces between closing and opening tag
         );
         $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
         return Filter::apply('sanitize:output', $buffer);
@@ -68,7 +68,9 @@ class Shield {
             'files' => $config->files,
             'file' => $config->file,
             'pager' => $config->pagination,
-            'manager' => Guardian::happy()
+            'manager' => Guardian::happy(),
+            'token' => Guardian::token(),
+            'messages' => Notify::read()
         );
         return array_merge($results, self::$defines);
     }
@@ -190,6 +192,8 @@ class Shield {
 
         Weapon::fire('after_shield_config_redefine', array($G, $G));
 
+        self::$defines = array();
+
         if($_file = File::exist(self::pathTrace($name))) {
             $shield = $_file;
         } elseif($_file = File::exist(self::pathTrace($base[0]))) {
@@ -211,6 +215,8 @@ class Shield {
 
         require Filter::apply('shield:path', $shield);
 
+        Guardian::forget();
+
         Weapon::fire('shield_after', array($G, $G));
 
         if($cacheable) {
@@ -218,8 +224,6 @@ class Shield {
             File::write($G['data']['cache'])->saveTo($cache);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
-
-        Guardian::forget();
 
         ob_end_flush();
 
@@ -252,6 +256,8 @@ class Shield {
 
         extract(self::defines());
 
+        self::$defines = array();
+
         Weapon::fire('after_shield_config_redefine', array($G, $G));
 
         if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
@@ -268,9 +274,9 @@ class Shield {
 
         require Filter::apply('shield:path', $shield);
 
-        Weapon::fire('shield_after', array($G, $G));
-
         Guardian::forget();
+
+        Weapon::fire('shield_after', array($G, $G));
 
         ob_end_flush();
 

@@ -1,6 +1,6 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-login" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->username; ?></span>
     <span class="grid span-4"><input name="username" type="text" autocomplete="off" autofocus></span>

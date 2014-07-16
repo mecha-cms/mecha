@@ -2,13 +2,19 @@
 
 
 /**
- * Inject the Required Assets for Manager
- * --------------------------------------
+ * Backend Assets
+ * --------------
+ *
+ * Inject the required assets for manager.
+ *
  */
+
+Weapon::add('shell_before', function() use($config) {
+    echo Asset::stylesheet($config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css');
+}, 10);
 
 Weapon::add('shell_after', function() use($config) {
     echo Asset::stylesheet(array(
-        $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
         'manager/shell/editor.css',
         'manager/shell/check.css',
         'manager/shell/upload.css',
@@ -49,8 +55,11 @@ Weapon::add('sword_after', function() use($config) {
 
 
 /**
- * Add Global Cache Killer for Articles and Pages
- * ----------------------------------------------
+ * Cache Killer
+ * ------------
+ *
+ * Add global cache killer for articles and pages.
+ *
  */
 
 function remove_pages_cache() {
@@ -66,8 +75,11 @@ Weapon::add('on_page_update', 'remove_pages_cache', 10);
 
 
 /**
- * Add Default Article and Page Footer Links
- * -----------------------------------------
+ * Footer Links
+ * ------------
+ *
+ * Add default article, page and comment footer links.
+ *
  */
 
 Weapon::add('article_footer', function($article) {
@@ -86,12 +98,6 @@ Weapon::add('page_footer', function($page) {
     }
 }, 20);
 
-
-/**
- * Add Default Comment Footer Links
- * --------------------------------
- */
-
 Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
@@ -102,13 +108,16 @@ Weapon::add('comment_footer', function($comment, $article) {
 
 
 /**
- * Load the Routes
- * ---------------
+ * Backend Routes
+ * --------------
+ *
+ * Load the routes.
+ *
  */
 
 $uri_end = str_replace($config->url . '/' . $config->manager->slug . '/', "", $config->url_current);
-$uri_segments = explode('/', $uri_end);
-if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_segments[0] . '.php')) {
+$uri_end_parts = explode('/', $uri_end);
+if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end_parts[0] . '.php')) {
     Config::set('page_type', 'manager');
     include $detour;
 }

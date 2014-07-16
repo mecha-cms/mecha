@@ -12,7 +12,7 @@ Weapon::fire('unit_composer_fields_before', array($FT, $fields));
 if( ! empty($fields)) {
     $html = "";
     foreach($fields as $key => $value) {
-        $field = $cache['fields'];
+        $field = Guardian::wayback('fields', Mecha::A($default->fields));
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }

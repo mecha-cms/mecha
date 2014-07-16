@@ -19,7 +19,7 @@
                     .replace(/\-/g, connector)
             );
 
-        }).trigger("keyup");
+        });
 
         return input;
 

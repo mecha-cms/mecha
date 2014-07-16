@@ -1,6 +1,6 @@
 <form class="form-tag" action="<?php echo $config->url_current; ?>" method="post">
-  <?php $ids = array(); echo Notify::read(); ?>
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <?php $ids = array(); echo $messages; ?>
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered table-full">
     <colgroup>
       <col style="width:4em;">

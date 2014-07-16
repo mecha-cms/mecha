@@ -3,7 +3,7 @@
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-file-archive-o"></i> <?php echo $speak->upload; ?></a>
 </div>
 <div class="tab-content-area">
-  <?php echo Notify::read(); ?>
+  <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <h3 class="media-head"><?php echo $speak->manager->title_plugin_list; ?></h3>
     <?php if($files): ?>
@@ -13,10 +13,10 @@
       <p><?php echo Get::summary($plugin->about->content); ?></p>
       <p>
         <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-        <a class="btn btn-sm btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
+        <a class="btn btn-sm btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
         <?php else: ?>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-          <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
+          <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
           <?php endif; ?>
         <?php endif; ?>
         <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
@@ -35,7 +35,7 @@
   <div class="tab-content hidden" id="tab-content-2">
     <h3 class="media-head"><?php echo $speak->manager->title_plugin_upload; ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/plugin" method="post" enctype="multipart/form-data">
-      <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+      <input name="token" type="hidden" value="<?php echo $token; ?>">
       <span class="input-wrapper btn btn-default">
         <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
         <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">

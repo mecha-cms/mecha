@@ -8,7 +8,6 @@
 
 Route::accept($config->manager->slug . '/ajax/preview:(:any)', function($kind = "") use($config, $speak) {
     $P = array('data' => Request::post());
-    $P['data']['type'] = $kind;
     if($kind == 'article' || $kind == 'page') {
         Weapon::fire('preview_content_before', array($P, $P));
         echo '<div class="inner">';

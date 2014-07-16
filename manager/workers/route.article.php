@@ -35,47 +35,40 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
 Route::accept(array($config->manager->slug . '/article/ignite', $config->manager->slug . '/article/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/sword/editor.js');
-    }, 11);
+    });
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
     if($id && $article = Get::article($id, array('content', 'tags', 'comments'))) {
-        $fields = Mecha::A($article);
-        $fields['date'] = $article->date->W3C;
-        $fields['tags'] = (array) $article->kind;
-        $fields['content'] = $fields['content_raw'];
-        $fields['css'] = $fields['css_raw'];
-        $fields['js'] = $fields['js_raw'];
         if( ! isset($article->fields)) {
-            $fields['fields'] = array();
+            $article->fields = array();
         }
         Config::set('page_title', $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title);
     } else {
         if($id !== false) {
-            Shield::abort(); // file not found!
+            Shield::abort(); // File not found!
         }
-        $fields = array(
+        $article = Mecha::O(array(
             'id' => "",
             'path' => "",
             'state' => 'draft',
-            'date' => "",
+            'date' => array('W3C' => ""),
             'title' => $config->defaults->page_title,
             'slug' => "",
-            'content' => $config->defaults->page_content,
+            'content_raw' => $config->defaults->page_content,
             'description' => "",
-            'tags' => array(),
+            'kind' => array(),
             'author' => Guardian::get('author'),
-            'css' => $config->defaults->page_custom_css,
-            'js' => $config->defaults->page_custom_js,
+            'css_raw' => $config->defaults->page_custom_css,
+            'js_raw' => $config->defaults->page_custom_js,
             'fields' => array()
-        );
-        Config::set('page_title', $speak->manager->title_new_article . $config->title_separator . $config->manager->title);
+        ));
+        Config::set('page_title', Config::speak('manager.title_new_', array($speak->article)) . $config->title_separator . $config->manager->title);
     }
-    $G = array('data' => $fields);
-    $G['data']['fields'] = Text::parse($G['data']['fields'])->to_encoded_json;
+    $G = array('data' => Mecha::A($article));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = $fields['id'];
-        $request['path'] = $fields['path'];
-        $request['state'] = $fields['state'];
+        $request['id'] = $article->id;
+        $request['path'] = $article->path;
+        $request['state'] = $article->state;
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
         // Collect all available slug to prevent duplicate
         $slugs = array();
@@ -93,14 +86,14 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $content = Request::post('content', "");
         $description = $request['description'];
         $author = strip_tags($request['author']);
-        $tags = Request::post('tags', false);
+        $kinds = Request::post('kind', false);
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Handling for page without tags
-        if($tags === false) {
-            $request['tags'] = array('0');
-            $tags = array('0');
+        // Handling for article without tags
+        if($kinds === false) {
+            $request['kind'] = array('0');
+            $kinds = array('0');
         }
         // Checks for invalid time pattern
         if( ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $date)) {
@@ -112,11 +105,11 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
             Guardian::memorize($request);
         }
-        // Slug must contains at least one letter. This validation added to
-        // prevent users from inputting a page offset instead of article slug.
+        // Slug must contains at least one letter or one `-`. This validation added
+        // to prevent users from inputting a page offset instead of article slug.
         // Because the URL pattern of article's index page is `article/1` and the
         // URL pattern of article's single page is `article/article-slug`
-        if( ! preg_match('#[a-z]#i', $slug)) {
+        if( ! preg_match('#[a-z\-]#i', $slug)) {
             Notify::error($speak->notify_error_slug_missing_letter);
             Guardian::memorize($request);
         }
@@ -130,27 +123,11 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $data .= 'Author: ' . $author . "\n";
         $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
-        $P = array(
-            'data' => array(
-                'id' => $id ? (int) $id : (int) Date::format($date, 'U'),
-                'date' => $date,
-                'title' => $title,
-                'slug' => $slug,
-                'content_raw' => $content,
-                'content' => Text::parse($content)->to_html,
-                'description' => $description,
-                'author' => $author,
-                'tags' => Converter::strEval($tags),
-                'css' => $css,
-                'js' => $js,
-                'fields' => Text::parse($field)->to_encoded_json
-            ),
-            'action' => $request['action']
-        );
+        $P = array('data' => $request, 'action' => $request['action']);
         // New
         if( ! $id) {
             if( ! Notify::errors()) {
-                File::write($data)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . $extension, 0600);
+                File::write($data)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension, 0600);
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
                     File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
                 }
@@ -164,15 +141,15 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // Checks for duplicate slug, except for the current old slug.
             // Allow users to change their post slug, but make sure they
             // do not type the slug of another post.
-            unset($slugs[$fields['slug']]);
+            unset($slugs[$article->slug]);
             if(isset($slugs[$slug])) {
                 Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
                 Guardian::memorize($request);
             }
             // Start rewriting ...
             if( ! Notify::errors()) {
-                File::open($article->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $tags) . '_' . $slug . $extension);
-                $custom = CUSTOM . DS . Date::format($fields['date'], 'Y-m-d-H-i-s') . $extension;
+                File::open($article->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
+                $custom = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s') . $extension;
                 if(File::exist($custom)) {
                     if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js))) {
                         // Always delete empty custom CSS and JavaScript files ...
@@ -192,7 +169,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_repair', array($G, $P));
                 // Rename all comment files related to article if article date has been changed
-                if(((string) $date !== (string) $fields['date']) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
+                if(((string) $date !== (string) $article->date->W3C) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
                     foreach($comments as $comment) {
                         $parts = explode('_', basename($comment));
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
@@ -202,10 +179,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 Guardian::kick($config->manager->slug . '/article/repair/id:' . Date::format($date, 'U'));
             }
         }
-    } else {
-        Guardian::memorize($fields);
     }
-    Shield::attach('manager', false);
+    Shield::define('default', $article)->attach('manager', false);
 });
 
 

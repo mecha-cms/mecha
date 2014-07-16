@@ -5,7 +5,7 @@ class Get {
     protected function __construct() {}
     protected function __clone() {}
 
-    private static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    public static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
     private static function pathTrace($detector, $folder = PAGE) {
         $results = false;

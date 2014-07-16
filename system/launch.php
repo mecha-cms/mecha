@@ -424,28 +424,14 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $parent = Request::post('parent');
             $message = strip_tags($request['message'], '<br>');
 
-            $P = array(
-                'data' => array(
-                    'post' => $article->id,
-                    'id' => $id,
-                    'parent' => $parent ? (int) Date::format($parent, 'U') : null,
-                    'name' => strip_tags($request['name']),
-                    'email' => $request['email'],
-                    'url' => Request::post('url', '#'),
-                    'status' => Guardian::happy() ? 'pilot' : 'passenger',
-                    'ua' => Get::UA(),
-                    'ip' => Get::IP(),
-                    'message_raw' => $message,
-                    'message' => Text::parse($message)->to_html
-                )
-            );
+            $P = array('data' => $request);
 
-            $data  = 'Name: ' . $P['data']['name'] . "\n";
-            $data .= 'Email: ' . Text::parse($P['data']['email'])->to_ascii . "\n";
-            $data .= 'URL: ' . $P['data']['url'] . "\n";
-            $data .= 'Status: ' . $P['data']['status'] . "\n";
-            $data .= 'UA: ' . $P['data']['ua'] . "\n";
-            $data .= 'IP: ' . $P['data']['ip'] . "\n";
+            $data  = 'Name: ' . strip_tags($request['name']) . "\n";
+            $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
+            $data .= 'URL: ' . Request::post('url', '#') . "\n";
+            $data .= 'Status: ' . (Guardian::happy() ? 'pilot' : 'passenger') . "\n";
+            $data .= 'UA: ' . Get::UA() . "\n";
+            $data .= 'IP: ' . Get::IP() . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $message;
 
             File::write($data)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension, 0600);
@@ -456,23 +442,16 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Weapon::fire('on_comment_construct', array($P, $P));
 
             if($config->email_notification) {
-                $header  = "From: " . $request['email'] . "\r\n";
-                $header .= "Reply-To: " . $request['email'] . "\r\n";
-                $header .= "Return-Path: " . $request['email'] . "\r\n";
-                $header .= "X-Mailer: PHP/" . phpversion();
                 $message  = Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . "\r\n\r\n";
                 $message .= $request['name'] . ": " . $request['message'] . "\r\n\r\n";
                 $message .= Date::format($id, 'Y/m/d H:i:s');
-
-                $header = Filter::apply('comment:notification.email.header', $header);
-                $message = Filter::apply('comment:notification.email.message', $message);
 
                 /**
                  * Sending email notification ...
                  */
 
                 if( ! Guardian::happy()) {
-                    if(mail($config->author_email, $speak->comment_notification_subject, $message, $header)) {
+                    if(Notify::send($request['email'], $config->author_email, $speak->comment_notification_subject, $message, 'comment:')) {
                         Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $message, $header));
                     }
                 }

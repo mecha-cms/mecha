@@ -1,7 +1,7 @@
-﻿<div class="main-actions">
-  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/article/ignite"><i class="fa fa-plus-square"></i> <?php echo $speak->manager->title_new_article; ?></a>
+<div class="main-actions">
+  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/article/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->article)); ?></a>
 </div>
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <?php if($articles): ?>
 <ol class="article-list">
   <?php foreach($articles as $article): ?>

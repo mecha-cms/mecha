@@ -1,6 +1,5 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset" method="post" enctype="multipart/form-data">
-  <?php $token = Guardian::makeToken(); ?>
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <span class="input-wrapper btn btn-default">
     <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>

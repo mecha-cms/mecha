@@ -6,5 +6,3 @@
  */
 
 include SHIELD . DS . $config->shield . DS . 'index.php';
-
-?>

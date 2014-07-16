@@ -1,13 +1,13 @@
-<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-repair form-field" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
     <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo $file->title; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
-    <span class="grid span-5"><input name="key" type="text" class="input-block" value="<?php echo $config->key ? $config->key : ""; ?>"></span>
+    <span class="grid span-5"><input name="key" type="text" class="input-block" value="<?php echo $the_key ? $the_key : ""; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->type; ?></span>
@@ -59,8 +59,8 @@
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
-      <?php if($config->key): ?>
-      <button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $config->key; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+      <?php if($the_key): ?>
+      <button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button> <a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $the_key; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
       <?php else: ?>
       <button class="btn btn-construct" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->create; ?></button>
       <?php endif; ?>

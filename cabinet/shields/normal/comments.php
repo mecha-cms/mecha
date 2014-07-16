@@ -28,8 +28,8 @@
     <?php endif; ?>
   </ol>
   <form class="comment-form" id="comment-form" action="<?php echo $config->url_current; ?>" method="post">
-    <?php echo Notify::read(); ?>
-    <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+    <?php echo $messages; ?>
+    <input name="token" type="hidden" value="<?php echo $token; ?>">
     <input name="parent" type="hidden" value="">
     <label class="grid-group">
       <span class="grid span-1 form-label"><?php echo $speak->comment_name; ?></span>

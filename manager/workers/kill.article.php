@@ -1,6 +1,6 @@
-﻿<?php echo Notify::read(); ?>
+<?php echo $messages; ?>
 <form class="form-kill form-article" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
   <h3><?php echo $article->title; ?></h3>
   <p><?php echo $article->description; ?></p>
   <p><strong><?php echo $article->total_comments_text; ?></strong></p>

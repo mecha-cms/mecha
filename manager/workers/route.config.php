@@ -90,8 +90,6 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Weapon::fire('on_config_update', array($G, $P));
             Guardian::kick($request['manager']['slug'] . '/config');
         }
-    } else {
-        Guardian::memorize($config);
     }
     Shield::attach('manager', false);
 });

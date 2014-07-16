@@ -28,7 +28,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     base.fire(\'on_row_increase\');
 })(Zepto, DASHBOARD);
 </script>';
-    }, 11);
+    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $data = array();
@@ -43,7 +43,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
                 );
             }
         }
-        $P = array('data' => $data);
+        $P = array('data' => $request);
         File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
         Weapon::fire('on_tag_update', array($G, $P));

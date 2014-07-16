@@ -3,7 +3,7 @@
   <a class="tab" href="#tab-content-2"><i class="fa fa-user"></i> <?php echo $speak->about; ?></a>
 </div>
 <div class="tab-content-area">
-  <?php echo Notify::read(); ?>
+  <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
   <?php if($file->configurator): ?>
   <?php include $file->configurator; ?>

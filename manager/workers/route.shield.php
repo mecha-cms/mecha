@@ -6,7 +6,11 @@
  * ---------------
  */
 
-Route::accept($config->manager->slug . '/shield', function() use($config, $speak) {
+Route::accept(array($config->manager->slug . '/shield', $config->manager->slug . '/shield/(:any)'), function($folder = false) use($config, $speak) {
+    if( ! $folder) $folder = $config->shield;
+    if( ! File::exist(SHIELD . DS . $folder)) {
+        Shield::abort(); // Folder not found!
+    }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $accepted_mimes = array(
@@ -52,14 +56,82 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
 })(Zepto);
 </script>';
-            }, 11);
+            });
         }
     }
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'shield.php'
     ));
-    Shield::attach('manager', false);
+    $the_shields = glob(SHIELD . DS . '*', GLOB_ONLYDIR);
+    sort($the_shields);
+    Shield::define(array(
+        'info' => Shield::info($folder),
+        'the_shield_path' => $folder,
+        'the_shield_contents' => Get::files(SHIELD . DS . $folder, 'css,html,js,php,txt', 'ASC', 'name'),
+        'the_shields' => $the_shields
+    ))->attach('manager', false);
+});
+
+
+/**
+ * Shield Igniter
+ * --------------
+ */
+
+Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot' || $folder === "") {
+        Shield::abort();
+    }
+    if( ! $file = File::exist(SHIELD . DS . $folder)) {
+        Shield::abort(); // Folder not found!
+    }
+    Config::set(array(
+        'page_title' => $speak->creating . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
+    ));
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
+        echo '<script>
+(function($) {
+    new MTE($(\'textarea[name="content"]\')[0], {
+        tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
+        toolbar: false
+    });
+})(Zepto);
+</script>';
+    });
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
+        $path = str_replace(array('\\', '/'), DS, $request['name']);
+        if( ! Request::post('name')) {
+            Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
+        } else {
+            // Missing file extension
+            if( ! preg_match('#^.*?\.(.+?)$#', $path)) {
+                Notify::error($speak->notify_error_file_extension_missing);
+            }
+            if(File::exist(SHIELD . DS . $folder . DS . $path)) {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '</code>')));
+            }
+            $accepted_extensions = array('css', 'html', 'js', 'php', 'txt');
+            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            if( ! in_array($extension, $accepted_extensions)) {
+                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+            }
+        }
+        $P = array('data' => $request);
+        if( ! Notify::errors()) {
+            File::write($request['content'])->saveTo(SHIELD . DS . $folder . DS . $path);
+            Notify::success(Config::speak('notify_file_created', array('<code>' . basename($path) . '</code>')));
+            Weapon::fire('on_shield_update', array($P, $P));
+            Weapon::fire('on_shield_construct', array($P, $P));
+            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder);
+        }
+    }
+    Shield::define(array(
+        'the_shield' => $folder,
+        'the_path' => ""
+    ))->attach('manager', false);
 });
 
 
@@ -68,17 +140,19 @@ Route::accept($config->manager->slug . '/shield', function() use($config, $speak
  * -------------
  */
 
-Route::accept($config->manager->slug . '/shield/repair/file:(:all)', function($name = "") use($config, $speak) {
-    $name = str_replace(array('\\', '/'), DS, $name);
-    $shield = Request::get('shield') ? Request::get('shield') : $config->shield;
-    $qs = $shield != $config->shield ? '?shield=' . $shield : "";
-    if(Guardian::get('status') != 'pilot') {
+Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', function($folder = "", $path = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot' || $folder === "" || $path === "") {
         Shield::abort();
     }
-    if( ! $file = File::exist(SHIELD . DS . $shield . DS . $name)) {
-        Shield::abort(); // file not found!
+    $path = str_replace(array('\\', '/'), DS, $path);
+    if( ! $file = File::exist(SHIELD . DS . $folder)) {
+        Shield::abort(); // Folder not found!
     }
-    $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
+    if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
+        Shield::abort(); // File not found!
+    }
+    $content = File::open($file)->read();
+    $G = array('data' => array('path' => $file, 'name' => $path, 'content' => $content));
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
@@ -92,21 +166,44 @@ Route::accept($config->manager->slug . '/shield/repair/file:(:all)', function($n
     });
 })(Zepto);
 </script>';
-    }, 11);
-    if(Request::post()) {
-        Guardian::checkToken(Request::post('token'));
-        $P = array('data' => array('path' => $file, 'content' => Request::post('content')));
+    });
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
+        $name = str_replace(array('\\', '/'), DS, $request['name']);
+        if( ! Request::post('name')) {
+            Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
+        } else {
+            // Missing file extension
+            if( ! preg_match('#^.*?\.(.+?)$#', $name)) {
+                Notify::error($speak->notify_error_file_extension_missing);
+            }
+            if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
+            }
+            $accepted_extensions = array('css', 'html', 'js', 'php', 'txt');
+            $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            if( ! in_array($extension, $accepted_extensions)) {
+                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+            }
+        }
+        $P = array('data' => $request);
         if( ! Notify::errors()) {
-            File::open($file)->write($P['data']['content'])->save(0600);
-            Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($name) . '</code>')));
+            File::open($file)->write($request['content'])->save();
+            if($path != $name) {
+                File::open($file)->moveTo(SHIELD . DS . $folder . DS . $name);
+            }
+            Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($path) . '</code>')));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
-            Guardian::kick($config->url_current . $qs);
+            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . $name);
         }
     } else {
-        Guardian::memorize($G['data']);
+        Guardian::memorize(array('path' => $file, 'name' => $path, 'content' => $content));
     }
-    Shield::attach('manager', false);
+    Shield::define(array(
+        'the_shield' => $folder,
+        'the_path' => $path
+    ))->attach('manager', false);
 });
 
 
@@ -115,36 +212,43 @@ Route::accept($config->manager->slug . '/shield/repair/file:(:all)', function($n
  * -------------
  */
 
-Route::accept($config->manager->slug . '/shield/kill/(file:|shield:)(:all)', function($prefix = "", $name = "") use($config, $speak) {
-    $name = str_replace(array('\\', '/'), DS, $name);
-    $shield = Request::get('shield') ? Request::get('shield') : $config->shield;
-    if(Guardian::get('status') != 'pilot') {
+Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $config->manager->slug . '/shield/(:any)/kill/file:(:all)'), function($folder = "", $path = false) use($config, $speak) {
+    if(Guardian::get('status') != 'pilot' || $folder === "") {
         Shield::abort();
     }
-    if($prefix == 'file:') {
-        if( ! $file = File::exist(SHIELD . DS . $shield . DS . $name)) {
-            Shield::abort(); // file not found!
+    if($path) {
+        $path = str_replace(array('\\', '/'), DS, $path);
+        if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
+            Shield::abort(); // File not found!
         }
     } else {
-        if( ! $file = File::exist(SHIELD . DS . $name)) {
-            Shield::abort(); // folder not found!
+        if( ! $file = File::exist(SHIELD . DS . $folder)) {
+            Shield::abort(); // Folder not found!
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . basename($name) . $config->title_separator . $config->manager->title,
-        'name' => $name,
+        'page_title' => $speak->deleting . ': ' . basename($path) . $config->title_separator . $config->manager->title,
+        'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
     ));
-    if(Request::post()) {
-        Guardian::checkToken(Request::post('token'));
-        $P = array('data' => array('path' => $file));
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
+        $P = array('data' => $request);
         File::open($file)->delete();
-        Notify::success(Config::speak('notify_file_deleted', array('<code>' . basename($file) . '</code>')));
+        if($path) {
+            Notify::success(Config::speak('notify_file_deleted', array('<code>' . basename($path) . '</code>')));
+        } else {
+            Notify::success(Config::speak('notify_success_deleted', array($speak->shield)));
+        }
         Weapon::fire('on_shield_update', array($P, $P));
         Weapon::fire('on_shield_destruct', array($P, $P));
-        Guardian::kick($config->manager->slug . '/shield');
+        Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
         Notify::warning($speak->notify_confirm_delete);
     }
-    Shield::attach('manager', false);
+    Shield::define(array(
+        'the_shield' => $folder,
+        'the_path' => $path,
+        'info' => Shield::info($folder)
+    ))->attach('manager', false);
 });

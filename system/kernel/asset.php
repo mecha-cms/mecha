@@ -58,21 +58,21 @@ class Asset {
         return Filter::apply('asset:javascript', '<script src="' . self::url($path) . '"' . $addon . '></script>', $path);
     }
 
-    // DEPRECATED !!! Please use `Asset::javascript()`
+    // DEPRECATED. Please use `Asset::javascript()`
     public static function script($path, $addon = "") {
         return self::javascript($path, $addon);
     }
 
-    // Return the HTML stylesheet of asset
+    // Return the HTML StyleSheet of asset
     public static function stylesheet($path, $addon = "") {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= Filter::apply('asset:css', '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
+                $html .= Filter::apply('asset:stylesheet', '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
             }
             return $html;
         }
-        return Filter::apply('asset:css', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES, $path);
+        return Filter::apply('asset:stylesheet', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES, $path);
     }
 
     // Return the HTML image of asset

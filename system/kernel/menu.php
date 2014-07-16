@@ -29,12 +29,12 @@
  *      <li><a href="#example">Example 2</a></li>
  *      <li><a href="http://example.com/example">Example 3</a></li>
  *      <li><a href="#">Example 4</a>
- *        <ul>
+ *        <ul class="children-1">
  *          <li><a href="http://example.com/example/example">Example 4.1</a></li>
  *        </ul>
  *      </li>
  *      <li><a href="http://example.com/parent">Example 5</a>
- *        <ul>
+ *        <ul class="children-1">
  *          <li><a href="http://example.com/parent/children-1">Example 5.1</a></li>
  *          <li><a href="http://example.com/parent/children-2">Example 5.2</a></li>
  *        </ul>
