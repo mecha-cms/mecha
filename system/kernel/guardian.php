@@ -41,17 +41,22 @@ class Guardian {
      *
      * -- CODE: ---------------------------------------------------
      *
-     *    echo Guardian::makeToken();
+     *    echo Guardian::token();
      *
      * ------------------------------------------------------------
      *
      */
 
-    public static function makeToken() {
+    public static function token() {
         $file = SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
         Session::set(self::$token, $token);
         return $token;
+    }
+
+    // DEPRECATED. Please use `Guardian::token()`
+    public static function makeToken() {
+        return self::token();
     }
 
     /**
@@ -249,8 +254,8 @@ class Guardian {
     public static function wayback($name = null, $fallback = "") {
         $cache = Session::get(self::$cache);
         if(is_null($name)) return $cache;
-        $value = isset($cache[$name]) ? $cache[$name] : $fallback;
-        Session::set(self::$cache . '.' . $name, ""); // :)
+        $value = Mecha::GVR($cache, $name, $fallback);
+        Session::kill(self::$cache . '.' . $name);
         return $value;
     }
 
@@ -285,7 +290,7 @@ class Guardian {
         self::checkToken($_POST['token']);
         if(isset($_POST['username']) && isset($_POST['password']) && ! empty($_POST['username']) && ! empty($_POST['password'])) {
             if(isset($authors[$_POST['username']]) && $_POST['password'] === $authors[$_POST['username']]['password']) {
-                $token = self::makeToken();
+                $token = self::token();
                 Session::set(self::$login, array(
                     'token' => $token,
                     'username' => $_POST['username'],
