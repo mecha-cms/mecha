@@ -459,23 +459,21 @@ manager:
   placeholder_slug: judul-mengagumkan-anda
   placeholder_content: Konten di sini&hellip;
   placeholder_description: Deskripsi tentang pos ini (opsional).
-  placeholder_js: Tulis kode JavaScript kustom Anda di sini&hellip;
   placeholder_css: Tulis kode CSS kustom Anda di sini&hellip;
+  placeholder_js: Tulis kode JavaScript kustom Anda di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
   placeholder_asset_name: contoh-nama-aset.jpg
   placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
 
-  title_new_article: Artikel Baru
-  title_new_page: Halaman Baru
-  title_new_field: Bidang Baru
+  title_new_: %s Baru
 
   title_custom_css_and_js: CSS dan JavaScript Kustom
 
   title_live_preview_css: Pratinjau CSS Langsung
   title_live_preview_js: Pratinjau JavaScript Langsung
 
-  title_custom_js: <abbr title="JavaScript">JS</abbr> Kustom
   title_custom_css: <abbr title="Cascade Style Sheet">CSS</abbr> Kustom
+  title_custom_js: <abbr title="JavaScript">JS</abbr> Kustom
 
   title_title_separator: Pemisah Judul
 

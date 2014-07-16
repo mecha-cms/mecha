@@ -459,23 +459,21 @@ manager:
   placeholder_slug: your-awesome-title
   placeholder_content: Content goes here&hellip;
   placeholder_description: Some description about this post (optional).
-  placeholder_js: Write your custom JavaScript here&hellip;
   placeholder_css: Write your custom CSS here&hellip;
+  placeholder_js: Write your custom JavaScript here&hellip;
   placeholder_file: Select a file&hellip;
   placeholder_asset_name: example-asset-name.jpg
   placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
 
-  title_new_article: New Article
-  title_new_page: New Page
-  title_new_field: New Field
+  title_new_: New %s
 
   title_custom_css_and_js: Custom CSS and JavaScript
 
   title_live_preview_css: Live Preview CSS
   title_live_preview_js: Live Preview JavaScript
 
-  title_custom_js: Custom <abbr title="JavaScript">JS</abbr>
   title_custom_css: Custom <abbr title="Cascade Style Sheet">CSS</abbr>
+  title_custom_js: Custom <abbr title="JavaScript">JS</abbr>
 
   title_title_separator: Title Separator
 
