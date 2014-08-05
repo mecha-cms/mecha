@@ -43,6 +43,19 @@ class File {
     private static $opened = null;
     private static $increment = 0;
 
+    private static $config = array(
+        'size_max' => 2097152, // Maximum allowed file size
+        'extension_allow' => array( // List of allowed file extensions
+            'css', 'draft', 'hold', 'html', 'js', 'md', 'txt',
+            'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
+            'eot', 'ttf', 'woff',
+            'gz', 'rar', 'tar', 'zip', 'zipx'
+        ),
+        'extension_image' => array(
+            'gif', 'ico', 'jpg', 'jpeg', 'png'
+        )
+    );
+
     private function __construct() {}
     private function __clone() {}
 
@@ -77,12 +90,11 @@ class File {
 
     // Show the opened file to screen
     public static function read() {
-        $image_extensions = array('gif', 'ico', 'jpg', 'jpeg', 'png');
         $file = pathinfo(self::$opened);
         if( ! isset($file['extension'])) {
             $file['extension'] = "";
         }
-        if(in_array(strtolower($file['extension']), $image_extensions)) {
+        if(in_array(strtolower($file['extension']), self::$config['extension_image'])) {
             return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '"' . ES;
         }
         return file_get_contents(self::$opened);
@@ -193,15 +205,6 @@ class File {
     public static function upload($file, $destination = ROOT, $custom_success_message = "") {
         $config = Config::get();
         $speak = Config::speak();
-        $settings = array(
-            'max' => 2097152, // Maximum allowed file size
-            'allow' => array( // List of allowed file extensions
-                'css', 'html', 'js', 'md', 'txt',
-                'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
-                'eot', 'ttf', 'woff',
-                'gz', 'rar', 'tar', 'zip', 'zipx'
-            )
-        );
         // Create a safe file name
         $renamed = array();
         $parts = explode('.', $file['name']);
@@ -215,11 +218,11 @@ class File {
             return Notify::error($speak->notify_error_no_file_selected);
         }
         // Bad file extension
-        if( ! in_array(strtolower($info['extension']), $settings['allow'])) {
+        if( ! in_array(strtolower($info['extension']), self::$config['extension_allow'])) {
             return Notify::error(Config::speak('notify_error_file_extension', array($info['extension'])));
         }
         // Too large
-        if($file['size'] > $settings['max']) {
+        if($file['size'] > self::$config['size_max']) {
             return Notify::error(Config::speak('notify_error_file_size', array(self::size($settings['max'], 'KB'))));
         }
         // Something goes wrong
@@ -245,7 +248,7 @@ class File {
             $html[] = '<strong>' . $key . ':</strong> ' . $value;
         }
         if( ! empty($custom_success_message)) {
-            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], ($file['size'] / 1024) . ' KB', $link)));
+            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], $file['size'], $link)));
         } else {
             Notify::success(implode('<br>', $html), "");
         }
@@ -253,13 +256,24 @@ class File {
 
     // Get file size then convert it to ...
     public static function size($file, $unit = 'Bytes') {
+        $fs = is_numeric($file) ? $file : filesize($file);
         switch(strtolower($unit)) {
-            case 'bytes': $size = filesize($file); break; // bytes
-            case 'kb': $size = filesize($file) * .0009765625; break; // bytes to KB
-            case 'mb': $size = (filesize($file) * .0009765625) * .0009765625; break; // bytes to MB
-            case 'gb': $size = ((filesize($file) * .0009765625) * .0009765625) * .0009765625; break; // bytes to GB
+            case 'bytes': $size = $fs; break; // Bytes
+            case 'kb': $size = $fs * .0009765625; break; // Bytes to KB
+            case 'mb': $size = ($fs * .0009765625) * .0009765625; break; // Bytes to MB
+            case 'gb': $size = (($fs * .0009765625) * .0009765625) * .0009765625; break; // Bytes to GB
         }
         return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $unit);
+    }
+
+    // Configure ...
+    public static function configure($key, $value = "") {
+        if(is_array($key)) {
+            self::$config = array_merge(self::$config, $key);
+        } else {
+            self::$config[$key] = $value;
+        }
+        return new static;
     }
 
 }

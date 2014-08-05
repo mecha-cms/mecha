@@ -6,14 +6,6 @@
 
 
 /**
- * Start the Session Launch
- * ------------------------
- */
-
-session_start();
-
-
-/**
  * => `http://www.php.net/manual/en/security.magicquotes.disabling.php`
  * --------------------------------------------------------------------
  */
@@ -40,13 +32,11 @@ spl_autoload_register(function($worker) {
 
 
 /**
- * First Installation
+ * Start the Sessions
  * ------------------
  */
 
-if(File::exist(ROOT . DS . 'install.php')) {
-    Guardian::kick('install.php');
-}
+session_start();
 
 
 /**
@@ -56,9 +46,18 @@ if(File::exist(ROOT . DS . 'install.php')) {
 
 Config::load();
 
-
 $config = Config::get();
 $speak = Config::speak();
+
+
+/**
+ * First Installation
+ * ------------------
+ */
+
+if(File::exist(ROOT . DS . 'install.php')) {
+    Guardian::kick($config->url . '/install.php');
+}
 
 
 /**
@@ -103,7 +102,9 @@ foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $plugin) {
     if(File::exist($language)) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
     }
-    if($launch = File::exist($plugin . DS . 'launch.php')) include $launch;
+    if($launch = File::exist($plugin . DS . 'launch.php')) {
+        include $launch;
+    }
 }
 
 
@@ -147,7 +148,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
             return Converter::phpEval($matches[1]);
         }, $content);
     }
-    $regex['#`\{\{(.*?)\}\}`#'] = '{{$1}}'; // the escaped shortcode
+    $regex['#`\{\{(.*?)\}\}`#'] = '{{$1}}'; // The escaped shortcode
     return preg_replace(array_keys($regex), array_values($regex), $content);
 }, 10);
 

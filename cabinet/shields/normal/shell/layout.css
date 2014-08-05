@@ -373,9 +373,9 @@ body {border-top:5px solid}
     box-shadow:none;
   }
   .blog-navigation li ul a {
-    margin:2px 0 0;
-    background-color:#333;
-    color:white;
+    font-weight:normal;
+    font-size:96%;
+    margin:0;
   }
   .blog-sidebar,
   .blog-posts,

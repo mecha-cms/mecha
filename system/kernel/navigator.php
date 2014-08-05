@@ -119,9 +119,10 @@ class Navigator {
     }
 
     private static function slug($input) {
-        $base = basename($input, '.' . pathinfo($input, PATHINFO_EXTENSION));
+        $extension = pathinfo($input, PATHINFO_EXTENSION);
+        $base = basename($input, '.' . $extension);
         $parts = explode('_', $base);
-        return isset($parts[2]) ? $parts[2] : $base;
+        return isset($parts[2]) ? $parts[2] : $base . '.' . $extension;
     }
 
     public static function configure($key, $value = "") {

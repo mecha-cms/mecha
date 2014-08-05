@@ -715,8 +715,8 @@ class Get {
                 $results['js_raw'] = isset($custom[1]) ? trim($custom[1]) : "";
                 $js_raw = Filter::apply('shortcode', $results['js_raw']);
                 $js_raw = Filter::apply('custom:shortcode', $js_raw);
-                $js_raw = Filter::apply('javascript', $js_raw);
-                $results['js'] = Filter::apply('custom:javascript', $js_raw);
+                $js_raw = Filter::apply('js', $js_raw);
+                $results['js'] = Filter::apply('custom:js', $js_raw);
             } else {
                 $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
             }
@@ -1072,9 +1072,9 @@ class Get {
          *
          */
 
-        if(preg_match_all('#\!\[.*?\]\((.*?)(| +\'.[^\']*?\'| +".[^"]*?")\)#', $source, $matches)) {
-            return $matches[1];
-        }
+        // if(preg_match_all('#\!\[.*?\]\((.*?)(| +\'.[^\']*?\'| +".[^"]*?")\)#', $source, $matches)) {
+        //     return $matches[1];
+        // }
 
         /**
          * Matched with ...

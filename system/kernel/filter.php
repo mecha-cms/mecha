@@ -69,7 +69,7 @@ class Filter {
         }
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
         foreach($filters as $filter => $cargo) {
-			$arguments = array($value) + array_slice(func_get_args(), 2);
+            $arguments = array($value) + array_slice(func_get_args(), 2);
             $value = call_user_func_array($cargo['function'], $arguments);
         }
         return $value;

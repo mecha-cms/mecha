@@ -13,7 +13,7 @@
  *    // Perform a test
  *    var_dump(Text::parse('some text'));
  *
- *    // Convert formated text into array
+ *    // Convert formatted text into array
  *    Text::toArray("Key: value\nKey: value");
  *
  * -------------------------------------------------------

@@ -80,8 +80,8 @@ class Route {
         if(strpos($url, $base) === 0) {
             $url = substr($url, strlen($base));
         }
+        $url = trim($url, '/');
         foreach(self::$routes as $pattern => $callback) {
-            $url = trim($url, '/');
             if(preg_match('#^' . self::fix($pattern) . '$#', $url, $params)) {
                 array_shift($params);
                 Weapon::fire('before_route_function_call', array($url, $pattern, array_values($params)));

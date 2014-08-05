@@ -88,6 +88,7 @@ class Notify {
 
         $header = Filter::apply($filter_prefix . 'notification.email.header', $header);
         $message = Filter::apply($filter_prefix . 'notification.email.message', $message);
+
         return mail($to, $subject, $message, $header);
     }
 

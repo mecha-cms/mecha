@@ -117,7 +117,7 @@ comment_reply_to: Sebagai balasan %s
 comment_reply_cancel: Batal Membalas
 comment_replies: Balasan
 comment_guide: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
-comment_notification: Komentar baru telah ditambahkan ke halaman ini => %s
+comment_notification: Komentar baru telah ditambahkan ke <a href="%s">halaman ini</a>
 comment_notification_subject: Komentar baru telah ditambahkan.
 
 contact_name: Nama

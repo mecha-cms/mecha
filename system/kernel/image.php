@@ -99,7 +99,7 @@ class Image {
      *
      */
 
-    public static function saveAs($name = "") {
+    public static function saveAs($name = 'image.jpg') {
         return self::saveTo(dirname(self::$placeholder) . DS . $name);
     }
 
@@ -159,7 +159,8 @@ class Image {
                 $results[] = (object) array(
                     'width' => $data[0],
                     'height' => $data[1],
-                    'size' => (int) File::size($file),
+                    'size_raw' => filesize($file),
+                    'size' => File::size($file, 'KB'),
                     'bits' => $data['bits'],
                     'mime' => $data['mime']
                 );
@@ -170,7 +171,8 @@ class Image {
             $results = array(
                 'width' => $data[0],
                 'height' => $data[1],
-                'size' => (int) File::size(self::$opened),
+                'size_raw' => filesize(self::$opened),
+                'size' => File::size(self::$opened, 'KB'),
                 'bits' => $data['bits'],
                 'mime' => $data['mime']
             );

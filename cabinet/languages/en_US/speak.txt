@@ -117,7 +117,7 @@ comment_reply_to: Reply to %s
 comment_reply_cancel: Cancel Reply
 comment_replies: Replies
 comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
-comment_notification: A new comment has been added to this page => %s
+comment_notification: A new comment has been added to <a href="%s">this page</a>
 comment_notification_subject: A new comment has been added.
 
 contact_name: Name

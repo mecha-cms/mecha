@@ -409,7 +409,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 if(
                     $request['email'] == $fuck || // Block by email address
                     Get::IP() != 'N/A' && Get::IP() == $fuck || // Block by IP address
-                    strpos($request['message'], strtolower($fuck)) !== false // Block by message word(s)
+                    strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
                 ) {
                     Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
                     break;
@@ -442,9 +442,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Weapon::fire('on_comment_construct', array($P, $P));
 
             if($config->email_notification) {
-                $message  = Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . "\r\n\r\n";
-                $message .= $request['name'] . ": " . $request['message'] . "\r\n\r\n";
-                $message .= Date::format($id, 'Y/m/d H:i:s');
+                $message  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
+                $message .= '<p><strong style="font-weight:bold;font-size:200%;">' . $request['name'] . ':</strong></p>';
+                $message .= Text::parse(strip_tags($request['message'], '<br>'))->to_html;
+                $message .= '<p><em>' . Date::format($id, 'Y/m/d H:i:s') . '</em></p>';
 
                 /**
                  * Sending email notification ...
@@ -452,7 +453,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
                 if( ! Guardian::happy()) {
                     if(Notify::send($request['email'], $config->author_email, $speak->comment_notification_subject, $message, 'comment:')) {
-                        Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $message, $header));
+                        Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $message));
                     }
                 }
             }

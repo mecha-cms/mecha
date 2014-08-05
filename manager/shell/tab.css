@@ -67,3 +67,5 @@
   .tab.active:before,
   .tab.active:after {display:none}
 }
+
+.tab-content:target {display:block}

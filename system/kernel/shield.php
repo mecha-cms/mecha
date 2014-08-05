@@ -1,11 +1,5 @@
 <?php
 
-/**
- * ==========================================================
- *  SHIELD ATTACHER
- * ==========================================================
- */
-
 class Shield {
 
     private static $defines = array();
@@ -220,8 +214,8 @@ class Shield {
         Weapon::fire('shield_after', array($G, $G));
 
         if($cacheable) {
-            $G['data']['cache'] = ob_get_contents();
-            File::write($G['data']['cache'])->saveTo($cache);
+            $G['data']['content'] = ob_get_contents();
+            File::write($G['data']['content'])->saveTo($cache);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
 
@@ -256,9 +250,9 @@ class Shield {
 
         extract(self::defines());
 
-        self::$defines = array();
-
         Weapon::fire('after_shield_config_redefine', array($G, $G));
+
+        self::$defines = array();
 
         if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
             $shield = SHIELD . DS . $config->shield . DS . $name . '.php';

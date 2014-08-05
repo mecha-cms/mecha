@@ -33,11 +33,11 @@ Result:
 ~~~ .html
 <ul>
   <li><a href="#">Menu</a>
-    <ul>
+    <ul class="children-1">
       <li><a href="{{url}}submenu-1">Submenu 1</a></li>
       <li><a href="{{url}}submenu-2">Submenu 2</a></li>
       <li><a href="#">Submenu 3</a>
-        <ul>
+        <ul class="children-2">
           <li><a href="{{url}}submenu-3-1">Submenu 3.1</a></li>
         </ul>
       </li>
@@ -46,7 +46,7 @@ Result:
 </ul>
 ~~~
 
-### Make the Parent Menu Becomes Active
+### Make the Parent Menu Active
 
 ~~~ .no-highlight
 Menu (/some-where):
@@ -59,7 +59,7 @@ Result:
 ~~~ .html
 <ul>
   <li><a href="{{url}}some-where">Menu</a>
-    <ul>
+    <ul class="children-1">
       <li><a href="{{url}}submenu-1">Submenu 1</a></li>
       <li><a href="{{url}}submenu-2">Submenu 2</a></li>
     </ul>

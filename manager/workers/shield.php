@@ -19,15 +19,11 @@
         <col style="width:2.6em;">
       </colgroup>
       <tbody>
-        <?php $undeletable = array('404.php', 'article.php', 'comments.php', 'footer.php', 'header.php', 'index.php', 'manager.php', 'page.php', 'page-home.php'); foreach($the_shield_contents as $file): ?>
+        <?php foreach($the_shield_contents as $file): ?>
         <tr>
           <td><?php echo basename($file['path']); ?></td>
           <td class="text-center"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/repair/file:' . str_replace(array(SHIELD . DS . $the_shield_path . DS, '\\'), array("", '/'), $file['path']); ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
-          <?php if( ! in_array(basename($file['path']), $undeletable)): ?>
           <td class="text-center"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/kill/file:' . str_replace(array(SHIELD . DS . $the_shield_path . DS, '\\'), array("", '/'), $file['path']); ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
-          <?php else: ?>
-          <td></td>
-          <?php endif; ?>
         </tr>
         <?php endforeach; ?>
       </tbody>

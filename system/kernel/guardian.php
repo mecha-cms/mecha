@@ -48,7 +48,7 @@ class Guardian {
      */
 
     public static function token() {
-        $file = SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
+        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
         Session::set(self::$token, $token);
         return $token;
@@ -138,7 +138,7 @@ class Guardian {
      */
 
     public static function deleteToken() {
-        File::open(SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt')->delete();
+        File::open(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt')->delete();
         Session::kill(self::$token);
     }
 
@@ -182,15 +182,12 @@ class Guardian {
      */
 
     public static function kick($path = "") {
+        $path = trim($path, '/');
         if(strpos($path, '://') === false) {
-            $path = Config::get('url') . '/' . trim($path, '/');
+            $path = Config::get('url') . '/' . $path;
         }
-        $info = array(
-            'url' => $path,
-            'execution_time' => time(),
-            'error' => Notify::errors()
-        );
-        Weapon::fire('before_kick', array($info));
+        $G = array('data' => array('url' => $path));
+        Weapon::fire('before_kick', array($G));
         header('Location: ' . $path);
         exit;
     }
@@ -280,11 +277,12 @@ class Guardian {
         $users = Text::toArray(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read());
         $authors = array();
         foreach($users as $user => $detail) {
-            preg_match('#(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)#', $detail, $matches);
+            preg_match('#^(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\) *(.*?)?$#', $detail, $matches);
             $authors[$user] = array(
                 'password' => trim($matches[1]),
-                'name' => trim($matches[2]),
-                'status' => trim($matches[3])
+                'author' => trim($matches[2]),
+                'status' => trim($matches[3]),
+                'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : $config->author_email
             );
         }
         self::checkToken($_POST['token']);
@@ -295,10 +293,11 @@ class Guardian {
                     'token' => $token,
                     'username' => $_POST['username'],
                     // 'password' => $authors[$_POST['username']]['password'],
-                    'author' => $authors[$_POST['username']]['name'],
-                    'status' => $authors[$_POST['username']]['status']
+                    'author' => $authors[$_POST['username']]['author'],
+                    'status' => $authors[$_POST['username']]['status'],
+                    'email' => $authors[$_POST['username']]['email']
                 ));
-                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . Text::parse($_POST['username'])->to_slug_moderate . '.token.txt', 0600);
+                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($_POST['username'])->to_slug_moderate . '.txt', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
@@ -348,7 +347,7 @@ class Guardian {
      */
 
     public static function happy() {
-        $file = SYSTEM . DS . 'log' . DS . Text::parse(self::get('username'))->to_slug_moderate . '.token.txt';
+        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt';
         $auth = Session::get(self::$login);
         return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }

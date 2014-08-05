@@ -197,12 +197,12 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             Weapon::fire('on_shield_repair', array($G, $P));
             Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . $name);
         }
-    } else {
-        Guardian::memorize(array('path' => $file, 'name' => $path, 'content' => $content));
     }
     Shield::define(array(
         'the_shield' => $folder,
-        'the_path' => $path
+        'the_path' => $path,
+        'the_file' => $file,
+        'the_content' => $content
     ))->attach('manager', false);
 });
 
