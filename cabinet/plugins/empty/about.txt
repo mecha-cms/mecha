@@ -1,4 +1,4 @@
-Title: Empty Plugin
+﻿Title: Empty Plugin
 Author: Taufik Nurrohman
 Version: 1.0.0
 
@@ -34,9 +34,9 @@ This is the basic form. This is a shield item, so you can use that `$config` and
 <form action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Please add a token input -->
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
 
-  <!-- Other form elements goes here ... -->
+  <!-- Other form elements goes here… -->
 
   <!-- The submit button -->
   <p><button type="submit">Update</button></p>

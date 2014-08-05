@@ -59,8 +59,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 Package::take($uploaded)->extract(); // Extract the ZIP file
                 File::open($uploaded)->delete(); // Delete the ZIP file
                 if(File::exist(PLUGIN . DS . $path . DS . 'launch.php')) {
-                    Weapon::fire('on_plugin_mounted', array($info));
-                    Weapon::fire('on_plugin_' . md5($path) . '_mounted', array($info));
+                    Weapon::fire('on_plugin_mounted', array($P, $P));
+                    Weapon::fire('on_plugin_' . md5($path) . '_mounted', array($P, $P));
                     Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                 } else {
                     Guardian::kick($config->manager->slug . '/plugin#plugin:' . $path);

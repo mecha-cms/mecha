@@ -1,4 +1,4 @@
-Title: Plugin Kosong
+﻿Title: Plugin Kosong
 Author: Taufik Nurrohman
 Version: 1.0.0
 
@@ -34,9 +34,9 @@ Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi An
 <form action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Mohon tambahkan input token -->
-  <input name="token" type="hidden" value="<?php echo Guardian::makeToken(); ?>">
+  <input name="token" type="hidden" value="<?php echo $token; ?>">
 
-  <!-- Elemen-elemen formulir yang lain ada di sini ... -->
+  <!-- Elemen-elemen formulir yang lain ada di sini… -->
 
   <!-- Tombol eksekusi formulir -->
   <p><button type="submit">Perbaharui</button></p>
