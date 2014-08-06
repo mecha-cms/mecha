@@ -223,7 +223,7 @@ class File {
         }
         // Too large
         if($file['size'] > self::$config['size_max']) {
-            return Notify::error(Config::speak('notify_error_file_size', array(self::size($settings['max'], 'KB'))));
+            return Notify::error(Config::speak('notify_error_file_size', array(self::size(self::$config['size_max'], 'KB'))));
         }
         // Something goes wrong
         if($file['error'] > 0) {
