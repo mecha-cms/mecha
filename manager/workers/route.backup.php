@@ -104,7 +104,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
     if($backup = File::exist(ROOT . DS . $file)) {
         header('Content-Type: application/zip');
-        header('Content-Length: ' . filesize($backup));
+        // header('Content-Length: ' . filesize($backup));
         header('Content-Disposition: attachment; filename=' . $file);
         readfile($backup);
         $G = array('data' => array('path' => $backup));
