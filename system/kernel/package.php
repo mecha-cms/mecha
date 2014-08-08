@@ -207,7 +207,7 @@ class Package {
             $bucket = str_replace(array('\\', '/'), DS, $bucket);
             mkdir($destination . DS . $bucket, 0777, true);
         }
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             if($bucket !== false) {
                 $zip->extractTo($destination . DS . $bucket);
             } else {
@@ -215,7 +215,6 @@ class Package {
             }
             $zip->close();
         }
-        self::$opened = $destination;
         return new static;
     }
 
@@ -239,7 +238,7 @@ class Package {
 
     public static function addFiles($files = array(), $destination = null) {
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             if( ! is_array($files)) {
                 // Handling for `Package::take('file.zip')->addFile('test.txt')`
                 if(strpos($files, DS) === false) {
@@ -309,7 +308,7 @@ class Package {
         if( ! is_array($files)) {
             $files = array($files);
         }
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             foreach($files as $file) {
                 if($zip->locateName($file) !== false) {
                     $zip->deleteName($file);
@@ -354,7 +353,7 @@ class Package {
 
     public static function renameFiles($files, $new = "") {
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             if(is_array($old)) {
                 foreach($old as $k => $v) {
                     $k = str_replace(array('\\', '/'), DS, $k);
@@ -407,7 +406,7 @@ class Package {
     public static function getContent($file) {
         $zip = new ZipArchive();
         $results = false;
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             if($zip->locateName($file) !== false) {
                 $results = $zip->getFromName($file);
             }
@@ -434,7 +433,7 @@ class Package {
     public static function getInfo($key = null, $fallback = false) {
         $results = array();
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened, ZIPARCHIVE::CREATE)) {
+        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
             $extension = pathinfo($zip->filename, PATHINFO_EXTENSION);
             $results = array(
                 'path' => self::$opened,

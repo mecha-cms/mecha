@@ -106,6 +106,7 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
         header('Content-Type: application/zip');
         // header('Content-Length: ' . filesize($backup));
         header('Content-Disposition: attachment; filename=' . $file);
+        ob_clean();
         readfile($backup);
         $G = array('data' => array('path' => $backup));
         ignore_user_abort(true);
