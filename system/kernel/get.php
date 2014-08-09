@@ -725,7 +725,7 @@ class Get {
             $custom = "";
         }
 
-        $results['image'] = self::imageURL($content . $custom, 1);
+        $results['image'] = self::imageURL($results['content'] . $custom, 1);
 
         $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
         $results['total_comments'] = $comments !== false ? count($comments) : 0;
