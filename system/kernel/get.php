@@ -775,6 +775,8 @@ class Get {
 
         }
 
+        if( ! isset($results['fields'])) $results['fields'] = array();
+
         /**
          * Exclude some fields from results
          */
@@ -916,6 +918,8 @@ class Get {
                 $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
             }
             $results['fields'] = $init;
+        } else {
+            $results['fields'] = array();
         }
         return Mecha::O($results);
     }
