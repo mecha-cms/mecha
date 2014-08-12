@@ -325,7 +325,7 @@ class Get {
         $results = array();
         $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
         $total_pages = count($pages);
-        if($total_pages === 0) return false;
+        if( ! is_array($pages) || $total_pages === 0) return false;
         if($order == 'ASC') {
             sort($pages);
         } else {
@@ -450,7 +450,7 @@ class Get {
         } else {
             $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension);
         }
-        if(count($results) === 0) return false;
+        if( ! is_array($results) || count($results) === 0) return false;
         if($order == 'ASC') {
             sort($results);
         } else {

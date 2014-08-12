@@ -204,8 +204,10 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         Guardian::checkToken(Request::post('token'));
         File::open($article->path)->delete();
         // Deleting comments ...
-        foreach(Get::comments($id, 'DESC', 'txt,hold') as $comment) {
-            File::open($comment)->delete();
+        if($comments = Get::comments($id, 'DESC', 'txt,hold')) {
+            foreach($comments as $comment) {
+                File::open($comment)->delete();
+            }
         }
         // Deleting custom CSS and JavaScript file of article ...
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();

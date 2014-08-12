@@ -23,8 +23,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(empty($_POST['name'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
     if(empty($_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
     if(empty($_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (empty($_POST['username']) ? ' too' : "") . '.</p>';
-    if( ! empty($_POST['username']) && preg_match('#[^a-z0-9]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username should contains only letters and numbers.</p>';
-    if( ! empty($_POST['password']) && preg_match('#[^a-z0-9]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password should contains only letters and numbers.</p>';
+    if( ! empty($_POST['username']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username should contains only letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if( ! empty($_POST['password']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password should contains only letters, numbers, <code>-</code> and <code>_</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 
@@ -96,7 +96,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       </label>
       <label class="grid-group no-gap">
         <span class="grid span-2 form-label"><span>Password</span></span>
-        <span class="grid span-4"><input name="password" type="text" class="input-block" value="<?php echo isset($cache['password']) ? $cache['password'] : ""; ?>"></span>
+        <span class="grid span-4"><input name="password" type="password" class="input-block" value="<?php echo isset($cache['password']) ? $cache['password'] : ""; ?>"></span>
       </label>
       <div class="grid-group no-gap">
         <span class="grid span-2"></span>
