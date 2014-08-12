@@ -742,7 +742,9 @@ class Get {
          * Custom fields ...
          */
 
-        if( ! isset($excludes['fields']) && isset($results['fields'])) {
+        if( ! isset($results['fields'])) $results['fields'] = array();
+
+        if( ! isset($excludes['fields'])) {
 
             /**
              * Initialize custom fields with empty values so that users
@@ -760,7 +762,10 @@ class Get {
             $init = array();
 
             foreach($fields as $key => $value) {
-                $init[$key] = "";
+                if( ! isset($value['scope'])) $value['scope'] = 'all';
+                if($value['scope'] == str_replace(':', "", $filter_prefix) || $value['scope'] == 'all') {
+                    $init[$key] = "";
+                }
             }
 
             /**
@@ -774,8 +779,6 @@ class Get {
             $results['fields'] = $init;
 
         }
-
-        if( ! isset($results['fields'])) $results['fields'] = array();
 
         /**
          * Exclude some fields from results
@@ -904,23 +907,23 @@ class Get {
         $results['url'] = $config->url . $connector . $results['slug'];
         if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
         if( ! isset($results['description'])) $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', ""));
-        if(isset($results['fields'])) {
-            if($file = File::exist(STATE . DS . 'fields.txt')) {
-                $fields = File::open($file)->unserialize();
-            } else {
-                $fields = array();
-            }
-            $init = array();
-            foreach($fields as $key => $value) {
+        if( ! isset($results['fields'])) $results['fields'] = array();
+        if($file = File::exist(STATE . DS . 'fields.txt')) {
+            $fields = File::open($file)->unserialize();
+        } else {
+            $fields = array();
+        }
+        $init = array();
+        foreach($fields as $key => $value) {
+            if( ! isset($value['scope'])) $value['scope'] = 'all';
+            if($value['scope'] == str_replace(':', "", $filter_prefix) || $value['scope'] == 'all') {
                 $init[$key] = "";
             }
-            foreach($results['fields'] as $key => $value) {
-                $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
-            }
-            $results['fields'] = $init;
-        } else {
-            $results['fields'] = array();
         }
+        foreach($results['fields'] as $key => $value) {
+            $init[$key] = isset($value['value']) ? Filter::apply($filter_prefix . 'fields.' . $key, $value['value']) : false;
+        }
+        $results['fields'] = $init;
         return Mecha::O($results);
     }
 
