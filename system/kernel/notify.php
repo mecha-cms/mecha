@@ -79,9 +79,6 @@ class Notify {
     }
 
     public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {
-
-        if(trim($to) === "" || ! Guardian::check($to)->this_is_email) return false;
-
         $header  = "MIME-Version: 1.0\r\n";
         $header .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
         $header .= "From: " . $from . "\r\n";
@@ -93,7 +90,6 @@ class Notify {
         $message = Filter::apply($filter_prefix . 'notification.email.message', $message);
 
         return mail($to, $subject, $message, $header);
-
     }
 
     public static function configure($key, $value = array()) {
