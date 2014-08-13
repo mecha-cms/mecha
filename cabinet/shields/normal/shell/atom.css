@@ -522,8 +522,8 @@ ul {
   list-style:disc outside;
 }
 
-ol > li > ul,
-ul > li > ul {
+ul > li > ul,
+ol > li > ul {
   margin-left:1em;
   margin-top:0;
 }
