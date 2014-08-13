@@ -522,12 +522,14 @@ ul {
   list-style:disc outside;
 }
 
-ol ul,ul ul {
+ol > li > ul,
+ul > li > ul {
   margin-left:1em;
   margin-top:0;
 }
 
-ol ol,ul ol {
+ol > li > ol,
+ul > li > ol {
   margin-left:1.4em;
   margin-top:0;
 }
