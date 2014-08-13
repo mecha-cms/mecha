@@ -200,7 +200,7 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         Guardian::kick($config->manager->slug . '/page');
     } else {
         Notify::warning($speak->notify_confirm_delete);
-        Notify::warning(Config::speak('notify_confirm_delete_page', array($speak->page)));
+        Notify::warning(Config::speak('notify_confirm_delete_page', array(strtolower($speak->page))));
     }
     Shield::attach('manager', false);
 });

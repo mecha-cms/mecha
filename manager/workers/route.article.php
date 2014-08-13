@@ -220,7 +220,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         Guardian::kick($config->manager->slug . '/article');
     } else {
         Notify::warning($speak->notify_confirm_delete);
-        Notify::warning(Config::speak('notify_confirm_delete_page', array($speak->article)));
+        Notify::warning(Config::speak('notify_confirm_delete_page', array(strtolower($speak->article))));
     }
     Shield::attach('manager', false);
 });

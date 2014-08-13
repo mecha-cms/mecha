@@ -1,4 +1,4 @@
-﻿<?php $FT = 'article'; ?>
+<?php $FT = 'article'; ?>
 <div class="tab-area">
   <?php if(strpos($config->url_current, 'id:') !== false): ?>
   <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/article/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><i class="fa fa-fw fa-plus-square"></i> <?php echo $speak->new; ?></a>
@@ -40,10 +40,11 @@
       <?php
 
       $tags = array();
+      $tags_wayback = Converter::strEval(Guardian::wayback('kind', Mecha::A($default->kind)));
 
       foreach(Get::tags() as $tag) {
           if($tag && $tag->id !== 0) {
-              $tags[] = '<div><label><input type="checkbox" name="kind[]" value="' . $tag->id . '"' . (in_array($tag->id, Guardian::wayback('kind', Mecha::A($default->kind))) ? ' checked' : "") . '> <span>' . $tag->name . '</span></label></div>';
+              $tags[] = '<div><label><input type="checkbox" name="kind[]" value="' . $tag->id . '"' . (in_array((int) $tag->id, $tags_wayback) ? ' checked' : "") . '> <span>' . $tag->name . '</span></label></div>';
           }
       }
 
