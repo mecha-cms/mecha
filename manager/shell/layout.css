@@ -24,7 +24,8 @@ textarea[name="js"] {height:300px}
 }
 
 .page-list,
-.article-list {
+.article-list,
+.response-list {
   list-style:none;
   margin:0;
   padding:0;
@@ -32,7 +33,8 @@ textarea[name="js"] {height:300px}
 }
 
 .page-list .page,
-.article-list .article {
+.article-list .article,
+.response-list .response {
   margin:2px 0 0;
   padding:1em 0;
   overflow:hidden;
@@ -41,23 +43,28 @@ textarea[name="js"] {height:300px}
 .page-header,
 .page-body,
 .article-header,
-.article-body {
+.article-body,
+.response-header,
+.response-body {
   margin-bottom:.5em;
   overflow:hidden;
 }
 
 .page-footer,
-.article-footer {text-align:right}
+.article-footer,
+.response-footer {text-align:right}
 
 .page-title,
-.article-title {
+.article-title,
+.response-title {
   display:block;
   float:left;
   font-weight:bold;
 }
 
 .page-time,
-.article-time {
+.article-time,
+.response-time {
   display:block;
   float:right;
   color:#AAA;
