@@ -21,20 +21,20 @@
 
 class Request {
 
-    public static function post($param = null, $fallback = false, $type = 'POST') {
+    public static function post($param = null, $fallback = false) {
         if(is_null($param)) {
-            if($type == 'POST') {
-                return $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST) && ! empty($_POST) ? $_POST : $fallback;
-            } else {
-                return $_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET) && ! empty($_GET) ? $_GET : $fallback;
-            }
+            return $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST) && ! empty($_POST) ? $_POST : $fallback;
         }
-        $output = Mecha::eat($type == 'POST' ? $_POST : $_GET)->vomit($param, $fallback);
+        $output = Mecha::eat($_POST)->vomit($param, $fallback);
         return ! empty($output) ? $output : $fallback;
     }
 
     public static function get($param = null, $fallback = false) {
-        return self::post($param, $fallback, 'GET');
+        if(is_null($param)) {
+            return $_SERVER['REQUEST_METHOD'] == 'GET' && isset($_GET) && ! empty($_GET) ? $_GET : $fallback;
+        }
+        $output = Mecha::eat($_GET)->vomit($param, $fallback);
+        return ! empty($output) ? $output : $fallback;
     }
 
 }

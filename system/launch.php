@@ -444,7 +444,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if($config->email_notification) {
                 $message  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
                 $message .= Text::parse('**' . strip_tags($request['name']) . ':** ' . strip_tags($request['message'], '<br>'))->to_html;
-                $message .= '<p><em>' . Date::format($id, 'Y/m/d H:i:s') . '</em></p>';
+                $message .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
 
                 /**
                  * Sending email notification ...

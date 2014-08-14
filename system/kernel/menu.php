@@ -55,6 +55,11 @@
 
 class Menu {
 
+    protected static $config = array(
+        'selected' => 'selected',
+        'children' => 'children-%s'
+    );
+
     public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:', $depth = 0) {
         $config = Config::get();
         $speak = Config::speak();
@@ -68,7 +73,7 @@ class Menu {
             }
             $filter_prefix = 'navigation:';
         }
-        $html = '<' . $type . ($depth > 0 ? ' class="children-' . $depth . '"' : "") . '>';
+        $html = '<' . $type . ($depth > 0 ? ' class="' . sprintf(self::$config['children'], $depth) . '"' : "") . '>';
         foreach($array as $text => $url) {
             if(is_array($url)) {
                 if(preg_match('#(.*?)\((.*?)\)$#', $text, $matches)) {
@@ -77,20 +82,29 @@ class Menu {
                     if(strpos($_url, '://') === false && strpos($_url, '#') !== 0) {
                         $_url = str_replace('/#', '#', trim($config->url . '/' . $_url, '/'));
                     }
-                    $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($_url == $current || strpos($current, $_url) === 0 && $_url != $config->url ? ' class="selected"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . self::get($url, $type, $filter_prefix, $depth + 1) . '</li>');
+                    $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($_url == $current || strpos($current, $_url) === 0 && $_url != $config->url ? ' class="' . self::$config['selected'] . '"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . self::get($url, $type, $filter_prefix, $depth + 1) . '</li>');
                 } else {
                     $_url = $config->url . '#';
-                    $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($_url == $current || strpos($current, $_url) === 0 && $_url != $config->url ? ' class="selected"' : "") . '><a href="#">' . $text . '</a>' . self::get($url, $type, $filter_prefix, $depth + 1) . '</li>');
+                    $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($_url == $current || strpos($current, $_url) === 0 && $_url != $config->url ? ' class="' . self::$config['selected'] . '"' : "") . '><a href="#">' . $text . '</a>' . self::get($url, $type, $filter_prefix, $depth + 1) . '</li>');
                 }
             } else {
                 // Create full URL from value if the value does not contain a `://`
                 if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
                     $url = str_replace('/#', '#', trim($config->url . '/' . trim($url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($url == $current || strpos($current, $url) === 0 && $url != $config->url ? ' class="selected"' : "") . '><a href="' . $url . '">' . $text . '</a></li>');
+                $html .= Filter::apply($filter_prefix . 'list.item', '<li' . ($url == $current || strpos($current, $url) === 0 && $url != $config->url ? ' class="' . self::$config['selected'] . '"' : "") . '><a href="' . $url . '">' . $text . '</a></li>');
             }
         }
         return Filter::apply($filter_prefix . 'list', $html . '</' . $type . '>');
+    }
+
+    public static function configure($key, $value = "") {
+        if(is_array($key)) {
+            self::$config = array_merge(self::$config, $key);
+        } else {
+            self::$config[$key] = $value;
+        }
+        return new static;
     }
 
 }

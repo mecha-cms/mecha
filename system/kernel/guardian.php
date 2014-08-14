@@ -97,7 +97,7 @@ class Guardian {
      */
 
     public static function checkMath($answer = "") {
-        return is_numeric($answer) && Guardian::check((int) $answer, Session::get(self::$math))->this_is_correct;
+        return is_numeric($answer) && self::check((int) $answer, Session::get(self::$math))->this_is_correct;
     }
 
     /**
@@ -119,9 +119,9 @@ class Guardian {
         $answer = (string) $answer;
         $answer_key = (string) Session::get(self::$captcha);
         if( ! $case_sensitive) {
-            return Guardian::check(strtolower($answer), strtolower($answer_key))->this_is_correct;
+            return self::check(strtolower($answer), strtolower($answer_key))->this_is_correct;
         }
-        return Guardian::check($answer, $answer_key)->this_is_correct;
+        return self::check($answer, $answer_key)->this_is_correct;
     }
 
     /**
@@ -250,7 +250,10 @@ class Guardian {
 
     public static function wayback($name = null, $fallback = "") {
         $cache = Session::get(self::$cache);
-        if(is_null($name)) return $cache;
+        if(is_null($name)) {
+            self::forget();
+            return $cache;
+        }
         $value = Mecha::GVR($cache, $name, $fallback);
         Session::kill(self::$cache . '.' . $name);
         return $value;

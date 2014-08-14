@@ -4,7 +4,7 @@
   <?php if(isset($default->ip)): ?>
   <div class="grid-group">
     <span class="grid span-1 form-label">IP</span>
-    <span class="grid span-5 form-static text-info"><i class="fa fa-globe"></i> <?php echo $default->ip; ?></span>
+    <span class="grid span-5 form-static"><strong><?php echo $default->ip; ?></strong></span>
   </div>
   <?php endif; ?>
   <label class="grid-group">

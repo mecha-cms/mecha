@@ -29,7 +29,7 @@
  *    File::open('path/to/file.txt')->delete();
  *
  *    // Upload a file
- *    File::upload($_FILES['file'], 'path/to');
+ *    File::upload($_FILES['file'], 'path/to/folder');
  *
  *    // etc.
  *
@@ -214,7 +214,7 @@ class File {
         $info = pathinfo($file['name']);
         $file['name'] = implode('.', $renamed);
         // No file selected
-        if(empty($file['name'])) {
+        if( ! isset($file['name']) || empty($file['name'])) {
             return Notify::error($speak->notify_error_no_file_selected);
         }
         // Bad file extension
