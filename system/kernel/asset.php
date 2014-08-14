@@ -40,10 +40,14 @@ class Asset {
     // Get public asset URL
     public static function url($path) {
         $config = Config::get();
-        if(strpos(self::pathTrace($path), ROOT) === false) {
+        $url = self::pathTrace($path);
+        if(strpos($url, '://') === false && ! File::exist($url)) {
+            return false;
+        }
+        if(strpos($url, ROOT) === false) {
             return Filter::apply('asset:url', $path, $path);
         }
-        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), self::pathTrace($path)) . ($config->resource_versioning ? '?v=' . filemtime(self::pathTrace($path)) : ""), $path);
+        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), $url) . ($config->resource_versioning ? '?v=' . filemtime($url) : ""), $path);
     }
 
     // Return the HTML JavaScript of asset
@@ -51,9 +55,16 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= Filter::apply('asset:javascript', '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>', $path[$i]);
+                if(self::url($path[$i]) === false) {
+                    $html .= Filter::apply('asset:javascript', "", $path[$i]);
+                } else {
+                    $html .= Filter::apply('asset:javascript', '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>', $path[$i]);
+                }
             }
             return $html;
+        }
+        if(self::url($path) === false) {
+            return Filter::apply('asset:javascript', "", $path);
         }
         return Filter::apply('asset:javascript', '<script src="' . self::url($path) . '"' . $addon . '></script>', $path);
     }
@@ -68,9 +79,16 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= Filter::apply('asset:stylesheet', '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
+                if(self::url($path[$i]) === false) {
+                    $html .= Filter::apply('asset:stylesheet', "", $path[$i]);
+                } else {
+                    $html .= Filter::apply('asset:stylesheet', '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
+                }
             }
             return $html;
+        }
+        if(self::url($path) === false) {
+            return Filter::apply('asset:stylesheet', "", $path);
         }
         return Filter::apply('asset:stylesheet', '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES, $path);
     }
@@ -80,9 +98,16 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                $html .= Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
+                if(self::url($path[$i]) === false) {
+                    $html .= Filter::apply('asset:image', "", $path[$i]);
+                } else {
+                    $html .= Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES, $path[$i]);
+                }
             }
             return $html;
+        }
+        if(self::url($path) === false) {
+            return Filter::apply('asset:image', "", $path);
         }
         return Filter::apply('asset:image', '<img src="' . self::url($path) . '"' . $addon . ES, $path);
     }
