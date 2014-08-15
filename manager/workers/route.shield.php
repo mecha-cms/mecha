@@ -113,7 +113,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '</code>')));
             }
-            $accepted_extensions = array('css', 'html', 'js', 'php', 'txt');
+            $accepted_extensions = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
@@ -180,7 +180,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
             }
-            $accepted_extensions = array('css', 'html', 'js', 'php', 'txt');
+            $accepted_extensions = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
