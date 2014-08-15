@@ -534,6 +534,14 @@ ul > li > ol {
   margin-top:0;
 }
 
+li > p + ul,
+li > p + ol,
+li > .p + ul,
+li > .p + ol {
+  margin-top:1.3846153846153846em;
+  margin-left:2.3846153846153846em;
+}
+
 .list-unstyled {
   margin-left:0;
   list-style:none;
