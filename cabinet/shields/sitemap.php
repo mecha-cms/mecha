@@ -16,7 +16,7 @@ if($config->total_pages > 0) {
 
 if($config->total_articles > 0) {
     foreach(Get::articles() as $article) {
-        list($time, $kind, $slug) = explode('_', basename($article, '.' . pathinfo($page, PATHINFO_EXTENSION)));
+        list($time, $kind, $slug) = explode('_', basename($article, '.' . pathinfo($article, PATHINFO_EXTENSION)));
         $bucket[] = array(
             'url' => $config->url . '/' . $config->index->slug . '/' . $slug,
             'date' => Date::format($time, 'c'),
