@@ -285,7 +285,7 @@ class Guardian {
                 'password' => trim($matches[1]),
                 'author' => trim($matches[2]),
                 'status' => trim($matches[3]),
-                'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : $config->author_email
+                'email' => isset($matches[4]) && ! empty($matches[4]) ? $matches[4] : $config->author_email
             );
         }
         self::checkToken($_POST['token']);

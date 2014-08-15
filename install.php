@@ -23,8 +23,15 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     if(empty($_POST['name'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
     if(empty($_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
     if(empty($_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (empty($_POST['username']) ? ' too' : "") . '.</p>';
-    if( ! empty($_POST['username']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username should contains only letters, numbers, <code>-</code> and <code>_</code>.</p>';
-    if( ! empty($_POST['password']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password should contains only letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(empty($_POST['email'])) {
+        $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your email?</p>';
+    } else {
+        if( ! filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
+            $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Invalid email address.</p>';
+        }
+    }
+    if( ! empty($_POST['username']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username should only contains letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if( ! empty($_POST['password']) && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password should only contains letters, numbers, <code>-</code> and <code>_</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 
@@ -32,7 +39,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $user_file = ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt';
         $data  = $_POST['username'] . ': ';
         $data .= $_POST['password'] . ' (';
-        $data .= $_POST['name'] . ':pilot)';
+        $data .= $_POST['name'] . ':pilot) ';
+        $data .= $_POST['email'];
         if( ! file_exists($user_file)) file_put_contents($user_file, $data);
         $_SESSION['mecha_notification'] = '<div class="message message-success cf"><p><i class="fa fa-thumbs-up"></i> Okay. Now you can login with this details:</p><p><strong>Username:</strong> ' . $_POST['username'] . '<br><strong>Password:</strong> ' . $_POST['password'] . '</p></div>';
         chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
@@ -87,8 +95,12 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       <h3>First Meet</h3>
       <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'username' => "", 'password' => ""); echo ! empty($errors) ? '<div class="messages">' . implode("", $errors) . '</div>' : ""; ?>
       <label class="grid-group no-gap">
-        <span class="grid span-2 form-label"><span>Your name</span></span>
+        <span class="grid span-2 form-label"><span>Your Name</span></span>
         <span class="grid span-4"><input name="name" type="text" class="input-block" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
+      </label>
+      <label class="grid-group no-gap">
+        <span class="grid span-2 form-label"><span>Your Email</span></span>
+        <span class="grid span-4"><input name="email" type="email" class="input-block" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>"></span>
       </label>
       <label class="grid-group no-gap">
         <span class="grid span-2 form-label"><span>Username</span></span>
