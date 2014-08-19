@@ -130,7 +130,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     }
     Shield::define(array(
         'the_shield' => $folder,
-        'the_path' => ""
+        'the_path' => "",
+        'the_content' => ""
     ))->attach('manager', false);
 });
 

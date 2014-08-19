@@ -112,7 +112,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       </label>
       <div class="grid-group no-gap">
         <span class="grid span-2"></span>
-        <span class="grid span-4"><button class="btn btn-primary btn-install" type="submit"><i class="fa fa-user"></i> Install</button></span>
+        <span class="grid span-4"><button class="btn btn-action" type="submit"><i class="fa fa-user"></i> Install</button></span>
       </div>
     </form>
   </body>
