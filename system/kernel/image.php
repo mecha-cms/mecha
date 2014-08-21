@@ -156,7 +156,7 @@ class Image {
             $results = array();
             foreach(self::$opened as $file) {
                 $data = getimagesize($file);
-                $results[] = (object) array(
+                $results[] = array(
                     'width' => $data[0],
                     'height' => $data[1],
                     'size_raw' => filesize($file),
@@ -179,7 +179,7 @@ class Image {
             if( ! is_null($key)) {
                 return isset($results[$key]) ? $results[$key] : $fallback;
             }
-            return (object) $results;
+            return $results;
         }
         return $results;
     }
@@ -211,8 +211,8 @@ class Image {
     public static function resize($max_width = 100, $max_height = 100, $proportional = true, $crop = false) {
         self::gen();
         $info = self::getInfo();
-        $old_width = $info->width;
-        $old_height = $info->height;
+        $old_width = $info['width'];
+        $old_height = $info['height'];
         $new_width = $max_width;
         $new_height = $max_height;
         $x = 0;
@@ -671,13 +671,13 @@ class Image {
         }
         foreach(self::getInfo() as $info) {
             $bucket[] = array(
-                'width' => $info->width,
-                'height' => $info->height
+                'width' => $info['width'],
+                'height' => $info['height']
             );
-            $max_width[] = $info->width;
-            $max_height[] = $info->height;
-            $width += $info->width + $gap;
-            $height += $info->height + $gap;
+            $max_width[] = $info['width'];
+            $max_height[] = $info['height'];
+            $width += $info['width'] + $gap;
+            $height += $info['height'] + $gap;
         }
         if(is_array($bg)) {
             list($r, $g, $b, $a) = array_values($bg);
