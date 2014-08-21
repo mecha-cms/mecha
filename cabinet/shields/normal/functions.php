@@ -2,7 +2,7 @@
 
 // Your custom functions goes here ...
 
-Widget::add('tagLinks', function($connector) {
+Widget::add('tagLinks', function($connector = ', ') {
     $config = Config::get();
     $speak = Config::speak();
     $links = array();
