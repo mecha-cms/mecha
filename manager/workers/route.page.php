@@ -65,9 +65,10 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     $G = array('data' => Mecha::A($page));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = $page->id;
+        $request['id'] = (int) date('U', strtotime($request['date']));
+        $request['kind'] = Converter::strEval($request['kind']);
         $request['path'] = $page->path;
-        $request['state'] = $page->state;
+        $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
         // Collect all available slug to prevent duplicate
         $slugs = array();
