@@ -456,9 +456,8 @@ manager:
   powered: Powered by <strong>Mecha CMS</strong>
 
   placeholder_title: Your Awesome Title
-  placeholder_slug: your-awesome-title
   placeholder_content: Content goes here&hellip;
-  placeholder_description: Some description about this post (optional).
+  placeholder_description: Some description about this %s (optional).
   placeholder_css: Write your custom CSS here&hellip;
   placeholder_js: Write your custom JavaScript here&hellip;
   placeholder_file: Select a file&hellip;

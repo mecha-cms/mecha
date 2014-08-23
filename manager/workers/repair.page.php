@@ -29,7 +29,7 @@
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
-        <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_description; ?>"><?php echo Text::parse(Guardian::wayback('description', $default->description))->to_encoded_html; ?></textarea></span>
+        <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo Config::speak('manager.placeholder_description', array(strtolower($speak->page))); ?>"><?php echo Text::parse(Guardian::wayback('description', $default->description))->to_encoded_html; ?></textarea></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->author; ?></span>

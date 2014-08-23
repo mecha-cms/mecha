@@ -456,9 +456,8 @@ manager:
   powered: Diberdayakan oleh <strong>CMS Mecha</strong>
 
   placeholder_title: Judul Mengagumkan Anda
-  placeholder_slug: judul-mengagumkan-anda
   placeholder_content: Konten di sini&hellip;
-  placeholder_description: Deskripsi tentang pos ini (opsional).
+  placeholder_description: Deskripsi tentang %s ini (opsional).
   placeholder_css: Tulis kode CSS kustom Anda di sini&hellip;
   placeholder_js: Tulis kode JavaScript kustom Anda di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
