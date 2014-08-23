@@ -66,8 +66,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
     $G = array('data' => Mecha::A($article));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = (int) date('U', strtotime($request['date']));
-        $request['kind'] = Converter::strEval($request['kind']);
+        $request['id'] = (int) date('U', isset($request['date']) ? strtotime($request['date']) : time());
+        $request['kind'] = isset($request['kind']) ? Converter::strEval($request['kind']) : array(0);
         $request['path'] = $article->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
@@ -80,22 +80,17 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
         }
         // Set post date by submitted time, or by input value if available
-        $date = Request::post('date', date('c'));
+        $date = date('c', $request['id']);
         // General fields
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<code>,<em>,<i>,<span>'));
         $slug = Text::parse(Request::post('slug', $speak->untitled . '-' . Date::format($date, 'Y-m-d-H-i-s')))->to_slug;
         $content = Request::post('content', "");
         $description = $request['description'];
         $author = strip_tags($request['author']);
-        $kinds = Request::post('kind', false);
+        $kinds = $request['kind'];
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Handling for article without tags
-        if($kinds === false) {
-            $request['kind'] = array('0');
-            $kinds = array('0');
-        }
         // Checks for invalid time pattern
         if( ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $date)) {
             Notify::error($speak->notify_invalid_time_pattern);

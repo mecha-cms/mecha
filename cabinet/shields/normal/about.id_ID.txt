@@ -6,3 +6,5 @@ Version: 1.1.0
 ====
 
 Tameng normal untuk CMS Mecha.
+
+*[CMS]: Content Management System

@@ -6,3 +6,5 @@ Version: 1.1.0
 ====
 
 Normal shield for Mecha CMS.
+
+*[CMS]: Content Management System

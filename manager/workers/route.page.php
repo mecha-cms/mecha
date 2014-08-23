@@ -65,8 +65,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     $G = array('data' => Mecha::A($page));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = (int) date('U', strtotime($request['date']));
-        $request['kind'] = Converter::strEval($request['kind']);
+        $request['id'] = (int) date('U', isset($request['date']) ? strtotime($request['date']) : time());
         $request['path'] = $page->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
@@ -84,7 +83,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $slugs[$config->search->slug] = 1;
         $slugs[$config->manager->slug] = 1;
         // Set post date by submitted time, or by input value if available
-        $date = Request::post('date', date('c'));
+        $date = date('c', $request['id']);
         // General fields
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<code>,<em>,<i>,<span>'));
         $slug = Text::parse(Request::post('slug', $speak->untitled . '-' . Date::format($date, 'Y-m-d-H-i-s')))->to_slug;
