@@ -214,7 +214,7 @@ class File {
         $info = pathinfo($file['name']);
         $file['name'] = implode('.', $renamed);
         // No file selected
-        if( ! isset($file['name']) || empty($file['name'])) {
+        if( ! isset($file['name']) || empty($file['type']) || empty($file['name'])) {
             return Notify::error($speak->notify_error_no_file_selected);
         }
         // Bad file extension

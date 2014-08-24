@@ -356,7 +356,12 @@ input[type="submit"]:active,
 [disabled],
 [readonly],
 .btn-disabled,
-.disabled {
+.disabled,
+fieldset[disabled] button,
+fieldset[disabled] input,
+fieldset[disabled] select,
+fieldset[disabled] textarea,
+fieldset[disabled] .btn {
   cursor:default;
   cursor:not-allowed;
   opacity:.9;

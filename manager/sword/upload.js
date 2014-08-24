@@ -27,6 +27,8 @@
             status = ok ? 'btn-accept' : 'btn-reject',
             statusIcon = ok ? 'iconReady' : 'iconError';
 
+        $(this).parent().next().prop('disabled', !ok);
+
         if (this.value === "") {
 
             $(this).prev().html(cache)
