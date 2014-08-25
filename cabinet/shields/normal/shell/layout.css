@@ -280,8 +280,8 @@ body {border-top:5px solid}
 }
 
 .widget ul li:first-child {border-top:1px solid}
-.widget-archive ul li,
-.widget-archive ul li:first-child {
+.widget-archive-hierarchy ul li,
+.widget-archive-hierarchy ul li:first-child {
   padding:0;
   border:none;
 }
