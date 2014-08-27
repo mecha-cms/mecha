@@ -144,7 +144,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
             array(
                 '(.*?)'
             ),
-        preg_quote($key)) . '(?!`)#'] = $value;
+        preg_quote($key, '#')) . '(?!`)#'] = $value;
     }
     if(strpos($content, '{{php}}') !== false) {
         $content = preg_replace_callback('#(?!`)\{\{php\}\}(?!`)([\s\S]+?)(?!`)\{\{\/php\}\}(?!`)#m', function($matches) {

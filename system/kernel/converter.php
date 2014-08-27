@@ -227,7 +227,7 @@ class Converter {
         $name = $matches[1];
         $attributes = null;
         if(isset($matches[3])) {
-            $matches[3] = preg_replace('#' . $element[2] . '([^' . preg_quote($attr[1], '#') . ']+)' . $attr[2] . '#', '<separator>$1' . $attr[2], trim($matches[3], $element[2]));var_dump($matches[3]);
+            $matches[3] = preg_replace('#' . $element[2] . '([^' . preg_quote($attr[1], '#') . ']+)' . $attr[2] . '#', '<separator>$1' . $attr[2], trim($matches[3], $element[2]));
             if( ! empty($matches[3])) {
                 $attributes = array();
                 $parts = explode('<separator>', $matches[3]);
