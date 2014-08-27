@@ -50,6 +50,8 @@ class Shield {
 
     private static function defines() {
         $config = Config::get();
+        $token = Guardian::token();
+        $message = Notify::read();
         $results = array(
             'config' => $config,
             'speak' => $config->speak,
@@ -63,9 +65,11 @@ class Shield {
             'file' => $config->file,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
-            'token' => Guardian::token(),
-            'messages' => Notify::read()
+            'token' => $token,
+            'messages' => $message
         );
+        Session::set(Guardian::$token, $token);
+        Session::set(Notify::$message, $message);
         return array_merge($results, self::$defines);
     }
 
@@ -209,6 +213,8 @@ class Shield {
 
         require Filter::apply('shield:path', $shield);
 
+        Notify::clear();
+
         Guardian::forget();
 
         Weapon::fire('shield_after', array($G, $G));
@@ -267,6 +273,8 @@ class Shield {
         Weapon::fire('shield_before', array($G, $G));
 
         require Filter::apply('shield:path', $shield);
+
+        Notify::clear();
 
         Guardian::forget();
 

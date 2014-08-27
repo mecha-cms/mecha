@@ -20,9 +20,9 @@
 
 class Notify {
 
-    private static $notify = 'mecha_notification';
+    public static $message = 'mecha_notification';
 
-    private static $errors = 0;
+    public static $errors = 0;
 
     private static $config = array(
         'icons' => array(
@@ -40,7 +40,7 @@ class Notify {
 
     public static function add($type = 'default', $text = "", $icon = null, $tag = 'p') {
         $icon = is_null($icon) ? self::$config['icons'][$type] : $icon;
-        Session::set(self::$notify, Session::get(self::$notify) . '<' . $tag . ' class="' . sprintf(self::$config['classes']['message'], $type) . '">' . $icon . $text . '</' . $tag . '>');
+        Session::set(self::$message, Session::get(self::$message) . '<' . $tag . ' class="' . sprintf(self::$config['classes']['message'], $type) . '">' . $icon . $text . '</' . $tag . '>');
     }
 
     public static function success($text = "", $icon = null, $tag = 'p') {
@@ -69,13 +69,13 @@ class Notify {
     }
 
     public static function read() {
-        $results = Session::get(self::$notify) !== "" ? '<div class="' . self::$config['classes']['messages'] . '">' . Session::get(self::$notify) . '</div>' : "";
+        $results = Session::get(self::$message) !== "" ? '<div class="' . self::$config['classes']['messages'] . '">' . Session::get(self::$message) . '</div>' : "";
         self::clear();
         return $results;
     }
 
     public static function clear() {
-        Session::set(self::$notify, "");
+        Session::set(self::$message, "");
     }
 
     public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {
