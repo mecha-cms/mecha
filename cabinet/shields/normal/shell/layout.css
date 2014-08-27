@@ -196,15 +196,12 @@ body {border-top:5px solid}
 
 .comment {
   margin:2px 0 0;
-  padding:1em 0;
+  padding:1em 0 1em 1em;
   border-left:5px solid transparent;
   overflow:hidden;
 }
 
-.comment-pilot {
-  border-color:#365D98;
-  padding-left:1em;
-}
+.comment-pilot {border-color:#365D98}
 
 .comment-intruder {
   opacity:.4;
