@@ -28,12 +28,12 @@ AddDefaultCharset UTF-8
     </FilesMatch>
 </IfModule>
 
-# Prevent viewing of .htaccess, .md and .txt files
-<FilesMatch "(^#.*#|\.(md|txt|htaccess)|~)$">
+# Prevent viewing of .htaccess file
+<Files ~ "^\.ht">
     Order allow,deny
     Deny from all
     Satisfy all
-</FilesMatch>
+</Files>
 
 # gzip
 <ifModule mod_gzip.c>
