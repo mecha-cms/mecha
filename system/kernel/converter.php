@@ -227,13 +227,13 @@ class Converter {
         $name = $matches[1];
         $attributes = null;
         if(isset($matches[3])) {
-            $matches[3] = trim($matches[3], $element[2]);
+            $matches[3] = preg_replace('#' . $element[2] . '([^' . preg_quote($attr[1], '#') . ']+)' . $attr[2] . '#', '<separator>$1' . $attr[2], trim($matches[3], $element[2]));var_dump($matches[3]);
             if( ! empty($matches[3])) {
                 $attributes = array();
-                $parts = explode($element[2], $matches[3]);
+                $parts = explode('<separator>', $matches[3]);
                 foreach($parts as $part) {
                     $part = explode($attr[2], $part, 2);
-                    $attributes[$part[0]] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
+                    $attributes[trim($part[0], $element[2])] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
                 }
                 unset($attributes[""]); // Remove empty array keys
             }
