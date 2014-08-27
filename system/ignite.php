@@ -4,6 +4,8 @@
 // error_reporting(E_ALL);
 // ini_set('display_errors', 1);
 
+ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.txt');
+
 
 /**
  * => `http://www.php.net/manual/en/security.magicquotes.disabling.php`
@@ -36,6 +38,7 @@ spl_autoload_register(function($worker) {
  * ------------------
  */
 
+session_save_path(SYSTEM . DS . 'log' . DS . 'sessions');
 session_start();
 
 
