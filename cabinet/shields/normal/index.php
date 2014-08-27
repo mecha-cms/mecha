@@ -13,7 +13,7 @@
   </article>
   <?php endforeach; ?>
   <?php else: ?>
-  <article class="post post-index" id="post-0">
+  <article class="post post-index">
     <div class="post-body"><?php echo Config::speak('notify_empty', array(strtolower($speak->posts))); ?></div>
   </article>
   <?php endif; ?>
