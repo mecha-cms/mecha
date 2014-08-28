@@ -316,6 +316,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         Shield::abort('404-article');
     }
 
+    if(isset($_GET['repair']) && Guardian::happy()) {
+        Guardian::kick($config->manager->slug . '/article/repair/id:' . $article->id);
+    }
+
     if($article->state == 'draft') {
         Shield::abort('404-article');
     }
@@ -569,6 +573,10 @@ Route::accept('(:any)', function($slug = "") use($config) {
 
     if( ! $page = Get::page($slug)) {
         Shield::abort('404-page');
+    }
+
+    if(isset($_GET['repair']) && Guardian::happy()) {
+        Guardian::kick($config->manager->slug . '/page/repair/id:' . $page->id);
     }
 
     if($page->state == 'draft') {
