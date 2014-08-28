@@ -471,7 +471,7 @@ manager:
   title_live_preview_css: Pratinjau CSS Langsung
   title_live_preview_js: Pratinjau JavaScript Langsung
 
-  title_custom_css: <abbr title="Cascade Style Sheet">CSS</abbr> Kustom
+  title_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Kustom
   title_custom_js: <abbr title="JavaScript">JS</abbr> Kustom
 
   title_title_separator: Pemisah Judul
@@ -506,7 +506,7 @@ manager:
 
   title_defaults_page_title: Judul Halaman Standar
   title_defaults_page_content: Konten Halaman Standar
-  title_defaults_page_custom_css: <abbr title="Cascade Style Sheet">CSS</abbr> Halaman Standar
+  title_defaults_page_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Halaman Standar
   title_defaults_page_custom_js: JavaScript Halaman Standar
 
   title_plugin_list: Plugin Anda

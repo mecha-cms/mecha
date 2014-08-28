@@ -471,7 +471,7 @@ manager:
   title_live_preview_css: Live Preview CSS
   title_live_preview_js: Live Preview JavaScript
 
-  title_custom_css: Custom <abbr title="Cascade Style Sheet">CSS</abbr>
+  title_custom_css: Custom <abbr title="Cascading Style Sheet">CSS</abbr>
   title_custom_js: Custom <abbr title="JavaScript">JS</abbr>
 
   title_title_separator: Title Separator
@@ -506,7 +506,7 @@ manager:
 
   title_defaults_page_title: Default Page Title
   title_defaults_page_content: Default Page Content
-  title_defaults_page_custom_css: Default Page <abbr title="Cascade Style Sheet">CSS</abbr>
+  title_defaults_page_custom_css: Default Page <abbr title="Cascading Style Sheet">CSS</abbr>
   title_defaults_page_custom_js: Default Page JavaScript
 
   title_plugin_list: Your Plugins
