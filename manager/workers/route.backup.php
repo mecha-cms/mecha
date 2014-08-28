@@ -72,7 +72,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
         $name = $site . '_' . $time . '.zip';
         Package::take(ROOT)->pack(ROOT . DS . $name);
     } else {
-        $name = $site . '.' . $origin . '_' . $time . '.zip';
+        $name = $site . '.cabinet.' . $origin . '_' . $time . '.zip';
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
         if($origin == 'states') {
             Package::take(ROOT . DS . $name)->deleteFiles(array(
