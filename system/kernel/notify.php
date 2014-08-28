@@ -75,7 +75,7 @@ class Notify {
     }
 
     public static function clear() {
-        Session::set(self::$message, "");
+        Session::kill(self::$message);
     }
 
     public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {

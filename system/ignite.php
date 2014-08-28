@@ -5,6 +5,7 @@
 // ini_set('display_errors', 1);
 
 ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.txt');
+ini_set('session.gc_probability', 1);
 
 
 /**
