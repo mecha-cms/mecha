@@ -10,7 +10,7 @@ Hasil:
 
 ~~~ .html
 <ul>
-  <li><a href="{{url}}">Beranda</a></li>
+  <li><a href="{{url.home}}">Beranda</a></li>
   <li><a href="{{url}}tentang">Tentang</a></li>
   <li><a href="{{url}}kontak">Kontak</a></li>
 </ul>

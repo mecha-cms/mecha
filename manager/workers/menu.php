@@ -5,4 +5,4 @@
   <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></p>
 </form>
 <hr>
-<?php echo preg_replace('#/("|&quot;)&gt;(.*?)&lt;/a&gt;#', '\1&gt;\2&lt;/a&gt;', Config::speak('file:menu')); ?>
+<?php echo Config::speak('file:menu'); ?>
