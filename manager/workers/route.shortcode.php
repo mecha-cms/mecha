@@ -10,10 +10,9 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $shortcodes = File::open($file)->unserialize();
-    } else {
-        $shortcodes = include STATE . DS . 'repair.shortcodes.php';
+        $shortcodes = array_replace_recursive($shortcodes, File::open($file)->unserialize());
     }
     $G = array('data' => $shortcodes);
     Config::set(array(

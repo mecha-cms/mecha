@@ -219,10 +219,9 @@ class Get {
     public static function rawTags($order = 'ASC', $sorter = 'name') {
         $config = Config::get();
         $speak = Config::speak();
+        $tags = include STATE . DS . 'repair.tags.php';
         if($file = File::exist(STATE . DS . 'tags.txt')) {
-            $tags = File::open($file)->unserialize();
-        } else {
-            $tags = include STATE . DS . 'repair.tags.php';
+            $tags = array_replace_recursive($tags, File::open($file)->unserialize());
         }
         return Mecha::eat($tags)->order($order, $sorter)->vomit();
     }

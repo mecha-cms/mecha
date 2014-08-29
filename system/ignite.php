@@ -131,10 +131,9 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     if(strpos($content, '{{') === false) {
         return $content;
     }
+    $shortcodes = include STATE . DS . 'repair.shortcodes.php';
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $shortcodes = File::open($file)->unserialize();
-    } else {
-        $shortcodes = include STATE . DS . 'repair.shortcodes.php';
+        $shortcodes = array_replace_recursive($shortcodes, File::open($file)->unserialize());
     }
     $regex = array();
     foreach($shortcodes as $key => $value) {
