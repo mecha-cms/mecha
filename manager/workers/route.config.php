@@ -8,7 +8,7 @@
 
 Route::accept($config->manager->slug . '/config', function() use($config, $speak) {
     Config::set(array(
-        'page_title' => $speak->config . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->configs . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'config.php'
     ));
     if(Guardian::get('status') != 'pilot') {

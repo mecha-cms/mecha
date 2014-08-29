@@ -16,7 +16,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         $menus = $speak->home . ": /\n" . $speak->about . ": /about";
     }
     Config::set(array(
-        'page_title' => $speak->menu . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'menu.php'
     ));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {

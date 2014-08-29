@@ -18,7 +18,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         $files = false;
     }
     Config::set(array(
-        'page_title' => $speak->cache . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->caches . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
