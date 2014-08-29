@@ -570,6 +570,7 @@ notify_invalid_math_answer: Jawaban matematika salah.
 notify_invalid_captcha_answer: Jawaban <em>captcha</em> salah.
 
 notify_invalid_file_extension: Berkas yang sedang Anda coba unggah bukan merupakan berkas <code>%s</code> yang valid.
+notify_invalid_duplicate: %s duplikat.
 
 notify_confirm: Anda yakin?
 notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?

@@ -17,10 +17,10 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     ));
     $G = array('data' => Config::get('files'));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('manager/sword/row-tag.js');
         echo '<script>
 (function($, base) {
     base.add(\'on_row_increase\', function() {
+        $(\'input[name="id[]"]\').last().val(parseInt($(\'input[name="id[]"]\').last().closest(\'tr\').prev().find(\'input[name="id[]"]\').val(), 10) + 1);
         $(\'input[name="name[]"]\').each(function() {
             $.slugger($(this), $(this).parent().next().find(\'input\'), \'-\');
         });
@@ -32,21 +32,31 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $data = array();
-        for($i = 0, $keys = $request['id'], $count = count($keys); $i < $count; ++$i) {
-            if(trim($request['name'][$i]) !== "") {
-                $slug = trim($request['slug'][$i]) !== "" ? $request['slug'][$i] : $request['name'][$i];
-                $data[] = array(
-                    'id' => (int) $keys[$i],
-                    'name' => $request['name'][$i],
-                    'slug' => Text::parse($slug)->to_slug,
-                    'description' => $request['description'][$i]
-                );
+        $keys = $request['id'];
+        // Checks for duplicate ID
+        foreach(array_count_values($keys) as $key) {
+            if($key > 1) {
+                Notify::error(Config::speak('notify_invalid_duplicate', array($speak->id)));
+                break;
             }
         }
-        $P = array('data' => $request);
-        File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
-        Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
-        Weapon::fire('on_tag_update', array($G, $P));
+        if( ! Notify::errors()) {
+            for($i = 0, $count = count($keys); $i < $count; ++$i) {
+                if(trim($request['name'][$i]) !== "") {
+                    $slug = trim($request['slug'][$i]) !== "" ? $request['slug'][$i] : $request['name'][$i];
+                    $data[$i] = array(
+                        'id' => (int) $keys[$i],
+                        'name' => $request['name'][$i],
+                        'slug' => Text::parse($slug)->to_slug,
+                        'description' => $request['description'][$i]
+                    );
+                }
+            }
+            $P = array('data' => $request);
+            File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
+            Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
+            Weapon::fire('on_tag_update', array($G, $P));
+        }
         Guardian::kick($config->url_current);
     }
     Shield::attach('manager', false);

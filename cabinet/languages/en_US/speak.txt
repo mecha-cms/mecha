@@ -570,6 +570,7 @@ notify_invalid_math_answer: Wrong math answer.
 notify_invalid_captcha_answer: Wrong captcha answer.
 
 notify_invalid_file_extension: The file you are trying to upload is not a valid <code>%s</code> file.
+notify_invalid_duplicate: Duplicate %s.
 
 notify_confirm: Are your sure?
 notify_confirm_page_leave: Are you sure you want to leave this page?
