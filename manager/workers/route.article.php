@@ -151,7 +151,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 File::open($article->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
                 $custom = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s') . $extension;
                 if(File::exist($custom)) {
-                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js))) {
+                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom)->delete();
                     } else {
