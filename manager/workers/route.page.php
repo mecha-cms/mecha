@@ -41,6 +41,10 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         if( ! isset($page->fields)) {
             $page->fields = array();
         }
+        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . '.txt')) {
+            $page->css_raw = $config->defaults->page_custom_css;
+            $page->js_raw = $config->defaults->page_custom_js;
+        }
         Config::set('page_title', $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title);
     } else {
         if($id !== false) {
