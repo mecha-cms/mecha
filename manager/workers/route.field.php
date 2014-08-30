@@ -76,8 +76,11 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         if(trim($request['key']) === "") {
             $request['key'] = $request['title'];
         }
-        $r_key = Text::parse(strtolower($request['key']))->to_array_key;
-        $fields[$r_key] = array(
+        $request_key = Text::parse(strtolower($request['key']))->to_array_key;
+        if($key !== false) {
+            unset($fields[$key]);
+        }
+        $fields[$request_key] = array(
             'title' => $request['title'],
             'type' => $request['type'],
             'value' => $request['value'],
