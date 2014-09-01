@@ -82,7 +82,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     <title>Hi!</title>
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
     <link href="cabinet/shields/normal/shell/atom.css" rel="stylesheet">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
     html,body {overflow:auto}
     body {padding:5%}
