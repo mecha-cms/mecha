@@ -55,15 +55,25 @@ class Route {
         $string);
     }
 
-    public static function accept($patterns, $callback) {
+    public static function accept($patterns, $callback, $priority = 10) {
         if(is_array($patterns)) {
+            $increment = 0;
             foreach($patterns as $pattern) {
                 $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
-                self::$routes[$pattern] = $callback;
+                self::$routes[] = array(
+                    'pattern' => $pattern,
+                    'callback' => $callback,
+                    'priority' => ( ! is_null($priority) ? (float) $priority : 10) + $increment
+                );
+                $increment += .1;
             }
         } else {
             $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
-            self::$routes[$pattern] = $callback;
+            self::$routes[] = array(
+                'pattern' => $pattern,
+                'callback' => $callback,
+                'priority' => ! is_null($priority) ? (float) $priority : 10
+            );
         }
     }
 
@@ -81,11 +91,12 @@ class Route {
             $url = substr($url, strlen($base));
         }
         $url = trim($url, '/');
-        foreach(self::$routes as $pattern => $callback) {
-            if(preg_match('#^' . self::fix($pattern) . '$#', $url, $params)) {
+        $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();
+        foreach($routes as $route) {
+            if(preg_match('#^' . self::fix($route['pattern']) . '$#', $url, $params)) {
                 array_shift($params);
-                Weapon::fire('before_route_function_call', array($url, $pattern, array_values($params)));
-                return call_user_func_array($callback, array_values($params));
+                Weapon::fire('before_route_function_call', array($url, $route, array_values($params)));
+                return call_user_func_array($route['callback'], array_values($params));
             }
         }
     }

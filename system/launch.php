@@ -35,7 +35,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
 
     Shield::attach('manager');
 
-});
+}, 20);
 
 
 /**
@@ -49,7 +49,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
 Route::accept($config->manager->slug . '/logout', function() use($config, $speak) {
     Notify::success($speak->logged_out . '.');
     Guardian::reject()->kick($config->manager->slug . '/login');
-});
+}, 21);
 
 
 /**
@@ -88,7 +88,7 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
 
     Shield::attach('index');
 
-});
+}, 30);
 
 
 /**
@@ -123,7 +123,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
 
     Shield::attach('index');
 
-});
+}, 40);
 
 
 /**
@@ -160,7 +160,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
 
     Shield::attach('index');
 
-});
+}, 41);
 
 
 /**
@@ -199,7 +199,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
 
     Shield::attach('index');
 
-});
+}, 50);
 
 
 /**
@@ -285,7 +285,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
         Shield::abort('404-search');
     }
 
-});
+}, 60);
 
 
 /**
@@ -299,7 +299,7 @@ Route::accept($config->search->slug, function() use($config) {
     } else {
         Guardian::kick();
     }
-});
+}, 61);
 
 
 /**
@@ -328,7 +328,6 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         'page_type' => 'article',
         'page_title' => $article->title . $config->title_separator . $config->index->title . $config->title_separator . $config->title,
         'article' => $article,
-        'page' => $article,
         'pagination' => Navigator::extract(Get::articles(), $article->path, 1, $config->index->slug)
     ));
 
@@ -473,7 +472,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
     Shield::attach('article-' . $slug);
 
-});
+}, 70);
 
 
 /**
@@ -487,7 +486,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 Route::accept('sitemap', function() {
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(SHIELD . DS . 'sitemap', true, true);
-});
+}, 80);
 
 
 /**
@@ -504,7 +503,7 @@ Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset 
     Config::set('offset', $offset);
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(SHIELD . DS . 'rss', true, true);
-});
+}, 90);
 
 
 /**
@@ -558,7 +557,7 @@ Route::accept('captcha.png', function() {
     imagepng($image);
     imagedestroy($image);
 
-});
+}, 100);
 
 
 /**
@@ -599,7 +598,7 @@ Route::accept('(:any)', function($slug = "") use($config) {
 
     Shield::attach('page-' . $slug);
 
-});
+}, 110);
 
 
 /**
@@ -633,7 +632,7 @@ Route::accept("", function() use($config) {
 
     Shield::attach('page-home');
 
-});
+}, 120);
 
 
 /**
