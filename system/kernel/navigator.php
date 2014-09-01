@@ -67,10 +67,9 @@ class Navigator {
             $step = $chunk > self::$navigator['step'] ? self::$navigator['step'] : $chunk;
             $left = $current - $step;
             if($left < 1) $left = 1;
-            if($current > 1) {
-                $html .= '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>';
-                $html .= '<a href="' . $config->url . $connector . ($current - 1) . '">' . $speak->prev . '</a>';
-            }
+            $html .= $current > 1 ? '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>' : '<span>' . $speak->first . '</span>';
+            $html .= $current > 1 ? '<a href="' . $config->url . $connector . ($current - 1) . '">' . $speak->prev . '</a>' : '<span>' . $speak->prev . '</span>';
+            $html .= '<span>';
             for($i = $current - $step + 1; $i < $current + $step; ++$i) {
                 if($chunk > 1) {
                     if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
@@ -79,10 +78,9 @@ class Navigator {
                     }
                 }
             }
-            if($current < $chunk) {
-                $html .= '<a href="' . $config->url . $connector . ($current + 1) . '">' . $speak->next . '</a>';
-                $html .= '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>';
-            }
+            $html .= '</span>';
+            $html .= $current < $chunk ? '<a href="' . $config->url . $connector . ($current + 1) . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>';
+            $html .= $current < $chunk ? '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>';
 
             self::$bucket['step']['link'] = $html . '</span>';
 
