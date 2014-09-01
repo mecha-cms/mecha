@@ -22,7 +22,7 @@ class Filter {
      *  ---------- | ------- | -------------------------------------------
      *  $name      | string  | Filter name
      *  $function  | mixed   | Filter function
-     *  $priority  | integer | Filter function priority
+     *  $priority  | float   | Filter function priority
      *  ---------- | ------- | -------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -37,7 +37,7 @@ class Filter {
         }
         self::$filters[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (float) $priority : 10
+            'priority' => (float) ( ! is_null($priority) ? $priority : 10)
         );
     }
 
@@ -90,7 +90,7 @@ class Filter {
      *  Parameter | Type    | Description
      *  --------- | ------- | --------------------------------------------
      *  $name     | string  | Filter name
-     *  $priority | integer | Filter function priority
+     *  $priority | float   | Filter function priority
      *  --------- | ------- | --------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *

@@ -27,7 +27,9 @@
  *        echo 'Page ' . $offset;
  *    });
  *
- *    Route::execute(); // execute the added routes
+ *    Route::execute(); // Execute the added routes
+ *
+ *    Route::execute('article/(:any)', array('foo')); // Re-execute this route
  *
  * ------------------------------------------------------------------------------------
  *
@@ -36,6 +38,7 @@
  *  --------- | -------- | ------------------------------------------------------------
  *  $pattern  | string   | URL pattern to match, relative to root domain name
  *  $callback | function | Function to be executed if pattern matched with URL
+ *  $priority | float    | Function to be executed if pattern matched with URL
  *  --------- | -------- | ------------------------------------------------------------
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -63,7 +66,7 @@ class Route {
                 self::$routes[] = array(
                     'pattern' => $pattern,
                     'callback' => $callback,
-                    'priority' => ( ! is_null($priority) ? (float) $priority : 10) + $increment
+                    'priority' => (float) (( ! is_null($priority) ? $priority : 10) + $increment)
                 );
                 $increment += .1;
             }
@@ -72,7 +75,7 @@ class Route {
             self::$routes[] = array(
                 'pattern' => $pattern,
                 'callback' => $callback,
-                'priority' => ! is_null($priority) ? (float) $priority : 10
+                'priority' => (float) ( ! is_null($priority) ? $priority : 10)
             );
         }
     }
@@ -84,19 +87,33 @@ class Route {
         });
     }
 
-    public static function execute() {
-        $url = preg_replace('#(\?|\&).*$#', "", $_SERVER['REQUEST_URI']);
-        $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-        if(strpos($url, $base) === 0) {
-            $url = substr($url, strlen($base));
-        }
-        $url = trim($url, '/');
-        $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();
-        foreach($routes as $route) {
-            if(preg_match('#^' . self::fix($route['pattern']) . '$#', $url, $params)) {
-                array_shift($params);
-                Weapon::fire('before_route_function_call', array($url, $route, array_values($params)));
-                return call_user_func_array($route['callback'], array_values($params));
+    public static function execute($pattern = null, $params = array(), $priority = null) {
+        if( ! is_null($pattern)) {
+            foreach(self::$routes as $route) {
+                if($route['pattern'] == $pattern) {
+                    if( ! is_null($priority)) {
+                        if((float) $route['priority'] == (float) $priority) {
+                            call_user_func_array($route['callback'], $params);
+                        }
+                    } else {
+                        call_user_func_array($route['callback'], $params);
+                    }
+                }
+            }
+        } else {
+            $url = preg_replace('#(\?|\&).*$#', "", $_SERVER['REQUEST_URI']);
+            $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
+            if(strpos($url, $base) === 0) {
+                $url = substr($url, strlen($base));
+            }
+            $url = trim($url, '/');
+            $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();var_dump($routes);
+            foreach($routes as $route) {
+                if(preg_match('#^' . self::fix($route['pattern']) . '$#', $url, $params)) {
+                    array_shift($params);
+                    Weapon::fire('before_route_function_call', array($url, $route, array_values($params)));
+                    return call_user_func_array($route['callback'], array_values($params));
+                }
             }
         }
     }

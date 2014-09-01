@@ -26,7 +26,7 @@ class Weapon {
      *  ---------- | ------- | --------------------------------------
      *  $name      | string  | Hook name
      *  $function  | mixed   | Hook function
-     *  $priority  | integer | Hook function priority
+     *  $priority  | float   | Hook function priority
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -35,7 +35,7 @@ class Weapon {
     public static function add($name, $function, $priority = 10) {
         self::$armaments[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (float) $priority : 10
+            'priority' => (float) ( ! is_null($priority) ? $priority : 10)
         );
     }
 
@@ -88,7 +88,7 @@ class Weapon {
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------
      *  $name     | string  | Hook name
-     *  $priority | integer | Hook function priority
+     *  $priority | float   | Hook function priority
      *  --------- | ------- | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
