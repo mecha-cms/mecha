@@ -111,7 +111,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * -------------------
  */
 
-Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
+Route::accept($config->manager->slug . '/plugin/([^0-9\/]+)', function($slug = "") use($config, $speak, $e_plugin_page) {
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
     }
