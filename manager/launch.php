@@ -10,7 +10,7 @@
  */
 
 Weapon::add('shell_before', function() use($config) {
-    echo Asset::stylesheet($config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css');
+    echo Asset::stylesheet($config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css');
 }, 10);
 
 Weapon::add('shell_after', function() use($config) {

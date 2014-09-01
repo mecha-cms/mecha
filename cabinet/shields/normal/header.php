@@ -4,7 +4,7 @@
     <?php Weapon::fire('SHIPMENT_REGION_TOP'); ?>
     <?php Weapon::fire('shell_before'); ?>
     <?php echo Asset::stylesheet(array(
-        $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.min.css',
+        $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css',
         'shell/atom.css',
         'shell/layout.css'
     )); ?>

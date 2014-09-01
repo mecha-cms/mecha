@@ -2,7 +2,7 @@
   <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->shield)); ?></a>
 </div>
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-file-code-o"></i> <?php echo $speak->shield; ?></a>
+  <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-shield"></i> <?php echo $speak->shield; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-file-archive-o"></i> <?php echo $speak->upload; ?></a>
   <a class="tab" href="#tab-content-3"><i class="fa fa-fw fa-wrench"></i> <?php echo $speak->manage; ?></a>
 </div>

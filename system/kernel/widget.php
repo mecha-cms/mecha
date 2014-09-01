@@ -51,17 +51,17 @@ class Widget {
             '<i class="fa fa-fw fa-th-list"></i> <span>' . $speak->field . '</span>' => '/' . $config->manager->slug . '/field',
             '<i class="fa fa-fw fa-coffee"></i> <span>' . $speak->shortcode . '</span>' => '/' . $config->manager->slug . '/shortcode',
             '<i class="fa fa-fw fa-shield"></i> <span>' . $speak->shield . '</span>' => '/' . $config->manager->slug . '/shield',
-            '<i class="fa fa-fw fa-magic"></i> <span>' . $speak->plugin . '</span>' => '/' . $config->manager->slug . '/plugin',
+            '<i class="fa fa-fw fa-plug"></i> <span>' . $speak->plugin . '</span>' => '/' . $config->manager->slug . '/plugin',
             '<i class="fa fa-fw fa-clock-o"></i> <span>' . $speak->cache . '</span>' => '/' . $config->manager->slug . '/cache',
             '<i class="fa fa-fw fa-life-ring"></i> <span>' . $speak->backup . '</span>' => '/' . $config->manager->slug . '/backup'
         );
         if($config->page_type == 'article') {
             $menus['<i class="fa fa-fw fa-pencil"></i> <span>' . Config::speak('manager._this_article', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> <span>' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
+            $menus['<i class="fa fa-fw fa-trash"></i> <span>' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
         }
         if($config->page_type == 'page') {
             $menus['<i class="fa fa-fw fa-pencil"></i> <span>' . Config::speak('manager._this_page', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash-o"></i> <span>' . Config::speak('manager._this_page', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash"></i> <span>' . Config::speak('manager._this_page', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
         }
 
         /**
