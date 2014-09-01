@@ -111,7 +111,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * -------------------
  */
 
-Route::accept($config->manager->slug . '/plugin/([^0-9\/]+)', function($slug = "") use($config, $speak, $e_plugin_page) {
+Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
     }
@@ -134,7 +134,7 @@ Route::accept($config->manager->slug . '/plugin/([^0-9\/]+)', function($slug = "
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
     Shield::attach('manager', false);
-});
+}, 10.2); // => `manager/plugin` is on priority 10, `manager/plugin/(:num)` is on priority 10.1
 
 
 /**
