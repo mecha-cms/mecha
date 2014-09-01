@@ -35,7 +35,7 @@ class Weapon {
     public static function add($name, $function, $priority = 10) {
         self::$armaments[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (int) $priority : 10
+            'priority' => ! is_null($priority) ? (float) $priority : 10
         );
     }
 
@@ -95,6 +95,9 @@ class Weapon {
      */
 
     public static function eject($name = null, $priority = null) {
+        if( ! is_null($priority)) {
+            $priority = (float) $priority;
+        }
         if(is_null($name)) {
             self::$armaments = array();
         } else {

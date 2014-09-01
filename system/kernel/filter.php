@@ -37,7 +37,7 @@ class Filter {
         }
         self::$filters[$name][] = array(
             'function' => $function,
-            'priority' => ! is_null($priority) ? (int) $priority : 10
+            'priority' => ! is_null($priority) ? (float) $priority : 10
         );
     }
 
@@ -97,6 +97,9 @@ class Filter {
      */
 
     public static function remove($name = null, $priority = null) {
+        if( ! is_null($priority)) {
+            $priority = (float) $priority;
+        }
         if(is_null($name)) {
             self::$filters = array();
         } else {
