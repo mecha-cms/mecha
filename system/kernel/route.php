@@ -107,7 +107,7 @@ class Route {
                 $url = substr($url, strlen($base));
             }
             $url = trim($url, '/');
-            $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();var_dump($routes);
+            $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();
             foreach($routes as $route) {
                 if(preg_match('#^' . self::fix($route['pattern']) . '$#', $url, $params)) {
                     array_shift($params);
