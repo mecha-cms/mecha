@@ -30,7 +30,7 @@ array_walk_recursive($gpc, function(&$value) {
 
 spl_autoload_register(function($worker) {
     $path = SYSTEM . DS . 'kernel' . DS . strtolower($worker) . '.php';
-    if(file_exists($path)) include $path;
+    if(file_exists($path)) require $path;
 });
 
 
@@ -192,11 +192,11 @@ Weapon::add('meta', function() {
     $html  = '<meta charset="' . $config->charset . '"' . ES;
     $html .= '<meta name="viewport" content="width=device-width"' . ES;
     if(isset($config->article->description)) {
-        $html .= '<meta name="description" content="' . Text::parse($config->article->description)->to_encoded_html . '"' . ES;
+        $html .= '<meta name="description" content="' . strip_tags($config->article->description) . '"' . ES;
     } elseif(isset($config->page->description)) {
-        $html .= '<meta name="description" content="' . Text::parse($config->page->description)->to_encoded_html . '"' . ES;
+        $html .= '<meta name="description" content="' . strip_tags($config->page->description) . '"' . ES;
     } else {
-        $html .= '<meta name="description" content="' . Text::parse($config->description)->to_encoded_html . '"' . ES;
+        $html .= '<meta name="description" content="' . strip_tags($config->description) . '"' . ES;
     }
     $html .= '<meta name="author" content="' . $config->author . '"' . ES;
     echo Filter::apply('meta', $html, 1);

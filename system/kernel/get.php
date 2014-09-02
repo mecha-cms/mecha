@@ -691,8 +691,13 @@ class Get {
         if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
 
         if( ! isset($results['description'])) {
-            $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
-            $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
+            if(strpos($results['content'], '<!-- cut -->') !== false) {
+                $parts = explode('<!-- cut -->', $results['content'], 2);
+                $results['description'] = trim(isset($excludes['content']) ? Text::parse($parts[0])->to_html : $parts[0]);
+            } else {
+                $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
+            }
+            Filter::apply($filter_prefix . 'description', Filter::apply('description', $results['description']));
         }
 
         if( ! isset($excludes['tags'])) {
