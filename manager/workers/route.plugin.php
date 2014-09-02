@@ -20,6 +20,9 @@ $e_plugin_page = "Title: %s\n" .
  */
 
 Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak, $e_plugin_page) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $accepted_mimes = array(
@@ -112,6 +115,9 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  */
 
 Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
     }
@@ -143,6 +149,9 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
  */
 
 Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     $page_current = (int) Request::get('o', 1);
     // Toggle file name from `launch.php` to `pending.php` or vice-versa.
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
@@ -164,6 +173,9 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  */
 
 Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     // Check whether the localized "about" file is available
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
@@ -178,7 +190,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         File::open(PLUGIN . DS . $slug)->delete();
-        $P = array('data' => $request);
+        $P = array('data' => array('id' => $slug));
         Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
         Weapon::fire('on_plugin_update', array($P, $P));
         Weapon::fire('on_plugin_destruct', array($P, $P));

@@ -7,6 +7,9 @@
  */
 
 Route::accept(array($config->manager->slug . '/shield', $config->manager->slug . '/shield/(:any)'), function($folder = false) use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if( ! $folder) $folder = $config->shield;
     if( ! File::exist(SHIELD . DS . $folder)) {
         Shield::abort(); // Folder not found!
@@ -181,7 +184,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
             }
-            $accepted_extensions = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
+            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));

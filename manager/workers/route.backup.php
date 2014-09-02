@@ -7,6 +7,9 @@
  */
 
 Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT);
@@ -66,6 +69,9 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
  */
 
 Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     $time = date('Y-m-d-H-i-s');
     $site = Text::parse($config->title)->to_slug;
     if($origin == 'root') {
@@ -102,6 +108,9 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
  */
 
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     if($backup = File::exist(ROOT . DS . $file)) {
         header('Content-Type: application/zip');
         // header('Content-Length: ' . filesize($backup));
