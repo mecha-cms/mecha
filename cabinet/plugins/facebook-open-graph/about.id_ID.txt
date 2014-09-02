@@ -1,8 +1,8 @@
 Title: Facebook Open Graph
 Author: Taufik Nurrohman
 URL: http://latitudu.com
-Version: 1.1.0
+Version: 1.1.1
 
 ====
 
-Secara otomatis menyisipkan tag meta [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer &ndash; Open Graph Overview") ke dalam kepala Mecha.
+Secara otomatis menyisipkan tag meta [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer &ndash; Open Graph Overview") ke dalam kepala **Mecha**.
