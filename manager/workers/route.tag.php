@@ -7,15 +7,12 @@
  */
 
 Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
         'files' => Get::rawTags('ASC', 'id'),
         'cargo' => DECK . DS . 'workers' . DS . 'tag.php'
     ));
-    $G = array('data' => Config::get('files'));
+    $G = array('data' => Mecha::A(Config::get('files')));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($, base) {
@@ -52,7 +49,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
                     );
                 }
             }
-            $P = array('data' => $request);
+            $P = array('data' => Converter::strEval($request));
             File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
             Weapon::fire('on_tag_update', array($G, $P));
