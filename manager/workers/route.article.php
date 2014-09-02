@@ -199,9 +199,8 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         'cargo' => DECK . DS . 'workers' . DS . 'kill.article.php'
     ));
     $G = array('data' => Mecha::A($article));
-    $G['data']['fields'] = Text::parse($G['data']['fields'])->to_encoded_json;
-    if(Request::post()) {
-        Guardian::checkToken(Request::post('token'));
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
         File::open($article->path)->delete();
         // Deleting comments ...
         if($comments = Get::comments($id, 'DESC', 'txt,hold')) {

@@ -3,7 +3,7 @@
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered table-full">
     <colgroup>
-      <col style="width:4em;">
+      <col style="width:5em;">
       <col>
       <col>
       <col>

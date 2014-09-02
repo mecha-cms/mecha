@@ -71,7 +71,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     Shield::define(array(
         'info' => Shield::info($folder),
         'the_shield_path' => $folder,
-        'the_shield_contents' => Get::files(SHIELD . DS . $folder, 'css,html,js,php,txt', 'ASC', 'name'),
+        'the_shield_contents' => Get::files(SHIELD . DS . $folder, 'css,htaccess,htm,html,js,json,jsonp,less,php,scss,txt,xml', 'ASC', 'name'),
         'the_shields' => $the_shields
     ))->attach('manager', false);
 });
@@ -116,7 +116,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '</code>')));
             }
-            $accepted_extensions = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
+            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'less', 'php', 'scss', 'txt', 'xml');
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
@@ -184,7 +184,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
             }
-            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml');
+            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'less', 'php', 'scss', 'txt', 'xml');
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
@@ -237,7 +237,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $conf
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $P = array('data' => $request);
+        $P = array('data' => array('path' => $file));
         File::open($file)->delete();
         if($path) {
             Notify::success(Config::speak('notify_file_deleted', array('<code>' . basename($path) . '</code>')));

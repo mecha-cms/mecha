@@ -59,7 +59,7 @@ Route::accept($config->manager->slug . '/cache/kill/files?:(:all)', function($na
             $info_path[] = $_path;
             File::open($_path)->delete();
         }
-        $P = array('data' => $request);
+        $P = array('data' => array('files' => $info_path));
         Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
         Weapon::fire('on_cache_update', array($P, $P));
         Weapon::fire('on_cache_destruct', array($P, $P));

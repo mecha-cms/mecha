@@ -28,7 +28,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
                 $data[$keys[$i]] = $request['values'][$i];
             }
         }
-        $P = array('data' => $request);
+        $P = array('data' => $data);
         File::serialize($data)->saveTo(STATE . DS . 'shortcodes.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Weapon::fire('on_shortcode_update', array($G, $P));

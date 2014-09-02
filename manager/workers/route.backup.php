@@ -96,7 +96,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
             ));
         }
     }
-    $G = array('data' => array('path' => ROOT . DS . $name));
+    $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
     Weapon::fire('on_backup_construct', array($G, $G));
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);
 });
@@ -117,7 +117,7 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
         header('Content-Disposition: attachment; filename=' . $file);
         ob_clean();
         readfile($backup);
-        $G = array('data' => array('path' => $backup));
+        $G = array('data' => array('path' => $backup, 'file' => $backup));
         ignore_user_abort(true);
         File::open($backup)->delete();
         Weapon::fire('on_backup_destruct', array($G, $G));

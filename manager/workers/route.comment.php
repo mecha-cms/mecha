@@ -46,7 +46,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
     ));
     if($request = Request::post()) {
-        $P = array('data' => $request);
+        $P = array('data' => Mecha::A($comment));
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
         File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 

@@ -39,7 +39,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         }
         if( ! Notify::errors()) {
             for($i = 0, $count = count($keys); $i < $count; ++$i) {
-                if(trim($request['name'][$i]) !== "") {
+                if(trim($request['name'][$i]) !== "" && trim($request['id'][$i]) !== "" && is_numeric($request['id'][$i])) {
                     $slug = trim($request['slug'][$i]) !== "" ? $request['slug'][$i] : $request['name'][$i];
                     $data[$i] = array(
                         'id' => (int) $keys[$i],
@@ -49,7 +49,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
                     );
                 }
             }
-            $P = array('data' => Converter::strEval($request));
+            $P = array('data' => $data);
             File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
             Weapon::fire('on_tag_update', array($G, $P));
