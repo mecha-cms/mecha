@@ -1,7 +1,8 @@
 .widget .counter:before {content: " ("}
 .widget .counter:after {content:")"}
 
-.widget-archive-dropdown select {
+.widget-archive-dropdown select,
+.widget-tag-dropdown select {
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
@@ -12,7 +13,8 @@
   background:none;
   border:1px solid;
   outline:none;
-  padding:.2em;
+  margin:0;
+  padding:.5em;
   cursor:pointer;
 }
 

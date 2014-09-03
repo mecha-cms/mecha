@@ -81,16 +81,8 @@ Weapon::add('shell_before', function() {
     echo Asset::stylesheet('cabinet/shields/widgets.css');
 });
 
-Weapon::add('sword_after', function() {
+Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
     echo Asset::javascript('cabinet/shields/widgets.js');
-    echo "<script>";
-    for($i = 1; $i < Widget::$ids['archive-hierarchy']; ++$i) {
-        echo "Widget.archive('HIERARCHY'," . $i . ");";
-    }
-    for($i = 1; $i < Widget::$ids['archive-dropdown']; ++$i) {
-        echo "Widget.archive('DROPDOWN'," . $i . ");";
-    }
-    echo "</script>";
 });
 
 

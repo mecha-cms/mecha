@@ -11,6 +11,7 @@ class Widget {
         'archive-dropdown' => 1,
         'tag-list' => 1,
         'tag-cloud' => 1,
+        'tag-dropdown' => 1,
         'search' => 1,
         'recent-post' => 1,
         'recent-comment' => 1,
@@ -175,7 +176,7 @@ class Widget {
             } else {
                 $html  = '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown-' . self::$ids['archive-dropdown'] . '">';
                 self::$ids['archive-dropdown']++;
-                $html .= '<select>';
+                $html .= '<select>' . ($query === "" ? '<option disabled selected>' . $speak->options . '&hellip;</option>' : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
                     $html .= '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ($query == $year . '-' . $month ? ' selected' : "") . '>' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . ' (' . $counter[$archive] . ')</option>';
@@ -259,6 +260,18 @@ class Widget {
             $html .= '</div>';
             $html  = Filter::apply('widget', $html);
             return Filter::apply('widget:tag.cloud', Filter::apply('widget:tag', $html));
+        }
+        if($type == 'DROPDOWN') {
+            $html  = '<div class="widget widget-tag widget-tag-dropdown" id="widget-tag-dropdown-' . self::$ids['tag-dropdown'] . '">';
+            self::$ids['tag-dropdown']++;
+            $html .= '<select>' . ($config->tag_query === "" ? '<option disabled selected>' . $speak->options . '&hellip;</option>' : "");
+            foreach($tags as $tag) {
+                $html .= '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query == $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>';
+            }
+            $html .= '</select>';
+            $html .= '</div>';
+            $html  = Filter::apply('widget', $html);
+            return Filter::apply('widget:tag.list', Filter::apply('widget:tag', $html));
         }
     }
 
