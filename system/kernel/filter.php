@@ -63,13 +63,14 @@ class Filter {
      */
 
     public static function apply($name, $value) {
+        $params = array_slice(func_get_args(), 2);
         if( ! isset(self::$filters[$name])) {
             self::$filters[$name] = false;
             return $value;
         }
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
         foreach($filters as $filter => $cargo) {
-            $arguments = array($value) + array_slice(func_get_args(), 2);
+            $arguments = array_merge(array($value), $params);
             $value = call_user_func_array($cargo['function'], $arguments);
         }
         return $value;
