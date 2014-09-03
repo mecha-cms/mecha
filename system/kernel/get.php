@@ -684,6 +684,7 @@ class Get {
             $results['content'] = ob_get_clean();
         }
 
+        $results['excerpt'] = "";
         $results['date'] = Date::extract($results['time']);
         $results['url'] = $config->url . $connector . $results['slug'];
         $results['id'] = $results['date']['unix'];
@@ -691,13 +692,14 @@ class Get {
         if( ! isset($results['author'])) $results['author'] = Filter::apply($filter_prefix . 'author', Filter::apply('author', $config->author));
 
         if( ! isset($results['description'])) {
-            if(strpos($results['content'], '<!-- cut -->') !== false) {
-                $parts = explode('<!-- cut -->', $results['content'], 2);
-                $results['description'] = trim(isset($excludes['content']) ? Text::parse($parts[0])->to_html : $parts[0]);
-            } else {
-                $results['description'] = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
-            }
-            Filter::apply($filter_prefix . 'description', Filter::apply('description', $results['description']));
+            $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
+            Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
+        }
+
+        if(strpos($results['content'], '<!-- cut -->') !== false) {
+            $parts = explode('<!-- cut -->', $results['content'], 2);
+            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . trim($parts[1]);
+            $results['excerpt'] = trim(isset($excludes['content']) ? Text::parse($parts[0])->to_html : $parts[0]);
         }
 
         if( ! isset($excludes['tags'])) {
