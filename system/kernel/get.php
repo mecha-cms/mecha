@@ -693,7 +693,7 @@ class Get {
 
         if( ! isset($results['description'])) {
             $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
-            Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
+            $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
         }
 
         if(strpos($results['content'], '<!-- cut -->') !== false) {
