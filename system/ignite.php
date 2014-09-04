@@ -138,13 +138,13 @@ Filter::add('shortcode', function($content) use($config, $speak) {
             ),
         preg_quote($key, '#')) . '(?!`)#'] = $value;
     }
+    $content = preg_replace(array_keys($regex), array_values($regex), $content);
     if(strpos($content, '{{php}}') !== false) {
         $content = preg_replace_callback('#(?!`)\{\{php\}\}(?!`)([\s\S]+?)(?!`)\{\{\/php\}\}(?!`)#m', function($matches) {
             return Converter::phpEval($matches[1]);
         }, $content);
     }
-    $regex['#`\{\{(.*?)\}\}`#'] = '{{$1}}'; // The escaped shortcode
-    return preg_replace(array_keys($regex), array_values($regex), $content);
+    return preg_replace('#`\{\{(.*?)\}\}`#', '{{$1}}', $content);
 }, 10);
 
 

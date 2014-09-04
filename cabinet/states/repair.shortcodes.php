@@ -9,5 +9,6 @@ return array(
     '{{url.archive}}' => $config->url . '/' . $config->archive->slug . '/',
     '{{url.search}}' => $config->url . '/' . $config->search->slug . '/',
     '{{url.manager}}' => $config->url . '/' . $config->manager->slug . '/',
+    '{{url.current}}' => '{{php}}echo Config::get(\'url_current\');{{/php}}',
     '{{asset}}' => $config->url . '/cabinet/assets/'
 );
