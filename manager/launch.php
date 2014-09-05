@@ -38,7 +38,7 @@ Weapon::add('sword_before', function() {
 
 Weapon::add('sword_after', function() use($config) {
     echo Asset::javascript(array(
-        $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.3/zepto.min.js',
+        $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js',
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
         'manager/sword/row.js',
@@ -62,7 +62,7 @@ Weapon::add('sword_after', function() use($config) {
  *
  */
 
-function remove_pages_cache() {
+function do_remove_cache() {
     global $config;
     $root = ( ! empty($config->base) ? str_replace('/', '.', $config->base) . '.' : "");
     File::open(CACHE . DS . $root . 'sitemap.cache.txt')->delete();
@@ -70,8 +70,8 @@ function remove_pages_cache() {
     File::open(CACHE . DS . $root . 'feeds.rss.cache.txt')->delete();
 }
 
-Weapon::add('on_article_update', 'remove_pages_cache', 10);
-Weapon::add('on_page_update', 'remove_pages_cache', 10);
+Weapon::add('on_article_update', 'do_remove_cache', 10);
+Weapon::add('on_page_update', 'do_remove_cache', 10);
 
 
 /**
@@ -119,5 +119,5 @@ $uri_end = str_replace($config->url . '/' . $config->manager->slug . '/', "", $c
 $uri_end_parts = explode('/', $uri_end);
 if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end_parts[0] . '.php')) {
     Config::set('page_type', 'manager');
-    include $detour;
+    require $detour;
 }

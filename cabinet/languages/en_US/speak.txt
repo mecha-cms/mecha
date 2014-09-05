@@ -502,7 +502,7 @@ manager:
   title_comment_notification: Notification for new comments
   title_resource_versioning: Enable resource versioning
 
-  title_widget_time: Widget time as <var>YYYY-MM</var> (year first)
+  title_widget_time: Time format as <code>YYYY-MM-DD</code> (year before month)
 
   title_defaults_page_title: Default Page Title
   title_defaults_page_content: Default Page Content

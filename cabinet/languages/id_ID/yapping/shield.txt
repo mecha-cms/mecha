@@ -12,4 +12,4 @@ nama-tameng.zip
 
 Anda perlu menambahkan sebuah folder sebagai pembungkus untuk berkas-berkas tameng Anda, kemudian beri nama berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.
 
-Setelah itu, Anda bisa mengaktifkan tameng melalui [manajer konfigurasi](config "Konfigurasi").
+Setelah itu, Anda bisa mengaktifkan tameng melalui [manajer konfigurasi]({{url.manager}}config "Konfigurasi").

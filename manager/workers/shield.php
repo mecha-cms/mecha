@@ -4,7 +4,9 @@
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-shield"></i> <?php echo $speak->shield; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-file-archive-o"></i> <?php echo $speak->upload; ?></a>
+  <?php if(count($the_shields) > 1): ?>
   <a class="tab" href="#tab-content-3"><i class="fa fa-fw fa-wrench"></i> <?php echo $speak->manage; ?></a>
+  <?php endif; ?>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
@@ -48,6 +50,7 @@
     <hr>
     <?php echo Config::speak('file:shield'); ?>
   </div>
+  <?php if(count($the_shields) > 1): ?>
   <div class="tab-content hidden" id="tab-content-3">
     <h3 class="media-head"><?php echo $speak->shields; ?></h3>
     <?php foreach($the_shields as $shield): $shield = basename($shield); ?>
@@ -62,4 +65,5 @@
     <?php endif; ?>
     <?php endforeach; ?>
   </div>
+  <?php endif; ?>
 </div>

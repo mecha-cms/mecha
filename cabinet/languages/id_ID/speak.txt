@@ -502,7 +502,7 @@ manager:
   title_comment_notification: Notifikasi untuk komentar baru
   title_resource_versioning: Aktifkan versi sumber daya
 
-  title_widget_time: Waktu widget sebagai <var>YYYY-MM</var> (tahun sebelum bulan)
+  title_widget_time: Format waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
 
   title_defaults_page_title: Judul Halaman Standar
   title_defaults_page_content: Konten Halaman Standar

@@ -70,20 +70,22 @@ class Navigator {
             $step = $chunk > self::$navigator['step'] ? self::$navigator['step'] : $chunk;
             $left = $current - $step;
             if($left < 1) $left = 1;
-            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>' : '<span>' . $speak->first . '</span>', 1, $connector), 1, $connector);
-            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . $prev . '">' . $speak->prev . '</a>' : '<span>' . $speak->prev . '</span>', $prev, $connector), $prev, $connector);
-            $html .= '<span>';
-            for($i = $current - $step + 1; $i < $current + $step; ++$i) {
-                if($chunk > 1) {
-                    if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
-                        $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong class="current">' . $i . '</strong>', $i, $connector), $i, $connector);
-                        self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $config->url . $connector . $i : false, $i, $connector), $i, $connector);
+            if($chunk > 1) {
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>' : '<span>' . $speak->first . '</span>', 1, $connector), 1, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . $prev . '">' . $speak->prev . '</a>' : '<span>' . $speak->prev . '</span>', $prev, $connector), $prev, $connector);
+                $html .= '<span>';
+                for($i = $current - $step + 1; $i < $current + $step; ++$i) {
+                    if($chunk > 1) {
+                        if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
+                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong class="current">' . $i . '</strong>', $i, $connector), $i, $connector);
+                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $config->url . $connector . $i : false, $i, $connector), $i, $connector);
+                        }
                     }
                 }
+                $html .= '</span>';
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $next . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
             }
-            $html .= '</span>';
-            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $next . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
-            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
 
             self::$bucket['step']['link'] = $html . '</span>';
 
