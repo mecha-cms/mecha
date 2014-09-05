@@ -69,7 +69,12 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     $G = array('data' => Mecha::A($page));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = (int) date('U', isset($request['date']) ? strtotime($request['date']) : time());
+        // Checks for invalid time pattern
+        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
+            Notify::error($speak->notify_invalid_time_pattern);
+            Guardian::memorize($request);
+        }
+        $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
         $request['path'] = $page->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
@@ -97,11 +102,6 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Checks for invalid time pattern
-        if( ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $date)) {
-            Notify::error($speak->notify_invalid_time_pattern);
-            Guardian::memorize($request);
-        }
         // Checks for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
