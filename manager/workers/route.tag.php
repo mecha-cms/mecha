@@ -7,12 +7,13 @@
  */
 
 Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
+    $tags = Get::rawTags('ASC', 'id');
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
-        'files' => Get::rawTags('ASC', 'id'),
+        'files' => $tags,
         'cargo' => DECK . DS . 'workers' . DS . 'tag.php'
     ));
-    $G = array('data' => Mecha::A(Config::get('files')));
+    $G = array('data' => $tags);
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($, base) {
@@ -28,16 +29,23 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $data = array();
-        $keys = $request['id'];
         // Checks for duplicate ID
-        foreach(array_count_values($keys) as $key) {
-            if($key > 1) {
+        foreach(array_count_values($request['id']) as $id => $count) {
+            if(trim($id) !== "" && $count > 1) {
                 Notify::error(Config::speak('notify_invalid_duplicate', array($speak->id)));
                 break;
             }
         }
+        // Checks for duplicate slug
+        foreach(array_count_values($request['slug']) as $slug => $count) {
+            if(trim($slug) !== "" && $count > 1) {
+                Notify::error(Config::speak('notify_invalid_duplicate', array(strtolower($speak->slug))));
+                break;
+            }
+        }
         if( ! Notify::errors()) {
+            $data = array();
+            $keys = $request['id'];
             for($i = 0, $count = count($keys); $i < $count; ++$i) {
                 if(trim($request['name'][$i]) !== "" && trim($request['id'][$i]) !== "" && is_numeric($request['id'][$i])) {
                     $slug = trim($request['slug'][$i]) !== "" ? $request['slug'][$i] : $request['name'][$i];
