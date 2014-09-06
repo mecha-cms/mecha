@@ -501,6 +501,7 @@ manager:
   title_comment_moderation: Moderasi komentar
   title_comment_notification: Notifikasi untuk komentar baru
   title_resource_versioning: Aktifkan versi sumber daya
+  title_minify_html: Kompres keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
 
   title_widget_time: Format waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
 

@@ -16,6 +16,7 @@ return array(
     'excerpt_length' => 300,
     'excerpt_tail' => '&hellip;',
     'widget_year_first' => true,
+    'minify_html' => true,
 
     // Header
     'title' => 'My Awesome Site',

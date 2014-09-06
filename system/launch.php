@@ -223,10 +223,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
     } else {
 
-        /**
-         * Matched with all keywords combined
-         */
-
+        // Matched with all keywords combined
         if($files = Get::articles('DESC', 'keyword:' . $keywords)) {
             foreach($files as $file) {
                 $articles[] = $file;
@@ -237,10 +234,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             }
         }
 
-        /**
-         * Matched with a single keyword
-         */
-
+        // Matched with a single keyword
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
             if($files = Get::articles('DESC', 'keyword:' . $keyword)) {
@@ -339,10 +333,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         if(isset($article->js)) echo $article->js;
     });
 
-    /**
-     * Submitting a comment ...
-     */
-
+    // Submitting a comment ...
     if($request = Request::post()) {
 
         Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
@@ -358,12 +349,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if( ! Guardian::check($request['email'])->this_is_email) {
                 Notify::error($speak->notify_invalid_email);
             } else {
-
-                /**
-                 * Do not allow passengers to enter your
-                 * email address in the comment email field
-                 */
-
+                // Disallow passengers from entering your
+                // email address in the comment email field
                 if( ! Guardian::happy() && $request['email'] == $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                 }
@@ -401,10 +388,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
         }
 
-        /**
-         * Checks for spam keywords in comment
-         */
-
+        // Checks for spam keywords in comment
         $fucking_words = explode(',', $config->spam_keywords);
         foreach($fucking_words as $spam) {
             $fuck = trim($spam);
@@ -426,20 +410,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $id = (int) time();
             $parent = Request::post('parent');
 
-            /**
-             * Disallow images in comments to prevent XSS
-             */
-
-            $message = preg_replace(
-                array(
-                    '#(\!\[.*?\]\(.*?\))#',
-                    '#<img (.*?)' . preg_quote(ES, '/') . '#'
-                ),
-                array(
-                    "\n\n~~~ .markdown\n$1\n~~~\n\n",
-                    '&lt;img $1' . Text::parse(ES)->to_encoded_html
-                ),
-            strip_tags($request['message'], '<br>'));
+            // Temporarily disallow images in comment to prevent XSS
+            $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', strip_tags($request['message'], '<br><img>'));
 
             $P = array('data' => $request);
 
@@ -459,17 +431,13 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Weapon::fire('on_comment_construct', array($P, $P));
 
             if($config->email_notification) {
-                $message  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
-                $message .= Text::parse('**' . strip_tags($request['name']) . ':** ' . strip_tags($request['message'], '<br>'))->to_html;
-                $message .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
-
-                /**
-                 * Sending email notification ...
-                 */
-
+                $mail  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
+                $mail .= Text::parse('**' . strip_tags($request['name']) . ':** ' . $message)->to_html;
+                $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
+                // Sending email notification ...
                 if( ! Guardian::happy()) {
-                    if(Notify::send($request['email'], $config->author_email, $speak->comment_notification_subject, $message, 'comment:')) {
-                        Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $message));
+                    if(Notify::send($request['email'], $config->author_email, $speak->comment_notification_subject, $mail, 'comment:')) {
+                        Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $mail));
                     }
                 }
             }

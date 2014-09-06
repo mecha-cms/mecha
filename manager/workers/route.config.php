@@ -22,6 +22,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         $request['email_notification'] = Request::post('email_notification') ? true : false;
         $request['widget_year_first'] = Request::post('widget_year_first') ? true : false;
         $request['resource_versioning'] = Request::post('resource_versioning') ? true : false;
+        $request['minify_html'] = Request::post('minify_html') ? true : false;
         // Fixes for slug pattern input
         $request['index']['slug'] = Text::parse(Request::post('index.slug', 'article'))->to_slug;
         $request['tag']['slug'] = Text::parse(Request::post('tag.slug', 'tagged'))->to_slug;

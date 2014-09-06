@@ -386,6 +386,12 @@
         <div><label><input name="resource_versioning" type="checkbox" value="true"<?php echo Guardian::wayback('resource_versioning', $config->resource_versioning) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_resource_versioning; ?></span></label></div>
       </div>
     </div>
+    <div class="grid-group">
+      <span class="grid span-2"></span>
+      <span class="grid span-4">
+        <div><label><input name="minify_html" type="checkbox" value="true"<?php echo Guardian::wayback('minify_html', $config->minify_html) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_minify_html; ?></span></label></div>
+      </span>
+    </div>
   </fieldset>
   <fieldset>
     <legend><?php echo $speak->manager->title_header; ?></legend>

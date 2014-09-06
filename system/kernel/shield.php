@@ -178,7 +178,11 @@ class Shield {
      *
      */
 
-    public static function attach($name, $minify = true, $cacheable = false) {
+    public static function attach($name, $minify = null, $cacheable = false) {
+
+        if(is_null($minify)) {
+            $minify = Config::get('minify_html');
+        }
 
         $G = array('data' => array('name' => $name, 'minify' => $minify, 'cacheable' => $cacheable));
 
@@ -246,7 +250,11 @@ class Shield {
      *
      */
 
-    public static function abort($name = null, $minify = true) {
+    public static function abort($name = null, $minify = null) {
+
+        if(is_null($minify)) {
+            $minify = Config::get('minify_html');
+        }
 
         $G = array('data' => array('name' => $name, 'minify' => $minify));
 

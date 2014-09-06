@@ -501,6 +501,7 @@ manager:
   title_comment_moderation: Comment moderation
   title_comment_notification: Notification for new comments
   title_resource_versioning: Enable resource versioning
+  title_minify_html: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> output
 
   title_widget_time: Time format as <code>YYYY-MM-DD</code> (year before month)
 
