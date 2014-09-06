@@ -79,7 +79,7 @@ class Package {
 
     public static function take($files = null) {
         if( ! extension_loaded('zip')) {
-            Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip extension</a> is not installed on your web server.');
+            Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
         }
         self::$opened = null;
         self::$map = null;

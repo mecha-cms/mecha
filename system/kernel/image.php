@@ -9,7 +9,7 @@ class Image {
 
     public static function take($files = null) {
         if( ! extension_loaded('gd')) {
-            Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD extension</a> is not installed on your web server.');
+            Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
         }
         if(is_array($files)) {
             self::$opened = array();
@@ -112,16 +112,23 @@ class Image {
      *
      *    Image::take('photo.jpg')->draw();
      *
+     *    Image::take('photo.jpg')->draw('path/to/saved-image.jpg');
+     *
      * --------------------------------------------------------------------
      *
      */
 
-    public static function draw() {
+    public static function draw($save = false) {
         $image = file_get_contents(self::$placeholder);
+        if($save !== false) {
+            $save = str_replace(array('\\', '/'), DS, $save);
+            File::write($image)->saveTo($save);
+        }
         header('Content-Type: ' . self::getInfo('mime'));
         File::open(self::$placeholder)->delete();
         imagedestroy(self::$GD);
         echo $image;
+        exit;
     }
 
     /**
@@ -208,8 +215,11 @@ class Image {
      *
      */
 
-    public static function resize($max_width = 100, $max_height = 100, $proportional = true, $crop = false) {
+    public static function resize($max_width = 100, $max_height = null, $proportional = true, $crop = false) {
         self::gen();
+        if(is_null($max_height)) {
+            $max_height = $max_width;
+        }
         $info = self::getInfo();
         $old_width = $info['width'];
         $old_height = $info['height'];
