@@ -174,23 +174,6 @@ Filter::add('content', function($content) use($config) {
 
 
 /**
- * Prevent XSS in Comments
- * -----------------------
- *
- * Disallow images in comments to prevent XSS.
- * => `http://en.wikipedia.org/wiki/Cross-site_scripting`
- *
- */
-
-Filter::add('comment:message', function($content) {
-    if(strpos($content, '<img ') === false) {
-        return $content;
-    }
-    return preg_replace('#<img (.*?)' . preg_quote(ES, '/') . '#', '&lt;img $1' . Text::parse(ES)->to_encoded_html, $content);
-});
-
-
-/**
  * Set Page Metadata
  * -----------------
  */

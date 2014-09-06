@@ -425,7 +425,21 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $post = Date::format($article->time, 'Y-m-d-H-i-s');
             $id = (int) time();
             $parent = Request::post('parent');
-            $message = strip_tags($request['message'], '<br>');
+
+            /**
+             * Disallow images in comments to prevent XSS
+             */
+
+            $message = preg_replace(
+                array(
+                    '#(\!\[.*?\]\(.*?\))#',
+                    '#<img (.*?)' . preg_quote(ES, '/') . '#'
+                ),
+                array(
+                    "\n\n~~~ .markdown\n$1\n~~~\n\n",
+                    '&lt;img $1' . Text::parse(ES)->to_encoded_html
+                ),
+            strip_tags($request['message'], '<br>'));
 
             $P = array('data' => $request);
 
