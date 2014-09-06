@@ -45,7 +45,7 @@ class Asset {
             return false;
         }
         if(strpos($url, ROOT) === false) {
-            return Filter::apply('asset:url', $path, $path);
+            return Filter::apply('asset:url', $path . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?v=' . filemtime(str_replace(array($config->url, '\\', '/'), array(ROOT, DS, DS), $url)) : ""), $path);
         }
         return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), $url) . ($config->resource_versioning ? '?v=' . filemtime($url) : ""), $path);
     }
