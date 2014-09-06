@@ -65,8 +65,8 @@ if(File::exist(ROOT . DS . 'install.php')) {
 
 
 /**
- * Set Default TimeZone Before Launch
- * ----------------------------------
+ * Set Default Time Zone Before Launch
+ * -----------------------------------
  */
 
 date_default_timezone_set($config->timezone);
@@ -163,7 +163,7 @@ Filter::add('content', function($content) use($config) {
     return preg_replace(
         array(
             '#<table>#',
-            '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host) . ')#'
+            '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host, '/') . ')#'
         ),
         array(
             '<table class="table-bordered table-full">',
@@ -171,6 +171,23 @@ Filter::add('content', function($content) use($config) {
         ),
     $content);
 }, 10);
+
+
+/**
+ * Prevent XSS in Comments
+ * -----------------------
+ *
+ * Disallow images in comments to prevent XSS.
+ * => `http://en.wikipedia.org/wiki/Cross-site_scripting`
+ *
+ */
+
+Filter::add('comment:message', function($content) {
+    if(strpos($content, '<img ') === false) {
+        return $content;
+    }
+    return preg_replace('#<img (.*?)' . preg_quote(ES, '/') . '#', '&lt;img $1' . Text::parse(ES)->to_encoded_html, $content);
+});
 
 
 /**
