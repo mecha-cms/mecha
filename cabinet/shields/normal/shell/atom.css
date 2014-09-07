@@ -204,7 +204,8 @@ h6,.h6 {font-size:100%}
 hr {border-top:1px dashed}
 
 abbr,dfn {cursor:help}
-abbr[title],dfn[title] {border-bottom:1px dotted}
+abbr[title]:hover,
+dfn[title]:hover {border-bottom:1px solid}
 
 
 /* FORM ELEMENTS */
@@ -406,6 +407,13 @@ input[type="number"]::-webkit-outer-spin-button {height:auto}
 
 input[type="file"],
 label,select {cursor:pointer}
+
+input[type="image"] {
+  width:auto;
+  height:auto;
+  padding:0;
+  background:none;
+}
 
 option {
   margin:0;
