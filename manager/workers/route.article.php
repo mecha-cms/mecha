@@ -93,6 +93,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         // General fields
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<code>,<em>,<i>,<span>'));
         $slug = Text::parse(Request::post('slug', $title))->to_slug;
+        $slug = $slug == '--' ? Text::parse($title)->to_slug : $slug;
         $content = Request::post('content', "");
         $description = $request['description'];
         $author = strip_tags($request['author']);

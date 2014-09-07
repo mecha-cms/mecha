@@ -204,8 +204,8 @@ h6,.h6 {font-size:100%}
 hr {border-top:1px dashed}
 
 abbr,dfn {cursor:help}
-abbr[title]:hover,
-dfn[title]:hover {border-bottom:1px solid}
+abbr[title],dfn[title] {border-bottom:1px solid transparent}
+abbr[title]:hover,dfn[title]:hover {border-bottom:1px solid}
 
 
 /* FORM ELEMENTS */
@@ -429,13 +429,14 @@ label {
 
 label input:checked + span {opacity:.8}
 
-.form-label {
-  padding:10px 0 0 0;
+.form-label,
+.form-static {
+  display:block;
+  padding-top:10px;
   line-height:normal;
-  text-align:right;
 }
 
-.form-static {padding-top:10px}
+.form-label {text-align:right}
 
 .no-gap .form-label > span {
   display:block;

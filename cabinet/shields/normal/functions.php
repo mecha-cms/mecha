@@ -1,6 +1,12 @@
 <?php
 
-// Your custom functions goes here ...
+/**
+ * Custom Functions
+ * ----------------
+ *
+ * Your custom functions goes here ...
+ *
+ */
 
 Widget::add('tagLinks', function($connector = ', ') {
     $config = Config::get();

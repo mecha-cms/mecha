@@ -1,6 +1,6 @@
 .tab-area {
   margin:1.3846153846153846em 0 0;
-  height:33px;
+  height:32px;
   font-weight:bold;
   line-height:30px;
   overflow:hidden;
@@ -37,7 +37,7 @@
   content:"";
   display:block;
   position:absolute;
-  bottom:-1px;
+  bottom:0;
   z-index:4;
   width:999em;
   height:0;
