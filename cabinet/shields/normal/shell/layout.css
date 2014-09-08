@@ -311,8 +311,8 @@ body {border-top:5px solid}
   right:0;
 }
 
-.widget.widget-recent-comment li,
-.widget.widget-recent-comment li:first-child {
+.widget-recent-comment ul li,
+.widget-recent-comment ul li:first-child {
   border-width:0;
   padding:0;
   margin:.5em 0 0;

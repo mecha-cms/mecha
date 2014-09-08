@@ -34,6 +34,7 @@
 }
 
 .modal-header {
+  margin:0;
   padding:0 1em;
   font:inherit;
   font-weight:bold;
@@ -42,6 +43,7 @@
 }
 
 .modal-content {
+  margin:0;
   padding:1em;
   border-top:1px solid;
   border-bottom:1px solid;

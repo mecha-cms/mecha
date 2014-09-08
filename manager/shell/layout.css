@@ -80,6 +80,7 @@ textarea[name="js"] {height:300px}
   overflow:hidden;
   text-overflow:ellipsis;
   position:relative;
+  margin-bottom:0;
 }
 
 .plugin-author a {

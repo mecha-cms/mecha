@@ -30,7 +30,7 @@
                 base.fire('on_row_increase', [e, this]);
             }
         } else {
-            if (length > min + 1 && $(this).closest('tr').prev().find('input:not([type="hidden"])').val() === "") {
+            if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
                 base.fire('on_row_decrease', [e, this]);
             }

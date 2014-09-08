@@ -26,7 +26,7 @@
       </tr>
       <?php endforeach; ?>
       <tr>
-        <td class="text-right"><input name="id[]" type="text" class="input-block text-center" style="padding-right:2px;padding-left:2px;" value="<?php $id_max = (max($ids) + 1); echo $id_max; ?>"></td>
+        <td class="text-right"><input name="id[]" type="text" class="input-block no-appearance" value="<?php $id_max = (max($ids) + 1); echo $id_max; ?>" autocomplete="off"></td>
         <td><input name="name[]" type="text" class="input-block" value="<?php echo Guardian::wayback('name.' . $id_max); ?>"></td>
         <td><input name="slug[]" type="text" class="input-block" value="<?php echo Guardian::wayback('slug.' . $id_max); ?>"></td>
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Guardian::wayback('description.' . $id_max); ?>"></td>

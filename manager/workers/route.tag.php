@@ -18,7 +18,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         echo '<script>
 (function($, base) {
     base.add(\'on_row_increase\', function() {
-        $(\'input[name="id[]"]\').last().val(parseInt($(\'input[name="id[]"]\').last().closest(\'tr\').prev().find(\'input[name="id[]"]\').val(), 10) + 1);
+        $(\'input[name="id[]"]\').last().val(parseInt($(\'input[name="id[]"]\').last().closest(\'tr\').prev().find(\'input[name="id[]"]\').val(), 10) + 1 || "");
         $(\'input[name="name[]"]\').each(function() {
             $.slugger($(this), $(this).parent().next().find(\'input\'), \'-\');
         });
