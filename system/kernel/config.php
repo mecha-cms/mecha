@@ -35,9 +35,14 @@ class Config {
         if(is_object($key)) {
             $key = Mecha::A($key);
         }
+        $cargo = array();
         if(is_array($key)) {
-            self::$bucket = array_merge(self::$bucket, $key);
+            foreach($key as $k => $v) {
+                Mecha::SVR($cargo, $k, $v);
+            }
+            self::$bucket = array_replace_recursive(self::$bucket, $cargo);
         } else {
+            Mecha::SVR($cargo, $key, $value);
             self::$bucket[$key] = $value;
         }
     }

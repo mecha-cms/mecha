@@ -73,8 +73,8 @@ last: Last
 old: Old
 new: New
 
-older: Older <i class="fa fa-angle-right"></i>
-newer: <i class="fa fa-angle-left"></i> Newer
+older: Older
+newer: Newer
 
 oldest: Oldest
 newest: Newest

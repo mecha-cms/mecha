@@ -85,7 +85,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         $G = array('data' => Mecha::A($config));
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
+            File::serialize(Converter::strEval($request))->saveTo(STATE . DS . 'config.txt', 0600);
             Config::load(); // Refresh the configuration data ...
             Notify::success(Config::speak('notify_success_updated', array(Config::speak('config'))));
             Weapon::fire('on_config_update', array($G, $P));

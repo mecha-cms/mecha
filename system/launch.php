@@ -326,11 +326,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     ));
 
     Weapon::add('shell_after', function() use($article) {
-        if(isset($article->css)) echo $article->css;
+        if(isset($article->css) && trim($article->css) !== "") echo O_BEGIN . $article->css . O_END;
     });
 
     Weapon::add('sword_after', function() use($article) {
-        if(isset($article->js)) echo $article->js;
+        if(isset($article->js) && trim($article->js) !== "") echo O_BEGIN . $article->js . O_END;
     });
 
     // Submitting a comment ...
@@ -565,11 +565,11 @@ Route::accept('(:any)', function($slug = "") use($config) {
     }
 
     Weapon::add('shell_after', function() use($page) {
-        if(isset($page->css)) echo $page->css;
+        if(isset($page->css) && trim($page->css) !== "") echo O_BEGIN . $page->css . O_END;
     });
 
     Weapon::add('sword_after', function() use($page) {
-        if(isset($page->js)) echo $page->js;
+        if(isset($page->js) && trim($page->js) !== "") echo O_BEGIN . $page->js . O_END;
     });
 
     Config::set(array(
