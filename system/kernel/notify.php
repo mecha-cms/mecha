@@ -40,7 +40,7 @@ class Notify {
 
     public static function add($type = 'default', $text = "", $icon = null, $tag = 'p') {
         $icon = is_null($icon) ? self::$config['icons'][$type] : $icon;
-        Session::set(self::$message, Session::get(self::$message) . '<' . $tag . ' class="' . sprintf(self::$config['classes']['message'], $type) . '">' . $icon . $text . '</' . $tag . '>');
+        Session::set(self::$message, Session::get(self::$message) . TAB . '<' . $tag . ' class="' . sprintf(self::$config['classes']['message'], $type) . '">' . $icon . $text . '</' . $tag . '>' . NL);
     }
 
     public static function success($text = "", $icon = null, $tag = 'p') {
@@ -69,7 +69,7 @@ class Notify {
     }
 
     public static function read() {
-        $results = Session::get(self::$message) !== "" ? '<div class="' . self::$config['classes']['messages'] . '">' . Session::get(self::$message) . '</div>' : "";
+        $results = Session::get(self::$message) !== "" ? O_BEGIN . '<div class="' . self::$config['classes']['messages'] . '">' . NL . Session::get(self::$message) . '</div>' . O_END : "";
         self::clear();
         return $results;
     }

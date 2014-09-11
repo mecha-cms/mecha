@@ -2,22 +2,22 @@
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    echo '<!-- Start Facebook Open Graph -->';
-    echo '<meta property="og:title" content="' . strip_tags($config->page_title) . '"' . ES;
-    echo '<meta property="og:type" content="' . ($config->page_type == 'article' ? 'article' : 'website') . '"' . ES;
-    echo '<meta property="og:url" content="' . $config->url_current . '"' . ES;
+    echo str_repeat(TAB, 2) . '<!-- Start Facebook Open Graph -->' . NL;
+    echo str_repeat(TAB, 2) . '<meta property="og:title" content="' . strip_tags($config->page_title) . '"' . ES . NL;
+    echo str_repeat(TAB, 2) . '<meta property="og:type" content="' . ($config->page_type == 'article' ? 'article' : 'website') . '"' . ES . NL;
+    echo str_repeat(TAB, 2) . '<meta property="og:url" content="' . $config->url_current . '"' . ES . NL;
     if(isset($config->article->image)) {
-        echo '<meta property="og:image" content="' . $config->article->image . '"' . ES;
+        echo str_repeat(TAB, 2) . '<meta property="og:image" content="' . $config->article->image . '"' . ES . NL;
     } elseif(isset($config->page->image)) {
-        echo '<meta property="og:image" content="' . $config->page->image . '"' . ES;
+        echo str_repeat(TAB, 2) . '<meta property="og:image" content="' . $config->page->image . '"' . ES . NL;
     }
-    echo '<meta property="og:site_name" content="' . $config->title . '"' . ES;
+    echo str_repeat(TAB, 2) . '<meta property="og:site_name" content="' . $config->title . '"' . ES . NL;
     if(isset($config->article->description)) {
-        echo '<meta property="og:description" content="' . strip_tags($config->article->description) . '"' . ES;
+        echo str_repeat(TAB, 2) . '<meta property="og:description" content="' . strip_tags($config->article->description) . '"' . ES . NL;
     } elseif(isset($config->page->description)) {
-        echo '<meta property="og:description" content="' . strip_tags($config->page->description) . '"' . ES;
+        echo str_repeat(TAB, 2) . '<meta property="og:description" content="' . strip_tags($config->page->description) . '"' . ES . NL;
     } else {
-        echo '<meta property="og:description" content="' . strip_tags($config->description) . '"' . ES;
+        echo str_repeat(TAB, 2) . '<meta property="og:description" content="' . strip_tags($config->description) . '"' . ES . NL;
     }
-    echo '<!-- End Facebook Open Graph -->';
+    echo str_repeat(TAB, 2) . '<!-- End Facebook Open Graph -->' . NL;
 }, 11);

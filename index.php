@@ -23,8 +23,12 @@ define('PLUGIN', ROOT . DS . 'cabinet' . DS . 'plugins');
 define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
 define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
 
-define('SEPARATOR', '====');
-define('ES', '>');
+define('SEPARATOR', '===='); // Separator between the page header and page content
+define('ES', '>'); // Self closing HTML tag's end character(s)
+define('TAB', '  '); // Standard indentation on the page
+define('NL', PHP_EOL); // New line character of HTML output
+define('O_BEGIN', ""); // Begin HTML output
+define('O_END', PHP_EOL); // End HTML output
 
 include SYSTEM . DS . 'ignite.php';
 include SYSTEM . DS . 'launch.php';
