@@ -9,10 +9,6 @@
  *
  */
 
-Weapon::add('shell_before', function() use($config) {
-    echo Asset::stylesheet($config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css');
-}, 10);
-
 Weapon::add('shell_after', function() use($config) {
     echo Asset::stylesheet(array(
         'manager/shell/editor.css',
@@ -26,6 +22,10 @@ Weapon::add('shell_after', function() use($config) {
         'manager/shell/layout.css',
         'shell/manager.css'
     ));
+    $font_uri = $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css';
+    if( ! Asset::loaded($font_uri)) {
+        echo Asset::stylesheet($font_uri);
+    }
 }, 10);
 
 Weapon::add('cargo_before', function() use($config, $speak) {

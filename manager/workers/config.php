@@ -405,11 +405,11 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->slogan; ?></span>
-      <span class="grid span-4"><textarea name="slogan" class="textarea-block"><?php echo Guardian::wayback('slogan', $config->slogan); ?></textarea></span>
+      <span class="grid span-4"><textarea name="slogan" class="textarea-block"><?php echo Text::parse(Guardian::wayback('slogan', $config->slogan))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->description; ?></span>
-      <span class="grid span-4"><textarea name="description" class="textarea-block"><?php echo Guardian::wayback('description', $config->description); ?></textarea></span>
+      <span class="grid span-4"><textarea name="description" class="textarea-block"><?php echo Text::parse(Guardian::wayback('description', $config->description))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->keywords; ?></span>
@@ -513,7 +513,7 @@
     <legend><?php echo $speak->manager->title_other; ?></legend>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
-      <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_keyword_spam; ?>"><?php echo Guardian::wayback('spam_keywords', $config->spam_keywords); ?></textarea></span>
+      <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_keyword_spam; ?>"><?php echo Text::parse(Guardian::wayback('spam_keywords', $config->spam_keywords))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_title; ?></span>
@@ -521,15 +521,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code"><?php echo Guardian::wayback('defaults.page_content', $config->defaults->page_content); ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_content', $config->defaults->page_content))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code"><?php echo Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css); ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code"><?php echo Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js); ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js))->to_encoded_html; ?></textarea></span>
     </label>
   </fieldset>
   <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></p>

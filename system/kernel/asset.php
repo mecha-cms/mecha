@@ -25,6 +25,8 @@
 
 class Asset {
 
+    public static $loaded = array();
+
     private static function pathTrace($path) {
         $config = Config::get();
         if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
@@ -55,17 +57,17 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) === false) {
-                    $html .= Filter::apply('asset:javascript', "", $path[$i]);
-                } else {
+                if(self::url($path[$i]) !== false) {
+                    self::$loaded[$path[$i]] = 1;
                     $html .= Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]);
                 }
             }
             return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
         }
         if(self::url($path) === false) {
-            return Filter::apply('asset:javascript', "", $path);
+            return "";
         }
+        self::$loaded[$path] = 1;
         return Filter::apply('asset:javascript', O_BEGIN . str_repeat(TAB, 2) . '<script src="' . self::url($path) . '"' . $addon . '></script>' . O_END, $path);
     }
 
@@ -79,17 +81,17 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) === false) {
-                    $html .= Filter::apply('asset:stylesheet', "", $path[$i]);
-                } else {
+                if(self::url($path[$i]) !== false) {
+                    self::$loaded[$path[$i]] = 1;
                     $html .= Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]);
                 }
             }
             return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
         }
         if(self::url($path) === false) {
-            return Filter::apply('asset:stylesheet', "", $path);
+            return "";
         }
+        self::$loaded[$path] = 1;
         return Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path);
     }
 
@@ -98,18 +100,24 @@ class Asset {
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) === false) {
-                    $html .= Filter::apply('asset:image', "", $path[$i]);
-                } else {
+                if(self::url($path[$i]) !== false) {
+                    self::$loaded[$path[$i]] = 1;
                     $html .= Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]);
                 }
             }
             return O_BEGIN . rtrim($html, NL) . O_END;
         }
         if(self::url($path) === false) {
-            return Filter::apply('asset:image', "", $path);
+            return "";
         }
+        self::$loaded[$path] = 1;
         return Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path);
+    }
+
+    // Checks for loaded asset(s)
+    public static function loaded($path = null) {
+        if(is_null($path)) return self::$loaded;
+        return isset(self::$loaded[str_replace(DS, '/', $path)]);
     }
 
 }
