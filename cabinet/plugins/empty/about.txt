@@ -8,7 +8,7 @@ Version: 1.0.0
 
 ### Do Something on Form Submit
 
-The standard submission form URL should be directed to the following URL:
+The standard form submission URL should be directed to the following URL:
 
 ~~~ .no-highlight
 {{url}}manager/plugin/plugin-folder/update
@@ -48,7 +48,7 @@ Place the form inside your `configurator.php` file.
 
 #### The Route
 
-Create a new route to the plugin manager path + `/update` relative to the home URL to execute a post submit:
+Create a new route to the plugin manager path + `/update` relative to the home URL to execute a `POST` submit:
 
 ~~~ .php
 $config = Config::get();

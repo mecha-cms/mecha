@@ -102,7 +102,7 @@ Route::accept($config->manager->slug . '/cache/repair/files?:(:any)', function($
     }
     $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . $name . $config->title_separator . $speak->cache . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . $name . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.cache.php'
     ));
     if($request = Request::post()) {

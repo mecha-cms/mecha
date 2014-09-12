@@ -158,7 +158,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     $content = File::open($file)->read();
     $G = array('data' => array('path' => $file, 'name' => $path, 'content' => $content));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
@@ -231,7 +231,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $conf
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . basename($path) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . basename($file) . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
     ));
