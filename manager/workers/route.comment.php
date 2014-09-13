@@ -7,6 +7,9 @@
  */
 
 Route::accept(array($config->manager->slug . '/comment', $config->manager->slug . '/comment/(:num)'), function($offset = 1) use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->per_page)->vomit()) {
         $comments = array();
@@ -67,8 +70,8 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
  */
 
 Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id = "") use($config, $speak) {
-    if( ! $comment = Get::comment($id)) {
-        Shield::abort(); // File not found!
+    if(Guardian::get('status') != 'pilot' || ! $comment = Get::comment($id)) {
+        Shield::abort();
     }
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     $G = array('data' => Mecha::A($comment));
@@ -80,7 +83,9 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($) {
-    var $area = $(\'textarea[name="message"]\'), languages = $area.data(\'mteLanguages\');
+    if (typeof MTE == "undefined") return;
+    var $area = $(\'.MTE[name="message"]\'),
+        languages = $area.data(\'mteLanguages\');
     new MTE($area[0], {
         tabSize: \'    \',
         shortcut: true,

@@ -42,7 +42,7 @@ foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $folder) {
     }
 }
 
-Weapon::fire('unit_composer_fields_before', array($FT, $fields));
+Weapon::fire('unit_composer_3_before', array($FT, $fields));
 
 if( ! empty($fields)) {
     $html = "";
@@ -56,6 +56,9 @@ if( ! empty($fields)) {
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
+        }
+        if($value['scope'] == $FT) {
+            $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
         }
         if($value['type'] == 'text' && $value['scope'] == $FT) {
             $html .= '<label class="grid-group">';
@@ -99,13 +102,10 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['scope'] == $FT) {
-            $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
-        }
     }
     echo ! empty($html) ? $html : '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 } else {
     echo '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 }
 
-Weapon::fire('unit_composer_fields_after', array($FT, $fields));
+Weapon::fire('unit_composer_3_after', array($FT, $fields));

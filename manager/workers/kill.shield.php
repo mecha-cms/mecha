@@ -4,7 +4,7 @@
   <?php if(strpos($config->url_current, 'file:') !== false): ?>
   <h3><?php echo $speak->shield . ': ' . $info->title; ?></h3>
   <p><strong><?php echo $the_shield; ?></strong> <i class="fa fa-arrow-right"></i> <?php echo str_replace(DS, ' <i class="fa fa-arrow-right"></i> ', $the_path); ?></p>
-  <pre><code class="html"><?php echo Text::parse(File::open(SHIELD . DS . $the_shield . DS . $the_path)->read())->to_encoded_html; ?></code></pre>
+  <pre><code><?php echo Text::parse(File::open(SHIELD . DS . $the_shield . DS . $the_path)->read())->to_encoded_html; ?></code></pre>
   <?php else: ?>
   <h3><?php echo $speak->shield . ': ' . $info->title; ?></h3>
   <?php if($files): ?>

@@ -21,8 +21,8 @@
         <td class="text-center align-middle">
           <a class="sort" href="#move-up"><i class="fa fa-angle-up"></i></a><a class="sort" href="#move-down"><i class="fa fa-angle-down"></i></a>
         </td>
-        <td><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
-        <td><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"></td>
+        <td class="align-middle"><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
+        <td class="align-middle"><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"></td>
       </tr>
       <?php endforeach; ?>
       <?php endif; ?>
@@ -30,8 +30,8 @@
         <td class="text-center align-middle">
           <a class="sort" href="#move-up"><i class="fa fa-angle-up"></i></a><a class="sort" href="#move-down"><i class="fa fa-angle-down"></i></a>
         </td>
-        <td><input name="keys[]" type="text" class="input-block" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
-        <td><input name="values[]" type="text" class="input-block"></td>
+        <td class="align-middle"><input name="keys[]" type="text" class="input-block" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
+        <td class="align-middle"><input name="values[]" type="text" class="input-block"></td>
       </tr>
       <tr class="row-more-less" data-min="3" data-max="9999">
         <td colspan="3"><a class="btn btn-sm btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>

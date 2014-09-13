@@ -20,9 +20,9 @@
       <?php foreach($files as $tag): $ids[] = $tag->id; ?>
       <tr>
         <td class="text-right"><input name="id[]" type="hidden" value="<?php echo $tag->id; ?>"><?php echo $tag->id; ?></td>
-        <td><input name="name[]" type="text" class="input-block" value="<?php echo $tag->name; ?>"></td>
-        <td><input name="slug[]" type="text" class="input-block" value="<?php echo $tag->slug; ?>"></td>
-        <td><input name="description[]" type="text" class="input-block" value="<?php echo Text::parse($tag->description)->to_encoded_html; ?>"></td>
+        <td><input name="name[]" type="text" class="input-block" value="<?php echo $tag->name; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>
+        <td><input name="slug[]" type="text" class="input-block" value="<?php echo $tag->slug; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>
+        <td><input name="description[]" type="text" class="input-block" value="<?php echo Text::parse($tag->description)->to_encoded_html; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>
       </tr>
       <?php endforeach; ?>
       <tr>

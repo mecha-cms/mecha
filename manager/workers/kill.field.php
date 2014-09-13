@@ -7,6 +7,7 @@
         <th><?php echo $speak->title; ?></th>
         <th><?php echo $speak->key; ?></th>
         <th><?php echo $speak->type; ?></th>
+        <th><?php echo $speak->scope; ?></th>
       </tr>
     </thead>
     <tbody>
@@ -14,6 +15,7 @@
         <td><?php echo $file->title; ?></td>
         <td><?php echo $the_key; ?></td>
         <td><?php echo $file->type; ?></td>
+        <td><?php echo $file->scope; ?></td>
       </tr>
     </tbody>
   </table>

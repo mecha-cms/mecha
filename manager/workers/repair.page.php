@@ -13,6 +13,7 @@
   <form class="form-compose" action="<?php echo $config->url_current; ?>" method="post" data-preview-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:page'; ?>">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
     <div class="tab-content" id="tab-content-1">
+      <?php Weapon::fire('unit_composer_1_before', array($FT)); ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
         <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $default->title))->to_encoded_html; ?>" placeholder="<?php echo $speak->manager->placeholder_title; ?>"></span>
@@ -21,29 +22,29 @@
         <span class="grid span-1 form-label"><?php echo $speak->slug; ?></span>
         <span class="grid span-5"><input name="slug" type="text" class="input-block" value="<?php echo Guardian::wayback('slug', $default->slug); ?>" placeholder="<?php echo Text::parse($speak->manager->placeholder_title)->to_slug; ?>"></span>
       </label>
-      <label class="grid-group">
-        <span class="grid span-1 form-label"><?php echo $speak->content; ?></span>
-        <span class="grid span-5">
-          <?php include 'unit.composer.content.php'; ?>
-        </span>
-      </label>
+      <?php include 'unit.composer.1.php'; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
         <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo Config::speak('manager.placeholder_description', array(strtolower($speak->page))); ?>"><?php echo Text::parse(Guardian::wayback('description', $default->description))->to_encoded_html; ?></textarea></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->author; ?></span>
-        <span class="grid span-5"><input name="author" type="text" value="<?php echo Guardian::wayback('author', $default->author); ?>"></span>
+        <span class="grid span-5"><input name="author" type="text" value="<?php echo Guardian::wayback('author', $default->author); ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></span>
       </label>
+      <?php Weapon::fire('unit_composer_1_after', array($FT)); ?>
     </div>
     <div class="tab-content hidden" id="tab-content-2">
-      <?php include 'unit.composer.css-js.php'; ?>
+      <?php Weapon::fire('unit_composer_2_before', array($FT)); ?>
+      <?php include 'unit.composer.2.php'; ?>
+      <?php Weapon::fire('unit_composer_2_after', array($FT)); ?>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
-      <?php include 'unit.composer.fields.php'; ?>
+      <?php include 'unit.composer.3.php'; ?>
     </div>
     <div class="tab-content hidden" id="tab-content-4">
+      <?php Weapon::fire('unit_composer_4_before', array($FT)); ?>
       <div class="editor-preview" data-progress-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>."></div>
+      <?php Weapon::fire('unit_composer_4_after', array($FT)); ?>
     </div>
     <hr>
     <p>

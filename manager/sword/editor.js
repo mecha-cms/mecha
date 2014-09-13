@@ -10,11 +10,11 @@
         $preview = $('.editor-preview'),
         $title = $('[name="title"]', $editor),
         $slug = $('[name="slug"]', $editor),
-        $content = $('[name="content"]', $editor),
+        $content = $('.MTE[name="content"]', $editor),
         $tab = $('.tab-area a'),
         $check = $('input[type="checkbox"]', $editor),
-        $css = $('[name="css"]', $editor),
-        $js = $('[name="js"]', $editor),
+        $css = $('.MTE[name="css"]', $editor),
+        $js = $('.MTE[name="js"]', $editor),
         $css_check = $('[name="css_live_check"]', $editor),
         $js_check = $('[name="js_live_check"]', $editor);
 
@@ -45,7 +45,7 @@
         return false;
     });
 
-    if ($content.length) {
+    if ($content.length && typeof MTE != "undefined") {
         base.composer = new MTE($content[0], {
             tabSize: '    ',
             shortcut: true,

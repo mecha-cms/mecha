@@ -96,7 +96,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
         echo '<script>
 (function($) {
-    new MTE($(\'textarea[name="content"]\')[0], {
+    if (typeof MTE == "undefined") return;
+    new MTE($(\'.MTE[name="content"]\')[0], {
         tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
         toolbar: false
     });
@@ -164,7 +165,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
         echo '<script>
 (function($) {
-    new MTE($(\'textarea[name="content"]\')[0], {
+    if (typeof MTE == "undefined") return;
+    new MTE($(\'.MTE[name="content"]\')[0], {
         tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
         toolbar: false
     });

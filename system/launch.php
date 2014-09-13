@@ -442,7 +442,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 }
             }
 
-            Guardian::kick($config->url_current . ($config->comment_moderation ? '#comment-form' : '#comment-' . Date::format($id, 'U')));
+            Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comment_moderation ? '#comment-form' : '#comment-' . Date::format($id, 'U')));
 
         } else {
 

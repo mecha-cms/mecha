@@ -20,7 +20,10 @@
   width:1em;
 }
 
-.sort {display:block}
+.sort {
+  display:block;
+  line-height:1;
+}
 
 .sortable .handle .sort {
   position:absolute;

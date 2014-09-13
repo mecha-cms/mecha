@@ -22,7 +22,8 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
 (function($) {
-    new MTE($(\'textarea[name="content"]\')[0], {
+    if (typeof MTE == "undefined") return;
+    new MTE($(\'.MTE[name="content"]\')[0], {
         tabSize: \'    \',
         toolbar: false
     });

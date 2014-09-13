@@ -38,6 +38,9 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
     });
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
     if($id && $article = Get::article($id, array('content', 'tags', 'comments'))) {
+        if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
+            Shield::abort();
+        }
         if( ! isset($article->fields)) {
             $article->fields = array();
         }
@@ -191,7 +194,10 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
  */
 
 Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot' || ! $article = Get::article($id, array('comments'))) {
+    if( ! $article = Get::article($id, array('comments'))) {
+        Shield::abort();
+    }
+    if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
         Shield::abort();
     }
     Config::set(array(
