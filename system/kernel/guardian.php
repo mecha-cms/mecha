@@ -27,7 +27,7 @@ class Guardian {
      */
 
     public static function get($key = null, $fallback = "") {
-        $log = Session::get(self::$login);
+        $log = Session::get('cookie:' . self::$login);
         if( ! is_null($key)) {
             return isset($log[$key]) ? $log[$key] : $fallback;
         }
@@ -292,14 +292,14 @@ class Guardian {
         if(isset($_POST['username']) && isset($_POST['password']) && ! empty($_POST['username']) && ! empty($_POST['password'])) {
             if(isset($authors[$_POST['username']]) && $_POST['password'] === $authors[$_POST['username']]['password']) {
                 $token = self::token();
-                Session::set(self::$login, array(
+                Session::set('cookie:' . self::$login, array(
                     'token' => $token,
                     'username' => $_POST['username'],
                     // 'password' => $authors[$_POST['username']]['password'],
                     'author' => $authors[$_POST['username']]['author'],
                     'status' => $authors[$_POST['username']]['status'],
                     'email' => $authors[$_POST['username']]['email']
-                ));
+                ), 30, '/', "", false, true);
                 File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($_POST['username'])->to_slug_moderate . '.txt', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
@@ -330,7 +330,7 @@ class Guardian {
 
     public static function reject() {
         self::deleteToken();
-        Session::kill(self::$login);
+        Session::kill('cookie:' . self::$login);
         return new static;
     }
 
@@ -351,7 +351,7 @@ class Guardian {
 
     public static function happy() {
         $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt';
-        $auth = Session::get(self::$login);
+        $auth = Session::get('cookie:' . self::$login);
         return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }
 

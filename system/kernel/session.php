@@ -43,10 +43,10 @@
 
 class Session {
 
-    public static function set($session, $value = "", $expire = 86400, $domain = "", $path = '/', $secure = false, $http_only = false) {
+    public static function set($session, $value = "", $expire = 1, $path = '/', $domain = "", $secure = false, $http_only = false) {
         if(strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
-            $expire = time() + (int) $expire;
+            $expire = time() + 60 * 60 * 24 * ((int) $expire);
             if(strpos($name, '.') !== false) {
                 $parts = explode('.', $name);
                 $name = array_shift($parts);
