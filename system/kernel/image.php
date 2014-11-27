@@ -644,7 +644,7 @@ class Image {
             $x_2 = $x + $width - 1;
             for($i = (int) floor(($width - 1) / 2); $i >= 0; --$i) {
                 imagecopy($pallete, self::$GD, 0, 0, $x_2 - $i, $y, 1, $height);
-                imagecopy(self::$GD, self::$GD, $x_2 - $i, $y, $x + $i,  $y, 1, $height);
+                imagecopy(self::$GD, self::$GD, $x_2 - $i, $y, $x + $i, $y, 1, $height);
                 imagecopy(self::$GD, $pallete, $x + $i, $y, 0, 0, 1, $height);
             }
             imagedestroy($pallete);

@@ -66,7 +66,8 @@ class Session {
         if($session == 'cookies') return $_COOKIE;
         if(strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
-            $value = Mecha::GVR(Converter::strEval($_COOKIE), $name, $fallback);
+            $cookie = isset($_COOKIE) ? Converter::strEval($_COOKIE) : $fallback;
+            $value = Mecha::GVR($cookie, $name, $fallback);
             return ! is_array($value) && ! is_null(json_decode($value, true)) ? json_decode($value, true) : $value;
         }
         return Mecha::GVR($_SESSION, $session, $fallback);
