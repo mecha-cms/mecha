@@ -678,9 +678,9 @@ iframe:first-child,
 /* GRID SYSTEM */
 
 .grid {
-    min-height:1px;
-    float:left;
-    margin-left:4.349%;
+  min-height:1px;
+  float:left;
+  margin-left:4.349%;
 }
 
 .grid:first-child {margin-left:0}

@@ -32,9 +32,9 @@
     });
 
     $modal.each(function() {
-        var $this = $(this);
+        var $this = $(this),
+            $trigger = $this.attr('data-trigger') ? $this.data('trigger') : false;
         $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).insertBefore($this);
-        var $trigger = $this.attr('data-trigger') ? $this.data('trigger') : false;
         if ($trigger) {
             $body.on("click", $trigger, function(e) {
                 $this.show().prev().show();
