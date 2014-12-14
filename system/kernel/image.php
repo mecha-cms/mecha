@@ -237,29 +237,19 @@ class Image {
                 return new static;
             }
             if($crop) {
-                $pallete = imagecreatetruecolor($max_width, $max_height);
-                // Landscape
+                // Wider than the thumbnail (in aspect ratio sense)
                 if($current_ratio > $desired_ratio_after) {
                     $new_width = $old_width * $max_height / $old_height;
-                }
-                // Portrait
-                if($current_ratio < $desired_ratio_before) {
+                // Wider than the image
+                } else {
                     $new_height = $old_height * $max_width / $old_width;
-                }
-                // Nearly square ratio image
-                if($current_ratio > $desired_ratio_before && $current_ratio < $desired_ratio_after) {
-                    if($old_width > $old_height) {
-                        $new_height = max($max_width, $max_height);
-                        $new_width = $old_width * $max_height / $old_height;
-                    } else {
-                        $new_height = $old_height * $max_width / $old_width;
-                    }
                 }
                 // Calculate where to crop based on the center of the image
                 $width_ratio = $old_width / $new_width;
                 $height_ratio = $old_height / $new_height;
                 $x = floor((($new_width - $max_width) / 2) * $width_ratio);
                 $y = round((($new_height - $max_height) / 2) * $height_ratio);
+                $pallete = imagecreatetruecolor($max_width, $max_height);
             } else {
                 if($old_width > $old_height) {
                     $ratio = max($old_width, $old_height) / max($max_width, $max_height);
