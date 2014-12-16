@@ -80,13 +80,6 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
     } else {
         $name = $site . '.cabinet.' . $origin . '_' . $time . '.zip';
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
-        if($origin == 'states') {
-            Package::take(ROOT . DS . $name)->deleteFiles(array(
-                'repair.config.php',
-                'repair.shortcodes.php',
-                'repair.tags.php'
-            ));
-        }
         if($origin == 'shields') {
             Package::take(ROOT . DS . $name)->deleteFiles(array(
                 'rss.php',

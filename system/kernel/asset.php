@@ -114,7 +114,7 @@ class Asset {
         return Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path);
     }
 
-    // Checks for loaded asset(s)
+    // Check for loaded asset(s)
     public static function loaded($path = null) {
         if(is_null($path)) return self::$loaded;
         return isset(self::$loaded[str_replace(DS, '/', $path)]);

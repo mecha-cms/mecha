@@ -35,6 +35,9 @@ class Config {
         if(is_object($key)) {
             $key = Mecha::A($key);
         }
+        if(is_object($value)) {
+            $value = Mecha::A($value);
+        }
         $cargo = array();
         if(is_array($key)) {
             foreach($key as $k => $v) {
@@ -197,7 +200,7 @@ class Config {
     public static function load() {
 
         // Extract the configuration file
-        $config = include STATE . DS . 'repair.config.php';
+        $config = include DECK . DS . 'workers' . DS . 'repair.state.config.php';
         if($file = File::exist(STATE . DS . 'config.txt')) {
             $config = array_replace_recursive($config, File::open($file)->unserialize());
         }

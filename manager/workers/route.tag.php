@@ -29,14 +29,14 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        // Checks for duplicate ID
+        // Check for duplicate ID
         foreach(array_count_values($request['id']) as $id => $count) {
             if(trim($id) !== "" && $count > 1) {
                 Notify::error(Config::speak('notify_invalid_duplicate', array($speak->id)));
                 break;
             }
         }
-        // Checks for duplicate slug
+        // Check for duplicate slug
         foreach(array_count_values($request['slug']) as $slug => $count) {
             if(trim($slug) !== "" && $count > 1) {
                 Notify::error(Config::speak('notify_invalid_duplicate', array(strtolower($speak->slug))));

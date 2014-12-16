@@ -16,7 +16,8 @@ return array(
     'excerpt_length' => 300,
     'excerpt_tail' => '&hellip;',
     'widget_year_first' => true,
-    'minify_html' => true,
+    'html_minifier' => true,
+    'html_parser' => HTML_PARSER,
 
     // Header
     'title' => 'My Awesome Site',
@@ -68,6 +69,10 @@ return array(
 
     // Defaults
     'defaults' => array(
+        'article_title' => "",
+        'article_content' => "",
+        'article_custom_css' => "<style media=\"screen\">\n\n</style>",
+        'article_custom_js' => "<script>\n\n</script>",
         'page_title' => "",
         'page_content' => "",
         'page_custom_css' => "<style media=\"screen\">\n\n</style>",

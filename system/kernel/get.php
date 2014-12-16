@@ -219,7 +219,7 @@ class Get {
     public static function rawTags($order = 'ASC', $sorter = 'name') {
         $config = Config::get();
         $speak = Config::speak();
-        $tags = include STATE . DS . 'repair.tags.php';
+        $tags = include DECK . DS . 'workers' . DS . 'repair.state.tags.php';
         if($file = File::exist(STATE . DS . 'tags.txt')) {
             $tags = array_replace_recursive($tags, File::open($file)->unserialize());
         }
@@ -563,12 +563,13 @@ class Get {
         if( ! $input) return false;
         $extension = pathinfo($input, PATHINFO_EXTENSION);
         list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension));
+        $kind = explode(',', $kind);
         return array(
             'path' => $input,
             'time' => Date::format($time),
             'last_update' => File::exist($input) ? filemtime($input) : null,
             'update' => File::exist($input) ? date('Y-m-d H:i:s', filemtime($input)) : null,
-            'kind' => Converter::strEval(explode(',', $kind)),
+            'kind' => Converter::strEval($kind),
             'slug' => $slug,
             'state' => $extension == 'txt' ? 'published' : 'draft'
         );
