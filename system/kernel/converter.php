@@ -143,20 +143,26 @@ class Converter {
 
     public static function strEval($input) {
         $results = false;
-        if(is_string($input) && preg_match('#^(true|false|TRUE|FALSE|yes|no|on|off|null|NULL|ok|okay)$#', $input, $matches)) {
+        if(is_string($input) && preg_match('#^(true|false|yes|no|on|off|null|ok|okay|TRUE|FALSE|YES|NO|ON|OFF|NULL|OK|OKAY)$#', $input, $matches)) {
             switch($matches[1]) {
                 case 'true': $results = true; break;
                 case 'false': $results = false; break;
-                case 'TRUE': $results = TRUE; break;
-                case 'FALSE': $results = FALSE; break;
                 case 'yes': $results = true; break;
                 case 'no': $results = false; break;
                 case 'on': $results = true; break;
                 case 'off': $results = false; break;
                 case 'null': $results = null; break;
-                case 'NULL': $results = NULL; break;
                 case 'ok': $results = true; break;
                 case 'okay': $results = true; break;
+                case 'TRUE': $results = TRUE; break;
+                case 'FALSE': $results = FALSE; break;
+                case 'YES': $results = TRUE; break;
+                case 'NO': $results = FALSE; break;
+                case 'ON': $results = TRUE; break;
+                case 'OFF': $results = FALSE; break;
+                case 'NULL': $results = NULL; break;
+                case 'OK': $results = TRUE; break;
+                case 'OKAY': $results = TRUE; break;
             }
         } elseif(is_string($input) && ! is_null(json_decode($input, true))) {
             $results = self::strEval(json_decode($input, true));
