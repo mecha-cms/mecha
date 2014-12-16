@@ -47,7 +47,7 @@
 
     if ($content.length && typeof MTE != "undefined") {
         base.composer = new MTE($content[0], {
-            tabSize: '    ',
+            tabSize: base.tab_size,
             shortcut: true,
             toolbarClass: 'editor-toolbar cf',
             buttons: languages.buttons,
@@ -59,9 +59,11 @@
             'position': 8,
             'click': function(e, editor) {
                 var s = editor.grip.selection(),
-                    table = languages.others.table_text;
+                    p = base.is_html_parser_enabled,
+                    table = languages.others['table_text_' + (p ? 'raw' : 'html')];
+                table = table.replace(/\t/g, base.tab_size);
                 editor.grip.insert(table, function() {
-                    editor.grip.select(s.start, s.start + table.indexOf('|') - 1, function() {
+                    editor.grip.select(s.start + (p ? 0 : 25 + (base.tab_size.length * 6)), s.start + table.indexOf(p ? ' |' : '</th>'), function() {
                         editor.grip.updateHistory();
                     });
                 });
@@ -74,11 +76,11 @@
             }
         });
         new MTE($css[0], {
-            tabSize: '  ',
+            tabSize: base.tab_size,
             toolbar: false
         });
         new MTE($js[0], {
-            tabSize: '    ',
+            tabSize: base.tab_size,
             toolbar: false
         });
     }

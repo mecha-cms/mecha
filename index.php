@@ -8,7 +8,7 @@
  */
 
 define('DS', DIRECTORY_SEPARATOR);
-define('MECHA_VERSION', '1.1.1');
+define('MECHA_VERSION', '1.1.2');
 define('ROOT', rtrim(__DIR__, '\\/'));
 define('SYSTEM', ROOT . DS . 'system');
 define('DECK', ROOT . DS . 'manager');
@@ -29,6 +29,10 @@ define('TAB', '  '); // Standard indentation on the page
 define('NL', PHP_EOL); // New line character of HTML output
 define('O_BEGIN', ""); // Begin HTML output
 define('O_END', PHP_EOL); // End HTML output
+define('HTML_PARSER', 'Markdown Extra'); // Depends on the type of HTML parser in the `plugins` folder
 
-include SYSTEM . DS . 'ignite.php';
-include SYSTEM . DS . 'launch.php';
+define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css');
+define('JAVASCRIPT_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js');
+
+require SYSTEM . DS . 'ignite.php';
+require SYSTEM . DS . 'launch.php';

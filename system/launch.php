@@ -372,23 +372,23 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error($speak->notify_invalid_math_answer);
         }
 
-        if(strlen($request['name']) > 100) {
+        if(Guardian::check($request['name'], 100)->this_is_too_long) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_name)));
         }
 
-        if(strlen($request['email']) > 100) {
+        if(Guardian::check($request['email'], 100)->this_is_too_long) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_email)));
         }
 
-        if(strlen($request['url']) > 100) {
+        if(Guardian::check($request['url'], 100)->this_is_too_long) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_url)));
         }
 
-        if(strlen($request['message']) > 1700) {
+        if(Guardian::check($request['message'], 1700)->this_is_too_long) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
         }
 
-        // Checks for spam keywords in comment
+        // Check for spam keywords in comment
         $fucking_words = explode(',', $config->spam_keywords);
         foreach($fucking_words as $spam) {
             $fuck = trim($spam);
@@ -413,12 +413,17 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             // Temporarily disallow images in comment to prevent XSS
             $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', strip_tags($request['message'], '<br><img>'));
 
+            if( ! $config->parse_html) {
+                $message = str_replace('<img ', '&lt;img ', $message);
+            }
+
             $P = array('data' => $request);
 
             $data  = 'Name: ' . strip_tags($request['name']) . "\n";
             $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
             $data .= 'URL: ' . Request::post('url', '#') . "\n";
             $data .= 'Status: ' . (Guardian::happy() ? 'pilot' : 'passenger') . "\n";
+            $data .= 'Content Type: ' . ($config->html_parser ? $config->html_parser : 'HTML') . "\n";
             $data .= 'UA: ' . Get::UA() . "\n";
             $data .= 'IP: ' . Get::IP() . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $message;

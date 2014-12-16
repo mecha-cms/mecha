@@ -389,7 +389,8 @@
     <div class="grid-group">
       <span class="grid span-2"></span>
       <span class="grid span-4">
-        <div><label><input name="minify_html" type="checkbox" value="true"<?php echo Guardian::wayback('minify_html', $config->minify_html) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_minify_html; ?></span></label></div>
+        <div><label><input name="html_minifier" type="checkbox" value="true"<?php echo Guardian::wayback('html_minifier', $config->html_minifier) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_minifier; ?></span></label></div>
+        <div><label><input name="html_parser" type="checkbox" value="<?php echo HTML_PARSER; ?>"<?php echo Guardian::wayback('html_parser', $config->html_parser) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_parser; ?></span></label></div>
       </span>
     </div>
   </fieldset>
@@ -514,6 +515,22 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
       <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_keyword_spam; ?>"><?php echo Text::parse(Guardian::wayback('spam_keywords', $config->spam_keywords))->to_encoded_html; ?></textarea></span>
+    </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_title; ?></span>
+      <span class="grid span-4"><input name="defaults[article_title]" class="input-block" value="<?php echo Guardian::wayback('defaults.article_title', $config->defaults->article_title); ?>"></span>
+    </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_content ?></span>
+      <span class="grid span-4"><textarea name="defaults[article_content]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_content', $config->defaults->article_content))->to_encoded_html; ?></textarea></span>
+    </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_css; ?></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_css]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css))->to_encoded_html; ?></textarea></span>
+    </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_js; ?></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_js]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_title; ?></span>

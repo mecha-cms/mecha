@@ -13,42 +13,23 @@
  *    // Perform a test
  *    var_dump(Text::parse('some text'));
  *
- *    // Convert formatted text into array
+ *    // Convert text into array
  *    Text::toArray("Key: value\nKey: value");
  *
  * -------------------------------------------------------
  *
  */
 
-use \Michelf\Markdown;
-use \Michelf\MarkdownExtra;
-
-spl_autoload_register(function() {
-    include PLUGIN . DS . 'markdown' . DS . 'Michelf' . DS . 'Markdown.php';
-    include PLUGIN . DS . 'markdown' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
-});
-
 class Text {
 
     private function __construct() {}
     private function __clone() {}
 
-    /**
-     * Convert Text into ASCII Characters
-     * ----------------------------------
-     */
-
-    private static function text_to_ASCII($text) {
-        $result = "";
-        for($i = 0, $length = strlen($text); $i < $length; ++$i) {
-            $result .= '&#' . ord($text[$i]) . ';';
-        }
-        return $result;
-    }
+    private static $parsers = array();
 
     /**
-     * Convert Nested Strings into Associative Arrays
-     * ----------------------------------------------
+     * Convert Nested String into Associative Arrays
+     * ---------------------------------------------
      */
 
     private static function text_to_array($text, $splitter, $indent) {
@@ -107,118 +88,31 @@ class Text {
     }
 
     /**
-     * Convert Text into Slug URL
-     * --------------------------
+     * Parser Creator
+     * --------------
      */
 
-    private static function text_to_slug($text, $lower = true, $strip_underscores_and_dots = true) {
-        if($lower) $text = strtolower($text);
-        $text_accents = array(
-            'à' => 'a',  'ô' => 'o',  'ď' => 'd',  'ḟ' => 'f',  'ë' => 'e',  'š' => 's',  'ơ' => 'o',
-            'ß' => 'ss', 'ă' => 'a',  'ř' => 'r',  'ț' => 't',  'ň' => 'n',  'ā' => 'a',  'ķ' => 'k',
-            'ŝ' => 's',  'ỳ' => 'y',  'ņ' => 'n',  'ĺ' => 'l',  'ħ' => 'h',  'ṗ' => 'p',  'ó' => 'o',
-            'ú' => 'u',  'ě' => 'e',  'é' => 'e',  'ç' => 'c',  'ẁ' => 'w',  'ċ' => 'c',  'õ' => 'o',
-            'ṡ' => 's',  'ø' => 'o',  'ģ' => 'g',  'ŧ' => 't',  'ș' => 's',  'ė' => 'e',  'ĉ' => 'c',
-            'ś' => 's',  'î' => 'i',  'ű' => 'u',  'ć' => 'c',  'ę' => 'e',  'ŵ' => 'w',  'ṫ' => 't',
-            'ū' => 'u',  'č' => 'c',  'ö' => 'o',  'è' => 'e',  'ŷ' => 'y',  'ą' => 'a',  'ł' => 'l',
-            'ų' => 'u',  'ů' => 'u',  'ş' => 's',  'ğ' => 'g',  'ļ' => 'l',  'ƒ' => 'f',  'ž' => 'z',
-            'ẃ' => 'w',  'ḃ' => 'b',  'å' => 'a',  'ì' => 'i',  'ï' => 'i',  'ḋ' => 'd',  'ť' => 't',
-            'ŗ' => 'r',  'ä' => 'a',  'í' => 'i',  'ŕ' => 'r',  'ê' => 'e',  'ü' => 'u',  'ò' => 'o',
-            'ē' => 'e',  'ñ' => 'n',  'ń' => 'n',  'ĥ' => 'h',  'ĝ' => 'g',  'đ' => 'd',  'ĵ' => 'j',
-            'ÿ' => 'y',  'ũ' => 'u',  'ŭ' => 'u',  'ư' => 'u',  'ţ' => 't',  'ý' => 'y',  'ő' => 'o',
-            'â' => 'a',  'ľ' => 'l',  'ẅ' => 'w',  'ż' => 'z',  'ī' => 'i',  'ã' => 'a',  'ġ' => 'g',
-            'ṁ' => 'm',  'ō' => 'o',  'ĩ' => 'i',  'ù' => 'u',  'į' => 'i',  'ź' => 'z',  'á' => 'a',
-            'û' => 'u',  'þ' => 'th', 'ð' => 'dh', 'æ' => 'ae', 'µ' => 'u',  'ĕ' => 'e',  'ı' => 'i',
-            'À' => 'A',  'Ô' => 'O',  'Ď' => 'D',  'Ḟ' => 'F',  'Ë' => 'E',  'Š' => 'S',  'Ơ' => 'O',
-            'Ă' => 'A',  'Ř' => 'R',  'Ț' => 'T',  'Ň' => 'N',  'Ā' => 'A',  'Ķ' => 'K',  'Ĕ' => 'E',
-            'Ŝ' => 'S',  'Ỳ' => 'Y',  'Ņ' => 'N',  'Ĺ' => 'L',  'Ħ' => 'H',  'Ṗ' => 'P',  'Ó' => 'O',
-            'Ú' => 'U',  'Ě' => 'E',  'É' => 'E',  'Ç' => 'C',  'Ẁ' => 'W',  'Ċ' => 'C',  'Õ' => 'O',
-            'Ṡ' => 'S',  'Ø' => 'O',  'Ģ' => 'G',  'Ŧ' => 'T',  'Ș' => 'S',  'Ė' => 'E',  'Ĉ' => 'C',
-            'Ś' => 'S',  'Î' => 'I',  'Ű' => 'U',  'Ć' => 'C',  'Ę' => 'E',  'Ŵ' => 'W',  'Ṫ' => 'T',
-            'Ū' => 'U',  'Č' => 'C',  'Ö' => 'O',  'È' => 'E',  'Ŷ' => 'Y',  'Ą' => 'A',  'Ł' => 'L',
-            'Ų' => 'U',  'Ů' => 'U',  'Ş' => 'S',  'Ğ' => 'G',  'Ļ' => 'L',  'Ƒ' => 'F',  'Ž' => 'Z',
-            'Ẃ' => 'W',  'Ḃ' => 'B',  'Å' => 'A',  'Ì' => 'I',  'Ï' => 'I',  'Ḋ' => 'D',  'Ť' => 'T',
-            'Ŗ' => 'R',  'Ä' => 'A',  'Í' => 'I',  'Ŕ' => 'R',  'Ê' => 'E',  'Ü' => 'U',  'Ò' => 'O',
-            'Ē' => 'E',  'Ñ' => 'N',  'Ń' => 'N',  'Ĥ' => 'H',  'Ĝ' => 'G',  'Đ' => 'D',  'Ĵ' => 'J',
-            'Ÿ' => 'Y',  'Ũ' => 'U',  'Ŭ' => 'U',  'Ư' => 'U',  'Ţ' => 'T',  'Ý' => 'Y',  'Ő' => 'O',
-            'Â' => 'A',  'Ľ' => 'L',  'Ẅ' => 'W',  'Ż' => 'Z',  'Ī' => 'I',  'Ã' => 'A',  'Ġ' => 'G',
-            'Ṁ' => 'M',  'Ō' => 'O',  'Ĩ' => 'I',  'Ù' => 'U',  'Į' => 'I',  'Ź' => 'Z',  'Á' => 'A',
-            'Û' => 'U',  'Þ' => 'Th', 'Ð' => 'Dh', 'Æ' => 'Ae', 'İ' => 'I'
-        );
-        $slug = str_replace(array_keys($text_accents), array_values($text_accents), strip_tags($text));
-        $slug = preg_replace(
-            array(
-                '#[^a-z0-9-\_\.]#i',
-                '#-+#',
-                '#^-|-$#'
-            ),
-            array(
-                '-',
-                '-',
-                ""
-            ),
-        $slug);
-        if($strip_underscores_and_dots) {
-            $slug = preg_replace(array('#[\_\.]+#', '#\-+#'), '-', $slug);
-        }
-        return ! empty($slug) ? $slug : '--';
+    public static function parser($name, $callback) {
+        self::$parsers[$name] = $callback;
     }
 
     /**
-     * Convert Slug URL into Plain Text
-     * --------------------------------
+     * Parser Outputs
+     * --------------
      */
 
-    private static function slug_to_text($slug) {
-        // 1. Replace `+` to ` `
-        // 2. Replace `-` to ` `
-        // 3. Replace `---` to `-`
-        return preg_replace(
-            array(
-                '#-{3}#',
-                '#-#',
-                '# +#',
-                '#``\.``#'
-            ),
-            array(
-                '``.``',
-                ' ',
-                ' ',
-                '-'
-            ),
-        urldecode($slug));
-    }
-
-    /**
-     * Parser Output
-     * -------------
-     */
-
-    public static function parse($input, $option = false) {
-        $parser = new MarkdownExtra;
-        $parser->empty_element_suffix = ES;
-        $parser->table_align_class_tmpl = 'text-%%'; // Define table alignment class, example: `<td class="text-right">`
-        if(is_string($input)) {
-            return (object) array(
-                'to_ascii' => self::text_to_ASCII($input),
-                'to_encoded_url' => urlencode($input),
-                'to_decoded_url' => urldecode($input),
-                'to_encoded_html' => htmlentities($input, ENT_QUOTES, 'UTF-8'),
-                'to_decoded_html' => html_entity_decode($input, ENT_QUOTES, 'UTF-8'),
-                'to_html' => trim($parser->transform($input)),
-                'to_encoded_json' => json_encode($input),
-                'to_decoded_json' => ! is_null(json_decode($input, $option)) ? json_decode($input, $option) : $input,
-                'to_slug' => self::text_to_slug($input),
-                'to_slug_moderate' => self::text_to_slug($input, true, false),
-                'to_text' => self::slug_to_text($input),
-                'to_array_key' => str_replace('-', '_', self::text_to_slug($input, false))
-            );
-        } elseif(is_array($input) || is_object($input)) {
-            return (object) array(
-                'to_encoded_json' => json_encode($input)
-            );
+    public static function parse() {
+        $results = array();
+        // If there is no HTML parser engine ...
+        if( ! isset(self::$parsers['to_html'])) {
+            self::$parsers['to_html'] = function($input) {
+                return $input;
+            };
         }
-        return $input;
+        foreach(self::$parsers as $name => $callback) {
+            $results[$name] = call_user_func_array($callback, func_get_args());
+        }
+        return (object) $results;
     }
 
     public static function toArray($text = "", $splitter = ':', $indent = '    ') {
@@ -234,11 +128,11 @@ class Text {
     }
 
     /**
-     * Convert Formatted Text File into Page Data
-     * ------------------------------------------
+     * Convert Text File into Page Data
+     * --------------------------------
      */
 
-    public static function toPage($text, $content = true, $filter_prefix = 'page:') {
+    public static function toPage($text, $content = true, $filter_prefix = 'page:', $force_html_parser = false) {
         $results = array();
         if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) { // By file path
             $by_path = true;
@@ -271,7 +165,7 @@ class Text {
             $results['content_raw'] = $contents;
             $contents = Filter::apply('shortcode', $contents);
             $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
-            $results['content'] = Filter::apply('content', Text::parse($contents)->to_html);
+            $results['content'] = Filter::apply('content', ! isset($results['content_type']) || (isset($results['content_type']) && $results['content_type'] == HTML_PARSER) || $force_html_parser ? Text::parse($contents)->to_html : $contents);
             $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
         }
         return $results;

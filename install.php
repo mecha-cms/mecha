@@ -54,10 +54,11 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         chmod(ROOT . DS . 'cabinet' . DS . 'states', 0766);
         chmod(ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt', 0600);
         unlink(ROOT . DS . 'cabinet' . DS . 'articles' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'pages' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'custom' . DS . '.empty');
+        unlink(ROOT . DS . 'cabinet' . DS . 'pages' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'responses' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'scraps' . DS . '.empty');
+        unlink(ROOT . DS . 'cabinet' . DS . 'states' . DS . '.empty');
         unlink(ROOT . DS . 'system' . DS . 'log' . DS . 'sessions' . DS . '.empty');
         unlink(ROOT . DS . 'install.php');
         unset($_SESSION['meet_mecha']);

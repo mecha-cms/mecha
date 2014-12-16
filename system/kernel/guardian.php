@@ -8,6 +8,8 @@ class Guardian {
     public static $math = 'mecha_math';
     public static $captcha = 'mecha_captcha';
 
+    public static $validators = array();
+
     protected function __construct() {}
     protected function __clone() {}
 
@@ -61,7 +63,7 @@ class Guardian {
 
     /**
      * ============================================================
-     *  CHECKS FOR INVALID SECURITY TOKEN
+     *  CHECK FOR INVALID SECURITY TOKEN
      * ============================================================
      *
      * -- CODE: ---------------------------------------------------
@@ -83,7 +85,7 @@ class Guardian {
 
     /**
      * ============================================================
-     *  CHECKS FOR INVALID MATH ANSWER
+     *  CHECK FOR INVALID MATH ANSWER
      * ============================================================
      *
      * -- CODE: ---------------------------------------------------
@@ -102,7 +104,7 @@ class Guardian {
 
     /**
      * ============================================================
-     *  CHECKS FOR INVALID CAPTCHA ANSWER
+     *  CHECK FOR INVALID CAPTCHA ANSWER
      * ============================================================
      *
      * -- CODE: ---------------------------------------------------
@@ -144,6 +146,25 @@ class Guardian {
 
     /**
      * ============================================================
+     *  INPUT VALIDATION CHECKER
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    Guardian::checker('this_is_email', function($input) {
+     *        return filter_var($input, FILTER_VALIDATE_EMAIL);
+     *    });
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function checker($name, $callback) {
+        self::$validators[$name] = $callback;
+    }
+
+    /**
+     * ============================================================
      *  INPUT VALIDATION CHECKS
      * ============================================================
      *
@@ -157,15 +178,12 @@ class Guardian {
      *
      */
 
-    public static function check($input, $compare = "") {
-        return (object) array(
-            'this_is_IP' => filter_var($input, FILTER_VALIDATE_IP),
-            'this_is_URL' => filter_var($input, FILTER_VALIDATE_URL),
-            'this_is_email' => filter_var($input, FILTER_VALIDATE_EMAIL),
-            'this_is_boolean' => filter_var($input, FILTER_VALIDATE_BOOLEAN),
-            'this_is_correct' => $input === $compare ? true : false,
-            'this_is_regex' => @preg_match($input, null) !== false
-        );
+    public static function check() {
+        $results = array();
+        foreach(self::$validators as $name => $callback) {
+            $results[$name] = call_user_func_array($callback, func_get_args());
+        }
+        return (object) $results;
     }
 
     /**

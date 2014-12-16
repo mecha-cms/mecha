@@ -21,19 +21,19 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     ));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
-(function($) {
+(function($, base) {
     if (typeof MTE == "undefined") return;
     new MTE($(\'.MTE[name="content"]\')[0], {
-        tabSize: \'    \',
+        tabSize: \'    \', // Use 4 spaces for indentation!
         toolbar: false
     });
-})(Zepto);
+})(Zepto, DASHBOARD);
 </script>';
     });
     $G = array('data' => array('content' => $menus));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        // Checks for invalid input
+        // Check for invalid input
         if(preg_match('#(^|\n)(\t| {1,3})(?:[^ ])#', $request['content'])) {
             Notify::error($speak->notify_invalid_indent_character);
             Guardian::memorize($request);

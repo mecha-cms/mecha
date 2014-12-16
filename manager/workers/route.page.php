@@ -44,11 +44,17 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         if( ! isset($page->fields)) {
             $page->fields = array();
         }
+        if( ! isset($page->content_type)) {
+            $page->content_type = $config->html_parser;
+        }
         if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . '.txt')) {
             $page->css_raw = $config->defaults->page_custom_css;
             $page->js_raw = $config->defaults->page_custom_js;
         }
-        Config::set('page_title', $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title);
+        Config::set(array(
+            'page_title', $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title,
+            'page' => $page
+        ));
     } else {
         if($id !== false) {
             Shield::abort(); // File not found!
@@ -61,18 +67,22 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             'title' => $config->defaults->page_title,
             'slug' => "",
             'content_raw' => $config->defaults->page_content,
+            'content_type' => $config->html_parser,
             'description' => "",
             'author' => Guardian::get('author'),
             'css_raw' => $config->defaults->page_custom_css,
             'js_raw' => $config->defaults->page_custom_js,
             'fields' => array()
         ));
-        Config::set('page_title', Config::speak('manager.title_new_', array($speak->page)) . $config->title_separator . $config->manager->title);
+        Config::set(array(
+            'page_title', Config::speak('manager.title_new_', array($speak->page)) . $config->title_separator . $config->manager->title,
+            'page' => $page
+        ));
     }
     $G = array('data' => Mecha::A($page));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        // Checks for invalid time pattern
+        // Check for invalid time pattern
         if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
             Notify::error($speak->notify_invalid_time_pattern);
             Guardian::memorize($request);
@@ -101,12 +111,13 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $slug = Text::parse(Request::post('slug', $title))->to_slug;
         $slug = $slug == '--' ? Text::parse($title)->to_slug : $slug;
         $content = Request::post('content', "");
+        $content_type = Request::post('content_type', 'HTML');
         $description = $request['description'];
         $author = strip_tags($request['author']);
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Checks for duplicate slug
+        // Check for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
             Guardian::memorize($request);
@@ -116,7 +127,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             Notify::error($speak->notify_error_slug_missing_letter);
             Guardian::memorize($request);
         }
-        // Checks for empty post content
+        // Check for empty post content
         if(trim($content) === "") {
             Notify::error($speak->notify_error_post_content_empty);
             Guardian::memorize($request);
@@ -124,6 +135,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $data  = 'Title: ' . $title . "\n";
         $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
+        $data .= 'Content Type: ' . $content_type . "\n";
         $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
         $P = array('data' => $request, 'action' => $request['action']);
@@ -141,7 +153,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             }
         // Repair
         } else {
-            // Checks for duplicate slug, except for the current old slug.
+            // Check for duplicate slug, except for the current old slug.
             // Allow users to change their post slug, but make sure they
             // do not type the slug of another post.
             unset($slugs[$page->slug]);

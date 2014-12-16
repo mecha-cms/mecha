@@ -44,11 +44,17 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         if( ! isset($article->fields)) {
             $article->fields = array();
         }
-        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $article->date->unix) . '.txt')) {
-            $article->css_raw = $config->defaults->page_custom_css;
-            $article->js_raw = $config->defaults->page_custom_js;
+        if( ! isset($article->content_type)) {
+            $article->content_type = $config->html_parser;
         }
-        Config::set('page_title', $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title);
+        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $article->date->unix) . '.txt')) {
+            $article->css_raw = $config->defaults->article_custom_css;
+            $article->js_raw = $config->defaults->article_custom_js;
+        }
+        Config::set(array(
+            'page_title', $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title,
+            'article' => $article
+        ));
     } else {
         if($id !== false) {
             Shield::abort(); // File not found!
@@ -58,28 +64,32 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             'path' => "",
             'state' => 'draft',
             'date' => array('W3C' => ""),
-            'title' => $config->defaults->page_title,
+            'title' => $config->defaults->article_title,
             'slug' => "",
-            'content_raw' => $config->defaults->page_content,
+            'content_raw' => $config->defaults->article_content,
+            'content_type' => $config->html_parser,
             'description' => "",
             'kind' => array(),
             'author' => Guardian::get('author'),
-            'css_raw' => $config->defaults->page_custom_css,
-            'js_raw' => $config->defaults->page_custom_js,
+            'css_raw' => $config->defaults->article_custom_css,
+            'js_raw' => $config->defaults->article_custom_js,
             'fields' => array()
         ));
-        Config::set('page_title', Config::speak('manager.title_new_', array($speak->article)) . $config->title_separator . $config->manager->title);
+        Config::set(array(
+            'page_title', Config::speak('manager.title_new_', array($speak->article)) . $config->title_separator . $config->manager->title,
+            'article' => $article
+        ));
     }
     $G = array('data' => Mecha::A($article));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        // Checks for invalid time pattern
+        // Check for invalid time pattern
         if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
             Notify::error($speak->notify_invalid_time_pattern);
             Guardian::memorize($request);
         }
         $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
-        $request['kind'] = isset($request['kind']) ? Converter::strEval($request['kind']) : array(0);
+        $request['kind'] = isset($request['kind']) ? $request['kind'] : array(0);
         $request['path'] = $article->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
@@ -98,13 +108,14 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $slug = Text::parse(Request::post('slug', $title))->to_slug;
         $slug = $slug == '--' ? Text::parse($title)->to_slug : $slug;
         $content = Request::post('content', "");
+        $content_type = Request::post('content_type', 'HTML');
         $description = $request['description'];
         $author = strip_tags($request['author']);
         $kinds = $request['kind'];
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Checks for duplicate slug
+        // Check for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
             Guardian::memorize($request);
@@ -117,7 +128,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             Notify::error($speak->notify_error_slug_missing_letter);
             Guardian::memorize($request);
         }
-        // Checks for empty post content
+        // Check for empty post content
         if(trim($content) === "") {
             Notify::error($speak->notify_error_post_content_empty);
             Guardian::memorize($request);
@@ -125,6 +136,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $data  = 'Title: ' . $title . "\n";
         $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
+        $data .= 'Content Type: ' . $content_type . "\n";
         $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
         $P = array('data' => $request, 'action' => $request['action']);
@@ -132,7 +144,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         if( ! $id) {
             if( ! Notify::errors()) {
                 File::write($data)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension, 0600);
-                if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
+                if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
                     File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
                 }
                 Notify::success(Config::speak('notify_success_created', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
@@ -142,7 +154,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
         // Repair
         } else {
-            // Checks for duplicate slug, except for the current old slug.
+            // Check for duplicate slug, except for the current old slug.
             // Allow users to change their post slug, but make sure they
             // do not type the slug of another post.
             unset($slugs[$article->slug]);
@@ -155,14 +167,14 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 File::open($article->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
                 $custom = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s') . $extension;
                 if(File::exist($custom)) {
-                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {
+                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->article_custom_css && $js == $config->defaults->article_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom)->delete();
                     } else {
                         File::open($custom)->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
-                    if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
+                    if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
                         File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
                     }
                 }

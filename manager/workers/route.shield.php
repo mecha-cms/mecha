@@ -93,15 +93,15 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         'page_title' => $speak->creating . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
-(function($) {
+(function($, base) {
     if (typeof MTE == "undefined") return;
     new MTE($(\'.MTE[name="content"]\')[0], {
-        tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
+        tabSize: base.tab_size,
         toolbar: false
     });
-})(Zepto);
+})(Zepto, DASHBOARD);
 </script>';
     });
     if($request = Request::post()) {
@@ -162,15 +162,15 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($file) {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
-(function($) {
+(function($, base) {
     if (typeof MTE == "undefined") return;
     new MTE($(\'.MTE[name="content"]\')[0], {
-        tabSize: \'' . (strtolower(pathinfo($file, PATHINFO_EXTENSION)) == 'js' ? '    ' : '  ') . '\',
+        tabSize: base.tab_size,
         toolbar: false
     });
-})(Zepto);
+})(Zepto, DASHBOARD);
 </script>';
     });
     if($request = Request::post()) {

@@ -73,27 +73,30 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if(Guardian::get('status') != 'pilot' || ! $comment = Get::comment($id)) {
         Shield::abort();
     }
+    if( ! isset($comment->content_type)) {
+        $comment->content_type = $config->html_parser;
+    }
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
-    $G = array('data' => Mecha::A($comment));
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => $comment,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
+    $G = array('data' => Mecha::A($comment));
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo '<script>
-(function($) {
+(function($, base) {
     if (typeof MTE == "undefined") return;
     var $area = $(\'.MTE[name="message"]\'),
         languages = $area.data(\'mteLanguages\');
     new MTE($area[0], {
-        tabSize: \'    \',
+        tabSize: base.tab_size,
         shortcut: true,
         buttons: languages.buttons,
         prompt: languages.prompt,
         placeholder: languages.placeholder
     });
-})(Zepto);
+})(Zepto, DASHBOARD);
 </script>';
     });
     if($request = Request::post()) {
@@ -119,6 +122,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
             $data .= 'URL: ' . $P['data']['url'] . "\n";
             $data .= 'Status: ' . $request['status'] . "\n";
+            $data .= 'Content Type: ' . Request::post('content_type', 'HTML') . "\n";
             $data .= 'UA: ' . $request['ua'] . "\n";
             $data .= 'IP: ' . $request['ip'] . "\n";
             $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];

@@ -22,9 +22,8 @@ Weapon::add('shell_after', function() use($config) {
         'manager/shell/layout.css',
         'shell/manager.css'
     ));
-    $font_uri = $config->protocol . 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css';
-    if( ! Asset::loaded($font_uri)) {
-        echo Asset::stylesheet($font_uri);
+    if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
+        echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
     }
 }, 10);
 
@@ -32,13 +31,14 @@ Weapon::add('cargo_before', function() use($config, $speak) {
     echo O_BEGIN . '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '!</strong> &middot; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>' . O_END;
 }, 10);
 
-Weapon::add('sword_before', function() {
+Weapon::add('sword_before', function() use($config) {
     echo Asset::javascript('manager/sword/dashboard.js');
+    echo O_BEGIN . '<script>' . NL . 'DASHBOARD.tab_size = \'' . TAB . '\';' . NL . 'DASHBOARD.is_html_parser_enabled = ' . (Config::get('article.content_type') == HTML_PARSER || Config::get('page.content_type') == HTML_PARSER || Config::get('response.content_type') == HTML_PARSER ? 'true' : 'false') . ';' . NL . '</script>' . O_END;
 }, 10);
 
 Weapon::add('sword_after', function() use($config) {
     echo Asset::javascript(array(
-        $config->protocol . 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js',
+        $config->protocol . JAVASCRIPT_LIBRARY_PATH,
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
         'manager/sword/row.js',

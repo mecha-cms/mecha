@@ -1,4 +1,4 @@
-For the _Options_ field type, write some lines of text in the **Value** field as a representation of each option:
+For the _Option_ field type, write some lines of text in the **Value** field as a representation of each option:
 
 ~~~ .no-highlight
 Option 1
@@ -16,7 +16,7 @@ Result:
 </select>
 ~~~
 
-This also accepted:
+This can also be accepted:
 
 ~~~ .no-highlight
 Label 1: Value 1

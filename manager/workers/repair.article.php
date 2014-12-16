@@ -36,7 +36,7 @@
       <?php
 
       $tags = array();
-      $tags_wayback = Converter::strEval(Guardian::wayback('kind', Mecha::A($default->kind)));
+      $tags_wayback = Guardian::wayback('kind', Mecha::A($default->kind));
 
       foreach(Get::tags() as $tag) {
           if($tag && $tag->id !== 0) {
@@ -48,7 +48,7 @@
       <?php if(count($tags) > 1): ?>
       <div class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->tags; ?></span>
-        <span class="grid span-5"><?php echo implode("", $tags); ?></span>
+        <div class="grid span-5"><?php echo implode("", $tags); ?></div>
       </div>
       <?php endif; ?>
       <label class="grid-group">
