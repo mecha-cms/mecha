@@ -20,7 +20,7 @@
       </tr>
     </thead>
     <tbody>
-      <?php $editable = array('css', 'html', 'js', 'json', 'jsonp', 'php', 'txt', 'xml'); foreach($files as $file): ?>
+      <?php $editable = explode(',', SCRIPT_EXT); foreach($files as $file): ?>
       <tr>
         <td class="text-center"><input name="selected[]" type="checkbox" value="<?php echo str_replace(array(CACHE . DS, '\\'), array("", '/'), $file->path); ?>"></td>
         <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>

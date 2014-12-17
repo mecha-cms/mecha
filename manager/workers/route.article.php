@@ -52,8 +52,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             $article->js_raw = $config->defaults->article_custom_js;
         }
         Config::set(array(
-            'page_title', $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title,
-            'article' => $article
+            'page_title' => $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title,
+            'article' => Mecha::A($article)
         ));
     } else {
         if($id !== false) {
@@ -76,8 +76,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             'fields' => array()
         ));
         Config::set(array(
-            'page_title', Config::speak('manager.title_new_', array($speak->article)) . $config->title_separator . $config->manager->title,
-            'article' => $article
+            'page_title' => Config::speak('manager.title_new_', array($speak->article)) . $config->title_separator . $config->manager->title,
+            'article' => Mecha::A($article)
         ));
     }
     $G = array('data' => Mecha::A($article));

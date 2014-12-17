@@ -8,7 +8,7 @@ class Guardian {
     public static $math = 'mecha_math';
     public static $captcha = 'mecha_captcha';
 
-    public static $validators = array();
+    private static $validators = array();
 
     protected function __construct() {}
     protected function __clone() {}

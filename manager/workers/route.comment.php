@@ -79,7 +79,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'response' => $comment,
+        'response' => Mecha::A($comment),
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
     $G = array('data' => Mecha::A($comment));

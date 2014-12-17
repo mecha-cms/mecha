@@ -52,7 +52,7 @@ class File {
             'gz', 'rar', 'tar', 'zip', 'zipx'
         ),
         'extension_image' => array(
-            'gif', 'ico', 'jpg', 'jpeg', 'png'
+            'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png'
         )
     );
 
