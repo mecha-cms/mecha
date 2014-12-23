@@ -23,7 +23,7 @@ Widget::add('tagLinks', function($connector = ', ') {
     return ! empty($links) ? $speak->tags . ': ' . implode($connector, $links) : "";
 });
 
-// Add an arrow to the older/newer link text
+// Insert an arrow to the older and newer link text
 Config::set(array(
     'speak.older' => $speak->older . ' <i class="fa fa-angle-right"></i>',
     'speak.newer' => '<i class="fa fa-angle-left"></i> ' . $speak->newer
