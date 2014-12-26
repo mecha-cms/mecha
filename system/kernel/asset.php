@@ -26,6 +26,7 @@
 class Asset {
 
     public static $loaded = array();
+    public static $ignored = array();
 
     private static function pathTrace($path) {
         $config = Config::get();
@@ -59,7 +60,7 @@ class Asset {
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
                     self::$loaded[$path[$i]] = 1;
-                    $html .= Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]);
+                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
                 }
             }
             return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -68,7 +69,7 @@ class Asset {
             return "";
         }
         self::$loaded[$path] = 1;
-        return Filter::apply('asset:javascript', O_BEGIN . str_repeat(TAB, 2) . '<script src="' . self::url($path) . '"' . $addon . '></script>' . O_END, $path);
+        return ! self::ignored($path) ? Filter::apply('asset:javascript', O_BEGIN . str_repeat(TAB, 2) . '<script src="' . self::url($path) . '"' . $addon . '></script>' . O_END, $path) : "";
     }
 
     // DEPRECATED. Please use `Asset::javascript()`
@@ -83,7 +84,7 @@ class Asset {
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
                     self::$loaded[$path[$i]] = 1;
-                    $html .= Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]);
+                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
                 }
             }
             return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -92,7 +93,7 @@ class Asset {
             return "";
         }
         self::$loaded[$path] = 1;
-        return Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path);
+        return ! self::ignored($path) ? Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path) : "";
     }
 
     // Return the HTML image of asset
@@ -102,7 +103,7 @@ class Asset {
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
                     self::$loaded[$path[$i]] = 1;
-                    $html .= Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]);
+                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
                 }
             }
             return O_BEGIN . rtrim($html, NL) . O_END;
@@ -111,13 +112,30 @@ class Asset {
             return "";
         }
         self::$loaded[$path] = 1;
-        return Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path);
+        return ! self::ignored($path) ? Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path) : "";
     }
 
     // Check for loaded asset(s)
     public static function loaded($path = null) {
         if(is_null($path)) return self::$loaded;
-        return isset(self::$loaded[str_replace(DS, '/', $path)]);
+        return isset(self::$loaded[$path]);
+    }
+
+    // Do not let the `Asset` loads these files ...
+    public static function ignore($path = null) {
+        if(is_array($path)) {
+            foreach($path as $p) {
+                self::$ignored[$p] = 1;
+            }
+        } else {
+            self::$ignored[$path] = 1;
+        }
+    }
+
+    // Check for ignored asset(s)
+    public static function ignored($path = null) {
+        if(is_null($path)) return self::$ignored;
+        return isset(self::$ignored[$path]);
     }
 
 }
