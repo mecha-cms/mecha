@@ -37,20 +37,22 @@
   margin:0;
   padding:0 1em;
   font:inherit;
+  letter-spacing:0;
   font-weight:bold;
   line-height:36px;
   height:36px;
 }
 
 .modal-content {
-  margin:0;
+  margin:37px 0 48px 0; /* magic numbers :( */
   padding:1em;
+  background-color:rgba(0,0,0,.02);
   border-top:1px solid;
   border-bottom:1px solid;
   position:absolute;
-  top:36px;
+  top:0;
   right:0;
-  bottom:48px;
+  bottom:0;
   left:0;
   z-index:4;
   overflow:auto;
@@ -59,7 +61,10 @@
 .modal-content-inner {margin-bottom:1em}
 
 .modal-footer {
-  height:48px;
+  margin:0;
+  padding:0;
+  height:50px;
+  line-height:50px;
   position:absolute;
   right:0;
   bottom:0;
@@ -67,13 +72,8 @@
   overflow:hidden;
 }
 
-.modal-footer .btn {
-  display:block;
-  margin:6px 0 0 6px;
-  float:left;
-}
-
-.modal-footer .btn + .btn {margin-left:.3076923076923077em}
+.modal-footer .btn {margin:0 0 0 6px}
+.modal-footer .btn + .btn {margin-left:0}
 
 .modal-close {cursor:pointer}
 
