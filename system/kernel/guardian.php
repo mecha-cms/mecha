@@ -165,6 +165,28 @@ class Guardian {
 
     /**
      * ============================================================
+     *  CHECK FOR INPUT VALIDATOR EXISTENCE
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    if( ! Guardian::checkerExist('this_is_me')) {
+     *        Guardian::checker('this_is_me', function($input) {
+     *            ...
+     *        });
+     *    }
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function checkerExist($name = null) {
+        if(is_null($name)) return self::$validators;
+        return isset(self::$validators[$name]);
+    }
+
+    /**
+     * ============================================================
      *  INPUT VALIDATION CHECKS
      * ============================================================
      *

@@ -97,18 +97,22 @@ class Text {
     }
 
     /**
+     * Parser Existence
+     * ----------------
+     */
+
+    public static function parserExist($name = null) {
+        if(is_null($name)) return self::$parsers;
+        return isset(self::$parsers[$name]);
+    }
+
+    /**
      * Parser Outputs
      * --------------
      */
 
     public static function parse() {
         $results = array();
-        // If there is no HTML parser engine ...
-        if( ! isset(self::$parsers['to_html'])) {
-            self::$parsers['to_html'] = function($input) {
-                return $input;
-            };
-        }
         foreach(self::$parsers as $name => $callback) {
             $results[$name] = call_user_func_array($callback, func_get_args());
         }

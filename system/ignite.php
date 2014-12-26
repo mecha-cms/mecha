@@ -112,12 +112,12 @@ Text::parser('to_decoded_url', function($input) {
 
 // Convert decoded HTML to encoded HTML
 Text::parser('to_encoded_html', function($input, $a = ENT_QUOTES, $b = 'UTF-8') {
-    return is_string($input) ? call_user_func_array('htmlentities', func_get_args()) : $input;
+    return is_string($input) ? htmlentities($input, $a, $b) : $input;
 });
 
 // Convert encoded HTML to decoded HTML
 Text::parser('to_decoded_html', function($input, $a = ENT_QUOTES, $b = 'UTF-8') {
-    return is_string($input) ? call_user_func_array('html_entity_decode', func_get_args()) : $input;
+    return is_string($input) ? html_entity_decode($input, $a, $b) : $input;
 });
 
 // Convert decoded JSON to encoded JSON
@@ -131,7 +131,6 @@ Text::parser('to_decoded_json', function($input, $a = false) {
 });
 
 function do_slug($text, $lower = true, $strip_underscores_and_dots = true, $connector = '-') {
-    if($lower) $text = strtolower($text);
     $text_accents = array(
         // Numeric characters
         '¹' => 1,
@@ -507,7 +506,7 @@ function do_slug($text, $lower = true, $strip_underscores_and_dots = true, $conn
         'ϐ' => 'b',
         'ϑ' => 'th',
         'ϒ' => 'Y',
-        /* Arabic */
+        // Arabic
         'أ' => 'a',
         'ب' => 'b',
         'ت' => 't',
@@ -536,7 +535,7 @@ function do_slug($text, $lower = true, $strip_underscores_and_dots = true, $conn
         'ه' => 'h',
         'و' => 'o',
         'ي' => 'y',
-        /* Vietnamese */
+        // Vietnamese
         'ạ' => 'a',
         'ả' => 'a',
         'ầ' => 'a',
@@ -641,6 +640,7 @@ function do_slug($text, $lower = true, $strip_underscores_and_dots = true, $conn
             ""
         ),
     $slug);
+    if($lower) $slug = strtolower($slug);
     return ! empty($slug) ? $slug : str_repeat($connector, 2);
 }
 
@@ -679,6 +679,11 @@ Text::parser('to_text', function($input) {
 // Convert text to array key pattern
 Text::parser('to_array_key', function($input) {
     return is_string($input) ? do_slug($input, false, true, '_') : $input;
+});
+
+// Convert plain text to HTML
+Text::parser('to_html', function($input) {
+    return $input; // If there is no HTML parser engine ...
 });
 
 
