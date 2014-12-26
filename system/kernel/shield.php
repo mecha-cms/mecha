@@ -152,7 +152,7 @@ class Shield {
              "Version: " . $speak->unknown . "\n" .
              "\n" . SEPARATOR . "\n" .
              "\n" . Config::speak('notify_not_available', array($speak->description));
-        $shield_info = File::exist($info) ? Text::toPage(File::open($info)->read(), true, 'shield:') : Text::toPage($e_shield_page, true, 'shield:');
+        $shield_info = File::exist($info) ? Text::toPage(File::open($info)->read(), true, 'shield:', true) : Text::toPage($e_shield_page, true, 'shield:', true);
         return Mecha::O($shield_info);
     }
 

@@ -11,5 +11,5 @@ Text::parser('to_html', function($input) {
     $parser = new MarkdownExtra;
     $parser->empty_element_suffix = ES;
     $parser->table_align_class_tmpl = 'text-%%'; // Define table alignment class, example: `<td class="text-right">`
-    return $parser->transform($input);
+    return trim($parser->transform($input));
 });
