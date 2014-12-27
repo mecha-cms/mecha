@@ -234,7 +234,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             }
         }
 
-        // Matched with a single keyword
+        // Matched with a keyword
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
             if($files = Get::articles('DESC', 'keyword:' . $keyword)) {
@@ -349,8 +349,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if( ! Guardian::check($request['email'])->this_is_email) {
                 Notify::error($speak->notify_invalid_email);
             } else {
-                // Disallow passengers from entering your
-                // email address in the comment email field
+                // Disallow passengers from entering your email address in the comment email field
                 if( ! Guardian::happy() && $request['email'] == $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                 }
@@ -548,7 +547,7 @@ Route::accept('captcha.png', function() {
 
 
 /**
- * Page Static
+ * Static Page
  * -----------
  *
  * [1]. page-slug

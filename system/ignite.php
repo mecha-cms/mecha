@@ -744,28 +744,32 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
  * ---------------
  */
 
-$plugins = array();
-$plugins_list = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
-$plugins_payload = count($plugins_list);
+Weapon::add('on_plugin_update', function() {
+    File::open(CACHE . DS . 'plugins.order.cache.txt')->delete();
+});
 
-sort($plugins_list);
-
-for($i = 0; $i < $plugins_payload; ++$i) {
-    $plugins[] = false; // $plugins[] = '#' . $plugins_list[$i];
-}
-
-for($j = 0; $j < $plugins_payload; ++$j) {
-    if($overtake = File::exist($plugins_list[$j] . DS . '__overtake.txt')) {
-        $to_index = ((int) file_get_contents($overtake)) - 1;
-        if($to_index < 0) $to_index = 0;
-        if($to_index > $plugins_payload - 1) $to_index = $plugins_payload - 1;
-        array_splice($plugins, $to_index, 0, array($plugins_list[$j]));
-    } else {
-        $plugins[$j] = $plugins_list[$j];
+if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache.txt')) {
+    $plugins = File::open($plugins_order)->unserialize();
+} else {
+    $plugins = array();
+    $plugins_list = glob(PLUGIN . DS . '*' . DS . 'launch.php');
+    $plugins_payload = count($plugins_list);
+    sort($plugins_list);
+    for($i = 0; $i < $plugins_payload; ++$i) {
+        $plugins[] = false; // $plugins[] = '#' . dirname($plugins_list[$i]);
     }
+    for($j = 0; $j < $plugins_payload; ++$j) {
+        if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {
+            $to_index = ((int) file_get_contents($overtake)) - 1;
+            if($to_index < 0) $to_index = 0;
+            if($to_index > $plugins_payload - 1) $to_index = $plugins_payload - 1;
+            array_splice($plugins, $to_index, 0, array(dirname($plugins_list[$j])));
+        } else {
+            $plugins[$j] = dirname($plugins_list[$j]);
+        }
+    }
+    File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache.txt');
 }
-
-// var_dump($plugins); <= Check the plugins order!
 
 foreach($plugins as $plugin) {
     if($plugin) {
@@ -780,6 +784,14 @@ foreach($plugins as $plugin) {
         }
     }
 }
+
+
+/**
+ * Check the Plugins Order
+ * -----------------------
+ */
+
+// var_dump($plugins); exit;
 
 
 /**
