@@ -60,22 +60,22 @@ Guardian::checker('this_is_boolean', function($input) {
 });
 
 // Check whether the input value is too large
-Guardian::checker('this_is_too_large', function($input, $max) {
+Guardian::checker('this_is_too_large', function($input, $max = 3000) {
     return is_numeric($input) ? $input > $max : false;
 });
 
 // Check whether the input value is too small
-Guardian::checker('this_is_too_small', function($input, $min) {
+Guardian::checker('this_is_too_small', function($input, $min = 0) {
     return is_numeric($input) ? $input < $min : false;
 });
 
 // Check whether the input value is too long
-Guardian::checker('this_is_too_long', function($input, $max) {
+Guardian::checker('this_is_too_long', function($input, $max = 3000) {
     return is_string($input) ? strlen($input) > $max : false;
 });
 
 // Check whether the input value is too short
-Guardian::checker('this_is_too_short', function($input, $min) {
+Guardian::checker('this_is_too_short', function($input, $min = 0) {
     return is_string($input) ? strlen($input) < $min : false;
 });
 
@@ -744,15 +744,40 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
  * ---------------
  */
 
-foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $plugin) {
-    if( ! $language = File::exist($plugin . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-        $language = $plugin . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+$plugins = array();
+$plugins_list = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
+$plugins_payload = count($plugins_list);
+
+sort($plugins_list);
+
+for($i = 0; $i < $plugins_payload; ++$i) {
+    $plugins[] = false; // $plugins[] = '#' . $plugins_list[$i];
+}
+
+for($j = 0; $j < $plugins_payload; ++$j) {
+    if($overtake = File::exist($plugins_list[$j] . DS . '__overtake.txt')) {
+        $to_index = ((int) file_get_contents($overtake)) - 1;
+        if($to_index < 0) $to_index = 0;
+        if($to_index > $plugins_payload - 1) $to_index = $plugins_payload - 1;
+        array_splice($plugins, $to_index, 0, array($plugins_list[$j]));
+    } else {
+        $plugins[$j] = $plugins_list[$j];
     }
-    if(File::exist($language)) {
-        Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
-    }
-    if($launch = File::exist($plugin . DS . 'launch.php')) {
-        include $launch;
+}
+
+// var_dump($plugins); <= Check the plugins order!
+
+foreach($plugins as $plugin) {
+    if($plugin) {
+        if( ! $language = File::exist($plugin . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+            $language = $plugin . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+        }
+        if(File::exist($language)) {
+            Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
+        }
+        if($launch = File::exist($plugin . DS . 'launch.php')) {
+            include $launch;
+        }
     }
 }
 
