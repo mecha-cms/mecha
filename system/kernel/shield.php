@@ -190,11 +190,11 @@ class Shield {
 
         extract(self::defines());
 
-        $base = explode('-', $name, 2);
-
         Weapon::fire('after_shield_config_redefine', array($G, $G));
 
         self::$defines = array();
+
+        $base = explode('-', $name, 2);
 
         if($_file = File::exist(self::pathTrace($name))) {
             $shield = $_file;

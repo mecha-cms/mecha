@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 
 
 // error_reporting(E_ALL);
@@ -771,15 +771,15 @@ if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache.txt')) {
     File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache.txt');
 }
 
-foreach($plugins as $plugin) {
-    if($plugin) {
-        if( ! $language = File::exist($plugin . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-            $language = $plugin . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+for($k = 0, $plugins_launched = count($plugins); $k < $plugins_launched; ++$k) {
+    if($plugins[$k]) {
+        if( ! $language = File::exist($plugins[$k] . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+            $language = $plugins[$k] . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
         }
         if(File::exist($language)) {
             Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
         }
-        if($launch = File::exist($plugin . DS . 'launch.php')) {
+        if($launch = File::exist($plugins[$k] . DS . 'launch.php')) {
             include $launch;
         }
     }
