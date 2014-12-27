@@ -38,7 +38,7 @@ Weapon::add('sword_before', function() use($config) {
 
 Weapon::add('sword_after', function() use($config) {
     echo Asset::javascript(array(
-        $config->protocol . JAVASCRIPT_LIBRARY_PATH,
+        $config->protocol . JS_LIBRARY_PATH,
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
         'manager/sword/row.js',

@@ -31,13 +31,14 @@ define('O_BEGIN', ""); // Begin HTML output
 define('O_END', PHP_EOL); // End HTML output
 define('HTML_PARSER', 'Markdown Extra'); // Depends on the type of HTML parser in the `plugins` folder
 
+define('CSS_LIBRARY_PATH', "");
 define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.2.0/css/font-awesome.min.css');
-define('JAVASCRIPT_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js');
+define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js');
 
 define('FONT_EXT', 'eot,svg,otf,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpg,jpeg,png');
-define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav');
-define('PACKAGE_EXT', 'gz,rar,tar,zip,zipx');
+define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
+define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');
 define('SCRIPT_EXT', 'css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
 
 require SYSTEM . DS . 'ignite.php';

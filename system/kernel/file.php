@@ -153,6 +153,8 @@ class File {
         if( ! is_null($permission)) {
             chmod($path, $permission);
         }
+        self::$opened = $path;
+        return new static;
     }
 
     // Rename a file
@@ -162,6 +164,8 @@ class File {
         if($new_name != $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
+        self::$opened = $root . $new_name;
+        return new static;
     }
 
     // Move file or folder to somewhere
@@ -173,6 +177,8 @@ class File {
             }
             rename(self::$opened, $destination);
         }
+        self::$opened = $destination;
+        return new static;
     }
 
     // Copy a file
@@ -196,9 +202,22 @@ class File {
         }
     }
 
+    // Create new directory
+    public static function dir($paths, $permission = 0777) {
+        if( ! is_array($paths)) {
+            $paths = array($paths);
+        }
+        foreach($paths as $i => $path) {
+            if( ! self::exist($path)) {
+                mkdir(str_replace(array('\\', '/'), DS, $path), (is_array($permission) ? $permission[$i] : $permission), true);
+            }
+        }
+    }
+
     // Set file permission
     public static function setPermission($permission) {
         chmod(self::$opened, $permission);
+        return new static;
     }
 
     // Upload a file
@@ -252,6 +271,8 @@ class File {
         } else {
             Notify::success(implode('<br>', $html), "");
         }
+        self::$opened = $destination . DS . $file['name'];
+        return new static;
     }
 
     // Get file size then convert it to ...

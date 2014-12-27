@@ -45,7 +45,7 @@
       }
 
       ?>
-      <?php if(count($tags) > 1): ?>
+      <?php if(count($tags) > 0): ?>
       <div class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->tags; ?></span>
         <div class="grid span-5"><?php echo implode("", $tags); ?></div>
