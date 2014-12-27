@@ -413,7 +413,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             // Temporarily disallow images in comment to prevent XSS
             $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', strip_tags($request['message'], '<br><img>'));
 
-            if( ! $config->parse_html) {
+            if( ! $config->html_parser) {
                 $message = str_replace('<img ', '&lt;img ', $message);
             }
 
