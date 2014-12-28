@@ -4,9 +4,9 @@ Version: 1.0.0
 
 ====
 
-> Ini cuma sebagai pemulai plugin.
+> Ini cuma sebagai panduan dasar pembuatan plugin.
 
-### Lakukan Sesuatu Pada Saat Data Formulir Dikirim
+### Lakukan Sesuatu Saat Data Formulir Dikirimkan
 
 Standar URL pengiriman pada formulir harus diarahkan menuju URL ini:
 
@@ -17,10 +17,10 @@ Standar URL pengiriman pada formulir harus diarahkan menuju URL ini:
 Anda seharusnya bisa membuatnya dengan mudah melalui ini:
 
 ~~~ .php
-Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/folder-plugin/update';
+Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/' . basename(__DIR__) . '/update';
 ~~~
 
-Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lihat saat ini, maka Anda bisa menggunakan ini:
+Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lihat saat ini, maka Anda bisa menggunakan cara ini:
 
 ~~~ .php
 Config::get('url_current') . '/update';
@@ -28,7 +28,7 @@ Config::get('url_current') . '/update';
 
 #### Formulir
 
-Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi Anda bisa menggunakan variabel pintasan `$config` dan `$speak` dari sini:
+Berikut ini adalah struktur formulir dasar untuk konfigurasi plugin. Ini adalah item _shield_, jadi Anda bisa menggunakan variabel pintasan `$config` dan `$speak` dari sini:
 
 ~~~ .html
 <form action="<?php echo $config->url_current; ?>/update" method="post">
@@ -36,7 +36,7 @@ Berikut ini adalah struktur formulir dasarnya. Ini adalah item _shield_, jadi An
   <!-- Mohon tambahkan input token -->
   <input name="token" type="hidden" value="<?php echo $token; ?>">
 
-  <!-- Elemen-elemen formulir yang lain ada di sini… -->
+  <!-- Letakkan elemen-elemen formulir yang lain di sini… -->
 
   <!-- Tombol eksekusi formulir -->
   <p><button type="submit">Perbaharui</button></p>
@@ -48,13 +48,13 @@ Tempatkan formulir tersebut di dalam berkas `configurator.php`.
 
 #### Rute
 
-Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman muka untuk mengeksekusi `POST` pada formulir:
+Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman muka untuk melaksanakan aksi `POST` pada formulir:
 
 ~~~ .php
 $config = Config::get();
 $speak = Config::speak();
 
-Route::accept($config->manager->slug . '/plugin/folder-plugin/update', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
@@ -64,7 +64,7 @@ Route::accept($config->manager->slug . '/plugin/folder-plugin/update', function(
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(PLUGIN . DS . 'folder-plugin' . DS . 'states' . DS . 'test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
 
         Notify::success('Plugin updated.'); // [3]
 

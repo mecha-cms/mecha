@@ -4,20 +4,20 @@ Version: 1.0.0
 
 ====
 
-> This is just a plugin starter.
+> This is just a plugin starter template.
 
 ### Do Something on Form Submit
 
 The standard form submission URL should be directed to the following URL:
 
 ~~~ .no-highlight
-{{url}}manager/plugin/plugin-folder/update
+{{url.manager}}/plugin/plugin-folder/update
 ~~~
 
 You could easily generate the URL using this:
 
 ~~~ .php
-Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/plugin-folder/update';
+Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/' . basename(__DIR__) . '/update';
 ~~~
 
 Or, since you already have the plugin URL path in the current page, you could simply use this:
@@ -28,7 +28,7 @@ Config::get('url_current') . '/update';
 
 #### The Form
 
-This is the basic form. This is a shield item, so you can use that `$config` and `$speak` shortcut from here:
+The following is the basic plugin configuration form. This is a shield item, so you can use that `$config` and `$speak` shortcut from here:
 
 ~~~ .html
 <form action="<?php echo $config->url_current; ?>/update" method="post">
@@ -44,17 +44,17 @@ This is the basic form. This is a shield item, so you can use that `$config` and
 </form>
 ~~~
 
-Place the form inside your `configurator.php` file.
+Place the plugin form inside your `configurator.php` file.
 
 #### The Route
 
-Create a new route to the plugin manager path + `/update` relative to the home URL to execute a `POST` submit:
+Create a new route to the plugin page path + `/update` relative to home URL to execute a `POST` action:
 
 ~~~ .php
 $config = Config::get();
 $speak = Config::speak();
 
-Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
 
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
@@ -64,7 +64,7 @@ Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function(
 
         Guardian::checkToken(Request::post('token')); // [2]
 
-        File::write('test!')->saveTo(PLUGIN . DS . 'plugin-folder' . DS . 'states' . DS . 'test-plugin.txt');
+        File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
 
         Notify::success('Plugin updated.'); // [3]
 
@@ -76,9 +76,9 @@ Route::accept($config->manager->slug . '/plugin/plugin-folder/update', function(
 ~~~
 
 No. | Description
---: | ----------------------------------------------------------------------
-1.  | Do not allow non pilot or passenger user to perform a form submission.
-2.  | Check the token input. If not match, redirect to the login page.
+--: | -----------------------------------------------------------------------------
+1.  | Do not allow non pilot and passenger users to perform a form submission.
+2.  | Check the token input. If it doesn&rsquo;t match, redirect to the login page.
 3.  | Create a success message on success.
 4.  | Redirect to the previous URL on success.
 
