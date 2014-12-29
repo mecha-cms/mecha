@@ -204,7 +204,7 @@ class Shield {
             Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::pathTrace($name) . '</code>')));
         }
 
-        $cache = CACHE . DS . str_replace('/', '.', trim($_SERVER['REQUEST_URI'], '\\/')) . '.cache.txt';
+        $cache = CACHE . DS . str_replace('/', '.', trim($_SERVER['REQUEST_URI'], '\\/')) . '.cache';
 
         if($cacheable && File::exist($cache)) {
             echo File::open($cache)->read();

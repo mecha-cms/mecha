@@ -39,7 +39,7 @@ define('FONT_EXT', 'eot,svg,otf,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpg,jpeg,png');
 define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
 define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');
-define('SCRIPT_EXT', 'css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
+define('SCRIPT_EXT', 'cache,css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
 
 require SYSTEM . DS . 'ignite.php';
 require SYSTEM . DS . 'launch.php';

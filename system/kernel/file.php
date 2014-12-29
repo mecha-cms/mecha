@@ -46,7 +46,7 @@ class File {
     private static $config = array(
         'size_max' => 2097152, // Maximum allowed file size
         'extension_allow' => array( // List of allowed file extensions
-            'css', 'draft', 'hold', 'html', 'js', 'md', 'txt',
+            'cache', 'css', 'draft', 'hold', 'html', 'js', 'md', 'txt',
             'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
             'eot', 'ttf', 'woff',
             'gz', 'rar', 'tar', 'zip', 'zipx'
