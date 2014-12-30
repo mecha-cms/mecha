@@ -245,4 +245,55 @@ class Converter {
         );
     }
 
+    // HTML Minifier
+    public static function detractSkeleton($content) {
+        if(trim($content) === "") return $content;
+        return preg_replace(
+            array(
+                '#\<\!--(?!\[if)([\s\S]+?)--\>#',
+                '#\>[^\S ]+#s',
+                '#[^\S ]+\<#s',
+                '#\>\s{2,}\<#s'
+            ),
+            array(
+                "",
+                '>',
+                '<',
+                '><'
+            ),
+        $content);
+    }
+
+    // CSS Minifier (almost)
+    public static function detractShell($content) {
+        if(trim($content) === "") return $content;
+        $content = preg_replace(
+            array(
+                '# +#',
+                '#\/\*([\s\S]+)\*\/#m',
+                '#[\n\r\t]+#',
+                '# *\{ *#',
+                '# *([,;:>+~]) *#',
+                '# *\; *\}#',
+                '# *\!(important)#i'
+            ),
+            array(
+                ' ',
+                "",
+                "",
+                '{',
+                '$1',
+                '}',
+                '!$1'
+            ),
+        $content);
+        return $content;
+    }
+
+    // JavaScript Minifier (draft)
+    public static function detractSword($content) {
+        if(trim($content) === "") return $content;
+        return $content;
+    }
+
 }

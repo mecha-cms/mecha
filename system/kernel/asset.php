@@ -53,9 +53,36 @@ class Asset {
         return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), $url) . ($config->resource_versioning ? '?v=' . filemtime($url) : ""), $path);
     }
 
-    // Return the HTML JavaScript of asset
-    public static function javascript($path, $addon = "") {
+    // Return the HTML StyleSheet of asset
+    public static function stylesheet($path, $addon = "", $merge = false) {
         if(is_array($path)) {
+            if($merge) {
+                self::$loaded[$merge] = 1;
+                return self::merge($path, $merge, $addon, 'stylesheet');
+            }
+            $html = "";
+            for($i = 0, $count = count($path); $i < $count; ++$i) {
+                if(self::url($path[$i]) !== false) {
+                    self::$loaded[$path[$i]] = 1;
+                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
+                }
+            }
+            return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
+        }
+        if(self::url($path) === false) {
+            return "";
+        }
+        self::$loaded[$path] = 1;
+        return ! self::ignored($path) ? Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path) : "";
+    }
+
+    // Return the HTML JavaScript of asset
+    public static function javascript($path, $addon = "", $merge = false) {
+        if(is_array($path)) {
+            if($merge) {
+                self::$loaded[$merge] = 1;
+                return self::merge($path, $merge, $addon, 'javascript');
+            }
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
@@ -73,27 +100,8 @@ class Asset {
     }
 
     // DEPRECATED. Please use `Asset::javascript()`
-    public static function script($path, $addon = "") {
-        return self::javascript($path, $addon);
-    }
-
-    // Return the HTML StyleSheet of asset
-    public static function stylesheet($path, $addon = "") {
-        if(is_array($path)) {
-            $html = "";
-            for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) !== false) {
-                    self::$loaded[$path[$i]] = 1;
-                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
-                }
-            }
-            return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
-        }
-        if(self::url($path) === false) {
-            return "";
-        }
-        self::$loaded[$path] = 1;
-        return ! self::ignored($path) ? Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path) : "";
+    public static function script($path, $addon = "", $merge = false) {
+        return self::javascript($path, $addon, $merge);
     }
 
     // Return the HTML image of asset
@@ -113,6 +121,55 @@ class Asset {
         }
         self::$loaded[$path] = 1;
         return ! self::ignored($path) ? Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path) : "";
+    }
+
+    // Merge multiple asset files into a single file
+    public static function merge($files = array(), $name = null, $addon = "", $call = null) {
+        $the_file = ASSET . DS . str_replace(array('\\', '/'), DS, $name);
+        $the_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.txt';
+        $is_valid = true;
+        if(file_exists($the_log)) {
+            $the_file_time = explode("\n", file_get_contents($the_log));
+            foreach($the_file_time as $i => $time) {
+                if(file_exists(self::pathTrace($files[$i])) && ((int) filemtime(self::pathTrace($files[$i])) !== (int) $time)) {
+                    $is_valid = false;
+                    break;
+                }
+            }
+        } else {
+            $is_valid = false;
+        }
+        if( ! File::exist($the_file) || ! $is_valid) {
+            $merged_time = "";
+            $merged_content = "";
+            foreach($files as $file) {
+                $path = self::pathTrace($file);
+                if(file_exists($path)) {
+                    $merged_time .= filemtime($path) . "\n";
+                    $c = file_get_contents($path);
+                    if(strpos(basename($the_file), '.min.css') !== false) {
+                        $merged_content .= Converter::detractShell($c) . "\n";
+                    } elseif(strpos(basename($the_file), '.min.js') !== false) {
+                        $merged_content .= Converter::detractSword($c) . "\n";
+                    } else {
+                        $merged_content .= $c . "\n\n";
+                    }
+                }
+            }
+            File::write(trim($merged_time))->saveTo(SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.txt');
+            File::write(trim($merged_content))->saveTo($the_file);
+        }
+        if(is_null($call)) {
+            if(preg_match('#\.css$#i', $name)) {
+                return self::stylesheet($the_file, $addon);
+            } elseif(preg_match('#\.js$#i', $name)) {
+                return self::javascript($the_file, $addon);
+            } else {
+                return self::image($the_file, $addon);
+            }
+        } else {
+            return call_user_func_array('self::' . $call, array($the_file, $addon));
+        }
     }
 
     // Check for loaded asset(s)

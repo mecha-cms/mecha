@@ -21,7 +21,7 @@ Weapon::add('shell_after', function() use($config) {
         'manager/shell/accordion.css',
         'manager/shell/layout.css',
         'shell/manager.css'
-    ));
+    ), "", 'manager.min.css');
     if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
         echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
     }
@@ -37,8 +37,8 @@ Weapon::add('sword_before', function() use($config) {
 }, 10);
 
 Weapon::add('sword_after', function() use($config) {
+    echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
     echo Asset::javascript(array(
-        $config->protocol . JS_LIBRARY_PATH,
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
         'manager/sword/row.js',
@@ -50,7 +50,7 @@ Weapon::add('sword_after', function() use($config) {
         'manager/sword/tooltip.js',
         'manager/sword/sortable.js',
         'manager/sword/accordion.js'
-    ));
+    ), "", 'manager.min.js');
 }, 10);
 
 
@@ -68,6 +68,9 @@ function do_remove_cache() {
     File::open(CACHE . DS . $root . 'sitemap.cache')->delete();
     File::open(CACHE . DS . $root . 'feeds.cache')->delete();
     File::open(CACHE . DS . $root . 'feeds.rss.cache')->delete();
+    foreach(glob(CACHE . DS . $root . 'feeds.rss.*.cache') as $cache) {
+        File::open($cache)->delete();
+    }
 }
 
 Weapon::add('on_article_update', 'do_remove_cache', 10);

@@ -33,14 +33,7 @@ class Shield {
 
     private static function sanitize_output($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
-        $str = array(
-            '#\<\!--(?!\[if)([\s\S]+?)--\>#' => "", // Remove comments in HTML
-            '#\>[^\S ]+#s' => '>', // Strip whitespaces after tags, except space
-            '#[^\S ]+\<#s' => '<', // Strip whitespaces before tags, except space
-            '#\>\s{2,}\<#s' => '><' // Strip multiple whitespaces between closing and opening tag
-        );
-        $buffer = preg_replace(array_keys($str), array_values($str), $buffer);
-        return Filter::apply('sanitize:output', $buffer);
+        return Filter::apply('sanitize:output', Converter::detractSkeleton($buffer));
     }
 
     /**
