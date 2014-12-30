@@ -246,11 +246,11 @@ class Converter {
     }
 
     // HTML Minifier
-    public static function detractSkeleton($content) {
-        if(trim($content) === "") return $content;
+    public static function detractSkeleton($input) {
+        if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#\<\!--(?!\[if)([\s\S]+?)--\>#',
+                '#\<\!--(?!\[if)([\s\S]+?)--\>#', // Remove HTML comments except IE comments
                 '#\>[^\S ]+#s',
                 '#[^\S ]+\<#s',
                 '#\>\s{2,}\<#s'
@@ -261,39 +261,45 @@ class Converter {
                 '<',
                 '><'
             ),
-        $content);
+        $input);
     }
 
-    // CSS Minifier (almost)
-    public static function detractShell($content) {
-        if(trim($content) === "") return $content;
-        $content = preg_replace(
+    // CSS Minifier => http://ideone.com/Q5USEF + improvement(s)
+    public static function detractShell($input) {
+        if(trim($input) === "") return $input;
+        return preg_replace(
             array(
-                '# +#',
-                '#\/\*([\s\S]+)\*\/#m',
-                '#[\n\r\t]+#',
-                '# *\{ *#',
-                '# *([,;:>+~]) *#',
-                '# *\; *\}#',
-                '# *\!(important)#i'
+                '#(?sx)("(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\')|\/\* (?> .*? \*\/ )#',
+                '#(?six)("(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\')|\s*+ ; \s*+ ( } ) \s*+|\s*+ ( [*$~^|]?+= |[{};,>~+] | !important\b ) \s*+|( [[(:] ) \s++|\s++ ( [])] )|\s++ ( : ) \s*+(?!(?>[^{}"\']++| "(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\' )*+\{)|^ \s++ | \s++ \z|(\s)\s+#',
+                '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
+                '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0;` with `:0`
+                '#background-position:0([;\}])#', // Replace `background-position:0;` with `background-position:0 0;`
+                '#(:|\s)0+\\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
             ),
             array(
-                ' ',
-                "",
-                "",
-                '{',
                 '$1',
-                '}',
-                '!$1'
+                '$1$2$3$4$5$6$7',
+                '$1$2',
+                ':0$1',
+                'background-position:0 0$1',
+                '$1.$2'
             ),
-        $content);
-        return $content;
+        $input);
     }
 
     // JavaScript Minifier (draft)
-    public static function detractSword($content) {
-        if(trim($content) === "") return $content;
-        return $content;
+    public static function detractSword($input) {
+        if(trim($input) === "") return $input;
+        return preg_replace(
+            array(
+                '#\/\*([\s\S]+?)\*\/#m',
+                '#[\n\r]+\s*#'
+            ),
+            array(
+                "",
+                "\n"
+            ),
+        $input);
     }
 
 }
