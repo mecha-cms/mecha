@@ -250,7 +250,7 @@ class Converter {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#\<\!--(?!\[if)([\s\S]+?)--\>#', // Remove HTML comments except IE comments
+                '#\<\!--(?!\[if)([\s\S]+?)--\>#s', // Remove HTML comments except IE comments
                 '#\>[^\S ]+#s',
                 '#[^\S ]+\<#s',
                 '#\>\s{2,}\<#s'
@@ -293,8 +293,8 @@ class Converter {
         return preg_replace(
             array(
                 '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
-                '#[\n\r\t]\s*#', // Remove spaces and new-line characters at the beginning of line
-                '#(?| *(".*?"|\'.*?\') *| *(\(\/.*?\/[igm]*,) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused spaces outside the string and regex
+                '#[\n\r\t]\s*#', // Remove space and new-line characters at the beginning of line
+                '#(?| *(".*?"|\'.*?\') *| *(\(\/.*?\/[igm]*,) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
                 '#;\}#' // Remove the last semicolon
             ),
             array(
