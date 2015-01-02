@@ -147,10 +147,14 @@ class Asset {
                 if(file_exists($path)) {
                     $merged_time .= filemtime($path) . "\n";
                     $c = file_get_contents($path);
-                    if(strpos(basename($the_file), '.min.css') !== false) {
-                        $merged_content .= Converter::detractShell($c) . "\n";
-                    } elseif(strpos(basename($the_file), '.min.js') !== false) {
-                        $merged_content .= Converter::detractSword($c) . "\n";
+                    if(strpos(basename($path), '.min.') === false) {
+                        if(strpos(basename($the_file), '.min.css') !== false) {
+                            $merged_content .= Converter::detractShell($c) . "\n";
+                        } elseif(strpos(basename($the_file), '.min.js') !== false) {
+                            $merged_content .= Converter::detractSword($c) . "\n";
+                        } else {
+                            $merged_content .= $c . "\n\n";
+                        }
                     } else {
                         $merged_content .= $c . "\n\n";
                     }

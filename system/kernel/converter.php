@@ -269,8 +269,8 @@ class Converter {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#(?sx)("(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\')|\/\* (?> .*? \*\/ )#',
-                '#(?six)("(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\')|\s*+ ; \s*+ ( } ) \s*+|\s*+ ( [*$~^|]?+= |[{};,>~+] | !important\b ) \s*+|( [[(:] ) \s++|\s++ ( [])] )|\s++ ( : ) \s*+(?!(?>[^{}"\']++| "(?:[^"\\]++|\\.)*+"| \'(?:[^\'\\\\]++|\\.)*+\' )*+\{)|^ \s++ | \s++ \z|(\s)\s+#',
+                '#("(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')|\/\*(?>.*?\*\/)#s', // Remove comments
+                '#("(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+-]|\s*!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
                 '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
                 '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0;` with `:0`
                 '#background-position:0([;\}])#', // Replace `background-position:0;` with `background-position:0 0;`
@@ -287,17 +287,21 @@ class Converter {
         $input);
     }
 
-    // JavaScript Minifier (draft)
+    // JavaScript Minifier
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#\/\*([\s\S]+?)\*\/#m',
-                '#[\n\r]+\s*#'
+                '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
+                '#[\n\r\t]\s*#', // Remove spaces and new-line characters at the beginning of line
+                '#(?| *(".*?"|\'.*?\') *| *(\(\/.*?\/[igm]*,) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused spaces outside the string and regex
+                '#;\}#' // Remove the last semicolon
             ),
             array(
                 "",
-                "\n"
+                "",
+                '$1',
+                '}'
             ),
         $input);
     }
