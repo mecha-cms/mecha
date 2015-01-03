@@ -250,10 +250,10 @@ class Converter {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#\<\!--(?!\[if)([\s\S]+?)--\>#s', // Remove HTML comments except IE comments
-                '#\>[^\S ]+#s',
-                '#[^\S ]+\<#s',
-                '#\>\s{2,}\<#s'
+                '#<\!--(?!\[if)([\s\S]+?)-->#s', // Remove HTML comments except IE comments
+                '#>[^\S ]+#s',
+                '#[^\S ]+<#s',
+                '#>\s{2,}<#s'
             ),
             array(
                 "",
@@ -269,11 +269,11 @@ class Converter {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                '#("(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')|\/\*(?>.*?\*\/)#s', // Remove comments
-                '#("(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+-]|\s*!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\]++|\\.)*+"|\'(?:[^\'\\\\]++|\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+-]|\s*!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
                 '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
-                '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0;` with `:0`
-                '#background-position:0([;\}])#', // Replace `background-position:0;` with `background-position:0 0;`
+                '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
+                '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
                 '#(:|\s)0+\\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
             ),
             array(
