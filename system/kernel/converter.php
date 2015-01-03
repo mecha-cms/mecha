@@ -267,47 +267,53 @@ class Converter {
     // CSS Minifier => http://ideone.com/Q5USEF + improvement(s)
     public static function detractShell($input) {
         if(trim($input) === "") return $input;
-        return preg_replace(
-            array(
-                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
-                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+-]|\s*!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
-                '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
-                '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
-                '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
-                '#(:|\s)0+\\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
-            ),
-            array(
-                '$1',
-                '$1$2$3$4$5$6$7',
-                '$1$2',
-                ':0$1',
-                'background-position:0 0$1',
-                '$1.$2'
-            ),
-        $input);
+        $input_parts = preg_split('#(\/\*\![\s\S]+?\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $results = "";
+        foreach($input_parts as $s) {
+            $results .= (strpos($s, '/*!') === 0 ? $s : preg_replace(
+                array(
+                    '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
+                    '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+-]|\s*!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
+                    '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
+                    '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
+                    '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
+                    '#(:|\s)0+\\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
+                ),
+                array(
+                    '$1',
+                    '$1$2$3$4$5$6$7',
+                    '$1$2',
+                    ':0$1',
+                    'background-position:0 0$1',
+                    '$1.$2'
+                ),
+            $s)) . "\n";
+        }
+        return trim($results);
     }
 
     // JavaScript Minifier
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
-        return preg_replace(
-            array(
-                '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
-                '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
-                '#(?| *(".*?"|\'.*?\'|(?<=[=\(\s])\/.*?\/[igm]*[.,;\s]) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
-                '#;\}#', // Remove the last semicolon
-                '#$#',
-                '#;+$#'
-            ),
-            array(
-                "",
-                "",
-                '$1',
-                '}',
-                ';',
-                ';'
-            ),
-        $input);
+        $input_parts = preg_split('#(\/\*\![\s\S]+?\*\/|\/\*@cc_on[\s\S]+?@\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $results = "";
+        foreach($input_parts as $s) {
+            $results .= (strpos($s, '/*!') === 0 || strpos($s, '/*@cc_on') === 0 ? $s : preg_replace(
+                array(
+                    '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
+                    '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
+                    '#(?| *(".*?"|\'.*?\'|(?<=[=\(\s])\/.*?\/[igm]*[.,;\s]) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
+                    '#;\}#' // Remove the last semicolon
+                ),
+                array(
+                    "",
+                    "",
+                    '$1',
+                    '}'
+                ),
+            $s)) . "\n";
+        }
+        return trim($results);
     }
 
 }
