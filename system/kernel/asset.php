@@ -55,48 +55,40 @@ class Asset {
 
     // Return the HTML StyleSheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
+        if( ! is_array($path)) {
+            $path = array($path);
+        }
         if($merge) {
             self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'stylesheet');
         }
-        if(is_array($path)) {
-            $html = "";
-            for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) !== false) {
-                    self::$loaded[$path[$i]] = 1;
-                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
-                }
+        $html = "";
+        for($i = 0, $count = count($path); $i < $count; ++$i) {
+            if(self::url($path[$i]) !== false) {
+                self::$loaded[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
             }
-            return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
         }
-        if(self::url($path) === false) {
-            return "";
-        }
-        self::$loaded[$path] = 1;
-        return ! self::ignored($path) ? Filter::apply('asset:stylesheet', O_BEGIN . str_repeat(TAB, 2) . '<link href="' . self::url($path) . '" rel="stylesheet"' . $addon . ES . O_END, $path) : "";
+        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
     }
 
     // Return the HTML JavaScript of asset
     public static function javascript($path, $addon = "", $merge = false) {
+        if( ! is_array($path)) {
+            $path = array($path);
+        }
         if($merge) {
             self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'javascript');
         }
-        if(is_array($path)) {
-            $html = "";
-            for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) !== false) {
-                    self::$loaded[$path[$i]] = 1;
-                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
-                }
+        $html = "";
+        for($i = 0, $count = count($path); $i < $count; ++$i) {
+            if(self::url($path[$i]) !== false) {
+                self::$loaded[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
             }
-            return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
         }
-        if(self::url($path) === false) {
-            return "";
-        }
-        self::$loaded[$path] = 1;
-        return ! self::ignored($path) ? Filter::apply('asset:javascript', O_BEGIN . str_repeat(TAB, 2) . '<script src="' . self::url($path) . '"' . $addon . '></script>' . O_END, $path) : "";
+        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
     }
 
     // DEPRECATED. Please use `Asset::javascript()`
@@ -106,25 +98,21 @@ class Asset {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
+        if( ! is_array($path)) {
+            $path = array($path);
+        }
         if($merge) {
             self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'image');
         }
-        if(is_array($path)) {
-            $html = "";
-            for($i = 0, $count = count($path); $i < $count; ++$i) {
-                if(self::url($path[$i]) !== false) {
-                    self::$loaded[$path[$i]] = 1;
-                    $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
-                }
+        $html = "";
+        for($i = 0, $count = count($path); $i < $count; ++$i) {
+            if(self::url($path[$i]) !== false) {
+                self::$loaded[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
             }
-            return O_BEGIN . rtrim($html, NL) . O_END;
         }
-        if(self::url($path) === false) {
-            return "";
-        }
-        self::$loaded[$path] = 1;
-        return ! self::ignored($path) ? Filter::apply('asset:image', O_BEGIN . '<img src="' . self::url($path) . '"' . $addon . ES . O_END, $path) : "";
+        return O_BEGIN . rtrim($html, NL) . O_END;
     }
 
     // Merge multiple asset files into a single file
