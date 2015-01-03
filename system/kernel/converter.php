@@ -293,15 +293,19 @@ class Converter {
         return preg_replace(
             array(
                 '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
-                '#[\n\r\t]\s*#', // Remove space and new-line characters at the beginning of line
-                '#(?| *(".*?"|\'.*?\') *| *(\(\/.*?\/[igm]*,) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
-                '#;\}#' // Remove the last semicolon
+                '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
+                '#(?| *(".*?"|\'.*?\'|(?<=[=\(\s])\/.*?\/[igm]*[.,;\s]) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
+                '#;\}#', // Remove the last semicolon
+                '#$#',
+                '#;+$#'
             ),
             array(
                 "",
                 "",
                 '$1',
-                '}'
+                '}',
+                ';',
+                ';'
             ),
         $input);
     }

@@ -50,7 +50,7 @@ class Guardian {
      */
 
     public static function token() {
-        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt';
+        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.log';
         $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
         Session::set(self::$token, $token);
         return $token;
@@ -140,7 +140,7 @@ class Guardian {
      */
 
     public static function deleteToken() {
-        File::open(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt')->delete();
+        File::open(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.log')->delete();
         Session::kill(self::$token);
     }
 
@@ -340,7 +340,7 @@ class Guardian {
                     'status' => $authors[$_POST['username']]['status'],
                     'email' => $authors[$_POST['username']]['email']
                 ), 30, '/', "", false, true);
-                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($_POST['username'])->to_slug_moderate . '.txt', 0600);
+                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($_POST['username'])->to_slug_moderate . '.log', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
@@ -390,7 +390,7 @@ class Guardian {
      */
 
     public static function happy() {
-        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.txt';
+        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'))->to_slug_moderate . '.log';
         $auth = Session::get('cookie:' . self::$login);
         return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
     }

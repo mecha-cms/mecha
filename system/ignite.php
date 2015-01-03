@@ -4,7 +4,7 @@
 // error_reporting(E_ALL);
 // ini_set('display_errors', 1);
 
-ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.txt');
+ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.log');
 ini_set('session.gc_probability', 1);
 
 
@@ -731,11 +731,11 @@ date_default_timezone_set($config->timezone);
  */
 
 Weapon::add('shell_before', function() {
-    echo Asset::stylesheet('cabinet/shields/widgets.css');
+    echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'widgets.min.css');
 });
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-    echo Asset::javascript('cabinet/shields/widgets.js');
+    echo Asset::javascript('cabinet/shields/widgets.js', "", 'widgets.min.js');
 });
 
 
@@ -756,7 +756,7 @@ if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
     $plugins_payload = count($plugins_list);
     sort($plugins_list);
     for($i = 0; $i < $plugins_payload; ++$i) {
-        $plugins[] = false; // $plugins[] = '#' . dirname($plugins_list[$i]);
+        $plugins[] = false; // $plugins[] = '-- ' . dirname($plugins_list[$i]);
     }
     for($j = 0; $j < $plugins_payload; ++$j) {
         if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {

@@ -33,7 +33,7 @@ class Widget {
         $speak = Config::speak();
         if( ! Guardian::happy()) return "";
         $total = $config->total_comments_backend;
-        $destination = SYSTEM . DS . 'log' . DS . 'comments.total.txt';
+        $destination = SYSTEM . DS . 'log' . DS . 'comments.total.log';
         $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
         if($file = File::exist($destination)) {
             $old = (int) File::open($file)->read();

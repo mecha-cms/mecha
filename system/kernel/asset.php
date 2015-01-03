@@ -55,11 +55,11 @@ class Asset {
 
     // Return the HTML StyleSheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
+        if($merge) {
+            self::$loaded[$merge] = 1;
+            return self::merge($path, $merge, $addon, 'stylesheet');
+        }
         if(is_array($path)) {
-            if($merge) {
-                self::$loaded[$merge] = 1;
-                return self::merge($path, $merge, $addon, 'stylesheet');
-            }
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
@@ -78,11 +78,11 @@ class Asset {
 
     // Return the HTML JavaScript of asset
     public static function javascript($path, $addon = "", $merge = false) {
+        if($merge) {
+            self::$loaded[$merge] = 1;
+            return self::merge($path, $merge, $addon, 'javascript');
+        }
         if(is_array($path)) {
-            if($merge) {
-                self::$loaded[$merge] = 1;
-                return self::merge($path, $merge, $addon, 'javascript');
-            }
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
                 if(self::url($path[$i]) !== false) {
@@ -105,7 +105,11 @@ class Asset {
     }
 
     // Return the HTML image of asset
-    public static function image($path, $addon = "") {
+    public static function image($path, $addon = "", $merge = false) {
+        if($merge) {
+            self::$loaded[$merge] = 1;
+            return self::merge($path, $merge, $addon, 'image');
+        }
         if(is_array($path)) {
             $html = "";
             for($i = 0, $count = count($path); $i < $count; ++$i) {
@@ -125,8 +129,11 @@ class Asset {
 
     // Merge multiple asset files into a single file
     public static function merge($files = array(), $name = null, $addon = "", $call = null) {
+        if( ! is_array($files)) {
+            $files = array($files);
+        }
         $the_file = ASSET . DS . str_replace(array('\\', '/'), DS, $name);
-        $the_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.txt';
+        $the_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.log';
         $is_valid = true;
         if(file_exists($the_log)) {
             $the_file_time = explode("\n", file_get_contents($the_log));
@@ -139,37 +146,51 @@ class Asset {
         } else {
             $is_valid = false;
         }
-        if( ! File::exist($the_file) || ! $is_valid) {
-            $merged_time = "";
-            $merged_content = "";
-            foreach($files as $file) {
-                $path = self::pathTrace($file);
-                if(file_exists($path)) {
-                    $merged_time .= filemtime($path) . "\n";
-                    $c = file_get_contents($path);
-                    if(strpos(basename($path), '.min.') === false) {
-                        if(strpos(basename($the_file), '.min.css') !== false) {
-                            $merged_content .= Converter::detractShell($c) . "\n";
-                        } elseif(strpos(basename($the_file), '.min.js') !== false) {
-                            $merged_content .= Converter::detractSword($c) . "\n";
+        $merged_time = "";
+        $merged_content = "";
+        $e = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        if( ! file_exists($the_file) || ! $is_valid) {
+            if($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
+                foreach($files as $file) {
+                    $path = self::pathTrace($file);
+                    if(file_exists($path)) {
+                        $merged_time .=  filemtime($path) . "\n";
+                    }
+                }
+                File::write(trim($merged_time))->saveTo($the_log);
+                Image::take($files)->merge()->saveTo($the_file);
+            } else {
+                foreach($files as $file) {
+                    $path = self::pathTrace($file);
+                    if(file_exists($path)) {
+                        $merged_time .= filemtime($path) . "\n";
+                        $c = file_get_contents($path);
+                        if(strpos(basename($path), '.min.') === false) {
+                            if(strpos(basename($the_file), '.min.css') !== false) {
+                                $merged_content .= Converter::detractShell($c) . "\n";
+                            } elseif(strpos(basename($the_file), '.min.js') !== false) {
+                                $merged_content .= Converter::detractSword($c) . "\n";
+                            } else {
+                                $merged_content .= $c . "\n\n";
+                            }
                         } else {
                             $merged_content .= $c . "\n\n";
                         }
-                    } else {
-                        $merged_content .= $c . "\n\n";
                     }
                 }
+                File::write(trim($merged_time))->saveTo($the_log);
+                File::write(trim($merged_content))->saveTo($the_file);
             }
-            File::write(trim($merged_time))->saveTo(SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.txt');
-            File::write(trim($merged_content))->saveTo($the_file);
         }
         if(is_null($call)) {
-            if(preg_match('#\.css$#i', $name)) {
+            if($e == 'css') {
                 return self::stylesheet($the_file, $addon);
-            } elseif(preg_match('#\.js$#i', $name)) {
+            } elseif($e == 'js') {
                 return self::javascript($the_file, $addon);
-            } else {
+            } elseif($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
                 return self::image($the_file, $addon);
+            } else {
+                return "";
             }
         } else {
             return call_user_func_array('self::' . $call, array($the_file, $addon));

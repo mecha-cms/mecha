@@ -10,7 +10,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
+    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
     if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->per_page)->vomit()) {
         $comments = array();
         foreach($files as $comment) {
@@ -42,7 +42,6 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
     if( ! $comment = Get::comment($id)) {
         Shield::abort(); // File not found!
     }
-    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => $comment,
@@ -52,12 +51,13 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         $P = array('data' => Mecha::A($comment));
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
-        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600); 
+        File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
         Weapon::fire('on_comment_update', array($P, $P));
         Weapon::fire('on_comment_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/comment');
     } else {
+        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
         Notify::warning($speak->notify_confirm_delete);
     }
     Shield::attach('manager', false);
@@ -76,7 +76,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if( ! isset($comment->content_type)) {
         $comment->content_type = $config->html_parser;
     }
-    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.txt', 0600);
+    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => Mecha::A($comment),
