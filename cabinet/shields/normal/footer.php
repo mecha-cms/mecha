@@ -1,6 +1,6 @@
       </div> <!-- .blog-content -->
       <footer class="blog-footer">
-        <div class="blog-footer-left">&copy; <a href="<?php echo $config->url; ?>"><?php echo $config->title; ?></a>, <?php echo $speak->manager->powered . ' ' . MECHA_VERSION; ?></div>
+        <div class="blog-footer-left">&copy; <a href="<?php echo $config->url; ?>"><?php echo $config->title; ?></a> &middot; <?php echo $speak->manager->powered . ' ' . MECHA_VERSION; ?></div>
         <div class="blog-footer-right">
           <?php if($manager): ?>
           <a href="<?php echo $config->url . '/' . $config->manager->slug; ?>/logout" rel="nofollow"><i class="fa fa-sign-out"></i> <?php echo $speak->log_out; ?></a>

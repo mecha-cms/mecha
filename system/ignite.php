@@ -823,7 +823,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     }
     $regex = array();
     foreach($shortcodes as $key => $value) {
-        $regex['#(?!`)' . str_replace(
+        $regex['#(?<!`)' . str_replace(
             array(
                 '%s'
             ),
@@ -834,7 +834,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     }
     $content = preg_replace(array_keys($regex), array_values($regex), $content);
     if(strpos($content, '{{php}}') !== false) {
-        $content = preg_replace_callback('#(?!`)\{\{php\}\}(?!`)([\s\S]+?)(?!`)\{\{\/php\}\}(?!`)#m', function($matches) {
+        $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]+?)(?<!`)\{\{\/php\}\}(?!`)#m', function($matches) {
             return Converter::phpEval($matches[1]);
         }, $content);
     }
