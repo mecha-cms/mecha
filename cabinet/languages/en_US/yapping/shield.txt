@@ -10,6 +10,6 @@ shield-name.zip
      └── …
 ~~~
 
-You need to add a root folder as a wrapper for all of your shield files, and then you have to name the `ZIP` file with the same name as the root folder name.
+You need to add a root folder as a wrapper for all of your shield files, and then you have to give a name to the `ZIP` file with the same name as the root folder name.
 
 After that, you can activate the shield through the [configuration manager]({{url.manager}}config "Configurations").

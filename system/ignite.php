@@ -683,7 +683,8 @@ Text::parser('to_array_key', function($input) {
 
 // Convert plain text to HTML
 Text::parser('to_html', function($input) {
-    return $input; // If there is no HTML parser engine ...
+    // Suppose that there is no HTML parser engine ...
+    return $input;
 });
 
 
@@ -805,14 +806,12 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 
 /**
- * Handle Shortcode in Contents
+ * Handle Shortcodes in Content
  * ----------------------------
  */
 
 Filter::add('shortcode', function($content) use($config, $speak) {
-    if(strpos($content, '{{') === false) {
-        return $content;
-    }
+    if(strpos($content, '{{') === false) return $content;
     $shortcodes = include DECK . DS . 'workers' . DS . 'repair.state.shortcodes.php';
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $file_shortcodes = File::open($file)->unserialize();
@@ -848,7 +847,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
  *
  * I'm trying to not touching the source code of the Markdown plugin at all.
  *
- * [1]. Add bordered class for tables in contents.
+ * [1]. Add bordered class for tables in content.
  * [2]. Add `rel="nofollow"` attribute in external links.
  *
  */

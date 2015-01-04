@@ -10,4 +10,4 @@ nama-plugin.zip
      └── …
 ~~~
 
-Anda perlu menambahkan sebuah folder sebagai pembungkus untuk berkas-berkas plugin Anda, kemudian beri nama berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.
+Anda perlu menambahkan sebuah folder akar sebagai pembungkus untuk berkas-berkas plugin Anda, dan kemudian berikanlah nama kepada berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.
