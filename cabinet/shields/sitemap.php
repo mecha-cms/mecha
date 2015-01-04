@@ -26,18 +26,18 @@ if($config->total_articles > 0) {
     }
 }
 
-if(empty($bucket)) exit;
-
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 echo '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">';
 
-foreach($bucket as $item) {
-    echo '<url>';
-    echo '<loc>' . $item['url'] . '</loc>';
-    echo '<lastmod>' . $item['date'] . '</lastmod>';
-    echo '<changefreq>' . $item['changefreq'] . '</changefreq>';
-    echo '<priority>' . $item['priority'] . '</priority>';
-    echo '</url>';
+if( ! empty($bucket)) {
+    foreach($bucket as $item) {
+        echo '<url>';
+        echo '<loc>' . $item['url'] . '</loc>';
+        echo '<lastmod>' . $item['date'] . '</lastmod>';
+        echo '<changefreq>' . $item['changefreq'] . '</changefreq>';
+        echo '<priority>' . $item['priority'] . '</priority>';
+        echo '</url>';
+    }
 }
 
 echo '</urlset>';

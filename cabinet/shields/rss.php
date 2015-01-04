@@ -4,30 +4,33 @@ $bucket = array();
 
 if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
     foreach($pages as $path) {
-        $bucket[] = Get::article($path, array('content', 'tags', 'css', 'js', 'comments', 'fields'));
+        $bucket[] = Get::articleHeader($path);
     }
-} else {
-    exit;
 }
+
+$germs = array('#&\#?[a-z0-9]{2,8}\;#i');
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
-echo '<rss version="2.0">';
-echo '<channel>';
+echo '<feed xmlns="http://www.w3.org/2005/Atom">';
 echo '<title>' . $config->title . '</title>';
-echo '<description>' . $config->slogan . '</description>';
-echo '<link>' . $config->url . '</link>';
+echo '<link href="' . $config->url . '"/>';
+echo '<link rel="self" href="' . $config->url_current . '"/>';
+echo $config->offset > 1 ? '<link rel="previous" href="' . $config->url . 'feeds/rss/' . ($config->offset - 1) . '"/>' : "";
+echo '<link rel="next" href="' . $config->url . 'feeds/rss/' . ($config->offset + 1) . '"/>';
+echo '<updated>' . date('c') . '</updated>';
+echo '<author><name>' . $config->author . '</name></author>';
+echo '<id>' . $config->url . '/</id>';
 
-$stripper = array('#&\#?[a-z0-9]{2,8}\;#i');
-
-foreach($bucket as $item) {
-    echo '<item>';
-    echo '<title>' . preg_replace($stripper, "", Text::parse($item->title)->to_decoded_html) . '</title>';
-    echo '<description>' . preg_replace($stripper, "", Text::parse($item->description)->to_decoded_html) . '</description>';
-    echo '<link>' . $item->url . '</link>';
-    echo '<guid>' . $item->id . '</guid>';
-    echo '<pubDate>' . $item->date->W3C . '</pubDate>';
-    echo '</item>';
+if( ! empty($bucket)) {
+    foreach($bucket as $item) {
+        echo '<entry>';
+        echo '<title>' . preg_replace($germs, "", strip_tags($item->title)) . '</title>';
+        echo '<link href="' . $item->url . '"/>';
+        echo '<id>' . $item->url . '</id>';
+        echo '<updated>' . Date::format($item->update, 'c') . '</updated>';
+        echo '<summary>' . preg_replace($germs, "", strip_tags($item->description)) . '</summary>';
+        echo '</entry>';
+    }
 }
 
-echo '</channel>';
-echo '</rss>';
+echo '</feed>';
