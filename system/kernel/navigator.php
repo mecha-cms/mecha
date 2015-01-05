@@ -4,7 +4,7 @@ class Navigator {
 
     protected static $bucket = array();
 
-    protected static $navigator = array(
+    public static $navigator = array(
         'step' => 5
     );
 
@@ -131,11 +131,17 @@ class Navigator {
         return isset($parts[2]) ? $parts[2] : $base . '.' . $extension;
     }
 
-    public static function configure($key, $value = "") {
+    public static function configure($key, $value = null) {
         if(is_array($key)) {
-            self::$navigator = array_merge(self::$navigator, $key);
+            self::$navigator = array_replace_recursive(self::$navigator, $key);
         } else {
-            self::$navigator[$key] = $value;
+            if(is_array($value)) {
+                foreach($value as $k => $v) {
+                    self::$navigator[$key][$k] = $v;
+                }
+            } else {
+                self::$navigator[$key] = $value;
+            }
         }
         return new static;
     }

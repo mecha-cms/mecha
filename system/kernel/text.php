@@ -22,9 +22,6 @@
 
 class Text {
 
-    private function __construct() {}
-    private function __clone() {}
-
     private static $parsers = array();
 
     /**
@@ -39,15 +36,13 @@ class Text {
         $validated = preg_replace(
             array(
                 '#\r#',
-                '#(^|\n)( *\#.[^\n]*)#',
-                '#\n+#',
-                '#^\#+\n#'
+                '#(^|\n)( *\#[^\n]*)#',
+                '#\n+#'
             ),
             array(
                 "",
                 '$1',
-                "\n",
-                ""
+                "\n"
             ),
         $text);
         foreach(explode("\n", trim($validated)) as $line) {

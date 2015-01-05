@@ -210,21 +210,14 @@ class Config {
         $config['host'] = $_SERVER['HTTP_HOST'];
         $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-        $config['url_current'] = rtrim($config['url'] . '/' . preg_replace('#(\?|\&).*$#', "", trim($_SERVER['QUERY_STRING'], '/')), '/');
+        $end_path = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : '/' . preg_replace('#[?&;].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
+        $config['url_current'] = rtrim($config['url'] . $end_path, '/');
 
         $config['page_title'] = $config['title'];
         $config['page_type'] = '404';
         $config['offset'] = 1;
-        $config['index_query'] = "";
-        $config['tag_query'] = "";
-        $config['archive_query'] = "";
-        $config['search_query'] = "";
-        $config['articles'] = $config['article'] = false;
-        $config['pages'] = $config['page'] = false;
-        $config['responses'] = $config['response'] = false;
-        $config['files'] = $config['file'] = false;
-        $config['pagination'] = false;
-        $config['cargo'] = false;
+        $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
+        $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
 
         $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
         $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));

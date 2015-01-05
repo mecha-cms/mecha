@@ -43,7 +43,7 @@ class File {
     private static $opened = null;
     private static $increment = 0;
 
-    private static $config = array(
+    public static $config = array(
         'size_max' => 2097152, // Maximum allowed file size
         'extension_allow' => array( // List of allowed file extensions
             'cache', 'css', 'draft', 'hold', 'html', 'js', 'md', 'txt',
@@ -55,9 +55,6 @@ class File {
             'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png'
         )
     );
-
-    private function __construct() {}
-    private function __clone() {}
 
     // Check if file already exist
     public static function exist($path, $fallback = false) {
@@ -288,11 +285,17 @@ class File {
     }
 
     // Configure ...
-    public static function configure($key, $value = "") {
+    public static function configure($key, $value = null) {
         if(is_array($key)) {
-            self::$config = array_merge(self::$config, $key);
+            self::$config = array_replace_recursive(self::$config, $key);
         } else {
-            self::$config[$key] = $value;
+            if(is_array($value)) {
+                foreach($value as $k => $v) {
+                    self::$config[$key][$k] = $v;
+                }
+            } else {
+                self::$config[$key] = $value;
+            }
         }
         return new static;
     }

@@ -10,9 +10,6 @@ class Guardian {
 
     private static $validators = array();
 
-    protected function __construct() {}
-    protected function __clone() {}
-
     /**
      * ============================================================
      *  GET USER DETAILS

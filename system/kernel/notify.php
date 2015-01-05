@@ -21,10 +21,9 @@
 class Notify {
 
     public static $message = 'mecha_notification';
-
     public static $errors = 0;
 
-    private static $config = array(
+    public static $config = array(
         'icons' => array(
             'default' => '<i class="fa fa-fw fa-microphone"></i> ',
             'success' => '<i class="fa fa-fw fa-check"></i> ',
@@ -96,9 +95,17 @@ class Notify {
 
     }
 
-    public static function configure($key, $value = array()) {
-        foreach($value as $k => $v) {
-            self::$config[$key][$k] = $v;
+    public static function configure($key, $value = null) {
+        if(is_array($key)) {
+            self::$config =array_replace_recursive(self::$config, $key);
+        } else {
+            if(is_array($value)) {
+                foreach($value as $k => $v) {
+                    self::$config[$key][$k] = $v;
+                }
+            } else {
+                self::$config[$key] = $value;
+            }
         }
         return new static;
     }

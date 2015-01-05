@@ -48,9 +48,6 @@ class Route {
 
     private static $routes = array();
 
-    private function __construct() {}
-    private function __clone() {}
-
     private static function fix($string) {
         return str_replace(
             array(':any', ':num', ':all', '/', ':'),
