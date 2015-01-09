@@ -21,23 +21,23 @@ class Filter {
      *  Parameter  | Type    | Description
      *  ---------- | ------- | -------------------------------------------
      *  $name      | string  | Filter name
-     *  $function  | mixed   | Filter function
-     *  $priority  | float   | Filter function priority
+     *  $fn        | mixed   | Filter function
+     *  $stack     | float   | Filter function priority
      *  ---------- | ------- | -------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10) {
+    public static function add($name, $fn, $stack = 10) {
         // Kill duplicates
         if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
             foreach(self::$filters[$name] as $filter) {
-                if($filter['function'] == $function && $filter['priority'] === $priority) return true;
+                if($filter['fn'] == $fn && $filter['stack'] === $stack) return true;
             }
         }
         self::$filters[$name][] = array(
-            'function' => $function,
-            'priority' => (float) ( ! is_null($priority) ? $priority : 10)
+            'fn' => $fn,
+            'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
     }
 
@@ -68,10 +68,10 @@ class Filter {
             self::$filters[$name] = false;
             return $value;
         }
-        $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'priority')->vomit();
+        $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
             $arguments = array_merge(array($value), $params);
-            $value = call_user_func_array($cargo['function'], $arguments);
+            $value = call_user_func_array($cargo['fn'], $arguments);
         }
         return $value;
     }
@@ -91,28 +91,28 @@ class Filter {
      *  Parameter | Type    | Description
      *  --------- | ------- | --------------------------------------------
      *  $name     | string  | Filter name
-     *  $priority | float   | Filter function priority
+     *  $stack    | float   | Filter function priority
      *  --------- | ------- | --------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function remove($name = null, $priority = null) {
-        if( ! is_null($priority)) {
-            $priority = (float) $priority;
+    public static function remove($name = null, $stack = null) {
+        if( ! is_null($stack)) {
+            $stack = (float) $stack;
         }
-        if(is_null($name)) {
-            self::$filters = array();
-        } else {
-            if(is_null($priority)) {
-                unset(self::$filters[$name]);
-            } else {
+        if( ! is_null($name)) {
+            if( ! is_null($stack)) {
                 for($i = 0, $length = count(self::$filters[$name]); $i < $length; ++$i) {
-                    if(self::$filters[$name][$i]['priority'] === $priority) {
+                    if(self::$filters[$name][$i]['stack'] === $stack) {
                         unset(self::$filters[$name][$i]);
                     }
                 }
+            } else {
+                unset(self::$filters[$name]);
             }
+        } else {
+            self::$filters = array();
         }
     }
 

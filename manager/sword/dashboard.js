@@ -5,36 +5,47 @@
 
 window.DASHBOARD = {
     hooks: [],
-    add: function(name, callback, priority) {
+    add: function(name, fn, stack) {
         if (typeof DASHBOARD.hooks[name] == "undefined") {
             DASHBOARD.hooks[name] = [];
         }
-        if (parseInt(priority, 10) === priority) { // should be a valid integer
-            if (DASHBOARD.hooks[name].length > priority + 1) {
-                DASHBOARD.hooks[name].splice(priority, 0, callback);
-            } else {
-                DASHBOARD.hooks[name].push(callback);
-            }
-        } else {
-            DASHBOARD.hooks[name].push(callback);
+        if (typeof stack == "undefined") {
+            stack = 10;
         }
+        DASHBOARD.hooks[name].push({
+            'fn': fn,
+            'stack': stack
+        });
     },
     fire: function(name, arguments) {
         if (typeof DASHBOARD.hooks[name] != "undefined") {
+            DASHBOARD.hooks[name].sort(function(a, b) {
+                return a['stack'] - b['stack'];
+            });
             for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
                 DASHBOARD.hooks[name][i](arguments);
             }
         }
     },
-    eject: function(name) {
+    eject: function(name, stack) {
         if (typeof DASHBOARD.hooks[name] != "undefined") {
-            delete DASHBOARD.hooks[name];
+            if (typeof stack != "undefined") {
+                for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
+                    if (DASHBOARD.hooks[name][i]['stack'] === stack) {
+                        delete DASHBOARD.hooks[name][i];
+                    }
+                }
+            } else {
+                delete DASHBOARD.hooks[name];
+            }
+        } else {
+            DASHBOARD.hooks = [];
         }
     },
-    exist: function(name) {
+    exist: function(name, fallback) {
         if (typeof name == "undefined") {
-            return DASHBOARD.hooks;
+            return Object.keys(DASHBOARD.hooks).length > 0 ? DASHBOARD.hooks : fallback;
         }
-        return typeof DASHBOARD.hooks[name] != "undefined";
+        return typeof DASHBOARD.hooks[name] != "undefined" ? DASHBOARD.hooks[name] : fallback;
     }
 };

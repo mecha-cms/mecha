@@ -25,17 +25,17 @@ class Weapon {
      *  Parameter  | Type    | Description
      *  ---------- | ------- | --------------------------------------
      *  $name      | string  | Hook name
-     *  $function  | mixed   | Hook function
-     *  $priority  | float   | Hook function priority
+     *  $fn        | mixed   | Hook function
+     *  $stack     | float   | Hook function priority
      *  ---------- | ------- | --------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function add($name, $function, $priority = 10) {
+    public static function add($name, $fn, $stack = 10) {
         self::$armaments[$name][] = array(
-            'function' => $function,
-            'priority' => (float) ( ! is_null($priority) ? $priority : 10)
+            'fn' => $fn,
+            'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
     }
 
@@ -67,9 +67,9 @@ class Weapon {
             $arguments = array_slice(func_get_args(), 1);
         }
         if(isset(self::$armaments[$name])) {
-            $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'priority')->vomit();
+            $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                call_user_func_array($cargo['function'], $arguments);
+                call_user_func_array($cargo['fn'], $arguments);
             }
         } else {
             self::$armaments[$name] = false;
@@ -91,28 +91,28 @@ class Weapon {
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------
      *  $name     | string  | Hook name
-     *  $priority | float   | Hook function priority
+     *  $stack    | float   | Hook function priority
      *  --------- | ------- | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function eject($name = null, $priority = null) {
-        if( ! is_null($priority)) {
-            $priority = (float) $priority;
+    public static function eject($name = null, $stack = null) {
+        if( ! is_null($stack)) {
+            $stack = (float) $stack;
         }
-        if(is_null($name)) {
-            self::$armaments = array();
-        } else {
-            if(is_null($priority)) {
-                unset(self::$armaments[$name]);
-            } else {
+        if( ! is_null($name)) {
+            if( ! is_null($stack)) {
                 for($i = 0, $length = count(self::$armaments[$name]); $i < $length; ++$i) {
-                    if(self::$armaments[$name][$i]['priority'] === $priority) {
+                    if(self::$armaments[$name][$i]['stack'] === $stack) {
                         unset(self::$armaments[$name][$i]);
                     }
                 }
+            } else {
+                unset(self::$armaments[$name]);
             }
+        } else {
+            self::$armaments = array();
         }
     }
 
