@@ -85,16 +85,16 @@ class File {
         return new static;
     }
 
-    // Show the opened file to screen
-    public static function read() {
+    // Show the opened file to the screen
+    public static function read($fallback = "") {
         $file = pathinfo(self::$opened);
         if( ! isset($file['extension'])) {
             $file['extension'] = "";
         }
         if(in_array(strtolower($file['extension']), self::$config['extension_image'])) {
-            return '<img alt="' . basename(self::$opened) . '" src="' . str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened) . '"' . ES;
+            return file_exists(self::$opened) ? Asset::image(str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened), ' alt="' . basename(self::$opened) . '"') : $fallback;
         }
-        return file_get_contents(self::$opened);
+        return file_exists(self::$opened) ? file_get_contents(self::$opened) : $fallback;
     }
 
     // Write something before saving

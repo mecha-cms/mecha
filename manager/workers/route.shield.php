@@ -258,3 +258,17 @@ Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $conf
         'info' => Shield::info($folder)
     ))->attach('manager', false);
 });
+
+
+/**
+ * Shield Backup
+ * -------------
+ */
+
+Route::accept($config->manager->slug . '/shield/(:any)/backup', function($folder = "") use($config, $speak) {
+    $name = $folder . '.zip';
+    Package::take(SHIELD . DS . $folder)->pack(ROOT . DS . $name, true);
+    $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
+    Weapon::fire('on_backup_construct', array($G, $G));
+    Guardian::kick($config->manager->slug . '/backup/send:' . $name);
+});

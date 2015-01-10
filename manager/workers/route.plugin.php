@@ -139,7 +139,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
-    Shield::attach('manager', false);
+    Shield::define('the_plugin_path', $slug)->attach('manager', false);
 }, 10.2); // => `manager/plugin` is on priority 10, `manager/plugin/(:num)` is on priority 10.1
 
 
@@ -201,4 +201,18 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         Notify::warning($speak->notify_confirm_delete);
     }
     Shield::attach('manager', false);
+});
+
+
+/**
+ * Plugin Backup
+ * -------------
+ */
+
+Route::accept($config->manager->slug . '/plugin/(:any)/backup', function($folder = "") use($config, $speak) {
+    $name = $folder . '.zip';
+    Package::take(PLUGIN . DS . $folder)->pack(ROOT . DS . $name, true);
+    $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
+    Weapon::fire('on_backup_construct', array($G, $G));
+    Guardian::kick($config->manager->slug . '/backup/send:' . $name);
 });

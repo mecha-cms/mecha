@@ -34,10 +34,10 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
 
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('manager/sword/editor.js');
+        echo Asset::javascript('manager/sword/editor.js', "", 'editor.min.js');
     });
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.page.php');
-    if($id && $page = Get::page($id, array('content', 'tags', 'comments'))) {
+    if($id && $page = Get::page($id, array('content', 'excerpt', 'tags', 'comments'))) {
         if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $page->author) {
             Shield::abort();
         }

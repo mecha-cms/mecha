@@ -85,11 +85,11 @@ class Widget {
          */
 
         if($more_menus = Mecha::A(Config::get('manager_menu'))) {
-            $menus = $menus + array('{{separator}}' => "") + $more_menus;
+            $menus = $menus + array('<menu:separator>' => "") + $more_menus;
         }
 
         Filter::add('manager:list.item', function($menu) {
-            return preg_replace('#<li.*?><a .*?>\{\{separator\}\}<\/a><\/li>#', '<li class="separator"></li>', $menu);
+            return preg_replace('#<li.*?><a .*?><menu:separator><\/a><\/li>#', '<li class="separator"></li>', $menu);
         }, 10);
 
         $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$ids['manager-menu'] . '">' . NL;

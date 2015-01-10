@@ -37,8 +37,8 @@
  *  Parameter | Type     | Description
  *  --------- | -------- | ------------------------------------------------------------
  *  $pattern  | string   | URL pattern to match, relative to root domain name
- *  $callback | function | Function to be executed if pattern matched with URL
- *  $priority | float    | Function to be executed if pattern matched with URL
+ *  $fn       | function | Route function to be executed if pattern matched with URL
+ *  $stack    | float    | Route function priority
  *  --------- | -------- | ------------------------------------------------------------
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
@@ -55,24 +55,24 @@ class Route {
         $string);
     }
 
-    public static function accept($patterns, $callback, $priority = 10) {
+    public static function accept($patterns, $fn, $stack = 10) {
         if(is_array($patterns)) {
-            $increment = 0;
+            $i = 0;
             foreach($patterns as $pattern) {
                 $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
                 self::$routes[] = array(
                     'pattern' => $pattern,
-                    'callback' => $callback,
-                    'priority' => (float) (( ! is_null($priority) ? $priority : 10) + $increment)
+                    'fn' => $fn,
+                    'stack' => (float) (( ! is_null($stack) ? $stack : 10) + $i)
                 );
-                $increment += .1;
+                $i += .1;
             }
         } else {
             $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
             self::$routes[] = array(
                 'pattern' => $pattern,
-                'callback' => $callback,
-                'priority' => (float) ( ! is_null($priority) ? $priority : 10)
+                'fn' => $fn,
+                'stack' => (float) ( ! is_null($stack) ? $stack : 10)
             );
         }
     }
@@ -84,32 +84,27 @@ class Route {
         });
     }
 
-    public static function execute($pattern = null, $params = array(), $priority = null) {
+    public static function execute($pattern = null, $params = array(), $stack = null) {
         if( ! is_null($pattern)) {
             foreach(self::$routes as $route) {
                 if($route['pattern'] == $pattern) {
-                    if( ! is_null($priority)) {
-                        if((float) $route['priority'] == (float) $priority) {
-                            call_user_func_array($route['callback'], $params);
+                    if( ! is_null($stack)) {
+                        if((float) $route['stack'] == (float) $stack) {
+                            call_user_func_array($route['fn'], $params);
                         }
                     } else {
-                        call_user_func_array($route['callback'], $params);
+                        call_user_func_array($route['fn'], $params);
                     }
                 }
             }
         } else {
-            $url = preg_replace('#(\?|\&).*$#', "", $_SERVER['REQUEST_URI']);
-            $base = str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME']));
-            if(strpos($url, $base) === 0) {
-                $url = substr($url, strlen($base));
-            }
-            $url = trim($url, '/');
-            $routes = Mecha::eat(self::$routes)->order('ASC', 'priority')->vomit();
+            $url = Config::get('url_path');
+            $routes = Mecha::eat(self::$routes)->order('ASC', 'stack')->vomit();
             foreach($routes as $route) {
                 if(preg_match('#^' . self::fix($route['pattern']) . '$#', $url, $params)) {
                     array_shift($params);
                     Weapon::fire('before_route_function_call', array($url, $route, array_values($params)));
-                    return call_user_func_array($route['callback'], array_values($params));
+                    return call_user_func_array($route['fn'], array_values($params));
                 }
             }
         }

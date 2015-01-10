@@ -694,10 +694,11 @@ class Get {
             $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
         }
 
-        if(strpos($results['content'], '<!-- cut -->') !== false) {
-            $parts = explode('<!-- cut -->', $results['content'], 2);
-            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . trim($parts[1]);
-            $results['excerpt'] = trim(isset($excludes['content']) ? Filter::apply($filter_prefix . 'content', Filter::apply('content', Text::parse(Filter::apply($filter_prefix . 'shortcode', Filter::apply('shortcode', $parts[0])))->to_html)) : $parts[0]);
+        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Filter::apply($filter_prefix . 'content', Filter::apply('content', Text::parse(Filter::apply($filter_prefix . 'shortcode', Filter::apply('shortcode', $content)))->to_html)) : $results['content'];
+        if( ! isset($excludes['excerpt']) && strpos($content_test, '<!-- cut -->') !== false) {
+            $parts = explode('<!-- cut -->', $content_test, 2);
+            $results['excerpt'] = trim($parts[1]);
+            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . $results['excerpt'];
         }
 
         if( ! isset($excludes['tags'])) {
@@ -1017,36 +1018,13 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type    | Description
-     *  ----------- | ------- | -------------------------------------------------
-     *  $text       | string  | The source text
-     *  $maxchars   | integer | The maximum length of summary
-     *  $tail       | string  | Character that follows at the end of the summary
-     *  ----------- | ------- | -------------------------------------------------
+     *  See => `Converter::curt()`
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function summary($text, $maxchars = 100, $tail = '&hellip;') {
-        $text = preg_replace(
-            array(
-                '#(<.*?>|[\n\r\s\t\*\_\`])+#',
-                '# +#',
-                '#\&nbsp\;#',
-                '#[\-\~\=\#]{2,}#',
-                '# *\. *([a-z])#i',
-                '#<|>#'
-            ),
-            array(
-                ' ',
-                ' ',
-                "",
-                "",
-                '. $1',
-                ""
-            ),
-        $text);
-        return trim(substr($text, 0, $maxchars) . ($maxchars < strlen($text) ? $tail : ""));
+    public static function summary($input, $chars = 100, $tail = '&hellip;') {
+        return Converter::curt($input, $chars, $tail);
     }
 
     /**

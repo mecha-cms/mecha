@@ -30,6 +30,7 @@
         <?php endforeach; ?>
       </tbody>
     </table>
+    <p><small><a href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_shield_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_shield_path; ?>.zip</a></small></p>
     <?php else: ?>
     <?php if(File::exist(SHIELD . DS . $the_shield_path)): ?>
     <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->shields))); ?></p>

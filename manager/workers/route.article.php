@@ -34,10 +34,10 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
 
 Route::accept(array($config->manager->slug . '/article/ignite', $config->manager->slug . '/article/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('manager/sword/editor.js');
+        echo Asset::javascript('manager/sword/editor.js', "", 'editor.min.js');
     });
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
-    if($id && $article = Get::article($id, array('content', 'tags', 'comments'))) {
+    if($id && $article = Get::article($id, array('content', 'excerpt', 'tags', 'comments'))) {
         if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
             Shield::abort();
         }
