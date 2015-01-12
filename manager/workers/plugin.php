@@ -13,16 +13,16 @@
       <p><?php echo Get::summary($plugin->about->content); ?></p>
       <p>
         <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-        <a class="btn btn-sm btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
+        <a class="btn btn-small btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
         <?php else: ?>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-          <a class="btn btn-sm btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
+          <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
           <?php endif; ?>
         <?php endif; ?>
         <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-        <span class="btn btn-sm btn-destruct btn-disabled"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></span>
+        <span class="btn btn-small btn-destruct btn-disabled"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></span>
         <?php else: ?>
-        <a class="btn btn-sm btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/kill/id:' . $plugin->slug; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></a>
+        <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/kill/id:' . $plugin->slug; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></a>
       <?php endif; ?>
       </p>
     </div>

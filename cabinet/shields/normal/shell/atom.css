@@ -194,6 +194,7 @@ h1,h2,h3,h4,h5,h6,
   line-height:1;
   margin:18px 0 0;
   margin-top:1.3846153846153846rem;
+  word-wrap:break-word;
 }
 
 h1,.h1 {font-size:200%}
@@ -370,23 +371,23 @@ fieldset[disabled] .btn {
   opacity:.9;
 }
 
-.btn-sm {
+.btn-small {
   padding:7px 10px;
   font-size:86%;
 }
 
-.input-sm,
-.textarea-sm {
+.input-small,
+.textarea-small {
   padding:7px;
   font-size:86%;
 }
 
-.select-sm {
+.select-small {
   padding:6px 8px;
   font-size:86%;
 }
 
-.textarea-sm {
+.textarea-small {
   height:90px;
   line-height:normal;
 }

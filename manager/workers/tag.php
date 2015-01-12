@@ -32,7 +32,7 @@
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Guardian::wayback('description.' . $id_max); ?>"></td>
       </tr>
       <tr class="row-more-less" data-min="3" data-max="9999">
-        <td colspan="4"><a class="btn btn-sm btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
+        <td colspan="4"><a class="btn btn-small btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-small btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>
   </table>

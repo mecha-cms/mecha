@@ -30,7 +30,7 @@
         <?php endforeach; ?>
       </tbody>
     </table>
-    <p><small><a href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_shield_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_shield_path; ?>.zip</a></small></p>
+    <p><a href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_shield_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_shield_path; ?>.zip</a></p>
     <?php else: ?>
     <?php if(File::exist(SHIELD . DS . $the_shield_path)): ?>
     <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->shields))); ?></p>
@@ -60,7 +60,7 @@
       <h4><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
       <p><?php echo Get::summary($info->content); ?></p>
       <p>
-        <a class="btn btn-sm btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-sm btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/shield:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+        <a class="btn btn-small btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/shield:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
       </p>
     </div>
     <?php endif; ?>

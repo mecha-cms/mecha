@@ -34,7 +34,7 @@
         <td class="align-middle"><input name="values[]" type="text" class="input-block"></td>
       </tr>
       <tr class="row-more-less" data-min="3" data-max="9999">
-        <td colspan="3"><a class="btn btn-sm btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-sm btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
+        <td colspan="3"><a class="btn btn-small btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-small btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>
   </table>

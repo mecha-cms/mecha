@@ -17,7 +17,7 @@
       <h3 class="plugin-title"><?php echo $file->title; if(isset($file->version)) echo ' ' . $file->version; ?></h3>
       <div class="plugin-description">
         <?php echo $file->content; ?>
-        <p><small><a href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $the_plugin_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_plugin_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_plugin_path; ?>.zip</a></small></p>
+        <p><a href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $the_plugin_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_plugin_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_plugin_path; ?>.zip</a></p>
       </div>
     </div>
   </div>
