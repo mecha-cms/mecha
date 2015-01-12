@@ -15,10 +15,7 @@
     <div class="plugin-about">
       <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($file->author)->to_encoded_html; ?><?php if(isset($file->url) && $file->url != '#'): ?> <a class="help" href="<?php echo $file->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
       <h3 class="plugin-title"><?php echo $file->title; if(isset($file->version)) echo ' ' . $file->version; ?></h3>
-      <div class="plugin-description">
-        <?php echo $file->content; ?>
-        <p><a href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $the_plugin_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_plugin_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_plugin_path; ?>.zip</a></p>
-      </div>
+      <div class="plugin-description"><?php echo $file->content; ?></div>
     </div>
   </div>
 </div>

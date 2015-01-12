@@ -8,7 +8,7 @@
  *
  */
 
-// Tag links generator for the current article
+// Tag link generator for the current article
 Widget::add('tagLinks', function($connector = ', ') {
     $config = Config::get();
     $speak = Config::speak();
@@ -20,10 +20,10 @@ Widget::add('tagLinks', function($connector = ', ') {
             $links[] = '<a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag->slug . '" rel="tag">' . $tag->name . '</a>';
         }
     }
-    return ! empty($links) ? $speak->tags . ': ' . implode($connector, $links) : "";
+    return ! empty($links) ? (count($links) > 1 ? $speak->tags : $speak->tag) . ': ' . implode($connector, $links) : "";
 });
 
-// Insert an arrow to the older and newer link text
+// Add an arrow to the older and newer link text
 Config::set(array(
     'speak.older' => $speak->older . ' <i class="fa fa-angle-right"></i>',
     'speak.newer' => '<i class="fa fa-angle-left"></i> ' . $speak->newer

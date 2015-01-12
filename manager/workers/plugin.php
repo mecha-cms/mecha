@@ -10,7 +10,7 @@
     <?php foreach($files as $plugin): ?>
     <div class="media-item" id="plugin:<?php echo $plugin->slug; ?>">
       <h4><i class="fa <?php echo File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'fa-unlock-alt' : 'fa-lock'; ?>"></i> <?php echo $plugin->about->title; ?></h4>
-      <p><?php echo Get::summary($plugin->about->content); ?></p>
+      <p><?php echo Converter::curt($plugin->about->content); ?></p>
       <p>
         <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
         <a class="btn btn-small btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>

@@ -30,7 +30,6 @@
         <?php endforeach; ?>
       </tbody>
     </table>
-    <p><a href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/backup" title="<?php echo $speak->download . ' ' . strtolower($speak->as) . ' `' . $the_shield_path . '.zip`'; ?>"><i class="fa fa-cloud-download"></i> <?php echo $the_shield_path; ?>.zip</a></p>
     <?php else: ?>
     <?php if(File::exist(SHIELD . DS . $the_shield_path)): ?>
     <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->shields))); ?></p>
@@ -58,7 +57,7 @@
     <?php if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
     <div class="media-item" id="shield:<?php echo $shield; ?>">
       <h4><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
-      <p><?php echo Get::summary($info->content); ?></p>
+      <p><?php echo Converter::curt($info->content); ?></p>
       <p>
         <a class="btn btn-small btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/shield:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
       </p>
