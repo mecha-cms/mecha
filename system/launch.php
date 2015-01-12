@@ -103,6 +103,7 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
 Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config) {
 
     $articles = array();
+    $offset = (int) $offset;
 
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file) {
@@ -140,6 +141,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     $months = explode(',', $speak->months);
     $slug = $year . '-' . $month;
     $articles = array();
+    $offset = (int) $offset;
 
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file) {
@@ -179,6 +181,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     }
 
     $articles = array();
+    $offset = (int) $offset;
 
     if($files = Mecha::eat(Get::articles('DESC', 'kind:' . $tag->id))->chunk($offset, $config->tag->per_page)->vomit()) {
         foreach($files as $file) {
@@ -214,6 +217,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
 Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config) {
 
     $articles = array();
+    $offset = (int) $offset;
     $query = Text::parse($query)->to_decoded_url;
     $keywords = Text::parse($query)->to_slug;
 
@@ -486,10 +490,28 @@ Route::accept('sitemap', function() {
  */
 
 Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) {
-    Config::set('offset', $offset);
+    Config::set('offset', (int) $offset);
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(SHIELD . DS . 'rss', true, true);
-}, 90);
+}, 81);
+
+
+/**
+ * JSON Feed
+ * ---------
+ *
+ * [1]. feeds/json
+ * [2]. feeds/json/1
+ * [3]. feeds/json?callback=theFunction
+ * [4]. feeds/json/1?callback=theFunction
+ *
+ */
+
+Route::accept(array('feeds/json', 'feeds/json/(:num)'), function($offset = 1) {
+    Config::set('offset', (int) $offset);
+    header('Content-Type: application/json');
+    Shield::attach(SHIELD . DS . 'json', true, true);
+}, 82);
 
 
 /**

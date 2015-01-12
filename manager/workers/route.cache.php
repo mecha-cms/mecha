@@ -10,6 +10,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    $offset = (int) $offset;
     $takes = Get::files(CACHE, '*', 'DESC', 'update');
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();

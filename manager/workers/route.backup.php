@@ -82,6 +82,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
         if($origin == 'shields') {
             Package::take(ROOT . DS . $name)->deleteFiles(array(
+                'json.php',
                 'rss.php',
                 'sitemap.php',
                 'widgets.css',

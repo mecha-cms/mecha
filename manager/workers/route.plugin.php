@@ -23,6 +23,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    $offset = (int) $offset;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $accepted_mimes = array(

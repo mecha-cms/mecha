@@ -64,11 +64,8 @@ Weapon::add('sword_after', function() use($config) {
 
 function do_remove_cache() {
     global $config;
-    $root = ( ! empty($config->base) ? str_replace('/', '.', $config->base) . '.' : "");
-    File::open(CACHE . DS . $root . 'sitemap.cache')->delete();
-    File::open(CACHE . DS . $root . 'feeds.cache')->delete();
-    File::open(CACHE . DS . $root . 'feeds.rss.cache')->delete();
-    foreach(glob(CACHE . DS . $root . 'feeds.rss.*.cache') as $cache) {
+    File::open(CACHE . DS . 'sitemap.cache')->delete();
+    foreach(glob(CACHE . DS . 'feeds.*.cache') as $cache) {
         File::open($cache)->delete();
     }
 }

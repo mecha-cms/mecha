@@ -8,6 +8,7 @@
 
 Route::accept(array($config->manager->slug . '/article', $config->manager->slug . '/article/(:num)'), function($offset = 1) use($config, $speak) {
     $articles = false;
+    $offset = (int) $offset;
     if($files = Mecha::eat(Get::articles('DESC', "", 'txt,draft'))->chunk($offset, $config->per_page)->vomit()) {
         $articles = array();
         foreach($files as $file) {

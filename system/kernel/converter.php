@@ -346,7 +346,7 @@ class Converter {
                 array(
                     '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
                     '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
-                    '#(?| *(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[igm]*(?=[.,;\s])) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
+                    '#(?| *(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[gimuy]*(?=[.,;\s])) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
                     '#;\}#' // Remove the last semicolon
                 ),
                 array(

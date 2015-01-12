@@ -7,6 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
+    $offset = (int) $offset;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         File::upload($_FILES['file'], ASSET);

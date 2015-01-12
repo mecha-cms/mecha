@@ -10,6 +10,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    $offset = (int) $offset;
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
     if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->per_page)->vomit()) {
         $comments = array();
