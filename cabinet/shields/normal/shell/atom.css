@@ -576,8 +576,8 @@ ul {
   list-style:disc outside;
 }
 
-ul > li > ul,
-ol > li > ul {
+ol > li > ul,
+ul > li > ul {
   margin-left:1em;
   margin-top:0;
 }
@@ -588,13 +588,23 @@ ul > li > ol {
   margin-top:0;
 }
 
-li > p + ul,
 li > p + ol,
-li > .p + ul,
-li > .p + ol {
+li > p + ul,
+li > .p + ol,
+li > .p + ul {
   margin-top:1.3846153846153846em;
+  margin-bottom:1.3846153846153846em;
   margin-left:2.3846153846153846em;
 }
+
+li > p + ol + p,
+li > p + ul + p,
+li > p + ol + .p,
+li > p + ul + .p,
+li > .p + ol + p,
+li > .p + ul + p,
+li > .p + ol + .p,
+li > .p + ul + .p {margin-bottom:0}
 
 .list-unstyled {
   margin-left:0;
