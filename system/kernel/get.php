@@ -1061,7 +1061,7 @@ class Get {
          *
          */
 
-        // if(preg_match_all('#\!\[.*?\]\((.*?)(| +\'.[^\']*?\'| +".[^"]*?")\)#', $source, $matches)) {
+        // if(preg_match_all('#\!\[.*?\]\(([^\s]+?)( +([\'"]).*?\3)?\)#', $source, $matches)) {
         //     return $matches[1];
         // }
 
@@ -1083,8 +1083,8 @@ class Get {
          *
          */
 
-        if(preg_match_all('#<img (.*?)?src=(\'(.[^\']*?)\'|"(.[^"]*?)")(.*?)? ?\/?>#i', $source, $matches)) {
-            return $matches[4];
+        if(preg_match_all('#<img .*?src=([\'"])([^\'"]+?)\1.*? *\/?>#i', $source, $matches)) {
+            return $matches[2];
         }
 
         /**
@@ -1104,7 +1104,7 @@ class Get {
          *
          */
 
-        if(preg_match_all('#(background|background-image|content)\:(.*?)?url\((\'(.[^\']*?)\'|"(.[^"]*?)")\)#i', $source, $matches)) {
+        if(preg_match_all('#(background(-image)?|content)\:.*?url\(([\'"]|)?([^\'"]+?)\3\)#i', $source, $matches)) {
             return $matches[4];
         }
 

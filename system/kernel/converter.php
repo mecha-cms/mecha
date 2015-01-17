@@ -265,28 +265,26 @@ class Converter {
      */
 
     public static function attr($input, $element = array('<', '>', ' '), $attr = array('"', '"', '='), $str_eval = true) {
-        if( ! preg_match('#^' . preg_quote($element[0], '#') . '([a-zA-Z0-9\-\:\_]+)?(' . preg_quote($element[2], '#') . '(.*?))?\/?' . preg_quote($element[1], '#') . '(([\s\S]*?)(' . preg_quote($element[0], '#') . '\/\1' . preg_quote($element[1], '#') . '))?$#m', $input, $matches)) {
-            return false;
-        }
-        $name = $matches[1];
-        $attributes = null;
-        if(isset($matches[3])) {
-            $matches[3] = preg_replace('#' . $element[2] . ($attr[1] !== "" ? '([^' . preg_quote($attr[1], '#') . ']+)' : '([^' . preg_quote($element[2], '#') . ']+)') . $attr[2] . '#', '<attr:separator>$1' . $attr[2], trim($matches[3], $element[2]));
-            if( ! empty($matches[3])) {
-                $attributes = array();
-                $parts = explode('<attr:separator>', $matches[3]);
-                foreach($parts as $part) {
-                    $part = explode($attr[2], $part, 2);
-                    $attributes[trim($part[0], $element[2])] = isset($part[1]) ? preg_replace('#^' . preg_quote($attr[0], '#') . '|' . preg_quote($attr[1], '#') . '$#', "", $part[1]) : "";
-                }
-                unset($attributes[""]); // Remove empty array keys
+        $e0 = preg_quote($element[0], '#');
+        $e1 = preg_quote($element[1], '#');
+        $e2 = preg_quote($element[2], '#');
+        $a0 = preg_quote($attr[0], '#');
+        $a1 = preg_quote($attr[1], '#');
+        $a2 = preg_quote($attr[2], '#');
+        if( ! preg_match('#^(' . $e0 . ')([a-z0-9\-._:]+)((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')\/\2(' . $e1 . '))|(' . $e2 . ')*\/?(' . $e1 . '))$#im', $input, $matches)) return false;
+        $matches[5] = preg_replace('#(^|(' . $e2 . ')+)([a-z0-9\-]+)(' . $a2 . ')(' . $a0 . ')(' . $a1 . ')#i', '$1$2$3$4$5<attr:value>$6', $matches[5]);
+        $results = array(
+            'element' => $matches[2],
+            'attributes' => null,
+            'content' => isset($matches[8]) && $matches[9] == $element[0] . '/' . $matches[2] . $element[1] ? $matches[8] : null
+        );
+        if(preg_match_all('#([a-z0-9\-]+)((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#i', $matches[5], $attrs)) {
+            $results['attributes'] = array();
+            foreach($attrs[1] as $i => $attr) {
+                $results['attributes'][$attr] = isset($attrs[5][$i]) && ! empty($attrs[5][$i]) ? (strpos($attrs[5][$i], '<attr:value>') === false ? $attrs[5][$i] : str_replace('<attr:value>', "", $attrs[5][$i])) : $attr;
             }
         }
-        return array(
-            'element' => ! empty($name) ? $name : null,
-            'attributes' => $str_eval ? self::strEval($attributes) : $attributes,
-            'content' => isset($matches[6]) ? $matches[5] : null
-        );
+        return $str_eval ? self::strEval($results) : $results;
     }
 
     // HTML Minifier
@@ -311,7 +309,7 @@ class Converter {
     // CSS Minifier => http://ideone.com/Q5USEF + improvement(s)
     public static function detractShell($input) {
         if(trim($input) === "") return $input;
-        $input_parts = preg_split('#(\/\*\![\s\S]+?\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $results = "";
         foreach($input_parts as $s) {
             $results .= (strpos($s, '/*!') === 0 ? $s : preg_replace(
@@ -339,12 +337,12 @@ class Converter {
     // JavaScript Minifier
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
-        $input_parts = preg_split('#(\/\*\![\s\S]+?\*\/|\/\*@cc_on[\s\S]+?@\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/|\/\*@cc_on[\s\S]+?@\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $results = "";
         foreach($input_parts as $s) {
             $results .= (strpos($s, '/*!') === 0 || strpos($s, '/*@cc_on') === 0 ? $s : preg_replace(
                 array(
-                    '#\/\*([\s\S]+?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
+                    '#\/\*([\s\S]*?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
                     '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
                     '#(?| *(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[gimuy]*(?=[.,;\s])) *| *([+-=\/%(){}\[\]<>|&?!:;,]) *)#s', // Remove unused space characters outside the string and regex
                     '#;\}#' // Remove the last semicolon
