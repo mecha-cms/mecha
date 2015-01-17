@@ -64,46 +64,45 @@ class Menu {
         )
     );
 
-    protected static function create($array = null, $type = 'ul', $filter_prefix = 'menu:', $depth = 0, $t = "") {
-        $config = Config::get();
-        $speak = Config::speak();
-        $current = $config->url_current;
-        // Use menu file from the cabinet if `$array` is not defined
-        if(is_null($array)) {
-            if($file = File::exist(STATE . DS . 'menus.txt')) {
-                $array = Text::toArray(File::open($file)->read());
+    public static function create($array, $type, $filter_prefix, $depth) {
+        $c_url = Config::get('url');
+        $c_url_current = Config::get('url_current');
+        $html = str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ' class="' . sprintf(self::$config['classes']['children'], $depth / 2) . '"' : "") . '>' . NL;
+        foreach($array as $title => $url) {
+            if( ! is_array($url)) {
+                if(strpos($url, '#') !== 0 && strpos($url, '://') === false) {
+                    $url = preg_replace('#\/([\#?])#', '$1', trim($c_url . '/' . trim($url, '/'), '/'));
+                }
+                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($url == $c_url_current || ($url != $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $url . '">' . $title . '</a></li>' . NL, $depth + 1);
             } else {
-                $array = array($speak->home => '/', $speak->about => '/about');
-            }
-            $filter_prefix = 'navigation:';
-        }
-        $html = $t . str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ' class="' . sprintf(self::$config['classes']['children'], $depth) . '"' : "") . '>' . NL;
-        foreach($array as $text => $url) {
-            if(is_array($url)) {
-                if(preg_match('#(.*?)\((.*?)\)$#', $text, $matches)) {
-                    $_url = trim($matches[2], '/');
-                    // Create full URL from value if the value does not contain a `://`
-                    if(strpos($_url, '://') === false && strpos($_url, '#') !== 0) {
-                        $_url = str_replace('/#', '#', rtrim($config->url . '/' . $_url, '/'));
-                    }
-                    $html .= Filter::apply($filter_prefix . 'list.item', $t . str_repeat(TAB, $depth + 1) . '<li' . ($_url == $current || ($_url != $config->url && strpos($current . '/', $_url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $_url . '">' . trim($matches[1]) . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 1, str_repeat(TAB, $depth + 1)) . $t . str_repeat(TAB, $depth + 1) . '</li>' . NL);
+                if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $title, $matches)) {
+                    $_title = $matches[1];
+                    $_url = $matches[2];
                 } else {
-                    $_url = $config->url . '#';
-                    $html .= Filter::apply($filter_prefix . 'list.item', $t . str_repeat(TAB, $depth + 1) . '<li' . ($_url == $current || ($_url != $config->url && strpos($current . '/', $_url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="#">' . $text . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 1, str_repeat(TAB, $depth + 1)) . $t . str_repeat(TAB, $depth + 1) . '</li>' . NL);
+                    $_title = $title;
+                    $_url = '#';
                 }
-            } else {
-                // Create full URL from value if the value does not contain a `://`
-                if(strpos($url, '://') === false && strpos($url, '#') !== 0) {
-                    $url = str_replace('/#', '#', trim($config->url . '/' . trim($url, '/'), '/'));
+                if(strpos($_url, '#') !== 0 && strpos($_url, '://') === false) {
+                    $_url = preg_replace('#\/([\#?])#', '$1', trim($c_url . '/' . trim($_url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', $t . str_repeat(TAB, $depth + 1) . '<li' . ($url == $current || ($url != $config->url && strpos($current . '/', $url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $url . '">' . $text . '</a></li>' . NL);
+                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($_url == $c_url_current || ($_url != $c_url && strpos($c_url_current . '/', $_url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $_url . '">' . $_title . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 2) . str_repeat(TAB, $depth + 1) . '</li>' . NL, $depth + 1);
             }
         }
-        return Filter::apply($filter_prefix . 'list', $html . $t . str_repeat(TAB, $depth) . '</' . $type . '>' . NL);
+        return Filter::apply($filter_prefix . 'list', $html . str_repeat(TAB, $depth) . '</' . $type . '>' . NL, $depth);
     }
 
     public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:') {
-        return O_BEGIN . rtrim(self::create($array, $type, $filter_prefix), NL) . O_END;
+        // Use menu file from the cabinet when `$array` is not defined
+        if(is_null($array)) {
+            $speak = Config::speak();
+            $filter_prefix = 'navigation:';
+            if($file = File::exist(STATE . DS . 'menus.txt')) {
+                $array = Text::toArray(File::open($file)->read(), ':', '    ');
+            } else {
+                $array = array($speak->home => '/', $speak->about => '/about');
+            }
+        }
+        return O_BEGIN . rtrim(self::create($array, $type, $filter_prefix, 0), NL) . O_END;
     }
 
     public static function configure($key, $value = null) {
