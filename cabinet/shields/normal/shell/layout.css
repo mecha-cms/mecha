@@ -7,13 +7,15 @@
 /* GENERALS */
 
 body {border-top:5px solid}
-
-.footnotes {
-  font-size:84%;
-  margin-top:1.3846153846153846em;
-}
-
 .form-login {padding:10% 0}
+
+.footnotes {margin-top:1.3846153846153846em}
+.footnotes ol {font-size:84%}
+
+.footnotes hr {
+  border-style:solid;
+  width:7em;
+}
 
 
 /* WRAPPER */
@@ -398,7 +400,7 @@ body {border-top:5px solid}
     float:none;
     display:inline;
   }
-  .blog-footer-left:after {
+  .blog-footer-right:before {
     content:"\2013";
     color:#AAA;
     margin:0 1em;
