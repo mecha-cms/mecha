@@ -32,22 +32,17 @@ class Config {
      */
 
     public static function set($key, $value = "") {
-        if(is_object($key)) {
-            $key = Mecha::A($key);
-        }
-        if(is_object($value)) {
-            $value = Mecha::A($value);
-        }
+        if(is_object($key)) $key = Mecha::A($key);
+        if(is_object($value)) $value = Mecha::A($value);
         $cargo = array();
-        if(is_array($key)) {
+        if( ! is_array($key)) {
+            Mecha::SVR($cargo, $key, $value);
+        } else {
             foreach($key as $k => $v) {
                 Mecha::SVR($cargo, $k, $v);
             }
-            self::$bucket = array_replace_recursive(self::$bucket, $cargo);
-        } else {
-            Mecha::SVR($cargo, $key, $value);
-            self::$bucket[$key] = $value;
         }
+        self::$bucket = array_replace_recursive(self::$bucket, $cargo);
     }
 
     /**
@@ -85,7 +80,7 @@ class Config {
             return is_array($output) ? Mecha::O($output) : $output;
         }
         if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            self::$bucket[$key] = $fallback;
+            return $fallback;
         }
         return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
     }
@@ -112,24 +107,7 @@ class Config {
      */
 
     public static function merge($key, $value = array()) {
-        if(is_object($value)) {
-            $value = Mecha::A($value);
-        }
-        if( ! isset(self::$bucket[$key])) {
-            if(strpos($key, '.') !== false) {
-                Mecha::SVR(self::$bucket, $key, $value);
-            } else {
-                self::$bucket[$key] = $value;
-            }
-        } else {
-            if(strpos($key, '.') !== false) {
-                $cargo = array();
-                Mecha::SVR($cargo, $key, $value);
-                self::$bucket = array_merge_recursive(self::$bucket, $cargo);
-            } else {
-                self::$bucket[$key] = array_merge_recursive(self::$bucket[$key], $value);
-            }
-        }
+        self::set($key, $value);
     }
 
     /**

@@ -30,10 +30,11 @@ class Asset {
 
     private static function pathTrace($path) {
         $config = Config::get();
-        if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
+        $path = strpos($path, '://') === false ? ltrim(str_replace(array('\\', '/'), DS, $path), '\\/') : $path;
+        if($_path = File::exist(SHIELD . DS . $config->shield . DS . $path)) {
             return $_path;
         } else {
-            if($_path = File::exist(ROOT . DS . ltrim($path, '\\/'))) {
+            if($_path = File::exist(ROOT . DS . $path)) {
                 return $_path;
             }
         }
