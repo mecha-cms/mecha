@@ -10,7 +10,8 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $shortcodes = include DECK . DS . 'workers' . DS . 'repair.state.shortcodes.php';
+    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcodes.php';
+    $shortcodes = file_exists($d) ? include $d : array();
     if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
         $file_shortcodes = File::open($file)->unserialize();
         foreach($file_shortcodes as $key => $value) {

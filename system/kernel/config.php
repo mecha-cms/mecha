@@ -178,7 +178,8 @@ class Config {
     public static function load() {
 
         // Extract the configuration file
-        $config = include DECK . DS . 'workers' . DS . 'repair.state.config.php';
+        $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
+        $config = file_exists($d) ? include $d : array();
         if($file = File::exist(STATE . DS . 'config.txt')) {
             $config = array_replace_recursive($config, File::open($file)->unserialize());
         }

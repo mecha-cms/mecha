@@ -539,10 +539,10 @@ Route::accept('captcha.png', function() {
     $font = Request::get('font', 'special-elite-regular.ttf');
     $text = Session::get(Guardian::$captcha, "");
 
-    if($bg !== 'false' && $bg = Converter::HEX2RGB($bg)) {
+    if($bg !== false && $bg = Converter::HEX2RGB($bg)) {
         $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
     } else {
-        $bg = $bg !== 'false' ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
+        $bg = $bg !== false ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
     }
 
     if($color = Converter::HEX2RGB($color)) {

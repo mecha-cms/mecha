@@ -216,7 +216,8 @@ class Get {
     public static function rawTags($order = 'ASC', $sorter = 'name') {
         $config = Config::get();
         $speak = Config::speak();
-        $tags = include DECK . DS . 'workers' . DS . 'repair.state.tags.php';
+        $d = DECK . DS . 'workers' . DS . 'repair.state.tags.php';
+        $tags = file_exists($d) ? include $d : array();
         if($file = File::exist(STATE . DS . 'tags.txt')) {
             $tags = array_replace_recursive($tags, File::open($file)->unserialize());
         }
