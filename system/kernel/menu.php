@@ -60,20 +60,22 @@ class Menu {
     public static $config = array(
         'classes' => array(
             'selected' => 'selected',
-            'children' => 'children-%s'
+            'children' => 'children-%s',
+            'parent' => false
         )
     );
 
     public static function create($array, $type, $filter_prefix, $depth) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
-        $html = str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ' class="' . sprintf(self::$config['classes']['children'], $depth / 2) . '"' : "") . '>' . NL;
+        $c_class = self::$config['classes'];
+        $html = str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ($c_class['children'] !== false ? ' class="' . sprintf($c_class['children'], $depth / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
         foreach($array as $title => $url) {
             if( ! is_array($url)) {
                 if(strpos($url, '#') !== 0 && strpos($url, '://') === false) {
-                    $url = preg_replace('#\/([\#?])#', '$1', trim($c_url . '/' . trim($url, '/'), '/'));
+                    $url = preg_replace('#\/([\#?&])#', '$1', trim($c_url . '/' . trim($url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($url == $c_url_current || ($url != $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $url . '">' . $title . '</a></li>' . NL, $depth + 1);
+                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($url == $c_url_current || ($url != $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $url . '">' . $title . '</a></li>' . NL, $depth + 1);
             } else {
                 if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $title, $matches)) {
                     $_title = $matches[1];
@@ -83,9 +85,9 @@ class Menu {
                     $_url = '#';
                 }
                 if(strpos($_url, '#') !== 0 && strpos($_url, '://') === false) {
-                    $_url = preg_replace('#\/([\#?])#', '$1', trim($c_url . '/' . trim($_url, '/'), '/'));
+                    $_url = preg_replace('#\/([\#?&])#', '$1', trim($c_url . '/' . trim($_url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($_url == $c_url_current || ($_url != $c_url && strpos($c_url_current . '/', $_url . '/') === 0) ? ' class="' . self::$config['classes']['selected'] . '"' : "") . '><a href="' . $_url . '">' . $_title . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 2) . str_repeat(TAB, $depth + 1) . '</li>' . NL, $depth + 1);
+                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($_url == $c_url_current || ($_url != $c_url && strpos($c_url_current . '/', $_url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $_url . '">' . $_title . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 2) . str_repeat(TAB, $depth + 1) . '</li>' . NL, $depth + 1);
             }
         }
         return Filter::apply($filter_prefix . 'list', $html . str_repeat(TAB, $depth) . '</' . $type . '>' . NL, $depth);

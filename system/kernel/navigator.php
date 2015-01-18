@@ -5,7 +5,11 @@ class Navigator {
     protected static $bucket = array();
 
     public static $navigator = array(
-        'step' => 5
+        'step' => 5,
+        'classes' => array(
+            'pagination' => 'pagination',
+            'current' => 'current'
+        )
     );
 
     /**
@@ -42,6 +46,7 @@ class Navigator {
         $speak = Config::speak();
         $base = $config->url;
         $total = count($pages);
+        $sn = self::$navigator;
 
         if($connector != '/' && ! empty($connector)) $connector = '/' . trim($connector, '/') . '/';
 
@@ -65,7 +70,7 @@ class Navigator {
             self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', $next ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
 
             // Generate pagination links for index page
-            $html = '<span class="pagination">';
+            $html = '<span' . ($sn['classes']['pagination'] !== false ? ' class="' . $sn['classes']['pagination'] . '"' : "") . '>';
             $chunk = (int) ceil($total / $perpage);
             $step = $chunk > self::$navigator['step'] ? self::$navigator['step'] : $chunk;
             $left = $current - $step;
@@ -77,7 +82,7 @@ class Navigator {
                 for($i = $current - $step + 1; $i < $current + $step; ++$i) {
                     if($chunk > 1) {
                         if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
-                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong class="current">' . $i . '</strong>', $i, $connector), $i, $connector);
+                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
                             self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $config->url . $connector . $i : false, $i, $connector), $i, $connector);
                         }
                     }
