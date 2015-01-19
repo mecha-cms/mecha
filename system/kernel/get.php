@@ -698,8 +698,8 @@ class Get {
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Filter::apply($filter_prefix . 'content', Filter::apply('content', Text::parse(Filter::apply($filter_prefix . 'shortcode', Filter::apply('shortcode', $content)))->to_html)) : $results['content'];
         if( ! isset($excludes['excerpt']) && strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = trim($parts[1]);
-            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . $results['excerpt'];
+            $results['excerpt'] = trim($parts[0]);
+            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . trim($parts[1]);
         }
 
         if( ! isset($excludes['tags'])) {
