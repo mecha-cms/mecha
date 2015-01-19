@@ -22,17 +22,17 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     $_SESSION['token'] = $token;
 
     if(trim($_POST['name']) === "") $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
-    if(trim($_POST['username']) === "") $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
-    if(trim($_POST['password']) === "") $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['username']) === "" ? ' too' : "") . '.</p>';
     if(trim($_POST['email']) === "") {
-        $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your email?</p>';
+        $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your email? Mecha need that.</p>';
     } else {
         if( ! filter_var($_POST['email'], FILTER_VALIDATE_EMAIL)) {
             $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Invalid email address.</p>';
         }
     }
-    if(trim($_POST['username']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username should only contains letters, numbers, <code>-</code> and <code>_</code>.</p>';
-    if(trim($_POST['password']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password should only contains letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(trim($_POST['username']) === "") $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
+    if(trim($_POST['password']) === "") $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['username']) === "" ? ' too' : "") . '.</p>';
+    if(trim($_POST['username']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(trim($_POST['password']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p class="message message-error cf"><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 

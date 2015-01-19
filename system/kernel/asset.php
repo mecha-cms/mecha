@@ -30,11 +30,10 @@ class Asset {
 
     private static function pathTrace($path) {
         $config = Config::get();
-        $path = strpos($path, '://') === false ? ltrim(str_replace(array('\\', '/'), DS, $path), '\\/') : $path;
-        if($_path = File::exist(SHIELD . DS . $config->shield . DS . $path)) {
+        if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, '\\/'))) {
             return $_path;
         } else {
-            if($_path = File::exist(ROOT . DS . $path)) {
+            if($_path = File::exist(ROOT . DS . ltrim($path, '\\/'))) {
                 return $_path;
             }
         }
@@ -45,7 +44,7 @@ class Asset {
     public static function url($path) {
         $config = Config::get();
         $url = self::pathTrace($path);
-        if(strpos($url, '://') === false && ! File::exist($url)) {
+        if(strpos($url, '://') === false && ! file_exists($url)) {
             return false;
         }
         if(strpos($url, ROOT) === false) {
