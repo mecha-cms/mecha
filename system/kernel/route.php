@@ -51,7 +51,7 @@ class Route {
     private static function fix($string) {
         return str_replace(
             array(':any', ':num', ':all', '/', ':'),
-            array('.[^/]*', '\d+', '.*?', '\/', '\:'),
+            array('[^/]+', '[0-9]+', '.*?', '\/', '\:'),
         $string);
     }
 

@@ -205,17 +205,15 @@ class Shield {
             exit;
         }
 
-        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
-
         Weapon::fire('shield_before', array($G, $G));
+
+        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
         require Filter::apply('shield:path', $shield);
 
         Notify::clear();
 
         Guardian::forget();
-
-        Weapon::fire('shield_after', array($G, $G));
 
         if($cacheable) {
             $G['data']['content'] = ob_get_contents();
@@ -224,6 +222,8 @@ class Shield {
         }
 
         ob_end_flush();
+
+        Weapon::fire('shield_after', array($G, $G));
 
         exit;
 
@@ -270,9 +270,9 @@ class Shield {
 
         Guardian::setResponseStatus(404);
 
-        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
-
         Weapon::fire('shield_before', array($G, $G));
+
+        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
 
         require Filter::apply('shield:path', $shield);
 
@@ -280,9 +280,9 @@ class Shield {
 
         Guardian::forget();
 
-        Weapon::fire('shield_after', array($G, $G));
-
         ob_end_flush();
+
+        Weapon::fire('shield_after', array($G, $G));
 
         exit;
 
