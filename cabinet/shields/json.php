@@ -18,9 +18,13 @@ $json = array(
         ),
         'updated' => date('c'),
         'author' => array(
-            'name' => $config->author
+            'name' => $config->author,
+            'url' => array(
+                'profile' => $config->author_profile_url
+            )
         ),
-        'offset' => $config->offset
+        'offset' => $config->offset,
+        'total' => $config->total_articles
     ),
     'item' => array()
 );
