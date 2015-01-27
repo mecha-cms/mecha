@@ -305,11 +305,26 @@ days_short: Min,Sen,Sel,Rab,Kam,Jum,Sab
 # ---------
 
 compose: Tulis
+composing: Menulis
+composed: Ditulis
 
 ok: Oke
+
 cancel: Batal
+cenceling: Membatalkan
+canceled: Dibatalkan
+
 yes: Ya
+
 no: Tidak
+
+open: Buka
+opening: Membuka
+opened: Dibuka
+
+close: Tutup
+closing: Menutup
+closed: Ditutup
 
 create: Buat
 creating: Membuat

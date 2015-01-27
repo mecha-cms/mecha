@@ -305,11 +305,26 @@ days_short: Sun,Mon,Tue,Wed,Thu,Fri,Sat
 # ---------
 
 compose: Compose
+composing: Composing
+composed: Composed
 
 ok: OK
+
 cancel: Cancel
+canceling: Cancelling
+canceled: Cancelled
+
 yes: Yes
+
 no: No
+
+open: Open
+opening: Opening
+opened: Opened
+
+close: Close
+closing: Closing
+closed: Closed
 
 create: Create
 creating: Creating
