@@ -6,11 +6,11 @@
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-pencil"></i> <?php echo $speak->compose; ?></a>
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-leaf"></i> <?php echo $speak->manager->title_custom_css_and_js; ?></a>
   <a class="tab" href="#tab-content-3"><i class="fa fa-fw fa-th-list"></i> <?php echo $speak->fields; ?></a>
-  <a class="tab" href="#tab-content-4"><i class="fa fa-fw fa-eye"></i> <?php echo $speak->preview; ?></a>
+  <a class="tab ajax" href="#tab-content-4" data-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:page'; ?>" data-loading-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>." data-source="#form-compose" data-destination="#form-compose-preview"><i class="fa fa-fw fa-eye"></i> <?php echo $speak->preview; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
-  <form class="form-compose" action="<?php echo $config->url_current; ?>" method="post" data-preview-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:page'; ?>">
+  <form class="form-compose" id="form-compose" action="<?php echo $config->url_current; ?>" method="post">
     <input type="hidden" name="token" value="<?php echo $token; ?>">
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($FT)); ?>
@@ -43,7 +43,7 @@
     </div>
     <div class="tab-content hidden" id="tab-content-4">
       <?php Weapon::fire('unit_composer_4_before', array($FT)); ?>
-      <div class="editor-preview" data-progress-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>."></div>
+      <div id="form-compose-preview"></div>
       <?php Weapon::fire('unit_composer_4_after', array($FT)); ?>
     </div>
     <hr>

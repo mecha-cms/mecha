@@ -5,47 +5,35 @@
 
 (function($, base) {
 
-    var $zone = $(document.body),
+    var $base = $(document.body),
         $editor = $('.form-compose').first(),
-        $preview = $('.editor-preview'),
         $title = $('[name="title"]', $editor),
         $slug = $('[name="slug"]', $editor),
-        $content = $('.MTE[name="content"]', $editor),
+        $content = $('[name="content"]', $editor),
         $tab = $('.tab-area a'),
-        $check = $('input[type="checkbox"]', $editor),
-        $css = $('.MTE[name="css"]', $editor),
-        $js = $('.MTE[name="js"]', $editor),
+        $check = $('[type="checkbox"]', $editor),
+        $css = $('[name="css"]', $editor),
+        $js = $('[name="js"]', $editor),
         $css_check = $('[name="css_live_check"]', $editor),
         $js_check = $('[name="js_live_check"]', $editor);
 
-    $zone.removeClass('no-js').addClass('js');
+    $base.removeClass('no-js').addClass('js');
 
-    var $css_preview = $('<div id="live-preview-css"></div>').appendTo($zone),
-        $js_preview = $('<div id="live-preview-js"></div>').appendTo($zone);
+    var $css_preview = $('<div id="live-preview-css"></div>').appendTo($base),
+        $js_preview = $('<div id="live-preview-js"></div>').appendTo($base);
 
-    var languages = $content.data('mteLanguages');
+    var languages = $content.data('mteLanguages'), FT = $content.data('ft');
 
-    $tab.on("click", function() {
-        if (this.hash.replace('#', "") == 'tab-content-4') { // preview tab only
-            $preview.html($preview.data('progressText'));
-            $.ajax({
-                url: $editor.data('previewUrl'),
-                type: 'POST',
-                data: $editor.serializeArray(),
-                success: function(data, textStatus, jqXHR) {
-                    $preview.html(data);
-                    base.fire('on_preview_complete', [data, textStatus, jqXHR]);
-                },
-                error: function(jqXHR, textStatus, errorThrown) {
-                    $preview.html($preview.data('errorText'));
-                    base.fire('on_preview_failure', [jqXHR, textStatus, errorThrown]);
-                }
-            });
-        }
-        return false;
+    base.add('on_ajax_success', function(data) {
+        base.fire('on_preview_complete', data);
+    });
+
+    base.add('on_ajax_error', function(data) {
+        base.fire('on_preview_failure', data);
     });
 
     if ($content.length && typeof MTE != "undefined") {
+        base.fire('on_control_begin', [FT, 'content']);
         base.composer = new MTE($content[0], {
             tabSize: base.tab_size,
             shortcut: true,
@@ -53,20 +41,51 @@
             buttons: languages.buttons,
             prompt: languages.prompt,
             placeholder: languages.placeholder,
-            keydown: function(e, editor) {
-                base.fire('on_editor_keydown', [e, editor]);
-            },
             click: function(e, editor, type) {
-                base.fire('on_editor_click', [e, editor, type]);
+                base.fire('on_control_event_click', [e, editor, type, [FT, 'content']]);
+            },
+            keydown: function(e, editor) {
+                base.fire('on_control_event_keydown', [e, editor, [FT, 'content']]);
             },
             ready: function(editor) {
-                base.fire('on_editor_ready', [editor]);
+                base.fire('on_control_event_ready', [editor, [FT, 'content']]);
             }
         });
+        base.fire('on_control_end', [FT, 'content']);
+        base.fire('on_control_begin', [FT, 'css']);
+        new MTE($css[0], {
+            tabSize: base.tab_size,
+            toolbar: false,
+            click: function(e, editor, type) {
+                base.fire('on_control_event_click', [e, editor, type, [FT, 'css']]);
+            },
+            keydown: function(e, editor) {
+                base.fire('on_control_event_keydown', [e, editor, [FT, 'css']]);
+            },
+            ready: function(editor) {
+                base.fire('on_control_event_ready', [editor, [FT, 'css']]);
+            }
+        });
+        base.fire('on_control_end', [FT, 'css']);
+        base.fire('on_control_begin', [FT, 'js']);
+        new MTE($js[0], {
+            tabSize: base.tab_size,
+            toolbar: false,
+            click: function(e, editor, type) {
+                base.fire('on_control_event_click', [e, editor, type, [FT, 'js']]);
+            },
+            keydown: function(e, editor) {
+                base.fire('on_control_event_keydown', [e, editor, [FT, 'js']]);
+            },
+            ready: function(editor) {
+                base.fire('on_control_event_ready', [editor, [FT, 'js']]);
+            }
+        });
+        base.fire('on_control_end', [FT, 'js']);
         base.composer.button('table', {
-            'title': languages.others.table,
-            'position': 8,
-            'click': function(e, editor) {
+            title: languages.others.table,
+            position: 8,
+            click: function(e, editor) {
                 var s = editor.grip.selection(),
                     p = base.is_html_parser_enabled,
                     table = languages.others['table_text_' + (p ? 'raw' : 'html')];
@@ -79,18 +98,10 @@
             }
         });
         base.composer.button('question-circle', {
-            'title': languages.others.help,
-            'click': function() {
+            title: languages.others.help,
+            click: function() {
                 window.open('http://mecha-cms.com/article/markdown-syntax');
             }
-        });
-        new MTE($css[0], {
-            tabSize: base.tab_size,
-            toolbar: false
-        });
-        new MTE($js[0], {
-            tabSize: base.tab_size,
-            toolbar: false
         });
     }
 

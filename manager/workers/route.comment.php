@@ -90,22 +90,24 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if (typeof MTE == "undefined") return;
     var $area = $(\'.MTE\'),
         languages = $area.data(\'mteLanguages\');
+    base.fire(\'on_control_begin\', [\'comment\', \'message\']);
     base.composer = new MTE($area[0], {
         tabSize: base.tab_size,
         shortcut: true,
         buttons: languages.buttons,
         prompt: languages.prompt,
         placeholder: languages.placeholder,
-        keydown: function(e, editor) {
-            base.fire(\'on_editor_keydown\', [e, editor]);
-        },
         click: function(e, editor, type) {
-            base.fire(\'on_editor_click\', [e, editor, type]);
+            base.fire(\'on_control_event_click\', [e, editor, type, [\'comment\', \'message\']]);
+        },
+        keydown: function(e, editor) {
+            base.fire(\'on_control_event_keydown\', [e, editor, [\'comment\', \'message\']]);
         },
         ready: function(editor) {
-            base.fire(\'on_editor_ready\', [editor]);
+            base.fire(\'on_control_event_ready\', [editor, [\'comment\', \'message\']]);
         }
     });
+    base.fire(\'on_control_end\', [\'comment\', \'message\']);
 })(Zepto, DASHBOARD);
 </script>';
     });

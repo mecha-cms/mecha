@@ -41,6 +41,7 @@ Weapon::add('sword_after', function() use($config) {
     echo Asset::javascript(array(
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
+        'manager/sword/ajax.js',
         'manager/sword/row.js',
         'manager/sword/slug.js',
         'manager/sword/check.js',

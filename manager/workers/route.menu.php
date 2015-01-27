@@ -23,10 +23,21 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         echo '<script>
 (function($, base) {
     if (typeof MTE == "undefined") return;
+    base.fire(\'on_control_begin\', [\'menu\', \'content\']);
     new MTE($(\'.MTE\')[0], {
         tabSize: \'    \', // Use 4 spaces for indentation!
-        toolbar: false
+        toolbar: false,
+        click: function(e, editor, type) {
+            base.fire(\'on_control_event_click\', [e, editor, type, [\'menu\', \'content\']]);
+        },
+        keydown: function(e, editor) {
+            base.fire(\'on_control_event_keydown\', [e, editor, [\'menu\', \'content\']]);
+        },
+        ready: function(editor) {
+            base.fire(\'on_control_event_ready\', [editor, [\'menu\', \'content\']]);
+        }
     });
+    base.fire(\'on_control_end\', [\'menu\', \'content\']);
 })(Zepto, DASHBOARD);
 </script>';
     });

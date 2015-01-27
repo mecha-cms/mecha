@@ -59,7 +59,6 @@ class Asset {
             $path = array($path);
         }
         if($merge) {
-            self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'stylesheet');
         }
         $html = "";
@@ -78,7 +77,6 @@ class Asset {
             $path = array($path);
         }
         if($merge) {
-            self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'javascript');
         }
         $html = "";
@@ -102,7 +100,6 @@ class Asset {
             $path = array($path);
         }
         if($merge) {
-            self::$loaded[$merge] = 1;
             return self::merge($path, $merge, $addon, 'image');
         }
         $html = "";
