@@ -97,7 +97,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         echo '<script>
 (function($, base) {
     if (typeof MTE == "undefined") return;
-    new MTE($(\'.MTE[name="content"]\')[0], {
+    new MTE($(\'.MTE\')[0], {
         tabSize: base.tab_size,
         toolbar: false
     });
@@ -166,7 +166,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         echo '<script>
 (function($, base) {
     if (typeof MTE == "undefined") return;
-    new MTE($(\'.MTE[name="content"]\')[0], {
+    new MTE($(\'.MTE\')[0], {
         tabSize: base.tab_size,
         toolbar: false
     });

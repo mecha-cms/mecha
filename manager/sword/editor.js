@@ -52,7 +52,16 @@
             toolbarClass: 'editor-toolbar cf',
             buttons: languages.buttons,
             prompt: languages.prompt,
-            placeholder: languages.placeholder
+            placeholder: languages.placeholder,
+            keydown: function(e, editor) {
+                base.fire('on_editor_keydown', [e, editor]);
+            },
+            click: function(e, editor, type) {
+                base.fire('on_editor_click', [e, editor, type]);
+            },
+            ready: function(editor) {
+                base.fire('on_editor_ready', [editor]);
+            }
         });
         base.composer.button('table', {
             'title': languages.others.table,

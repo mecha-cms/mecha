@@ -23,7 +23,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         echo '<script>
 (function($, base) {
     if (typeof MTE == "undefined") return;
-    new MTE($(\'.MTE[name="content"]\')[0], {
+    new MTE($(\'.MTE\')[0], {
         tabSize: \'    \', // Use 4 spaces for indentation!
         toolbar: false
     });

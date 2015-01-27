@@ -1,6 +1,7 @@
 <?php echo $messages; ?>
 <form class="form-repair form-comment" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <?php Weapon::fire('unit_composer_1_before', array('comment')); ?>
   <?php if(isset($default->ip)): ?>
   <div class="grid-group">
     <span class="grid span-1 form-label">IP</span>
@@ -41,6 +42,7 @@
     <span class="grid span-1 form-label"></span>
     <span class="grid span-5"><label><input name="content_type" type="checkbox" value="<?php echo HTML_PARSER; ?>"<?php echo Guardian::wayback('content_type', $default->content_type) == HTML_PARSER ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_parser; ?></span></label></span>
   </div>
+  <?php Weapon::fire('unit_composer_1_after', array('comment')); ?>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">

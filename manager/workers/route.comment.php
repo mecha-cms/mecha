@@ -88,14 +88,23 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         echo '<script>
 (function($, base) {
     if (typeof MTE == "undefined") return;
-    var $area = $(\'.MTE[name="message"]\'),
+    var $area = $(\'.MTE\'),
         languages = $area.data(\'mteLanguages\');
-    new MTE($area[0], {
+    base.composer = new MTE($area[0], {
         tabSize: base.tab_size,
         shortcut: true,
         buttons: languages.buttons,
         prompt: languages.prompt,
-        placeholder: languages.placeholder
+        placeholder: languages.placeholder,
+        keydown: function(e, editor) {
+            base.fire(\'on_editor_keydown\', [e, editor]);
+        },
+        click: function(e, editor, type) {
+            base.fire(\'on_editor_click\', [e, editor, type]);
+        },
+        ready: function(editor) {
+            base.fire(\'on_editor_ready\', [editor]);
+        }
     });
 })(Zepto, DASHBOARD);
 </script>';
