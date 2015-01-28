@@ -193,7 +193,6 @@ class Config {
         $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
 
         $config['page_title'] = $config['title'];
-        $config['page_type'] = '404';
         $config['offset'] = 1;
         $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
         $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
@@ -205,6 +204,17 @@ class Config {
         $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft}', GLOB_BRACE));
         $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft}', GLOB_BRACE));
         $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
+
+        $p = '404';
+        if($config['url_current'] === $config['url']) $p = 'home';
+        if(strpos($config['url_current'], $config['url'] . '/') === 0) $p = 'page';
+        if($config['url_current'] === $config['url'] . '/' . $config['index']['slug']) $p = 'index';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['index']['slug'] . '/') === 0) $p = 'article';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['tag']['slug'] . '/') === 0) $p = 'tag';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['archive']['slug'] . '/') === 0) $p = 'archive';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $p = 'search';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $p = 'manager';
+        $config['page_type'] = $p;
 
         if($file = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
             $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
