@@ -839,7 +839,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
         }, $content);
     }
     return preg_replace('#`\{\{(.*?)\}\}`#', '{{$1}}', $content);
-}, 10);
+}, 20);
 
 
 /**
@@ -867,7 +867,7 @@ Filter::add('content', function($content) use($config) {
         $content);
     }
     return $content;
-}, 10);
+}, 20);
 
 
 /**
