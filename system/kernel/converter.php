@@ -264,19 +264,21 @@ class Converter {
      *
      */
 
-    public static function attr($input, $element = array('<', '>', ' '), $attr = array('"', '"', '='), $str_eval = true) {
+    public static function attr($input, $element = array('<', '>', ' ', '/'), $attr = array('"', '"', '='), $str_eval = true) {
+        if( ! isset($element[3])) $element[3] = '/';
         $e0 = preg_quote($element[0], '#');
         $e1 = preg_quote($element[1], '#');
         $e2 = preg_quote($element[2], '#');
+        $e3 = preg_quote($element[3], '#');
         $a0 = preg_quote($attr[0], '#');
         $a1 = preg_quote($attr[1], '#');
         $a2 = preg_quote($attr[2], '#');
-        if( ! preg_match('#^(' . $e0 . ')([a-z0-9\-._:]+)((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')\/\2(' . $e1 . '))|(' . $e2 . ')*\/?(' . $e1 . '))$#im', $input, $matches)) return false;
+        if( ! preg_match('#^(' . $e0 . ')([a-z0-9\-._:]+)((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')' . $e3 . '\2(' . $e1 . '))|(' . $e2 . ')*' . $e3 . '?(' . $e1 . '))$#im', $input, $matches)) return false;
         $matches[5] = preg_replace('#(^|(' . $e2 . ')+)([a-z0-9\-]+)(' . $a2 . ')(' . $a0 . ')(' . $a1 . ')#i', '$1$2$3$4$5<attr:value>$6', $matches[5]);
         $results = array(
             'element' => $matches[2],
             'attributes' => null,
-            'content' => isset($matches[8]) && $matches[9] == $element[0] . '/' . $matches[2] . $element[1] ? $matches[8] : null
+            'content' => isset($matches[8]) && $matches[9] == $element[0] . $element[3] . $matches[2] . $element[1] ? $matches[8] : null
         );
         if(preg_match_all('#([a-z0-9\-]+)((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#i', $matches[5], $attrs)) {
             $results['attributes'] = array();

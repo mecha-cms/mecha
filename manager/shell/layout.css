@@ -1,6 +1,20 @@
+.textarea-expand,
 textarea[name="content"],
 textarea[name="css"],
-textarea[name="js"] {height:300px}
+textarea[name="html"],
+textarea[name="js"],
+textarea[name="php"],
+textarea[name="json"],
+textarea[name="jsonp"],
+textarea[name="xml"],
+textarea[name="content[]"],
+textarea[name="css[]"],
+textarea[name="html[]"],
+textarea[name="js[]"],
+textarea[name="php[]"],
+textarea[name="json[]"],
+textarea[name="jsonp[]"],
+textarea[name="xml[]"] {height:300px}
 
 .main-actions {
   padding:1.3846153846153846em 0;
@@ -108,5 +122,5 @@ textarea[name="js"] {height:300px}
 
 .messages + .page-list,
 .messages + .article-list,
-.messages + .comment-list,
+.messages + .response-list,
 .tab-content-area .messages {margin-top:1.3846153846153846em}

@@ -97,12 +97,14 @@
                 });
             }
         });
-        base.composer.button('question-circle', {
-            title: languages.others.help,
-            click: function() {
-                window.open('http://mecha-cms.com/article/markdown-syntax');
-            }
-        });
+        if (base.is_html_parser_enabled) {
+            base.composer.button('question-circle', {
+                title: languages.others.help,
+                click: function() {
+                    window.open('http://mecha-cms.com/article/markdown-syntax');
+                }
+            });
+        }
     }
 
     if ($('.btn-destruct').length === 0) {

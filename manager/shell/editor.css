@@ -29,16 +29,11 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
 }
 
 .custom-modal {
-  position:fixed !important;
   position:absolute;
-  top:25%;
-  left:50%;
-  z-index:9999;
   background-color:white;
   border:1px solid;
   width:250px;
   padding:1em;
-  margin-left:-125px;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
@@ -49,7 +44,7 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
 
 .custom-modal-header {font-weight:bold}
 .custom-modal-content {margin:1em 0}
-.custom-modal-content input {
+.custom-modal-prompt input {
   display:block;
   width:100%;
 }

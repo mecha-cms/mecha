@@ -111,8 +111,6 @@ label:hover .radio {color:#3A64A4}
 .sortable.active,
 .table-sortable tr.active {background-color:#FFA}
 
-.accordion-header.active .fa {color:#4B9343}
-
 .editor-toolbar a {
   background-color:#333;
   color:#FFA;
