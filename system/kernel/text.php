@@ -149,7 +149,7 @@ class Text {
             }
         } else { // By file content
             $by_path = false;
-            if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
+            if(strpos(str_replace("\r", "", $text), "\n" . SEPARATOR . "\n") !== false) {
                 $parts = explode(SEPARATOR, trim($text), 2);
                 $headers = explode("\n", trim($parts[0]));
                 foreach($headers as $field) {
