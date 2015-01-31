@@ -695,10 +695,10 @@ class Get {
             $results['description'] = Filter::apply($filter_prefix . 'description', Filter::apply('description', $summary));
         }
 
-        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Filter::apply($filter_prefix . 'content', Filter::apply('content', Text::parse(Filter::apply($filter_prefix . 'shortcode', Filter::apply('shortcode', $content)))->to_html)) : $results['content'];
-        if( ! isset($excludes['excerpt']) && strpos($content_test, '<!-- cut -->') !== false) {
-            $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = trim($parts[0]);
+        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, true, $filter_prefix) : $results;
+        if( ! isset($excludes['excerpt']) && strpos($content_test['content'], '<!-- cut -->') !== false) {
+            $parts = explode('<!-- cut -->', $content_test['content'], 2);
+            $results['excerpt'] = Filter::apply($filter_prefix . 'excerpt', Filter::apply('excerpt', trim($parts[0])));
             $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . trim($parts[1]);
         }
 
@@ -859,13 +859,8 @@ class Get {
         }
         if( ! $path || ! File::exist($path)) return false;
         $results['date'] = Date::extract($results['time']);
-        $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:');
+        $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:', 'message');
         $results['email'] = Text::parse($results['email'])->to_decoded_html;
-        $results['message_raw'] = $results['content_raw'];
-        unset($results['content_raw']);
-        $results['message'] = Filter::apply('message', $results['content']);
-        unset($results['content']);
-        $results['message'] = Filter::apply('comment:message', $results['message']);
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {

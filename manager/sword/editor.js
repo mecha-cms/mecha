@@ -97,7 +97,7 @@
                 });
             }
         });
-        if (base.is_html_parser_enabled) {
+        if (base.is_html_parser_enabled === true) {
             base.composer.button('question-circle', {
                 title: languages.others.help,
                 click: function() {

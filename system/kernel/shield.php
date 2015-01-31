@@ -145,7 +145,7 @@ class Shield {
              "Version: " . $speak->unknown . "\n" .
              "\n" . SEPARATOR . "\n" .
              "\n" . Config::speak('notify_not_available', array($speak->description));
-        $shield_info = File::exist($info) ? Text::toPage(File::open($info)->read(), true, 'shield:', true) : Text::toPage($e_shield_page, true, 'shield:', true);
+        $shield_info = File::exist($info) ? Text::toPage(File::open($info)->read(), true, 'shield:') : Text::toPage($e_shield_page, true, 'shield:');
         return Mecha::O($shield_info);
     }
 
@@ -252,9 +252,9 @@ class Shield {
 
         $G = array('data' => array('name' => $name, 'minify' => $minify));
 
-        Config::set('page_type', '404');
-
         Weapon::fire('before_shield_config_redefine', array($G, $G));
+
+        Config::set('page_type', '404');
 
         extract(self::defines());
 

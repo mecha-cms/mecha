@@ -131,8 +131,9 @@ class Text {
      * --------------------------------
      */
 
-    public static function toPage($text, $content = true, $filter_prefix = 'page:', $force_html_parser = false) {
+    public static function toPage($text, $content = true, $filter_prefix = 'page:', $content_field = 'content') {
         $results = array();
+        $c = $content_field;
         if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) { // By file path
             $by_path = true;
             while(($buffer = fgets($handle, 4096)) !== false) {
@@ -141,31 +142,52 @@ class Text {
                     break;
                 }
                 $field = explode(':', $buffer, 2);
+                if( ! isset($field[1])) $field[1] = "";
                 $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
                 $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
                 $results[$key] = $value;
             }
         } else { // By file content
             $by_path = false;
-            $parts = explode(SEPARATOR, trim($text), 2);
-            $headers = explode("\n", trim($parts[0]));
-            foreach($headers as $field) {
-                $field = explode(':', $field, 2);
-                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
-                $results[$key] = $value;
+            if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
+                $parts = explode(SEPARATOR, trim($text), 2);
+                $headers = explode("\n", trim($parts[0]));
+                foreach($headers as $field) {
+                    $field = explode(':', $field, 2);
+                    if( ! isset($field[1])) $field[1] = "";
+                    $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                    $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
+                    $results[$key] = $value;
+                }
+                $results[$c . '_raw'] = $results[$c] = isset($parts[1]) ? trim($parts[1]) : "";
+            } else {
+                $results[$c . '_raw'] = $results[$c] = trim($text);
             }
-            $results['content_raw'] = $results['content'] = isset($parts[1]) ? trim($parts[1]) : "";
         }
         if($content) {
-            if($by_path) $text = File::open($text)->read();
-            $parts = explode(SEPARATOR, trim($text), 2);
-            $contents = isset($parts[1]) ? trim($parts[1]) : "";
-            $results['content_raw'] = $contents;
+            if($by_path) {
+                $text = File::open($text)->read();
+                $parts = explode(SEPARATOR, trim($text), 2);
+                $contents = isset($parts[1]) ? trim($parts[1]) : "";
+                $results[$c . '_raw'] = $contents;
+            } else {
+                $contents = $results[$c . '_raw'];
+            }
+            $parse_content = ! isset($results['content_type']) || (isset($results['content_type']) && $results['content_type'] === HTML_PARSER);
+
+            /**
+             * NOTES: The `content_type` field is very specific and the name
+             * cannot be dynamically changed as you might think that I have
+             * to replace that `$results['content_type']` with `$results[$c . '_type']`.
+             * The `content` field is created from the second explosion which is not
+             * came from any field of the page header, but the `content_type` is created
+             * purely by the field of the page header called `Content Type`.
+             */
+
             $contents = Filter::apply('shortcode', $contents);
             $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
-            $results['content'] = Filter::apply('content', ! isset($results['content_type']) || (isset($results['content_type']) && $results['content_type'] == HTML_PARSER) || $force_html_parser ? Text::parse($contents)->to_html : $contents);
-            $results['content'] = Filter::apply($filter_prefix . 'content', $results['content']);
+            $results[$c] = Filter::apply($c, $parse_content ? Text::parse($contents)->to_html : $contents);
+            $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
         }
         return $results;
     }

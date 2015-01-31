@@ -6,23 +6,25 @@
  * ------------
  */
 
-Route::accept($config->manager->slug . '/ajax/preview:(article|page)', function($kind = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/ajax/preview:(:any)', function($kind = "") use($config, $speak) {
     $P = array('data' => Request::post());
-    Weapon::fire('preview_content_before', array($P, $P));
-    echo '<div class="inner">';
-    if(Request::post()) {
-        $title = Request::post('title');
-        $title = Filter::apply('title', $title);
-        $title = Filter::apply($kind . ':title', $title);
-        $content = Request::post('content', '<p class="empty">' . Config::speak('notify_empty', array(strtolower($speak->contents))) . '</p>');
-        $content = Filter::apply('shortcode', $content);
-        $content = Filter::apply($kind . ':shortcode', $content);
-        $content = Filter::apply('content', Request::post('content_type', 'HTML') == HTML_PARSER ? Text::parse($content)->to_html : $content);
-        $content = Filter::apply($kind . ':content', $content);
-        echo '<h2 class="preview-title">' . $title . '</h2>';
-        echo '<div class="preview-content p">' . $content . '</div>';
+    $P['kind'] = $kind;
+    Weapon::fire('preview_before', array($P, $P));
+    echo '<div class="preview">';
+    if($request = Request::post()) {
+        $file = 'Title: ' . (trim($request['title']) !== "" ? $request['title'] : $speak->untitled . ' ' . date('Y/m/d H:i:s')) . "\n";
+        $file .= 'Content Type: ' . (isset($request['content_type']) ? $request['content_type'] : 'HTML') . "\n";
+        $file .= "\n" . SEPARATOR . "\n";
+        $file .= "\n" . (trim($request['content']) !== "" ? $request['content'] : Config::speak('notify_empty', array(strtolower($speak->contents))));
+        $file = Text::toPage($file);
+        Weapon::fire('preview_title_before', array($P, $P));
+        echo '<h2 class="preview-title preview-' . $kind . '-title">' . $file['title'] . '</h2>';
+        Weapon::fire('preview_title_after', array($P, $P));
+        Weapon::fire('preview_content_before', array($P, $P));
+        echo '<div class="preview-content preview-' . $kind . '-content p">' . $file['content'] . '</div>';
+        Weapon::fire('preview_content_after', array($P, $P));
     }
     echo '</div>';
-    Weapon::fire('preview_content_after', array($P, $P));
+    Weapon::fire('preview_after', array($P, $P));
     exit;
 });
