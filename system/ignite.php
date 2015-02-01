@@ -709,6 +709,16 @@ $speak = Config::speak();
 
 
 /**
+ * Remove the Query String of Current Page Path
+ * --------------------------------------------
+ */
+
+if($config->page_type != 'home') {
+    array_shift($_GET);
+}
+
+
+/**
  * First Installation
  * ------------------
  */
