@@ -10,4 +10,4 @@ plugin-name.zip
      └── …
 ~~~
 
-You need to add a root folder as a wrapper for all of your plugin files, and then you have to give a name to the `ZIP` file with the same name as the root folder name.
+You need to add a root folder as a wrapper for all of your plugin files, and then you have to give a name for the `ZIP` file with the same name as the root folder name.
