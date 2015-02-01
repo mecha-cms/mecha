@@ -81,7 +81,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         }
     }
     $plugins = array();
-    $folders = glob(PLUGIN . DS . '*', GLOB_ONLYDIR);
+    $folders = glob(PLUGIN . DS . Request::get('q_id', '*'), GLOB_ONLYDIR);
     sort($folders);
     if($files = Mecha::eat($folders)->chunk($offset, $config->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {
@@ -102,7 +102,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'files' => $plugins,
+        'files' => ! empty($plugins) ? $plugins : false,
         'pagination' => Navigator::extract($folders, $offset, $config->per_page, $config->manager->slug . '/plugin'),
         'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
     ));
@@ -158,12 +158,12 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'freeze' ? '_eject' : '_mounted';
+    $mode = $path == 'freeze' ? 'eject' : 'mounted';
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
     Weapon::fire('on_plugin_update', array($G, $G));
     Weapon::fire('on_plugin_' . $mode, array($G, $G));
     Weapon::fire('on_plugin_' . md5($slug) . '_update', array($G, $G));
-    Weapon::fire('on_plugin_' . md5($slug) . $mode, array($G, $G));
+    Weapon::fire('on_plugin_' . md5($slug) . '_' . $mode, array($G, $G));
     Guardian::kick($config->manager->slug . '/plugin/' . $page_current);
 });
 

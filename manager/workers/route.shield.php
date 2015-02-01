@@ -240,7 +240,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
  * -------------
  */
 
-Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $config->manager->slug . '/shield/(:any)/kill/file:(:all)'), function($folder = "", $path = false) use($config, $speak) {
+Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->manager->slug . '/shield/(:any)/kill/file:(:all)'), function($folder = "", $path = false) use($config, $speak) {
     if(Guardian::get('status') != 'pilot' || $folder === "") {
         Shield::abort();
     }
@@ -279,6 +279,30 @@ Route::accept(array($config->manager->slug . '/shield/kill/shield:(:any)', $conf
         'the_path' => $path,
         'info' => Shield::info($folder)
     ))->attach('manager', false);
+});
+
+
+/**
+ * Shield Attacher
+ * ---------------
+ */
+
+Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
+    $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
+    $new_config = file_exists($d) ? include $d : array();
+    if($file = File::exist(STATE . DS . 'config.txt')) {
+        $new_config = array_replace_recursive($new_config, File::open($file)->unserialize());
+    }
+    $new_config['shield'] = $path == 'attach' ? $slug : 'normal';
+    File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
+    $G = array('data' => array('id' => $slug, 'action' => $path));
+    $mode = $path == 'attach' ? 'mounted' : 'eject';
+    Notify::success(Config::speak('notify_success_updated', array($speak->shield)));
+    Weapon::fire('on_shield_update', array($G, $G));
+    Weapon::fire('on_shield_' . $mode, array($G, $G));
+    Weapon::fire('on_shield_' . md5($slug) . '_update', array($G, $G));
+    Weapon::fire('on_shield_' . md5($slug) . '_' . $mode, array($G, $G));
+    Guardian::kick($config->manager->slug . '/shield/' . $slug);
 });
 
 
