@@ -15,7 +15,9 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_construct', array($P, $P));
     }
-    $takes = Get::files(ASSET, '*', 'DESC', 'update');
+    $filter = Request::get('s', false);
+    $filter = $filter ? Text::parse($filter)->to_slug_moderate : "";
+    $takes = Get::files(ASSET, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
         foreach($_files as $_file) $files[] = $_file;
