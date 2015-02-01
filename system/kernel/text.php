@@ -144,7 +144,10 @@ class Text {
                 $field = explode(':', $buffer, 2);
                 if( ! isset($field[1])) $field[1] = "";
                 $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
+                $value = Filter::apply($key, Converter::strEval(trim($field[1])));
+                if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
+                    $value = Filter::apply($filter_prefix . $key, $value);
+                }
                 $results[$key] = $value;
             }
         } else { // By file content
@@ -156,7 +159,10 @@ class Text {
                     $field = explode(':', $field, 2);
                     if( ! isset($field[1])) $field[1] = "";
                     $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                    $value = Filter::apply($filter_prefix . $key, Filter::apply($key, Converter::strEval(trim($field[1]))));
+                    $value = Filter::apply($key, Converter::strEval(trim($field[1])));
+                    if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
+                        $value = Filter::apply($filter_prefix . $key, $value);
+                    }
                     $results[$key] = $value;
                 }
                 $results[$c . '_raw'] = $results[$c] = isset($parts[1]) ? trim($parts[1]) : "";
@@ -185,9 +191,13 @@ class Text {
              */
 
             $contents = Filter::apply('shortcode', $contents);
-            $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
+            if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
+                $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
+            }
             $results[$c] = Filter::apply($c, $parse_content ? Text::parse($contents)->to_html : $contents);
-            $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
+            if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
+                $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
+            }
         }
         return $results;
     }

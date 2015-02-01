@@ -110,8 +110,12 @@ class File {
     }
 
     // Unserialize the serialized data to output
-    public static function unserialize() {
-        return unserialize(file_get_contents(self::$opened));
+    public static function unserialize($fallback = array()) {
+        if($file = self::exist(self::$opened)) {
+            $data = file_get_contents(self::$opened);
+            return preg_match('#^([adObis]:|N;)#', $data) ? unserialize($data) : $fallback;
+        }
+        return $fallback;
     }
 
     // Delete the opened file
