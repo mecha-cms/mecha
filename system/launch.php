@@ -47,7 +47,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
  */
 
 Route::accept($config->manager->slug . '/logout', function() use($config, $speak) {
-    Notify::success($speak->logged_out . '.');
+    Notify::success(ucfirst(strtolower($speak->logged_out)) . '.');
     Guardian::reject()->kick($config->manager->slug . '/login');
 }, 21);
 

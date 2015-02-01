@@ -2,7 +2,7 @@
 <?php if($files): ?>
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <p><button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete_selected_files; ?></button></p>
+  <p><button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></button></p>
   <table class="table-bordered table-full">
     <colgroup>
       <col style="width:2.6em;">
