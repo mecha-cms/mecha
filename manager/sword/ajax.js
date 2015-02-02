@@ -32,15 +32,33 @@
             url: _action,
             type: 'POST',
             data: $source.serializeArray(),
-            success: function(data, textStatus, jqXHR) {
+            success: function(data, status, xhr) {
                 $destination.html(data);
-                base.fire('on_ajax_success', [data, textStatus, jqXHR, [e, _this]]);
-                base.fire('on_ajax_end', [e, _this]);
+                base.fire('on_ajax_success', {
+                    'data': data,
+                    'status': status,
+                    'xhr': xhr,
+                    'event': e,
+                    'target': _this
+                });
+                base.fire('on_ajax_end', {
+                    'event': e,
+                    'target': _this
+                });
             },
-            error: function(jqXHR, textStatus, errorThrown) {
+            error: function(xhr, status, error) {
                 $destination.html(_error);
-                base.fire('on_ajax_error', [jqXHR, textStatus, errorThrown, [e, _this]]);
-                base.fire('on_ajax_end', [e, _this]);
+                base.fire('on_ajax_error', {
+                    'xhr': xhr,
+                    'status': status,
+                    'error': error,
+                    'event': e,
+                    'target': _this
+                });
+                base.fire('on_ajax_end', {
+                    'event': e,
+                    'target': _this
+                });
             }
         });
 

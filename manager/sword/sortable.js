@@ -41,16 +41,28 @@
         if (this.hash.replace('#', "") == 'move-up') {
             if ($tr.prev().is('tr')) {
                 $tr.insertBefore($tr.prev());
-                base.fire('on_row_move_up', [e, this]);
+                base.fire('on_row_move_up', {
+                    'event': e,
+                    'target': this
+                });
             }
         } else {
             if ($tr.next().is('tr')) {
                 $tr.insertAfter($tr.next());
-                base.fire('on_row_move_down', [e, this]);
+                base.fire('on_row_move_down', {
+                    'event': e,
+                    'target': this
+                });
             }
         }
-        base.fire('on_row_move', [e, this]);
-        base.fire('on_row_sort', [e, this]);
+        base.fire('on_row_move', {
+            'event': e,
+            'target': this
+        });
+        base.fire('on_row_sort', {
+            'event': e,
+            'target': this
+        });
         return false;
     }).find('tr').on("click", function() {
         $(this).siblings().removeClass('active');
@@ -88,16 +100,28 @@
         if (this.hash.replace('#', "") == 'move-up') {
             if ($elem.prev().is('.sortable')) {
                 $elem.insertBefore($elem.prev());
-                base.fire('on_item_move_up', [e, this]);
+                base.fire('on_item_move_up', {
+                    'event': e,
+                    'target': this
+                });
             }
         } else {
             if ($elem.next().is('.sortable')) {
                 $elem.insertAfter($elem.next());
-                base.fire('on_item_move_down', [e, this]);
+                base.fire('on_item_move_down', {
+                    'event': e,
+                    'target': this
+                });
             }
         }
-        base.fire('on_item_move', [e, this]);
-        base.fire('on_item_sort', [e, this]);
+        base.fire('on_item_move', {
+            'event': e,
+            'target': this
+        });
+        base.fire('on_item_sort', {
+            'event': e,
+            'target': this
+        });
         return false;
     }).not('.active').on("click", function() {
         $(this).siblings().removeClass('active');

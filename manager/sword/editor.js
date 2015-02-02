@@ -41,47 +41,126 @@
             prompt: languages.prompt,
             placeholder: languages.placeholder,
             click: function(e, editor, type) {
-                base.fire('on_control_event_click', [e, editor, type, [FT, 'content']]);
+                base.fire('on_control_event_click', {
+                    'event': e,
+                    'editor': editor,
+                    'id': type,
+                    'info': {
+                        'FT': FT,
+                        'name': 'content'
+                    }
+                });
             },
             keydown: function(e, editor) {
-                base.fire('on_control_event_keydown', [e, editor, [FT, 'content']]);
+                base.fire('on_control_event_keydown', {
+                    'event': e,
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'content'
+                    }
+                });
             },
             ready: function(editor) {
-                base.fire('on_control_event_ready', [editor, [FT, 'content']]);
+                base.fire('on_control_event_ready', {
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'content'
+                    }
+                });
             }
         });
         base.composer_content = base.composer;
-        base.fire('on_control_end', [FT, 'content']);
-        base.fire('on_control_begin', [FT, 'css']);
+        base.fire('on_control_end', {
+            'FT': FT,
+            'name': 'content'
+        });
+        base.fire('on_control_begin', {
+            'FT': FT,
+            'name': 'css'
+        
+        });
         base.editor_css = new MTE($css[0], {
             tabSize: base.tab_size,
             toolbar: false,
             click: function(e, editor, type) {
-                base.fire('on_control_event_click', [e, editor, type, [FT, 'css']]);
+                base.fire('on_control_event_click', {
+                    'event': e,
+                    'editor': editor,
+                    'id': type,
+                    'info': {
+                        'FT': FT,
+                        'name': 'css'
+                    }
+                });
             },
             keydown: function(e, editor) {
-                base.fire('on_control_event_keydown', [e, editor, [FT, 'css']]);
+                base.fire('on_control_event_keydown', {
+                    'event': e,
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'css'
+                    }
+                });
             },
             ready: function(editor) {
-                base.fire('on_control_event_ready', [editor, [FT, 'css']]);
+                base.fire('on_control_event_ready', {
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'css'
+                    }
+                });
             }
         });
-        base.fire('on_control_end', [FT, 'css']);
-        base.fire('on_control_begin', [FT, 'js']);
+        base.fire('on_control_end', {
+            'FT': FT,
+            'name': 'css'
+        });
+        base.fire('on_control_begin', {
+            'FT': FT,
+            'name': 'js'
+        });
         base.editor_js = new MTE($js[0], {
             tabSize: base.tab_size,
             toolbar: false,
             click: function(e, editor, type) {
-                base.fire('on_control_event_click', [e, editor, type, [FT, 'js']]);
+                base.fire('on_control_event_click', {
+                    'event': e,
+                    'editor': editor,
+                    'id': type,
+                    'info': {
+                        'FT': FT,
+                        'name': 'js'
+                    }
+                });
             },
             keydown: function(e, editor) {
-                base.fire('on_control_event_keydown', [e, editor, [FT, 'js']]);
+                base.fire('on_control_event_keydown', {
+                    'event': e,
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'js'
+                    }
+                });
             },
             ready: function(editor) {
-                base.fire('on_control_event_ready', [editor, [FT, 'js']]);
+                base.fire('on_control_event_ready', {
+                    'editor': editor,
+                    'info': {
+                        'FT': FT,
+                        'name': 'js'
+                    }
+                });
             }
         });
-        base.fire('on_control_end', [FT, 'js']);
+        base.fire('on_control_end', {
+            'FT': FT,
+            'name': 'js'
+        });
         base.composer.button('table', {
             title: languages.others.table,
             position: 8,

@@ -27,16 +27,25 @@
         if ($(this).is('.btn-increase')) {
             if (length < max + 1) {
                 $(this).closest('tr').before(clone);
-                base.fire('on_row_increase', [e, this]);
+                base.fire('on_row_increase', {
+                    'event': e,
+                    'target': this
+                });
             }
         } else {
             if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
-                base.fire('on_row_decrease', [e, this]);
+                base.fire('on_row_decrease', {
+                    'event': e,
+                    'target': this
+                });
             }
         }
 
-        base.fire('on_row_update', [e, this]);
+        base.fire('on_row_update', {
+            'event': e,
+            'target': this
+        });
 
         return false;
 

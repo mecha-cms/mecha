@@ -34,7 +34,10 @@
                 window.location.href = this.href;
             }
         }
-        base.fire('on_tab_change', [e, this]);
+        base.fire('on_tab_change', {
+            'event': e,
+            'target': this
+        });
         return false;
     });
 

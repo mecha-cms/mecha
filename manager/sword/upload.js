@@ -46,8 +46,15 @@
 
         }
 
-        base.fire('on_file_change', [e, this]);
-        base.fire('on_file_' + (ok ? 'accept' : 'reject'), [e, this]);
+        base.fire('on_file_change', {
+            'event': e,
+            'target': this
+        });
+
+        base.fire('on_file_' + (ok ? 'accept' : 'reject'), {
+            'event': e,
+            'target': this
+        });
 
     });
 

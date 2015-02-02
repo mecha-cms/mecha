@@ -25,8 +25,14 @@
         $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');
         $(this).next().toggleClass('hidden').siblings('.accordion-content').addClass('hidden');
         if (!active) $base.scrollTop($(this).offset().top);
-        base.fire('on_accordion_change', [e, this]);
-        base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), [e, this]);
+        base.fire('on_accordion_change', {
+            'event': e,
+            'target': this
+        });
+        base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), {
+            'event': e,
+            'target': this
+        });
         return false;
     }).on("mousedown", function() {
         return false;

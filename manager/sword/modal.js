@@ -27,7 +27,10 @@
 
     $close.on("click", function(e) {
         $(this).closest('.modal').hide().prev().hide();
-        base.fire('on_modal_hide', [e, this]);
+        base.fire('on_modal_hide', {
+            'event': e,
+            'target': this
+        });
         return false;
     });
 
@@ -38,7 +41,10 @@
         if ($trigger) {
             $body.on("click", $trigger, function(e) {
                 $this.show().prev().show();
-                base.fire('on_modal_show', [e, this]);
+                base.fire('on_modal_show', {
+                    'event': e,
+                    'target': this
+                });
                 return false;
             });
         }

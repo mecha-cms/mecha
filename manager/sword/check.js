@@ -15,8 +15,14 @@
             $(this).before('<a class="checkbox' + (this.checked ? ' checked' : "") + '" href="#toggle"></a>');
         }).on("change", function(e) {
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
-            base.fire('on_checkbox_change', [e, this]);
-            base.fire('on_checkbox_' + (this.checked ? 'check' : 'uncheck'), [e, this]);
+            base.fire('on_checkbox_change', {
+                'event': e,
+                'target': this
+            });
+            base.fire('on_checkbox_' + (this.checked ? 'check' : 'uncheck'), {
+                'event': e,
+                'target': this
+            });
         });
         $('.checkbox').on("click", function() {
             if ($(this).is('.disabled')) return false;
@@ -34,8 +40,14 @@
         }).on("change", function(e) {
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
             $radio.filter('[name="' + this.name + '"]').not(this).prop('checked', false).prev().removeClass('checked');
-            base.fire('on_radio_change', [e, this]);
-            base.fire('on_radio_' + (this.checked ? 'check' : 'uncheck'), [e, this]);
+            base.fire('on_radio_change', {
+                'event': e,
+                'target': this
+            });
+            base.fire('on_radio_' + (this.checked ? 'check' : 'uncheck'), {
+                'event': e,
+                'target': this
+            });
         });
         $('.radio').on("click", function() {
             if ($(this).is('.disabled') || $(this).is('.checked')) return false;

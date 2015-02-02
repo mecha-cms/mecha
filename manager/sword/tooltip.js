@@ -66,7 +66,10 @@
                 left: left
             });
 
-            base.fire('on_tooltip_show', [e, _this]);
+            base.fire('on_tooltip_show', {
+                'event': e,
+                'target': _this
+            });
 
         }, 400);
 
@@ -75,7 +78,10 @@
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
             $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
-            base.fire('on_tooltip_hide', [e, _this]);
+            base.fire('on_tooltip_hide', {
+                'event': e,
+                'target': _this
+            });
         }, 400);
     }).data('title', function() {
         return this.title ? this.title : false;
@@ -89,14 +95,20 @@
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
             $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
-            base.fire('on_tooltip_exit', [e, _this]);
+            base.fire('on_tooltip_exit', {
+                'event': e,
+                'target': _this
+            });
         }, 400);
     });
 
     $window.on("resize", function(e) {
         window.clearTimeout(timer);
         $tooltip.removeAttr('style').removeClass('t r b l').addClass('hidden');
-        base.fire('on_tooltip_hide', [e, this]);
+        base.fire('on_tooltip_hide', {
+            'event': e,
+            'target': this
+        });
     });
 
 })(Zepto, DASHBOARD);
