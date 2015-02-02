@@ -24,7 +24,8 @@ $json = array(
             )
         ),
         'offset' => $config->offset,
-        'total' => $config->total_articles
+        'total' => $config->total_articles,
+        'tags' => Get::rawTags()
     ),
     'item' => array()
 );
@@ -37,7 +38,8 @@ if( ! empty($bucket)) {
             'date' => $item->date->W3C,
             'update' => Date::format($item->update, 'c'),
             'id' => $item->id,
-            'summary' => $item->description
+            'summary' => $item->description,
+            'kind' => Mecha::A($item->kind)
         );
     }
 }
