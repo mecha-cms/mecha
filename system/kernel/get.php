@@ -724,17 +724,15 @@ class Get {
             if($file = File::exist(CUSTOM . DS . $time . '.txt')) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $results['css_raw'] = isset($custom[0]) ? trim($custom[0]) : "";
-                $css_raw = Filter::apply('shortcode', $results['css_raw']);
-                $css_raw = Filter::apply('custom:shortcode', $css_raw);
+                $css_raw = self::AMF($results['css_raw'], 'custom:', 'shortcode');
+                $css_raw = Filter::apply('custom:css', $css_raw);
                 $css_raw = Filter::apply('css:shortcode', $css_raw);
-                $css_raw = Filter::apply('css', $css_raw);
-                $results['css'] = Filter::apply('custom:css', $css_raw);
+                $results['css'] = self::AMF($css_raw, $filter_prefix, 'css');
                 $results['js_raw'] = isset($custom[1]) ? trim($custom[1]) : "";
-                $js_raw = Filter::apply('shortcode', $results['js_raw']);
-                $js_raw = Filter::apply('custom:shortcode', $js_raw);
+                $js_raw = self::AMF($results['js_raw'], 'custom:', 'shortcode');
+                $js_raw = Filter::apply('custom:js', $js_raw);
                 $js_raw = Filter::apply('js:shortcode', $js_raw);
-                $js_raw = Filter::apply('js', $js_raw);
-                $results['js'] = Filter::apply('custom:js', $js_raw);
+                $results['js'] = self::AMF($js_raw, $filter_prefix, 'js');
             } else {
                 $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
             }
