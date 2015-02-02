@@ -47,6 +47,7 @@
         }
 
         base.fire('on_file_change', [e, this]);
+        base.fire('on_file_' + (ok ? 'accept' : 'reject'), [e, this]);
 
     });
 

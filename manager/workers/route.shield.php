@@ -98,7 +98,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
 (function($, base) {
     if (typeof MTE == "undefined") return;
     base.fire(\'on_control_begin\', [\'shield\', \'content\']);
-    new MTE($(\'.MTE\')[0], {
+    base.editor = new MTE($(\'.MTE\')[0], {
         tabSize: base.tab_size,
         toolbar: false,
         click: function(e, editor, type) {
@@ -111,6 +111,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             base.fire(\'on_control_event_ready\', [editor, [\'shield\', \'content\']]);
         }
     });
+    base.editor_content = base.editor;
     base.fire(\'on_control_end\', [\'shield\', \'content\']);
 })(Zepto, DASHBOARD);
 </script>';
@@ -178,7 +179,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
 (function($, base) {
     if (typeof MTE == "undefined") return;
     base.fire(\'on_control_begin\', [\'shield\', \'content\']);
-    new MTE($(\'.MTE\')[0], {
+    base.editor = new MTE($(\'.MTE\')[0], {
         tabSize: base.tab_size,
         toolbar: false,
         click: function(e, editor, type) {
@@ -191,6 +192,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             base.fire(\'on_control_event_ready\', [editor, [\'shield\', \'content\']]);
         }
     });
+    base.editor_content = base.editor;
     base.fire(\'on_control_end\', [\'shield\', \'content\']);
 })(Zepto, DASHBOARD);
 </script>';

@@ -7,17 +7,15 @@
 
     var $base = $(document.body),
         $editor = $('.form-compose').first(),
+        $tab = $('.tab-area a'),
         $title = $('[name="title"]', $editor),
         $slug = $('[name="slug"]', $editor),
         $content = $('[name="content"]', $editor),
-        $tab = $('.tab-area a'),
         $check = $('[type="checkbox"]', $editor),
         $css = $('[name="css"]', $editor),
         $js = $('[name="js"]', $editor),
         $css_check = $('[name="css_live_check"]', $editor),
         $js_check = $('[name="js_live_check"]', $editor);
-
-    $base.removeClass('no-js').addClass('js');
 
     var $css_preview = $('<div id="live-preview-css"></div>').appendTo($base),
         $js_preview = $('<div id="live-preview-js"></div>').appendTo($base);
@@ -38,6 +36,7 @@
             tabSize: base.tab_size,
             shortcut: true,
             toolbarClass: 'editor-toolbar cf',
+            buttonClassPrefix: 'editor-toolbar-button editor-toolbar-button-',
             buttons: languages.buttons,
             prompt: languages.prompt,
             placeholder: languages.placeholder,
@@ -51,9 +50,10 @@
                 base.fire('on_control_event_ready', [editor, [FT, 'content']]);
             }
         });
+        base.composer_content = base.composer;
         base.fire('on_control_end', [FT, 'content']);
         base.fire('on_control_begin', [FT, 'css']);
-        new MTE($css[0], {
+        base.editor_css = new MTE($css[0], {
             tabSize: base.tab_size,
             toolbar: false,
             click: function(e, editor, type) {
@@ -68,7 +68,7 @@
         });
         base.fire('on_control_end', [FT, 'css']);
         base.fire('on_control_begin', [FT, 'js']);
-        new MTE($js[0], {
+        base.editor_js = new MTE($js[0], {
             tabSize: base.tab_size,
             toolbar: false,
             click: function(e, editor, type) {

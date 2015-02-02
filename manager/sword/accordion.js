@@ -16,7 +16,7 @@
 (function($, base) {
 
     var $accordion = $('.accordion-area'),
-        $zone = $('html, body');
+        $base = $('html, body');
 
     if (!$accordion.length) return;
 
@@ -24,7 +24,7 @@
         var active = $(this).is('.active');
         $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');
         $(this).next().toggleClass('hidden').siblings('.accordion-content').addClass('hidden');
-        if (!active) $zone.scrollTop($(this).offset().top);
+        if (!active) $base.scrollTop($(this).offset().top);
         base.fire('on_accordion_change', [e, this]);
         base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), [e, this]);
         return false;

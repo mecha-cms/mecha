@@ -24,7 +24,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
 (function($, base) {
     if (typeof MTE == "undefined") return;
     base.fire(\'on_control_begin\', [\'menu\', \'content\']);
-    new MTE($(\'.MTE\')[0], {
+    base.editor = new MTE($(\'.MTE\')[0], {
         tabSize: \'    \', // Use 4 spaces for indentation!
         toolbar: false,
         click: function(e, editor, type) {
@@ -37,6 +37,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
             base.fire(\'on_control_event_ready\', [editor, [\'menu\', \'content\']]);
         }
     });
+    base.editor_content = base.editor;
     base.fire(\'on_control_end\', [\'menu\', \'content\']);
 })(Zepto, DASHBOARD);
 </script>';

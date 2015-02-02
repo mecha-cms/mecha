@@ -94,6 +94,8 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     base.composer = new MTE($area[0], {
         tabSize: base.tab_size,
         shortcut: true,
+        toolbarClass: \'editor-toolbar cf\',
+        buttonClassPrefix: \'editor-toolbar-button editor-toolbar-button-\',
         buttons: languages.buttons,
         prompt: languages.prompt,
         placeholder: languages.placeholder,
@@ -107,6 +109,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             base.fire(\'on_control_event_ready\', [editor, [\'comment\', \'message\']]);
         }
     });
+    base.composer_message = base.composer;
     base.fire(\'on_control_end\', [\'comment\', \'message\']);
 })(Zepto, DASHBOARD);
 </script>';

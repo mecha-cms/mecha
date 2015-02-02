@@ -41,12 +41,15 @@
         if (this.hash.replace('#', "") == 'move-up') {
             if ($tr.prev().is('tr')) {
                 $tr.insertBefore($tr.prev());
+                base.fire('on_row_move_up', [e, this]);
             }
         } else {
             if ($tr.next().is('tr')) {
                 $tr.insertAfter($tr.next());
+                base.fire('on_row_move_down', [e, this]);
             }
         }
+        base.fire('on_row_move', [e, this]);
         base.fire('on_row_sort', [e, this]);
         return false;
     }).find('tr').on("click", function() {
@@ -75,7 +78,7 @@
 (function($, base) {
 
     var $sortable = $('.sortable'),
-        $zone = $sortable.parent();
+        $base = $sortable.parent();
 
     if (!$sortable) return;
 
@@ -85,12 +88,15 @@
         if (this.hash.replace('#', "") == 'move-up') {
             if ($elem.prev().is('.sortable')) {
                 $elem.insertBefore($elem.prev());
+                base.fire('on_item_move_up', [e, this]);
             }
         } else {
             if ($elem.next().is('.sortable')) {
                 $elem.insertAfter($elem.next());
+                base.fire('on_item_move_down', [e, this]);
             }
         }
+        base.fire('on_item_move', [e, this]);
         base.fire('on_item_sort', [e, this]);
         return false;
     }).not('.active').on("click", function() {

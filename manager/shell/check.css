@@ -22,7 +22,7 @@
 .radio:before {content:"\f111"}
 
 .checkbox.checked:before {content:"\f14a"}
-.radio.checked:before {content:"\f058"}
+.radio.checked:before {content:"\f192"}
 
 .checkbox.disabled,
 .radio.disabled {

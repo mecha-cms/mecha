@@ -49,3 +49,7 @@ window.DASHBOARD = {
         return typeof DASHBOARD.hooks[name] != "undefined" ? DASHBOARD.hooks[name] : fallback;
     }
 };
+
+(function(h) {
+    h.className = /(^| )no-js( |$)/.test(h.className) ? h.className.replace(/(^| )no-js( |$)/, '$1js$2') : h.className + ' js';
+})(document.documentElement);
