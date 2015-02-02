@@ -109,6 +109,7 @@
 
     if ($('.btn-destruct').length === 0) {
         $.slugger($title, $slug, '-');
+        $title.trigger("keyup");
     }
 
     var timer = null;
