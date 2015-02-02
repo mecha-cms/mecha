@@ -90,6 +90,12 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if (typeof MTE == "undefined") return;
     var $area = $(\'.MTE\'),
         languages = $area.data(\'mteLanguages\');
+    base.add(\'on_ajax_success\', function(data) {
+        base.fire(\'on_preview_complete\', data);
+    });
+    base.add(\'on_ajax_error\', function(data) {
+        base.fire(\'on_preview_failure\', data);
+    });
     base.fire(\'on_control_begin\', [\'comment\', \'message\']);
     base.composer = new MTE($area[0], {
         tabSize: base.tab_size,

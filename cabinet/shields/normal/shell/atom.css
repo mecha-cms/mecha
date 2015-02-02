@@ -374,21 +374,16 @@ fieldset[disabled] .btn {
   opacity:.9;
 }
 
-.btn-small {
-  padding:7px 10px;
-  font-size:86%;
-}
-
+.btn-small,
 .input-small,
+.select-small,
 .textarea-small {
-  padding:7px;
+  padding:7px 8px;
   font-size:86%;
 }
 
-.select-small {
-  padding:6px 8px;
-  font-size:86%;
-}
+.btn-small {padding:7px 10px}
+.select-small {padding:6px 7px}
 
 .textarea-small {
   height:90px;
@@ -421,9 +416,20 @@ input[type="image"] {
   background:none;
 }
 
-option {
+option,
+optgroup {
   margin:0;
   padding:0;
+}
+
+optgroup {
+  font:inherit;
+  font-weight:bold;
+}
+
+optgroup option {
+  margin-left:1em;
+  font-weight:normal;
 }
 
 label {
