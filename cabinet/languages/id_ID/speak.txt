@@ -509,6 +509,7 @@ manager:
   placeholder_css: CSS kustom di sini&hellip;
   placeholder_js: JavaScript di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
+  placeholder_file_name: contoh-nama-berkas.txt
   placeholder_asset_name: contoh-nama-aset.jpg
   placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
 
@@ -545,14 +546,16 @@ manager:
   title_language_direction: Direksi Bahasa
   title_keyword_spam: Kata Kunci Sampah
 
-  title_comment_allow: Izinkan komentar
-  title_comment_moderation: Moderasi komentar
-  title_comment_notification: Notifikasi untuk komentar baru
-  title_resource_versioning: Aktifkan versi sumber daya
-  title_html_minifier: Kompres keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
-  title_html_parser: Aktifkan parser <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_comment_allow: Izinkan Komentar
+  title_comment_moderation: Moderasi Komentar
+  title_comment_notification: Notifikasi untuk Komentar Baru
+  title_resource_versioning: Aktifkan Versi Sumber Daya
 
-  title_widget_time: Format waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
+  title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_html_minifier: Kompres Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
+
+  title_widget_time: Format Waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
 
   title_defaults_article_title: Judul Artikel Standar
   title_defaults_article_content: Konten Artikel Standar

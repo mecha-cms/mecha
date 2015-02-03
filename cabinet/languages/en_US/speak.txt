@@ -509,6 +509,7 @@ manager:
   placeholder_css: Custom CSS goes here&hellip;
   placeholder_js: Custom JavaScript goes here&hellip;
   placeholder_file: Select a file&hellip;
+  placeholder_file_name: example-file-name.txt
   placeholder_asset_name: example-asset-name.jpg
   placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
 
@@ -545,14 +546,16 @@ manager:
   title_language_direction: Language Direction
   title_keyword_spam: Spam Keywords
 
-  title_comment_allow: Allow comments
-  title_comment_moderation: Comment moderation
-  title_comment_notification: Notification for new comments
-  title_resource_versioning: Enable resource versioning
-  title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> output
-  title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> parser
+  title_comment_allow: Allow Comments
+  title_comment_moderation: Comment Moderation
+  title_comment_notification: Notification for New Comments
+  title_resource_versioning: Enable Resource Versioning
 
-  title_widget_time: Time format as <code>YYYY-MM-DD</code> (year before month)
+  title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
+  title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
+  title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
+
+  title_widget_time: Time Format as <code>YYYY-MM-DD</code> (year before month)
 
   title_defaults_article_title: Default Article Title
   title_defaults_article_content: Default Article Content

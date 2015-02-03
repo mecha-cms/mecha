@@ -1186,4 +1186,57 @@ class Get {
         return $_SERVER['HTTP_USER_AGENT'];
     }
 
+    /**
+     * ==========================================================================
+     *  GET TIMEZONE LIST
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::timezone());
+     *    var_dump(Get::timezone('Asia/Jakarta'));
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+     public static function timezone($identifier = null, $fallback = false, $format = '(%1$s) %2$s &ndash; %3$s') {
+        // http://pastebin.com/vBmW1cnX
+        static $regions = array(
+            DateTimeZone::AFRICA,
+            DateTimeZone::AMERICA,
+            DateTimeZone::ANTARCTICA,
+            DateTimeZone::ASIA,
+            DateTimeZone::ATLANTIC,
+            DateTimeZone::AUSTRALIA,
+            DateTimeZone::EUROPE,
+            DateTimeZone::INDIAN,
+            DateTimeZone::PACIFIC
+        );
+        $timezones = array();
+        $timezone_offsets = array();
+        $timezone_list = array();
+        foreach($regions as $region) {
+            $timezones = array_merge($timezones, DateTimeZone::listIdentifiers($region));
+        }
+        foreach($timezones as $timezone) {
+            $tz = new DateTimeZone($timezone);
+            $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
+        }
+        asort($timezone_offsets);
+        foreach($timezone_offsets as $timezone => $offset) {
+            $offset_prefix = $offset < 0 ? '-' : '+';
+            $offset_formatted = gmdate('H:i', abs($offset));
+            $pretty_offset = 'UTC' . $offset_prefix . $offset_formatted;
+            $t = new DateTimeZone($timezone);
+            $c = new DateTime(null, $t);
+            $current_time = $c->format('g:i A');
+            $timezone_list[$timezone] = sprintf($format, $pretty_offset, str_replace('_', ' ', $timezone), $current_time);
+        }
+        if( ! is_null($identifier)) {
+            return isset($timezone_list[$identifier]) ? $timezone_list[$identifier] : $fallback;
+        }
+        return $timezone_list;
+    }
+
 }
