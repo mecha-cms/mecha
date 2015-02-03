@@ -285,12 +285,13 @@ class Guardian {
      *
      */
 
-    public static function wayback($name = null, $fallback = "") {
+    public static function wayback($name = null, &$fallback = "") {
         $cache = Session::get(self::$cache);
         if(is_null($name)) {
             self::forget();
             return $cache;
         }
+        if( ! isset($fallback)) $fallback = 'NULL';
         $value = Mecha::GVR($cache, $name, $fallback);
         Session::kill(self::$cache . '.' . $name);
         return $value;
