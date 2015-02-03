@@ -45,8 +45,8 @@ Route::accept($config->manager->slug . '/asset/kill/files?:(:all)', function($na
         Shield::abort();
     }
     $name = str_replace(array('\\', '/'), DS, $name);
-    if(strpos($name, ';') !== false) {
-        $deletes = explode(';', $name);
+    if(strpos($name, ',') !== false) {
+        $deletes = explode(',', $name);
     } else {
         if( ! File::exist(ASSET . DS . $name)) {
             Shield::abort(); // File not found!
@@ -90,7 +90,7 @@ Route::accept($config->manager->slug . '/asset/kill', function($path = "") use($
             Notify::error($speak->notify_error_no_files_selected);
             Guardian::kick($config->manager->slug . '/asset');
         }
-        Guardian::kick($config->manager->slug . '/asset/kill/files:' . implode(';', $request['selected']));
+        Guardian::kick($config->manager->slug . '/asset/kill/files:' . implode(',', $request['selected']));
     }
 });
 
