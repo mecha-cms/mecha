@@ -42,6 +42,7 @@ Route::accept($config->manager->slug . '/cache/kill/files?:(:all)', function($na
     if(strpos($name, ',') !== false) {
         $deletes = explode(',', $name);
     } else {
+        $name = str_replace('---COMMA---', ',', $name);
         if( ! File::exist(CACHE . DS . $name)) {
             Shield::abort(); // File not found!
         } else {
@@ -49,14 +50,14 @@ Route::accept($config->manager->slug . '/cache/kill/files?:(:all)', function($na
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($deletes[0]) : $speak->caches) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->caches) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.cache.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $info_path = array();
         foreach($deletes as $file_to_delete) {
-            $_path = CACHE . DS . $file_to_delete;
+            $_path = CACHE . DS . str_replace('---COMMA---', ',', $file_to_delete);
             $info_path[] = $_path;
             File::open($_path)->delete();
         }
@@ -84,7 +85,11 @@ Route::accept($config->manager->slug . '/cache/kill', function($path = "") use($
             Notify::error($speak->notify_error_no_files_selected);
             Guardian::kick($config->manager->slug . '/cache');
         }
-        Guardian::kick($config->manager->slug . '/cache/kill/files:' . implode(',', $request['selected']));
+        $files = array();
+        foreach($request['selected'] as $file) {
+            $files[] = str_replace(',', '---COMMA---', $file);
+        }
+        Guardian::kick($config->manager->slug . '/cache/kill/files:' . implode(',', $files));
     }
 });
 

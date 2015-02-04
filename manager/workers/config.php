@@ -9,8 +9,13 @@
         <select name="timezone" class="select-block">
         <?php
 
-        foreach(Get::timezone() as $key => $value) {
-            echo '<option value="' . $key . '"' . (Guardian::wayback('timezone', $config->timezone) == $key ? ' selected' : "") . '>' . $value . '</option>';
+        $timezones = Get::timezone();
+        $cache = Guardian::wayback('timezone', $config->timezone);
+
+        arsort($timezones);
+
+        foreach($timezones as $key => $value) {
+            echo '<option value="' . $key . '"' . ($cache == $key ? ' selected' : "") . '>' . $value . '</option>';
         }
 
         ?>
@@ -27,9 +32,10 @@
         <select name="language" class="select-block">
         <?php
 
+        $cache = Guardian::wayback('language', $config->language);
         foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
             $lang = basename($folder);
-            echo '<option value="' . $lang . '"' . (Guardian::wayback('language', $config->language) == $lang ? ' selected' : "") . '>' . $lang . '</option>';
+            echo '<option value="' . $lang . '"' . ($cache == $lang ? ' selected' : "") . '>' . $lang . '</option>';
         }
 
         ?>
@@ -40,8 +46,14 @@
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_language_direction; ?></span>
       <span class="grid span-4">
         <select name="language_direction" class="select-block">
-          <option value="ltr"<?php echo (Guardian::wayback('language_direction', $config->language_direction) == 'ltr' ? ' selected' : ""); ?>>Left to Right (LTR)</option>
-          <option value="rtl"<?php echo (Guardian::wayback('language_direction', $config->language_direction) == 'rtl' ? ' selected' : ""); ?>>Right to Left (RTL)</option>
+        <?php
+
+        $cache = Guardian::wayback('language_direction', $config->language_direction);
+        foreach(array('ltr' => 'Left to Right (LTR)', 'rtl' => 'Right to Left (RTL)') as $k => $v) {
+            echo '<option value="' . $k . '"' . ($cache == $k ? ' selected' : "") . '>' . $v . '</option>';
+        }
+
+        ?>
         </select>
       </span>
     </label>
@@ -51,10 +63,11 @@
         <select name="shield" class="select-block">
         <?php
 
+        $cache = Guardian::wayback('shield', $config->shield);
         foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
             $shield = basename($folder);
             $info = Shield::info($shield);
-            echo strpos($shield, '__') !== 0 ? '<option value="' . $shield . '"' . (Guardian::wayback('shield', $config->shield) == $shield ? ' selected' : "") . '>' . $info->title . '</option>' : "";
+            echo strpos($shield, '__') !== 0 ? '<option value="' . $shield . '"' . ($cache == $shield ? ' selected' : "") . '>' . $info->title . '</option>' : "";
         }
 
         ?>

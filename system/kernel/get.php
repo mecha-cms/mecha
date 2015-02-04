@@ -742,7 +742,7 @@ class Get {
         }
 
         $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $filter_prefix, 'images');
-        $results['image'] = self::AMF($results['images'][0], $filter_prefix, 'image');
+        $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : self::$placeholder, $filter_prefix, 'image');
 
         $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
         $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $filter_prefix, 'total_comments');
@@ -1057,7 +1057,7 @@ class Get {
      *
      */
 
-    public static function imagesURL($source, $fallback = '?') {
+    public static function imagesURL($source, $fallback = array()) {
 
         /**
          * Matched with ...
@@ -1117,7 +1117,7 @@ class Get {
             return $matches[4];
         }
 
-        return array($fallback == '?' ? self::$placeholder : $fallback); // No images!
+        return $fallback; // No images!
 
     }
 
@@ -1137,7 +1137,7 @@ class Get {
      */
 
     public static function imageURL($source, $sequence = 1, $fallback = '?') {
-        $images = self::imagesURL($source, $fallback);
+        $images = self::imagesURL($source, array());
         return isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? self::$placeholder : $fallback);
     }
 
@@ -1200,7 +1200,7 @@ class Get {
      *
      */
 
-     public static function timezone($identifier = null, $fallback = false, $format = '(%1$s) %2$s &ndash; %3$s') {
+     public static function timezone($identifier = null, $fallback = false, $format = '(UTC%1$s) %2$s &ndash; %3$s') {
         // http://pastebin.com/vBmW1cnX
         static $regions = array(
             DateTimeZone::AFRICA,
@@ -1223,11 +1223,11 @@ class Get {
             $tz = new DateTimeZone($timezone);
             $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
         }
-        asort($timezone_offsets);
+        ksort($timezone_offsets);
         foreach($timezone_offsets as $timezone => $offset) {
             $offset_prefix = $offset < 0 ? '-' : '+';
             $offset_formatted = gmdate('H:i', abs($offset));
-            $pretty_offset = 'UTC' . $offset_prefix . $offset_formatted;
+            $pretty_offset = $offset_prefix . $offset_formatted;
             $t = new DateTimeZone($timezone);
             $c = new DateTime(null, $t);
             $current_time = $c->format('g:i A');
