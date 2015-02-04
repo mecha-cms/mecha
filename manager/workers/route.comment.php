@@ -12,7 +12,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     }
     $offset = (int) $offset;
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
-    if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->manager->per_page)->vomit()) {
         $comments = array();
         foreach($files as $comment) {
             $comments[] = Get::comment($comment['path']);
@@ -24,7 +24,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         'page_title' => $speak->comments . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'responses' => $comments,
-        'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->per_page, $config->manager->slug . '/comment'),
+        'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
         'cargo' => DECK . DS . 'workers' . DS . 'comment.php'
     ));
     Shield::attach('manager', false);
@@ -139,14 +139,22 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         }
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
-            $data  = 'Name: ' . $request['name'] . "\n";
-            $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
-            $data .= 'URL: ' . $P['data']['url'] . "\n";
+            // Restrict users from inputting the `SEPARATOR` constant
+            // to prevent mistakes in parsing the file content
+            $s = Text::parse(SEPARATOR)->to_ascii;
+            $name = str_replace(SEPARATOR, $s, $request['name']);
+            $email = Text::parse($request['email'])->to_ascii;
+            $url = str_replace(SEPARATOR, $s, Request::post('url', '#'));
+            $message = str_replace(SEPARATOR, $s, $request['message']);
+            // Update data
+            $data  = 'Name: ' . $name . "\n";
+            $data .= 'Email: ' . $email . "\n";
+            $data .= 'URL: ' . $url . "\n";
             $data .= 'Status: ' . $request['status'] . "\n";
             $data .= 'Content Type: ' . Request::post('content_type', 'HTML') . "\n";
             $data .= 'UA: ' . $request['ua'] . "\n";
             $data .= 'IP: ' . $request['ip'] . "\n";
-            $data .= "\n" . SEPARATOR . "\n\n" . $request['message'];
+            $data .= "\n" . SEPARATOR . "\n\n" . $message;
             File::open($comment->path)->write($data)->save(0600)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
             Weapon::fire('on_comment_update', array($G, $P));

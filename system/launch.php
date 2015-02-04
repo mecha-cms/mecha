@@ -413,18 +413,26 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $id = (int) time();
             $parent = Request::post('parent');
 
+            $P = array('data' => $request);
+
+            // Restrict users from inputting the `SEPARATOR` constant
+            // to prevent mistakes in parsing the file content
+            $s = Text::parse(SEPARATOR)->to_ascii;
+            $name = str_replace(SEPARATOR, $s, strip_tags($request['name']));
+            $email = Text::parse($request['email'])->to_ascii;
+            $url = str_replace(SEPARATOR, $s, Request::post('url', '#'));
+            $message = str_replace(SEPARATOR, $s, $request['message']);
+
             // Temporarily disallow images in comment to prevent XSS
-            $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', strip_tags($request['message'], '<br><img>'));
+            $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', strip_tags($message, '<br><img>'));
 
             if( ! $config->html_parser) {
                 $message = str_replace('<img ', '&lt;img ', $message);
             }
 
-            $P = array('data' => $request);
-
-            $data  = 'Name: ' . strip_tags($request['name']) . "\n";
-            $data .= 'Email: ' . Text::parse($request['email'])->to_ascii . "\n";
-            $data .= 'URL: ' . Request::post('url', '#') . "\n";
+            $data  = 'Name: ' . $name . "\n";
+            $data .= 'Email: ' . $email . "\n";
+            $data .= 'URL: ' . $url . "\n";
             $data .= 'Status: ' . (Guardian::happy() ? 'pilot' : 'passenger') . "\n";
             $data .= 'Content Type: ' . ($config->html_parser ? $config->html_parser : 'HTML') . "\n";
             $data .= 'UA: ' . Get::UA() . "\n";
@@ -440,7 +448,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             if($config->email_notification) {
                 $mail  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
-                $mail .= Text::parse('**' . strip_tags($request['name']) . ':** ' . $message)->to_html;
+                $mail .= Text::parse('**' . $name . ':** ' . $message)->to_html;
                 $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
                 // Sending email notification ...
                 if( ! Guardian::happy()) {

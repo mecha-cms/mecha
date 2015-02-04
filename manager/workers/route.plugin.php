@@ -83,7 +83,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     $plugins = array();
     $folders = glob(PLUGIN . DS . Request::get('q_id', '*'), GLOB_ONLYDIR);
     sort($folders);
-    if($files = Mecha::eat($folders)->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat($folders)->chunk($offset, $config->manager->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {
             // Check whether the localized "about" file is available
             if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
@@ -103,7 +103,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'files' => ! empty($plugins) ? $plugins : false,
-        'pagination' => Navigator::extract($folders, $offset, $config->per_page, $config->manager->slug . '/plugin'),
+        'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
         'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
     ));
     Shield::attach('manager', false);

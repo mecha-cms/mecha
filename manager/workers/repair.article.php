@@ -53,7 +53,7 @@
       <?php endif; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->author; ?></span>
-        <span class="grid span-5"><input name="author" type="text" value="<?php echo Guardian::wayback('author', $default->author); ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></span>
+        <span class="grid span-5"><input name="author" type="text" value="<?php echo Text::parse(Guardian::wayback('author', $default->author))->to_encoded_html; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></span>
       </label>
       <?php Weapon::fire('unit_composer_1_after', array($FT)); ?>
     </div>

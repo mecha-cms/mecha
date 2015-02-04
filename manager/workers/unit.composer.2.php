@@ -7,9 +7,9 @@
 </div>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
-  <span class="grid span-5"><textarea name="css" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_css; ?>"><?php echo Guardian::wayback('css', $default->css_raw); ?></textarea></span>
+  <span class="grid span-5"><textarea name="css" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_css; ?>"><?php echo Text::parse(Guardian::wayback('css', $default->css_raw))->to_encoded_html; ?></textarea></span>
 </label>
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_js; ?></span>
-  <span class="grid span-5"><textarea name="js" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_js; ?>"><?php echo Guardian::wayback('js', $default->js_raw); ?></textarea></span>
+  <span class="grid span-5"><textarea name="js" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_js; ?>"><?php echo Text::parse(Guardian::wayback('js', $default->js_raw))->to_encoded_html; ?></textarea></span>
 </label>

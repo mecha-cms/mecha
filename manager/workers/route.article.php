@@ -9,7 +9,7 @@
 Route::accept(array($config->manager->slug . '/article', $config->manager->slug . '/article/(:num)'), function($offset = 1) use($config, $speak) {
     $articles = false;
     $offset = (int) $offset;
-    if($files = Mecha::eat(Get::articles('DESC', "", 'txt,draft'))->chunk($offset, $config->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::articles('DESC', "", 'txt,draft'))->chunk($offset, $config->manager->per_page)->vomit()) {
         $articles = array();
         foreach($files as $file) {
             $articles[] = Get::articleHeader($file);
@@ -21,7 +21,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
         'page_title' => $speak->articles . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'articles' => $articles,
-        'pagination' => Navigator::extract(Get::articles('DESC', "", 'txt,draft'), $offset, $config->per_page, $config->manager->slug . '/article'),
+        'pagination' => Navigator::extract(Get::articles('DESC', "", 'txt,draft'), $offset, $config->manager->per_page, $config->manager->slug . '/article'),
         'cargo' => DECK . DS . 'workers' . DS . 'article.php'
     ));
     Shield::attach('manager', false);
@@ -105,7 +105,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
         // General fields
-        $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr>,<b>,<code>,<dfn>,<em>,<i>,<ins>,<span>,<strong>,<sub>,<sup>,<time>,<u>,<var>'));
+        $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
         $slug = Text::parse(Request::post('slug', $title))->to_slug;
         $slug = $slug == '--' ? Text::parse($title)->to_slug : $slug;
         $content = Request::post('content', "");
@@ -116,6 +116,22 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
+        // Restrict users from inputting the `SEPARATOR` constant
+        // to prevent mistakes in parsing the file content
+        $s = Text::parse(SEPARATOR)->to_ascii;
+        $title = str_replace(SEPARATOR, $s, $title);
+        $description = str_replace(SEPARATOR, $s, $description);
+        $content = str_replace(SEPARATOR, $s, $content);
+        $author = str_replace(SEPARATOR, $s, $author);
+        $css = str_replace(SEPARATOR, $s, $css);
+        $js = str_replace(SEPARATOR, $s, $js);
+        if( ! empty($field)) {
+            foreach($field as $k => $v) {
+                if(isset($v['value']) && is_string($v['value'])) {
+                    $field[$k]['value'] = str_replace(SEPARATOR, $s, $v['value']);
+                }
+            }
+        }
         // Check for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
