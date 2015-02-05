@@ -687,6 +687,8 @@ Text::parser('to_html', function($input) {
     return $input;
 });
 
+define('SEPARATOR_ENCODED', Text::parse(SEPARATOR)->to_ascii);
+
 
 /**
  * Start the Sessions

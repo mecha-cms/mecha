@@ -201,14 +201,12 @@ class Text {
 
     // Encode the bogus `SEPARATOR`s (internal only)
     public static function ES($text) {
-        $s = self::parse(SEPARATOR)->to_ascii;
-        return str_replace(SEPARATOR, $s, $text);
+        return str_replace(SEPARATOR, SEPARATOR_ENCODED, $text);
     }
 
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
-        $s = self::parse(SEPARATOR)->to_ascii;
-        return str_replace($s, SEPARATOR, $text);
+        return str_replace(SEPARATOR_ENCODED, SEPARATOR, $text);
     }
 
 }
