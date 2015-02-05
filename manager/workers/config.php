@@ -105,7 +105,7 @@
       <span class="grid span-2"></span>
       <span class="grid span-4">
         <div><label><input name="html_minifier" type="checkbox" value="true"<?php echo Guardian::wayback('html_minifier', $config->html_minifier) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_minifier; ?></span></label></div>
-        <div><label><input name="html_parser" type="checkbox" value="<?php echo HTML_PARSER; ?>"<?php echo Guardian::wayback('html_parser', $config->html_parser) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_parser; ?></span></label></div>
+        <div><label><input name="html_parser" type="checkbox" value="<?php echo HTML_PARSER; ?>"<?php echo Guardian::wayback('html_parser', $config->html_parser) == HTML_PARSER ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_parser; ?></span></label></div>
       </span>
     </div>
   </fieldset>

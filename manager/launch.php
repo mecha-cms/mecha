@@ -33,7 +33,7 @@ Weapon::add('cargo_before', function() use($config, $speak) {
 
 Weapon::add('sword_before', function() use($config) {
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
-    echo O_BEGIN . '<script>' . NL . 'DASHBOARD.tab_size = \'' . TAB . '\';' . NL . 'DASHBOARD.is_html_parser_enabled = document.getElementsByName(\'content_type\').length ? document.getElementsByName(\'content_type\')[0].checked : false;' . NL . '</script>' . O_END;
+    echo O_BEGIN . '<script>' . NL . 'DASHBOARD.tab_size = \'' . TAB . '\';' . NL . 'DASHBOARD.is_html_parser_enabled = document.getElementsByName(\'content_type\').length ? document.getElementsByName(\'content_type\')[0].checked : ' . ($config->html_parser ? 'true' : 'false') . ';' . NL . '</script>' . O_END;
 }, 10);
 
 Weapon::add('sword_after', function() use($config) {

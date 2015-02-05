@@ -30,6 +30,8 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
 
 .custom-modal {
   position:absolute;
+  top:-999999px;
+  left:-999999px;
   background-color:white;
   border:1px solid;
   width:250px;
