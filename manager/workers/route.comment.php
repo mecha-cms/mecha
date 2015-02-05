@@ -141,11 +141,10 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         if( ! Notify::errors()) {
             // Restrict users from inputting the `SEPARATOR` constant
             // to prevent mistakes in parsing the file content
-            $s = Text::parse(SEPARATOR)->to_ascii;
-            $name = str_replace(SEPARATOR, $s, $request['name']);
+            $name = Text::ES($request['name']);
             $email = Text::parse($request['email'])->to_ascii;
-            $url = str_replace(SEPARATOR, $s, Request::post('url', '#'));
-            $message = str_replace(SEPARATOR, $s, $request['message']);
+            $url = Text::ES(Request::post('url', '#'));
+            $message = Text::ES($request['message']);
             // Update data
             $data  = 'Name: ' . $name . "\n";
             $data .= 'Email: ' . $email . "\n";

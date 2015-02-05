@@ -114,13 +114,13 @@ class Text {
         return (object) $results;
     }
 
-    public static function toArray($text = "", $splitter = ':', $indent = '    ') {
+    public static function toArray($text, $splitter = ':', $indent = '    ') {
         if(is_array($text)) return $text;
         if(is_object($text)) return Mecha::A($text);
         return self::text_to_array($text, $splitter, $indent);
     }
 
-    public static function toObject($text = "", $splitter = ':', $indent = '    ') {
+    public static function toObject($text, $splitter = ':', $indent = '    ') {
         if(is_object($text)) return $text;
         if(is_array($text)) return Mecha::O($text);
         return Mecha::O(self::text_to_array($text, $splitter, $indent));
@@ -144,7 +144,7 @@ class Text {
                 $field = explode(':', $buffer, 2);
                 if( ! isset($field[1])) $field[1] = "";
                 $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                $value = Filter::apply($key, Converter::strEval(trim($field[1])));
+                $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                 if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                     $value = Filter::apply($filter_prefix . $key, $value);
                 }
@@ -159,25 +159,22 @@ class Text {
                     $field = explode(':', $field, 2);
                     if( ! isset($field[1])) $field[1] = "";
                     $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
-                    $value = Filter::apply($key, Converter::strEval(trim($field[1])));
+                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                     if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                         $value = Filter::apply($filter_prefix . $key, $value);
                     }
                     $results[$key] = $value;
                 }
-                $results[$c . '_raw'] = $results[$c] = isset($parts[1]) ? trim($parts[1]) : "";
+                $results[$c . '_raw'] = $results[$c] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
             } else {
-                $results[$c . '_raw'] = $results[$c] = trim($text);
+                $results[$c . '_raw'] = $results[$c] = self::DS(trim($text));
             }
         }
         if($content) {
             if($by_path) {
                 $text = File::open($text)->read();
                 $parts = explode(SEPARATOR, trim($text), 2);
-                $contents = isset($parts[1]) ? trim($parts[1]) : "";
-                $results[$c . '_raw'] = $contents;
-            } else {
-                $contents = $results[$c . '_raw'];
+                $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
             }
             $parse_content = ! isset($results['content_type']) || (isset($results['content_type']) && $results['content_type'] === HTML_PARSER);
 
@@ -186,11 +183,11 @@ class Text {
              * cannot be dynamically changed as you might think that I have
              * to replace that `$results['content_type']` with `$results[$c . '_type']`.
              * The `content` field is created from the second explosion which is not
-             * came from any field of the page header, but the `content_type` is created
-             * purely by the field of the page header called `Content Type`.
+             * came from any field in the page header, but the `content_type` is created
+             * purely by the field in the page header called `Content Type`.
              */
 
-            $contents = Filter::apply('shortcode', $contents);
+            $contents = Filter::apply('shortcode', $results[$c . '_raw']);
             if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                 $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
             }
@@ -200,6 +197,18 @@ class Text {
             }
         }
         return $results;
+    }
+
+    // Encode the bogus `SEPARATOR`s (internal only)
+    public static function ES($text) {
+        $s = self::parse(SEPARATOR)->to_ascii;
+        return str_replace(SEPARATOR, $s, $text);
+    }
+
+    // Decode the encoded bogus `SEPARATOR`s (internal only)
+    public static function DS($text) {
+        $s = self::parse(SEPARATOR)->to_ascii;
+        return str_replace($s, SEPARATOR, $text);
     }
 
 }

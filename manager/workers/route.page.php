@@ -120,17 +120,16 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $field = Request::post('fields', array());
         // Restrict users from inputting the `SEPARATOR` constant
         // to prevent mistakes in parsing the file content
-        $s = Text::parse(SEPARATOR)->to_ascii;
-        $title = str_replace(SEPARATOR, $s, $title);
-        $description = str_replace(SEPARATOR, $s, $description);
-        $content = str_replace(SEPARATOR, $s, $content);
-        $author = str_replace(SEPARATOR, $s, $author);
-        $css = str_replace(SEPARATOR, $s, $css);
-        $js = str_replace(SEPARATOR, $s, $js);
+        $title = Text::ES($title);
+        $description = Text::ES($description);
+        $content = Text::ES($content);
+        $author = Text::ES($author);
+        $css = Text::ES($css);
+        $js = Text::ES($js);
         if( ! empty($field)) {
             foreach($field as $k => $v) {
                 if(isset($v['value']) && is_string($v['value'])) {
-                    $field[$k]['value'] = str_replace(SEPARATOR, $s, $v['value']);
+                    $field[$k]['value'] = Text::ES($v['value']);
                 }
             }
         }

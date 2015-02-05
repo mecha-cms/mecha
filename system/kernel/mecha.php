@@ -158,14 +158,14 @@ class Mecha {
      */
 
     public static function chunk($index = 1, $count = 10) {
-        if( ! self::$stomach) return new static;
+        if( ! is_array(self::$stomach)) return new static;
         $results = array();
         $chunk = array_chunk(self::$stomach, $count, true);
-        if(is_null($index)) {
-            self::$stomach = isset($chunk) ? $chunk : false;
-        } else {
+        if( ! is_null($index)) {
             $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : false;
             self::$stomach = $chunk ? array_values($chunk) : false;
+        } else {
+            self::$stomach = $chunk;
         }
         return new static;
     }

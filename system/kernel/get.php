@@ -709,7 +709,7 @@ class Get {
         if( ! isset($excludes['excerpt']) && strpos($content_test['content'], '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test['content'], 2);
             $results['excerpt'] = self::AMF(trim($parts[0]), $filter_prefix, 'excerpt');
-            $results['content'] = trim($parts[0]) . "\n\n<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>\n\n" . trim($parts[1]);
+            $results['content'] = trim($parts[0]) . NL . NL . "<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
         }
 
         if( ! isset($excludes['tags'])) {
@@ -723,12 +723,12 @@ class Get {
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
             if($file = File::exist(CUSTOM . DS . $time . '.txt')) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
-                $results['css_raw'] = isset($custom[0]) ? trim($custom[0]) : "";
+                $results['css_raw'] = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
+                $results['js_raw'] = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
                 $css_raw = self::AMF($results['css_raw'], 'custom:', 'shortcode');
                 $css_raw = Filter::apply('custom:css', $css_raw);
                 $css_raw = Filter::apply('css:shortcode', $css_raw);
                 $results['css'] = self::AMF($css_raw, $filter_prefix, 'css');
-                $results['js_raw'] = isset($custom[1]) ? trim($custom[1]) : "";
                 $js_raw = self::AMF($results['js_raw'], 'custom:', 'shortcode');
                 $js_raw = Filter::apply('custom:js', $js_raw);
                 $js_raw = Filter::apply('js:shortcode', $js_raw);
@@ -781,7 +781,7 @@ class Get {
 
             foreach($fields as $key => $value) {
                 if( ! isset($value['scope'])) $value['scope'] = 'all';
-                if($value['scope'] == str_replace(':', "", $filter_prefix) || $value['scope'] == 'all') {
+                if($value['scope'] == rtrim($filter_prefix, ':') || $value['scope'] == 'all') {
                     $init[$key] = "";
                 }
             }
@@ -930,7 +930,7 @@ class Get {
         $init = array();
         foreach($fields as $key => $value) {
             if( ! isset($value['scope'])) $value['scope'] = 'all';
-            if($value['scope'] == str_replace(':', "", $filter_prefix) || $value['scope'] == 'all') {
+            if($value['scope'] == rtrim($filter_prefix, ':') || $value['scope'] == 'all') {
                 $init[$key] = "";
             }
         }
@@ -992,7 +992,7 @@ class Get {
             fclose($handle);
             $results['id'] = self::AMF((int) Date::format($results['time'], 'U'), $filter_prefix, 'id');
             $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
-            $results['title'] = self::AMF((isset($parts[1]) ? trim($parts[1]) : '?'), $filter_prefix, 'title');
+            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $filter_prefix, 'title');
             return Mecha::O($results);
         }
         return false;
