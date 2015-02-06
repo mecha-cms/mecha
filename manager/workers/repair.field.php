@@ -3,7 +3,7 @@
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $file->title))->to_encoded_html; ?>"></span>
+    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $file->title), '->encoded_html'); ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
@@ -63,7 +63,7 @@
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
-    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo Text::parse(Guardian::wayback('value', $file->value))->to_encoded_html; ?></textarea></span>
+    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo Text::parse(Guardian::wayback('value', $file->value), '->encoded_html'); ?></textarea></span>
   </label>
   <div class="grid-group">
     <span class="grid span-1"></span>

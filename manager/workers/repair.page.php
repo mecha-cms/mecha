@@ -16,20 +16,20 @@
       <?php Weapon::fire('unit_composer_1_before', array($FT)); ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $default->title))->to_encoded_html; ?>" placeholder="<?php echo $speak->manager->placeholder_title; ?>"></span>
+        <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $default->title), '->encoded_html'); ?>" placeholder="<?php echo $speak->manager->placeholder_title; ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-5"><input name="slug" type="text" class="input-block" value="<?php echo Guardian::wayback('slug', $default->slug); ?>" placeholder="<?php echo Text::parse($speak->manager->placeholder_title)->to_slug; ?>"></span>
+        <span class="grid span-5"><input name="slug" type="text" class="input-block" value="<?php echo Guardian::wayback('slug', $default->slug); ?>" placeholder="<?php echo Text::parse($speak->manager->placeholder_title, '->slug'); ?>"></span>
       </label>
       <?php include 'unit.composer.1.php'; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
-        <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo Config::speak('manager.placeholder_description', array(strtolower($speak->page))); ?>"><?php echo Text::parse(Guardian::wayback('description', $default->description))->to_encoded_html; ?></textarea></span>
+        <span class="grid span-5"><textarea name="description" class="textarea-block" placeholder="<?php echo Config::speak('manager.placeholder_description', array(strtolower($speak->page))); ?>"><?php echo Text::parse(Guardian::wayback('description', $default->description), '->encoded_html'); ?></textarea></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->author; ?></span>
-        <span class="grid span-5"><input name="author" type="text" value="<?php echo Text::parse(Guardian::wayback('author', $default->author))->to_encoded_html; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></span>
+        <span class="grid span-5"><input name="author" type="text" value="<?php echo Text::parse(Guardian::wayback('author', $default->author), '->encoded_html'); ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></span>
       </label>
       <?php Weapon::fire('unit_composer_1_after', array($FT)); ?>
     </div>

@@ -92,7 +92,7 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_tail; ?></span>
-      <span class="grid span-4"><input name="excerpt_tail" type="text" value="<?php echo Text::parse(Guardian::wayback('excerpt_tail', $config->excerpt_tail))->to_encoded_html; ?>"></span>
+      <span class="grid span-4"><input name="excerpt_tail" type="text" value="<?php echo Text::parse(Guardian::wayback('excerpt_tail', $config->excerpt_tail), '->encoded_html'); ?>"></span>
     </label>
     <div class="grid-group">
       <span class="grid span-2"></span>
@@ -117,15 +117,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_title_separator; ?></span>
-      <span class="grid span-4"><input name="title_separator" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title_separator', $config->title_separator))->to_encoded_html; ?>"></span>
+      <span class="grid span-4"><input name="title_separator" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title_separator', $config->title_separator), '->encoded_html'); ?>"></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->slogan; ?></span>
-      <span class="grid span-4"><textarea name="slogan" class="textarea-block"><?php echo Text::parse(Guardian::wayback('slogan', $config->slogan))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="slogan" class="textarea-block"><?php echo Text::parse(Guardian::wayback('slogan', $config->slogan), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->description; ?></span>
-      <span class="grid span-4"><textarea name="description" class="textarea-block"><?php echo Text::parse(Guardian::wayback('description', $config->description))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="description" class="textarea-block"><?php echo Text::parse(Guardian::wayback('description', $config->description), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->keywords; ?></span>
@@ -229,7 +229,7 @@
     <legend><?php echo $speak->manager->title_other; ?></legend>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
-      <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_keyword_spam; ?>"><?php echo Text::parse(Guardian::wayback('spam_keywords', $config->spam_keywords))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="spam_keywords" class="textarea-block" placeholder="<?php echo $speak->manager->placeholder_keyword_spam; ?>"><?php echo Text::parse(Guardian::wayback('spam_keywords', $config->spam_keywords), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_title; ?></span>
@@ -237,15 +237,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_content', $config->defaults->article_content))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_content', $config->defaults->article_content), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_title; ?></span>
@@ -253,15 +253,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_content', $config->defaults->page_content))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_content', $config->defaults->page_content), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css), '->encoded_html'); ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js), '->encoded_html'); ?></textarea></span>
     </label>
   </fieldset>
   <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></p>

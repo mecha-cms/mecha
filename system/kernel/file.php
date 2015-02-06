@@ -229,7 +229,7 @@ class File {
         $renamed = array();
         $parts = explode('.', $file['name']);
         foreach($parts as $part) {
-            $renamed[] = Text::parse($part)->to_slug_moderate;
+            $renamed[] = Text::parse($part, '->slug_moderate');
         }
         $info = pathinfo($file['name']);
         $file['name'] = implode('.', $renamed);

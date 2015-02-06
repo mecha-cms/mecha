@@ -139,7 +139,7 @@ class Shield {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $e_shield_page = "Title: " . ucwords(Text::parse($folder)->to_text) . "\n" .
+        $e_shield_page = "Title: " . ucwords(Text::parse($folder, '->text')) . "\n" .
              "Author: " . $speak->unknown . "\n" .
              "URL: #\n" .
              "Version: " . $speak->unknown . "\n" .

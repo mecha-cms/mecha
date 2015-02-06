@@ -106,8 +106,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $date = date('c', $request['id']);
         // General fields
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
-        $slug = Text::parse(Request::post('slug', $title))->to_slug;
-        $slug = $slug == '--' ? Text::parse($title)->to_slug : $slug;
+        $slug = Text::parse(Request::post('slug', $title), '->slug');
+        $slug = $slug == '--' ? Text::parse($title, '->slug') : $slug;
         $content = Request::post('content', "");
         $content_type = Request::post('content_type', 'HTML');
         $description = $request['description'];
@@ -146,10 +146,10 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             Guardian::memorize($request);
         }
         $data  = 'Title: ' . $title . "\n";
-        $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description)->to_encoded_json) . "\n" : "";
+        $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description, '->encoded_json')) . "\n" : "";
         $data .= 'Author: ' . $author . "\n";
         $data .= 'Content Type: ' . $content_type . "\n";
-        $data .= ! empty($field) ? 'Fields: ' . Text::parse($field)->to_encoded_json . "\n" : "";
+        $data .= ! empty($field) ? 'Fields: ' . Text::parse($field, '->encoded_json') . "\n" : "";
         $data .= "\n" . SEPARATOR . "\n\n" . $content;
         $P = array('data' => $request, 'action' => $request['action']);
         // New

@@ -16,7 +16,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         Weapon::fire('on_asset_construct', array($P, $P));
     }
     $filter = Request::get('q', false);
-    $filter = $filter ? Text::parse($filter)->to_slug_moderate : "";
+    $filter = $filter ? Text::parse($filter, '->slug_moderate') : "";
     $takes = Get::files(ASSET, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
@@ -132,7 +132,7 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($
             $name = explode('.', $request['name']);
             $parts = array();
             foreach($name as $part) {
-                $parts[] = Text::parse($part)->to_slug_moderate;
+                $parts[] = Text::parse($part, '->slug_moderate');
             }
             $new_name = implode('.', $parts);
             // File name already exist

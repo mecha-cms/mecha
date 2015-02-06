@@ -21,8 +21,8 @@
         <td class="text-center align-middle">
           <a class="sort" href="#move-up"><i class="fa fa-angle-up"></i></a><a class="sort" href="#move-down"><i class="fa fa-angle-down"></i></a>
         </td>
-        <td class="align-middle"><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key)->to_encoded_html; ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
-        <td class="align-middle"><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value)->to_encoded_html; ?>"></td>
+        <td class="align-middle"><input name="keys[]" type="text" class="input-block" value="<?php echo Text::parse($key, '->encoded_html'); ?>" placeholder="{{<?php echo strtolower($speak->key); ?>}}"></td>
+        <td class="align-middle"><input name="values[]" type="text" class="input-block" value="<?php echo Text::parse($value, '->encoded_html'); ?>"></td>
       </tr>
       <?php endforeach; ?>
       <?php endif; ?>

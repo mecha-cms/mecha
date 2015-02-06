@@ -39,7 +39,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
                     $data[$i] = array(
                         'id' => (int) $keys[$i],
                         'name' => $request['name'][$i],
-                        'slug' => Text::parse($slug)->to_slug,
+                        'slug' => Text::parse($slug, '->slug'),
                         'description' => $request['description'][$i]
                     );
                 }

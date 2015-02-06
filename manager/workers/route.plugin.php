@@ -91,7 +91,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             }
             $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
             if($about['title'] == '%s') {
-                $about['title'] = ucwords(Text::parse(basename($files[$i]))->to_text);
+                $about['title'] = ucwords(Text::parse(basename($files[$i]), '->text'));
             }
             $plugins[$i]['about'] = $about;
             $plugins[$i]['slug'] = basename($files[$i]);
@@ -128,7 +128,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     }
     $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
     if($about['title'] == '%s') {
-        $about['title'] = ucwords(Text::parse($slug)->to_text);
+        $about['title'] = ucwords(Text::parse($slug, '->text'));
     }
     if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
         $about['author'] = $matches[1];
@@ -181,7 +181,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage(sprintf($e_plugin_page, ucwords(Text::parse($slug)->to_text)), true, 'plugin:');
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text'))), true, 'plugin:');
     $about['slug'] = $slug;
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
@@ -199,7 +199,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/plugin');
     } else {
-        Notify::warning($speak->notify_confirm_delete);
+        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $about['title'] . '</strong>')));
     }
     Shield::attach('manager', false);
 });

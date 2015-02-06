@@ -73,7 +73,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
         Shield::abort();
     }
     $time = date('Y-m-d-H-i-s');
-    $site = Text::parse($config->title)->to_slug;
+    $site = Text::parse($config->title, '->slug');
     if($origin == 'root') {
         $name = $site . '_' . $time . '.zip';
         Package::take(ROOT)->pack(ROOT . DS . $name);

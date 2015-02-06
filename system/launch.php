@@ -218,8 +218,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
     $articles = array();
     $offset = (int) $offset;
-    $query = Text::parse($query)->to_decoded_url;
-    $keywords = Text::parse($query)->to_slug;
+    $query = Text::parse($query, '->decoded_url');
+    $keywords = Text::parse($query, '->slug');
 
     if(Session::get('search_query') == $query) {
 
@@ -270,7 +270,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'offset' => $offset,
             'search_query' => $query,
             'articles' => $_articles,
-            'pagination' => Navigator::extract($articles, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query)->to_encoded_url)
+            'pagination' => Navigator::extract($articles, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query, '->encoded_url'))
         ));
         Shield::attach('index');
     } else {
@@ -293,7 +293,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
 Route::accept($config->search->slug, function() use($config) {
     if(Request::post('q') !== false) {
-        Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse(Request::post('q'))->to_encoded_url));
+        Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse(Request::post('q'), '->encoded_url')));
     } else {
         Guardian::kick();
     }
@@ -417,9 +417,9 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             // Restrict users from inputting the `SEPARATOR` constant
             // to prevent mistakes in parsing the file content
-            $s = Text::parse(SEPARATOR)->to_ascii;
+            $s = Text::parse(SEPARATOR, '->ascii');
             $name = str_replace(SEPARATOR, $s, strip_tags($request['name']));
-            $email = Text::parse($request['email'])->to_ascii;
+            $email = Text::parse($request['email'], '->ascii');
             $url = str_replace(SEPARATOR, $s, Request::post('url', '#'));
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
             $message = str_replace(SEPARATOR, $s, $request['message']);
@@ -447,7 +447,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             if($config->email_notification) {
                 $mail  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
-                $mail .= Text::parse('**' . $name . ':** ' . $message)->to_html;
+                $mail .= Text::parse('**' . $name . ':** ' . $message, '->html');
                 $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
                 // Sending email notification ...
                 if( ! Guardian::happy()) {

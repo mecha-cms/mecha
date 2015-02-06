@@ -64,7 +64,7 @@ if( ! empty($fields)) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-4">';
-            $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key])->to_encoded_html : $value['value']) . '">';
+            $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
             $html .= '</span>';
             $html .= '</label>';
         }
@@ -72,7 +72,7 @@ if( ! empty($fields)) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-4">';
-            $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key])->to_encoded_html : $value['value']) . '</textarea>';
+            $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
             $html .= '</span>';
             $html .= '</label>';
         }

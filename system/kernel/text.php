@@ -10,6 +10,9 @@
  *    // Basic parser
  *    echo Text::parse('some text')->to_slug;
  *
+ *    // Fast parser
+ *    echo Text::parse('some text', '->slug');
+ *
  *    // Perform a test
  *    var_dump(Text::parse('some text'));
  *
@@ -108,8 +111,16 @@ class Text {
 
     public static function parse() {
         $results = array();
+        $arguments = func_get_args();
+        // Alternate function for faster parsing process => `Text::parse('foo', '->html')`
+        if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
+            $parser = 'to_' . str_replace('->', "", $arguments[1]);
+            unset($arguments[1]);
+            return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : $arguments[0];
+        }
+        // Default function for complete parsing process => `Text::parse('foo')->to_html`
         foreach(self::$parsers as $name => $callback) {
-            $results[$name] = call_user_func_array($callback, func_get_args());
+            $results[$name] = call_user_func_array($callback, $arguments);
         }
         return (object) $results;
     }
@@ -143,7 +154,7 @@ class Text {
                 }
                 $field = explode(':', $buffer, 2);
                 if( ! isset($field[1])) $field[1] = "";
-                $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                $key = Text::parse(strtolower(trim($field[0])), '->array_key');
                 $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                 if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                     $value = Filter::apply($filter_prefix . $key, $value);
@@ -158,7 +169,7 @@ class Text {
                 foreach($headers as $field) {
                     $field = explode(':', $field, 2);
                     if( ! isset($field[1])) $field[1] = "";
-                    $key = Text::parse(strtolower(trim($field[0])))->to_array_key;
+                    $key = Text::parse(strtolower(trim($field[0])), '->array_key');
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                     if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                         $value = Filter::apply($filter_prefix . $key, $value);
@@ -191,7 +202,7 @@ class Text {
             if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                 $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
             }
-            $results[$c] = Filter::apply($c, $parse_content ? Text::parse($contents)->to_html : $contents);
+            $results[$c] = Filter::apply($c, $parse_content ? Text::parse($contents, '->html') : $contents);
             if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                 $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
             }

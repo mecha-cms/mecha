@@ -13,7 +13,7 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <div class="plugin-about">
-      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($file->author)->to_encoded_html; ?><?php if(isset($file->url) && $file->url != '#'): ?> <a class="help" href="<?php echo $file->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
+      <p class="plugin-author"><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url != '#'): ?> <a class="help" href="<?php echo $file->url; ?>" title="<?php echo $speak->link; ?>" rel="nofollow" target="_blank"><i class="fa fa-external-link-square"></i></a><?php endif; ?></p>
       <h3 class="plugin-title"><?php echo $file->title; if(isset($file->version)) echo ' ' . $file->version; ?></h3>
       <div class="plugin-description"><?php echo $file->content; ?></div>
     </div>

@@ -69,7 +69,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         if(trim($request['key']) === "") {
             $request['key'] = $request['title'];
         }
-        $request_key = Text::parse(strtolower($request['key']))->to_array_key;
+        $request_key = Text::parse(strtolower($request['key']), '->array_key');
         if($key === false) {
             if(isset($fields[$request_key])) {
                 Notify::error(Config::speak('notify_exist', array('<code>' . $request_key . '</code>')));

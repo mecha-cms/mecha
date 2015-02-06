@@ -1,7 +1,7 @@
 <?php echo $messages; ?>
 <form class="form-repair form-shield" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <p><textarea name="content" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('content', $the_content))->to_encoded_html; ?></textarea></p>
+  <p><textarea name="content" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('content', $the_content), '->encoded_html'); ?></textarea></p>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->name; ?></span>
     <span class="grid span-5"><input name="name" type="text" value="<?php echo Guardian::wayback('name', str_replace('\\', '/', $the_path)); ?>"></span>

@@ -45,7 +45,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         }
         foreach($pages as $page => $default) {
             // Fixes for slug pattern inputs
-            $request[$page]['slug'] = Text::parse(Request::post($page . '.slug', $default))->to_slug;
+            $request[$page]['slug'] = Text::parse(Request::post($page . '.slug', $default), '->slug');
             if( // If ...
                 // Should be greater than 0
                 (int) Request::post($page . '.per_page') < 1 ||

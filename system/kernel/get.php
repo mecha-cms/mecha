@@ -577,7 +577,7 @@ class Get {
             'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $filter_prefix, 'last_update'),
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $filter_prefix, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $filter_prefix, 'kind'),
-            'slug' => self::AMF($slug, $filter_prefix, 'slug'),
+            'slug' => self::AMF($slug, $filter_prefix, '->slug'),
             'state' => self::AMF($extension == 'txt' ? 'published' : 'draft', $filter_prefix, 'state')
         );
     }
@@ -873,7 +873,7 @@ class Get {
         if( ! $path || ! file_exists($path)) return false;
         $results['date'] = self::AMF(Date::extract($results['time']), $fp, 'date');
         $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:', 'message');
-        $results['email'] = Text::parse($results['email'])->to_decoded_html;
+        $results['email'] = Text::parse($results['email'], '->decoded_html');
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {

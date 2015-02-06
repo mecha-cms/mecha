@@ -16,7 +16,7 @@
       <?php endif; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_name; ?></span>
-        <span class="grid span-5"><input name="name" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('name', $default->name))->to_encoded_html; ?>"></span>
+        <span class="grid span-5"><input name="name" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('name', $default->name), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_email; ?></span>
@@ -24,7 +24,7 @@
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_url; ?></span>
-        <span class="grid span-5"><input name="url" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('url', $default->url))->to_encoded_html; ?>"></span>
+        <span class="grid span-5"><input name="url" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('url', $default->url), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_status; ?></span>
@@ -42,7 +42,7 @@
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
-        <span class="grid span-5"><textarea name="message" class="textarea-block code MTE" data-mte-use-toolbar="true" data-mte-use-shortcut="true"><?php echo Text::parse(Guardian::wayback('message', $default->message_raw))->to_encoded_html; ?></textarea></span>
+        <span class="grid span-5"><textarea name="message" class="textarea-block code MTE" data-mte-use-toolbar="true" data-mte-use-shortcut="true"><?php echo Text::parse(Guardian::wayback('message', $default->message_raw), '->encoded_html'); ?></textarea></span>
       </label>
       <div class="grid-group">
         <span class="grid span-1 form-label"></span>
