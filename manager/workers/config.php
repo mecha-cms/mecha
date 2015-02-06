@@ -237,15 +237,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_content]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_content', $config->defaults->article_content))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_content', $config->defaults->article_content))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_custom_css]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[article_custom_js]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[article_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_title; ?></span>
@@ -253,15 +253,15 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_content', $config->defaults->page_content))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_content]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_content', $config->defaults->page_content))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_css]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css))->to_encoded_html; ?></textarea></span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
-      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js))->to_encoded_html; ?></textarea></span>
+      <span class="grid span-4"><textarea name="defaults[page_custom_js]" class="textarea-block code MTE"><?php echo Text::parse(Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js))->to_encoded_html; ?></textarea></span>
     </label>
   </fieldset>
   <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button></p>

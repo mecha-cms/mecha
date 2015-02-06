@@ -5,7 +5,7 @@
 
 (function($) {
 
-    $.slugger = function(input, output, connector) {
+    $.slug = function(input, output, connector) {
 
         input.off("keyup").on("keyup", function() {
 
@@ -34,5 +34,7 @@
         return input;
 
     };
+
+    $.slugger = $.slug; // < 1.1.3
 
 })(Zepto);

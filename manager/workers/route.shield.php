@@ -71,7 +71,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     Shield::define(array(
         'info' => Shield::info($folder),
         'the_shield_path' => $folder,
-        'the_shield_contents' => Get::files(SHIELD . DS . $folder, 'css,htaccess,htm,html,js,json,jsonp,less,php,scss,txt,xml', 'ASC', 'name'),
+        'the_shield_contents' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'name'),
         'the_shields' => $the_shields
     ))->attach('manager', false);
 });
@@ -93,29 +93,6 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         'page_title' => $speak->creating . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($, base) {
-    if (typeof MTE == "undefined") return;
-    base.fire(\'on_control_begin\', [\'shield\', \'content\']);
-    base.editor = new MTE($(\'.MTE\')[0], {
-        tabSize: base.tab_size,
-        toolbar: false,
-        click: function(e, editor, type) {
-            base.fire(\'on_control_event_click\', [e, editor, type, [\'shield\', \'content\']]);
-        },
-        keydown: function(e, editor) {
-            base.fire(\'on_control_event_keydown\', [e, editor, [\'shield\', \'content\']]);
-        },
-        ready: function(editor) {
-            base.fire(\'on_control_event_ready\', [editor, [\'shield\', \'content\']]);
-        }
-    });
-    base.editor_content = base.editor;
-    base.fire(\'on_control_end\', [\'shield\', \'content\']);
-})(Zepto, DASHBOARD);
-</script>';
-    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $path = str_replace(array('\\', '/'), DS, $request['name']);
@@ -129,7 +106,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '</code>')));
             }
-            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'less', 'php', 'scss', 'txt', 'xml');
+            $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
@@ -174,29 +151,6 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($, base) {
-    if (typeof MTE == "undefined") return;
-    base.fire(\'on_control_begin\', [\'shield\', \'content\']);
-    base.editor = new MTE($(\'.MTE\')[0], {
-        tabSize: base.tab_size,
-        toolbar: false,
-        click: function(e, editor, type) {
-            base.fire(\'on_control_event_click\', [e, editor, type, [\'shield\', \'content\']]);
-        },
-        keydown: function(e, editor) {
-            base.fire(\'on_control_event_keydown\', [e, editor, [\'shield\', \'content\']]);
-        },
-        ready: function(editor) {
-            base.fire(\'on_control_event_ready\', [editor, [\'shield\', \'content\']]);
-        }
-    });
-    base.editor_content = base.editor;
-    base.fire(\'on_control_end\', [\'shield\', \'content\']);
-})(Zepto, DASHBOARD);
-</script>';
-    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $name = str_replace(array('\\', '/'), DS, $request['name']);
@@ -210,7 +164,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
             }
-            $accepted_extensions = array('css', 'htaccess', 'htm', 'html', 'js', 'json', 'jsonp', 'less', 'php', 'scss', 'txt', 'xml');
+            $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_error_file_extension', array($extension)));
@@ -246,6 +200,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     if(Guardian::get('status') != 'pilot' || $folder === "") {
         Shield::abort();
     }
+    $info = Shield::info($folder);
     if($path) {
         $path = str_replace(array('\\', '/'), DS, $path);
         if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
@@ -257,7 +212,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . basename($file) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . ($path ? basename($file) : $info->title) . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
     ));
@@ -274,12 +229,12 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         Weapon::fire('on_shield_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
-        Notify::warning($speak->notify_confirm_delete);
+        Notify::warning(Config::speak('notify_confirm_delete_', array($path ? '<code>' . basename($file) . '</code>' : '<strong>' . $info->title . '</strong>')));
     }
     Shield::define(array(
         'the_shield' => $folder,
         'the_path' => $path,
-        'info' => Shield::info($folder)
+        'info' => $info
     ))->attach('manager', false);
 });
 

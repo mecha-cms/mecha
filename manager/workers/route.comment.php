@@ -84,42 +84,6 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
     $G = array('data' => Mecha::A($comment));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($, base) {
-    if (typeof MTE == "undefined") return;
-    var $area = $(\'.MTE\'),
-        languages = $area.data(\'mteLanguages\');
-    base.add(\'on_ajax_success\', function(data) {
-        base.fire(\'on_preview_complete\', data);
-    });
-    base.add(\'on_ajax_error\', function(data) {
-        base.fire(\'on_preview_failure\', data);
-    });
-    base.fire(\'on_control_begin\', [\'comment\', \'message\']);
-    base.composer = new MTE($area[0], {
-        tabSize: base.tab_size,
-        shortcut: true,
-        toolbarClass: \'editor-toolbar cf\',
-        buttonClassPrefix: \'editor-toolbar-button editor-toolbar-button-\',
-        buttons: languages.buttons,
-        prompt: languages.prompt,
-        placeholder: languages.placeholder,
-        click: function(e, editor, type) {
-            base.fire(\'on_control_event_click\', [e, editor, type, [\'comment\', \'message\']]);
-        },
-        keydown: function(e, editor) {
-            base.fire(\'on_control_event_keydown\', [e, editor, [\'comment\', \'message\']]);
-        },
-        ready: function(editor) {
-            base.fire(\'on_control_event_ready\', [editor, [\'comment\', \'message\']]);
-        }
-    });
-    base.composer_message = base.composer;
-    base.fire(\'on_control_end\', [\'comment\', \'message\']);
-})(Zepto, DASHBOARD);
-</script>';
-    });
     if($request = Request::post()) {
         $request['id'] = $id;
         $request['ua'] = isset($comment->ua) ? $comment->ua : 'N/A';

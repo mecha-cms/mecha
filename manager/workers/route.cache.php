@@ -67,7 +67,7 @@ Route::accept($config->manager->slug . '/cache/kill/files?:(:all)', function($na
         Weapon::fire('on_cache_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/cache');
     } else {
-        Notify::warning($speak->notify_confirm_delete);
+        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', array('<code>' . basename($name) . '</code>')) : $speak->notify_confirm_delete);
     }
     Shield::define('the_name', $deletes)->attach('manager', false);
 });

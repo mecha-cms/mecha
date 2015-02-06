@@ -615,8 +615,8 @@ notify_error_slug_missing_letter: Slug URI should contains at least one letter, 
 notify_error_post_content_empty: Post content cannot be empty.
 notify_error_too_short: <strong>%s</strong> too short.
 notify_error_too_long: <strong>%s</strong> too long.
-notify_error_not_found: Not found!
-notify_error_duplicate: Duplicate!
+notify_error_not_found: Not found.
+notify_error_duplicate: Duplicate.
 
 notify_invalid_token: Invalid token.
 notify_invalid_time_pattern: Invalid time pattern.
@@ -633,11 +633,13 @@ notify_invalid_duplicate: Duplicate %s.
 
 notify_confirm: Are your sure?
 notify_confirm_page_leave: Are you sure you want to leave this page?
-notify_confirm_delete: Are you sure you want to delete this?
-notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of %1$s.
+notify_confirm_delete: Are you sure you want to delete?
+notify_confirm_page_leave_: Are you sure you want to leave %s page?
+notify_confirm_delete_: Are you sure you want to delete %s?
+notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of the %1$s.
 notify_confirm_maybe_you_mean: Maybe you mean %s
 
-notify_warning_intruder_detected: Intruder detected!
+notify_warning_intruder_detected: Intruder detected.
 notify_warning_forbidden_input: You are not allowed to use %s in the %s field.
 
 

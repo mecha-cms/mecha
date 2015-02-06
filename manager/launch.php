@@ -1,6 +1,17 @@
 <?php
 
 
+
+$uri_end_parts = str_replace($config->url . '/' . $config->manager->slug . '/', "", $config->url_current);
+$uri_end_parts = explode('/', $uri_end_parts);
+$uri_end = $uri_end_parts[0];
+
+Config::merge('DASHBOARD.languages', array(
+    'MTE' => Mecha::A($speak->MTE)
+));
+
+
+
 /**
  * Backend Assets
  * --------------
@@ -8,6 +19,13 @@
  * Inject the required assets for manager.
  *
  */
+
+Weapon::add('meta', function() use($config) {
+    echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^| )no-js( |$)/.test(b)?b.replace(/(^| )no-js( |$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
+    if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
+        echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
+    }
+}, 20);
 
 Weapon::add('shell_after', function() use($config) {
     echo Asset::stylesheet(array(
@@ -31,16 +49,26 @@ Weapon::add('cargo_before', function() use($config, $speak) {
     echo O_BEGIN . Filter::apply('banner:manager', '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '</strong>! &middot; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>') . O_END;
 }, 10);
 
-Weapon::add('sword_before', function() use($config) {
+Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
+    $constants = get_defined_constants(true);
+    $constants_js = "";
+    foreach($constants['user'] as $constant => $value) {
+        $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $value);
+        $constants_js .= $constant . '=\'' . addslashes($value) . '\',';
+    }
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
-    echo O_BEGIN . '<script>' . NL . 'DASHBOARD.tab_size = \'' . TAB . '\';' . NL . 'DASHBOARD.is_html_parser_enabled = document.getElementsByName(\'content_type\').length ? document.getElementsByName(\'content_type\')[0].checked : ' . ($config->html_parser ? 'true' : 'false') . ';' . NL . '</script>' . O_END;
-}, 10);
+    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.FT=\'' . $uri_end . '\';DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=document.getElementsByName(\'content_type\')?document.getElementsByName(\'content_type\')[0].checked:' . ($config->html_parser ? 'true' : 'false') . ';';
+    // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
+    //  Please use the `TAB` and `ES` variable as in the defined PHP constants.
+    $output .= 'DASHBOARD.tab_size=\'' . TAB . '\';DASHBOARD.element_suffix=\'' . ES . '\';';
+    echo $output . '</script>' . O_END;
+}, 1);
 
-Weapon::add('sword_after', function() use($config) {
-    echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
+Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
     echo Asset::javascript(array(
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
+        'manager/sword/editor/run.js',
         'manager/sword/ajax.js',
         'manager/sword/row.js',
         'manager/sword/slug.js',
@@ -116,9 +144,7 @@ Weapon::add('comment_footer', function($comment, $article) {
  *
  */
 
-$uri_end = str_replace($config->url . '/' . $config->manager->slug . '/', "", $config->url_current);
-$uri_end_parts = explode('/', $uri_end);
-if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end_parts[0] . '.php')) {
+if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end . '.php')) {
     Config::set('page_type', 'manager');
     require $detour;
 }

@@ -3,11 +3,11 @@
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo $file->title; ?>"></span>
+    <span class="grid span-5"><input name="title" type="text" class="input-block" value="<?php echo Text::parse(Guardian::wayback('title', $file->title))->to_encoded_html; ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
-    <span class="grid span-5"><input name="key" type="text" class="input-block" value="<?php echo $the_key ? $the_key : ""; ?>"></span>
+    <span class="grid span-5"><input name="key" type="text" class="input-block" value="<?php echo Guardian::wayback('key', $the_key); ?>"></span>
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->type; ?></span>
@@ -22,8 +22,9 @@
           'option' => $speak->option
       );
 
+      $cache = Guardian::wayback('type', $file->type);
       foreach($options as $k => $v) {
-          echo '<option value="' . $k . '"' . ($k == $file->type ? ' selected' : "") . '>' . $v . '</option>';
+          echo '<option value="' . $k . '"' . ($cache == $k ? ' selected' : "") . '>' . $v . '</option>';
       }
 
       ?>
@@ -44,9 +45,17 @@
           'all' => $speak->both
       );
 
+      $cache = Guardian::wayback('scope', $file->scope);
       foreach($options as $k => $v) {
-          echo '<option value="' . $k . '"' . ($k == $file->scope ? ' selected' : "") . '>' . $v . '</option>';
+          echo '<option value="' . $k . '"' . ($cache == $k ? ' selected' : "") . '>' . $v . '</option>';
       }
+
+      if($file->value === true) $file->value = 'true';
+      if($file->value === false) $file->value = 'false';
+      if($file->value === null) $file->value = 'null';
+      if($file->value === TRUE) $file->value = 'TRUE';
+      if($file->value === FALSE) $file->value = 'FALSE';
+      if($file->value === NULL) $file->value = 'NULL';
 
       ?>
       </select>
@@ -54,7 +63,7 @@
   </label>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
-    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo isset($file->value) ? $file->value : ""; ?></textarea></span>
+    <span class="grid span-5"><textarea name="value" class="textarea-block"><?php echo Text::parse(Guardian::wayback('value', $file->value))->to_encoded_html; ?></textarea></span>
   </label>
   <div class="grid-group">
     <span class="grid span-1"></span>

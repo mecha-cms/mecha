@@ -34,9 +34,6 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
  */
 
 Route::accept(array($config->manager->slug . '/article/ignite', $config->manager->slug . '/article/repair/id:(:num)'), function($id = false) use($config, $speak) {
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('manager/sword/editor.js', "", 'editor.min.js');
-    });
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
     if($id && $article = Get::article($id, array('content', 'excerpt', 'tags', 'comments'))) {
         if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
@@ -212,6 +209,9 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
         }
     }
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+        echo Asset::javascript('manager/sword/editor.compose.js', "", 'editor.compose.min.js');
+    }, 11);
     Shield::define('default', $article)->attach('manager', false);
 });
 
@@ -253,7 +253,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         Weapon::fire('on_article_destruct', array($G, $G));
         Guardian::kick($config->manager->slug . '/article');
     } else {
-        Notify::warning($speak->notify_confirm_delete);
+        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $article->title . '</strong>')));
         Notify::warning(Config::speak('notify_confirm_delete_page', array(strtolower($speak->article))));
     }
     Shield::attach('manager', false);

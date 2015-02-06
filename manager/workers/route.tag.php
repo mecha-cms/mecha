@@ -14,19 +14,6 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         'cargo' => DECK . DS . 'workers' . DS . 'tag.php'
     ));
     $G = array('data' => $tags);
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($, base) {
-    base.add(\'on_row_increase\', function() {
-        $(\'input[name="id[]"]\').last().val(parseInt($(\'input[name="id[]"]\').last().closest(\'tr\').prev().find(\'input[name="id[]"]\').val(), 10) + 1 || "");
-        $(\'input[name="name[]"]\').each(function() {
-            $.slugger($(this), $(this).parent().next().find(\'input\'), \'-\');
-        });
-    });
-    base.fire(\'on_row_increase\');
-})(Zepto, DASHBOARD);
-</script>';
-    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Check for duplicate ID
@@ -64,5 +51,18 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         }
         Guardian::kick($config->url_current);
     }
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+        echo '<script>
+(function($, base) {
+    base.add(\'on_row_increase\', function() {
+        $(\'input[name="id[]"]\').last().val(parseInt($(\'input[name="id[]"]\').last().closest(\'tr\').prev().find(\'input[name="id[]"]\').val(), 10) + 1 || "");
+        $(\'input[name="name[]"]\').each(function() {
+            $.slug($(this), $(this).parent().next().find(\'input\'), \'-\');
+        });
+    });
+    base.fire(\'on_row_increase\');
+})(Zepto, DASHBOARD);
+</script>';
+    });
     Shield::attach('manager', false);
 });

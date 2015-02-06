@@ -59,13 +59,6 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         'file' => $data,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
     ));
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($) {
-    $.slugger($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
-})(Zepto);
-</script>';
-    });
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Empty title field
@@ -77,7 +70,11 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             $request['key'] = $request['title'];
         }
         $request_key = Text::parse(strtolower($request['key']))->to_array_key;
-        if($key !== false) {
+        if($key === false) {
+            if(isset($fields[$request_key])) {
+                Notify::error(Config::speak('notify_exist', array('<code>' . $request_key . '</code>')));
+            }
+        } else {
             unset($fields[$key]);
         }
         $fields[$request_key] = array(
@@ -92,9 +89,16 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
             Weapon::fire('on_field_update', array($G, $P));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($G, $P));
-            Guardian::kick($config->manager->slug . '/field');
+            Guardian::kick($key === false ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
         }
     }
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+        echo '<script>
+(function($) {
+    $.slug($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
+})(Zepto);
+</script>';
+    });
     Shield::define('the_key', $key)->attach('manager', false);
 });
 
@@ -135,7 +139,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
         Weapon::fire('on_field_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/field');
     } else {
-        Notify::warning($speak->notify_confirm_delete);
+        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $data['title'] . '</strong>')));
     }
     Shield::define('the_key', $key)->attach('manager', false);
 });
