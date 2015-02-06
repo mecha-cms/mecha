@@ -79,7 +79,7 @@ class Notify {
 
     public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {
 
-        if(trim($to) === "" || ! Guardian::check($to)->this_is_email) return false;
+        if(trim($to) === "" || ! Guardian::check($to, '->email')) return false;
 
         $header  = "MIME-Version: 1.0\r\n";
         $header .= "Content-Type: text/html; charset=ISO-8859-1\r\n";

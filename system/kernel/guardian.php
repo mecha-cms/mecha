@@ -96,7 +96,7 @@ class Guardian {
      */
 
     public static function checkMath($answer = "") {
-        return is_numeric($answer) && self::check((int) $answer, Session::get(self::$math))->this_is_correct;
+        return is_numeric($answer) && self::check((int) $answer, '->correct', Session::get(self::$math));
     }
 
     /**
@@ -118,9 +118,9 @@ class Guardian {
         $answer = (string) $answer;
         $answer_key = (string) Session::get(self::$captcha);
         if( ! $case_sensitive) {
-            return self::check(strtolower($answer), strtolower($answer_key))->this_is_correct;
+            return self::check(strtolower($answer), '->correct', strtolower($answer_key));
         }
-        return self::check($answer, $answer_key)->this_is_correct;
+        return self::check($answer, '->correct', $answer_key);
     }
 
     /**
@@ -193,14 +193,26 @@ class Guardian {
      *        echo 'OK.';
      *    }
      *
+     *    if(Guardian::check('email@domain.com', '->email')) {
+     *        echo 'OK.';
+     *    }
+     *
      * ------------------------------------------------------------
      *
      */
 
     public static function check() {
         $results = array();
+        $arguments = func_get_args();
+        // Alternate function for faster checking process => `Guardian::check('foo, '->URL')`
+        if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
+            $validator = 'this_is_' . str_replace('->', "", $arguments[1]);
+            unset($arguments[1]);
+            return isset(self::$validators[$validator]) ? call_user_func_array(self::$validators[$validator], $arguments) : false;
+        }
+        // Default function for complete checking process => `Guardian::check('foo')->this_is_URL`
         foreach(self::$validators as $name => $callback) {
-            $results[$name] = call_user_func_array($callback, func_get_args());
+            $results[$name] = call_user_func_array($callback, $arguments);
         }
         return (object) $results;
     }

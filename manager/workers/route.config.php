@@ -66,7 +66,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Guardian::memorize($request);
         }
         // Check for invalid email address
-        if(trim($request['author_email']) !== "" && ! Guardian::check($request['author_email'])->this_is_email) {
+        if(trim($request['author_email']) !== "" && ! Guardian::check($request['author_email'], '->email')) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }

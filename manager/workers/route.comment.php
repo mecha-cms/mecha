@@ -97,7 +97,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Guardian::memorize($request);
         }
         // Invalid email address
-        if(trim($request['email']) !== "" && ! Guardian::check($request['email'])->this_is_email) {
+        if(trim($request['email']) !== "" && ! Guardian::check($request['email'], '->email')) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }

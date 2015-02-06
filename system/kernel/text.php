@@ -116,7 +116,7 @@ class Text {
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $parser = 'to_' . str_replace('->', "", $arguments[1]);
             unset($arguments[1]);
-            return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : $arguments[0];
+            return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : false;
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
         foreach(self::$parsers as $name => $callback) {

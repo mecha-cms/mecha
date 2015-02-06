@@ -350,7 +350,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
         if(trim($request['email']) !== "") {
 
-            if( ! Guardian::check($request['email'])->this_is_email) {
+            if( ! Guardian::check($request['email'], '->email')) {
                 Notify::error($speak->notify_invalid_email);
             } else {
                 // Disallow passengers from entering your email address in the comment email field
@@ -363,7 +363,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_empty_field', array($speak->email)));
         }
 
-        if(trim($request['url']) !== "" && ! Guardian::check($request['url'])->this_is_URL) {
+        if(trim($request['url']) !== "" && ! Guardian::check($request['url'], '->URL')) {
             Notify::error($speak->notify_invalid_url);
         }
 
@@ -375,19 +375,19 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error($speak->notify_invalid_math_answer);
         }
 
-        if(Guardian::check($request['name'], 100)->this_is_too_long) {
+        if(Guardian::check($request['name'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_name)));
         }
 
-        if(Guardian::check($request['email'], 100)->this_is_too_long) {
+        if(Guardian::check($request['email'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_email)));
         }
 
-        if(Guardian::check($request['url'], 100)->this_is_too_long) {
+        if(Guardian::check($request['url'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_url)));
         }
 
-        if(Guardian::check($request['message'], 1700)->this_is_too_long) {
+        if(Guardian::check($request['message'], '->too_long', 1700)) {
             Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
         }
 

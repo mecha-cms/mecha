@@ -1166,7 +1166,7 @@ class Get {
         } else {
             $ip = $_SERVER['REMOTE_ADDR'];
         }
-        return Guardian::check($ip)->this_is_IP ? $ip : 'N/A';
+        return Guardian::check($ip, '->IP') ? $ip : 'N/A';
     }
 
     /**

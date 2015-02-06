@@ -59,7 +59,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
     $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.FT=\'' . $uri_end . '\';DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=document.getElementsByName(\'content_type\')?document.getElementsByName(\'content_type\')[0].checked:' . ($config->html_parser ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
-    //  Please use the `TAB` and `ES` variable as in the defined PHP constants.
+    //  Please use the `TAB` and `ES` variable as declared in the PHP constants.
     $output .= 'DASHBOARD.tab_size=\'' . TAB . '\';DASHBOARD.element_suffix=\'' . ES . '\';';
     echo $output . '</script>' . O_END;
 }, 1);
