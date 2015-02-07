@@ -10,13 +10,15 @@ if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
 
 $json = array(
     'meta' => array(
+        'generator' => 'Mecha CMS ' . MECHA_VERSION,
         'title' => $config->title,
         'url' => array(
             'home' => $config->url,
             'previous' => $config->offset > 1 ? $config->url . '/feeds/json/' . ($config->offset - 1) : null,
             'next' => $config->offset < ceil($config->total_articles / 25) ? $config->url . '/feeds/json/' . ($config->offset + 1) : null
         ),
-        'updated' => date('c'),
+        'description' => $config->description,
+        'update' => date('c'),
         'author' => array(
             'name' => $config->author,
             'url' => array(
@@ -38,7 +40,7 @@ if( ! empty($bucket)) {
             'date' => $item->date->W3C,
             'update' => Date::format($item->update, 'c'),
             'id' => $item->id,
-            'summary' => $item->description,
+            'description' => $item->description,
             'kind' => Mecha::A($item->kind)
         );
     }

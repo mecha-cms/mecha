@@ -1,6 +1,7 @@
 <?php
 
 $bucket = array();
+$r = array('#&\#?[a-z0-9]{2,8}\;#i');
 
 if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
     foreach($pages as $path) {
@@ -8,29 +9,37 @@ if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
     }
 }
 
-$germs = array('#&\#?[a-z0-9]{2,8}\;#i');
-
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
-echo '<feed xmlns="http://www.w3.org/2005/Atom">';
+echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
+echo '<channel>';
+echo '<generator>Mecha CMS ' . MECHA_VERSION . '</generator>';
 echo '<title>' . $config->title . '</title>';
-echo '<link href="' . $config->url . '"/>';
-echo '<link rel="self" href="' . $config->url_current . '"/>';
-echo $config->offset > 1 ? '<link rel="previous" href="' . $config->url . '/feeds/rss/' . ($config->offset - 1) . '"/>' : "";
-echo $config->offset < ceil($config->total_articles / 25) ? '<link rel="next" href="' . $config->url . '/feeds/rss/' . ($config->offset + 1) . '"/>' : "";
-echo '<updated>' . date('c') . '</updated>';
-echo '<author><name>' . $config->author . '</name></author>';
-echo '<id>' . $config->url . '/</id>';
-
+echo '<link>' . $config->url . '/</link>';
+echo '<description>' . $config->description . '</description>';
+echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
+echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
+echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $config->url . '/feeds/rss/' . ($config->offset - 1) . '"/>' : "";
+echo $config->offset < ceil($config->total_articles / 25) ? '<atom:link rel="next" href="' . $config->url . '/feeds/rss/' . ($config->offset + 1) . '"/>' : "";
 if( ! empty($bucket)) {
     foreach($bucket as $item) {
-        echo '<entry>';
-        echo '<title>' . preg_replace($germs, "", strip_tags($item->title)) . '</title>';
-        echo '<link href="' . $item->url . '"/>';
-        echo '<id>' . $item->url . '</id>';
-        echo '<updated>' . Date::format($item->update, 'c') . '</updated>';
-        echo '<summary>' . preg_replace($germs, "", strip_tags($item->description)) . '</summary>';
-        echo '</entry>';
+        $title = preg_replace($r, "", strip_tags($item->title));
+        $description = Text::parse(preg_replace($r, "", $item->description), '->encoded_html');
+        $kind = Mecha::A($item->kind);
+        echo '<item>';
+        echo '<title>' . $title . '</title>';
+        echo '<link>' . $item->url . '</link>';
+        echo '<description>' . $description . '</description>';
+        echo '<pubDate>' . Date::format($item->time, 'r') . '</pubDate>';
+        echo '<guid>' . $item->url . '</guid>';
+        if( ! empty($kind)) {
+            foreach($kind as $k) {
+                $kind_data = Get::rawTagsBy($k);
+                echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . $kind_data['slug'] . '">' . $kind_data['name'] . '</category>';
+            }
+        }
+        echo '<source url="' . $config->url . '/feeds/rss">' . $config->title . ': ' . $title . '</source>';
+        echo '</item>';
     }
 }
-
-echo '</feed>';
+echo '</channel>';
+echo '</rss>';
