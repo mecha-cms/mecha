@@ -1,8 +1,3 @@
-/**
- * padding vertical = 6
- * padding horizontal = 10
- */
-
 .help {cursor:help}
 a.help {cursor:pointer}
 
@@ -17,7 +12,7 @@ a.help {cursor:pointer}
   border-color:black;
   color:white;
   font-size:86%;
-  padding:6px 10px;
+  padding:.5366726296958855em .8944543828264758em;
   position:absolute;
   z-index:9999;
   -webkit-box-shadow:0 5px 15px rgba(0,0,0,.5);
@@ -29,12 +24,12 @@ a.help {cursor:pointer}
   display:block;
   width:0;
   height:0;
-  border:6px solid transparent;
+  border:.5366726296958855em solid transparent;
   border-top-color:inherit;
   position:absolute;
   top:100%;
   left:50%;
-  margin-left:-6px;
+  margin-left:-.5366726296958855em;
 }
 
 .tooltip.t .tooltip-arrow {border-bottom:none}
@@ -47,12 +42,12 @@ a.help {cursor:pointer}
 }
 
 .tooltip.r .tooltip-arrow {
-  left:8px;
+  left:.7155635062611807em;
   margin:0;
 }
 
 .tooltip.l .tooltip-arrow {
-  right:8px;
+  right:.7155635062611807em;
   left:auto;
   margin:0;
 }

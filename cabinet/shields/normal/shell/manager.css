@@ -8,9 +8,9 @@
   top:0;
   right:0;
   z-index:9999;
-  height:40px;
-  line-height:40px;
-  padding:0 14px;
+  height:3.076923076923077em;
+  line-height:3.076923076923077em;
+  padding:0 1.0769230769230769em;
 }
 
 .widget-manager-menu ul li,
@@ -29,11 +29,11 @@
   font-style:normal;
   font-weight:bold;
   font-size:100%;
-  line-height:30px;
-  height:30px;
+  line-height:2.3076923076923075em;
+  height:2.3076923076923075em;
   overflow:hidden;
   margin:0 0 2px;
-  padding:0 8px;
+  padding:0 .6153846153846154em;
 }
 
 .widget-manager-menu a:focus,
@@ -62,10 +62,10 @@
 
 .widget-manager-menu a .counter {
   position:absolute;
-  top:5px;
-  right:5px;
-  line-height:20px;
-  height:20px;
+  top:.38461538461538464em;
+  right:.38461538461538464em;
+  line-height:1.5384615384615385em;
+  height:1.5384615384615385em;
   background-color:#FFA;
   color:#333;
   padding:0 .5em;

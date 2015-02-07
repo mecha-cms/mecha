@@ -99,8 +99,14 @@ function do_remove_cache() {
     }
 }
 
+// Articles and pages
 Weapon::add('on_article_update', 'do_remove_cache', 10);
 Weapon::add('on_page_update', 'do_remove_cache', 10);
+
+// Plugins
+Weapon::add('on_plugin_update', function() {
+    File::open(CACHE . DS . 'plugins.order.cache')->delete();
+});
 
 
 /**

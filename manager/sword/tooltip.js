@@ -29,15 +29,9 @@
                 .html($this.data('title') + '<span class="tooltip-arrow"></span>')
                     .removeClass('t r b l hidden');
 
-
-            /**
-             * padding vertical = 6
-             * padding horizontal = 10
-             */
-
             var distance = {
-                vertical: 6,
-                horizontal: 10
+                vertical: parseInt($tooltip.css('padding-top'), 10),
+                horizontal: parseInt($tooltip.css('padding-left'), 10)
             };
 
             var width = $tooltip.width(),

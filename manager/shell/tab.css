@@ -1,8 +1,8 @@
 .tab-area {
   margin:1.3846153846153846em 0 0;
-  height:32px;
+  height:2.4615384615384617em;
   font-weight:bold;
-  line-height:30px;
+  line-height:2.3076923076923075em;
   overflow:hidden;
   zoom:1;
 }
@@ -18,15 +18,15 @@
 .tab {
   display:block;
   float:left;
-  margin:0 0 0 5px;
-  padding:0 10px;
+  margin:0 0 0 .38461538461538464em;
+  padding:0 .7692307692307693em;
   border:1px solid;
   color:inherit;
   border-bottom-width:0;
   position:relative;
 }
 
-.tab .fa {margin-left:-2px}
+.tab .fa {margin-left:-.15384615384615385em}
 
 .tab:focus,
 .tab:hover,

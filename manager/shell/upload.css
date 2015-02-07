@@ -1,4 +1,5 @@
 .form-upload .input-wrapper {
+  display:inline-block;
   position:relative;
   overflow:hidden;
 }

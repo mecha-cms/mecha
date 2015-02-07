@@ -12,6 +12,11 @@
  *  PS: Excuse me with my CSS writing style. I like to keep it compact like this.
  * ==============================================================================
  *
+ *
+ *  @base-font-size: 13px;
+ *  @base-line-height: 18px;
+ *
+ *
  *  Base    | +8%     | -8%
  *  ------- | ------- | -------
  *  #FFF    |         |
@@ -222,12 +227,12 @@ select,
 textarea,
 .btn {
   display:inline-block;
-  width:200px;
+  width:15.384615384615385em;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
   vertical-align:middle;
-  padding:10px;
+  padding:.7692307692307693em;
   margin:0;
   font:inherit;
   line-height:normal;
@@ -240,8 +245,8 @@ textarea,
 button {overflow:visible}
 
 select {
-  padding-top:9px;
-  padding-bottom:9px;
+  padding-top:.6923076923076923em;
+  padding-bottom:.6923076923076923em;
 }
 
 .btn-block,
@@ -263,7 +268,7 @@ input::-moz-focus-inner {
 textarea {
   overflow:auto;
   height:auto;
-  min-height:90px;
+  min-height:6.923076923076923em;
   line-height:inherit;
   resize:vertical;
 }
@@ -280,8 +285,8 @@ input[type="submit"],
   text-align:center;
   text-decoration:none !important;
   color:#FFA !important;
-  padding-left:12px;
-  padding-right:12px;
+  padding-left:.9230769230769231em;
+  padding-right:.9230769230769231em;
   -webkit-border-radius:2px;
   -moz-border-radius:2px;
   border-radius:2px;
@@ -378,29 +383,24 @@ fieldset[disabled] .btn {
 .input-small,
 .select-small,
 .textarea-small {
-  padding:7px 8px;
+  padding:.6261180679785331em .7155635062611807em;
   font-size:86%;
 }
 
-.btn-small {padding:7px 10px}
-.select-small {padding:6px 7px}
-
-.textarea-small {
-  height:90px;
-  line-height:normal;
-}
+.btn-small {padding:.6261180679785331em .8944543828264758em}
+.select-small {padding:.5366726296958855em .6261180679785331em}
+.textarea-small {line-height:normal}
 
 input[type="checkbox"],
 input[type="radio"] {
-  width:14px;
-  height:14px;
+  width:1.0769230769230769em;
+  height:1.0769230769230769em;
   cursor:pointer;
   background:none;
   border:none;
   margin:0;
   padding:0;
   position:relative;
-  top:-1px;
 }
 
 input[type="number"]::-webkit-inner-spin-button,
@@ -444,8 +444,8 @@ label input:checked + span {opacity:.8}
 .form-label,
 .form-static {
   display:block;
-  padding-top:10px;
-  padding-bottom:10px;
+  padding-top:.7692307692307693em;
+  padding-bottom:.7692307692307693em;
   line-height:normal;
 }
 
@@ -559,7 +559,7 @@ iframe {
   border:none;
   background:none;
   width:100%;
-  height:90px;
+  height:6.923076923076923em;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
@@ -799,13 +799,13 @@ img {
 /* MESSAGES */
 
 .message {
-  padding:.8em 1em;
+  padding:.7692307692307693em .9230769230769231em;
   background-color:#333;
   color:white;
   overflow:hidden;
 }
 
-.message > .fa.fa-fw:first-child {margin-left:-.2em}
+.message > .fa.fa-fw:first-child {margin-left:-.15384615384615385em} /* (width - font-size) / 2 */
 
 .message code {
   color:inherit;

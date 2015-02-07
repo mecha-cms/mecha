@@ -757,10 +757,6 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
  * ---------------
  */
 
-Weapon::add('on_plugin_update', function() {
-    File::open(CACHE . DS . 'plugins.order.cache')->delete();
-});
-
 if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
     $plugins = File::open($plugins_order)->unserialize();
 } else {

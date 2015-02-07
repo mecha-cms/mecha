@@ -14,7 +14,7 @@ textarea[name="js[]"],
 textarea[name="php[]"],
 textarea[name="json[]"],
 textarea[name="jsonp[]"],
-textarea[name="xml[]"] {height:300px}
+textarea[name="xml[]"] {height:23.076923076923077em}
 
 .main-actions {
   padding:1.3846153846153846em 0;
@@ -87,8 +87,8 @@ textarea[name="xml[]"] {height:300px}
 .pager a .fa {font-size:100%}
 
 .plugin-author {
-  height:32px;
-  line-height:32px;
+  height:2.4615384615384617em;
+  line-height:2.4615384615384617em;
   padding:0 2.5em 0 1em;
   white-space:nowrap;
   overflow:hidden;
