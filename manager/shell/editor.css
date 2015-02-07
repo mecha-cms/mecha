@@ -1,13 +1,13 @@
 .editor-toolbar {
   display:block;
-  height:26px;
-  line-height:26px;
+  height:2em;
+  line-height:2em;
 }
 
 .editor-toolbar a {
   display:block;
   float:left;
-  width:26px;
+  width:2em;
   height:inherit;
   line-height:inherit;
   text-align:center;
@@ -34,7 +34,7 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
   left:-999999px;
   background-color:white;
   border:1px solid;
-  width:250px;
+  width:19.23076923076923em;
   padding:1em;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;

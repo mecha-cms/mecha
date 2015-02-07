@@ -172,7 +172,7 @@ q:after {
 /* GENERAL */
 
 html {
-  font-size:13px;
+  font:normal normal 13px/1.3846153846153846em Helmet,FreeSans,Sans-Serif;
   overflow-y:scroll;
   overflow-x:hidden;
   -webkit-font-smoothing:antialiased;
@@ -180,7 +180,6 @@ html {
 }
 
 body {
-  font:normal normal 100%/1.3846153846153846em Helmet,FreeSans,Sans-Serif;
   background-color:white;
   color:#333;
 }

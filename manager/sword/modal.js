@@ -27,6 +27,7 @@
 
     $close.on("click", function(e) {
         $(this).closest('.modal').hide().prev().hide();
+        $body.css('overflow', "").parent().css('overflow', "");
         base.fire('on_modal_hide', {
             'event': e,
             'target': this
@@ -37,10 +38,20 @@
     $modal.each(function() {
         var $this = $(this),
             $trigger = $this.attr('data-trigger') ? $this.data('trigger') : false;
-        $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).insertBefore($this);
+        $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).on("click", function(e) {
+            $(this).hide().next().hide();
+            $body.css('overflow', "").parent().css('overflow', "");
+            base.fire('on_modal_hide', {
+                'event': e,
+                'target': this
+            });
+        }).insertBefore($this);
         if ($trigger) {
             $body.on("click", $trigger, function(e) {
                 $this.show().prev().show();
+                if ($this.hasClass('modal-full-screen')) {
+                    $body.css('overflow', 'hidden').parent().css('overflow', 'hidden');
+                }
                 base.fire('on_modal_show', {
                     'event': e,
                     'target': this

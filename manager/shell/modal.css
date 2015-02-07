@@ -5,8 +5,8 @@
   bottom:20%;
   left:50%;
   z-index:9999;
-  width:600px;
-  margin-left:-300px;
+  width:46.15384615384615em;
+  margin-left:-23.076923076923077em;
   background-color:white;
   border:1px solid;
   -webkit-box-sizing:border-box;
@@ -91,7 +91,7 @@
   line-height:inherit;
 }
 
-@media (max-height:600px) {
+@media (max-height:46.15384615384615em) {
   .modal {
     top:5%;
     bottom:5%;
@@ -101,10 +101,10 @@
 .modal-small {
   top:50%;
   bottom:auto;
-  width:300px;
-  height:250px;
-  margin-top:-125px;
-  margin-left:-150px;
+  width:23.076923076923077em;
+  height:19.23076923076923em;
+  margin-top:-9.615384615384615em;
+  margin-left:-11.538461538461538em;
 }
 
 .modal-large {
@@ -125,12 +125,13 @@
   bottom:0;
   left:0;
   margin:0;
+  border:none;
   -webkit-border-radius:0;
   -moz-border-radius:0;
   border-radius:0;
 }
 
-@media (max-width:650px) {
+@media (max-width:50em) {
   .modal {
     width:auto;
     height:auto;

@@ -268,7 +268,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
  * -------------
  */
 
-Route::accept($config->manager->slug . '/shield/(:any)/backup', function($folder = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/shield/backup/id:(:any)', function($folder = "") use($config, $speak) {
     $name = $folder . '.zip';
     Package::take(SHIELD . DS . $folder)->pack(ROOT . DS . $name, true);
     $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));

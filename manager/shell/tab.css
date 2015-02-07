@@ -53,7 +53,7 @@
   clear:both;
 }
 
-@media (max-width:580px) {
+@media (max-width:44.61538461538461em) {
   .tab-area {
     height:auto;
     line-height:42px;

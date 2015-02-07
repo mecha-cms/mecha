@@ -210,7 +210,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
  * -------------
  */
 
-Route::accept($config->manager->slug . '/plugin/(:any)/backup', function($folder = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/backup/id:(:any)', function($folder = "") use($config, $speak) {
     $name = $folder . '.zip';
     Package::take(PLUGIN . DS . $folder)->pack(ROOT . DS . $name, true);
     $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
