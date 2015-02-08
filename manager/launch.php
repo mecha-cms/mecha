@@ -57,7 +57,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
         $constants_js .= $constant . '=\'' . addslashes($value) . '\',';
     }
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
-    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.FT=\'' . $uri_end . '\';DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=document.getElementsByName(\'content_type\').length?document.getElementsByName(\'content_type\')[0].checked:' . ($config->html_parser ? 'true' : 'false') . ';';
+    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment=\'' . $uri_end . '\';DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=document.getElementsByName(\'content_type\').length?document.getElementsByName(\'content_type\')[0].checked:' . ($config->html_parser ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
     //  Please use the `TAB` and `ES` variable as declared in the PHP constants.
     $output .= 'DASHBOARD.tab_size=\'' . TAB . '\';DASHBOARD.element_suffix=\'' . ES . '\';';

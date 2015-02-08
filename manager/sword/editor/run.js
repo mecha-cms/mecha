@@ -17,7 +17,7 @@
             toolbar = area[i].getAttribute('data-mte-use-toolbar') || false,
             prefix = toolbar ? 'composer' : 'editor';
         base.fire('on_control_begin', {
-            'FT': base.FT,
+            'segment': base.segment,
             'name': name,
             'index': i
         });
@@ -39,7 +39,7 @@
                     'id': type,
                     'index': i,
                     'info': {
-                        'FT': base.FT,
+                        'segment': base.segment,
                         'name': name
                     }
                 });
@@ -50,7 +50,7 @@
                     'editor': editor,
                     'index': i,
                     'info': {
-                        'FT': base.FT,
+                        'segment': base.segment,
                         'name': name
                     }
                 });
@@ -60,7 +60,7 @@
                     'editor': editor,
                     'index': i,
                     'info': {
-                        'FT': base.FT,
+                        'segment': base.segment,
                         'name': name,
                     }
                 });
@@ -70,7 +70,7 @@
             base[prefix] = base[prefix + '_' + name];
         }
         base.fire('on_control_end', {
-            'FT': base.FT,
+            'segment': base.segment,
             'name': name,
             'index': i
         });

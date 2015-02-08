@@ -9,15 +9,17 @@
  *
  *    // Basic parser
  *    echo Text::parse('some text')->to_slug;
+ *    echo Text::parse('some text', $foo, $bar)->to_slug;
  *
  *    // Fast parser
  *    echo Text::parse('some text', '->slug');
+ *    echo Text::parse('some text', '->slug', $foo, $bar);
  *
  *    // Perform a test
  *    var_dump(Text::parse('some text'));
  *
  *    // Convert text into array
- *    Text::toArray("Key: value\nKey: value");
+ *    Text::toArray("Key 1: Value 1\nKey 2: Value 2");
  *
  * -------------------------------------------------------
  *
@@ -51,7 +53,7 @@ class Text {
         foreach(explode("\n", trim($validated)) as $line) {
             // Get depth and labels
             $depth = 0;
-            $is_multi = strpos($line, $splitter) !== false;
+            $is_multi = strpos($line, $splitter) !== false && strpos($line, $splitter) > 0;
             while(substr($line, 0, strlen($indent)) === $indent) {
                 $depth += 1;
                 $line = rtrim(substr($line, strlen($indent)));

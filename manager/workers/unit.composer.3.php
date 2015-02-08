@@ -42,7 +42,7 @@ foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $folder) {
     }
 }
 
-Weapon::fire('unit_composer_3_before', array($FT, $fields));
+Weapon::fire('unit_composer_3_before', array($segment, $fields));
 
 if( ! empty($fields)) {
     $html = "";
@@ -52,15 +52,15 @@ if( ! empty($fields)) {
             $value['value'] = "";
         }
         if( ! isset($value['scope']) || isset($value['scope']) && $value['scope'] == 'all') {
-            $value['scope'] = $FT;
+            $value['scope'] = $segment;
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
-        if($value['scope'] == $FT) {
+        if($value['scope'] == $segment) {
             $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
         }
-        if($value['type'] == 'text' && $value['scope'] == $FT) {
+        if($value['type'] == 'text' && $value['scope'] == $segment) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-4">';
@@ -68,7 +68,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'summary' && $value['scope'] == $FT) {
+        if($value['type'] == 'summary' && $value['scope'] == $segment) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-4">';
@@ -76,7 +76,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</label>';
         }
-        if($value['type'] == 'boolean' && $value['scope'] == $FT) {
+        if($value['type'] == 'boolean' && $value['scope'] == $segment) {
             $html .= '<div class="grid-group">';
             $html .= '<span class="grid span-2"></span>';
             $html .= '<span class="grid span-4">';
@@ -84,7 +84,7 @@ if( ! empty($fields)) {
             $html .= '</span>';
             $html .= '</div>';
         }
-        if($value['type'] == 'option' && $value['scope'] == $FT) {
+        if($value['type'] == 'option' && $value['scope'] == $segment) {
             $html .= '<label class="grid-group">';
             $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
             $html .= '<span class="grid span-4">';
@@ -108,4 +108,4 @@ if( ! empty($fields)) {
     echo '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
 }
 
-Weapon::fire('unit_composer_3_after', array($FT, $fields));
+Weapon::fire('unit_composer_3_after', array($segment, $fields));
