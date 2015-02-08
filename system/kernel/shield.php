@@ -165,19 +165,21 @@ class Shield {
      *  ---------- | ------- | ----------------------------------
      *  $name      | string  | Name of the shield
      *  $minify    | boolean | Minify HTML output?
-     *  $cacheable | boolean | Create a cache file on page visit?
+     *  $cache     | boolean | Create a cache file on page visit?
      *  ---------- | ------- | ----------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function attach($name, $minify = null, $cacheable = false) {
+    public static function attach($name, $minify = null, $cache = false) {
 
-        if(is_null($minify)) {
-            $minify = Config::get('html_minifier');
-        }
+        if(is_null($minify)) $minify = Config::get('html_minifier');
 
-        $G = array('data' => array('name' => $name, 'minify' => $minify, 'cacheable' => $cacheable));
+        $G = array('data' => array(
+            'name' => $name,
+            'minify' => $minify,
+            'cache' => $cache
+        ));
 
         Weapon::fire('before_shield_config_redefine', array($G, $G));
 
@@ -185,23 +187,28 @@ class Shield {
 
         Weapon::fire('after_shield_config_redefine', array($G, $G));
 
-        self::$defines = array();
-
-        $base = explode('-', $name, 2);
+        $shield = false;
+        $shield_base = explode('-', $name, 2);
 
         if($_file = File::exist(self::pathTrace($name))) {
             $shield = $_file;
-        } elseif($_file = File::exist(self::pathTrace($base[0]))) {
+        } elseif($_file = File::exist(self::pathTrace($shield_base[0]))) {
             $shield = $_file;
         } else {
             Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::pathTrace($name) . '</code>')));
         }
 
-        $qs = isset($_GET) && ! empty($_GET) ? '.' . md5($_SERVER['QUERY_STRING']) : "";
-        $cache = CACHE . DS . str_replace(array($config->url . '/', '/'), array("", '.'), $config->url_current) . $qs . '.cache';
+        $G['data']['path'] = $shield;
 
-        if($cacheable && File::exist($cache)) {
-            echo File::open($cache)->read();
+        self::$defines = array();
+
+        $qs = isset($_GET) && ! empty($_GET) ? '.' . md5($_SERVER['QUERY_STRING']) : "";
+        $cache_path = CACHE . DS . str_replace(array($config->url . '/', '/'), array("", '.'), $config->url_current) . $qs . '.cache';
+
+        $G['data']['cache'] = $cache_path;
+
+        if($cache && File::exist($cache_path)) {
+            echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;
         }
 
@@ -215,9 +222,10 @@ class Shield {
 
         Guardian::forget();
 
-        if($cacheable) {
-            $G['data']['content'] = ob_get_contents();
-            File::write($G['data']['content'])->saveTo($cache);
+        $G['data']['content'] = ob_get_contents();
+
+        if($cache) {
+            File::write($G['data']['content'])->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
 
@@ -244,47 +252,15 @@ class Shield {
      *
      */
 
-    public static function abort($name = null, $minify = null) {
+    public static function abort($name = null, $minify = null, $cache = false) {
 
-        if(is_null($minify)) {
-            $minify = Config::get('html_minifier');
-        }
-
-        $G = array('data' => array('name' => $name, 'minify' => $minify));
-
-        Weapon::fire('before_shield_config_redefine', array($G, $G));
+        if(is_null($name)) $name = '404';
 
         Config::set('page_type', '404');
 
-        extract(self::defines());
-
-        Weapon::fire('after_shield_config_redefine', array($G, $G));
-
-        self::$defines = array();
-
-        if( ! is_null($name) && File::exist(SHIELD . DS . $config->shield . DS . $name . '.php')) {
-            $shield = SHIELD . DS . $config->shield . DS . $name . '.php';
-        } else {
-            $shield = SHIELD . DS . $config->shield . DS . '404.php';
-        }
-
         Guardian::setResponseStatus(404);
 
-        Weapon::fire('shield_before', array($G, $G));
-
-        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
-
-        require Filter::apply('shield:path', $shield);
-
-        Notify::clear();
-
-        Guardian::forget();
-
-        ob_end_flush();
-
-        Weapon::fire('shield_after', array($G, $G));
-
-        exit;
+        self::attach($name, $minify, $cache);
 
     }
 

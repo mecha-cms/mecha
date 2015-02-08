@@ -1,7 +1,7 @@
 <?php
 
 $bucket = array();
-$r = array('#&\#?[a-z0-9]{2,8}\;#i');
+$r = array('#&\#?[a-z0-9]{2,8}\;#i', '#[[:^print:]]#u');
 
 if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
     foreach($pages as $path) {
@@ -22,7 +22,7 @@ echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $config->url . '
 echo $config->offset < ceil($config->total_articles / 25) ? '<atom:link rel="next" href="' . $config->url . '/feeds/rss/' . ($config->offset + 1) . '"/>' : "";
 if( ! empty($bucket)) {
     foreach($bucket as $item) {
-        $title = preg_replace($r, "", strip_tags($item->title));
+        $title = Text::parse(preg_replace($r, "", strip_tags($item->title)), '->encoded_html');
         $description = Text::parse(preg_replace($r, "", $item->description), '->encoded_html');
         $kind = Mecha::A($item->kind);
         echo '<item>';
