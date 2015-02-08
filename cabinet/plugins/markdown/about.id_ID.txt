@@ -1,8 +1,8 @@
-Title: Markdown
+﻿Title: Markdown
 Author: Michel Fortin
 URL: http://michelf.ca/projects/php-markdown
 Version: 1.4.1
 
 ====
 
-Markdown Extra &ndash; Alat konversi teks-ke-HTML untuk para penulis web.
+**Markdown Extra** – Alat konversi teks-ke-HTML untuk para penulis web.

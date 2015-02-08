@@ -1,8 +1,8 @@
-Title: Facebook Open Graph
+﻿Title: Facebook Open Graph
 Author: Taufik Nurrohman
-URL: http://latitudu.com
+URL: http://mecha-cms.com
 Version: 1.1.1
 
 ====
 
-Inject [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer &ndash; Open Graph Overview") meta tags to your **Mecha**&rsquo;s head automatically!
+Inject [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer – Open Graph Overview") meta tags to your **Mecha**’s head automatically!

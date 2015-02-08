@@ -1,83 +1,99 @@
 ﻿Title: Plugin Kosong
 Author: Taufik Nurrohman
-Version: 1.0.0
+URL: #
+Version: 0.0.0
 
 ====
 
-> Ini cuma sebagai panduan dasar pembuatan plugin.
+> Ini hanyalah sebuah plugin contoh.
 
-### Lakukan Sesuatu Saat Data Formulir Dikirimkan
-
-Standar URL pengiriman pada formulir harus diarahkan menuju URL ini:
+### Struktur Berkas
 
 ~~~ .no-highlight
-{{url}}manager/plugin/folder-plugin/update
+ROOT
+└── cabinet/
+    └── plugins/
+        └── folder-plugin/
+            ├── shell/ (opsional)
+            │   └── css di sini…
+            ├── sword/ (opsional)
+            │   └── javascript di sini…
+            ├── object/ (opsional)
+            │   └── gambar dan media lain di sini…
+            ├── workers/ (opsional)
+            │   └── kode php tambahan di sini…
+            ├── languages/ (opsional)
+            │   └── berkas bahasa di sini…
+            ├── states/ (opsional)
+            │   └── data konfigurasi (.txt) di sini…
+            ├── about.txt
+            ├── __overtake.txt (opsional)
+            ├── capture.png (opsional)
+            ├── configurator.php (opsional)
+            └── pending.php (atau “launch.php”)
 ~~~
 
-Anda seharusnya bisa membuatnya dengan mudah melalui ini:
+### `configurator.php`
 
-~~~ .php
-Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/' . basename(__DIR__) . '/update';
-~~~
-
-Atau, mengingat Anda sudah memiliki URL plugin pada halaman yang sedang Anda lihat saat ini, maka Anda bisa menggunakan cara ini:
-
-~~~ .php
-Config::get('url_current') . '/update';
-~~~
-
-#### Formulir
-
-Berikut ini adalah struktur formulir dasar untuk konfigurasi plugin. Ini adalah item _shield_, jadi Anda bisa menggunakan variabel pintasan `$config` dan `$speak` dari sini:
+Berkas ini berisi formulir untuk mengatur konfigurasi plugin:
 
 ~~~ .html
-<form action="<?php echo $config->url_current; ?>/update" method="post">
+<form class="form-plugin" action="<?php echo $config->url_current; ?>/update" method="post">
 
-  <!-- Mohon tambahkan input token -->
+  <!-- Mohon tambahkan sebuah masukan token -->
   <input name="token" type="hidden" value="<?php echo $token; ?>">
 
-  <!-- Letakkan elemen-elemen formulir yang lain di sini… -->
+  <!-- Elemen-elemen formulir yang lain bisa diletakkan di sini… -->
 
-  <!-- Tombol eksekusi formulir -->
+  <!-- Tombol eksekusi -->
   <p><button type="submit">Perbaharui</button></p>
 
 </form>
 ~~~
 
-Tempatkan formulir tersebut di dalam berkas `configurator.php`.
-
-#### Rute
-
-Buat sebuah rute menuju _path_ manajer plugin + `/update` relatif ke URL halaman muka untuk melaksanakan aksi `POST` pada formulir:
+URL formulir harus diarahkan ke ` {{url.manager}}plugin/folder-plugin/update `. Anda bisa membuatnya dengan beberapa metode ini (tergantung di mana Anda sedang berada saat itu):
 
 ~~~ .php
-$config = Config::get();
-$speak = Config::speak();
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/folder-plugin/update';
+~~~
 
+~~~ .php
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . basename(__DIR__) . '/update';
+~~~
+
+~~~ .php
+$url = Config::get('url_current') . '/update';
+~~~
+
+~~~ .php
+$url = $config->url_current . '/update';
+~~~
+
+**Tip:** Gunakan `basename(__DIR__)` sebagai pengganti nama folder plugin. Ini akan mengizinkan pengguna untuk mengubah nama folder plugin Anda dengan nama yang lain untuk tujuan tertentu. Misalnya untuk mencegah duplikat nama folder.
+
+### `lauch.php`
+
+Berkas ini berisi kode eksekusi plugin. Ketika plugin terpasang, maka berkas ini akan bekerja.
+
+Buat sebuah rute baru menuju ` {{url.manager}}plugin/folder-plugin/update ` relatif ke URL halaman muka untuk mengeksekusi permintaan `POST`:
+
+~~~ .php
 Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
-
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
     }
-
-    if(Request::post()) {
-
-        Guardian::checkToken(Request::post('token')); // [2]
-
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']); // [2]
         File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
-
         Notify::success('Plugin updated.'); // [3]
-
         Guardian::kick(dirname($config->url_current)); // [4]
-
     }
-
 });
 ~~~
 
 No. | Deskripsi
 --: | -------------------------------------------------------------------------
-1.  | Jangan izinkan pengguna non pilot dan penumpang untuk melakukan submisi.
+1.  | Jangan izinkan pengguna non–pilot dan penumpang untuk melakukan submisi.
 2.  | Cek input token. Jika tidak cocok, arahkan pengguna menuju halaman login.
 3.  | Buat sebuah pesan sukses pada saat pengiriman berhasil dilakukan.
 4.  | Arahkan pengguna menuju URL sebelumnya setelah semuanya selesai.

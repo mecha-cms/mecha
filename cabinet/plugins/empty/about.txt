@@ -1,37 +1,44 @@
 ﻿Title: Empty Plugin
 Author: Taufik Nurrohman
-Version: 1.0.0
+URL: #
+Version: 0.0.0
 
 ====
 
-> This is just a plugin starter template.
+> This is just a sample plugin.
 
-### Do Something on Form Submit
-
-The standard form submission URL should be directed to the following URL:
+### File Structure
 
 ~~~ .no-highlight
-{{url.manager}}/plugin/plugin-folder/update
+ROOT
+└── cabinet/
+    └── plugins/
+        └── plugin-folder/
+            ├── shell/ (optional)
+            │   └── stylesheets goes here…
+            ├── sword/ (optional)
+            │   └── javascripts goes here…
+            ├── object/ (optional)
+            │   └── images and other media goes here…
+            ├── workers/ (optional)
+            │   └── extra php files goes here…
+            ├── languages/ (optional)
+            │   └── language files goes here…
+            ├── states/ (optional)
+            │   └── saved configuration data (.txt) goes here…
+            ├── about.txt
+            ├── __overtake.txt (optional)
+            ├── capture.png (optional)
+            ├── configurator.php (optional)
+            └── pending.php (or “launch.php”)
 ~~~
 
-You could easily generate the URL using this:
+### `configurator.php`
 
-~~~ .php
-Config::get('url') . '/' . Config::get('manager')->slug . '/plugin/' . basename(__DIR__) . '/update';
-~~~
-
-Or, since you already have the plugin URL path in the current page, you could simply use this:
-
-~~~ .php
-Config::get('url_current') . '/update';
-~~~
-
-#### The Form
-
-The following is the basic plugin configuration form. This is a shield item, so you can use that `$config` and `$speak` shortcut from here:
+This file contains a form to set up the plugin configuration:
 
 ~~~ .html
-<form action="<?php echo $config->url_current; ?>/update" method="post">
+<form class="form-plugin" action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Please add a token input -->
   <input name="token" type="hidden" value="<?php echo $token; ?>">
@@ -44,41 +51,50 @@ The following is the basic plugin configuration form. This is a shield item, so 
 </form>
 ~~~
 
-Place the plugin form inside your `configurator.php` file.
-
-#### The Route
-
-Create a new route to the plugin page path + `/update` relative to home URL to execute a `POST` action:
+URL of the form should be directed to ` {{url.manager}}plugin/plugin-folder/update `. You could easily generate it with some of these methods (depending on where you are at the time):
 
 ~~~ .php
-$config = Config::get();
-$speak = Config::speak();
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/plugin-folder/update';
+~~~
 
+~~~ .php
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . basename(__DIR__) . '/update';
+~~~
+
+~~~ .php
+$url = Config::get('url_current') . '/update';
+~~~
+
+~~~ .php
+$url = $config->url_current . '/update';
+~~~
+
+**Tip:** Use `basename(__DIR__)` as a replacement of the plugin’s folder name. This will allows users to change your plugin’s folder name with another name for their specific purposes. As for example, to prevent duplicate of folder name.
+
+### `lauch.php`
+
+This file contains the executable code of the plugin. When the plugin is installed, then this file will be executed.
+
+Create a new route to ` {{url.manager}}plugin/plugin-folder/update ` relative to the homepage URL to execute a `POST` request:
+
+~~~ .php
 Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
-
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
     }
-
-    if(Request::post()) {
-
-        Guardian::checkToken(Request::post('token')); // [2]
-
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']); // [2]
         File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
-
         Notify::success('Plugin updated.'); // [3]
-
         Guardian::kick(dirname($config->url_current)); // [4]
-
     }
-
 });
 ~~~
 
 No. | Description
---: | -----------------------------------------------------------------------------
-1.  | Do not allow non pilot and passenger users to perform a form submission.
-2.  | Check the token input. If it doesn&rsquo;t match, redirect to the login page.
+--: | -------------------------------------------------------------------------
+1.  | Do not allow non–pilot and passenger users to perform a form submission.
+2.  | Check the token input. If it doesn’t match, redirect to the login page.
 3.  | Create a success message on success.
 4.  | Redirect to the previous URL on success.
 

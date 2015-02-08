@@ -152,6 +152,7 @@ class Converter {
     public static function curt($input, $chars = 100, $tail = '&hellip;') {
         $input = preg_replace(
             array(
+                '#[[:^print:]]#u',
                 '#<[^\/].*?>#',
                 '# +#',
                 '#<.*?>#',
@@ -160,6 +161,7 @@ class Converter {
                 '#<|>#'
             ),
             array(
+                "",
                 ' ',
                 ' ',
                 "",
