@@ -205,8 +205,6 @@ class Shield {
         $qs = isset($_GET) && ! empty($_GET) ? '.' . md5($_SERVER['QUERY_STRING']) : "";
         $cache_path = CACHE . DS . str_replace(array($config->url . '/', '/'), array("", '.'), $config->url_current) . $qs . '.cache';
 
-        $G['data']['cache'] = $cache_path;
-
         if($cache && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;
@@ -225,6 +223,7 @@ class Shield {
         $G['data']['content'] = ob_get_contents();
 
         if($cache) {
+            $G['data']['cache'] = $cache_path;
             File::write($G['data']['content'])->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
