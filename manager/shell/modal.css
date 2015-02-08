@@ -61,16 +61,16 @@
   line-height:3.8461538461538463em;
   height:3.8461538461538463em;
   position:absolute;
-  right:0;
+  right:.5384615384615384em;
   bottom:0;
-  left:0;
+  left:auto;
   overflow:hidden;
 }
 
 .modal-footer .btn {
   display:block;
   float:left;
-  margin:.5384615384615384em 0 0 .5384615384615384em;
+  margin:.5384615384615384em 0 0;
 }
 
 .modal-footer .btn + .btn {margin-left:.3076923076923077em}
