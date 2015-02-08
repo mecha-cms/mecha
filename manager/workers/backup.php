@@ -55,7 +55,7 @@
     ?>
     <?php foreach($destinations as $title => $destination): ?>
     <div class="media-item">
-      <h4><?php echo $title; ?></h4>
+      <h4 class="media-title"><?php echo $title; ?></h4>
       <p><code><?php echo $destination; ?></code></p>
       <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
         <input name="token" type="hidden" value="<?php echo $token; ?>">

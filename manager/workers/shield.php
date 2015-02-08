@@ -54,9 +54,12 @@
   <div class="tab-content hidden" id="tab-content-3">
     <h3 class="media-head"><?php echo $speak->shields; ?></h3>
     <?php foreach($the_shields as $shield): $shield = basename($shield); ?>
-    <?php if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
-    <div class="media-item" id="shield:<?php echo $shield; ?>">
-      <h4><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
+    <?php $c = File::exist(SHIELD . DS . $shield . DS . 'capture.png'); if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
+    <div class="media-item<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $shield; ?>">
+      <?php if($c): ?>
+      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>');" role="image"></div>
+      <?php endif; ?>
+      <h4 class="media-title"><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
       <p><?php echo Converter::curt($info->content); ?></p>
       <p>
         <a class="btn btn-small btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/attach/id:' . $shield; ?>"><i class="fa fa-shield"></i> <?php echo $speak->attach; ?></a> <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/id:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>

@@ -26,15 +26,33 @@ textarea[name="xml[]"] {height:23.076923076923077em}
 
 .media-item {
   border-top:1px dashed;
-  padding:1.3846153846153846em 0;
+  padding:1.3846153846153846em 0 1.3846153846153846em 11.3846153846153846em;
   margin:1.3846153846153846em 0 0;
+  position:relative;
 }
 
+.media-item.no-capture {padding-left:0}
 .media-item + .media-item {margin-top:0}
 
-.media-item h4 {
+.media-title {
   margin:0 0 -.24725274725274726em;
+  padding:0;
+  font-size:140%;
   line-height:1;
+}
+
+.media-capture {
+  position:absolute;
+  top:0;
+  bottom:0;
+  left:0;
+  width:10em;
+  margin:1.3846153846153846em 0;
+  background:transparent none no-repeat 50% 50%;
+  -webkit-background-size:cover;
+  -moz-background-size:cover;
+  background-size:cover;
+  overflow:hidden;
 }
 
 .page-list,
