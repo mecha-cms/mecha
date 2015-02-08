@@ -10,7 +10,7 @@
     <?php foreach($files as $plugin): $c = File::exist(PLUGIN . DS . $plugin->slug . DS . 'capture.png'); ?>
     <div class="media-item<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $plugin->slug; ?>">
       <?php if($c): ?>
-      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>');" role="image"></div>
+      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
       <h4 class="media-title"><i class="fa <?php echo File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'fa-unlock-alt' : 'fa-lock'; ?>"></i> <?php echo $plugin->about->title; ?></h4>
       <p><?php echo Converter::curt($plugin->about->content); ?></p>

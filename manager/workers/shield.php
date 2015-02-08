@@ -57,7 +57,7 @@
     <?php $c = File::exist(SHIELD . DS . $shield . DS . 'capture.png'); if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
     <div class="media-item<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $shield; ?>">
       <?php if($c): ?>
-      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>');" role="image"></div>
+      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
       <h4 class="media-title"><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
       <p><?php echo Converter::curt($info->content); ?></p>
