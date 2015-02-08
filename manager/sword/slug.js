@@ -7,6 +7,10 @@
 
     $.slug = function(input, output, connector) {
 
+        if (typeof connector == "undefined") {
+            connector = '-';
+        }
+
         input.off("keyup").on("keyup", function() {
 
             var value = this.value;

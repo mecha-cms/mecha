@@ -10,7 +10,7 @@
     });
     var area = d.getElementsByTagName('textarea'),
         speak = base.languages.MTE;
-    if (!area) return;
+    if (!area || !area.length) return;
     for (var i = 0, len = area.length; i < len; ++i) {
         var name = area[i].name.replace(/\[\]/g, '_' + i).replace(/\[(.*?)\]/, '_$1'),
             shortcut = area[i].getAttribute('data-mte-use-shortcut') || false,

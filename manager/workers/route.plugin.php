@@ -77,7 +77,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
 })(Zepto);
 </script>';
-            });
+            }, 11);
         }
     }
     $plugins = array();

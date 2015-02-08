@@ -63,6 +63,6 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     base.fire(\'on_row_increase\');
 })(Zepto, DASHBOARD);
 </script>';
-    });
+    }, 11);
     Shield::attach('manager', false);
 });

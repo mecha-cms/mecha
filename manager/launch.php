@@ -38,7 +38,7 @@ Weapon::add('shell_after', function() use($config) {
         'manager/shell/sortable.css',
         'manager/shell/accordion.css',
         'manager/shell/layout.css',
-        'shell/manager.css'
+        'shell/manager.css' // => from the current shield folder
     ), "", 'manager.min.css');
     if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
         echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);

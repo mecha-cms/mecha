@@ -43,6 +43,9 @@ window.DASHBOARD = {
         }
     },
     exist: function(name, fallback) {
+        if (typeof fallback == "undefined") {
+            fallback = false;
+        }
         if (typeof name == "undefined") {
             return Object.keys(DASHBOARD.hooks).length > 0 ? DASHBOARD.hooks : fallback;
         }

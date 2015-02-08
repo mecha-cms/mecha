@@ -59,7 +59,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
 })(Zepto);
 </script>';
-            });
+            }, 11);
         }
     }
     Config::set(array(

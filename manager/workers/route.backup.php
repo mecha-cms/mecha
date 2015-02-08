@@ -52,7 +52,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
 })(Zepto);
 </script>';
-            });
+            }, 11);
         }
     }
     Config::set(array(

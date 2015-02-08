@@ -79,7 +79,7 @@ Guardian::checker('this_is_too_short', function($input, $min = 0) {
     return is_string($input) ? strlen($input) < $min : false;
 });
 
-// Check for correct answer
+// Check whether the answer is incorrect
 Guardian::checker('this_is_correct', function($a = true, $b = false) {
     return $a === $b;
 });
