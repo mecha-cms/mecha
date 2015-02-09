@@ -66,7 +66,7 @@
                 });
             }
         }) : {};
-        if (i === 0) {
+        if (i === 0 || /(^| )MTE-main( |$)/.test(area[i].className)) {
             base[prefix] = base[prefix + '_' + name];
         }
         base.fire('on_control_end', {
