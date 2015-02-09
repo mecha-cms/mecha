@@ -528,22 +528,22 @@ Route::accept(array('feeds?/json', 'feeds?/json/(:num)'), function($offset = 1) 
  *
  */
 
-Route::accept('captcha.png', function() {
+Route::accept('captcha\.png', function() {
 
     header('Content-Type: image/png');
     header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
     header('Cache-Control: post-check=0, pre-check=0', false);
     header('Pragma: no-cache');
 
-    $bg = Request::get('bg', '333333');
-    $color = Request::get('color', 'FFFFAA');
+    $bg = (string) Request::get('bg', '333333');
+    $color = (string) Request::get('color', 'FFFFAA');
     $width = (int) Request::get('width', 100);
     $height = (int) Request::get('height', 30);
     $padding = (int) Request::get('padding', 7);
     $size = (int) Request::get('size', 16);
     $length = (int) Request::get('length', 7);
-    $font = Request::get('font', 'special-elite-regular.ttf');
-    $text = Session::get(Guardian::$captcha, "");
+    $font = (string) Request::get('font', 'special-elite-regular.ttf');
+    $text = (string) Session::get(Guardian::$captcha, "");
 
     if($bg !== false && $bg = Converter::HEX2RGB($bg)) {
         $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
@@ -570,6 +570,8 @@ Route::accept('captcha.png', function() {
     imagettftext($image, $size, 0, $padding, $size + $padding, $color, ASSET . DS . '__captcha' . DS . $font, $text);
     imagepng($image);
     imagedestroy($image);
+
+    exit;
 
 }, 100);
 
