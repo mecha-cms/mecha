@@ -398,7 +398,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if($fuck !== "") {
                 if(
                     $request['email'] == $fuck || // Block by email address
-                    Get::IP() != 'N/A' && Get::IP() == $fuck || // Block by IP address
+                    $fuck != 'N/A' && Get::IP() == $fuck || // Block by IP address
                     strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
                 ) {
                     Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
@@ -417,12 +417,11 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             // Restrict users from inputting the `SEPARATOR` constant
             // to prevent mistakes in parsing the file content
-            $s = Text::parse(SEPARATOR, '->ascii');
-            $name = str_replace(SEPARATOR, $s, strip_tags($request['name']));
+            $name = Text::ES(strip_tags($request['name']));
             $email = Text::parse($request['email'], '->ascii');
-            $url = str_replace(SEPARATOR, $s, Request::post('url', '#'));
+            $url = Text::ES(Request::post('url', '#'));
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
-            $message = str_replace(SEPARATOR, $s, $request['message']);
+            $message = Text::ES($request['message']);
 
             // Temporarily disallow images in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser == 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
@@ -490,13 +489,13 @@ Route::accept('sitemap', function() {
  * RSS Feed
  * --------
  *
- * [1]. feeds
- * [2]. feeds/rss
- * [3]. feeds/rss/1
+ * [1]. feed
+ * [2]. feed/rss
+ * [3]. feed/rss/1
  *
  */
 
-Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset = 1) {
+Route::accept(array('feeds?', 'feeds?/rss', 'feeds?/rss/(:num)'), function($offset = 1) {
     Config::set('offset', (int) $offset);
     header('Content-Type: text/xml; charset=UTF-8');
     Shield::attach(SHIELD . DS . 'rss', true, true);
@@ -507,14 +506,14 @@ Route::accept(array('feeds', 'feeds/rss', 'feeds/rss/(:num)'), function($offset 
  * JSON Feed
  * ---------
  *
- * [1]. feeds/json
- * [2]. feeds/json/1
- * [3]. feeds/json?callback=theFunction
- * [4]. feeds/json/1?callback=theFunction
+ * [1]. feed/json
+ * [2]. feed/json/1
+ * [3]. feed/json?callback=theFunction
+ * [4]. feed/json/1?callback=theFunction
  *
  */
 
-Route::accept(array('feeds/json', 'feeds/json/(:num)'), function($offset = 1) {
+Route::accept(array('feeds?/json', 'feeds?/json/(:num)'), function($offset = 1) {
     Config::set('offset', (int) $offset);
     header('Content-Type: application/json');
     Shield::attach(SHIELD . DS . 'json', true, true);
