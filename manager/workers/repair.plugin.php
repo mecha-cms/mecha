@@ -1,6 +1,6 @@
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><i class="fa fa-cog"></i> <?php echo $speak->config; ?></a>
-  <a class="tab" href="#tab-content-2"><i class="fa fa-user"></i> <?php echo $speak->about; ?></a>
+  <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-cog"></i> <?php echo $speak->config; ?></a>
+  <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-user"></i> <?php echo $speak->about; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
