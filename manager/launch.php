@@ -1,5 +1,4 @@
-<?php
-
+<?php if( ! defined('ROOT')) die('Rejected.');
 
 
 $uri_end_parts = str_replace($config->url . '/' . $config->manager->slug . '/', "", $config->url_current);
@@ -9,7 +8,6 @@ $uri_end = $uri_end_parts[0];
 Config::merge('DASHBOARD.languages', array(
     'MTE' => Mecha::A($speak->MTE)
 ));
-
 
 
 /**

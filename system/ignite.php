@@ -1,4 +1,4 @@
-<?php
+<?php if( ! defined('ROOT')) die('Rejected.');
 
 
 // error_reporting(E_ALL);
