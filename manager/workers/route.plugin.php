@@ -7,9 +7,9 @@
  */
 
 $e_plugin_page = "Title: %s\n" .
-     "Author: " . $speak->unknown . "\n" .
+     "Author: " . $speak->anon . "\n" .
      "URL: #\n" .
-     "Version: " . $speak->unknown . "\n" .
+     "Version: 0.0.0\n" .
      "\n" . SEPARATOR . "\n" .
      "\n" . Config::speak('notify_not_available', array($speak->description));
 
@@ -89,10 +89,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
                 $file = $files[$i] . DS . 'about.txt';
             }
-            $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
-            if($about['title'] == '%s') {
-                $about['title'] = ucwords(Text::parse(basename($files[$i]), '->text'));
-            }
+            $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage(sprintf($e_plugin_page, ucwords(Text::parse(basename($files[$i]), '->text'))), true, 'plugin:');
             $plugins[$i]['about'] = $about;
             $plugins[$i]['slug'] = basename($files[$i]);
         }
@@ -126,10 +123,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage($e_plugin_page, true, 'plugin:');
-    if($about['title'] == '%s') {
-        $about['title'] = ucwords(Text::parse($slug, '->text'));
-    }
+    $about = File::exist($file) ? Text::toPage(File::open($file)->read(), true, 'plugin:') : Text::toPage(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text'))), true, 'plugin:');
     if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
         $about['author'] = $matches[1];
         $about['url'] = $matches[2] . $matches[3];
