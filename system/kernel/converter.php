@@ -320,10 +320,10 @@ class Converter {
                 array(
                     '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
                     '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
-                    '#([\s:])(0)(px|em|%|in|cm|mm|pc|pt|ex)#', // Replace `0(px|em|%|in|cm|mm|pc|pt|ex)` with `0`
+                    '#([\s:])(0)(cm|em|ex|in|mm|pc|pt|px|%)#', // Replace `0(cm|em|ex|in|mm|pc|pt|px|%)` with `0`
                     '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
                     '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
-                    '#(:|\s)0+\\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
+                    '#([\s:])0+\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
                 ),
                 array(
                     '$1',
@@ -341,18 +341,16 @@ class Converter {
     // JavaScript Minifier
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
-        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/|\/\*@cc_on[\s\S]+?@\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/|\/\*\s*@cc_on[\s\S]*?@\s*\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
         $results = "";
         foreach($input_parts as $s) {
-            $results .= (strpos($s, '/*!') === 0 || strpos($s, '/*@cc_on') === 0 ? $s : preg_replace(
+            $results .= (strpos($s, '/*!') === 0 || strpos($s, '@cc_on') !== false ? $s : preg_replace(
                 array(
                     '#\/\*([\s\S]*?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
-                    '#(^|[\n\r])\s*#', // Remove space and new-line characters at the beginning of line
-                    '#(?|\s*(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[gimuy]*(?=[.,;\s]))\s*|\s*([+-=\/%(){}\[\]<>|&?!:;,])\s*)#s', // Remove unused space characters outside the string and regex
-                    '#;\}#' // Remove the last semicolon
+                    '#(?|\s*(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[gimuy]*(?=[.,;\s]))\s*|\s*([+-=\/%(){}\[\]<>|&?!:;.,])\s*)#s', // Remove unused white-space characters outside the string and regex
+                    '#;+\}#' // Remove the last semicolon
                 ),
                 array(
-                    "",
                     "",
                     '$1',
                     '}'
