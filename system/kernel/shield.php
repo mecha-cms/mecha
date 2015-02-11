@@ -21,7 +21,7 @@ class Shield {
      * ----------
      */
 
-    private static function desanitize_output($buffer) {
+    private static function s_o_d($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
         return Filter::apply('sanitize:output', $buffer);
     }
@@ -31,7 +31,7 @@ class Shield {
      * ------------------
      */
 
-    private static function sanitize_output($buffer) {
+    private static function s_o($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
         return Filter::apply('sanitize:output', Converter::detractSkeleton($buffer));
     }
@@ -203,16 +203,16 @@ class Shield {
         self::$defines = array();
 
         $qs = isset($_GET) && ! empty($_GET) ? '.' . md5($_SERVER['QUERY_STRING']) : "";
-        $cache_path = CACHE . DS . str_replace(array($config->url . '/', '/'), array("", '.'), $config->url_current) . $qs . '.cache';
+        $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $qs . '.cache';
 
-        if($cache && File::exist($cache_path)) {
+        if($G['data']['cache'] && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;
         }
 
         Weapon::fire('shield_before', array($G, $G));
 
-        ob_start($minify ? 'self::sanitize_output' : 'self::desanitize_output');
+        ob_start($minify ? 'self::s_o' : 'self::s_o_d');
 
         require Filter::apply('shield:path', $shield);
 
@@ -222,9 +222,9 @@ class Shield {
 
         $G['data']['content'] = ob_get_contents();
 
-        if($cache) {
+        if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
-            File::write($G['data']['content'])->saveTo($cache_path);
+            File::write(ob_get_contents())->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
 
