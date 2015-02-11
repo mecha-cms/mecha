@@ -18,8 +18,8 @@ echo '<link>' . $config->url . '/</link>';
 echo '<description>' . $config->description . '</description>';
 echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
 echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
-echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $config->url . '/feeds/rss/' . ($config->offset - 1) . '"/>' : "";
-echo $config->offset < ceil($config->total_articles / 25) ? '<atom:link rel="next" href="' . $config->url . '/feeds/rss/' . ($config->offset + 1) . '"/>' : "";
+echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $config->url . '/feed/rss/' . ($config->offset - 1) . '"/>' : "";
+echo $config->offset < ceil($config->total_articles / 25) ? '<atom:link rel="next" href="' . $config->url . '/feed/rss/' . ($config->offset + 1) . '"/>' : "";
 if( ! empty($bucket)) {
     foreach($bucket as $item) {
         $title = Text::parse(preg_replace($r, "", strip_tags($item->title)), '->encoded_html');
@@ -37,7 +37,7 @@ if( ! empty($bucket)) {
                 echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . $kind_data['slug'] . '">' . $kind_data['name'] . '</category>';
             }
         }
-        echo '<source url="' . $config->url . '/feeds/rss">' . $config->title . ': ' . $title . '</source>';
+        echo '<source url="' . $item->url . '">' . $config->title . ': ' . $title . '</source>';
         echo '</item>';
     }
 }

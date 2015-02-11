@@ -577,7 +577,7 @@ class Get {
             'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $filter_prefix, 'last_update'),
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $filter_prefix, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $filter_prefix, 'kind'),
-            'slug' => self::AMF($slug, $filter_prefix, '->slug'),
+            'slug' => self::AMF($slug, $filter_prefix, 'slug'),
             'state' => self::AMF($extension == 'txt' ? 'published' : 'draft', $filter_prefix, 'state')
         );
     }

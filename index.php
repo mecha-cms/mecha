@@ -35,7 +35,7 @@ define('CSS_LIBRARY_PATH', "");
 define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css');
 define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js');
 
-define('FONT_EXT', 'eot,svg,otf,ttf,woff,woff2');
+define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpg,jpeg,png');
 define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
 define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');

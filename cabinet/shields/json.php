@@ -14,8 +14,8 @@ $json = array(
         'title' => $config->title,
         'url' => array(
             'home' => $config->url,
-            'previous' => $config->offset > 1 ? $config->url . '/feeds/json/' . ($config->offset - 1) : null,
-            'next' => $config->offset < ceil($config->total_articles / 25) ? $config->url . '/feeds/json/' . ($config->offset + 1) : null
+            'previous' => $config->offset > 1 ? $config->url . '/feed/json/' . ($config->offset - 1) : null,
+            'next' => $config->offset < ceil($config->total_articles / 25) ? $config->url . '/feed/json/' . ($config->offset + 1) : null
         ),
         'description' => $config->description,
         'update' => date('c'),
