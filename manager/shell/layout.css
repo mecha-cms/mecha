@@ -142,3 +142,17 @@ textarea[name="xml[]"] {height:23.076923076923077em}
 .messages + .article-list,
 .messages + .response-list,
 .tab-content-area .messages {margin-top:1.3846153846153846em}
+
+.hidden {display:none}
+
+.hidden-visually,.sr {
+  position:absolute !important;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip:rect(0px,0px,0px,0px);
+  height:1px;
+  width:1px;
+  margin:-1px 0 0;
+  padding:0;
+  border:0;
+}
