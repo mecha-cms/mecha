@@ -25,9 +25,15 @@
 .radio.checked:before {content:"\f192"}
 
 .checkbox.disabled,
-.radio.disabled {
+.checkbox.readonly,
+.radio.disabled,
+.radio.readonly {
   color:inherit !important;
-  opacity:.8;
   cursor:default;
+}
+
+.checkbox.disabled,
+.radio.disabled {
+  opacity:.8;
   cursor:not-allowed;
 }

@@ -14,6 +14,7 @@
         $checkbox.each(function() {
             $(this).before('<a class="checkbox' + (this.checked ? ' checked' : "") + '" href="#toggle"></a>');
         }).on("change", function(e) {
+            if ($(this).is('[disabled]') || $(this).is('[readonly]')) return false;
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
             base.fire('on_checkbox_change', {
                 'event': e,
@@ -25,19 +26,21 @@
             });
         });
         $('.checkbox').on("click", function() {
-            if ($(this).is('.disabled')) return false;
+            if ($(this).is('.disabled') || $(this).is('.readonly')) return false;
             $(this).toggleClass('checked').next().prop('checked', $(this).is('.checked')).trigger("change");
             return false;
         }).on("mousedown", function() {
             return false;
         });
-        $checkbox.filter(':disabled').prev().addClass('disabled');
+        $checkbox.filter('[disabled]').prev().addClass('disabled');
+        $checkbox.filter('[readonly]').prev().addClass('readonly');
     }
 
     if ($radio.length) {
         $radio.each(function() {
             $(this).before('<a class="radio' + (this.checked ? ' checked' : "") + '" href="#check"></a>');
         }).on("change", function(e) {
+            if ($(this).is('[disabled]') || $(this).is('[readonly]') || $(this).is('[checked]')) return false;
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
             $radio.filter('[name="' + this.name + '"]').not(this).prop('checked', false).prev().removeClass('checked');
             base.fire('on_radio_change', {
@@ -50,13 +53,14 @@
             });
         });
         $('.radio').on("click", function() {
-            if ($(this).is('.disabled') || $(this).is('.checked')) return false;
+            if ($(this).is('.disabled') || $(this).is('.readonly') || $(this).is('.checked')) return false;
             $(this).next().prop('checked', true).trigger("change");
             return false;
         }).on("mousedown", function() {
             return false;
         });
-        $radio.filter(':disabled').prev().addClass('disabled');
+        $radio.filter('[disabled]').prev().addClass('disabled');
+        $radio.filter('[readonly]').prev().addClass('readonly');
     }
 
 })(Zepto, DASHBOARD);

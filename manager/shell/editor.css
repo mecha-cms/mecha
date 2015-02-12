@@ -48,7 +48,11 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
   overflow:hidden;
 }
 
-.custom-modal-header {font-weight:bold}
+.custom-modal-header {
+  font-weight:bold;
+  line-height:1;
+}
+
 .custom-modal-content {margin:1em 0}
 .custom-modal-prompt input {
   display:block;

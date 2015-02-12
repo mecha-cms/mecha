@@ -14,7 +14,7 @@
 (function($, base) {
 
     var $uploader = $('input[type="file"]'),
-        accepted = $uploader.attr('data-accepted-extensions') ? $uploader.data('acceptedExtensions').split(',') : 'bmp,css,cur,eot,gif,gz,html,ico,jpeg,jpg,js,md,png,rar,tar,ttf,txt,woff,woff2,zip,zipx'.split(','),
+        accepted = ($uploader.data('acceptedExtensions') || 'bmp,css,cur,eot,gif,gz,html,ico,jpeg,jpg,js,md,png,rar,tar,ttf,txt,woff,woff2,zip,zipx').split(','),
         cache = $uploader.prev().html();
 
     if (!$uploader.length) return;

@@ -37,7 +37,7 @@
 
     $modal.each(function() {
         var $this = $(this),
-            $trigger = $this.attr('data-trigger') ? $this.data('trigger') : false;
+            $trigger = $this.data('trigger') || false;
         $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).on("click", function(e) {
             $(this).hide().next().hide();
             $body.css('overflow', "").parent().css('overflow', "");

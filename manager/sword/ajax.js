@@ -1,16 +1,19 @@
 /**
- * AJAX Button
- * -----------
+ * AJAX Request
+ * ------------
  *
- *    <button class="ajax" data-url="/path/to/action" data-loading-text="Loading&hellip;" data-error-text="Error." data-source="#my-form" data-destination="#my-div">Load!</button>
+ *    <button class="ajax-post" data-url="/path/to/action" data-loading-text="Loading&hellip;" data-error-text="Error." data-source="#my-form" data-destination="#my-div">Load!</button>
  *    <form id="my-form"></form>
+ *    <div id="my-div"></div>
+ *
+ *    <button class="ajax-get" data-url="/path/to/file.html" data-loading-text="Loading&hellip;" data-error-text="Error." data-source="#my-container" data-destination="#my-div">Load!</button>
  *    <div id="my-div"></div>
  *
  */
 
 (function($, base) {
 
-    var $btn = $('.ajax');
+    var $btn = $('.ajax-post, .ajax-get');
 
     if (!$btn.length) return;
 
@@ -18,11 +21,13 @@
 
         var _this = this,
             $this = $(_this),
-            $source = $($this.data('source')),
-            _error = $this.attr('data-error-text') ? $this.data('errorText') : "",
-            _action = $this.attr('data-url') ? $this.data('url') : $source.attr('action'),
-            _loading = $this.attr('data-loading-text') ? $this.data('loadingText') : "",
-            $destination = $this.attr('data-destination') ? $($this.data('destination')) : $this.next();
+            _source = $this.data('source') || false,
+            $source = $(_source),
+            _error = $this.data('errorText') || "",
+            _action = $this.data('url') || $source.attr('action'),
+            _loading = $this.data('loadingText') || "",
+            _is_get = $this.is('.ajax-get'),
+            $destination = $($this.data('destination')) || $this.next();
 
         $destination.html(_loading);
 
@@ -30,10 +35,10 @@
 
         $.ajax({
             url: _action,
-            type: 'POST',
-            data: $source.serializeArray(),
+            type: _is_get ? 'GET' : 'POST',
+            data: _is_get || _source === false ? "" : $source.serializeArray(),
             success: function(data, status, xhr) {
-                $destination.html(data);
+                $destination.html(_is_get ? (_source !== false ? $(data).find(_source) : $(data)) : data);
                 base.fire('on_ajax_success', {
                     'data': data,
                     'status': status,

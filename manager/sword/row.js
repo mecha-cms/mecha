@@ -20,8 +20,8 @@
     $btn.on("click", function(e) {
 
         var clone = $(this).closest('tr').prev().clone(true),
-            max = $(this).closest('tr').data('max'),
-            min = $(this).closest('tr').data('min'),
+            max = $(this).closest('tr').data('max') || 9999,
+            min = $(this).closest('tr').data('min') || 1,
             length = $(this).closest('tbody').find('tr').length;
 
         if ($(this).is('.btn-increase')) {

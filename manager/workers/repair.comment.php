@@ -1,6 +1,6 @@
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-pencil"></i> <?php echo $speak->edit; ?></a>
-  <a class="tab ajax" href="#tab-content-2" data-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:comment'; ?>" data-loading-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>." data-source="#form-repair" data-destination="#form-repair-preview"><i class="fa fa-fw fa-eye"></i> <?php echo $speak->preview; ?></a>
+  <a class="tab ajax-post" href="#tab-content-2" data-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:comment'; ?>" data-loading-text="<?php echo $speak->previewing; ?>&hellip;" data-error-text="<?php echo $speak->error; ?>." data-source="#form-repair" data-destination="#form-repair-preview"><i class="fa fa-fw fa-eye"></i> <?php echo $speak->preview; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
