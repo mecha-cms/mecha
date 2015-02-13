@@ -25,8 +25,8 @@
 
             output.val(
                 value
-                    .replace(/<.*?>/g, "")
-                    .replace(/[^a-z0-9-]+/gi, '-')
+                    .replace(/<.*?>|&(?:[a-z0-9]+|#[0-9]+|#x[a-f0-9]+);/gi, ' ')
+                    .replace(/[^a-z0-9\-]+/gi, '-')
                     .replace(/\-+/g, '-')
                     .replace(/^\-|\-$/g, "")
                     .toLowerCase()

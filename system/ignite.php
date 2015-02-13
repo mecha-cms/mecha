@@ -630,11 +630,13 @@ function do_slug($text, $lower = true, $strip_underscores_and_dots = true, $conn
     $slug = str_replace(array_keys($text_accents), array_values($text_accents), strip_tags($text));
     $slug = preg_replace(
         array(
-            '#[^a-z0-9' . preg_quote($connector, '/') . ( ! $strip_underscores_and_dots ? '\_\.' : "") . ']#i',
+            '#&(?:[a-z0-9]+|\#[0-9]+|\#x[a-f0-9]+);#i',
+            '#[^a-z0-9' . preg_quote($connector, '#') . ( ! $strip_underscores_and_dots ? '_.' : "") . ']#i',
             '#' . $connector . '+#',
             '#^' . $connector . '|' . $connector . '$#'
         ),
         array(
+            ' ',
             $connector,
             $connector,
             ""
@@ -842,7 +844,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     }
     $content = preg_replace(array_keys($regex), array_values($regex), $content);
     if(strpos($content, '{{php}}') !== false) {
-        $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]+?)(?<!`)\{\{\/php\}\}(?!`)#m', function($matches) {
+        $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]*?)(?<!`)\{\{\/php\}\}(?!`)#', function($matches) {
             return Converter::phpEval($matches[1]);
         }, $content);
     }
