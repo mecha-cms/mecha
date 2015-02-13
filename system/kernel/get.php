@@ -7,7 +7,7 @@ class Get {
     private static function pathTrace($detector, $folder = PAGE) {
         $results = false;
         foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
-            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)));
+            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
             if($slug == $detector || (is_numeric($detector) && (string) date('Y-m-d-H-i-s', $detector) === (string) $time)) {
                 $results = $path;
                 break;
@@ -342,7 +342,7 @@ class Get {
             list($key, $value) = explode(':', $filter, 2);
             if($key == 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
+                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
                     if(strpos($time, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -381,7 +381,7 @@ class Get {
                 }
             } elseif($key == 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)));
+                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
                     if(strpos($slug, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -569,7 +569,7 @@ class Get {
     public static function pageExtract($input, $filter_prefix = 'page:') {
         if( ! $input) return false;
         $extension = pathinfo($input, PATHINFO_EXTENSION);
-        list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension));
+        list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension), 3);
         $kind = explode(',', $kind);
         return array(
             'path' => self::AMF($input, $filter_prefix, 'path'),
@@ -616,7 +616,7 @@ class Get {
         $fp = 'comment:';
         if( ! $input) return false;
         $extension = pathinfo($input, PATHINFO_EXTENSION);
-        list($post, $id, $parent) = explode('_', basename($input, '.' . $extension));
+        list($post, $id, $parent) = explode('_', basename($input, '.' . $extension), 3);
         return array(
             'path' => self::AMF($input, $fp, 'path'),
             'time' => self::AMF(Date::format($id), $fp, 'time'),
@@ -771,11 +771,7 @@ class Get {
              * is not available in the old posts.
              */
 
-            if($file = File::exist(STATE . DS . 'fields.txt')) {
-                $fields = File::open($file)->unserialize();
-            } else {
-                $fields = array();
-            }
+            $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
 
             $init = array();
 
@@ -877,7 +873,7 @@ class Get {
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {
-            list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)));
+            list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
             if((int) Date::format($time, 'U') == $results['post']) {
                 $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $fp, 'permalink');
                 break;
@@ -922,11 +918,7 @@ class Get {
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $filter_prefix, 'description');
         if( ! isset($results['fields'])) $results['fields'] = array();
-        if($file = File::exist(STATE . DS . 'fields.txt')) {
-            $fields = File::open($file)->unserialize();
-        } else {
-            $fields = array();
-        }
+        $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
         $init = array();
         foreach($fields as $key => $value) {
             if( ! isset($value['scope'])) $value['scope'] = 'all';

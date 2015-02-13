@@ -132,7 +132,7 @@ class Navigator {
     private static function slug($input) {
         $extension = pathinfo($input, PATHINFO_EXTENSION);
         $base = basename($input, '.' . $extension);
-        $parts = explode('_', $base);
+        $parts = explode('_', $base, 3);
         return isset($parts[2]) ? $parts[2] : $base . '.' . $extension;
     }
 

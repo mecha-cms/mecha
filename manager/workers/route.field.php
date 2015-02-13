@@ -32,11 +32,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = File::open($file)->unserialize();
-    } else {
-        $fields = array();
-    }
+    $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
     if($key === false) {
         $data = array(
             'title' => "",
@@ -112,11 +108,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = File::open($file)->unserialize();
-    } else {
-        $fields = array();
-    }
+    $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
     if( ! isset($fields[$key])) {
         Shield::abort();
     } else {

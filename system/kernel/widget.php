@@ -210,7 +210,7 @@ class Widget {
             return O_BEGIN . '<div class="widget widget-tag">' . Config::speak('notify_empty', array(strtolower($speak->posts))) . '</div>' . O_END;
         }
         foreach($files as $file) {
-            list($_time, $_kind, $_name) = explode('_', basename($file));
+            list($_time, $_kind, $_name) = explode('_', basename($file), 3);
             foreach(explode(',', $_kind) as $kind) {
                 $counters[] = (int) $kind;
             }

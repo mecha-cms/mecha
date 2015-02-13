@@ -276,7 +276,7 @@ class File {
         return new static;
     }
 
-    // Get file size then convert it to ...
+    // Convert file size
     public static function size($file, $unit = 'Bytes') {
         $fs = is_numeric($file) ? $file : filesize($file);
         switch(strtolower($unit)) {

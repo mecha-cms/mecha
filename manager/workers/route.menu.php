@@ -10,11 +10,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    if($file = File::exist(STATE . DS . 'menus.txt')) {
-        $menus = File::open($file)->read();
-    } else {
-        $menus = $speak->home . ": /\n" . $speak->about . ": /about";
-    }
+    $menus = File::open(STATE . DS . 'menus.txt')->read($speak->home . ": /\n" . $speak->about . ": /about");
     Config::set(array(
         'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'menu.php'

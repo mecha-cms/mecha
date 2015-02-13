@@ -48,7 +48,7 @@ class Guardian {
 
     public static function token() {
         $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->slug_moderate') . '.log';
-        $token = File::exist($file) ? File::open($file)->read() : sha1(uniqid(mt_rand(), true));
+        $token = File::open($file)->read(sha1(uniqid(mt_rand(), true)));
         Session::set(self::$token, $token);
         return $token;
     }

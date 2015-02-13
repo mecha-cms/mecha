@@ -1,6 +1,6 @@
 <?php
 
-$fields = File::exist(STATE . DS . 'fields.txt') ? File::open(STATE . DS . 'fields.txt')->unserialize() : array();
+$fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
 
 
 /**

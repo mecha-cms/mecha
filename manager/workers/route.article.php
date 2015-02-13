@@ -95,7 +95,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $slugs = array();
         if($files = Get::articles('DESC', "", 'txt,draft')) {
             foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
+                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
                 $slugs[$_slug] = 1;
             }
         }

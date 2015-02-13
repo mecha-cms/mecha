@@ -21,6 +21,10 @@ if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
 
 Route::accept($config->manager->slug . '/login', function() use($config, $speak) {
 
+    if(Guardian::happy()) {
+        Guardian::kick($config->manager->slug . '/article');
+    }
+
     Config::set(array(
         'page_type' => 'manager',
         'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
@@ -29,8 +33,6 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
 
     if(Request::post()) {
         Guardian::authorize()->kick($config->manager->slug . '/article');
-    } else {
-        Guardian::reject();
     }
 
     Shield::attach('manager');

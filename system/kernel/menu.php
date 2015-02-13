@@ -98,11 +98,7 @@ class Menu {
         if(is_null($array)) {
             $speak = Config::speak();
             $filter_prefix = 'navigation:';
-            if($file = File::exist(STATE . DS . 'menus.txt')) {
-                $array = Text::toArray(File::open($file)->read(), ':', '    ');
-            } else {
-                $array = array($speak->home => '/', $speak->about => '/about');
-            }
+            $array = Text::toArray(File::open(STATE . DS . 'menus.txt')->read($speak->home . ": /\n" . $speak->about . ": /about"), ':', '    ');
         }
         return O_BEGIN . rtrim(self::create($array, $type, $filter_prefix, 0), NL) . O_END;
     }
