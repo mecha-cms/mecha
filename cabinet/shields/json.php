@@ -1,8 +1,12 @@
 <?php
 
-$bucket = array();
+$bucket = array();$bucket = array();
+$url_base = rtrim($config->url_current, '\\/-.0123456789');
+$json_order = strtoupper(Request::get('order', 'DESC'));
+$json_filter = Text::parse(Request::get('filter', ""), '->decoded_url');
+$json_limit = Request::get('limit', 25);
 
-if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
+if($pages = Mecha::eat(Get::articles($json_order, $json_filter))->chunk($config->offset, $json_limit)->vomit()) {
     foreach($pages as $path) {
         $bucket[] = Get::articleHeader($path);
     }
@@ -14,8 +18,8 @@ $json = array(
         'title' => $config->title,
         'url' => array(
             'home' => $config->url,
-            'previous' => $config->offset > 1 ? $config->url . '/feed/json/' . ($config->offset - 1) : null,
-            'next' => $config->offset < ceil($config->total_articles / 25) ? $config->url . '/feed/json/' . ($config->offset + 1) : null
+            'previous' => $config->offset > 1 ? $url_base . '/' . ($config->offset - 1) : null,
+            'next' => $config->offset < ceil($config->total_articles / $json_limit) ? $url_base . '/' . ($config->offset + 1) : null
         ),
         'description' => $config->description,
         'update' => date('c'),
@@ -29,10 +33,11 @@ $json = array(
         'total' => $config->total_articles,
         'tags' => Get::rawTags()
     ),
-    'item' => array()
+    'item' => null
 );
 
 if( ! empty($bucket)) {
+    $json['item'] = array();
     foreach($bucket as $item) {
         $json['item'][] = array(
             'title' => $item->title,

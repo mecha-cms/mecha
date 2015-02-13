@@ -1,9 +1,66 @@
 <?php
 
 $bucket = array();
-$r = array('#&\#?[a-z0-9]{2,8}\;#i', '#[[:^print:]]#u');
+$url_base = rtrim($config->url_current, '\\/-.0123456789');
+$rss_order = strtoupper(Request::get('order', 'DESC'));
+$rss_filter = Text::parse(Request::get('filter', ""), '->decoded_url');
+$rss_limit = Request::get('limit', 25);
 
-if($pages = Mecha::eat(Get::articles())->chunk($config->offset, 25)->vomit()) {
+$str_replace = array(
+    '&cent;' => '¢',
+    '&pound;' => '£',
+    '&sect;' => '§',
+    '&copy;' => '©',
+    '&laquo;' => '«',
+    '&raquo;' => '»',
+    '&reg;' => '®',
+    '&deg;' => '°',
+    '&plusmn;' => '±',
+    '&minus;' => '−',
+    '&para;' => '¶',
+    '&middot;' => '·',
+    '&sup1;' => '¹',
+    '&sup2;' => '²',
+    '&sup3;' => '³',
+    '&frac14;' => '¼',
+    '&frac12;' => '½',
+    '&frac34;' => '¾',
+    '&ndash;' => '–',
+    '&mdash;' => '—',
+    '&lsquo;' => '‘',
+    '&rsquo;' => '’',
+    '&sbquo;' => '‚',
+    '&ldquo;' => '“',
+    '&rdquo;' => '”',
+    '&bdquo;' => '„',
+    '&dagger;' => '†',
+    '&Dagger;' => '‡',
+    '&bull;' => '•',
+    '&hellip;' => '…',
+    '&prime;' => '′',
+    '&Prime;' => '″',
+    '&euro;' => '€',
+    '&trade;' => '™',
+    '&asymp;' => '≈',
+    '&ne;' => '≠',
+    '&le;' => '≤',
+    '&ge;' => '≥',
+    '&spades;' => '♠',
+    '&clubs;' => '♣',
+    '&hearts;' => '♥',
+    '&diams;' => '♦',
+    '&larr;' => '←',
+    '&uarr;' => '↑',
+    '&rarr;' => '→',
+    '&darr;' => '↓',
+    '&harr;' => '↔'
+);
+
+$preg_replace = array(
+    '#[[:^print:]]#u' => ""
+);
+
+if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->offset, $rss_limit)->vomit()) {
     foreach($pages as $path) {
         $bucket[] = Get::articleHeader($path);
     }
@@ -18,12 +75,12 @@ echo '<link>' . $config->url . '/</link>';
 echo '<description>' . $config->description . '</description>';
 echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
 echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
-echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $config->url . '/feed/rss/' . ($config->offset - 1) . '"/>' : "";
-echo $config->offset < ceil($config->total_articles / 25) ? '<atom:link rel="next" href="' . $config->url . '/feed/rss/' . ($config->offset + 1) . '"/>' : "";
+echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $url_base . '/' . ($config->offset - 1) . '"/>' : "";
+echo $config->offset < ceil($config->total_articles / $rss_limit) ? '<atom:link rel="next" href="' . $url_base . '/' . ($config->offset + 1) . '"/>' : "";
 if( ! empty($bucket)) {
     foreach($bucket as $item) {
-        $title = Text::parse(preg_replace($r, "", strip_tags($item->title)), '->encoded_html');
-        $description = Text::parse(preg_replace($r, "", $item->description), '->encoded_html');
+        $title = Text::parse(preg_replace(array_keys($preg_replace), array_values($preg_replace), str_replace(array_values($str_replace), array_keys($str_replace), strip_tags($item->title))), '->encoded_html');
+        $description = Text::parse(preg_replace(array_keys($preg_replace), array_values($preg_replace), str_replace(array_values($str_replace), array_keys($str_replace), $item->description)), '->encoded_html');
         $kind = Mecha::A($item->kind);
         echo '<item>';
         echo '<title>' . $title . '</title>';
