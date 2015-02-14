@@ -358,7 +358,7 @@ body {border-top:5px solid}
 }
 
 @media (max-width:53.07692307692308em) {
-  body {padding-top:30px}
+  body {padding-top:3.076923076923077em}
   .blog-header {text-align:center}
   .blog-navigation {
     display:none;
