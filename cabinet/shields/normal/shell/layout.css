@@ -55,16 +55,21 @@ body {border-top:5px solid}
 
 .blog-sidebar-toggle {
   position:absolute;
-  top:10px;
-  left:4px;
-  padding:0 5px;
-  height:30px;
-  line-height:30px;
+  top:5px; /* border-top-width */
+  left:0;
+  width:1.5714285714285714em;
+  height:1.4285714285714286em;
+  font-size:2.1538461538461537em;
+  line-height:1.4285714285714286em;
+  text-align:center;
   display:none;
 }
 
 .blog-sidebar-toggle .fa {
-  font-size:28px;
+  display:block;
+  width:inherit;
+  height:inherit;
+  font-size:100%;
   line-height:inherit;
 }
 
@@ -389,7 +394,11 @@ body {border-top:5px solid}
     width:auto;
     padding:0;
   }
-  .blog-sidebar {display:none}
+  .blog-sidebar {
+    padding-bottom:5%;
+    display:none;
+  }
+  .blog-sidebar .widget-wrapper:last-child .widget {margin-bottom:0}
   .blog-sidebar-toggle,
   .blog-sidebar-is-visible .blog-navigation,
   .blog-sidebar-is-visible .blog-sidebar {display:block}
