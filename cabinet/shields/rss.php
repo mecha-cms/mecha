@@ -56,10 +56,6 @@ $str_replace = array(
     '&harr;' => '↔'
 );
 
-$preg_replace = array(
-    '#[[:^print:]]#u' => ""
-);
-
 if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->offset, $rss_limit)->vomit()) {
     foreach($pages as $path) {
         $bucket[] = Get::articleHeader($path);
@@ -77,10 +73,13 @@ echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
 echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
 echo $config->offset > 1 ? '<atom:link rel="previous" href="' . $url_base . '/' . ($config->offset - 1) . '"/>' : "";
 echo $config->offset < ceil($config->total_articles / $rss_limit) ? '<atom:link rel="next" href="' . $url_base . '/' . ($config->offset + 1) . '"/>' : "";
+
+Weapon::fire('rss_meta');
+
 if( ! empty($bucket)) {
-    foreach($bucket as $item) {
-        $title = Text::parse(preg_replace(array_keys($preg_replace), array_values($preg_replace), str_replace(array_values($str_replace), array_keys($str_replace), strip_tags($item->title))), '->encoded_html');
-        $description = Text::parse(preg_replace(array_keys($preg_replace), array_values($preg_replace), str_replace(array_values($str_replace), array_keys($str_replace), $item->description)), '->encoded_html');
+    foreach($bucket as $i => $item) {
+        $title = Text::parse(str_replace(array_values($str_replace), array_keys($str_replace), strip_tags($item->title)), '->encoded_html');
+        $description = Text::parse(str_replace(array_values($str_replace), array_keys($str_replace), $item->description), '->encoded_html');
         $kind = Mecha::A($item->kind);
         echo '<item>';
         echo '<title>' . $title . '</title>';
@@ -95,8 +94,10 @@ if( ! empty($bucket)) {
             }
         }
         echo '<source url="' . $item->url . '">' . $config->title . ': ' . $title . '</source>';
+        Weapon::fire('rss_item', array($item, $i));
         echo '</item>';
     }
 }
+
 echo '</channel>';
 echo '</rss>';

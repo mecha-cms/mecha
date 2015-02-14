@@ -38,8 +38,8 @@ $json = array(
 
 if( ! empty($bucket)) {
     $json['item'] = array();
-    foreach($bucket as $item) {
-        $json['item'][] = array(
+    foreach($bucket as $i => $item) {
+        $json['item'][$i] = array(
             'title' => $item->title,
             'url' => $item->url,
             'date' => $item->date->W3C,
@@ -48,7 +48,10 @@ if( ! empty($bucket)) {
             'description' => $item->description,
             'kind' => Mecha::A($item->kind)
         );
+        Weapon::fire('json_item', array(&$json['item'][$i], $item, $i));
     }
 }
+
+Weapon::fire('json_meta', array(&$json['meta']));
 
 echo (isset($_GET['callback']) ? $_GET['callback'] . '(' : "") . json_encode($json) . (isset($_GET['callback']) ? ');' : "");
