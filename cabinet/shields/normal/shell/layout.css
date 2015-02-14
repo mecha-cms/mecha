@@ -162,7 +162,7 @@ body {border-top:5px solid}
 .post-time {
   margin:0 0 1.3846153846153846em;
   text-transform:uppercase;
-  letter-spacing:2px;
+  letter-spacing:.15384615384615385em;
   color:#AAA;
 }
 
