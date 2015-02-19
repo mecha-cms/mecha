@@ -152,25 +152,21 @@ class Converter {
     public static function curt($input, $chars = 100, $tail = '&hellip;') {
         $input = preg_replace(
             array(
-                '#[[:^print:]]#u',
-                '#<[^\/].*?>#',
-                '# +#',
-                '#<.*?>#',
-                '#[=\-+*_~`\#]{2,}|&nbsp;#',
-                '# *\. +([A-Z])#',
-                '#<|>#'
+                '#<br *\/?>|<\/(div|p)>#', // New line to a single white-space
+                '#(\s|&nbsp;)+#', // Multiple white-spaces to a single white-space
+                '#<.*?>#', // Remove all HTML tags
+                '#^[`~\#*-=+]{2,}#m', // Remove all possible raw Markdown( Extra)? patterns
+                '#<|>#' // Fix all broken HTML tags. Replace `<div></di` to `div/di`
             ),
             array(
-                "",
                 ' ',
                 ' ',
                 "",
                 "",
-                '. $1',
                 ""
             ),
         trim($input));
-        return trim(substr($input, 0, $chars) . ($chars < strlen($input) ? $tail : ""));
+        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, 'UTF-8') : substr($input, 0, $chars)) . ($chars < strlen($input) ? $tail : ""));
     }
 
     /**
