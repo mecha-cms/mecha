@@ -1,5 +1,5 @@
 /**
- * Custom Radio and Checkbox
+ * Custom Checkbox and Radio
  * -------------------------
  */
 
@@ -29,18 +29,16 @@
             if ($(this).is('.disabled') || $(this).is('.readonly')) return false;
             $(this).toggleClass('checked').next().prop('checked', $(this).is('.checked')).trigger("change");
             return false;
-        }).on("mousedown", function() {
-            return false;
-        });
-        $checkbox.filter('[disabled]').prev().addClass('disabled');
-        $checkbox.filter('[readonly]').prev().addClass('readonly');
+        }).on("mousedown", false);
+        $checkbox.filter('[disabled]').prev().addClass('disabled').closest('label').on("click mousedown", false);
+        $checkbox.filter('[readonly]').prev().addClass('readonly').closest('label').on("click mousedown", false);
     }
 
     if ($radio.length) {
         $radio.each(function() {
             $(this).before('<a class="radio' + (this.checked ? ' checked' : "") + '" href="#check"></a>');
         }).on("change", function(e) {
-            if ($(this).is('[disabled]') || $(this).is('[readonly]') || $(this).is('[checked]')) return false;
+            if ($(this).is('[disabled]') || $(this).is('[readonly]')) return false;
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
             $radio.filter('[name="' + this.name + '"]').not(this).prop('checked', false).prev().removeClass('checked');
             base.fire('on_radio_change', {
@@ -56,11 +54,9 @@
             if ($(this).is('.disabled') || $(this).is('.readonly') || $(this).is('.checked')) return false;
             $(this).next().prop('checked', true).trigger("change");
             return false;
-        }).on("mousedown", function() {
-            return false;
-        });
-        $radio.filter('[disabled]').prev().addClass('disabled');
-        $radio.filter('[readonly]').prev().addClass('readonly');
+        }).on("mousedown", false);
+        $radio.filter('[disabled]').prev().addClass('disabled').closest('label').on("click mousedown", false);
+        $radio.filter('[readonly]').prev().addClass('readonly').closest('label').on("click mousedown", false);
     }
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);

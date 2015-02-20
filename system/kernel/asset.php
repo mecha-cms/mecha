@@ -55,6 +55,9 @@ class Asset {
 
     // Return the HTML StyleSheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
+        if(is_string($path) && strpos($path, '.css,') !== false) {
+            $path = explode(',', $path);
+        }
         if( ! is_array($path)) {
             $path = array($path);
         }
@@ -73,6 +76,9 @@ class Asset {
 
     // Return the HTML JavaScript of asset
     public static function javascript($path, $addon = "", $merge = false) {
+        if(is_string($path) && strpos($path, '.js,') !== false) {
+            $path = explode(',', $path);
+        }
         if( ! is_array($path)) {
             $path = array($path);
         }
@@ -96,6 +102,9 @@ class Asset {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
+        if(is_string($path) && strpos($path, ',') !== false) {
+            $path = explode(',', $path);
+        }
         if( ! is_array($path)) {
             $path = array($path);
         }
@@ -115,7 +124,11 @@ class Asset {
     // Merge multiple asset files into a single file
     public static function merge($files = array(), $name = null, $addon = "", $call = null) {
         if( ! is_array($files)) {
-            $files = array($files);
+            if(strpos($files, ',') !== false) {
+                $files = explode(',', $files);
+            } else {
+                $files = array($files);
+            }
         }
         $the_file = ASSET . DS . str_replace(array('\\', '/'), DS, $name);
         $the_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.log';

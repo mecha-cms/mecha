@@ -68,7 +68,7 @@
         $(this).siblings().removeClass('active');
     });
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);
 
 
 /**
@@ -127,4 +127,4 @@
         $(this).siblings().removeClass('active');
     });
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);

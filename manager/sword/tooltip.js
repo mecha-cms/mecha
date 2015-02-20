@@ -77,7 +77,7 @@
                 'target': _this
             });
         }, 400);
-    }).data('title', function() {
+    }).attr('data-title', function() {
         return this.title ? this.title : false;
     }).removeAttr('title');
 
@@ -105,4 +105,4 @@
         });
     });
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);

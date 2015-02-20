@@ -713,7 +713,7 @@ $speak = Config::speak();
 
 
 /**
- * Remove the Query String of Current Page Path
+ * Remove Query String of the Current Page Path
  * --------------------------------------------
  */
 

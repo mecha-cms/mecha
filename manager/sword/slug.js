@@ -41,4 +41,4 @@
 
     $.slugger = $.slug; // < 1.1.3
 
-})(Zepto);
+})(window.Zepto || window.jQuery);

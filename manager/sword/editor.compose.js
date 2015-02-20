@@ -83,4 +83,4 @@
         }
     });
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);

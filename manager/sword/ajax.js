@@ -2,11 +2,11 @@
  * AJAX Request
  * ------------
  *
- *    <button class="ajax-post" data-url="/path/to/action" data-loading-text="Loading&hellip;" data-error-text="Error." data-source="#my-form" data-destination="#my-div">Load!</button>
+ *    <button class="ajax-post" data-url="/path/to/action" data-loading-text="Loading&hellip;" data-error-text="Error." data-scope="#my-form" data-destination="#my-div">Load!</button>
  *    <form id="my-form"></form>
  *    <div id="my-div"></div>
  *
- *    <button class="ajax-get" data-url="/path/to/file.html" data-loading-text="Loading&hellip;" data-error-text="Error." data-source="#my-container" data-destination="#my-div">Load!</button>
+ *    <button class="ajax-get" data-url="/path/to/file.html" data-loading-text="Loading&hellip;" data-error-text="Error." data-scope="#my-container" data-destination="#my-div">Load!</button>
  *    <div id="my-div"></div>
  *
  */
@@ -21,7 +21,7 @@
 
         var _this = this,
             $this = $(_this),
-            _source = $this.data('source') || false,
+            _source = $this.data('scope') || false,
             $source = $(_source),
             _error = $this.data('errorText') || "",
             _action = $this.data('url') || $source.attr('action'),
@@ -71,4 +71,4 @@
 
     });
 
-})(Zepto, DASHBOARD);
+})(window.Zepto || window.jQuery, DASHBOARD);

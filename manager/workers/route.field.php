@@ -92,7 +92,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         echo '<script>
 (function($) {
     $.slug($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
-})(Zepto);
+})(window.Zepto || window.jQuery);
 </script>';
     }, 11);
     Shield::define('the_key', $key)->attach('manager', false);
