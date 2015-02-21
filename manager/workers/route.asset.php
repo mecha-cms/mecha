@@ -15,6 +15,17 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_construct', array($P, $P));
     }
+    if( ! Notify::errors()) {
+        /* ... */
+    } else {
+        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+            echo '<script>
+(function($) {
+    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
+})(window.Zepto || window.jQuery);
+</script>';
+        }, 11);
+    }
     $filter = Request::get('q', false);
     $filter = $filter ? Text::parse($filter, '->slug_moderate') : "";
     $takes = Get::files(ASSET, '*', 'DESC', 'update', $filter);

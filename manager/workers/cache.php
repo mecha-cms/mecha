@@ -13,7 +13,7 @@
     </colgroup>
     <thead>
       <tr>
-        <th>&nbsp;</th>
+        <th><input type="checkbox" data-connection="selected[]"></th>
         <th><?php echo Config::speak('last_', array($speak->updated)); ?></th>
         <th><?php echo $speak->file; ?></th>
         <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>

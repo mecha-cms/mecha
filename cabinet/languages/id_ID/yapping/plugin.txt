@@ -3,11 +3,11 @@
 ~~~ .no-highlight
 nama-plugin.zip
  └── nama-plugin/
-     ├── file-1.txt
-     ├── file-2.txt
-     ├── file-3.txt
-     ├── file-4.txt
-     └── …
+      ├── file-1.txt
+      ├── file-2.txt
+      ├── file-3.txt
+      ├── file-4.txt
+      └── …
 ~~~
 
 Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas plugin Anda, dan kemudian Anda perlu menamakan berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.

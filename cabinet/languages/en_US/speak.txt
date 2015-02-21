@@ -514,6 +514,7 @@ manager:
   placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
 
   title_new_: New %s
+  title_your_: Your %s
 
   title_custom_css_and_js: Custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript
 
@@ -567,11 +568,10 @@ manager:
   title_defaults_page_custom_css: Default Page <abbr title="Cascading Style Sheet">CSS</abbr>
   title_defaults_page_custom_js: Default Page JavaScript
 
-  title_plugin_list: Your Plugins
-  title_plugin_upload: Upload a Plugin Package
-
-  title_shield_list: Your Shields
-  title_shield_upload: Upload a Shield Package
+  title__upload: Upload a %s
+  title__upload_alt: Upload an %s
+  title__upload_package: Upload a %s Package
+  title__upload_package_alt: Upload an %s Package
 
   _this_article: %s This Article
   _this_page: %s This Page

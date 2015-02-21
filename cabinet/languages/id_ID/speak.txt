@@ -514,6 +514,7 @@ manager:
   placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
 
   title_new_: %s Baru
+  title_your_: %s Anda
 
   title_custom_css_and_js: <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript Kustom
 
@@ -567,11 +568,10 @@ manager:
   title_defaults_page_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Halaman Standar
   title_defaults_page_custom_js: JavaScript Halaman Standar
 
-  title_plugin_list: Plugin Anda
-  title_plugin_upload: Unggah Sebuah Plugin
-
-  title_shield_list: Tameng Anda
-  title_shield_upload: Unggah Sebuah Tameng
+  title__upload: Unggah Sebuah %s
+  title__upload_alt: Unggah Sebuah %s
+  title__upload_package: Unggah Sebuah Paket %s
+  title__upload_package_alt: Unggah Sebuah Paket %s
 
   _this_article: %s Artikel Ini
   _this_page: %s Halaman Ini

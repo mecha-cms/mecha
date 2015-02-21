@@ -39,7 +39,7 @@
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <h3 class="media-head"><?php echo $speak->manager->title_shield_upload; ?></h3>
+    <h3 class="media-head"><?php echo Config::speak('manager.title__upload_package', array($speak->shield)); ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/shield" method="post" enctype="multipart/form-data">
       <input name="token" type="hidden" value="<?php echo $token; ?>">
       <span class="input-wrapper btn btn-default">
@@ -52,7 +52,7 @@
   </div>
   <?php if(count($the_shields) > 1): ?>
   <div class="tab-content hidden" id="tab-content-3">
-    <h3 class="media-head"><?php echo $speak->shields; ?></h3>
+    <h3 class="media-head"><?php echo Config::speak('manager.title_your_', array($speak->shields)); ?></h3>
     <?php foreach($the_shields as $shield): $shield = basename($shield); ?>
     <?php $c = File::exist(SHIELD . DS . $shield . DS . 'capture.png'); if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
     <div class="media-item<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $shield; ?>">
