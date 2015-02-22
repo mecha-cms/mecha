@@ -402,8 +402,8 @@ class Widget {
         self::$ids['recent-comment']++;
         if($comments = Get::commentsExtract(null, 'DESC', 'time')) {
             $html .= TAB . '<ul>' . NL;
-            if (count($comments) < $total) $total = count($comments);
-            for($i = 0; $i < $total; ++$i) {
+            for($i = 0, $count = count($comments); $i < $total; ++$i) {
+                if($i === $count) break;
                 $comment = Get::comment($comments[$i]['path']);
                 $article = Get::articleAnchor($comment->post);
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment-item">' . NL;
