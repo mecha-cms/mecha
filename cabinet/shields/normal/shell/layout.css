@@ -212,7 +212,7 @@ body {border-top:5px solid}
   overflow:hidden;
 }
 
-.comment-pilot {border-color:#365D98}
+.comment-pilot {border-left-color:#365D98}
 
 .comment-intruder {
   opacity:.4;
@@ -239,7 +239,7 @@ body {border-top:5px solid}
 
 .comment-header,
 .comment-body {
-  margin-bottom:.5em;
+  margin-bottom:.6153846153846154em;
   overflow:hidden;
 }
 

@@ -282,8 +282,8 @@ input[type="submit"],
   cursor:pointer;
   background-color:#333;
   text-align:center;
-  text-decoration:none !important;
-  color:#FFA !important;
+  text-decoration:none;
+  color:#FFA;
   padding-left:.9230769230769231em;
   padding-right:.9230769230769231em;
   -webkit-border-radius:2px;
@@ -304,13 +304,19 @@ button:hover,
 input[type="button"]:hover,
 input[type="reset"]:hover,
 input[type="submit"]:hover,
-.btn:hover {background-color:#373737}
+.btn:hover {
+  background-color:#373737;
+  color:#FFA;
+  text-decoration:none;
+}
+
 button:active,
 input[type="button"]:active,
 input[type="reset"]:active,
 input[type="submit"]:active,
 .btn:active {
   background-color:#2F2F2F;
+  text-decoration:none;
   -webkit-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
   -moz-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
   box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
@@ -782,7 +788,7 @@ img {
 .fluid-media embed,
 .fluid-media iframe,
 .fluid-media object,
-.fluid-media video
+.fluid-media video,
 .fluid-video embed,
 .fluid-video iframe,
 .fluid-video object,

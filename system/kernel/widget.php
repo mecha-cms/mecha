@@ -292,7 +292,7 @@ class Widget {
         $html  = O_BEGIN . '<div class="widget widget-search" id="widget-search-' . self::$ids['search'] . '">' . NL;
         self::$ids['search']++;
         $html .= TAB . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
-        $html .= str_repeat(TAB, 2) . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . '<button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>' . NL;
+        $html .= str_repeat(TAB, 2) . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>' . NL;
         $html .= TAB . '</form>' . NL;
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
@@ -400,11 +400,17 @@ class Widget {
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-recent widget-recent-comment" id="widget-recent-comment-' . self::$ids['recent-comment'] . '">' . NL;
         self::$ids['recent-comment']++;
-        if($comments = Get::commentsExtract(null, 'DESC', 'time')) {
+        if($comments = Get::comments()) {
+            $comments_id = array();
+            foreach($comments as $comment) {
+                $parts = explode('_', basename($comment));
+                $comments_id[] = $parts[1];
+            }
+            rsort($comments_id);
             $html .= TAB . '<ul>' . NL;
-            for($i = 0, $count = count($comments); $i < $total; ++$i) {
+            for($i = 0, $count = count($comments_id); $i < $total; ++$i) {
                 if($i === $count) break;
-                $comment = Get::comment($comments[$i]['path']);
+                $comment = Get::comment($comments_id[$i]);
                 $article = Get::articleAnchor($comment->post);
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment-item">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
@@ -419,7 +425,7 @@ class Widget {
                     $html .= str_repeat(TAB, 4) . '<a class="recent-comment-name" href="' . $comment->url . '" rel="nofollow">' . $comment->name . '</a>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '</div>' . NL;
-                $html .= str_repeat(TAB, 3) . '<div class="recent-comment-body"><p>' . Get::summary($comment->message, $summary, '&hellip;') . '</p></div>' . NL;
+                $html .= str_repeat(TAB, 3) . '<div class="recent-comment-body"><p>' . Converter::curt($comment->message, $summary, '&hellip;') . '</p></div>' . NL;
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-footer">' . NL;
                 $html .= str_repeat(TAB, 4) . '<span class="recent-comment-time">' . NL;
                 $html .= str_repeat(TAB, 5) . '<time datetime="' . $comment->date->W3C . '">' . $comment->date->FORMAT_3 . '</time> <a title="' . ($article ? $speak->permalink . ' ' . strtolower($speak->to) . ' &rarr; ' . strip_tags($article->title) : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>' . NL;

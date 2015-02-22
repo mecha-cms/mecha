@@ -78,7 +78,7 @@ textarea[name="xml[]"] {height:23.076923076923077em}
 .article-body,
 .response-header,
 .response-body {
-  margin-bottom:.5em;
+  margin-bottom:.6153846153846154em;
   overflow:hidden;
 }
 
@@ -99,7 +99,6 @@ textarea[name="xml[]"] {height:23.076923076923077em}
 .response-time {
   display:block;
   float:right;
-  color:#AAA;
 }
 
 .pager a .fa {font-size:100%}
@@ -126,17 +125,13 @@ textarea[name="xml[]"] {height:23.076923076923077em}
 
 .plugin-title {
   padding:.5em .8em;
-  margin:2px 0 0;
+  margin:2px 0;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
 }
 
-.plugin-description {
-  margin:2px 0 0;
-  border-top:6px solid transparent;
-  padding:1.3846153846153846em;
-}
+.plugin-description {padding:1.3846153846153846em}
 
 .messages + .page-list,
 .messages + .article-list,

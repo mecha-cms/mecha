@@ -12,10 +12,16 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     }
     $offset = (int) $offset;
     File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
-    if($files = Mecha::eat(Get::commentsExtract(null, 'DESC', 'id', 'txt,hold'))->chunk($offset, $config->manager->per_page)->vomit()) {
+    if($files = Get::comments(null, 'DESC', 'txt,hold')) {
         $comments = array();
-        foreach($files as $comment) {
-            $comments[] = Get::comment($comment['path']);
+        $comments_id = array();
+        foreach($files as $file) {
+            $parts = explode('_', basename($file));
+            $comments_id[] = $parts[1];
+        }
+        rsort($comments_id);
+        foreach(Mecha::eat($comments_id)->chunk($offset, $config->manager->per_page)->vomit() as $comment) {
+            $comments[] = Get::comment($comment);
         }
     } else {
         $comments = false;

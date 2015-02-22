@@ -44,10 +44,17 @@
   text-decoration:none;
 }
 
+.widget-tag-cloud {overflow:hidden}
+
 .widget-tag-cloud .tag-size {
-  margin:0 .25em;
+  display:block;
+  float:left;
   vertical-align:middle;
+  margin:0 6px 0 0;
+  margin-right:.46153846153846156rem;
+  white-space:nowrap;
 }
+
 .widget-tag-cloud .tag-size-0 {font-size:80%}
 .widget-tag-cloud .tag-size-1 {font-size:90%}
 .widget-tag-cloud .tag-size-2 {font-size:100%}

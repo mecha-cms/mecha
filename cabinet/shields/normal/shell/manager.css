@@ -123,6 +123,10 @@ label:hover .radio {color:#3A64A4}
 .editor-preview {margin:0}
 .editor-preview .preview-title {margin-top:0}
 
+.page-time,
+.article-time,
+.response-time {color:#AAA}
+
 .plugin-author {
   background-color:#333;
   color:white;
