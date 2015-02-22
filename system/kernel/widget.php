@@ -176,7 +176,7 @@ class Widget {
             } else {
                 $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown-' . self::$ids['archive-dropdown'] . '">' . NL;
                 self::$ids['archive-dropdown']++;
-                $html .= TAB . '<select>' . NL . ($query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->options . '&hellip;</option>' . NL : "");
+                $html .= TAB . '<select>' . NL . ($query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
                     $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ($query == $year . '-' . $month ? ' selected' : "") . '>' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . ' (' . $counter[$archive] . ')</option>' . NL;
@@ -264,7 +264,7 @@ class Widget {
         if($type == 'DROPDOWN') {
             $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-dropdown" id="widget-tag-dropdown-' . self::$ids['tag-dropdown'] . '">' . NL;
             self::$ids['tag-dropdown']++;
-            $html .= TAB . '<select>' . NL . ($config->tag_query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->options . '&hellip;</option>' . NL : "");
+            $html .= TAB . '<select>' . NL . ($config->tag_query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
             foreach($tags as $tag) {
                 $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query == $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
             }
@@ -395,20 +395,21 @@ class Widget {
      *
      */
 
-    public static function recentComment($total = 7, $avatar_size = 50, $summary = 100) {
+    public static function recentComment($total = 7, $avatar_size = 50, $summary = 100, $d = 'monsterid') {
         $config = Config::get();
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-recent widget-recent-comment" id="widget-recent-comment-' . self::$ids['recent-comment'] . '">' . NL;
         self::$ids['recent-comment']++;
-        if($comments = Get::comments()) {
+        if($comments = Get::commentsExtract(null, 'DESC', 'time')) {
             $html .= TAB . '<ul>' . NL;
-            foreach($comments as $comment) {
-                $comment = Get::comment($comment);
+            if (count($comments) < $total) $total = count($comments);
+            for($i = 0; $i < $total; ++$i) {
+                $comment = Get::comment($comments[$i]['path']);
                 $article = Get::articleAnchor($comment->post);
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment-item">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= str_repeat(TAB, 3) . '<div class="recent-comment-avatar">' . NL;
-                    $html .= str_repeat(TAB, 4) . '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=monsterid" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
+                    $html .= str_repeat(TAB, 4) . '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
                     $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-header">' . NL;
