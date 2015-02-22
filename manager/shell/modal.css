@@ -4,7 +4,7 @@
   top:20%;
   bottom:20%;
   left:50%;
-  z-index:9999;
+  z-index:10000;
   width:46.15384615384615em;
   margin-left:-23.076923076923077em;
   background-color:white;
@@ -118,6 +118,18 @@
   margin:0;
 }
 
+@media (max-width:50em) {
+  .modal {
+    width:auto;
+    height:auto;
+    top:5%;
+    right:5%;
+    bottom:5%;
+    left:5%;
+    margin:0;
+  }
+}
+
 .modal-full-screen {
   width:auto;
   height:auto;
@@ -130,16 +142,4 @@
   -webkit-border-radius:0;
   -moz-border-radius:0;
   border-radius:0;
-}
-
-@media (max-width:50em) {
-  .modal {
-    width:auto;
-    height:auto;
-    top:5%;
-    right:5%;
-    bottom:5%;
-    left:5%;
-    margin:0;
-  }
 }

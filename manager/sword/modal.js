@@ -26,8 +26,14 @@
     if (!$modal.length) return;
 
     $close.on("click", function(e) {
-        $(this).closest('.modal').hide().prev().hide();
-        $body.css('overflow', "").parent().css('overflow', "");
+        $(this).closest('.modal').hide().next().hide();
+        $body.css({
+            position: "",
+            overflow: ""
+        }).parent().css({
+            position: "",
+            overflow: ""
+        });
         base.fire('on_modal_hide', {
             'event': e,
             'target': this
@@ -37,20 +43,33 @@
 
     $modal.each(function() {
         var $this = $(this),
-            $trigger = $this.data('trigger') || false;
-        $('<div class="modal-overlay"></div>').css('z-index', $this.css('z-index')).on("click", function(e) {
-            $(this).hide().next().hide();
-            $body.css('overflow', "").parent().css('overflow', "");
+            $trigger = $this.data('trigger') || false,
+            stack = parseInt($this.css('z-index'), 10) - 1;
+        $('<div class="modal-overlay"></div>').css('z-index', stack).on("click", function(e) {
+            $(this).hide().prev().hide();
+            $body.css({
+                position: "",
+                overflow: ""
+            }).parent().css({
+                position: "",
+                overflow: ""
+            });
             base.fire('on_modal_hide', {
                 'event': e,
                 'target': this
             });
-        }).insertBefore($this);
+        }).insertAfter($this);
         if ($trigger) {
             $body.on("click", $trigger, function(e) {
-                $this.show().prev().show();
+                $this.show().next().show();
                 if ($this.hasClass('modal-full-screen')) {
-                    $body.css('overflow', 'hidden').parent().css('overflow', 'hidden');
+                    $body.css({
+                        position: 'static',
+                        overflow: 'hidden'
+                    }).parent().css({
+                        position: 'static',
+                        overflow: 'hidden'
+                    });
                 }
                 base.fire('on_modal_show', {
                     'event': e,

@@ -225,11 +225,11 @@ input,
 select,
 textarea,
 .btn {
-  display:inline-block;
-  width:15.384615384615385em;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
+  display:inline-block;
+  width:15.384615384615385em;
   vertical-align:middle;
   padding:.7692307692307693em;
   margin:0;

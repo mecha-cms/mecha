@@ -42,45 +42,45 @@ class Widget {
             File::write($total)->saveTo($destination, 0600);
         }
         $menus = array(
-            '<i class="fa fa-fw fa-cogs"></i> <span>' . $speak->config . '</span>' => '/' . $config->manager->slug . '/config',
-            '<i class="fa fa-fw fa-file-text"></i> <span>' . $speak->article . '</span>' => '/' . $config->manager->slug . '/article',
-            '<i class="fa fa-fw fa-file"></i> <span>' . $speak->page . '</span>' => '/' . $config->manager->slug . '/page',
-            '<i class="fa fa-fw fa-comments"></i> <span>' . $speak->comment . $n . '</span>' => '/' . $config->manager->slug . '/comment',
-            '<i class="fa fa-fw fa-tags"></i> <span>' . $speak->tag . '</span>' => '/' . $config->manager->slug . '/tag',
-            '<i class="fa fa-fw fa-bars"></i> <span>' . $speak->menu . '</span>' => '/' . $config->manager->slug . '/menu',
-            '<i class="fa fa-fw fa-briefcase"></i> <span>' . $speak->asset . '</span>' => '/' . $config->manager->slug . '/asset',
-            '<i class="fa fa-fw fa-th-list"></i> <span>' . $speak->field . '</span>' => '/' . $config->manager->slug . '/field',
-            '<i class="fa fa-fw fa-coffee"></i> <span>' . $speak->shortcode . '</span>' => '/' . $config->manager->slug . '/shortcode',
-            '<i class="fa fa-fw fa-shield"></i> <span>' . $speak->shield . '</span>' => '/' . $config->manager->slug . '/shield',
-            '<i class="fa fa-fw fa-plug"></i> <span>' . $speak->plugin . '</span>' => '/' . $config->manager->slug . '/plugin',
-            '<i class="fa fa-fw fa-clock-o"></i> <span>' . $speak->cache . '</span>' => '/' . $config->manager->slug . '/cache',
-            '<i class="fa fa-fw fa-life-ring"></i> <span>' . $speak->backup . '</span>' => '/' . $config->manager->slug . '/backup'
+            '<i class="fa fa-fw fa-cogs"></i> <span class="label">' . $speak->config . '</span>' => '/' . $config->manager->slug . '/config',
+            '<i class="fa fa-fw fa-file-text"></i> <span class="label">' . $speak->article . '</span>' => '/' . $config->manager->slug . '/article',
+            '<i class="fa fa-fw fa-file"></i> <span class="label">' . $speak->page . '</span>' => '/' . $config->manager->slug . '/page',
+            '<i class="fa fa-fw fa-comments"></i> <span class="label">' . $speak->comment . $n . '</span>' => '/' . $config->manager->slug . '/comment',
+            '<i class="fa fa-fw fa-tags"></i> <span class="label">' . $speak->tag . '</span>' => '/' . $config->manager->slug . '/tag',
+            '<i class="fa fa-fw fa-bars"></i> <span class="label">' . $speak->menu . '</span>' => '/' . $config->manager->slug . '/menu',
+            '<i class="fa fa-fw fa-briefcase"></i> <span class="label">' . $speak->asset . '</span>' => '/' . $config->manager->slug . '/asset',
+            '<i class="fa fa-fw fa-th-list"></i> <span class="label">' . $speak->field . '</span>' => '/' . $config->manager->slug . '/field',
+            '<i class="fa fa-fw fa-coffee"></i> <span class="label">' . $speak->shortcode . '</span>' => '/' . $config->manager->slug . '/shortcode',
+            '<i class="fa fa-fw fa-shield"></i> <span class="label">' . $speak->shield . '</span>' => '/' . $config->manager->slug . '/shield',
+            '<i class="fa fa-fw fa-plug"></i> <span class="label">' . $speak->plugin . '</span>' => '/' . $config->manager->slug . '/plugin',
+            '<i class="fa fa-fw fa-clock-o"></i> <span class="label">' . $speak->cache . '</span>' => '/' . $config->manager->slug . '/cache',
+            '<i class="fa fa-fw fa-life-ring"></i> <span class="label">' . $speak->backup . '</span>' => '/' . $config->manager->slug . '/backup'
         );
         if($config->page_type == 'article') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> <span>' . Config::speak('manager._this_article', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
-            $menus['<i class="fa fa-fw fa-trash"></i> <span>' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
+            $menus['<i class="fa fa-fw fa-trash"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
         }
         if($config->page_type == 'page') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> <span>' . Config::speak('manager._this_page', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash"></i> <span>' . Config::speak('manager._this_page', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-pencil"></i> <span class="label">' . Config::speak('manager._this_page', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
+            $menus['<i class="fa fa-fw fa-trash"></i> <span class="label">' . Config::speak('manager._this_page', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
         }
 
         /**
-         * =================================================================================
+         * ==================================================================================================
          *  ADD MORE MANAGER MENU
          *
          *  Inject more menu item to the manager menu (for your plugin maybe?)
-         * =================================================================================
+         * ==================================================================================================
          *
-         * -- CODE: ------------------------------------------------------------------------
+         * -- CODE: -----------------------------------------------------------------------------------------
          *
          *    Config::merge('manager_menu', array(
-         *        '<i class="fa fa-fw fa-icon-name"></i> <span>Menu Name</span>' => '/page',
-         *        '<i class="fa fa-fw fa-icon-name"></i> <span>Menu Name</span>' => '/page',
+         *        '<i class="fa fa-fw fa-icon-name"></i> <span class="label">Menu 1</span>' => '/page-1',
+         *        '<i class="fa fa-fw fa-icon-name"></i> <span class="label">Menu 2</span>' => '/page-2',
          *        ...
          *    ));
          *
-         * ---------------------------------------------------------------------------------
+         * --------------------------------------------------------------------------------------------------
          *
          */
 
