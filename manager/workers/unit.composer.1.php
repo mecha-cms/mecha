@@ -1,7 +1,7 @@
 <label class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->content; ?></span>
   <span class="grid span-5">
-    <textarea name="content" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_content; ?>" data-mte-use-toolbar="true" data-mte-use-shortcut="true"><?php echo Text::parse(Guardian::wayback('content', $default->content_raw), '->encoded_html'); ?></textarea>
+    <textarea name="content" class="textarea-block code MTE" placeholder="<?php echo $speak->manager->placeholder_content; ?>" data-MTE-config='{"toolbar":true,"shortcut":true}'><?php echo Text::parse(Guardian::wayback('content', $default->content_raw), '->encoded_html'); ?></textarea>
   </span>
 </label>
 <div class="grid-group">

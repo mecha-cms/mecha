@@ -2,11 +2,11 @@
  * AJAX Request
  * ------------
  *
- *    <button class="ajax-post" data-url="/path/to/action" data-loading-text="Loading&hellip;" data-error-text="Error." data-scope="#my-form" data-destination="#my-div">Load!</button>
+ *    <button class="ajax-post" data-action-url="/path/to/action" data-text-progress="Loading&hellip;" data-text-error="Error." data-scope="#my-form" data-target="#my-div">Load!</button>
  *    <form id="my-form"></form>
  *    <div id="my-div"></div>
  *
- *    <button class="ajax-get" data-url="/path/to/file.html" data-loading-text="Loading&hellip;" data-error-text="Error." data-scope="#my-container" data-destination="#my-div">Load!</button>
+ *    <button class="ajax-get" data-url="/path/to/file.html" data-text-progress="Loading&hellip;" data-text-error="Error." data-scope="#my-scope" data-target="#my-div">Load!</button>
  *    <div id="my-div"></div>
  *
  */
@@ -23,13 +23,13 @@
             $this = $(_this),
             _source = $this.data('scope') || false,
             $source = $(_source),
-            _error = $this.data('errorText') || "",
-            _action = $this.data('url') || $source.attr('action'),
-            _loading = $this.data('loadingText') || "",
+            _error = $this.data('textError') || "",
+            _action = $this.data('actionUrl') || $this.data('url') || $source.attr('action'),
+            _progress = $this.data('textProgress') || "",
             _is_get = $this.is('.ajax-get'),
-            $destination = $($this.data('destination')) || $this.next();
+            $destination = $($this.data('target')) || $this.next();
 
-        $destination.html(_loading);
+        $destination.html(_progress);
 
         base.fire('on_ajax_begin', [e, _this]);
 

@@ -428,7 +428,7 @@ class Widget {
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-body"><p>' . Converter::curt($comment->message, $summary, '&hellip;') . '</p></div>' . NL;
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-footer">' . NL;
                 $html .= str_repeat(TAB, 4) . '<span class="recent-comment-time">' . NL;
-                $html .= str_repeat(TAB, 5) . '<time datetime="' . $comment->date->W3C . '">' . $comment->date->FORMAT_3 . '</time> <a title="' . ($article ? $speak->permalink . ' ' . strtolower($speak->to) . ' &rarr; ' . strip_tags($article->title) : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>' . NL;
+                $html .= str_repeat(TAB, 5) . '<time datetime="' . $comment->date->W3C . '">' . $comment->date->FORMAT_3 . '</time> <a title="' . ($article ? strip_tags($article->title) : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>' . NL;
                 $html .= str_repeat(TAB, 4) . '</span>' . NL;
                 $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 $html .= str_repeat(TAB, 2) . '</li>' . NL;

@@ -32,7 +32,14 @@
                     'target': this
                 });
             }
-        } else {
+            base.fire('on_row_update', {
+                'event': e,
+                'target': this
+            });
+            return false;
+        }
+
+        if ($(this).is('.btn-decrease')) {
             if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
                 base.fire('on_row_decrease', {
@@ -40,14 +47,12 @@
                     'target': this
                 });
             }
+            base.fire('on_row_update', {
+                'event': e,
+                'target': this
+            });
+            return false;
         }
-
-        base.fire('on_row_update', {
-            'event': e,
-            'target': this
-        });
-
-        return false;
 
     });
 
