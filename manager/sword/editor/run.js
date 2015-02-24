@@ -43,12 +43,17 @@ if (typeof DASHBOARD != "undefined") {
     var area = d.getElementsByTagName('textarea'),
         speak = base.languages.MTE;
     if (!area || !area.length) return;
+    var c_na = "", c_nu = 0;
     for (var i = 0, len = area.length; i < len; ++i) {
-        var name = area[i].name,
-            // Replace `foo[]` with `foo_1`
-            // Replace `foo[bar]` with `foo_bar`
-            hook = name.replace(/\[\]/g, '_' + i).replace(/\[(.*?)\]/g, '_$1'),
-            config = area[i].getAttribute('data-MTE-config') || '{}', prefix;
+        var name = area[i].name, hook, config, prefix;
+        if (c_na !== name) {
+            c_na = name;
+            c_nu = 0;
+        }
+        // Replace `foo[]` with `foo_0`
+        // Replace `foo[bar]` with `foo_bar`
+        hook = name.replace(/\[\]/g, '_' + c_nu).replace(/\[(.*?)\]/g, '_$1');
+        config = area[i].getAttribute('data-MTE-config') || '{}';
         config = typeof JSON.parse == "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
         base.fire('on_control_begin', {
@@ -64,6 +69,7 @@ if (typeof DASHBOARD != "undefined") {
             buttonClassPrefix: 'editor-toolbar-button editor-toolbar-button-',
             iconClassPrefix: 'fa fa-',
             emptyElementSuffix: ES,
+            PRE: '~~~\n%s\n~~~',
             buttons: speak.buttons,
             prompts: speak.prompts,
             placeholders: speak.placeholders,
@@ -109,5 +115,6 @@ if (typeof DASHBOARD != "undefined") {
             'name': name,
             'index': i
         });
+        c_nu++;
     }
 })(window, document, DASHBOARD);
