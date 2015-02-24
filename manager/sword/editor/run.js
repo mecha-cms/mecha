@@ -1,4 +1,25 @@
-// Apply MTE to all `<textarea>` elements ...
+/**
+ * Disabled HTML Parser
+ * --------------------
+ *
+ * To keep the API remains semantic, start from
+ * here you can call MTE as Mecha Text Editor.
+ *
+ */
+
+if (typeof DASHBOARD != "undefined") {
+    var MTE = MTE || {};
+    if (!DASHBOARD.is_html_parser_enabled) MTE = HTE;
+}
+
+
+/**
+ * Run the MTE Plugin
+ * ------------------
+ *
+ * Apply MTE to all `<textarea>` elements ...
+ *
+ */
 
 (function(w, d, base) {
     if (typeof MTE == "undefined") return;
@@ -23,7 +44,10 @@
         speak = base.languages.MTE;
     if (!area || !area.length) return;
     for (var i = 0, len = area.length; i < len; ++i) {
-        var name = area[i].name.replace(/\[\]/g, '_' + i).replace(/\[(.*?)\]/g, '_$1'),
+        var name = area[i].name,
+            // Replace `foo[]` with `foo_1`
+            // Replace `foo[bar]` with `foo_bar`
+            hook = name.replace(/\[\]/g, '_' + i).replace(/\[(.*?)\]/g, '_$1'),
             config = area[i].getAttribute('data-MTE-config') || '{}', prefix;
         config = typeof JSON.parse == "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
@@ -32,7 +56,7 @@
             'name': name,
             'index': i
         });
-        base[prefix + '_' + name] = /(^| )(MTE|code)( |$)/.test(area[i].className) && !/(^| )MTE-ignore( |$)/.test(area[i].className) ? new MTE(area[i], extend({
+        base[prefix + '_' + hook] = /(^| )(MTE|code)( |$)/.test(area[i].className) && !/(^| )MTE-ignore( |$)/.test(area[i].className) ? new MTE(area[i], extend({
             tabSize: TAB,
             toolbar: false,
             shortcut: false,
@@ -43,11 +67,11 @@
             buttons: speak.buttons,
             prompts: speak.prompts,
             placeholders: speak.placeholders,
-            click: function(e, editor, type) {
+            click: function(e, editor, id) {
                 base.fire('on_control_event_click', {
                     'event': e,
                     'editor': editor,
-                    'id': type,
+                    'id': id,
                     'index': i,
                     'info': {
                         'segment': base.segment,
@@ -78,7 +102,7 @@
             }
         }, config)) : {};
         if (i === 0 || /(^| )MTE-main( |$)/.test(area[i].className)) {
-            base[prefix] = base[prefix + '_' + name];
+            base[prefix] = base[prefix + '_' + hook];
         }
         base.fire('on_control_end', {
             'segment': base.segment,

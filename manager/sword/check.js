@@ -33,9 +33,9 @@
         $checkbox.filter('[disabled]').prev().addClass('disabled').closest('label').on("click mousedown", false);
         $checkbox.filter('[readonly]').prev().addClass('readonly').closest('label').on("click mousedown", false);
         base.add('on_checkbox_change', function(data) {
-            var target = data.target.getAttribute('data-connection');
-            if (target) {
-                $checkbox.filter('[name="' + target + '"]').prop('checked', data.target.checked).trigger("change");
+            var co = $(data.target).data('connection');
+            if (co) {
+                $checkbox.filter('[name="' + co + '"]').prop('checked', data.target.checked).trigger("change");
             }
         });
     }

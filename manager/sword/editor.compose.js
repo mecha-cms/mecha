@@ -25,19 +25,40 @@
         title: speak.others.table,
         position: 8,
         click: function(e, editor) {
-            var s = editor.grip.selection(),
+            var editor = editor.grip,
+                s = editor.selection(),
+                clean_B = s.before.replace(/\s*$/, ""),
+                clean_A = s.after.replace(/^\s*/, ""),
+                s_B = clean_B.length > 0 ? '\n\n' : "",
                 p = base.is_html_parser_enabled,
-                table = speak.others['table_text_' + (p ? 'raw' : 'html')];
-            table = table.replace(/\t/g, base.tab_size);
-            editor.grip.insert(table, function() {
-                editor.grip.select(s.start + (p ? 0 : 25 + (base.tab_size.length * 6)), s.start + table.indexOf(p ? ' |' : '</th>'), function() {
-                    editor.grip.updateHistory();
-                });
+                table = speak.others['table_text_' + (p ? 'raw' : 'html')],
+            table = s_B + table.replace(/\t/g, TAB) + '\n\n';
+            editor.area.value = clean_B + table + clean_A;
+            editor.select(clean_B.length + s_B.length + (p ? 0 : 25 + (TAB.length * 6)), clean_B.length + table.indexOf(p ? ' |' : '</th>'), function() {
+                editor.updateHistory();
             });
         }
     });
 
-    if (base.is_html_parser_enabled === true) {
+    base.composer.button('scissors', {
+        title: speak.others.excerpt,
+        click: function(e, editor) {
+            var editor = editor.grip,
+                s = editor.selection(),
+                clean_B = s.before.replace(/\s+$/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n'),
+                clean_A = s.after.replace(/^\s+/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n');
+            if (s.before.length === 0) {
+                editor.select(0);
+                return;
+            }
+            editor.area.value = clean_B + '\n\n<!-- cut -->\n\n' + clean_A;
+            editor.select(clean_B.length + 16, function() {
+                editor.updateHistory();
+            });
+        }
+    });
+
+    if (base.is_html_parser_enabled) {
         base.composer.button('question-circle', {
             title: speak.others.help,
             click: function() {

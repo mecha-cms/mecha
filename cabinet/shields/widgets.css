@@ -135,3 +135,5 @@
 
 .pagination span:first-child + span + span,
 .pagination a:first-child + a + span {padding:0}
+
+.fi {display:block} /* fragment identifier */

@@ -709,7 +709,7 @@ class Get {
         if( ! isset($excludes['excerpt']) && strpos($content_test['content'], '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test['content'], 2);
             $results['excerpt'] = self::AMF(trim($parts[0]), $filter_prefix, 'excerpt');
-            $results['content'] = trim($parts[0]) . NL . NL . "<span id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
+            $results['content'] = trim($parts[0]) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
         }
 
         if( ! isset($excludes['tags'])) {

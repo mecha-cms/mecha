@@ -4,6 +4,12 @@
 $uri_end_parts = explode('/', $config->url_path);
 $uri_end = $config->page_type == 'manager' ? $uri_end_parts[1] : $uri_end_parts[0];
 
+// Hide `paragraph`, `superscript` and `subscript` button by default
+$speak->MTE->buttons->paragraph = false;
+$speak->MTE->buttons->superscript = false;
+$speak->MTE->buttons->subscript = false;
+
+// Merge language data to the `DASHBOARD`
 Config::merge('DASHBOARD.languages', array(
     'MTE' => Mecha::A($speak->MTE)
 ));
@@ -35,7 +41,7 @@ Weapon::add('shell_after', function() use($config) {
         'manager/shell/sortable.css',
         'manager/shell/accordion.css',
         'manager/shell/layout.css',
-        'shell/manager.css' // => from the current shield folder
+        'shell/manager.css' // => taken from the current shield folder (if any)
     ), "", 'manager.min.css');
     if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
         echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
@@ -64,6 +70,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
     echo Asset::javascript(array(
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',
+        'manager/sword/editor/hte.min.js',
         'manager/sword/editor/run.js',
         'manager/sword/ajax.js',
         'manager/sword/row.js',
