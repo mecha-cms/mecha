@@ -27,8 +27,8 @@
         click: function(e, editor) {
             var editor = editor.grip,
                 s = editor.selection(),
-                clean_B = s.before.replace(/\s*$/, ""),
-                clean_A = s.after.replace(/^\s*/, ""),
+                clean_B = s.before.replace(/\s+$/, ""),
+                clean_A = s.after.replace(/^\s+/, ""),
                 s_B = clean_B.length > 0 ? '\n\n' : "",
                 p = base.is_html_parser_enabled,
                 table = speak.others['table_text_' + (p ? 'raw' : 'html')],
@@ -47,7 +47,7 @@
                 s = editor.selection(),
                 clean_B = s.before.replace(/\s+$/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n'),
                 clean_A = s.after.replace(/^\s+/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n');
-            if (s.before.length === 0) {
+            if (clean_B.length === 0) {
                 editor.select(0);
                 return;
             }

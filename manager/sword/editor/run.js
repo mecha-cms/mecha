@@ -69,7 +69,7 @@ if (typeof DASHBOARD != "undefined") {
             buttonClassPrefix: 'editor-toolbar-button editor-toolbar-button-',
             iconClassPrefix: 'fa fa-',
             emptyElementSuffix: ES,
-            PRE: '~~~\n%s\n~~~',
+            PRE: base.is_html_parser_enabled ? '~~~\n%s\n~~~' : 'pre',
             buttons: speak.buttons,
             prompts: speak.prompts,
             placeholders: speak.placeholders,
