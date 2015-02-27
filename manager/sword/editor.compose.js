@@ -13,17 +13,17 @@
         $content = $($form[0].content),
         $css = $($form[0].css),
         $js = $($form[0].js),
-        $css_check = $($form[0].css_live_check),
-        $js_check = $($form[0].js_live_check);
+        $check_css = $($form[0].css_live_check),
+        $check_js = $($form[0].js_live_check);
 
-    var $preview_css = $('<div id="live-preview-css"></div>').appendTo($base),
-        $preview_js = $('<div id="live-preview-js"></div>').appendTo($base);
+    var $preview_css = $('<div></div>').appendTo($base),
+        $preview_js = $('<div></div>').appendTo($base);
 
     var speak = base.languages.MTE;
 
     base.composer.button('table', {
         title: speak.others.table,
-        position: 8,
+        position: -3,
         click: function(e, editor) {
             var editor = editor.grip,
                 s = editor.selection(),
@@ -42,6 +42,7 @@
 
     base.composer.button('scissors', {
         title: speak.others.excerpt,
+        position: -3,
         click: function(e, editor) {
             var editor = editor.grip,
                 s = editor.selection(),
@@ -77,18 +78,18 @@
     $css.on("keyup", function() {
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
-            if ($css_check.is(':checked')) $preview_css.html($css.val());
+            if ($check_css.is(':checked')) $preview_css.html($css.val());
         }, 15);
     });
 
     $js.on("keyup", function() {
         window.clearTimeout(timer);
         timer = window.setTimeout(function() {
-            if ($js_check.is(':checked')) $preview_js.html($js.val());
+            if ($check_js.is(':checked')) $preview_js.html($js.val());
         }, 15);
     });
 
-    $css_check.on("change", function() {
+    $check_css.on("change", function() {
         if (this.checked) {
             $css.trigger("keyup");
         } else {
@@ -96,7 +97,7 @@
         }
     });
 
-    $js_check.on("change", function() {
+    $check_js.on("change", function() {
         if (this.checked) {
             $js.trigger("keyup");
         } else {

@@ -37,8 +37,6 @@
             'target': this
         });
         return false;
-    }).on("mousedown", function() {
-        return false;
-    });
+    }).on("mousedown", false);
 
 })(window.Zepto || window.jQuery, DASHBOARD);
