@@ -67,12 +67,16 @@
   overflow:hidden;
 }
 
+.modal-footer button,
 .modal-footer .btn {
   display:block;
   float:left;
   margin:.5384615384615384em 0 0;
 }
 
+.modal-footer button + button,
+.modal-footer button + .btn,
+.modal-footer .btn + button,
 .modal-footer .btn + .btn {margin-left:.3076923076923077em}
 
 .modal-close-x {
@@ -92,7 +96,19 @@
   line-height:inherit;
 }
 
-@media (max-height:46.15384615384615em) {
+@media (max-width:40.625em) {
+  .modal {
+    width:auto;
+    height:auto;
+    top:5%;
+    right:5%;
+    bottom:5%;
+    left:5%;
+    margin:0;
+  }
+}
+
+@media (max-height:25em) {
   .modal {
     top:5%;
     bottom:5%;
@@ -116,18 +132,6 @@
   bottom:10%;
   left:10%;
   margin:0;
-}
-
-@media (max-width:50em) {
-  .modal {
-    width:auto;
-    height:auto;
-    top:5%;
-    right:5%;
-    bottom:5%;
-    left:5%;
-    margin:0;
-  }
 }
 
 .modal-full-screen {
