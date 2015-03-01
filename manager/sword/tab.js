@@ -25,10 +25,10 @@
         if (this.href.match(/\#.*$/)) {
             $(this).addClass('active').siblings().removeClass('active');
             $('#' + this.hash.replace('#', "")).removeClass('hidden').siblings('.tab-content').addClass('hidden');
-			base.fire('on_tab_change', {
-				'event': e,
-				'target': this
-			});
+            base.fire('on_tab_change', {
+                'event': e,
+                'target': this
+            });
         } else {
             if ($(this).attr('data-confirm-text')) {
                 if (window.confirm($(this).data('confirmText'))) {

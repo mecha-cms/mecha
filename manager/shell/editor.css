@@ -1,10 +1,19 @@
+.editor-area {
+  display:block;
+  width:100%;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+  overflow:auto;
+}
+
 .editor-toolbar {
   display:block;
   height:2em;
   line-height:2em;
 }
 
-.editor-toolbar a {
+.editor-toolbar-button {
   display:block;
   float:left;
   width:2em;
@@ -17,7 +26,27 @@
   box-sizing:border-box;
 }
 
-textarea + .editor-toolbar a {margin:2px 2px 0 0}
+textarea + .editor-toolbar .editor-toolbar-button {margin:2px 2px 0 0}
+
+.editor-toolbar-separator {
+  display:block;
+  float:left;
+  width:0;
+  height:20px;
+  border-right:1px solid;
+  margin:0 4px 0 0;
+}
+
+.custom-drop {
+  position:absolute;
+  top:-999999px;
+  left:-999999px;
+  background-color:white;
+  width:7.6923076923076925em;
+  -webkit-box-shadow:0 1px 2px rgba(0,0,0,.4);
+  -moz-box-shadow:0 1px 2px rgba(0,0,0,.4);
+  box-shadow:0 1px 2px rgba(0,0,0,.4);
+}
 
 .custom-modal-overlay {
   position:fixed !important;
@@ -54,12 +83,28 @@ textarea + .editor-toolbar a {margin:2px 2px 0 0}
 }
 
 .custom-modal-content {margin:1em 0}
-.custom-modal-prompt input {
+.custom-modal-content input,
+.custom-modal-content select,
+.custom-modal-content textarea,
+.custom-modal-content .input {
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
   display:block;
   width:100%;
+  margin:.3076923076923077em 0 0;
+}
+
+.custom-modal-content input:first-child,
+.custom-modal-content select:first-child,
+.custom-modal-content textarea:first-child,
+.custom-modal-content .input:first-child {margin-top:0}
+
+.custom-modal-content input[type="checkbox"],
+.custom-modal-content input[type="radio"] {
+  display:inline-block;
+  width:auto;
+  margin:0;
 }
 
 .custom-modal-action {

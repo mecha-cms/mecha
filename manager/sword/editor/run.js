@@ -7,7 +7,7 @@
  *
  */
 
-if (typeof DASHBOARD != "undefined") {
+if (typeof DASHBOARD !== "undefined") {
     var MTE = MTE || {};
     if (!DASHBOARD.is_html_parser_enabled) MTE = HTE;
 }
@@ -22,11 +22,11 @@ if (typeof DASHBOARD != "undefined") {
  */
 
 (function(w, d, base) {
-    if (typeof MTE == "undefined") return;
+    if (typeof MTE === "undefined") return;
     function extend(a, b) {
         a = a || {};
         for (var c in b) {
-            if (typeof b[c] == "object") {
+            if (typeof b[c] === "object") {
                 a[c] = extend(a[c], b[c]);
             } else {
                 a[c] = b[c];
@@ -54,7 +54,7 @@ if (typeof DASHBOARD != "undefined") {
         // Replace `foo[bar]` with `foo_bar`
         hook = name.replace(/\[\]/g, '_' + c_nu).replace(/\[(.*?)\]/g, '_$1');
         config = area[i].getAttribute('data-MTE-config') || '{}';
-        config = typeof JSON.parse == "function" ? JSON.parse(config) : {};
+        config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
         base.fire('on_control_begin', {
             'segment': base.segment,
@@ -65,9 +65,17 @@ if (typeof DASHBOARD != "undefined") {
             tabSize: TAB,
             toolbar: false,
             shortcut: false,
+            areaClass: 'editor-area',
             toolbarClass: 'editor-toolbar cf',
-            buttonClassPrefix: 'editor-toolbar-button editor-toolbar-button-',
-            iconClassPrefix: 'fa fa-',
+            toolbarIconClass: 'fa fa-%s',
+            toolbarButtonClass: 'editor-toolbar-button editor-toolbar-button-%s',
+            toolbarSeparatorClass: 'editor-toolbar-separator',
+            dropClass: 'custom-drop custom-%s-drop',
+            modalClass: 'custom-modal custom-modal-%s',
+            modalHeaderClass: 'custom-modal-header custom-modal-%s-header',
+            modalContentClass: 'custom-modal-content custom-modal-%s-content',
+            modalFooterClass: 'custom-modal-action custom-modal-%s-action',
+            modalOverlayClass: 'custom-modal-overlay custom-modal-%s-overlay',
             emptyElementSuffix: ES,
             PRE: base.is_html_parser_enabled ? '~~~\n%s\n~~~' : 'pre',
             buttons: speak.buttons,
@@ -102,7 +110,37 @@ if (typeof DASHBOARD != "undefined") {
                     'index': i,
                     'info': {
                         'segment': base.segment,
-                        'name': name,
+                        'name': name
+                    }
+                });
+            },
+            copy: function(s) {
+                base.fire('on_control_event_copy', {
+                    'selection': s,
+                    'index': i,
+                    'info': {
+                        'segment': base.segment,
+                        'name': name
+                    }
+                });
+            },
+            cut: function(s) {
+                base.fire('on_control_event_cut', {
+                    'selection': s,
+                    'index': i,
+                    'info': {
+                        'segment': base.segment,
+                        'name': name
+                    }
+                });
+            },
+            paste: function(s) {
+                base.fire('on_control_event_paste', {
+                    'selection': s,
+                    'index': i,
+                    'info': {
+                        'segment': base.segment,
+                        'name': name
                     }
                 });
             }

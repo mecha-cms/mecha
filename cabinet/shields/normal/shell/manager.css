@@ -111,17 +111,18 @@ label:hover .radio {color:#3A64A4}
 .sortable.active,
 .table-sortable tr.active {background-color:#FFA}
 
-.editor-toolbar a {
+.editor-toolbar-button {
   background-color:#333;
   color:#FFA;
 }
 
-.editor-toolbar a:focus,
-.editor-toolbar a:hover {background-color:#373737}
-.editor-toolbar a:active {background-color:#2F2F2F}
+.editor-toolbar-button:focus,
+.editor-toolbar-button:hover {
+  background-color:#373737;
+  color:#FFA;
+}
 
-.editor-preview {margin:0}
-.editor-preview .preview-title {margin-top:0}
+.editor-toolbar-button:active {background-color:#2F2F2F}
 
 .page-time,
 .article-time,

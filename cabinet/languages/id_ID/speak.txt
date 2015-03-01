@@ -617,7 +617,8 @@ notify_error_empty_fields: Mohon isi semua bidang yang wajib.
 notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.
 notify_error_slug_exist: Slug <code>%s</code> sudah ada.
 notify_error_slug_missing_letter: Slug URL harus berisi setidaknya satu huruf, dari <code>A</code> sampai <code>Z</code>.
-notify_error_post_content_empty: Konten pos tidak boleh kosong.
+notify_error__content_empty: Konten %s tidak boleh dikosongkan.
+notify_error_post_content_empty: Konten pos tidak boleh dikosongkan.
 notify_error_too_short: <strong>%s</strong> terlalu pendek.
 notify_error_too_long: <strong>%s</strong> terlalu panjang.
 notify_error_not_found: Tidak ditemukan.

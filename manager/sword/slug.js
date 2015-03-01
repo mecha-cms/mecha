@@ -7,7 +7,7 @@
 
     $.slug = function(input, output, connector) {
 
-        if (typeof connector == "undefined") {
+        if (typeof connector === "undefined") {
             connector = '-';
         }
 
