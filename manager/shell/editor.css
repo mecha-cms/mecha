@@ -26,16 +26,17 @@
   box-sizing:border-box;
 }
 
-textarea + .editor-toolbar .editor-toolbar-button {margin:2px 2px 0 0}
-
 .editor-toolbar-separator {
   display:block;
   float:left;
   width:0;
   height:20px;
   border-right:1px solid;
-  margin:0 4px 0 0;
+  margin:0 2px 2px 0;
 }
+
+.editor-area + .editor-toolbar .editor-toolbar-button,
+.editor-area + .editor-toolbar .editor-toolbar-separator {margin:2px 2px 0 0}
 
 .custom-drop {
   position:absolute;
@@ -80,6 +81,7 @@ textarea + .editor-toolbar .editor-toolbar-button {margin:2px 2px 0 0}
 .custom-modal-header {
   font-weight:bold;
   line-height:1;
+  cursor:move;
 }
 
 .custom-modal-content {margin:1em 0}
