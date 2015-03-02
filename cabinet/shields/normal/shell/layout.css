@@ -6,7 +6,13 @@
 
 /* GENERALS */
 
-body {border-top:5px solid}
+body {
+  border-top:5px solid;
+  -webkit-box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  box-sizing:border-box;
+}
+
 .form-login {padding:10% 0}
 
 .footnotes {margin-top:1.3846153846153846em}

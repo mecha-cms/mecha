@@ -1,8 +1,8 @@
 .modal {
   position:fixed !important;
   position:absolute;
-  top:20%;
-  bottom:20%;
+  top:10%;
+  bottom:10%;
   left:50%;
   z-index:10000;
   width:46.15384615384615em;
@@ -108,7 +108,7 @@
   }
 }
 
-@media (max-height:25em) {
+@media (max-height:37.5em) {
   .modal {
     top:5%;
     bottom:5%;
@@ -127,9 +127,7 @@
 .modal-large {
   width:auto;
   height:auto;
-  top:10%;
   right:10%;
-  bottom:10%;
   left:10%;
   margin:0;
 }
