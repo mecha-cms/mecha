@@ -1,7 +1,7 @@
-﻿Title: Markdown
+Title: Markdown
 Author: Michel Fortin
 URL: http://michelf.ca/projects/php-markdown
-Version: 1.4.1
+Version: 1.5.0
 
 ====
 
