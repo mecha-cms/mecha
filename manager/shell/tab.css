@@ -24,6 +24,7 @@
   color:inherit;
   border-bottom-width:0;
   position:relative;
+  cursor:pointer;
 }
 
 .tab .fa {margin-left:-.15384615384615385em}

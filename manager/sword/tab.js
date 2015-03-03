@@ -17,14 +17,19 @@
 
 (function($, base) {
 
-    var $tabs = $('.tab-area a');
+    var $tab = $('.tab'), $panel;
 
-    if (!$tabs.length) return;
+    if (!$tab.length) return;
 
-    $tabs.on("click", function(e) {
-        if (this.href.match(/\#.*$/)) {
+    $tab.on("click", function(e) {
+        if (!this.href || this.href.match(/\#.*$/)) {
+            var hash = (this.hash || '#').replace('#', "");
+            $panel = $('#' + hash);
+            if (!$panel.length || hash === "") {
+                $panel = $tab.parent().parent().find('.tab-content').eq($(this).index());
+            }
             $(this).addClass('active').siblings().removeClass('active');
-            $('#' + this.hash.replace('#', "")).removeClass('hidden').siblings('.tab-content').addClass('hidden');
+            $panel.removeClass('hidden').siblings('.tab-content').addClass('hidden');
             base.fire('on_tab_change', {
                 'event': e,
                 'target': this
