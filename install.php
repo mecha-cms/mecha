@@ -102,23 +102,23 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
       <input name="token" type="hidden" value="<?php echo isset($token) ? $token : ""; ?>">
       <h3>First Meet</h3>
       <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'username' => "", 'password' => ""); echo ! empty($errors) ? '<div class="messages">' . implode("", $errors) . '</div>' : ""; ?>
-      <label class="grid-group no-gap">
+      <label class="grid-group">
         <span class="grid span-2 form-label"><span>Name</span></span>
         <span class="grid span-4"><input name="name" type="text" class="input-block" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
       </label>
-      <label class="grid-group no-gap">
+      <label class="grid-group">
         <span class="grid span-2 form-label"><span>Email</span></span>
         <span class="grid span-4"><input name="email" type="email" class="input-block" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>"></span>
       </label>
-      <label class="grid-group no-gap">
+      <label class="grid-group">
         <span class="grid span-2 form-label"><span>Username</span></span>
         <span class="grid span-4"><input name="username" type="text" class="input-block" value="<?php echo isset($cache['username']) ? $cache['username'] : ""; ?>"></span>
       </label>
-      <label class="grid-group no-gap">
+      <label class="grid-group">
         <span class="grid span-2 form-label"><span>Password</span></span>
         <span class="grid span-4"><input name="password" type="password" class="input-block" value="<?php echo isset($cache['password']) ? $cache['password'] : ""; ?>"></span>
       </label>
-      <div class="grid-group no-gap">
+      <div class="grid-group">
         <span class="grid span-2"></span>
         <span class="grid span-4"><button class="btn btn-action" type="submit"><i class="fa fa-user"></i> Install</button></span>
       </div>
