@@ -137,3 +137,15 @@
 .pagination a:first-child + a + span {padding:0}
 
 .fi {display:block} /* fragment identifier */
+
+
+/**
+ * DEPRECATED
+ * ----------
+ *
+ *  Will always be available as long as these classes
+ *  remains unused to represent what it should be.
+ *
+ */
+
+.table-full {width:100%}
