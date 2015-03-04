@@ -2,11 +2,11 @@
 .sortable-area:first-child {margin-top:0}
 
 .sortable {
-  border:1px solid;
-  border-left-width:4px;
-  padding:.8em 1em;
-  margin-left:1.5em;
   position:relative;
+  margin-left:1.5769230769230769em;
+  border:1px solid;
+  padding:.5em .8em;
+  border-left-width:4px;
 }
 
 .sortable + .sortable {margin-top:2px}
@@ -18,20 +18,27 @@
   bottom:0;
   margin-right:.5em;
   width:1.0769230769230769em;
+  text-align:center;
 }
 
-.sort {
+.sortable .handle a,
+.table-sortable .handle a {
   display:block;
   line-height:1;
-}
-
-.sortable .handle .sort {
   position:absolute;
   top:0;
   left:0;
 }
 
-.sortable .handle .sort + .sort {
+.sortable .handle a + a {
   top:auto;
   bottom:0;
 }
+
+.table-sortable .handle {
+  vertical-align:middle;
+  text-align:center;
+  width:1em;
+}
+
+.table-sortable .handle a {position:static}

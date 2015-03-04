@@ -15,27 +15,21 @@
 
 (function($, base) {
 
-    var $accordion = $('.accordion-area'),
-        $base = $('html, body');
+    var $accordion = $('.accordion-area');
 
     if (!$accordion.length) return;
 
     $accordion.find('.accordion-header').on("click", function(e) {
-        var active = $(this).is('.active');
+        var active = $(this).is('.active'),
+            data = {
+                'event': e,
+                'target': this
+            };
         $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');
         $(this).next().toggleClass('hidden').siblings('.accordion-content').addClass('hidden');
-        base.fire('on_accordion_change', {
-            'event': e,
-            'target': this
-        });
-        base.fire('on_accordion_toggle', {
-            'event': e,
-            'target': this
-        });
-        base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), {
-            'event': e,
-            'target': this
-        });
+        base.fire('on_accordion_change', data);
+        base.fire('on_accordion_toggle', data);
+        base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), data);
         return false;
     }).on("mousedown", false);
 

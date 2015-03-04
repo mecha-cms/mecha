@@ -14,7 +14,7 @@
     <?php if($the_shield_contents): ?>
     <h3 class="media-head"><?php echo $speak->shield; ?>: <?php echo $info->title; ?></h3>
     <p><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($info->author, '->encoded_html'); ?><?php if(isset($info->url) && $info->url != '#'): ?><br><strong><?php echo $speak->url; ?>:</strong> <a href="<?php echo $info->url; ?>" rel="nofollow" target="_blank"><?php echo $info->url; ?></a><?php endif; ?></p>
-    <table class="table-bordered table-full">
+    <table class="table-bordered table-full-width">
       <colgroup>
         <col>
         <col style="width:2.6em;">

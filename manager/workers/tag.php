@@ -1,7 +1,7 @@
 <form class="form-tag" action="<?php echo $config->url_current; ?>" method="post">
   <?php $ids = array(); echo $messages; ?>
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <table class="table-bordered table-full">
+  <table class="table-bordered table-full-width">
     <colgroup>
       <col style="width:5em;">
       <col>
@@ -32,7 +32,7 @@
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Guardian::wayback('description.' . $id_max); ?>"></td>
       </tr>
       <tr class="row-more-less" data-min="3" data-max="9999">
-        <td colspan="4"><a class="btn btn-small btn-default btn-increase" href="#add"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-small btn-default btn-decrease" href="#remove"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
+        <td colspan="4"><a class="btn btn-small btn-default row-more" href="#row:more"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-small btn-default row-less" href="#row:less"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>
   </table>

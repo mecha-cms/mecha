@@ -44,8 +44,9 @@
     $modal.each(function() {
         var $this = $(this),
             $trigger = $this.data('trigger') || false,
+            $overlay = $('<div class="modal-overlay"></div>'),
             stack = parseInt($this.css('z-index'), 10) - 1;
-        $('<div class="modal-overlay"></div>').css('z-index', stack).on("click", function(e) {
+        $overlay.css('z-index', stack).on("click", function(e) {
             $(this).hide().prev().hide();
             $body.css({
                 position: "",
@@ -59,6 +60,16 @@
                 'target': this
             });
         }).insertAfter($this);
+        if (!$(this).find('.modal-close-x').length) {
+            $('<a class="modal-close-x" href="#modal:close"><i class="fa fa-times"></i></a>').on("click", function(e) {
+                $overlay.trigger("click");
+                base.fire('on_modal_hide', {
+                    'event': e,
+                    'target': this
+                });
+                return false;
+            }).insertAfter($('.modal-header', this));
+        }
         if ($trigger) {
             $body.on("click", $trigger, function(e) {
                 $this.show().next().show();

@@ -27,11 +27,15 @@
             _action = $this.data('actionUrl') || $this.data('url') || $source.attr('action'),
             _progress = $this.data('textProgress') || "",
             _is_get = $this.is('.ajax-get'),
-            $destination = $($this.data('target')) || $this.next();
+            $destination = $($this.data('target')) || $this.next(),
+            data = {
+                'event': e,
+                'target': _this
+            };
 
         $destination.html(_progress);
 
-        base.fire('on_ajax_begin', [e, _this]);
+        base.fire('on_ajax_begin', data);
 
         $.ajax({
             url: _action,
@@ -46,10 +50,7 @@
                     'event': e,
                     'target': _this
                 });
-                base.fire('on_ajax_end', {
-                    'event': e,
-                    'target': _this
-                });
+                base.fire('on_ajax_end', data);
             },
             error: function(xhr, status, error) {
                 $destination.html(_error);
@@ -60,10 +61,7 @@
                     'event': e,
                     'target': _this
                 });
-                base.fire('on_ajax_end', {
-                    'event': e,
-                    'target': _this
-                });
+                base.fire('on_ajax_end', data);
             }
         });
 

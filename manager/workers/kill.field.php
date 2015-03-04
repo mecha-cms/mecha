@@ -1,7 +1,7 @@
 <?php echo $messages; ?>
 <form class="form-kill form-field" action="<?php echo $config->url_current; ?>" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <table class="table-bordered table-full">
+  <table class="table-bordered table-full-width">
     <thead>
       <tr>
         <th><?php echo $speak->title; ?></th>

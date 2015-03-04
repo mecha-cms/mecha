@@ -871,7 +871,7 @@ Filter::add('content', function($content) use($config) {
                 '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host, '/') . ')#'
             ),
             array(
-                '<table class="table-bordered table-full">',
+                '<table class="table-bordered table-full-width">',
                 '<a rel="nofollow" href="$1'
             ),
         $content);

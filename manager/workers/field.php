@@ -3,7 +3,7 @@
 </div>
 <?php echo $messages; ?>
 <?php if($files): ?>
-<table class="table-bordered table-full">
+<table class="table-bordered table-full-width">
   <colgroup>
     <col>
     <col>

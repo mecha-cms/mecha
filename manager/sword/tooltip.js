@@ -11,7 +11,7 @@
     var $window = $(window),
         $document = $(document),
         $body = $(document.body),
-        $target = $('.help[title]'),
+        $target = $('.help[title], .has-tooltip[title]'),
         $tooltip = $('<div class="tooltip t hidden"></div>').appendTo($body),
         timer = null;
 
@@ -83,7 +83,10 @@
 
     $tooltip.on("mouseenter", function(e) {
         window.clearTimeout(timer);
-        base.fire('on_tooltip_enter', [e, this]);
+        base.fire('on_tooltip_enter', {
+            'event': e,
+            'target': this
+        });
     }).on("mouseleave", function(e) {
         var _this = this;
         window.clearTimeout(timer);

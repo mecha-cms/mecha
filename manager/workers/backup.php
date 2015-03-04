@@ -6,7 +6,7 @@
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <h3 class="media-head"><?php echo $speak->backup; ?></h3>
-    <table class="table-bordered table-full">
+    <table class="table-bordered table-full-width">
       <colgroup>
         <col>
         <col style="width:2.6em;">

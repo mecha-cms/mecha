@@ -166,6 +166,8 @@ q:after {
 .fa {
   font-size:107.6923076923077%;
   line-height:inherit;
+  height:inherit;
+  vertical-align:middle;
 }
 
 
@@ -505,7 +507,7 @@ table[border="1"] td {
 }
 
 .table-bordered code {white-space:nowrap}
-.table-full {width:100%}
+.table-full-width {width:100%}
 
 
 /* BLOCKS */

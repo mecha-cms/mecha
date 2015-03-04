@@ -25,7 +25,11 @@
             extension = segments[segments.length - 1].toLowerCase(),
             ok = $.inArray(extension, accepted) !== -1,
             status = ok ? 'btn-accept' : 'btn-reject',
-            statusIcon = ok ? 'iconReady' : 'iconError';
+            statusIcon = ok ? 'iconReady' : 'iconError',
+            data = {
+                'event': e,
+                'target': this
+            };
 
         $(this).parent().next().prop('disabled', !ok);
 
@@ -46,15 +50,8 @@
 
         }
 
-        base.fire('on_file_change', {
-            'event': e,
-            'target': this
-        });
-
-        base.fire('on_file_' + (ok ? 'accept' : 'reject'), {
-            'event': e,
-            'target': this
-        });
+        base.fire('on_file_change', data);
+        base.fire('on_file_' + (ok ? 'accept' : 'reject'), data);
 
     });
 

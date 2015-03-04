@@ -14,16 +14,14 @@
         $checkbox.each(function() {
             $(this).before('<a class="checkbox' + (this.checked ? ' checked' : "") + '" href="#toggle"></a>');
         }).on("change", function(e) {
+            var data = {
+                'event': e,
+                'target': this
+            };
             if ($(this).is('[disabled]') || $(this).is('[readonly]')) return false;
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
-            base.fire('on_checkbox_change', {
-                'event': e,
-                'target': this
-            });
-            base.fire('on_checkbox_' + (this.checked ? 'check' : 'uncheck'), {
-                'event': e,
-                'target': this
-            });
+            base.fire('on_checkbox_change', data);
+            base.fire('on_checkbox_' + (this.checked ? 'check' : 'uncheck'), data);
         });
         $('.checkbox').on("click", function() {
             if ($(this).is('.disabled') || $(this).is('.readonly')) return false;
@@ -44,17 +42,15 @@
         $radio.each(function() {
             $(this).before('<a class="radio' + (this.checked ? ' checked' : "") + '" href="#check"></a>');
         }).on("change", function(e) {
+            var data = {
+                'event': e,
+                'target': this
+            };
             if ($(this).is('[disabled]') || $(this).is('[readonly]')) return false;
             $(this).prev()[this.checked ? 'addClass' : 'removeClass']('checked');
             $radio.filter('[name="' + this.name + '"]').not(this).prop('checked', false).prev().removeClass('checked');
-            base.fire('on_radio_change', {
-                'event': e,
-                'target': this
-            });
-            base.fire('on_radio_' + (this.checked ? 'check' : 'uncheck'), {
-                'event': e,
-                'target': this
-            });
+            base.fire('on_radio_change', data);
+            base.fire('on_radio_' + (this.checked ? 'check' : 'uncheck'), data);
         });
         $('.radio').on("click", function() {
             if ($(this).is('.disabled') || $(this).is('.readonly') || $(this).is('.checked')) return false;

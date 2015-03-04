@@ -4,8 +4,8 @@
  *
  *    <tr class="row-more-less" data-min="3" data-max="9999">
  *      <td>
- *        <a class="btn btn-sm btn-default btn-increase" href="#add">More</a>
- *        <a class="btn btn-sm btn-default btn-decrease" href="#remove">Less</a>
+ *        <a class="row-more" href="#row:more">More</a>
+ *        <a class="row-less" href="#row:less">Less</a>
  *      </td>
  *    </tr>
  *
@@ -13,44 +13,37 @@
 
 (function($, base) {
 
-    var $btn = $('.row-more-less .btn');
+    var $row = $('.row-more-less');
 
-    if (!$btn.length) return;
+    if (!$row.length) return;
 
-    $btn.on("click", function(e) {
+    $row.on("click", 'a', function(e) {
 
         var clone = $(this).closest('tr').prev().clone(true),
+            state = (this.hash || ':').replace('#', "").split(/[:\-]/)[1],
             max = $(this).closest('tr').data('max') || 9999,
             min = $(this).closest('tr').data('min') || 1,
-            length = $(this).closest('tbody').find('tr').length;
-
-        if ($(this).is('.btn-increase')) {
-            if (length < max + 1) {
-                $(this).closest('tr').before(clone);
-                base.fire('on_row_increase', {
-                    'event': e,
-                    'target': this
-                });
-            }
-            base.fire('on_row_update', {
+            length = $(this).closest('tbody').find('tr').length,
+            data = {
                 'event': e,
                 'target': this
-            });
+            };
+
+        if ($(this).is('.row-more') || state == 'more') {
+            if (length < max + 1) {
+                $(this).closest('tr').before(clone);
+                base.fire('on_row_increase', data);
+                base.fire('on_row_update', data);
+            }
             return false;
         }
 
-        if ($(this).is('.btn-decrease')) {
+        if ($(this).is('.row-less') || state == 'less') {
             if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
-                base.fire('on_row_decrease', {
-                    'event': e,
-                    'target': this
-                });
+                base.fire('on_row_decrease', data);
+                base.fire('on_row_update', data);
             }
-            base.fire('on_row_update', {
-                'event': e,
-                'target': this
-            });
             return false;
         }
 
