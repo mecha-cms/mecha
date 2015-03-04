@@ -706,9 +706,17 @@ class Get {
         }
 
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, true, $filter_prefix) : $results;
-        if( ! isset($excludes['excerpt']) && strpos($content_test['content'], '<!-- cut -->') !== false) {
-            $parts = explode('<!-- cut -->', $content_test['content'], 2);
-            $results['excerpt'] = self::AMF(trim($parts[0]), $filter_prefix, 'excerpt');
+        $content_test = $content_test['content'];
+
+        if(strpos($content_test, '<!-- cut+ ') !== false) {
+            preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
+            $content_more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
+            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '" rel="nofollow">' . $content_more . '</a></p><!-- cut -->', $content_test);
+        }
+
+        if(strpos($content_test, '<!-- cut -->') !== false) {
+            $parts = explode('<!-- cut -->', $content_test, 2);
+            $results['excerpt'] = self::AMF(preg_replace('#<\/p>[\n\r]*<p><a class="fi-link"#', ' <a class="fi-link"', trim($parts[0])), $filter_prefix, 'excerpt');
             $results['content'] = trim($parts[0]) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
         }
 

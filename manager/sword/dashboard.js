@@ -18,13 +18,15 @@ window.DASHBOARD = {
         });
     },
     fire: function(name, arguments) {
-        if (typeof DASHBOARD.hooks[name] !== "undefined") {
+        if (typeof DASHBOARD.hooks[name] === "object") {
             DASHBOARD.hooks[name].sort(function(a, b) {
                 return a.stack - b.stack;
             });
             for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
                 DASHBOARD.hooks[name][i].fn(arguments);
             }
+        } else {
+            DASHBOARD.hooks[name] = false;
         }
     },
     eject: function(name, stack) {

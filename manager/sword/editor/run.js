@@ -62,7 +62,7 @@ if (typeof DASHBOARD !== "undefined") {
             'index': i
         });
         base[prefix + '_' + hook] = /(^| )(MTE|code)( |$)/.test(area[i].className) && !/(^| )MTE-ignore( |$)/.test(area[i].className) ? new MTE(area[i], extend({
-            tabSize: TAB,
+            tabSize: TAB || '    ',
             toolbar: false,
             shortcut: false,
             areaClass: 'editor-area',
@@ -70,17 +70,29 @@ if (typeof DASHBOARD !== "undefined") {
             toolbarIconClass: 'fa fa-%s',
             toolbarButtonClass: 'editor-toolbar-button editor-toolbar-button-%s',
             toolbarSeparatorClass: 'editor-toolbar-separator',
-            dropClass: 'custom-drop custom-%s-drop',
+            dropClass: 'custom-drop custom-%s-drop cf',
             modalClass: 'custom-modal custom-modal-%s',
-            modalHeaderClass: 'custom-modal-header custom-modal-%s-header',
-            modalContentClass: 'custom-modal-content custom-modal-%s-content',
-            modalFooterClass: 'custom-modal-action custom-modal-%s-action',
+            modalHeaderClass: 'custom-modal-header custom-modal-%s-header cf',
+            modalContentClass: 'custom-modal-content custom-modal-%s-content cf',
+            modalFooterClass: 'custom-modal-action custom-modal-%s-action cf',
             modalOverlayClass: 'custom-modal-overlay custom-modal-%s-overlay',
-            emptyElementSuffix: ES,
+            emptyElementSuffix: ES || '>',
             PRE: base.is_html_parser_enabled ? '~~~\n%s\n~~~' : 'pre',
             buttons: speak.buttons,
             prompts: speak.prompts,
             placeholders: speak.placeholders,
+            update: function(e, editor, id) {
+                base.fire('on_control_event_update', {
+                    'event': e,
+                    'editor': editor,
+                    'id': id || null,
+                    'index': i,
+                    'info': {
+                        'segment': base.segment,
+                        'name': name
+                    }
+                });
+            },
             click: function(e, editor, id) {
                 base.fire('on_control_event_click', {
                     'event': e,

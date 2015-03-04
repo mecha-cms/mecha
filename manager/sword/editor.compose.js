@@ -45,15 +45,17 @@
         position: -3,
         click: function(e, editor) {
             var editor = editor.grip,
+                m = /<!-- cut(\+( .*?)?)? -->/.exec(editor.area.value),
                 s = editor.selection(),
-                clean_B = s.before.replace(/\s+$/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n'),
-                clean_A = s.after.replace(/^\s+/, "").replace(/\s*<!-- cut -->\s*/g, '\n\n');
+                clean_B = s.before.replace(/\s+$/, "").replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n'),
+                clean_A = s.after.replace(/^\s+/, "").replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n');
             if (clean_B.length === 0) {
                 editor.select(0);
                 return;
             }
-            editor.area.value = clean_B + '\n\n<!-- cut -->\n\n' + clean_A;
-            editor.select(clean_B.length + 16, function() {
+            var more_text = m && m[1] ? m[1] : "";
+            editor.area.value = clean_B + '\n\n<!-- cut' + more_text + ' -->\n\n' + clean_A;
+            editor.select(clean_B.length + 16 + more_text.length, function() {
                 editor.updateHistory();
             });
         }
