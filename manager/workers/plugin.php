@@ -39,7 +39,7 @@
     <h3 class="media-head"><?php echo Config::speak('manager.title__upload_package', array($speak->plugin)); ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/plugin" method="post" enctype="multipart/form-data">
       <input name="token" type="hidden" value="<?php echo $token; ?>">
-      <span class="input-wrapper btn btn-default">
+      <span class="input-outer btn btn-default">
         <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
         <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
       </span> <button class="btn btn-action" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>

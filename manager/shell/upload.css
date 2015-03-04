@@ -1,10 +1,10 @@
-.form-upload .input-wrapper {
+.form-upload .input-outer {
   display:inline-block;
   position:relative;
   overflow:hidden;
 }
 
-.form-upload .input-wrapper input {
+.form-upload .input-outer input {
   display:block;
   position:absolute;
   top:0;
