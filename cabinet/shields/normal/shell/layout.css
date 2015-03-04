@@ -162,7 +162,6 @@ body {
   overflow:hidden;
 }
 
-.post {overflow:hidden}
 .post + .post {margin-top:5%}
 
 .post-time {
@@ -173,6 +172,7 @@ body {
 }
 
 .post-index .post-time {font-size:80%}
+.post-index .post-time .fa {font-size:107.6923076923077%}
 
 .post-title {
   margin:0 0 18px;
@@ -193,8 +193,6 @@ body {
   overflow:hidden;
   margin-top:5%;
 }
-
-.blog-pager a .fa {font-size:100%}
 
 .blog-pager-prev {float:left}
 .blog-pager-next {float:right}

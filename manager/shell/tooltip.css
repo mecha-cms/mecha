@@ -1,11 +1,6 @@
 .help {cursor:help}
 a.help {cursor:pointer}
 
-.fa.help {
-  display:inline;
-  font-size:100%;
-}
-
 .tooltip {
   max-width:250px;
   background-color:black;

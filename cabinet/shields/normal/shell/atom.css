@@ -69,31 +69,31 @@ time,mark,audio,video {
   color:#AAA;
   opacity:1;
   overflow:visible; /* WebKit only :( */
-  line-height:normal;
+  line-height:inherit;
 }
 
 ::-moz-placeholder {
   color:#AAA;
   opacity:1;
-  line-height:normal;
+  line-height:inherit;
 }
 
 :-moz-placeholder {
   color:#AAA;
   opacity:1;
-  line-height:normal;
+  line-height:inherit;
 }
 
 :-ms-input-placeholder {
   color:#AAA;
   opacity:1;
-  line-height:normal;
+  line-height:inherit;
 }
 
 :placeholder {
   color:#AAA;
   opacity:1;
-  line-height:normal;
+  line-height:inherit;
 }
 
 :focus::-webkit-input-placeholder {color:#888 !important}
@@ -158,16 +158,6 @@ q:before,
 q:after {
   content:"";
   display:none;
-}
-
-
-/* FONT AWESOME */
-
-.fa {
-  font-size:107.6923076923077%;
-  line-height:inherit;
-  height:inherit;
-  vertical-align:middle;
 }
 
 
