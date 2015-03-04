@@ -7,7 +7,7 @@ Mecha CMS
 
 ### Features
 
- 1. It is easy to write articles using [Markdown]({{url.article}}markdown-syntax "Markdown Formatting Guide").
+ 1. It is easy to write articles using [Markdown](http://mecha-cms.com/article/markdown-syntax "Markdown Formatting Guide").
  2. Don&rsquo;t forget the ability to turn the Markdown ON and OFF.
  3. Live preview Markdown to HTML.
  4. Lots of Widgets.
@@ -30,7 +30,7 @@ Mecha CMS
 ### Steps to Install
 
  1. Make sure that you already have the required system.
- 2. Download **Mecha** by cloning [this](https://github.com/mecha-cms/cms) **GitHub** repo.
+ 2. Download **Mecha** by cloning [this](https://github.com/mecha-cms/mecha-cms) **GitHub** repo.
  3. Upload **Mecha** through your FTP/SFTP to the public folder/directory in your site &mdash; Usually named as `public_html`, `www` or `htdocs`
  4. Type `http://example.org/install.php` in the address bar of your web browser. Or, if for some reason you have to upload this CMS in a sub-folder, then just type `http://example.org/your-sub-folder-name/install.php` &mdash; Seriously, if you really typed domain **http://example.org**, then you really are in a big trouble!
  5. Put your name, your email, your username and your password in the form provided then click **Install**.
@@ -44,10 +44,10 @@ http://mecha-cms.com
 
 ### How to Contribute?
 
- 1. Use this CMS, do something strange until you find a bug/error on this CMS, then let me know through the [issue](https://github.com/mecha-cms/cms/issues "Mecha CMS Issues").
+ 1. Use this CMS, do something strange until you find a bug/error on this CMS, then let me know through the [issue](https://github.com/mecha-cms/mecha-cms/issues "Mecha CMS Issues").
  2. Share this CMS project page to your friends.
  3. Make some shields for **Mecha**.
- 4. Make some [plugins](https://github.com/mecha-cms/plugin "Mecha CMS Plugins") for **Mecha**.
+ 4. Make some [plugins](https://github.com/mecha-cms/mecha-plugin "Mecha CMS Plugins") for **Mecha**.
  5. Make a donation.
  6. Give me a star!
  7. Say thanks, for motivation purpose :)
