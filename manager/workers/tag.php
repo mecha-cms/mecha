@@ -2,15 +2,9 @@
   <?php $ids = array(); echo $messages; ?>
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <table class="table-bordered table-full-width">
-    <colgroup>
-      <col style="width:5em;">
-      <col>
-      <col>
-      <col>
-    </colgroup>
     <thead>
       <tr>
-        <th class="text-right"><?php echo $speak->id; ?></th>
+        <th class="text-right" style="width:3em;"><?php echo $speak->id; ?></th>
         <th><?php echo $speak->name; ?></th>
         <th><?php echo $speak->slug; ?></th>
         <th><?php echo $speak->description; ?></th>
@@ -19,7 +13,7 @@
     <tbody>
       <?php foreach($files as $tag): $ids[] = $tag->id; ?>
       <tr>
-        <td class="text-right"><input name="id[]" type="hidden" value="<?php echo $tag->id; ?>"><?php echo $tag->id; ?></td>
+        <td class="text-right"><input name="id[]" type="hidden" value="<?php echo $tag->id; ?>"><span><?php echo $tag->id; ?></span></td>
         <td><input name="name[]" type="text" class="input-block" value="<?php echo $tag->name; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>
         <td><input name="slug[]" type="text" class="input-block" value="<?php echo $tag->slug; ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Text::parse($tag->description, '->encoded_html'); ?>"<?php echo Guardian::get('status') != 'pilot' ? ' readonly' : ""; ?>></td>

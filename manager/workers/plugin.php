@@ -5,10 +5,10 @@
 <div class="tab-content-area">
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
-    <h3 class="media-head"><?php echo Config::speak('manager.title_your_', array($speak->plugins)); ?></h3>
+    <h3><?php echo Config::speak('manager.title_your_', array($speak->plugins)); ?></h3>
     <?php if($files): ?>
     <?php foreach($files as $plugin): $c = File::exist(PLUGIN . DS . $plugin->slug . DS . 'capture.png'); ?>
-    <div class="media-item<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $plugin->slug; ?>">
+    <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $plugin->slug; ?>">
       <?php if($c): ?>
       <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
@@ -36,7 +36,7 @@
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <h3 class="media-head"><?php echo Config::speak('manager.title__upload_package', array($speak->plugin)); ?></h3>
+    <h3><?php echo Config::speak('manager.title__upload_package', array($speak->plugin)); ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/plugin" method="post" enctype="multipart/form-data">
       <input name="token" type="hidden" value="<?php echo $token; ?>">
       <span class="input-outer btn btn-default">

@@ -179,7 +179,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($path) . '</code>')));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
-            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . $name);
+            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . str_replace(DS, '/', $name));
         }
     }
     Shield::define(array(

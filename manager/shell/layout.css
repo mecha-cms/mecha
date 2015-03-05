@@ -5,6 +5,15 @@ html {
   text-size-adjust:100%;
 }
 
+.th-icon,
+.td-icon {
+  text-align:center;
+  vertical-align:middle;
+  width:1em;
+}
+
+.table-bordered time {white-space:nowrap}
+
 .main-actions {
   padding:1.3846153846153846em 0;
   border-top:4px solid;
@@ -13,15 +22,15 @@ html {
 
 .main-actions + .tab-area {margin-top:0}
 
-.media-item {
+.media {
   border-top:1px dashed;
   padding:1.3846153846153846em 0 1.3846153846153846em 11.3846153846153846em;
   margin:1.3846153846153846em 0 0;
   position:relative;
 }
 
-.media-item.no-capture {padding-left:0}
-.media-item + .media-item {margin-top:0}
+.media.no-capture {padding-left:0}
+.media + .media {margin-top:0}
 
 .media-title {
   margin:0 0 -.24725274725274726em;
@@ -180,4 +189,9 @@ textarea.no-appearance {
   -webkit-box-shadow:none;
   -moz-box-shadow:none;
   box-shadow:none;
+}
+
+@media (max-width:36.25em) {
+  .media {padding-left:0}
+  .media-capture {display:none}
 }

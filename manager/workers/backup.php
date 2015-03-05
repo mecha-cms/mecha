@@ -5,12 +5,8 @@
 <div class="tab-content-area">
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
-    <h3 class="media-head"><?php echo $speak->backup; ?></h3>
+    <h3><?php echo $speak->backup; ?></h3>
     <table class="table-bordered table-full-width">
-      <colgroup>
-        <col>
-        <col style="width:2.6em;">
-      </colgroup>
       <tbody>
         <?php
 
@@ -29,15 +25,15 @@
         ?>
         <?php foreach($origins as $title => $origin): ?>
         <tr>
-          <th><?php echo $title; ?></th>
-          <td class="text-center"><a href="<?php echo $config->url_current; ?>/origin:<?php echo $origin; ?>" title="<?php echo $speak->download; ?>"><i class="fa fa-download"></i></a></td>
+          <td><?php echo $title; ?></td>
+          <td class="td-icon"><a href="<?php echo $config->url_current; ?>/origin:<?php echo $origin; ?>" title="<?php echo $speak->download; ?>"><i class="fa fa-download"></i></a></td>
         </tr>
         <?php endforeach; ?>
       </tbody>
     </table>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <h3 class="media-head"><?php echo $speak->restore; ?></h3>
+    <h3><?php echo $speak->restore; ?></h3>
     <?php echo Config::speak('file:restore'); ?>
     <?php
 
@@ -54,7 +50,7 @@
 
     ?>
     <?php foreach($destinations as $title => $destination): ?>
-    <div class="media-item">
+    <div class="media no-capture">
       <h4 class="media-title"><?php echo $title; ?></h4>
       <p><code><?php echo $destination; ?></code></p>
       <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">

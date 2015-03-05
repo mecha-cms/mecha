@@ -12,7 +12,9 @@
 
     if ($checkbox.length) {
         $checkbox.each(function() {
-            $(this).before('<a class="checkbox' + (this.checked ? ' checked' : "") + '" href="#toggle"></a>');
+            if (!$(this).prev().is('.checkbox')) {
+                $(this).before('<a class="checkbox' + (this.checked ? ' checked' : "") + '" href="#toggle"></a>');
+            }
         }).on("change", function(e) {
             var data = {
                 'event': e,
@@ -40,7 +42,9 @@
 
     if ($radio.length) {
         $radio.each(function() {
-            $(this).before('<a class="radio' + (this.checked ? ' checked' : "") + '" href="#check"></a>');
+            if (!$(this).prev().is('.radio')) {
+                $(this).before('<a class="radio' + (this.checked ? ' checked' : "") + '" href="#check"></a>');
+            }
         }).on("change", function(e) {
             var data = {
                 'event': e,

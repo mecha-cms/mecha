@@ -4,7 +4,7 @@
   <table class="table-bordered table-full-width table-sortable">
     <thead>
       <tr>
-        <th class="text-center align-middle"><i class="fa fa-sort"></i></th>
+        <th class="th-icon"><i class="fa fa-sort"></i></th>
         <th><?php echo $speak->key; ?></th>
         <th><?php echo $speak->value; ?></th>
       </tr>
