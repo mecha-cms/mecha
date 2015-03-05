@@ -171,8 +171,14 @@ body {
   color:#AAA;
 }
 
+.post-time .fa {
+  font-size:107.6923076923077%;
+  position:relative;
+  top:-.07692307692307693em;
+}
+
 .post-index .post-time {font-size:80%}
-.post-index .post-time .fa {font-size:107.6923076923077%}
+.post-index .post-time .fa {top:0}
 
 .post-title {
   margin:0 0 18px;

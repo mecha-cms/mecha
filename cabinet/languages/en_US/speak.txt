@@ -85,7 +85,7 @@ less: Less
 increase: Increase
 decrease: Decrease
 
-read_more: Read More &raquo;
+read_more: Read More
 
 welcome: Welcome
 

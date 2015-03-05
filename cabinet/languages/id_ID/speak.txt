@@ -85,7 +85,7 @@ less: Kurangi
 increase: Tingkatkan
 decrease: Turunkan
 
-read_more: Baca Selengkapnya &raquo;
+read_more: Baca Selengkapnya
 
 welcome: Selamat datang
 
