@@ -126,6 +126,23 @@
   padding-left:1em;
 }
 
+.pagination {
+  display:block;
+  text-align:center;
+}
+
+.pagination a,
+.pagination span,
+.pagination strong {
+  font-weight:normal;
+  padding:0 .3076923076923077em;
+}
+
+.pagination span:first-child + span + span,
+.pagination a:first-child + a + span {padding:0}
+
+.fi {display:block} /* fragment identifier */
+
 
 /**
  * Layout
@@ -256,8 +273,6 @@ textarea.no-appearance {
 
 .code {font-family:"Courier New",Courier,"Nimbus Mono L",Monospace}
 
-.fi {display:block} /* fragment identifier */
-
 .hidden {display:none}
 
 .hidden-visually,.sr {
@@ -287,18 +302,3 @@ textarea.no-appearance {
   display:block;
   clear:both;
 }
-
-.pagination {
-  display:block;
-  text-align:center;
-}
-
-.pagination a,
-.pagination span,
-.pagination strong {
-  font-weight:normal;
-  padding:0 .3076923076923077em;
-}
-
-.pagination span:first-child + span + span,
-.pagination a:first-child + a + span {padding:0}
