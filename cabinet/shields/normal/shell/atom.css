@@ -483,7 +483,6 @@ table[border="1"] td {
 }
 
 .table-bordered code {white-space:nowrap}
-.table-full-width {width:100%}
 
 
 /* BLOCKS */
@@ -530,7 +529,7 @@ figcaption,figure,ol,ul,p,pre,table,iframe,
 
 .p {
   display:block;
-  margin-top:1.3846153846153846em;
+  margin:1.3846153846153846em 0 0;
 }
 
 ol {
@@ -573,11 +572,6 @@ li > .p + ul + p,
 li > .p + ol + .p,
 li > .p + ul + .p {margin-bottom:0}
 
-.list-unstyled {
-  margin-left:0;
-  list-style:none;
-}
-
 dt {font-size:120%}
 dd {margin-left:1em}
 
@@ -615,97 +609,10 @@ iframe:first-child,
 .h6:first-child {margin-top:0}
 
 
-/* HELPERS */
-
-.hidden {display:none}
-
-.hidden-visually,.sr {
-  position:absolute !important;
-  overflow:hidden;
-  clip:rect(0 0 0 0);
-  clip:rect(0px,0px,0px,0px);
-  height:1px;
-  width:1px;
-  margin:-1px 0 0;
-  padding:0;
-  border:0;
-}
-
-.cf,
-.fluid-media,
-.fluid-video,
-.grid-group {
-  display:block;
-  cursor:inherit;
-  zoom:1;
-}
-
-.cf:after,
-.grid-group:after {
-  content:" ";
-  display:table;
-  clear:both;
-}
-
-.cl {
-  display:block;
-  clear:both;
-}
-
-
-/* GRID SYSTEM */
-
-.grid {
-  min-height:1px;
-  float:left;
-  margin-left:4.349%;
-}
-
-.grid:first-child {margin-left:0}
-
-.span-1 {width:13.043%}
-.span-2 {width:30.434%}
-.span-3 {width:47.826%}
-.span-4 {width:65.217%}
-.span-5 {width:82.608%}
-.span-6 {width:100%}
-
-.no-gap .grid {margin-left:0}
-
-.no-gap .span-1 {width:16.666%}
-.no-gap .span-2 {width:33.333%}
-.no-gap .span-3 {width:50%}
-.no-gap .span-4 {width:66.666%}
-.no-gap .span-5 {width:83.333%}
-.no-gap .span-6 {width:100%}
-
-
 /* ALIGNMENTS */
-
-.pull-left,
-.align-left {float:left}
-
-.pull-right,
-.align-right {float:right}
 
 .align-left {margin:.5em 1.3846153846153846em .5em 0}
 .align-right {margin:.5em 0 .5em 1.3846153846153846em}
-
-.align-center {
-  display:block;
-  margin-left:auto;
-  margin-right:auto;
-  text-align:center;
-}
-
-.align-top {vertical-align:top}
-.align-bottom {vertical-align:bottom}
-.align-middle {vertical-align:middle}
-
-.text-left {text-align:left}
-.text-right {text-align:right}
-.text-center {text-align:center}
-.text-justify {text-align:justify}
 
 
 /* TEXT */
@@ -731,9 +638,10 @@ img {
 
 .fluid-media,
 .fluid-video {
+  display:block;
+  height:0;
   position:relative;
   padding-bottom:56.25%;
-  height:0;
   overflow:hidden;
 }
 

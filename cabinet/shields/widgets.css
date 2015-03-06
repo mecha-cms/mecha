@@ -1,3 +1,8 @@
+/**
+ * Widget
+ * ------
+ */
+
 .widget .counter:before {content: " ("}
 .widget .counter:after {content:")"}
 
@@ -121,6 +126,160 @@
   padding-left:1em;
 }
 
+
+/**
+ * Layout
+ * ------
+ */
+
+.grid-group {
+  display:block;
+  cursor:inherit;
+  zoom:1;
+}
+
+.grid-group:after {
+  content:" ";
+  display:table;
+  clear:both;
+}
+
+.grid {
+  min-height:1px;
+  float:left;
+  margin-left:4.349%;
+}
+
+.grid:first-child {margin-left:0}
+
+.span-1 {width:13.043%}
+.span-2 {width:30.434%}
+.span-3 {width:47.826%}
+.span-4 {width:65.217%}
+.span-5 {width:82.608%}
+.span-6 {width:100%}
+
+.no-gap .grid {margin-left:0}
+
+.no-gap .span-1 {width:16.666%}
+.no-gap .span-2 {width:33.333%}
+.no-gap .span-3 {width:50%}
+.no-gap .span-4 {width:66.666%}
+.no-gap .span-5 {width:83.333%}
+.no-gap .span-6 {width:100%}
+
+.pull-left,
+.align-left {
+  display:block;
+  float:left;
+}
+
+.pull-right,
+.align-right {
+  display:block;
+  float:right;
+}
+
+.align-center {
+  display:block;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+}
+
+.align-top {vertical-align:top}
+.align-bottom {vertical-align:bottom}
+.align-middle {vertical-align:middle}
+
+.text-left {text-align:left}
+.text-right {text-align:right}
+.text-center {text-align:center}
+.text-justify {text-align:justify}
+
+.btn-small,
+.input-small,
+.select-small,
+.textarea-small {font-size:86%}
+
+.textarea-expand,
+textarea[name="content"],
+textarea[name="css"],
+textarea[name="html"],
+textarea[name="js"],
+textarea[name="php"],
+textarea[name="json"],
+textarea[name="jsonp"],
+textarea[name="xml"],
+textarea[name="content[]"],
+textarea[name="css[]"],
+textarea[name="html[]"],
+textarea[name="js[]"],
+textarea[name="php[]"],
+textarea[name="json[]"],
+textarea[name="jsonp[]"],
+textarea[name="xml[]"] {height:23.076923076923077em}
+
+.no-appearance,
+a.no-appearance,
+button.no-appearance,
+input.no-appearance,
+select.no-appearance,
+textarea.no-appearance {
+  -webkit-appearance:none;
+  -moz-appearance:none;
+  appearance:none;
+  margin:0;
+  padding:0;
+  border:none;
+  background:none;
+  outline:none;
+  font:inherit;
+  color:inherit;
+  text-align:inherit;
+  -webkit-border-radius:0;
+  -moz-border-radius:0;
+  border-radius:0;
+  -webkit-box-shadow:none;
+  -moz-box-shadow:none;
+  box-shadow:none;
+}
+
+.table-full-width {width:100%}
+
+.code {font-family:"Courier New",Courier,"Nimbus Mono L",Monospace}
+
+.fi {display:block} /* fragment identifier */
+
+.hidden {display:none}
+
+.hidden-visually,.sr {
+  position:absolute !important;
+  overflow:hidden;
+  clip:rect(0 0 0 0);
+  clip:rect(0px,0px,0px,0px);
+  height:1px;
+  width:1px;
+  margin:-1px 0 0;
+  padding:0;
+  border:0;
+}
+
+.cf {
+  display:block;
+  zoom:1;
+}
+
+.cf:after {
+  content:" ";
+  display:table;
+  clear:both;
+}
+
+.cl {
+  display:block;
+  clear:both;
+}
+
 .pagination {
   display:block;
   text-align:center;
@@ -135,5 +294,3 @@
 
 .pagination span:first-child + span + span,
 .pagination a:first-child + a + span {padding:0}
-
-.fi {display:block} /* fragment identifier */
