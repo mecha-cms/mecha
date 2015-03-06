@@ -52,16 +52,18 @@
     <?php foreach($destinations as $title => $destination): ?>
     <div class="media no-capture">
       <h4 class="media-title"><?php echo $title; ?></h4>
-      <p><code><?php echo $destination; ?></code></p>
-      <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
-        <input name="token" type="hidden" value="<?php echo $token; ?>">
-        <input name="destination" type="hidden" value="<?php echo $destination; ?>">
-        <input name="title" type="hidden" value="<?php echo strip_tags($title); ?>">
-        <span class="input-outer btn btn-default">
-          <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
-          <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
-        </span> <button class="btn btn-action" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
-      </form>
+      <div class="media-content">
+        <p><code><?php echo $destination; ?></code></p>
+        <form class="form-upload" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
+          <input name="token" type="hidden" value="<?php echo $token; ?>">
+          <input name="destination" type="hidden" value="<?php echo $destination; ?>">
+          <input name="title" type="hidden" value="<?php echo strip_tags($title); ?>">
+          <span class="input-outer btn btn-default">
+            <span><i class="fa fa-folder-open"></i> <?php echo $speak->manager->placeholder_file; ?></span>
+            <input type="file" name="file" title="<?php echo $speak->manager->placeholder_file; ?>" data-icon-ready="fa fa-check" data-icon-error="fa fa-times" data-accepted-extensions="zip">
+          </span> <button class="btn btn-action" type="submit"><i class="fa fa-cloud-upload"></i> <?php echo $speak->upload; ?></button>
+        </form>
+      </div>
     </div>
     <?php endforeach; ?>
   </div>

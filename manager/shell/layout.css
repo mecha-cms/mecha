@@ -14,13 +14,13 @@ html {
 
 .table-bordered time {white-space:nowrap}
 
-.main-actions {
+.main-action-group {
   padding:1.3846153846153846em 0;
   border-top:4px solid;
   text-align:right;
 }
 
-.main-actions + .tab-area {margin-top:0}
+.main-action-group + .tab-area {margin-top:0}
 
 .media {
   border-top:1px dashed;
@@ -33,7 +33,7 @@ html {
 .media + .media {margin-top:0}
 
 .media-title {
-  margin:0 0 -.24725274725274726em;
+  margin:0;
   padding:0;
   font-size:140%;
   line-height:1;
@@ -53,48 +53,36 @@ html {
   overflow:hidden;
 }
 
-.page-list,
-.article-list,
-.response-list {
+.media-content {margin:1.0769230769230769em 0 0}
+
+.page-list {
   list-style:none;
   margin:0;
   padding:0;
   position:relative;
 }
 
-.page-list .page,
-.article-list .article,
-.response-list .response {
+.page-list .page {
   margin:2px 0 0;
   padding:1em 0;
   overflow:hidden;
 }
 
 .page-header,
-.page-body,
-.article-header,
-.article-body,
-.response-header,
-.response-body {
+.page-body {
   margin-bottom:.6153846153846154em;
   overflow:hidden;
 }
 
-.page-footer,
-.article-footer,
-.response-footer {text-align:right}
+.page-footer {text-align:right}
 
-.page-title,
-.article-title,
-.response-title {
+.page-title {
   display:block;
   float:left;
   font-weight:bold;
 }
 
-.page-time,
-.article-time,
-.response-time {
+.page-time {
   display:block;
   float:right;
 }
@@ -130,8 +118,6 @@ html {
 .plugin-description {padding:1.3846153846153846em}
 
 .messages + .page-list,
-.messages + .article-list,
-.messages + .response-list,
 .tab-content-area .messages {margin-top:1.3846153846153846em}
 
 .hidden {display:none}

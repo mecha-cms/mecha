@@ -13,21 +13,23 @@
       <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
       <h4 class="media-title"><i class="fa <?php echo File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'fa-unlock-alt' : 'fa-lock'; ?>"></i> <?php echo $plugin->about->title; ?></h4>
-      <p><?php echo Converter::curt($plugin->about->content); ?></p>
-      <p>
-        <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-        <a class="btn btn-small btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
-        <?php else: ?>
+      <div class="media-content">
+        <p><?php echo Converter::curt($plugin->about->content); ?></p>
+        <p>
+          <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
+          <a class="btn btn-small btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/' . $plugin->slug; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-minus-circle"></i> <?php echo $speak->uninstall; ?></a>
+          <?php else: ?>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
           <a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset; ?>"><i class="fa fa-plus-circle"></i> <?php echo $speak->install; ?></a>
           <?php endif; ?>
-        <?php endif; ?>
-        <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-        <span class="btn btn-small btn-destruct btn-disabled"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></span>
-        <?php else: ?>
-        <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/kill/id:' . $plugin->slug; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></a>
-      <?php endif; ?>
-      </p>
+          <?php endif; ?>
+          <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
+          <span class="btn btn-small btn-destruct btn-disabled"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></span>
+          <?php else: ?>
+          <a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/plugin/kill/id:' . $plugin->slug; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->remove; ?></a>
+          <?php endif; ?>
+        </p>
+      </div>
     </div>
     <?php endforeach; ?>
     <p class="pager cf"><?php echo $pager->step->link; ?></p>

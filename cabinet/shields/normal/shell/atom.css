@@ -318,38 +318,23 @@ input[type="submit"]:active,
   box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
 }
 
-.btn-action,
-.btn-primary {background-color:#365D98}
+.btn-action {background-color:#365D98}
 .btn-action:focus,
-.btn-action:hover,
-.btn-primary:focus,
-.btn-primary:hover {background-color:#3A64A4}
+.btn-action:hover {background-color:#3A64A4}
 .btn-action:active,
 .btn-primary:active {background-color:#32568C}
 .btn-accept,
 .btn-begin,
-.btn-construct,
-.btn-success {background-color:#4B9343}
+.btn-construct {background-color:#4B9343}
 .btn-accept:focus,
 .btn-accept:hover,
 .btn-begin:focus,
 .btn-begin:hover,
 .btn-construct:focus,
-.btn-construct:hover,
-.btn-success:focus,
-.btn-success:hover {background-color:#519F48}
+.btn-construct:hover {background-color:#519F48}
 .btn-accept:active,
 .btn-begin:active,
-.btn-construct:active,
-.btn-success:active {background-color:#45873E}
-.btn-info {background-color:#6AAAC2}
-.btn-info:focus,
-.btn-info:hover {background-color:#72B8D2}
-.btn-info:active {background-color:#629CB2}
-.btn-warning {background-color:#DB582C}
-.btn-warning:focus,
-.btn-warning:hover {background-color:#ED5F30}
-.btn-warning:active {background-color:#C95128}
+.btn-construct:active {background-color:#45873E}
 .btn-danger,
 .btn-destruct,
 .btn-error,
@@ -364,6 +349,7 @@ input[type="submit"]:active,
 .btn-reject:hover {background-color:#A53737}
 .btn-danger:active,
 .btn-destruct:active,
+.btn-error:active,
 .btn-reject:active {background-color:#8D2F2F}
 
 [disabled],
@@ -727,8 +713,7 @@ iframe:first-child,
 .text-muted {color:#AAA}
 .text-accept,
 .text-begin,
-.text-construct,
-.text-success {color:#4B9343}
+.text-construct {color:#4B9343}
 .text-info {color:#00A2D1}
 .text-warning {color:#DB582C}
 .text-danger,

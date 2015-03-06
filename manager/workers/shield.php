@@ -1,4 +1,4 @@
-<div class="main-actions">
+<div class="main-action-group">
   <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path; ?>/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->shield)); ?></a>
 </div>
 <div class="tab-area">
@@ -55,10 +55,12 @@
       <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
       <h4 class="media-title"><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
-      <p><?php echo Converter::curt($info->content); ?></p>
-      <p>
-        <a class="btn btn-small btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/attach/id:' . $shield; ?>"><i class="fa fa-shield"></i> <?php echo $speak->attach; ?></a> <?php endif; ?><a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/id:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
-      </p>
+      <div class="media-content">
+        <p><?php echo Converter::curt($info->content); ?></p>
+        <p>
+          <a class="btn btn-small btn-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $shield; ?>"><i class="fa fa-cog"></i> <?php echo $speak->manage; ?></a> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><a class="btn btn-small btn-action" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/attach/id:' . $shield; ?>"><i class="fa fa-shield"></i> <?php echo $speak->attach; ?></a> <?php endif; ?><a class="btn btn-small btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/kill/id:' . $shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a>
+        </p>
+      </div>
     </div>
     <?php endif; ?>
     <?php endforeach; ?>

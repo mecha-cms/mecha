@@ -44,10 +44,8 @@ class Asset {
     public static function url($path) {
         $config = Config::get();
         $url = self::pathTrace($path);
-        if(strpos($url, '://') === false && ! file_exists($url)) {
-            return false;
-        }
         if(strpos($url, ROOT) === false) {
+            if(strpos($url, '://') === false) return false;
             return Filter::apply('asset:url', $path . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?v=' . filemtime(str_replace(array($config->url, '\\', '/'), array(ROOT, DS, DS), $url)) : ""), $path);
         }
         return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), $url) . ($config->resource_versioning ? '?v=' . filemtime($url) : ""), $path);
