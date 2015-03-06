@@ -50,7 +50,7 @@
                 base.fire('on_row_sort_up', data);
             }
         } else {
-            if ($tr.next().is('tr')) {
+            if ($tr.next().is('tr') && !$tr.next().is('.row-more-less')) {
                 $tr.insertAfter($tr.next());
                 base.fire('on_row_move_down', data);
                 base.fire('on_row_sort_down', data);
