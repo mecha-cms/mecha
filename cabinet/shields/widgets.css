@@ -196,6 +196,14 @@
 .text-center {text-align:center}
 .text-justify {text-align:justify}
 
+.btn-block,
+.input-block,
+.select-block,
+.textarea-block {
+  display:block;
+  width:100%;
+}
+
 .btn-small,
 .input-small,
 .select-small,

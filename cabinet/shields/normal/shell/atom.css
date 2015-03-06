@@ -244,14 +244,6 @@ select {
   padding-bottom:.6923076923076923em;
 }
 
-.btn-block,
-.input-block,
-.select-block,
-.textarea-block {
-  display:block;
-  width:100%;
-}
-
 button::-moz-focus-inner,
 input::-moz-focus-inner {
   margin:0;
