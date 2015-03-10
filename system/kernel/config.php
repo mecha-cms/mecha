@@ -145,7 +145,7 @@ class Config {
             if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
                 $wizard = Text::toPage(File::open($file)->read(), true, 'wizard:');
                 return $wizard['content'];
-            } elseif($file = File::exist(ROOT . DS . str_replace(array('file:', '\\', '/'), array("", DS, DS), $key) . '.txt')) {
+            } elseif($file = File::exist(ROOT . DS . File::path(str_replace('file:', "", $key)) . '.txt')) {
                 $wizard = Text::toPage(File::open($file)->read(), true, 'wizard:');
                 return $wizard['content'];
             } else {
@@ -180,8 +180,8 @@ class Config {
         // Extract the configuration file
         $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
         $config = file_exists($d) ? include $d : array();
-        if($file = File::exist(STATE . DS . 'config.txt')) {
-            $config = array_replace_recursive($config, File::open($file)->unserialize());
+        if($file = Get::state_config()) {
+            $config = array_replace_recursive($config, $file);
         }
 
         // Define some default variables
@@ -189,7 +189,8 @@ class Config {
         $config['host'] = $_SERVER['HTTP_HOST'];
         $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-        $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[?&;].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
+        $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
+        $config['url_query'] = ! empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : "";
         $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
 
         $config['page_title'] = $config['title'];

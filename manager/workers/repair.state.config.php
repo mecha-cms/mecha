@@ -9,15 +9,18 @@ return array(
     'language_direction' => 'ltr',
     'shield' => 'normal',
     'per_page' => 7,
+    'email_notification' => true,
     'comments' => true,
     'comment_moderation' => false,
-    'email_notification' => true,
+    'comment_notification_email' => true,
     'resource_versioning' => true,
     'excerpt_length' => 300,
     'excerpt_tail' => '&hellip;',
-    'widget_year_first' => true,
     'html_minifier' => true,
     'html_parser' => HTML_PARSER,
+    'widget_year_first' => true,
+    'widget_include_css' => true,
+    'widget_include_js' => true,
 
     // Header
     'title' => 'My Awesome Site',
@@ -41,21 +44,21 @@ return array(
 
     // Tag Page
     'tag' => array(
-        'title' => 'Tagged',
+        'title' => 'Tagged in %s',
         'slug' => 'tagged',
         'per_page' => 7
     ),
 
     // Archive Page
     'archive' => array(
-        'title' => 'Archive',
+        'title' => 'Archive %s',
         'slug' => 'archive',
         'per_page' => 7
     ),
 
     // Search Page
     'search' => array(
-        'title' => 'Search Results for',
+        'title' => 'Search Results for &ldquo;%s&rdquo;',
         'slug' => 'search',
         'per_page' => 7
     ),

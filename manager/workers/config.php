@@ -83,7 +83,7 @@
       <div class="grid span-4">
         <div><label><input name="comments" type="checkbox" value="true"<?php echo Guardian::wayback('comments', $config->comments) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_comment_allow; ?></span></label></div>
         <div><label><input name="comment_moderation" type="checkbox" value="true"<?php echo Guardian::wayback('comment_moderation', $config->comment_moderation) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_comment_moderation; ?></span></label></div>
-        <div><label><input name="email_notification" type="checkbox" value="true"<?php echo Guardian::wayback('email_notification', $config->email_notification) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_comment_notification; ?></span></label></div>
+        <div><label><input name="comment_notification_email" type="checkbox" value="true"<?php echo Guardian::wayback('comment_notification_email', $config->comment_notification_email) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_comment_notification_email; ?></span></label></div>
       </div>
     </div>
     <label class="grid-group">
@@ -98,13 +98,15 @@
       <span class="grid span-2"></span>
       <div class="grid span-4">
         <div><label><input name="widget_year_first" type="checkbox" value="true"<?php echo Guardian::wayback('widget_year_first', $config->widget_year_first) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_widget_time; ?></span></label></div>
-        <div><label><input name="resource_versioning" type="checkbox" value="true"<?php echo Guardian::wayback('resource_versioning', $config->resource_versioning) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_resource_versioning; ?></span></label></div>
+        <div><label><input name="widget_include_css" type="checkbox" value="true"<?php echo Guardian::wayback('widget_include_css', $config->widget_include_css) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_widget_include_css; ?></span></label></div>
+        <div><label><input name="widget_include_js" type="checkbox" value="true"<?php echo Guardian::wayback('widget_include_js', $config->widget_include_js) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_widget_include_js; ?></span></label></div>
       </div>
     </div>
     <div class="grid-group">
       <span class="grid span-2"></span>
       <span class="grid span-4">
         <div><label><input name="html_minifier" type="checkbox" value="true"<?php echo Guardian::wayback('html_minifier', $config->html_minifier) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_minifier; ?></span></label></div>
+        <div><label><input name="resource_versioning" type="checkbox" value="true"<?php echo Guardian::wayback('resource_versioning', $config->resource_versioning) ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_resource_versioning; ?></span></label></div>
         <div><label><input name="html_parser" type="checkbox" value="<?php echo HTML_PARSER; ?>"<?php echo Guardian::wayback('html_parser', $config->html_parser) == HTML_PARSER ? ' checked' : ""; ?>> <span><?php echo $speak->manager->title_html_parser; ?></span></label></div>
       </span>
     </div>
@@ -153,7 +155,7 @@
       <legend><?php echo $speak->manager->title_page_index; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4"><input name="index[title]" type="text" value="<?php echo Guardian::wayback('index.title', $config->index->title); ?>"></span>
+        <span class="grid span-4"><input name="index[title]" type="text" value="<?php echo Text::parse(Guardian::wayback('index.title', $config->index->title), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
@@ -168,7 +170,7 @@
       <legend><?php echo $speak->manager->title_page_tag; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4"><input name="tag[title]" type="text" value="<?php echo Guardian::wayback('tag.title', $config->tag->title); ?>"></span>
+        <span class="grid span-4"><input name="tag[title]" type="text" value="<?php echo Text::parse(Guardian::wayback('tag.title', $config->tag->title), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
@@ -183,7 +185,7 @@
       <legend><?php echo $speak->manager->title_page_archive; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4"><input name="archive[title]" type="text" value="<?php echo Guardian::wayback('archive.title', $config->archive->title); ?>"></span>
+        <span class="grid span-4"><input name="archive[title]" type="text" value="<?php echo Text::parse(Guardian::wayback('archive.title', $config->archive->title), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
@@ -198,7 +200,7 @@
       <legend><?php echo $speak->manager->title_page_search; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4"><input name="search[title]" type="text" value="<?php echo Guardian::wayback('seearch.title', $config->search->title); ?>"></span>
+        <span class="grid span-4"><input name="search[title]" type="text" value="<?php echo Text::parse(Guardian::wayback('seearch.title', $config->search->title), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
@@ -213,7 +215,7 @@
       <legend><?php echo $speak->manager->title_page_manager; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4"><input name="manager[title]" type="text" value="<?php echo Guardian::wayback('manager.title', $config->manager->title); ?>"></span>
+        <span class="grid span-4"><input name="manager[title]" type="text" value="<?php echo Text::parse(Guardian::wayback('manager.title', $config->manager->title), '->encoded_html'); ?>"></span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>

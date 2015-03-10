@@ -47,77 +47,13 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
 
 
 /**
- * Asset Killer
- * ------------
- */
-
-Route::accept($config->manager->slug . '/asset/kill/files?:(:all)', function($name = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
-    $name = str_replace(array('\\', '/'), DS, $name);
-    if(strpos($name, ',') !== false) {
-        $deletes = explode(',', $name);
-    } else {
-        $name = str_replace('---COMMA---', ',', $name);
-        if( ! File::exist(ASSET . DS . $name)) {
-            Shield::abort(); // File not found!
-        } else {
-            $deletes = array($name);
-        }
-    }
-    Config::set(array(
-        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->assets) . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
-    ));
-    if($request = Request::post()) {
-        Guardian::checkToken($request['token']);
-        $info_path = array();
-        foreach($deletes as $file_to_delete) {
-            $_path = ASSET . DS . str_replace('---COMMA---', ',', $file_to_delete);
-            $info_path[] = $_path;
-            File::open($_path)->delete();
-        }
-        $P = array('data' => array('files' => $info_path));
-        Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
-        Weapon::fire('on_asset_update', array($P, $P));
-        Weapon::fire('on_asset_destruct', array($P, $P));
-        Guardian::kick($config->manager->slug . '/asset');
-    } else {
-        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', array('<code>' . basename($name) . '</code>')) : $speak->notify_confirm_delete);
-    }
-    Shield::define('the_name', $deletes)->attach('manager', false);
-});
-
-
-/**
- * Multiple Asset Killer
- * ---------------------
- */
-
-Route::accept($config->manager->slug . '/asset/kill', function($path = "") use($config, $speak) {
-    if($request = Request::post()) {
-        Guardian::checkToken($request['token']);
-        if( ! isset($request['selected'])) {
-            Notify::error($speak->notify_error_no_files_selected);
-            Guardian::kick($config->manager->slug . '/asset');
-        }
-        $files = array();
-        foreach($request['selected'] as $file) {
-            $files[] = str_replace(',', '---COMMA---', $file);
-        }
-        Guardian::kick($config->manager->slug . '/asset/kill/files:' . implode(',', $files));
-    }
-});
-
-
-/**
  * Asset Repair
  * ------------
  */
 
-Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($old = "") use($config, $speak) {
-    $dir_name = rtrim(dirname(str_replace(array('\\', '/'), DS, $old)), '\\/');
+Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($path = "", $old = "") use($config, $speak) {
+    $old = File::path($old);
+    $dir_name = rtrim(dirname($old), '\\/');
     $old_name = ltrim(basename($old), '\\/');
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
@@ -164,4 +100,68 @@ Route::accept($config->manager->slug . '/asset/repair/files?:(:all)', function($
         }
     }
     Shield::define('the_name', $old_name)->attach('manager', false);
+});
+
+
+/**
+ * Asset Killer
+ * ------------
+ */
+
+Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', function($path = "", $name = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
+    $name = File::path($name);
+    if(strpos($name, ';') !== false) {
+        $deletes = explode(';', $name);
+    } else {
+        if( ! File::exist(ASSET . DS . $name)) {
+            Shield::abort(); // File not found!
+        } else {
+            $deletes = array($name);
+        }
+    }
+    Config::set(array(
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->assets) . $config->title_separator . $config->manager->title,
+        'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
+    ));
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
+        $info_path = array();
+        foreach($deletes as $file_to_delete) {
+            $_path = ASSET . DS . $file_to_delete;
+            $info_path[] = $_path;
+            File::open($_path)->delete();
+        }
+        $P = array('data' => array('files' => $info_path));
+        Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
+        Weapon::fire('on_asset_update', array($P, $P));
+        Weapon::fire('on_asset_destruct', array($P, $P));
+        Guardian::kick($config->manager->slug . '/asset');
+    } else {
+        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', array('<code>' . File::path($name) . '</code>')) : $speak->notify_confirm_delete);
+    }
+    Shield::define('the_name', $deletes)->attach('manager', false);
+});
+
+
+/**
+ * Multiple Asset Killer
+ * ---------------------
+ */
+
+Route::accept($config->manager->slug . '/asset/kill', function($path = "") use($config, $speak) {
+    if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
+        if( ! isset($request['selected'])) {
+            Notify::error($speak->notify_error_no_files_selected);
+            Guardian::kick($config->manager->slug . '/asset');
+        }
+        $files = array();
+        foreach($request['selected'] as $file) {
+            $files[] = Text::parse($file, '->encoded_url');
+        }
+        Guardian::kick($config->manager->slug . '/asset/kill/files:' . implode(';', $files));
+    }
 });

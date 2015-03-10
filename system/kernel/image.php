@@ -14,10 +14,10 @@ class Image {
         if(is_array($files)) {
             self::$opened = array();
             foreach($files as $file) {
-                self::$opened[] = str_replace(array('\\', '/'), DS, $file);
+                self::$opened[] = File::path($file);
             }
         } else {
-            self::$opened = str_replace(array('\\', '/'), DS, $files);
+            self::$opened = File::path($files);
         }
         $file = is_array(self::$opened) ? self::$opened[0] : self::$opened;
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -121,7 +121,7 @@ class Image {
     public static function draw($save = false) {
         $image = file_get_contents(self::$placeholder);
         if($save !== false) {
-            $save = str_replace(array('\\', '/'), DS, $save);
+            $save = File::path($save);
             File::write($image)->saveTo($save);
         }
         header('Content-Type: ' . self::getInfo('mime'));

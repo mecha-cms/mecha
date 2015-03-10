@@ -11,7 +11,7 @@
         <?php
 
         $origins = array(
-            $speak->manager->title_whole_site => 'root',
+            $speak->site => 'root',
             $speak->articles => basename(ARTICLE),
             $speak->pages => basename(PAGE),
             $speak->manager->title_custom_css_and_js => basename(CUSTOM),

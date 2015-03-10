@@ -79,6 +79,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         ));
     }
     $G = array('data' => Mecha::A($article));
+    Config::set('html_parser', $article->content_type);
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Check for invalid time pattern

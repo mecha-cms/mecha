@@ -50,16 +50,32 @@ class Route {
 
     private static function fix($string) {
         return str_replace(
-            array(':any', ':num', ':all', '/', ':'),
-            array('[^/]+', '[0-9]+', '.*?', '\/', '\:'),
-        $string);
+            array(
+                '\(',
+                '\)',
+                '\|',
+                '\:any',
+                '\:num',
+                '\:all',
+                '#'
+            ),
+            array(
+                '(',
+                ')',
+                '|',
+                '[^/]+',
+                '\d+',
+                '.*?',
+                '\#'
+            ),
+        preg_quote($string, '/'));
     }
 
     public static function accept($patterns, $fn, $stack = 10) {
         if(is_array($patterns)) {
             $i = 0;
             foreach($patterns as $pattern) {
-                $pattern = ltrim(str_replace(Config::get('url') . '/', "", $pattern), '/');
+                $pattern = trim(str_replace(Config::get('url') . '/', "", $pattern), '/');
                 self::$routes[] = array(
                     'pattern' => $pattern,
                     'fn' => $fn,
@@ -68,7 +84,7 @@ class Route {
                 $i += .1;
             }
         } else {
-            $pattern = ltrim(str_replace(Config::get('url') . '/', "", $patterns), '/');
+            $pattern = trim(str_replace(Config::get('url') . '/', "", $patterns), '/');
             self::$routes[] = array(
                 'pattern' => $pattern,
                 'fn' => $fn,

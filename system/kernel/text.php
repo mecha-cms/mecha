@@ -34,11 +34,12 @@ class Text {
      * ---------------------------------------------
      */
 
-    private static function text_to_array($text, $splitter, $indent) {
+    private static function text_to_array($text, $s, $indent) {
         $results = array();
         $data = array();
+        $indent_length = strlen($indent);
         // Remove all comments and empty line breaks
-        $validated = preg_replace(
+        $text = preg_replace(
             array(
                 '#\r#',
                 '#(^|\n)( *\#[^\n]*)#',
@@ -50,21 +51,21 @@ class Text {
                 "\n"
             ),
         $text);
-        foreach(explode("\n", trim($validated)) as $line) {
+        foreach(explode("\n", trim($text)) as $line) {
             // Get depth and labels
             $depth = 0;
-            $is_multi = strpos($line, $splitter) !== false && strpos($line, $splitter) > 0;
-            while(substr($line, 0, strlen($indent)) === $indent) {
+            $is_assoc = strpos($line, $s) > 0;
+            while(substr($line, 0, $indent_length) === $indent) {
                 $depth += 1;
-                $line = rtrim(substr($line, strlen($indent)));
+                $line = rtrim(substr($line, $indent_length));
             }
             // Truncate paths if needed
             while($depth < count($data)) {
                 array_pop($data);
             }
             // Keep lines (at depth)
-            if($is_multi) {
-                $parts = explode($splitter, $line, 2);
+            if($is_assoc) {
+                $parts = explode($s, $line, 2);
                 $data[$depth] = rtrim($parts[0]);
             } else {
                 $data[$depth] = $line;
@@ -73,7 +74,7 @@ class Text {
             $parent =& $results;
             foreach($data as $depth => $key) {
                 if( ! isset($parent[$key])) {
-                    if($is_multi) {
+                    if($is_assoc) {
                         $values = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
                         $parent[rtrim($parts[0])] = Converter::strEval($values);
                     } else {
@@ -127,16 +128,16 @@ class Text {
         return (object) $results;
     }
 
-    public static function toArray($text, $splitter = ':', $indent = '    ') {
+    public static function toArray($text, $s = ':', $indent = '    ') {
         if(is_array($text)) return $text;
         if(is_object($text)) return Mecha::A($text);
-        return self::text_to_array($text, $splitter, $indent);
+        return self::text_to_array($text, $s, $indent);
     }
 
-    public static function toObject($text, $splitter = ':', $indent = '    ') {
+    public static function toObject($text, $s = ':', $indent = '    ') {
         if(is_object($text)) return $text;
         if(is_array($text)) return Mecha::O($text);
-        return Mecha::O(self::text_to_array($text, $splitter, $indent));
+        return Mecha::O(self::text_to_array($text, $s, $indent));
     }
 
     /**
@@ -147,25 +148,49 @@ class Text {
     public static function toPage($text, $content = true, $filter_prefix = 'page:', $content_field = 'content') {
         $results = array();
         $c = $content_field;
-        if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) { // By file path
-            $by_path = true;
-            while(($buffer = fgets($handle, 4096)) !== false) {
-                if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
-                    fclose($handle);
-                    break;
+        $FP = is_string($filter_prefix) && trim($filter_prefix) !== "";
+        if( ! $content) {
+            // By file path
+            if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) {
+                while(($buffer = fgets($handle, 4096)) !== false) {
+                    if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
+                        fclose($handle);
+                        break;
+                    }
+                    $field = explode(':', $buffer, 2);
+                    if( ! isset($field[1])) $field[1] = "";
+                    $key = Text::parse(strtolower(trim($field[0])), '->array_key');
+                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
+                    if($FP) $value = Filter::apply($filter_prefix . $key, $value);
+                    $results[$key] = $value;
                 }
-                $field = explode(':', $buffer, 2);
-                if( ! isset($field[1])) $field[1] = "";
-                $key = Text::parse(strtolower(trim($field[0])), '->array_key');
-                $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
-                    $value = Filter::apply($filter_prefix . $key, $value);
+            // By file content
+            } else {
+                $text = str_replace("\r", "", $text);
+                if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
+                    $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
+                    $headers = explode("\n", trim($parts[0]));
+                    foreach($headers as $field) {
+                        $field = explode(':', $field, 2);
+                        if( ! isset($field[1])) $field[1] = "";
+                        $key = Text::parse(strtolower(trim($field[0])), '->array_key');
+                        $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
+                        if($FP) $value = Filter::apply($filter_prefix . $key, $value);
+                        $results[$key] = $value;
+                    }
+                    $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
                 }
-                $results[$key] = $value;
             }
-        } else { // By file content
-            $by_path = false;
-            if(strpos(str_replace("\r", "", $text), "\n" . SEPARATOR . "\n") !== false) {
+        } else {
+            // By file path
+            if(strpos($text, ROOT) === 0 && file_exists($text)) {
+                $text = file_get_contents($text);
+            }
+            $text = str_replace("\r", "", $text);
+            // By file content
+            if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
+                $results[$c . '_raw'] = self::DS(trim($text));
+            } else {
                 $parts = explode(SEPARATOR, trim($text), 2);
                 $headers = explode("\n", trim($parts[0]));
                 foreach($headers as $field) {
@@ -178,36 +203,31 @@ class Text {
                     }
                     $results[$key] = $value;
                 }
-                $results[$c . '_raw'] = $results[$c] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
-            } else {
-                $results[$c . '_raw'] = $results[$c] = self::DS(trim($text));
-            }
-        }
-        if($content) {
-            if($by_path) {
-                $text = File::open($text)->read();
-                $parts = explode(SEPARATOR, trim($text), 2);
                 $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
             }
-            $parse_content = ! isset($results['content_type']) || (isset($results['content_type']) && $results['content_type'] === HTML_PARSER);
+        }
 
-            /**
-             * NOTES: The `content_type` field is very specific and the name
-             * cannot be dynamically changed as you might think that I have
-             * to replace that `$results['content_type']` with `$results[$c . '_type']`.
-             * The `content` field is created from the second explosion which is not
-             * came from any field in the page header, but the `content_type` is created
-             * purely by the field in the page header called `Content Type`.
-             */
+        $parse = ! isset($results['content_type']) || $results['content_type'] === HTML_PARSER;
 
-            $contents = Filter::apply('shortcode', $results[$c . '_raw']);
-            if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
-                $contents = Filter::apply($filter_prefix . 'shortcode', $contents);
+        /**
+         * NOTES: The `content_type` field is very specific and the name
+         * cannot be dynamically changed as you might think that I have
+         * to replace that `$results['content_type']` with `$results[$c . '_type']`.
+         * The `content` field is created from the second explosion which is not
+         * came from any field in the page header, but the `content_type` is created
+         * purely by the field in the page header called `Content Type`.
+         */
+
+        if(isset($results[$c . '_raw'])) {
+            $results[$c . '_raw'] = Filter::apply($c . '_raw', $results[$c . '_raw']);
+            $results[$c . '_raw'] = Filter::apply('shortcode', $results[$c . '_raw']);
+            if($FP) {
+                $results[$c . '_raw'] = Filter::apply($filter_prefix . $c . '_raw', $results[$c . '_raw']);
+                $results[$c . '_raw'] = Filter::apply($filter_prefix . 'shortcode', $results[$c . '_raw']);
             }
-            $results[$c] = Filter::apply($c, $parse_content ? Text::parse($contents, '->html') : $contents);
-            if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
-                $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
-            }
+            $the_content = $parse && $content ? Text::parse($results[$c . '_raw'], '->html') : $results[$c . '_raw'];
+            $results[$c] = Filter::apply($c, $the_content);
+            if($FP) $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
         }
         return $results;
     }

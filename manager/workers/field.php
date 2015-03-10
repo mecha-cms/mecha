@@ -17,7 +17,17 @@
     <tr>
       <td><?php echo $value->title; ?></td>
       <td><?php echo $key; ?></td>
-      <td><?php echo $value->type; ?></td>
+      <?php
+
+      $t = 'Text';
+      switch($value->type[0]) {
+          case 's': $t = 'Summary'; break;
+          case 'b': $t = 'Boolean'; break;
+          case 'o': $t = 'Option'; break;
+      }
+
+      ?>
+      <td><em class="text-info"><?php echo $t; ?></em></td>
       <td class="td-icon"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key; ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
       <td class="td-icon"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key; ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
     </tr>

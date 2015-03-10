@@ -713,13 +713,21 @@ $speak = Config::speak();
 
 
 /**
- * Remove Query String of the Current Page Path
- * --------------------------------------------
+ * Create Proper Query String Data
+ * -------------------------------
  */
 
 if($config->page_type != 'home') {
     array_shift($_GET);
 }
+
+$queries = array();
+foreach($_GET as $k => $v) {
+    $queries[] = $k . '=' . $v;
+}
+
+$config->url_query = ! empty($queries) ? '?' . implode('&', $queries) : "";
+Config::set('url_query', $config->url_query);
 
 
 /**
@@ -745,13 +753,17 @@ date_default_timezone_set($config->timezone);
  * ----------------------------------
  */
 
-Weapon::add('shell_before', function() {
-    echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'widgets.min.css');
-});
+if($config->widget_include_css) {
+    Weapon::add('shell_before', function() {
+        echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'widgets.min.css');
+    });
+}
 
-Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-    echo Asset::javascript('cabinet/shields/widgets.js', "", 'widgets.min.js');
-});
+if($config->widget_include_js) {
+    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+        echo Asset::javascript('cabinet/shields/widgets.js', "", 'widgets.min.js');
+    });
+}
 
 
 /**
@@ -822,14 +834,13 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 Filter::add('shortcode', function($content) use($config, $speak) {
     if(strpos($content, '{{') === false) return $content;
-    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcodes.php';
+    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
     $shortcodes = file_exists($d) ? include $d : array();
-    if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $file_shortcodes = File::open($file)->unserialize();
-        foreach($file_shortcodes as $key => $value) {
+    if($file = Get::state_shortcode()) {
+        foreach($file as $key => $value) {
             unset($shortcodes[$key]);
         }
-        $shortcodes = array_merge($shortcodes, $file_shortcodes);
+        $shortcodes = array_merge($shortcodes, $file);
     }
     $regex = array();
     foreach($shortcodes as $key => $value) {
@@ -868,11 +879,11 @@ Filter::add('content', function($content) use($config) {
         return preg_replace(
             array(
                 '#<table>#',
-                '#<a href="(https?\:\/\/)(?!' . preg_quote($config->host, '/') . ')#'
+                '#<a href="(?!' . preg_quote($config->url, '/') . '|[\.\/\?\#])#'
             ),
             array(
                 '<table class="table-bordered table-full-width">',
-                '<a rel="nofollow" href="$1'
+                '<a rel="nofollow" href="'
             ),
         $content);
     }

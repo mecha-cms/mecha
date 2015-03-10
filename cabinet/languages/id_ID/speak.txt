@@ -61,6 +61,9 @@ emails: Email
 url: URL
 urls: URL
 
+site: Situs
+sites: Situs
+
 message: Pesan
 messages: Pesan
 
@@ -312,6 +315,9 @@ days_short: Min,Sen,Sel,Rab,Kam,Jum,Sab
 # ACTIONS
 # -------
 
+enter: Masuk
+exit: Keluar
+
 compose: Tulis
 composing: Menulis
 composed: Ditulis
@@ -542,8 +548,6 @@ manager:
   title_page_manager: Halaman Pengurus
   title_other: Lainnya
 
-  title_whole_site: Seluruh Situs
-
   title_page_excerpt: Ringkasan
   title_page_excerpt_length: Panjang Ringkasan
   title_page_excerpt_tail: Ekor Ringkasan
@@ -554,14 +558,17 @@ manager:
 
   title_comment_allow: Izinkan Komentar
   title_comment_moderation: Moderasi Komentar
-  title_comment_notification: Notifikasi untuk Komentar Baru
+  title_comment_notification_email: Notifikasi untuk Komentar Baru
+
   title_resource_versioning: Aktifkan Versi Sumber Daya
 
   title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_minifier: Kompres Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 
-  title_widget_time: Format Waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
+  title_widget_time: Format Waktu Widget sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
+  title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
+  title_widget_include_js: JavaScript Widget Bawaan ke Tameng
 
   title_defaults_article_title: Judul Artikel Standar
   title_defaults_article_content: Konten Artikel Standar
@@ -611,7 +618,9 @@ notify_error_no_file_selected: Mohon pilih sebuah berkas.
 notify_error_no_files_selected: Mohon pilih setidaknya satu berkas.
 notify_error_file_extension: Ekstensi <code>%s</code> tidak diperbolehkan.
 notify_error_file_extension_missing: Mohon sertakan ekstensi berkas. Misal: <code>berkas.jpg</code>
-notify_error_file_size: Ukuran berkas harus kurang dari <code>%s</code>.
+notify_error_file_size_max: Ukuran berkas harus kurang dari <code>%s</code>.
+notify_error_file_size_min: Ukuran berkas harus lebih dari <code>%s</code>.
+notify_error_file_type_unknown: Tipe berkas tidak diketahui.
 notify_error_username_or_password: Nama pengguna atau kata kunci Anda tidak valid.
 notify_error_empty_fields: Mohon isi semua bidang yang wajib.
 notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.

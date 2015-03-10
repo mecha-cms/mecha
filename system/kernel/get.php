@@ -44,7 +44,7 @@ class Get {
         return array(
             'path' => $input,
             'name' => basename($input, '.' . $extension),
-            'url' => str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), $input),
+            'url' => File::url($input),
             'extension' => strtolower($extension),
             'last_update' => file_exists($input) ? filemtime($input) : null,
             'update' => file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null,
@@ -205,6 +205,43 @@ class Get {
         return self::adjacentFiles($folder, $extensions, $order, $sorter, $filter, true);
     }
 
+    // Get stored configuration data (internal only)
+    public static function state_config($fallback = false) {
+        return File::open(STATE . DS . 'config.txt')->unserialize($fallback);
+    }
+
+    // Get stored custom field data (internal only)
+    public static function state_field($fallback = false) {
+        if($pre_113 = File::exist(STATE . DS . 'fields.txt')) {
+            File::open($pre_113)->renameTo('field.txt');
+        }
+        return File::open(STATE . DS . 'field.txt')->unserialize($fallback);
+    }
+
+    // Get stored menu data (internal only)
+    public static function state_menu($fallback = false) {
+        if($pre_113 = File::exist(STATE . DS . 'menus.txt')) {
+            File::open($pre_113)->renameTo('menu.txt');
+        }
+        return File::open(STATE . DS . 'menu.txt')->read($fallback);
+    }
+
+    // Get stored shortcode data (internal only)
+    public static function state_shortcode($fallback = false) {
+        if($pre_113 = File::exist(STATE . DS . 'shortcodes.txt')) {
+            File::open($pre_113)->renameTo('shortcode.txt');
+        }
+        return File::open(STATE . DS . 'shortcode.txt')->unserialize($fallback);
+    }
+
+    // Get stored tag data (internal only)
+    public static function state_tag($fallback = false) {
+        if($pre_113 = File::exist(STATE . DS . 'tags.txt')) {
+            File::open($pre_113)->renameTo('tag.txt');
+        }
+        return File::open(STATE . DS . 'tag.txt')->unserialize($fallback);
+    }
+
     /**
      * ==========================================================================
      *  EXTRACT ARRAY OF TAGS FROM TAG FILES
@@ -225,10 +262,10 @@ class Get {
     public static function rawTags($order = 'ASC', $sorter = 'name') {
         $config = Config::get();
         $speak = Config::speak();
-        $d = DECK . DS . 'workers' . DS . 'repair.state.tags.php';
+        $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
         $tags = file_exists($d) ? include $d : array();
-        if($file = File::exist(STATE . DS . 'tags.txt')) {
-            $tags = array_replace_recursive($tags, File::open($file)->unserialize());
+        if($file = self::state_tag()) {
+            $tags = array_replace_recursive($tags, $file);
         }
         return Mecha::eat($tags)->order($order, $sorter)->vomit();
     }
@@ -387,7 +424,7 @@ class Get {
                     }
                 }
                 return ! empty($results) ? $results : false;
-            } else { // if($key == 'keyword') ...
+            } else { // if($key == 'keyword') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $value) !== false) {
                         $results[] = $pages[$i];
@@ -733,10 +770,12 @@ class Get {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $results['css_raw'] = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
                 $results['js_raw'] = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
+                $css_raw = self::AMF($results['css_raw'], 'custom:', 'css_raw');
                 $css_raw = self::AMF($results['css_raw'], 'custom:', 'shortcode');
                 $css_raw = Filter::apply('custom:css', $css_raw);
                 $css_raw = Filter::apply('css:shortcode', $css_raw);
                 $results['css'] = self::AMF($css_raw, $filter_prefix, 'css');
+                $js_raw = self::AMF($results['js_raw'], 'custom:', 'js_raw');
                 $js_raw = self::AMF($results['js_raw'], 'custom:', 'shortcode');
                 $js_raw = Filter::apply('custom:js', $js_raw);
                 $js_raw = Filter::apply('js:shortcode', $js_raw);
@@ -779,13 +818,12 @@ class Get {
              * is not available in the old posts.
              */
 
-            $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
+            $fields = self::state_field(array());
 
             $init = array();
 
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope'])) $value['scope'] = 'all';
-                if($value['scope'] == rtrim($filter_prefix, ':') || $value['scope'] == 'all') {
+                if( ! isset($value['scope']) || $value['scope'] == rtrim($filter_prefix, ':')) {
                     $init[$key] = "";
                 }
             }
@@ -926,11 +964,10 @@ class Get {
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $filter_prefix, 'description');
         if( ! isset($results['fields'])) $results['fields'] = array();
-        $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
+        $fields = self::state_field(array());
         $init = array();
         foreach($fields as $key => $value) {
-            if( ! isset($value['scope'])) $value['scope'] = 'all';
-            if($value['scope'] == rtrim($filter_prefix, ':') || $value['scope'] == 'all') {
+            if( ! isset($value['scope']) || $value['scope'] == rtrim($filter_prefix, ':')) {
                 $init[$key] = "";
             }
         }

@@ -45,10 +45,11 @@ class Navigator {
         $config = Config::get();
         $speak = Config::speak();
         $base = $config->url;
+        $q = str_replace('&', '&amp;', $config->url_query);
         $total = count($pages);
         $sn = self::$navigator;
 
-        if($connector != '/' && ! empty($connector)) $connector = '/' . trim($connector, '/') . '/';
+        if(trim($connector, '/') !== "") $connector = '/' . trim($connector, '/') . '/';
 
         if(is_numeric($current)) {
 
@@ -58,8 +59,8 @@ class Navigator {
             $next = $current < ceil($total / $perpage) ? $current + 1 : false;
 
             // Generate next/previous URL for index page
-            self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . $connector . $prev : $base, $prev, $connector), $prev, $connector);
-            self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . $connector . $next : $base, $next, $connector), $next, $connector);
+            self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . $connector . $prev . $q : $base . $q, $prev, $connector), $prev, $connector);
+            self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . $connector . $next . $q : $base . $q, $next, $connector), $next, $connector);
 
             // Generate next/previous text for index page
             self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
@@ -76,20 +77,20 @@ class Navigator {
             $left = $current - $step;
             if($left < 1) $left = 1;
             if($chunk > 1) {
-                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . '1">' . $speak->first . '</a>' : '<span>' . $speak->first . '</span>', 1, $connector), 1, $connector);
-                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $config->url . $connector . $prev . '">' . $speak->prev . '</a>' : '<span>' . $speak->prev . '</span>', $prev, $connector), $prev, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $base . $connector . '1' . $q . '">' . $speak->first . '</a>' : '<span>' . $speak->first . '</span>', 1, $connector), 1, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $prev ? '<a href="' . $base . $connector . $prev . $q . '">' . $speak->prev . '</a>' : '<span>' . $speak->prev . '</span>', $prev, $connector), $prev, $connector);
                 $html .= '<span>';
                 for($i = $current - $step + 1; $i < $current + $step; ++$i) {
                     if($chunk > 1) {
                         if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
-                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $config->url . $connector . $i . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
-                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $config->url . $connector . $i : false, $i, $connector), $i, $connector);
+                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $base . $connector . $i . $q . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
+                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $base . $connector . $i . $q : false, $i, $connector), $i, $connector);
                         }
                     }
                 }
                 $html .= '</span>';
-                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $next . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
-                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $config->url . $connector . $chunk . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . $connector . $next . $q . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
+                $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . $connector . $chunk . $q . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
             }
 
             self::$bucket['step']['link'] = $html . '</span>';
@@ -106,8 +107,8 @@ class Navigator {
                     $next = isset($pages[$i + 1]) ? self::slug($pages[$i + 1]) : false;
 
                     // Generate next/previous URL for single page
-                    self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . $connector . $prev : $base, $prev, $connector), $prev, $connector);
-                    self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . $connector . $next : $base, $next, $connector), $next, $connector);
+                    self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . $connector . $prev . $q : $base . $q, $prev, $connector), $prev, $connector);
+                    self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . $connector . $next . $q : $base . $q, $next, $connector), $next, $connector);
 
                     // Generate next/previous text for single page
                     self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;

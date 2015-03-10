@@ -14,8 +14,18 @@
       <tr>
         <td><?php echo $file->title; ?></td>
         <td><?php echo $the_key; ?></td>
-        <td><?php echo $file->type; ?></td>
-        <td><?php echo $file->scope; ?></td>
+        <?php
+
+        $t = 'Text';
+        switch($file->type[0]) {
+            case 's': $t = 'Summary'; break;
+            case 'b': $t = 'Boolean'; break;
+            case 'o': $t = 'Option'; break;
+        }
+
+        ?>
+        <td><em class="text-info"><?php echo $t; ?></em></td>
+        <td><?php echo isset($file->scope) ? $file->scope : strtolower($speak->article . '/' . $speak->page); ?></td>
       </tr>
     </tbody>
   </table>

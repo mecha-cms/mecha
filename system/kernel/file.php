@@ -44,21 +44,73 @@ class File {
     private static $increment = 0;
 
     public static $config = array(
-        'size_max' => 2097152, // Maximum allowed file size
-        'extension_allow' => array( // List of allowed file extensions
-            'cache', 'css', 'draft', 'hold', 'html', 'js', 'md', 'txt',
-            'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png',
-            'eot', 'ttf', 'woff',
-            'gz', 'rar', 'tar', 'zip', 'zipx'
-        ),
-        'extension_image' => array(
-            'bmp', 'cur', 'gif', 'ico', 'jpg', 'jpeg', 'png'
+        'file_size_min_allow' => 0, // Minimum allowed file size
+        'file_size_max_allow' => 2097152, // Maximum allowed file size
+        'file_extension_allow' => array( // List of allowed file extensions
+
+            ## Script
+            'cache',
+            'css',
+            'draft',
+            // 'htaccess',
+            'hold',
+            'htm',
+            'html',
+            'js',
+            'json',
+            'jsonp',
+            'less',
+            'md',
+            'markdown',
+            // 'php',
+            'scss',
+            'txt',
+            'xml',
+
+            ## Image
+            'bmp',
+            'cur',
+            'gif',
+            'ico',
+            'jpg',
+            'jpeg',
+            'png',
+
+            ## Font
+            'eot',
+            'otf',
+            'svg',
+            'ttf',
+            'woff',
+            'woff2',
+
+            ## Media
+            'avi',
+            'flv',
+            'mkv',
+            'mov',
+            'mp3',
+            'mp4',
+            'm4a',
+            'm4v',
+            'swf',
+            'wav',
+            'wma',
+
+            ## Package
+            'gz',
+            'iso',
+            'rar',
+            'tar',
+            'zip',
+            'zipx'
+
         )
     );
 
     // Check if file already exist
     public static function exist($path, $fallback = false) {
-        $path = str_replace(array('\\', '/'), DS, $path);
+        $path = self::path($path);
         return file_exists($path) ? $path : $fallback;
     }
 
@@ -66,8 +118,8 @@ class File {
     public static function open($path) {
         self::$cache = "";
         self::$opened = null;
-        $path = str_replace(array('\\', '/'), DS, $path);
-        if(self::exist($path)) {
+        $path = self::path($path);
+        if(file_exists($path)) {
             self::$opened = $path;
         }
         return new static;
@@ -87,13 +139,6 @@ class File {
 
     // Show the opened file to the screen
     public static function read($fallback = "") {
-        $file = pathinfo(self::$opened);
-        if( ! isset($file['extension'])) {
-            $file['extension'] = "";
-        }
-        if(in_array(strtolower($file['extension']), self::$config['extension_image'])) {
-            return file_exists(self::$opened) ? Asset::image(str_replace(array(ROOT, '\\'), array(Config::get('url'), '/'), self::$opened), ' alt="' . basename(self::$opened) . '"') : $fallback;
-        }
         return file_exists(self::$opened) ? file_get_contents(self::$opened) : $fallback;
     }
 
@@ -111,7 +156,7 @@ class File {
 
     // Unserialize the serialized data to output
     public static function unserialize($fallback = array()) {
-        if($file = self::exist(self::$opened)) {
+        if(file_exists(self::$opened)) {
             $data = file_get_contents(self::$opened);
             return preg_match('#^([adObis]:|N;)#', $data) ? unserialize($data) : $fallback;
         }
@@ -144,8 +189,8 @@ class File {
 
     // Save the written data to somewhere
     public static function saveTo($path, $permission = null) {
-        $path = str_replace(array('\\', '/'), DS, $path);
-        if( ! self::exist(dirname($path))) {
+        $path = self::path($path);
+        if( ! file_exists(dirname($path))) {
             mkdir(dirname($path), 0777, true);
         }
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
@@ -172,7 +217,7 @@ class File {
     // Move file or folder to somewhere
     public static function moveTo($destination = ROOT) {
         $destination = rtrim($destination, '\\/');
-        if(self::exist(self::$opened)) {
+        if(file_exists(self::$opened)) {
             if(is_dir($destination)) {
                 $destination .= DS . basename(self::$opened);
             }
@@ -184,7 +229,7 @@ class File {
 
     // Copy a file
     public static function copyTo($destination = ROOT) {
-        if(self::exist(self::$opened)) {
+        if(file_exists(self::$opened)) {
             if( ! is_array($destination)) {
                 $destination = array($destination);
             }
@@ -192,7 +237,7 @@ class File {
                 if(is_dir($dest)) {
                     $dest = rtrim($dest, '\\/') . DS . basename(self::$opened);
                 }
-                if( ! self::exist($dest) && ! self::exist(preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest))) {
+                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest))) {
                     self::$increment = 0;
                     copy(self::$opened, $dest);
                 } else {
@@ -209,8 +254,8 @@ class File {
             $paths = array($paths);
         }
         foreach($paths as $i => $path) {
-            if( ! self::exist($path)) {
-                mkdir(str_replace(array('\\', '/'), DS, $path), (is_array($permission) ? $permission[$i] : $permission), true);
+            if( ! file_exists($path)) {
+                mkdir(self::path($path), (is_array($permission) ? $permission[$i] : $permission), true);
             }
         }
     }
@@ -225,55 +270,66 @@ class File {
     public static function upload($file, $destination = ROOT, $custom_success_message = "") {
         $config = Config::get();
         $speak = Config::speak();
+        $destination = self::path($destination);
         // Create a safe file name
         $renamed = array();
         $parts = explode('.', $file['name']);
         foreach($parts as $part) {
-            $renamed[] = Text::parse($part, '->slug_moderate');
+            $safe = Text::parse($part, '->slug_moderate');
+            $renamed[] = trim($safe, '_-') !== "" ? $safe : "";
         }
-        $info = pathinfo($file['name']);
+        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $file['name'] = implode('.', $renamed);
-        // No file selected
-        if( ! isset($file['name']) || empty($file['type']) || empty($file['name'])) {
-            return Notify::error($speak->notify_error_no_file_selected);
-        }
-        // Bad file extension
-        if( ! in_array(strtolower($info['extension']), self::$config['extension_allow'])) {
-            return Notify::error(Config::speak('notify_error_file_extension', array($info['extension'])));
-        }
-        // Too large
-        if($file['size'] > self::$config['size_max']) {
-            return Notify::error(Config::speak('notify_error_file_size', array(self::size(self::$config['size_max'], 'KB'))));
-        }
         // Something goes wrong
         if($file['error'] > 0) {
-            return Notify::error($speak->error . ': <code>' . $file['error'] . '</code>');
+            Notify::error($speak->error . ': <code>' . $file['error'] . '</code>');
         }
-        // Move the uploaded file to the destination folder
-        if( ! self::exist($destination . DS . $file['name'])) {
-            move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
+        // Unknown file type
+        if( ! isset($file['type']) || empty($file['type'])) {
+            Notify::error($speak->notify_error_file_type_unknown);
+        }
+        // No file selected
+        if( ! isset($file['name']) || empty($file['name'])) {
+            Notify::error($speak->notify_error_no_file_selected);
+        }
+        // Bad file extension
+        $extension_allow = array_flip(self::$config['file_extension_allow']);
+        if( ! isset($extension_allow[$extension])) {
+            Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+        }
+        // Too small
+        if($file['size'] < self::$config['file_size_min_allow']) {
+            Notify::error(Config::speak('notify_error_file_size_min', array(self::size(self::$config['file_size_min_allow'], 'KB'))));
+        }
+        // Too large
+        if($file['size'] > self::$config['file_size_max_allow']) {
+            Notify::error(Config::speak('notify_error_file_size_max', array(self::size(self::$config['file_size_max_allow'], 'KB'))));
+        }
+        if( ! Notify::errors()) {
+            // Move the uploaded file to the destination folder
+            if( ! file_exists($destination . DS . $file['name'])) {
+                move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
+            } else {
+                Notify::error(Config::speak('notify_file_exist', array('<code>' . $file['name'] . '</code>')));
+            }
+            // Create public asset link to show on file uploaded
+            $link = self::url($destination) . '/' . $file['name'];
+            $html = array(
+                '<strong>' . $speak->uploaded . ':</strong> ' . $file['name'],
+                '<strong>' . $speak->type . ':</strong> ' . $file['type'],
+                '<strong>' . $speak->size . ':</strong> ' . ($file['size'] / 1024) . ' KB',
+                '<strong>' . $speak->link . ':</strong> <a href="' . $link . '" target="_blank">' . $link . '</a>'
+            );
+            if( ! empty($custom_success_message)) {
+                Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], $file['size'], $link)));
+            } else {
+                Notify::success(implode('<br>', $html), "");
+            }
+            self::$opened = $destination . DS . $file['name'];
+            return new static;
         } else {
-            return Notify::error(Config::speak('notify_file_exist', array('<code>' . $file['name'] . '</code>')));
+            return false;
         }
-        // Create public asset link to show on file uploaded
-        $link = str_replace(array(ROOT, '\\'), array($config->url, '/'), $destination) . '/' . $file['name'];
-        $uploaded = array(
-            $speak->uploaded => $file['name'],
-            $speak->type => $file['type'],
-            $speak->size => ($file['size'] / 1024) . ' KB',
-            $speak->link => '<a href="' . $link . '" target="_blank">' . $link . '</a>'
-        );
-        $html = array();
-        foreach($uploaded as $key => $value) {
-            $html[] = '<strong>' . $key . ':</strong> ' . $value;
-        }
-        if( ! empty($custom_success_message)) {
-            Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], $file['size'], $link)));
-        } else {
-            Notify::success(implode('<br>', $html), "");
-        }
-        self::$opened = $destination . DS . $file['name'];
-        return new static;
     }
 
     // Convert file size
@@ -286,6 +342,20 @@ class File {
             case 'gb': $size = (($fs * .0009765625) * .0009765625) * .0009765625; break; // Bytes to GB
         }
         return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $unit);
+    }
+
+    // Convert URL to file path
+    public static function path($url) {
+        $base = Config::get('url');
+        $proof = str_replace(array('\\', '/'), array(DS, DS), $base);
+        return str_replace(array($base, '/', '\\', $proof), array(ROOT, DS, DS, ROOT), $url);
+    }
+
+    // Convert file path to URL
+    public static function url($path) {
+        $base = Config::get('url');
+        $proof = str_replace(array('\\', '/', DS), array('/', '/', '/'), ROOT);
+        return str_replace(array(ROOT, '\\', '/', DS, $proof), array($base, '/', '/', '/', $base), $path);
     }
 
     // Configure ...

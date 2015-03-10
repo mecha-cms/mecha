@@ -61,21 +61,26 @@ class Menu {
         'classes' => array(
             'selected' => 'selected',
             'children' => 'children-%s',
-            'parent' => false
+            'parent' => false,
+            'separator' => 'separator'
         )
     );
 
-    public static function create($array, $type, $filter_prefix, $depth) {
+    public static function create($array, $type, $filter_prefix, $depth, $depth_extra = "") {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
         $c_class = self::$config['classes'];
-        $html = str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ($c_class['children'] !== false ? ' class="' . sprintf($c_class['children'], $depth / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
+        $html = $depth_extra . str_repeat(TAB, $depth) . '<' . $type . ($depth > 0 ? ($c_class['children'] !== false ? ' class="' . sprintf($c_class['children'], $depth / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
         foreach($array as $title => $url) {
             if( ! is_array($url)) {
                 if(strpos($url, '#') !== 0 && strpos($url, '://') === false) {
                     $url = preg_replace('#\/([\#?&])#', '$1', trim($c_url . '/' . trim($url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($url == $c_url_current || ($url != $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $url . '">' . $title . '</a></li>' . NL, $depth + 1);
+                if($title === '|') {
+                    $html .= Filter::apply($filter_prefix . 'list.item.separator', Filter::apply($filter_prefix . 'list.item', $depth_extra . str_repeat(TAB, $depth + 1) . '<li class="' . $c_class['separator'] . '"></li>' . NL, $depth + 1), $depth + 1);
+                } else {
+                    $html .= Filter::apply($filter_prefix . 'list.item', $depth_extra . str_repeat(TAB, $depth + 1) . '<li' . ($url == $c_url_current || ($url != $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $url . '">' . $title . '</a></li>' . NL, $depth + 1);
+                }
             } else {
                 if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $title, $matches)) {
                     $_title = $matches[1];
@@ -87,20 +92,20 @@ class Menu {
                 if(strpos($_url, '#') !== 0 && strpos($_url, '://') === false) {
                     $_url = preg_replace('#\/([\#?&])#', '$1', trim($c_url . '/' . trim($_url, '/'), '/'));
                 }
-                $html .= Filter::apply($filter_prefix . 'list.item', str_repeat(TAB, $depth + 1) . '<li' . ($_url == $c_url_current || ($_url != $c_url && strpos($c_url_current . '/', $_url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $_url . '">' . $_title . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 2) . str_repeat(TAB, $depth + 1) . '</li>' . NL, $depth + 1);
+                $html .= Filter::apply($filter_prefix . 'list.item', $depth_extra . str_repeat(TAB, $depth + 1) . '<li' . ($_url == $c_url_current || ($_url != $c_url && strpos($c_url_current . '/', $_url . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $_url . '">' . $_title . '</a>' . NL . self::create($url, $type, $filter_prefix, $depth + 2) . $depth_extra . str_repeat(TAB, $depth + 1) . '</li>' . NL, $depth + 1);
             }
         }
-        return Filter::apply($filter_prefix . 'list', $html . str_repeat(TAB, $depth) . '</' . $type . '>' . NL, $depth);
+        return Filter::apply($filter_prefix . 'list', $html . $depth_extra . str_repeat(TAB, $depth) . '</' . $type . '>' . NL, $depth);
     }
 
-    public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:') {
+    public static function get($array = null, $type = 'ul', $filter_prefix = 'menu:', $depth_extra = "") {
         // Use menu file from the cabinet when `$array` is not defined
         if(is_null($array)) {
             $speak = Config::speak();
             $filter_prefix = 'navigation:';
-            $array = Text::toArray(File::open(STATE . DS . 'menus.txt')->read($speak->home . ": /\n" . $speak->about . ": /about"), ':', '    ');
+            $array = Text::toArray(Get::state_menu($speak->home . ": /\n" . $speak->feed . ": /feed"), ':', '    ');
         }
-        return O_BEGIN . rtrim(self::create($array, $type, $filter_prefix, 0), NL) . O_END;
+        return O_BEGIN . rtrim(self::create($array, $type, $filter_prefix, 0, $depth_extra), NL) . O_END;
     }
 
     public static function configure($key, $value = null) {

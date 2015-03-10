@@ -23,7 +23,9 @@
   </li>
   <?php endforeach; ?>
 </ol>
+<?php if( ! empty($pager->step->url)): ?>
 <p class="pager cf"><?php echo $pager->step->link; ?></p>
+<?php endif; ?>
 <?php else: ?>
 <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->pages))); ?></p>
 <?php endif; ?>

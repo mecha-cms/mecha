@@ -85,16 +85,12 @@ class Widget {
          */
 
         if($more_menus = Mecha::A(Config::get('manager_menu'))) {
-            $menus = $menus + array('<menu:separator>' => "") + $more_menus;
+            $menus = $menus + array('|' => "") + $more_menus;
         }
-
-        Filter::add('manager:list.item', function($menu) {
-            return preg_replace('#<li.*?><a .*?><menu:separator><\/a><\/li>#', '<li class="separator"></li>', $menu);
-        }, 10);
 
         $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$ids['manager-menu'] . '">' . NL;
         self::$ids['manager-menu']++;
-        $html .= Menu::get($menus, 'ul', 'manager:');
+        $html .= Menu::get($menus, 'ul', 'manager:', TAB);
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
         return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));
@@ -407,12 +403,12 @@ class Widget {
                 $comments_id[] = $parts[1];
             }
             rsort($comments_id);
-            $html .= TAB . '<ul>' . NL;
+            $html .= TAB . '<ul class="recent-comment-list">' . NL;
             for($i = 0, $count = count($comments_id); $i < $total; ++$i) {
                 if($i === $count) break;
                 $comment = Get::comment($comments_id[$i]);
                 $article = Get::articleAnchor($comment->post);
-                $html .= str_repeat(TAB, 2) . '<li class="recent-comment-item">' . NL;
+                $html .= str_repeat(TAB, 2) . '<li class="recent-comment">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= str_repeat(TAB, 3) . '<div class="recent-comment-avatar">' . NL;
                     $html .= str_repeat(TAB, 4) . '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;

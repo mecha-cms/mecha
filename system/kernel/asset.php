@@ -46,9 +46,10 @@ class Asset {
         $url = self::pathTrace($path);
         if(strpos($url, ROOT) === false) {
             if(strpos($url, '://') === false) return false;
-            return Filter::apply('asset:url', $path . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?v=' . filemtime(str_replace(array($config->url, '\\', '/'), array(ROOT, DS, DS), $url)) : ""), $path);
+            $url = preg_replace('#(https?\:\/\/)+#', '$1', $url);
+            return Filter::apply('asset:url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime(File::path($url))) : ""), $path);
         }
-        return Filter::apply('asset:url', str_replace(array(ROOT, '\\'), array($config->url, '/'), $url) . ($config->resource_versioning ? '?v=' . filemtime($url) : ""), $path);
+        return Filter::apply('asset:url', File::url($url) . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($url)) : ""), $path);
     }
 
     // Return the HTML StyleSheet of asset
@@ -128,13 +129,14 @@ class Asset {
                 $files = array($files);
             }
         }
-        $the_file = ASSET . DS . str_replace(array('\\', '/'), DS, $name);
+        $the_file = ASSET . DS . File::path($name);
         $the_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.log';
         $is_valid = true;
         if(file_exists($the_log)) {
             $the_file_time = explode("\n", file_get_contents($the_log));
             foreach($the_file_time as $i => $time) {
-                if(file_exists(self::pathTrace($files[$i])) && ((int) filemtime(self::pathTrace($files[$i])) !== (int) $time)) {
+                $path = self::pathTrace($files[$i]);
+                if( ! file_exists($path) || (file_exists($path) && (int) filemtime($path) !== (int) $time)) {
                     $is_valid = false;
                     break;
                 }
@@ -148,9 +150,11 @@ class Asset {
         if( ! file_exists($the_file) || ! $is_valid) {
             if($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
                 foreach($files as $file) {
-                    $path = self::pathTrace($file);
-                    if(file_exists($path)) {
-                        $merged_time .=  filemtime($path) . "\n";
+                    if( ! self::ignored($file)) {
+                        $path = self::pathTrace($file);
+                        if(file_exists($path)) {
+                            $merged_time .=  filemtime($path) . "\n";
+                        }
                     }
                 }
                 File::write(trim($merged_time))->saveTo($the_log);

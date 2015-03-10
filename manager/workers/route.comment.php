@@ -38,40 +38,6 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
 
 
 /**
- * Comment Killer
- * --------------
- */
-
-Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
-    if( ! $comment = Get::comment($id)) {
-        Shield::abort(); // File not found!
-    }
-    Config::set(array(
-        'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'response' => $comment,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
-    ));
-    if($request = Request::post()) {
-        $P = array('data' => Mecha::A($comment));
-        Guardian::checkToken($request['token']);
-        File::open($comment->path)->delete();
-        File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
-        Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
-        Weapon::fire('on_comment_update', array($P, $P));
-        Weapon::fire('on_comment_destruct', array($P, $P));
-        Guardian::kick($config->manager->slug . '/comment');
-    } else {
-        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
-        Notify::warning($speak->notify_confirm_delete);
-    }
-    Shield::attach('manager', false);
-});
-
-
-/**
  * Comment Repair
  * --------------
  */
@@ -90,6 +56,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
     ));
     $G = array('data' => Mecha::A($comment));
+    Config::set('html_parser', $comment->content_type);
     if($request = Request::post()) {
         $request['id'] = $id;
         $request['ua'] = isset($comment->ua) ? $comment->ua : 'N/A';
@@ -132,4 +99,38 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         }
     }
     Shield::define('default', $comment)->attach('manager', false);
+});
+
+
+/**
+ * Comment Killer
+ * --------------
+ */
+
+Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id = "") use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
+    if( ! $comment = Get::comment($id)) {
+        Shield::abort(); // File not found!
+    }
+    Config::set(array(
+        'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
+        'response' => $comment,
+        'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
+    ));
+    if($request = Request::post()) {
+        $P = array('data' => Mecha::A($comment));
+        Guardian::checkToken($request['token']);
+        File::open($comment->path)->delete();
+        File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+        Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
+        Weapon::fire('on_comment_update', array($P, $P));
+        Weapon::fire('on_comment_destruct', array($P, $P));
+        Guardian::kick($config->manager->slug . '/comment');
+    } else {
+        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+        Notify::warning($speak->notify_confirm_delete);
+    }
+    Shield::attach('manager', false);
 });

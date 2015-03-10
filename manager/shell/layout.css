@@ -20,8 +20,6 @@ html {
   text-align:right;
 }
 
-.main-action-group + .tab-area {margin-top:0}
-
 .media {
   border-top:1px dashed;
   padding:1.3846153846153846em 0 1.3846153846153846em 11.3846153846153846em;
@@ -57,16 +55,21 @@ html {
 
 .page-list {
   list-style:none;
-  margin:0;
+  margin:1.3846153846153846em 0 0;
   padding:0;
   position:relative;
 }
 
 .page-list .page {
-  margin:2px 0 0;
+  margin:0;
   padding:1em 0;
   overflow:hidden;
 }
+
+.page-list:first-child {margin-top:0}
+.page-list .page:first-child {padding-top:0}
+.page-list .page:last-child {padding-bottom:0}
+.page-list .page + .page {margin-top:2px}
 
 .page-header,
 .page-body {
@@ -117,7 +120,6 @@ html {
 
 .plugin-description {padding:1.3846153846153846em}
 
-.messages + .page-list,
 .tab-content-area .messages {margin-top:1.3846153846153846em}
 
 @media (max-width:36.25em) {

@@ -202,8 +202,8 @@ class Shield {
 
         self::$defines = array();
 
-        $qs = isset($_GET) && ! empty($_GET) ? '.' . md5($_SERVER['QUERY_STRING']) : "";
-        $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $qs . '.cache';
+        $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
+        $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
 
         if($G['data']['cache'] && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());

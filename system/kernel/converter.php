@@ -253,7 +253,7 @@ class Converter {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------------
-     *  $input    | string  | The string element to be converted
+     *  $input    | string  | The string of element to be converted
      *  $element  | array   | Tag open, tag close, tag separator
      *  $attr     | array   | Value open, value close, attribute separator
      *  $str_eval | boolean | Convert value with `Converter::strEval()` ?
@@ -287,7 +287,26 @@ class Converter {
         return $str_eval ? self::strEval($results) : $results;
     }
 
-    // HTML Minifier
+    /**
+     * ====================================================================
+     *  HTML MINIFIER
+     * ====================================================================
+     *
+     * -- CODE: -----------------------------------------------------------
+     *
+     *    Converter::detractSkeleton(file_get_contents('test.html'));
+     *
+     * --------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | string  | The HTML string to be compressed
+     *  --------- | ------- | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
         return preg_replace(
@@ -306,7 +325,28 @@ class Converter {
         $input);
     }
 
-    // CSS Minifier => http://ideone.com/Q5USEF + improvement(s)
+    /**
+     * ====================================================================
+     *  CSS MINIFIER
+     * ====================================================================
+     *
+     *  => http://ideone.com/Q5USEF + improvement(s)
+     *
+     * -- CODE: -----------------------------------------------------------
+     *
+     *    Converter::detractShell(file_get_contents('test.css'));
+     *
+     * --------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | string  | The CSS string to be compressed
+     *  --------- | ------- | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
     public static function detractShell($input) {
         if(trim($input) === "") return $input;
         $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
@@ -334,7 +374,26 @@ class Converter {
         return trim($results);
     }
 
-    // JavaScript Minifier
+    /**
+     * ====================================================================
+     *  JAVASCRIPT MINIFIER
+     * ====================================================================
+     *
+     * -- CODE: -----------------------------------------------------------
+     *
+     *    Converter::detractSword(file_get_contents('test.js'));
+     *
+     * --------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | string  | The JavaScript string to be compressed
+     *  --------- | ------- | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
         $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/|\/\*\s*@cc_on[\s\S]*?@\s*\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);

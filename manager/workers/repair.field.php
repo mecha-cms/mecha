@@ -16,15 +16,15 @@
       <?php
 
       $options = array(
-          'text' => $speak->text,
-          'summary' => $speak->summary,
-          'boolean' => $speak->boolean,
-          'option' => $speak->option
+          't' => $speak->text,
+          's' => $speak->summary,
+          'b' => $speak->boolean,
+          'o' => $speak->option
       );
 
       $cache = Guardian::wayback('type', $file->type);
       foreach($options as $k => $v) {
-          echo '<option value="' . $k . '"' . ($cache == $k ? ' selected' : "") . '>' . $v . '</option>';
+          echo '<option value="' . $k . '"' . ($cache[0] == $k ? ' selected' : "") . '>' . $v . '</option>';
       }
 
       ?>
@@ -37,12 +37,12 @@
       <select name="scope">
       <?php
 
-      if( ! isset($file->scope)) $file->scope = 'all';
+      if( ! isset($file->scope)) $file->scope = "";
 
       $options = array(
+          "" => $speak->article . ' ' . strtolower($speak->or) . ' ' . $speak->page,
           'article' => $speak->article,
-          'page' => $speak->page,
-          'all' => $speak->both
+          'page' => $speak->page
       );
 
       $cache = Guardian::wayback('scope', $file->scope);

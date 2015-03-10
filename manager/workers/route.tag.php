@@ -45,7 +45,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
                 }
             }
             $P = array('data' => $data);
-            File::serialize($data)->saveTo(STATE . DS . 'tags.txt', 0600);
+            File::serialize($data)->saveTo(STATE . DS . 'tag.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
             Weapon::fire('on_tag_update', array($G, $P));
         }

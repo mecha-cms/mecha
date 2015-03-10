@@ -216,11 +216,13 @@ body {
 }
 
 .comment {
-  margin:2px 0 0;
+  margin:0;
   padding:1em 0 1em 1em;
   border-left:5px solid transparent;
   overflow:hidden;
 }
+
+.comment + .comment {margin-top:2px}
 
 .comment-pilot {border-left-color:#365D98}
 

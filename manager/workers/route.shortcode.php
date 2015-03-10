@@ -10,14 +10,13 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcodes.php';
+    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
     $shortcodes = file_exists($d) ? include $d : array();
-    if($file = File::exist(STATE . DS . 'shortcodes.txt')) {
-        $file_shortcodes = File::open($file)->unserialize();
-        foreach($file_shortcodes as $key => $value) {
+    if($file = Get::state_shortcode()) {
+        foreach($file as $key => $value) {
             unset($shortcodes[$key]);
         }
-        $shortcodes = array_merge($shortcodes, $file_shortcodes);
+        $shortcodes = array_merge($shortcodes, $file);
     }
     $G = array('data' => $shortcodes);
     Config::set(array(
@@ -34,7 +33,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
             }
         }
         $P = array('data' => $data);
-        File::serialize($data)->saveTo(STATE . DS . 'shortcodes.txt', 0600);
+        File::serialize($data)->saveTo(STATE . DS . 'shortcode.txt', 0600);
         Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
         Weapon::fire('on_shortcode_update', array($G, $P));
         Guardian::kick($config->url_current);

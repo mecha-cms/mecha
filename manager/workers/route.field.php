@@ -10,13 +10,11 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    if($file = File::exist(STATE . DS . 'fields.txt')) {
-        $fields = File::open($file)->unserialize();
-        ksort($fields);
-    }
+    $fields = Get::state_field(array());
+    ksort($fields);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
-        'files' => isset($fields) && ! empty($fields) ? $fields : false,
+        'files' => ! empty($fields) ? $fields : false,
         'cargo' => DECK . DS . 'workers' . DS . 'field.php'
     ));
     Shield::attach('manager', false);
@@ -32,13 +30,12 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
+    $fields = Get::state_field(array());
     if($key === false) {
         $data = array(
             'title' => "",
             'type' => "",
-            'value' => "",
-            'scope' => 'article'
+            'value' => ""
         );
         Config::set('page_title', Config::speak('manager.title_new_', array($speak->field)) . $config->title_separator . $config->manager->title);
     } else {
@@ -76,12 +73,14 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $fields[$request_key] = array(
             'title' => $request['title'],
             'type' => $request['type'],
-            'value' => $request['value'],
-            'scope' => $request['scope']
+            'value' => $request['value']
         );
+        if($request['scope'] !== "") {
+            $fields[$request_key]['scope'] = $request['scope'];
+        }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            File::serialize($fields)->saveTo(STATE . DS . 'fields.txt', 0600);
+            File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
             Weapon::fire('on_field_update', array($G, $P));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($G, $P));
@@ -108,7 +107,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
+    $fields = Get::state_field(array());
     if( ! isset($fields[$key])) {
         Shield::abort();
     } else {
@@ -125,7 +124,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
         $P['data']['key'] = $key;
         $deleted_field = $fields[$key]['title'];
         unset($fields[$key]); // delete ...
-        File::serialize($fields)->saveTo(STATE . DS . 'fields.txt', 0600);
+        File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
         Notify::success(Config::speak('notify_success_deleted', array($deleted_field)));
         Weapon::fire('on_field_update', array($P, $P));
         Weapon::fire('on_field_destruct', array($P, $P));

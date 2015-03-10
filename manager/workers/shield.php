@@ -16,11 +16,11 @@
     <p><strong><?php echo $speak->author; ?>:</strong> <?php echo Text::parse($info->author, '->encoded_html'); ?><?php if(isset($info->url) && $info->url != '#'): ?><br><strong><?php echo $speak->url; ?>:</strong> <a href="<?php echo $info->url; ?>" rel="nofollow" target="_blank"><?php echo $info->url; ?></a><?php endif; ?></p>
     <table class="table-bordered table-full-width">
       <tbody>
-        <?php foreach($the_shield_contents as $file): ?>
+        <?php foreach($the_shield_contents as $file): $the_shield_url = File::url(str_replace(SHIELD . DS . $the_shield_path . DS, "", $file['path'])); ?>
         <tr>
-          <td><?php echo basename($file['path']); ?></td>
-          <td class="td-icon"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/repair/file:' . str_replace(array(SHIELD . DS . $the_shield_path . DS, '\\'), array("", '/'), $file['path']); ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
-          <td class="td-icon"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/kill/file:' . str_replace(array(SHIELD . DS . $the_shield_path . DS, '\\'), array("", '/'), $file['path']); ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
+          <td><?php echo strpos($the_shield_url, '/') !== false ? '<span class="text-fade">' . dirname($the_shield_url) . '/</span>' . basename($the_shield_url) : $the_shield_url; ?></td>
+          <td class="td-icon"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/repair/file:' . $the_shield_url; ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
+          <td class="td-icon"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/kill/file:' . $the_shield_url; ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
         </tr>
         <?php endforeach; ?>
       </tbody>
@@ -52,7 +52,7 @@
     <?php $c = File::exist(SHIELD . DS . $shield . DS . 'capture.png'); if($config->shield != $shield && strpos($shield, '__') !== 0): $info = Shield::info($shield); ?>
     <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $shield; ?>">
       <?php if($c): ?>
-      <div class="media-capture" style="background-image:url('<?php echo str_replace(array(ROOT, DS), array($config->url, '/'), $c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
+      <div class="media-capture" style="background-image:url('<?php echo File::url($c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
       <h4 class="media-title"><i class="fa fa-shield"></i> <?php echo $info->title; ?></h4>
       <div class="media-content">

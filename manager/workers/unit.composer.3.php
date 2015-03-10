@@ -1,6 +1,6 @@
 <?php
 
-$fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
+$fields = Get::state_field(array());
 
 
 /**
@@ -13,7 +13,7 @@ $fields = File::open(STATE . DS . 'fields.txt')->unserialize(array());
  *    return array(
  *        'break_title_text' => array(
  *            'title' => 'Break Title Text?',
- *            'type' => 'boolean',
+ *            'type' => 'b',
  *            'value' => "",
  *            'scope' => 'article'
  *        )
@@ -51,7 +51,7 @@ if( ! empty($fields)) {
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }
-        if( ! isset($value['scope']) || isset($value['scope']) && $value['scope'] == 'all') {
+        if( ! isset($value['scope']) || $value['scope'] !== 'article' && $value['scope'] !== 'page') {
             $value['scope'] = $segment;
         }
         if(Notify::errors()) {
@@ -59,48 +59,45 @@ if( ! empty($fields)) {
         }
         if($value['scope'] == $segment) {
             $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
-        }
-        if($value['type'] == 'text' && $value['scope'] == $segment) {
-            $html .= '<label class="grid-group">';
-            $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
-            $html .= '<span class="grid span-4">';
-            $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
-            $html .= '</span>';
-            $html .= '</label>';
-        }
-        if($value['type'] == 'summary' && $value['scope'] == $segment) {
-            $html .= '<label class="grid-group">';
-            $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
-            $html .= '<span class="grid span-4">';
-            $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
-            $html .= '</span>';
-            $html .= '</label>';
-        }
-        if($value['type'] == 'boolean' && $value['scope'] == $segment) {
-            $html .= '<div class="grid-group">';
-            $html .= '<span class="grid span-2"></span>';
-            $html .= '<span class="grid span-4">';
-            $html .= '<label><input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($value['value']) ? ' value="' . $value['value'] . '"' : "") . (isset($field[$key]) && ! empty($field[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span></label>';
-            $html .= '</span>';
-            $html .= '</div>';
-        }
-        if($value['type'] == 'option' && $value['scope'] == $segment) {
-            $html .= '<label class="grid-group">';
-            $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
-            $html .= '<span class="grid span-4">';
-            $html .= '<select name="fields[' . $key . '][value]" class="select-block">';
-            foreach(explode("\n", $value['value']) as $v) {
-                $v = trim($v);
-                if(strpos($v, ':') !== false) {
-                    $v = explode(':', $v, 2);
-                    $html .= '<option value="' . trim($v[1]) . '"' . (isset($field[$key]) && $field[$key] == trim($v[1]) ? ' selected': "") . '>' . trim($v[0]) . '</option>';
-                } else {
-                    $html .= '<option value="' . $v . '"' . (isset($field[$key]) && $field[$key] == trim($v) ? ' selected': "") . '>' . $v . '</option>';
+            if($value['type'][0] == 's') {
+                $html .= '<label class="grid-group">';
+                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<span class="grid span-4">';
+                $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
+                $html .= '</span>';
+                $html .= '</label>';
+            } elseif($value['type'][0] == 'b') {
+                $html .= '<div class="grid-group">';
+                $html .= '<span class="grid span-2"></span>';
+                $html .= '<span class="grid span-4">';
+                $html .= '<label><input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($value['value']) ? ' value="' . $value['value'] . '"' : "") . (isset($field[$key]) && ! empty($field[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span></label>';
+                $html .= '</span>';
+                $html .= '</div>';
+            } elseif($value['type'][0] == 'o') {
+                $html .= '<label class="grid-group">';
+                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<span class="grid span-4">';
+                $html .= '<select name="fields[' . $key . '][value]" class="select-block">';
+                foreach(explode("\n", $value['value']) as $v) {
+                    $v = trim($v);
+                    if(strpos($v, ':') !== false) {
+                        $v = explode(':', $v, 2);
+                        $html .= '<option value="' . trim($v[1]) . '"' . (isset($field[$key]) && $field[$key] == trim($v[1]) ? ' selected': "") . '>' . trim($v[0]) . '</option>';
+                    } else {
+                        $html .= '<option value="' . $v . '"' . (isset($field[$key]) && $field[$key] == trim($v) ? ' selected': "") . '>' . $v . '</option>';
+                    }
                 }
+                $html .= '</select>';
+                $html .= '</span>';
+                $html .= '</label>';
+            } else { // if($value['type'][0] == 't') {
+                $html .= '<label class="grid-group">';
+                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<span class="grid span-4">';
+                $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
+                $html .= '</span>';
+                $html .= '</label>';
             }
-            $html .= '</select>';
-            $html .= '</span>';
-            $html .= '</label>';
         }
     }
     echo ! empty($html) ? $html : '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';

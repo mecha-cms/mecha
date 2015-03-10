@@ -16,14 +16,16 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
     }
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $booleans = array(
+        $bools = array(
             'comments' => false,
             'comment_moderation' => false,
-            'email_notification' => false,
+            'comment_notification_email' => false,
             'widget_year_first' => false,
-            'resource_versioning' => false,
+            'widget_include_css' => false,
+            'widget_include_js' => false,
             'html_minifier' => false,
-            'html_parser' => 'HTML'
+            'html_parser' => 'HTML',
+            'resource_versioning' => false
         );
         $pages = array(
             'index' => 'article',
@@ -39,9 +41,9 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 $slugs[$_slug] = 1;
             }
         }
-        foreach($booleans as $boolean => $fallback) {
+        foreach($bools as $bool => $fallback) {
             // Fixes for checkbox inputs
-            $request[$boolean] = Request::post($boolean, $fallback);
+            $request[$bool] = Request::post($bool, $fallback);
         }
         foreach($pages as $page => $default) {
             // Fixes for slug pattern inputs

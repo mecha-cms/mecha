@@ -67,7 +67,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                     Weapon::fire('on_plugin_' . md5($path) . '_mounted', array($P, $P));
                     Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                 } else {
-                    Guardian::kick($config->manager->slug . '/plugin?q_id=' . $path . '#plugin:' . $path);
+                    Guardian::kick($config->manager->slug . '/plugin?q_id=' . $path);
                 }
             }
         } else {

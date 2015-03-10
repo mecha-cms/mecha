@@ -10,7 +10,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $menus = File::open(STATE . DS . 'menus.txt')->read($speak->home . ": /\n" . $speak->about . ": /about");
+    $menus = Get::state_menu($speak->home . ": /\n" . $speak->feed . ": /feed");
     Config::set(array(
         'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'menu.php'
@@ -25,7 +25,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            File::write($request['content'])->saveTo(STATE . DS . 'menus.txt', 0600);
+            File::write($request['content'])->saveTo(STATE . DS . 'menu.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
             Weapon::fire('on_menu_update', array($G, $P));
             Guardian::kick($config->url_current);

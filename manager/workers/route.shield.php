@@ -95,7 +95,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $path = str_replace(array('\\', '/'), DS, $request['name']);
+        $path = File::path($request['name']);
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
         } else {
@@ -138,7 +138,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     if(Guardian::get('status') != 'pilot' || $folder === "" || $path === "") {
         Shield::abort();
     }
-    $path = str_replace(array('\\', '/'), DS, $path);
+    $path = File::path($path);
     if( ! $file = File::exist(SHIELD . DS . $folder)) {
         Shield::abort(); // Folder not found!
     }
@@ -153,7 +153,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $name = str_replace(array('\\', '/'), DS, $request['name']);
+        $name = File::path($request['name']);
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
         } else {
@@ -179,7 +179,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($path) . '</code>')));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
-            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . str_replace(DS, '/', $name));
+            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
         }
     }
     Shield::define(array(
@@ -202,7 +202,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     }
     $info = Shield::info($folder);
     if($path) {
-        $path = str_replace(array('\\', '/'), DS, $path);
+        $path = File::path($path);
         if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
             Shield::abort(); // File not found!
         }
@@ -229,7 +229,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         Weapon::fire('on_shield_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', array($path ? '<code>' . basename($file) . '</code>' : '<strong>' . $info->title . '</strong>')));
+        Notify::warning(Config::speak('notify_confirm_delete_', array($path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>')));
     }
     Shield::define(array(
         'the_shield' => $folder,
@@ -247,8 +247,8 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
 Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
     $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
     $new_config = file_exists($d) ? include $d : array();
-    if($file = File::exist(STATE . DS . 'config.txt')) {
-        $new_config = array_replace_recursive($new_config, File::open($file)->unserialize());
+    if($file = Get::state_config()) {
+        $new_config = array_replace_recursive($new_config, $file);
     }
     $new_config['shield'] = $path == 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);

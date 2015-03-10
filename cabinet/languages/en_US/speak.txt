@@ -61,6 +61,9 @@ emails: Emails
 url: URL
 urls: URLs
 
+site: Site
+sites: Sites
+
 message: Message
 messages: Messages
 
@@ -312,6 +315,9 @@ days_short: Sun,Mon,Tue,Wed,Thu,Fri,Sat
 # ACTIONS
 # -------
 
+enter: Enter
+exit: Exit
+
 compose: Compose
 composing: Composing
 composed: Composed
@@ -542,8 +548,6 @@ manager:
   title_page_manager: Manager Page
   title_other: Other
 
-  title_whole_site: Whole Site
-
   title_page_excerpt: Excerpt
   title_page_excerpt_length: Excerpt Length
   title_page_excerpt_tail: Excerpt Tail
@@ -554,14 +558,17 @@ manager:
 
   title_comment_allow: Allow Comments
   title_comment_moderation: Comment Moderation
-  title_comment_notification: Notification for New Comments
+  title_comment_notification_email: Notification for New Comments
+
   title_resource_versioning: Enable Resource Versioning
 
   title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
   title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
   title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 
-  title_widget_time: Time Format as <code>YYYY-MM-DD</code> (year before month)
+  title_widget_time: Widget Time Format as <code>YYYY-MM-DD</code> (year before month)
+  title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
+  title_widget_include_js: Include Default Widget&rsquo;s JavaScript to the Shield
 
   title_defaults_article_title: Default Article Title
   title_defaults_article_content: Default Article Content
@@ -611,7 +618,9 @@ notify_error_no_file_selected: Please select a file.
 notify_error_no_files_selected: Please select at least one file.
 notify_error_file_extension: Extension <code>%s</code> is not allowed.
 notify_error_file_extension_missing: Please include the file extension. Example: <code>file.jpg</code>
-notify_error_file_size: File size must be under <code>%s</code>.
+notify_error_file_size_max: File size must be under <code>%s</code>.
+notify_error_file_size_min: File size must be above <code>%s</code>.
+notify_error_file_type_unknown: Unknown file type.
 notify_error_username_or_password: Invalid username or password.
 notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
