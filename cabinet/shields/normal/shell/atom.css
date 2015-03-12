@@ -640,7 +640,6 @@ img {
 }
 
 .message pre code {opacity:1}
-.message a {color:#FFA}
 .message-success {background-color:#8EAB1A}
 .message-info {background-color:#6AAAC2}
 
@@ -651,3 +650,7 @@ img {
 
 .message-error {background-color:#CF3030}
 .message + .message {margin-top:2px}
+
+.message-success a,
+.message-info a,
+.message-error a {color:#FFA}

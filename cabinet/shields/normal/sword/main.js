@@ -1,22 +1,18 @@
 /* Toggle Mobile Navigation */
 
 (function() {
-
     if (!document.querySelector) return;
-
-    var body = document.body,
+    var base = document.body,
         toggle = document.querySelector('.blog-sidebar-toggle');
-
-    body.spellcheck = false;
-
+    base.spellcheck = false;
     if (!toggle) return;
-
-    toggle.addEventListener("click", function(e) {
+    function do_toggle(e) {
         this.classList.toggle('active');
-        body.classList.toggle('blog-sidebar-is-visible');
-        body.scrollTop = 0;
-        body.parentNode.scrollTop = 0;
+        base.classList.toggle('blog-sidebar-is-visible');
+        base.scrollTop = 0;
+        base.parentNode.scrollTop = 0;
         e.preventDefault();
-    }, false);
-
+    }
+    toggle.addEventListener("touchstart", do_toggle, false);
+    toggle.addEventListener("click", do_toggle, false);
 })();

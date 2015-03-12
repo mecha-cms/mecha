@@ -40,9 +40,9 @@
       if( ! isset($file->scope)) $file->scope = "";
 
       $options = array(
-          "" => $speak->article . ' ' . strtolower($speak->or) . ' ' . $speak->page,
           'article' => $speak->article,
-          'page' => $speak->page
+          'page' => $speak->page,
+          "" => $speak->article . ' ' . strtolower($speak->and) . ' ' . $speak->page
       );
 
       $cache = Guardian::wayback('scope', $file->scope);

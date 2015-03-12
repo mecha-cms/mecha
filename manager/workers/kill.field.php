@@ -16,15 +16,15 @@
         <td><?php echo $the_key; ?></td>
         <?php
 
-        $t = 'Text';
+        $s = 'Summary';
         switch($file->type[0]) {
-            case 's': $t = 'Summary'; break;
-            case 'b': $t = 'Boolean'; break;
-            case 'o': $t = 'Option'; break;
+            case 't': $s = 'Text'; break;
+            case 'b': $s = 'Boolean'; break;
+            case 'o': $s = 'Option'; break;
         }
 
         ?>
-        <td><em class="text-info"><?php echo $t; ?></em></td>
+        <td><em class="text-info"><?php echo $s; ?></em></td>
         <td><?php echo isset($file->scope) ? $file->scope : strtolower($speak->article . '/' . $speak->page); ?></td>
       </tr>
     </tbody>

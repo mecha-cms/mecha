@@ -59,11 +59,11 @@ if( ! empty($fields)) {
         }
         if($value['scope'] == $segment) {
             $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $value['type'] . '">';
-            if($value['type'][0] == 's') {
+            if($value['type'][0] == 't') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
+                $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
                 $html .= '</span>';
                 $html .= '</label>';
             } elseif($value['type'][0] == 'b') {
@@ -90,11 +90,11 @@ if( ! empty($fields)) {
                 $html .= '</select>';
                 $html .= '</span>';
                 $html .= '</label>';
-            } else { // if($value['type'][0] == 't') {
+            } else { // if($value['type'][0] == 's') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
+                $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
                 $html .= '</span>';
                 $html .= '</label>';
             }
