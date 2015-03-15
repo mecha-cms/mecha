@@ -271,6 +271,7 @@ class File {
         $config = Config::get();
         $speak = Config::speak();
         $destination = self::path($destination);
+        $errors = Mecha::A($speak->notify_file);
         // Create a safe file name
         $renamed = array();
         $parts = explode('.', $file['name']);
@@ -281,29 +282,26 @@ class File {
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $file['name'] = implode('.', $renamed);
         // Something goes wrong
-        if($file['error'] > 0) {
-            Notify::error($speak->error . ': <code>' . $file['error'] . '</code>');
-        }
-        // Unknown file type
-        if( ! isset($file['type']) || empty($file['type'])) {
-            Notify::error($speak->notify_error_file_type_unknown);
-        }
-        // No file selected
-        if( ! isset($file['name']) || empty($file['name'])) {
-            Notify::error($speak->notify_error_no_file_selected);
-        }
-        // Bad file extension
-        $extension_allow = array_flip(self::$config['file_extension_allow']);
-        if( ! isset($extension_allow[$extension])) {
-            Notify::error(Config::speak('notify_error_file_extension', array($extension)));
-        }
-        // Too small
-        if($file['size'] < self::$config['file_size_min_allow']) {
-            Notify::error(Config::speak('notify_error_file_size_min', array(self::size(self::$config['file_size_min_allow'], 'KB'))));
-        }
-        // Too large
-        if($file['size'] > self::$config['file_size_max_allow']) {
-            Notify::error(Config::speak('notify_error_file_size_max', array(self::size(self::$config['file_size_max_allow'], 'KB'))));
+        if($file['error'] > 0 && isset($errors[$file['error']])) {
+            Notify::error($errors[$file['error']]);
+        } else {
+            // Unknown file type
+            if( ! isset($file['type']) || empty($file['type'])) {
+                Notify::error($speak->notify_error_file_type_unknown);
+            }
+            // Bad file extension
+            $extension_allow = array_flip(self::$config['file_extension_allow']);
+            if( ! isset($extension_allow[$extension])) {
+                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+            }
+            // Too small
+            if($file['size'] < self::$config['file_size_min_allow']) {
+                Notify::error(Config::speak('notify_error_file_size_min', array(self::size(self::$config['file_size_min_allow'], 'KB'))));
+            }
+            // Too large
+            if($file['size'] > self::$config['file_size_max_allow']) {
+                Notify::error(Config::speak('notify_error_file_size_max', array(self::size(self::$config['file_size_max_allow'], 'KB'))));
+            }
         }
         if( ! Notify::errors()) {
             // Move the uploaded file to the destination folder

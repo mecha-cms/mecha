@@ -599,6 +599,17 @@ notify_not_exist: %s sudah tidak ada.
 notify_available: %s tersedia.
 notify_not_available: %s tidak tersedia.
 
+notify_file:
+  0: Tidak ada kesalahan, berkas berhasil diunggah dengan sukses.
+  1: Berkas yang diunggah melampaui direktif <code>upload_max_filesize</code> dalam <code>php.ini</code>.
+  2: Berkas yang diunggah melampaui direktif <code>MAX_FILE_SIZE</code> yang ditentukan dalam formulir <abbr title="Hyper Text Markup Language">HTML</abbr>.
+  3: Berkas yang diunggah hanya terunggah sebagian.
+  4: Tidak ada berkas yang diunggah.
+  5: ?
+  6: Folder sementara tidak ada.
+  7: Gagal menulis berkas ke disk.
+  8: Sebuah ekstensi <abbr>PHP</abbr> menghentikan pengunggahan berkas.
+
 notify_file_exist: Berkas %s sudah ada.
 notify_file_not_exist: Berkas %s sudah tidak ada.
 

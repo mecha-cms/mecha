@@ -599,6 +599,17 @@ notify_not_exist: %s does not exist.
 notify_available: %s is available.
 notify_not_available: %s is not available.
 
+notify_file:
+  0: There is no error, the file uploaded with success.
+  1: The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.
+  2: The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.
+  3: The uploaded file was only partially uploaded.
+  4: No file was uploaded.
+  5: ?
+  6: Missing a temporary folder.
+  7: Failed to write file to disk.
+  8: A <abbr>PHP</abbr> extension stopped the file upload.
+
 notify_file_exist: File %s already exist.
 notify_file_not_exist: File %s does not exist.
 
