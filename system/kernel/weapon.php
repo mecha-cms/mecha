@@ -3,6 +3,7 @@
 class Weapon {
 
     protected static $armaments = array();
+    protected static $armaments_e = array();
 
     /**
      * ==============================================================
@@ -69,7 +70,9 @@ class Weapon {
             }
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                call_user_func_array($cargo['fn'], $arguments);
+                if( ! isset(self::$armaments_e[$name . ' ' . $cargo['stack']])) {
+                    call_user_func_array($cargo['fn'], $arguments);
+                }
             }
         } else {
             self::$armaments[$name] = false;
@@ -98,11 +101,10 @@ class Weapon {
      */
 
     public static function eject($name = null, $stack = null) {
-        if( ! is_null($stack)) {
-            $stack = (float) $stack;
-        }
+        self::$armaments_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
         if( ! is_null($name)) {
             if( ! is_null($stack)) {
+                $stack = (float) $stack;
                 for($i = 0, $length = count(self::$armaments[$name]); $i < $length; ++$i) {
                     if(self::$armaments[$name][$i]['stack'] === $stack) {
                         unset(self::$armaments[$name][$i]);

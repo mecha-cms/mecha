@@ -56,6 +56,9 @@ class Widget {
             '<i class="fa fa-fw fa-clock-o"></i> <span class="label">' . $speak->cache . '</span>' => '/' . $config->manager->slug . '/cache',
             '<i class="fa fa-fw fa-life-ring"></i> <span class="label">' . $speak->backup . '</span>' => '/' . $config->manager->slug . '/backup'
         );
+        if(file_exists(SYSTEM . DS . 'log' . DS . 'errors.log')) {
+            $menus['<i class="fa fa-fw fa-exclamation-triangle"></i> <span class="label">' . $speak->error . '</span>'] = $config->manager->slug . '/error';
+        }
         if($config->page_type == 'article') {
             $menus['<i class="fa fa-fw fa-pencil"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
             $menus['<i class="fa fa-fw fa-trash"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;

@@ -267,6 +267,14 @@ class Get {
         if($file = self::state_tag()) {
             $tags = array_replace_recursive($tags, $file);
         }
+        foreach($tags as $k => $v) {
+            $tags[$k] = array(
+                'id' => self::AMF($v['id'], 'tag:', 'id'),
+                'name' => self::AMF($v['name'], 'tag:', 'name'),
+                'slug' => self::AMF($v['slug'], 'tag:', 'slug'),
+                'description' => self::AMF($v['description'], 'tag:', 'description')
+            );
+        }
         return Mecha::eat($tags)->order($order, $sorter)->vomit();
     }
 

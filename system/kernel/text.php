@@ -159,7 +159,7 @@ class Text {
                     }
                     $field = explode(':', $buffer, 2);
                     if( ! isset($field[1])) $field[1] = "";
-                    $key = Text::parse(strtolower(trim($field[0])), '->array_key');
+                    $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                     if($FP) $value = Filter::apply($filter_prefix . $key, $value);
                     $results[$key] = $value;
@@ -173,7 +173,7 @@ class Text {
                     foreach($headers as $field) {
                         $field = explode(':', $field, 2);
                         if( ! isset($field[1])) $field[1] = "";
-                        $key = Text::parse(strtolower(trim($field[0])), '->array_key');
+                        $key = Text::parse(trim($field[0]), '->array_key', true);
                         $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                         if($FP) $value = Filter::apply($filter_prefix . $key, $value);
                         $results[$key] = $value;
@@ -196,7 +196,7 @@ class Text {
                 foreach($headers as $field) {
                     $field = explode(':', $field, 2);
                     if( ! isset($field[1])) $field[1] = "";
-                    $key = Text::parse(strtolower(trim($field[0])), '->array_key');
+                    $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
                     if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
                         $value = Filter::apply($filter_prefix . $key, $value);

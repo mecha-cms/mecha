@@ -75,6 +75,7 @@ class File {
             'jpg',
             'jpeg',
             'png',
+            'svg',
 
             ## Font
             'eot',

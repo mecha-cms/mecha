@@ -27,7 +27,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         }, 11);
     }
     $filter = Request::get('q', false);
-    $filter = $filter ? Text::parse($filter, '->slug_moderate') : "";
+    $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
     $takes = Get::files(ASSET, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
@@ -76,12 +76,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             // Safe file name
-            $name = explode('.', $request['name']);
-            $parts = array();
-            foreach($name as $part) {
-                $parts[] = Text::parse($part, '->slug_moderate');
-            }
-            $new_name = implode('.', $parts);
+            $new_name = Text::parse($request['name'], '->safe_file_name');
             // File name already exist
             if($old_name !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
                 Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));

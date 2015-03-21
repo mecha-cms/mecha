@@ -3,6 +3,7 @@
 class Filter {
 
     protected static $filters = array();
+    protected static $filters_e = array();
 
     /**
      * ===================================================================
@@ -70,8 +71,10 @@ class Filter {
         $params = array_slice(func_get_args(), 2);
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
-            $arguments = array_merge(array($value), $params);
-            $value = call_user_func_array($cargo['fn'], $arguments);
+            if( ! isset(self::$filters_e[$name . ' ' . $cargo['stack']])) {
+                $arguments = array_merge(array($value), $params);
+                $value = call_user_func_array($cargo['fn'], $arguments);
+            }
         }
         return $value;
     }
@@ -98,11 +101,10 @@ class Filter {
      */
 
     public static function remove($name = null, $stack = null) {
-        if( ! is_null($stack)) {
-            $stack = (float) $stack;
-        }
+        self::$filters_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
         if( ! is_null($name)) {
             if( ! is_null($stack)) {
+                $stack = (float) $stack;
                 for($i = 0, $length = count(self::$filters[$name]); $i < $length; ++$i) {
                     if(self::$filters[$name][$i]['stack'] === $stack) {
                         unset(self::$filters[$name][$i]);

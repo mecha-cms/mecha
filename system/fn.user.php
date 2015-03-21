@@ -1,0 +1,3 @@
+<?php
+
+// Your custom functions goes here ...
