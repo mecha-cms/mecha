@@ -274,14 +274,8 @@ class File {
         $destination = self::path($destination);
         $errors = Mecha::A($speak->notify_file);
         // Create a safe file name
-        $renamed = array();
-        $parts = explode('.', $file['name']);
-        foreach($parts as $part) {
-            $safe = Text::parse($part, '->slug_moderate');
-            $renamed[] = trim($safe, '_-') !== "" ? $safe : "";
-        }
         $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-        $file['name'] = implode('.', $renamed);
+        $file['name'] = Text::parse($file['name'], '->safe_file_name');
         // Something goes wrong
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);

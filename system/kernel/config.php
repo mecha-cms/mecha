@@ -215,15 +215,19 @@ class Config {
         if(strpos($config['url_current'], $config['url'] . '/' . $config['archive']['slug'] . '/') === 0) $p = 'archive';
         if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $p = 'search';
         if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $p = 'manager';
-        $config['page_type'] = $p;
 
-        if($file = File::exist(LANGUAGE . DS . $config['language'] . DS . 'speak.txt')) {
-            $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
-        } elseif($file = File::exist(LANGUAGE . DS . 'en_US' . DS . 'speak.txt')) {
-            $config['speak'] = Text::toArray(File::open($file)->read(), ':', '  ');
-        } else {
+        $lang = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
+        $lang_alt = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
+
+        if( ! file_exists($lang) && ! file_exists($lang_alt)) {
             Guardian::abort('Language file not found.');
         }
+
+        $lang = file_exists($lang) ? Text::toArray(File::open($lang)->read(), ':', '  ') : array();
+        $lang_alt = file_exists($lang_alt) ? Text::toArray(File::open($lang_alt)->read(), ':', '  ') : array();
+
+        $config['page_type'] = $p;
+        $config['speak'] = array_replace_recursive($lang_alt, $lang);
 
         self::$bucket = $config;
 

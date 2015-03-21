@@ -134,19 +134,17 @@ if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
     $plugins_payload = count($plugins_list);
     sort($plugins_list);
     for($i = 0; $i < $plugins_payload; ++$i) {
-        $plugins[] = false; // $plugins[] = '-- ' . dirname($plugins_list[$i]);
+        $plugins[] = false;
     }
     for($j = 0; $j < $plugins_payload; ++$j) {
         if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {
-            $to_index = ((int) file_get_contents($overtake)) - 1;
-            if($to_index < 0) $to_index = 0;
-            if($to_index > $plugins_payload - 1) $to_index = $plugins_payload - 1;
-            array_splice($plugins, $to_index, 0, array(dirname($plugins_list[$j])));
+            $index = Mecha::edge(((int) file_get_contents($overtake)) - 1, 0, $plugins_payload - 1);
+            $plugins = Mecha::walk($plugins)->to($index)->before(dirname($plugins_list[$j]))->vomit();
         } else {
             $plugins[$j] = dirname($plugins_list[$j]);
         }
     }
-    File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache');
+    File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);
 }
 
 for($k = 0, $plugins_launched = count($plugins); $k < $plugins_launched; ++$k) {
