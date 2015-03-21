@@ -63,10 +63,32 @@
         $(this).siblings().removeClass('active');
     });
 
+    var dragSrcElement = null;
+
     $tbody.find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
         }
+    }).parent().attr('draggable', true).on("dragstart", function(e) {
+        dragSrcElement = this;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+        $(this).addClass('origin');
+    }).on("dragover", function(e) {
+        e.preventDefault();
+        $(this).addClass('target');
+    }).on("dragleave", function() {
+        $(this).removeClass('target');
+    }).on("drop", function(e) {
+        e.preventDefault();
+        if (dragSrcElement !== this) {
+            dragSrcElement.innerHTML = this.innerHTML;
+            this.innerHTML = e.dataTransfer.getData('text/html');
+        }
+    }).on("dragend", function() {
+        $(this).removeClass('active origin target').siblings().removeClass('active origin target');
+    }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
+        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
     });
 
 })(window.Zepto || window.jQuery, DASHBOARD);
@@ -123,10 +145,32 @@
         $(this).siblings().removeClass('active');
     });
 
+    var dragSrcElement = null;
+
     $sortable.find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
         }
+    }).parent().attr('draggable', true).on("dragstart", function(e) {
+        dragSrcElement = this;
+        e.dataTransfer.effectAllowed = 'move';
+        e.dataTransfer.setData('text/html', this.innerHTML);
+        $(this).addClass('origin');
+    }).on("dragover", function(e) {
+        e.preventDefault();
+        $(this).addClass('target');
+    }).on("dragleave", function() {
+        $(this).removeClass('target');
+    }).on("drop", function(e) {
+        e.preventDefault();
+        if (dragSrcElement !== this) {
+            dragSrcElement.innerHTML = this.innerHTML;
+            this.innerHTML = e.dataTransfer.getData('text/html');
+        }
+    }).on("dragend", function() {
+        $(this).removeClass('active origin target').siblings().removeClass('active origin target');
+    }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
+        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
     });
 
 })(window.Zepto || window.jQuery, DASHBOARD);
