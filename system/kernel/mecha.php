@@ -16,30 +16,26 @@
 class Mecha {
 
     private static $stomach = array();
+    private static $index = 0;
 
-    /**
-     * Convert Array into Object
-     * -------------------------
-     */
+    // Prevent `$e` exceeds the value of the `$min` and `$max`
+    public static function edge($e, $min = 0, $max = 9999) {
+        if($e < $min) $e = $min;
+        if($e > $max) $e = $max;
+        return $e;
+    }
 
+    // Convert array to object
     public static function O($array) {
         return is_array($array) ? (object) array_map('self::O', $array) : $array;
     }
 
-    /**
-     * Convert Object into Array
-     * -------------------------
-     */
-
+    // Convert object to array
     public static function A($object) {
         return is_object($object) ? array_map('self::A', (array) $object) : $object;
     }
 
-    /**
-     * Set Array Value Recursively
-     * ---------------------------
-     */
-
+    // Set array value recursively
     public static function SVR(&$array, $segments, $value = "") {
         $segments = explode('.', $segments);
         while(count($segments) > 1) {
@@ -52,11 +48,7 @@ class Mecha {
         $array[array_shift($segments)] = $value;
     }
 
-    /**
-     * Get Array Value Recursively
-     * ---------------------------
-     */
-
+    // Get array value recursively
     public static function GVR(&$array, $segments = null, $fallback = false) {
         if(is_null($segments)) {
             return $array;
@@ -70,11 +62,7 @@ class Mecha {
         return $array;
     }
 
-    /**
-     * Unset Array Value Recursively
-     * -----------------------------
-     */
-
+    // Unset array value recursively
     public static function UVR(&$array, $segments) {
         $segments = explode('.', $segments);
         while(count($segments) > 1) {
@@ -88,21 +76,18 @@ class Mecha {
         }
     }
 
-    /**
-     * Initialize with Eating
-     * ----------------------
-     */
-
+    // Initialize with eating
     public static function eat($array) {
         self::$stomach = $array;
+        self::$index = 0;
         return new static;
     }
 
-    /**
-     * Sort Array Based on Its Value's Key
-     * -----------------------------------
-     */
+    public static function walk($array) {
+        return self::eat($array);
+    }
 
+    // Sort array based on its value's key
     public static function order($order = 'ASC', $key = null) {
         if(is_null($key)) {
             if($order == 'ASC') {
@@ -131,33 +116,113 @@ class Mecha {
         return new static;
     }
 
-    /**
-     * Array Shake
-     * -----------
-     */
-
+    // Array shake
     public static function shake() {
         shuffle(self::$stomach);
         return new static;
     }
 
-    /**
-     * Vomit! BLARGH!
-     * --------------
-     */
-
+    // Vomit! BLARGH!
     public static function vomit($param = null, $fallback = false) {
-        $array = self::$stomach;
-        self::$stomach = array();
-        return self::GVR($array, $param, $fallback);
+        return self::GVR(self::$stomach, $param, $fallback);
     }
 
-    /**
-     * Generate Chunks of Array
-     * ------------------------
-     */
+    // Move to next array index
+    public static function next() {
+        self::$index = self::edge(self::$index + 1, 0, self::count() - 1);
+        return new static;
+    }
 
-    public static function chunk($index = 1, $count = 10) {
+    // Move to previous array index
+    public static function prev() {
+        self::$index = self::edge(self::$index - 1, 0, self::count() - 1);
+        return new static;
+    }
+
+    // Move to `$index` array index
+    public static function to($index = 0) {
+        self::$index = is_int($index) ? $index : array_search($index, array_keys(self::$stomach));
+        return new static;
+    }
+
+    // Insert `$food` before current array index
+    public static function before($food, $key = null) {
+        if(is_null($key)) $key = self::$index;
+        self::$stomach = array_slice(self::$stomach, 0, self::$index, true) + array($key => $food) + array_slice(self::$stomach, self::$index, null, true);
+        self::$index = self::edge(self::$index - 1, 0, self::count() - 1);
+        return new static;
+    }
+
+    // Insert `$food` after current array index
+    public static function after($food, $key = null) {
+        if(is_null($key)) $key = self::$index + 1;
+        self::$stomach = array_slice(self::$stomach, 0, self::$index + 1, true) + array($key => $food) + array_slice(self::$stomach, self::$index + 1, null, true);
+        self::$index = self::edge(self::$index + 1, 0, self::count() - 1);
+        return new static;
+    }
+
+    // Replace current array index value with `$food`
+    public static function replace($food) {
+        $i = 0;
+        foreach(self::$stomach as $k => $v) {
+            if($i === self::$index) {
+                self::$stomach[$k] = $food;
+                break;
+            }
+            $i++;
+        }
+        return new static;
+    }
+
+    // Append `$food` to array
+    public static function append($food, $key = null) {
+        self::$index = self::count() - 1;
+        return self::after($food, $key);
+    }
+
+    // Prepend `$food` to array
+    public static function prepend($food, $key = null) {
+        self::$index = 0;
+        return self::before($food, $key);
+    }
+
+    // Get first array value
+    public static function first($show_value = true) {
+        return $show_value ? self::$stomach[0] : 0;
+    }
+
+    // Get last array value
+    public static function last($show_value = true) {
+        $end = self::count() - 1;
+        return $show_value ? self::$stomach[$end] : $end;
+    }
+
+    // Get current array value
+    public static function current($show_value = true) {
+        if($show_value) {
+            $i = 0;
+            foreach(self::$stomach as $k => $v) {
+                if($i === self::$index) {
+                    return self::$stomach[$k];
+                }
+                $i++;
+            }
+        }
+        return self::$index;
+    }
+
+    // Get selected array value
+    public static function get() {
+        return self::current(true);
+    }
+
+    // Get array count
+    public static function count($data = null) {
+        return is_null($data) ? count(self::$stomach) : count($data);
+    }
+
+    // Generate chunks of array
+    public static function chunk($index = 1, $count = 25) {
         if( ! is_array(self::$stomach)) return new static;
         $results = array();
         $chunk = array_chunk(self::$stomach, $count, true);
