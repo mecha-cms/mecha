@@ -29,44 +29,6 @@ class Widget {
      */
 
     public static function manager() {
-        $config = Config::get();
-        $speak = Config::speak();
-        if( ! Guardian::happy()) return "";
-        $total = $config->total_comments_backend;
-        $destination = SYSTEM . DS . 'log' . DS . 'comments.total.log';
-        $n = $total > 0 ? '<span class="counter">' . $total . '</span>' : "";
-        if($file = File::exist($destination)) {
-            $old = (int) File::open($file)->read();
-            $n = ($total > $old) ? '<span class="counter">' . ($total - $old) . '</span>' : "";
-        } else {
-            File::write($total)->saveTo($destination, 0600);
-        }
-        $menus = array(
-            '<i class="fa fa-fw fa-cogs"></i> <span class="label">' . $speak->config . '</span>' => '/' . $config->manager->slug . '/config',
-            '<i class="fa fa-fw fa-file-text"></i> <span class="label">' . $speak->article . '</span>' => '/' . $config->manager->slug . '/article',
-            '<i class="fa fa-fw fa-file"></i> <span class="label">' . $speak->page . '</span>' => '/' . $config->manager->slug . '/page',
-            '<i class="fa fa-fw fa-comments"></i> <span class="label">' . $speak->comment . $n . '</span>' => '/' . $config->manager->slug . '/comment',
-            '<i class="fa fa-fw fa-tags"></i> <span class="label">' . $speak->tag . '</span>' => '/' . $config->manager->slug . '/tag',
-            '<i class="fa fa-fw fa-bars"></i> <span class="label">' . $speak->menu . '</span>' => '/' . $config->manager->slug . '/menu',
-            '<i class="fa fa-fw fa-briefcase"></i> <span class="label">' . $speak->asset . '</span>' => '/' . $config->manager->slug . '/asset',
-            '<i class="fa fa-fw fa-th-list"></i> <span class="label">' . $speak->field . '</span>' => '/' . $config->manager->slug . '/field',
-            '<i class="fa fa-fw fa-coffee"></i> <span class="label">' . $speak->shortcode . '</span>' => '/' . $config->manager->slug . '/shortcode',
-            '<i class="fa fa-fw fa-shield"></i> <span class="label">' . $speak->shield . '</span>' => '/' . $config->manager->slug . '/shield',
-            '<i class="fa fa-fw fa-plug"></i> <span class="label">' . $speak->plugin . '</span>' => '/' . $config->manager->slug . '/plugin',
-            '<i class="fa fa-fw fa-clock-o"></i> <span class="label">' . $speak->cache . '</span>' => '/' . $config->manager->slug . '/cache',
-            '<i class="fa fa-fw fa-life-ring"></i> <span class="label">' . $speak->backup . '</span>' => '/' . $config->manager->slug . '/backup'
-        );
-        if(file_exists(SYSTEM . DS . 'log' . DS . 'errors.log')) {
-            $menus['<i class="fa fa-fw fa-exclamation-triangle"></i> <span class="label">' . $speak->error . '</span>'] = $config->manager->slug . '/error';
-        }
-        if($config->page_type == 'article') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/article/repair/id:' . $config->article->id;
-            $menus['<i class="fa fa-fw fa-trash"></i> <span class="label">' . Config::speak('manager._this_article', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/article/kill/id:' . $config->article->id;
-        }
-        if($config->page_type == 'page') {
-            $menus['<i class="fa fa-fw fa-pencil"></i> <span class="label">' . Config::speak('manager._this_page', array($speak->edit)) . '</span>'] = '/' . $config->manager->slug . '/page/repair/id:' . $config->page->id;
-            $menus['<i class="fa fa-fw fa-trash"></i> <span class="label">' . Config::speak('manager._this_page', array($speak->delete)) . '</span>'] = '/' . $config->manager->slug . '/page/kill/id:' . $config->page->id;
-        }
 
         /**
          * ==================================================================================================
@@ -78,8 +40,14 @@ class Widget {
          * -- CODE: -----------------------------------------------------------------------------------------
          *
          *    Config::merge('manager_menu', array(
-         *        '<i class="fa fa-fw fa-icon-name"></i> <span class="label">Menu 1</span>' => '/page-1',
-         *        '<i class="fa fa-fw fa-icon-name"></i> <span class="label">Menu 2</span>' => '/page-2',
+         *        'Menu 1' => array('icon' => '<i class="fa fa-fw fa-name"></i>', 'url' => '/page-1'),
+         *        'Menu 2' => array('icon' => '<i class="fa fa-fw fa-name"></i>', 'url' => '/page-2'),
+         *        ...
+         *    ));
+         *
+         *    Config::merge('manager_menu', array(
+         *        '<i class="fa fa-fw fa-name"></i> <span class="label">Menu 1</span>' => '/page-1',
+         *        '<i class="fa fa-fw fa-name"></i> <span class="label">Menu 2</span>' => '/page-2',
          *        ...
          *    ));
          *
@@ -87,13 +55,36 @@ class Widget {
          *
          */
 
-        if($more_menus = Mecha::A(Config::get('manager_menu'))) {
-            $menus = $menus + array('|' => "") + $more_menus;
+        $menus = array();
+        if( ! Guardian::happy()) return "";
+
+        if($_menus = Mecha::A(Config::get('manager_menu'))) {
+            foreach($_menus as $k => $v) {
+                // < 1.1.3
+                if(is_string($v)) {
+                    $menus[] = array(
+                        'html' => $k,
+                        'link' => $v,
+                        'stack' => 20
+                    );
+                } else {
+                    $stack = isset($v['stack']) ? $v['stack'] : 20;
+                    $menus[] = array(
+                        'html' => '<i class="fa fa-fw fa-' . $v['icon'] . '"></i> <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : ""),
+                        'link' => $v['url'],
+                        'stack' => $stack
+                    );
+                }
+            }
         }
 
         $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$ids['manager-menu'] . '">' . NL;
         self::$ids['manager-menu']++;
-        $html .= Menu::get($menus, 'ul', 'manager:', TAB);
+        $_menus = array();
+        foreach(Mecha::eat($menus)->order('ASC', 'stack')->vomit() as $menu) {
+            $_menus[$menu['html']] = $menu['link'];
+        }
+        $html .= Menu::get($_menus, 'ul', 'manager:', TAB);
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
         return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));
@@ -139,7 +130,7 @@ class Widget {
                     $html .= str_repeat(TAB, 3) . '<ul class="' . ($expand ? 'expanded' : 'collapsed') . '">' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
-                            $html .= str_repeat(TAB, 4) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a><span class="counter">' . count($days) . '</span></li>' . NL;
+                            $html .= str_repeat(TAB, 4) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                         }
                     }
                     $html .= str_repeat(TAB, 3) . '</ul>' . NL;
@@ -165,7 +156,7 @@ class Widget {
                 $html .= TAB . '<ul>' . NL;
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= str_repeat(TAB, 2) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a><span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                    $html .= str_repeat(TAB, 2) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
                     $i++;
                 }
                 $html .= TAB . '</ul>' . NL;
@@ -236,7 +227,7 @@ class Widget {
             self::$ids['tag-list']++;
             $html .= TAB . '<ul>' . NL;
             foreach($tags as $tag) {
-                $html .= str_repeat(TAB, 2) . '<li' . ($config->tag_query == $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a><span class="counter">' . $tag['count'] . '</span></li>' . NL;
+                $html .= str_repeat(TAB, 2) . '<li' . ($config->tag_query == $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
             }
             $html .= TAB . '</ul>' . NL;
             $html .= '</div>' . O_END;
@@ -254,7 +245,7 @@ class Widget {
             for($i = 0, $count = count($tags); $i < $count; ++$i) {
                 $normalized = $tags[$i]['count'] / $highest_count;
                 $size = ceil($normalized * $max_level);
-                $html .= '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tags[$i]['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tags[$i]['slug'] . '" rel="tag">' . $tags[$i]['name'] . '</a><span class="counter">' . $tags[$i]['count'] . '</span></span>';
+                $html .= '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tags[$i]['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tags[$i]['slug'] . '" rel="tag">' . $tags[$i]['name'] . '</a> <span class="counter">' . $tags[$i]['count'] . '</span></span>';
             }
             $html .= NL . '</div>' . O_END;
             $html  = Filter::apply('widget', $html);
@@ -469,7 +460,7 @@ class Widget {
         $arguments = array_slice(func_get_args(), 1);
         $html = call_user_func_array(self::$macros[$name], $arguments);
         $html = Filter::apply('widget', $html);
-        return Filter::apply('widget:custom.' . $name, Filter::apply('widget:custom', $html));
+        return Filter::apply('widget:custom.' . Text::parse($name, '->snake_case'), Filter::apply('widget:custom.' . $name, Filter::apply('widget:custom', $html)));
     }
 
 
@@ -485,7 +476,7 @@ class Widget {
         if( ! isset(self::$macros[$method])) Guardian::abort(Config::speak('notify_not_exist', array('<code>Widget::' . $method . '()</code>')));
         $html = call_user_func_array(self::$macros[$method], $arguments);
         $html = Filter::apply('widget', $html);
-        return Filter::apply('widget:custom.' . $method, Filter::apply('widget:custom', $html));
+        return Filter::apply('widget:custom.' . Text::parse($method, '->snake_case'), Filter::apply('widget:custom.' . $method, Filter::apply('widget:custom', $html)));
     }
 
 }

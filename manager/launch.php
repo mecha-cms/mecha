@@ -50,7 +50,7 @@ Weapon::add('shell_after', function() use($config) {
 }, 10);
 
 Weapon::add('cargo_before', function() use($config, $speak) {
-    echo O_BEGIN . Filter::apply('banner:manager', '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '</strong>! &middot; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>') . O_END;
+    echo O_BEGIN . Filter::apply('author:banner', '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '</strong>! &middot; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>') . O_END;
 }, 10);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
@@ -144,6 +144,77 @@ Weapon::add('comment_footer', function($comment, $article) {
         echo ($comment->state == 'pending' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->pending . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
+
+
+/**
+ * Widget Manager Menus
+ * --------------------
+ */
+
+$total = $config->total_comments_backend;
+$destination = SYSTEM . DS . 'log' . DS . 'comments.total.log';
+if($file = File::exist($destination)) {
+    $old = (int) File::open($file)->read();
+    $total = ($total > $old) ? ($total - $old) : 0;
+} else {
+    File::write($total)->saveTo($destination, 0600);
+}
+
+$menus = array(
+    $speak->config => array('icon' => 'cogs', 'url' => $config->manager->slug . '/config', 'stack' => 10),
+    $speak->article => array('icon' => 'file-text', 'url' => $config->manager->slug . '/article', 'stack' => 10.01),
+    $speak->page => array('icon' => 'file', 'url' => $config->manager->slug . '/page', 'stack' => 10.02),
+    $speak->comment => array(
+        'icon' => 'comments',
+        'url' => $config->manager->slug . '/comment',
+        'count' => $total,
+        'stack' => 10.03
+    ),
+    $speak->tag => array('icon' => 'tags', 'url' => $config->manager->slug . '/tag', 'stack' => 10.04),
+    $speak->menu => array('icon' => 'bars', 'url' => $config->manager->slug . '/menu', 'stack' => 10.05),
+    $speak->asset => array('icon' => 'briefcase', 'url' => $config->manager->slug . '/asset', 'stack' => 10.06),
+    $speak->field => array('icon' => 'th-list', 'url' => $config->manager->slug . '/field', 'stack' => 10.07),
+    $speak->shortcode => array('icon' => 'coffee', 'url' => $config->manager->slug . '/shortcode', 'stack' => 10.08),
+    $speak->shield => array('icon' => 'shield', 'url' => $config->manager->slug . '/shield', 'stack' => 10.09),
+    $speak->plugin => array('icon' => 'plug', 'url' => $config->manager->slug . '/plugin', 'stack' => 10.1),
+    $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 10.2),
+    $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 10.3)
+);
+
+if($errors = File::exist(SYSTEM . DS . 'log' . DS . 'errors.log')) {
+    $total = 0;
+    if(filesize($errors) > MAX_ERROR_FILE_SIZE) {
+        File::open($errors)->delete();
+        $total = '&infin;';
+    }
+    foreach(explode("\n", File::open($errors)->read()) as $message) {
+        if(trim($message) !== "") $total++;
+    }
+    $menus[$speak->error] = array(
+        'icon' => 'exclamation-triangle',
+        'url' => $config->manager->slug . '/error',
+        'count' => $total,
+        'stack' => 10.4
+    );
+}
+
+if($config->page_type == 'article' || $config->page_type == 'page') {
+    $type = $config->page_type;
+    $id = $type == 'article' ? $config->article->id : $config->page->id;
+    $menus[Config::speak('manager._this_' . $type, array($speak->edit))] = array(
+        'icon' => 'pencil',
+        'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
+        'stack' => 10.5
+    );
+    $menus[Config::speak('manager._this_' . $type, array($speak->delete))] = array(
+        'icon' => 'trash',
+        'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
+        'stack' => 10.6
+    );
+}
+
+$menus = $menus + array('|' => "");
+Config::merge('manager_menu', $menus);
 
 
 /**
