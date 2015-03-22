@@ -326,15 +326,15 @@ class File {
     }
 
     // Convert file size
-    public static function size($file, $unit = 'Bytes') {
-        $fs = is_numeric($file) ? $file : filesize($file);
-        switch(strtolower($unit)) {
-            case 'bytes': $size = $fs; break; // Bytes
-            case 'kb': $size = $fs * .0009765625; break; // Bytes to KB
-            case 'mb': $size = ($fs * .0009765625) * .0009765625; break; // Bytes to MB
-            case 'gb': $size = (($fs * .0009765625) * .0009765625) * .0009765625; break; // Bytes to GB
+    public static function size($file, $unit = null, $precision = 2) {
+        $size = is_numeric($file) ? $file : filesize($file);
+        $base = log($size, 1024);
+        $suffix = array('Bytes', 'KB', 'MB', 'GB', 'TB');
+        if ( ! $u = array_search((string) $unit, $suffix)) {
+            $u = ($size > 0) ? floor($base) : 0;
         }
-        return $size < 0 ? Config::speak('unknown') : trim(round($size, 2) . ' ' . $unit);
+        $output = round($size / pow(1024, $u), $precision);
+        return $output < 0 ? Config::speak('unknown') : trim($output . ' ' . $suffix[$u]);
     }
 
     // Convert URL to file path

@@ -19,12 +19,11 @@
       <td><?php echo $key; ?></td>
       <?php
 
-      $s = 'Summary';
-      switch($value->type[0]) {
-          case 't': $s = 'Text'; break;
-          case 'b': $s = 'Boolean'; break;
-          case 'o': $s = 'Option'; break;
-      }
+      $s = Mecha::alter($value->type[0], array(
+          't' => 'Text',
+          'b' => 'Boolean',
+          'o' => 'Option'
+      ), 'Summary');
 
       ?>
       <td><em class="text-info"><?php echo $s; ?></em></td>

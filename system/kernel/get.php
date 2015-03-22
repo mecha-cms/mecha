@@ -49,7 +49,7 @@ class Get {
             'last_update' => file_exists($input) ? filemtime($input) : null,
             'update' => file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null,
             'size_raw' => file_exists($input) ? filesize($input) : null,
-            'size' => File::size($input, 'KB')
+            'size' => File::size($input)
         );
     }
 

@@ -261,7 +261,7 @@ class Widget {
             $html .= TAB . '</select>' . NL;
             $html .= '</div>' . O_END;
             $html  = Filter::apply('widget', $html);
-            return Filter::apply('widget:tag.list', Filter::apply('widget:tag', $html));
+            return Filter::apply('widget:tag.dropdown', Filter::apply('widget:tag', $html));
         }
     }
 

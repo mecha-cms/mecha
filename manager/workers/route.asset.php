@@ -155,7 +155,7 @@ Route::accept($config->manager->slug . '/asset/kill', function($path = "") use($
         }
         $files = array();
         foreach($request['selected'] as $file) {
-            $files[] = Text::parse($file, '->encoded_url');
+            $files[] = str_replace('%2F', '/', Text::parse($file, '->encoded_url'));
         }
         Guardian::kick($config->manager->slug . '/asset/kill/files:' . implode(';', $files));
     }

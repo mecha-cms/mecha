@@ -65,7 +65,7 @@ class Weapon {
 
     public static function fire($name, $arguments = array()) {
         if(isset(self::$armaments[$name])) {
-            if(count(func_get_args()) > 2) {
+            if(func_num_args() > 2) {
                 $arguments = array_slice(func_get_args(), 1);
             }
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();

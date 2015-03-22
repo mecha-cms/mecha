@@ -186,20 +186,20 @@ class Converter {
     public static function strEval($input) {
         $results = false;
         if(is_string($input) && preg_match('#^(true|false|yes|no|on|off|null|ok|okay|TRUE|FALSE|NULL)$#', $input, $matches)) {
-            switch($matches[1]) {
-                case 'true': $results = true; break;
-                case 'false': $results = false; break;
-                case 'yes': $results = true; break;
-                case 'no': $results = false; break;
-                case 'on': $results = true; break;
-                case 'off': $results = false; break;
-                case 'null': $results = null; break;
-                case 'ok': $results = true; break;
-                case 'okay': $results = true; break;
-                case 'TRUE': $results = TRUE; break;
-                case 'FALSE': $results = FALSE; break;
-                case 'NULL': $results = NULL; break;
-            }
+            $results = Mecha::alter($matches[1], array(
+                'true' => true,
+                'false' => false,
+                'yes' => true,
+                'no' => false,
+                'on' => true,
+                'off' => false,
+                'null' => null,
+                'ok' => true,
+                'okay' => true,
+                'TRUE' => TRUE,
+                'FALSE' => FALSE,
+                'NULL' => NULL
+            ));
         } elseif(is_string($input) && ! is_null(json_decode($input, true))) {
             $results = self::strEval(json_decode($input, true));
         } elseif(is_numeric($input)) {

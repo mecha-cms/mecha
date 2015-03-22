@@ -31,7 +31,8 @@
 
 (function($, base) {
 
-    var $tbody = $('.table-sortable tbody');
+    var $tbody = $('.table-sortable tbody'),
+        selected = null;
 
     if (!$tbody) return;
 
@@ -63,16 +64,14 @@
         $(this).siblings().removeClass('active');
     });
 
-    var dragSrcElement = null;
-
     $tbody.find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
         }
     }).parent().attr('draggable', true).on("dragstart", function(e) {
-        dragSrcElement = this;
+        selected = this;
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.innerHTML);
+        e.dataTransfer.setData('text', this.innerHTML);
         $(this).addClass('origin');
     }).on("dragover", function(e) {
         e.preventDefault();
@@ -81,12 +80,12 @@
         $(this).removeClass('target');
     }).on("drop", function(e) {
         e.preventDefault();
-        if (dragSrcElement !== this) {
-            dragSrcElement.innerHTML = this.innerHTML;
-            this.innerHTML = e.dataTransfer.getData('text/html');
+        if (selected !== this) {
+            var center = $(this).offset().top + ($(this).height() / 2);
+            $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
     }).on("dragend", function() {
-        $(this).removeClass('active origin target').siblings().removeClass('active origin target');
+        $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
     }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
         $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
     });
@@ -113,7 +112,8 @@
 (function($, base) {
 
     var $sortable = $('.sortable'),
-        $base = $sortable.parent();
+        $base = $sortable.parent(),
+        selected = null;
 
     if (!$sortable) return;
 
@@ -145,16 +145,14 @@
         $(this).siblings().removeClass('active');
     });
 
-    var dragSrcElement = null;
-
     $sortable.find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
         }
     }).parent().attr('draggable', true).on("dragstart", function(e) {
-        dragSrcElement = this;
+        selected = this;
         e.dataTransfer.effectAllowed = 'move';
-        e.dataTransfer.setData('text/html', this.innerHTML);
+        e.dataTransfer.setData('text', this.innerHTML);
         $(this).addClass('origin');
     }).on("dragover", function(e) {
         e.preventDefault();
@@ -163,12 +161,12 @@
         $(this).removeClass('target');
     }).on("drop", function(e) {
         e.preventDefault();
-        if (dragSrcElement !== this) {
-            dragSrcElement.innerHTML = this.innerHTML;
-            this.innerHTML = e.dataTransfer.getData('text/html');
+        if (selected !== this) {
+            var center = $(this).offset().top + ($(this).height() / 2);
+            $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
     }).on("dragend", function() {
-        $(this).removeClass('active origin target').siblings().removeClass('active origin target');
+        $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
     }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
         $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
     });

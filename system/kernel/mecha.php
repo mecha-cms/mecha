@@ -235,4 +235,10 @@ class Mecha {
         return new static;
     }
 
+    // Shortcut for string-based `switch` and `case`
+    public static function alter($case, $cases, $default = null) {
+        if(is_null($default)) $default = $case;
+        return isset($cases[$case]) ? $cases[$case] : $default;
+    }
+
 }

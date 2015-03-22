@@ -443,7 +443,7 @@ class Package {
                 'last_update' => filemtime(self::$opened),
                 'update' => date('Y-m-d H:i:s', filemtime(self::$opened)),
                 'size_raw' => filesize(self::$opened),
-                'size' => File::size(self::$opened, 'KB'),
+                'size' => File::size(self::$opened),
                 'status' => $zip->status,
                 'total' => $zip->numFiles
             );

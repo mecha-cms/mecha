@@ -16,12 +16,11 @@
         <td><?php echo $the_key; ?></td>
         <?php
 
-        $s = 'Summary';
-        switch($file->type[0]) {
-            case 't': $s = 'Text'; break;
-            case 'b': $s = 'Boolean'; break;
-            case 'o': $s = 'Option'; break;
-        }
+        $s = Mecha::alter($file->type[0], array(
+            't' => 'Text',
+            'b' => 'Boolean',
+            'o' => 'Option'
+        ), 'Summary');
 
         ?>
         <td><em class="text-info"><?php echo $s; ?></em></td>

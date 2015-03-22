@@ -30,12 +30,6 @@ class Filter {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        // Kill duplicates
-        if(isset(self::$filters[$name]) && is_array(self::$filters[$name])) {
-            foreach(self::$filters[$name] as $filter) {
-                if($filter['fn'] == $fn && $filter['stack'] === $stack) return true;
-            }
-        }
         self::$filters[$name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
