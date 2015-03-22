@@ -110,7 +110,7 @@ class Menu {
 
     public static function configure($key, $value = null) {
         if(is_array($key)) {
-            self::$config = array_replace_recursive(self::$config, $key);
+            Mecha::extend(self::$config, $key);
         } else {
             if(is_array($value)) {
                 foreach($value as $k => $v) {

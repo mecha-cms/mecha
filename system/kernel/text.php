@@ -30,65 +30,6 @@ class Text {
     private static $parsers = array();
 
     /**
-     * Convert Nested String into Associative Arrays
-     * ---------------------------------------------
-     */
-
-    private static function text_to_array($text, $s, $indent) {
-        $results = array();
-        $data = array();
-        $indent_length = strlen($indent);
-        // Remove all comments and empty line breaks
-        $text = preg_replace(
-            array(
-                '#\r#',
-                '#(^|\n)( *\#[^\n]*)#',
-                '#\n+#'
-            ),
-            array(
-                "",
-                '$1',
-                "\n"
-            ),
-        $text);
-        foreach(explode("\n", trim($text)) as $line) {
-            // Get depth and labels
-            $depth = 0;
-            $is_assoc = strpos($line, $s) > 0;
-            while(substr($line, 0, $indent_length) === $indent) {
-                $depth += 1;
-                $line = rtrim(substr($line, $indent_length));
-            }
-            // Truncate paths if needed
-            while($depth < count($data)) {
-                array_pop($data);
-            }
-            // Keep lines (at depth)
-            if($is_assoc) {
-                $parts = explode($s, $line, 2);
-                $data[$depth] = rtrim($parts[0]);
-            } else {
-                $data[$depth] = $line;
-            }
-            // Traverse paths and add labels to result
-            $parent =& $results;
-            foreach($data as $depth => $key) {
-                if( ! isset($parent[$key])) {
-                    if($is_assoc) {
-                        $values = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
-                        $parent[rtrim($parts[0])] = Converter::strEval($values);
-                    } else {
-                        $parent[$key] = array();
-                    }
-                    break;
-                }
-                $parent =& $parent[$key];
-            }
-        }
-        return $results;
-    }
-
-    /**
      * Parser Creator
      * --------------
      */
@@ -126,18 +67,6 @@ class Text {
             $results[$name] = call_user_func_array($callback, $arguments);
         }
         return (object) $results;
-    }
-
-    public static function toArray($text, $s = ':', $indent = '    ') {
-        if(is_array($text)) return $text;
-        if(is_object($text)) return Mecha::A($text);
-        return self::text_to_array($text, $s, $indent);
-    }
-
-    public static function toObject($text, $s = ':', $indent = '    ') {
-        if(is_object($text)) return $text;
-        if(is_array($text)) return Mecha::O($text);
-        return Mecha::O(self::text_to_array($text, $s, $indent));
     }
 
     /**
@@ -228,6 +157,71 @@ class Text {
             $the_content = $parse && $content ? Text::parse($results[$c . '_raw'], '->html') : $results[$c . '_raw'];
             $results[$c] = Filter::apply($c, $the_content);
             if($FP) $results[$c] = Filter::apply($filter_prefix . $c, $results[$c]);
+        }
+        return $results;
+    }
+
+    /**
+     * Convert Nested String into Associative Arrays
+     * ---------------------------------------------
+     */
+
+    public static function toArray($text, $s = ':', $indent = '    ') {
+        if(is_array($text)) {
+            return $text;
+        }
+        if(is_object($text)) {
+            return Mecha::A($text);
+        }
+        $results = array();
+        $data = array();
+        $indent_length = strlen($indent);
+        // Remove all comments and empty line breaks
+        $text = preg_replace(
+            array(
+                '#\r#',
+                '#(^|\n)( *\#[^\n]*)#',
+                '#\n+#'
+            ),
+            array(
+                "",
+                '$1',
+                "\n"
+            ),
+        $text);
+        foreach(explode("\n", trim($text)) as $line) {
+            // Get depth and labels
+            $depth = 0;
+            $is_assoc = strpos($line, $s) > 0;
+            while(substr($line, 0, $indent_length) === $indent) {
+                $depth += 1;
+                $line = rtrim(substr($line, $indent_length));
+            }
+            // Truncate paths if needed
+            while($depth < count($data)) {
+                array_pop($data);
+            }
+            // Keep lines (at depth)
+            if($is_assoc) {
+                $parts = explode($s, $line, 2);
+                $data[$depth] = rtrim($parts[0]);
+            } else {
+                $data[$depth] = $line;
+            }
+            // Traverse paths and add labels to result
+            $parent =& $results;
+            foreach($data as $depth => $key) {
+                if( ! isset($parent[$key])) {
+                    if($is_assoc) {
+                        $values = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
+                        $parent[rtrim($parts[0])] = Converter::strEval($values);
+                    } else {
+                        $parent[$key] = array();
+                    }
+                    break;
+                }
+                $parent =& $parent[$key];
+            }
         }
         return $results;
     }

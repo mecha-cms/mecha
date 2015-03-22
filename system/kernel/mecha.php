@@ -18,21 +18,26 @@ class Mecha {
     private static $stomach = array();
     private static $index = 0;
 
-    // Prevent `$e` exceeds the value of the `$min` and `$max`
+    // Prevent `$e` exceeds the value of `$min` and `$max`
     public static function edge($e, $min = 0, $max = 9999) {
         if($e < $min) $e = $min;
         if($e > $max) $e = $max;
         return $e;
     }
 
+    // Handle missing array variables
+    public static function extend(&$default, $alternate) {
+        $default = array_replace_recursive($default, $alternate);
+    }
+
     // Convert array to object
-    public static function O($array) {
-        return is_array($array) ? (object) array_map('self::O', $array) : $array;
+    public static function O($a) {
+        return is_array($a) ? (object) array_map('self::O', $a) : $a;
     }
 
     // Convert object to array
-    public static function A($object) {
-        return is_object($object) ? array_map('self::A', (array) $object) : $object;
+    public static function A($o) {
+        return is_object($o) ? array_map('self::A', (array) $o) : $o;
     }
 
     // Set array value recursively

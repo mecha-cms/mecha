@@ -265,7 +265,7 @@ class Get {
         $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
         $tags = file_exists($d) ? include $d : array();
         if($file = self::state_tag()) {
-            $tags = array_replace_recursive($tags, $file);
+            Mecha::extend($tags, $file);
         }
         foreach($tags as $k => $v) {
             $tags[$k] = array(

@@ -42,7 +42,7 @@ class Config {
                 Mecha::SVR($cargo, $k, $v);
             }
         }
-        self::$bucket = array_replace_recursive(self::$bucket, $cargo);
+        Mecha::extend(self::$bucket, $cargo);
     }
 
     /**
@@ -181,7 +181,7 @@ class Config {
         $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
         $config = file_exists($d) ? include $d : array();
         if($file = Get::state_config()) {
-            $config = array_replace_recursive($config, $file);
+            Mecha::extend($config, $file);
         }
 
         // Define some default variables
@@ -206,28 +206,32 @@ class Config {
         $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft}', GLOB_BRACE));
         $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
 
-        $p = '404';
-        if($config['url_current'] === $config['url']) $p = 'home';
-        if(strpos($config['url_current'], $config['url'] . '/') === 0) $p = 'page';
-        if($config['url_current'] === $config['url'] . '/' . $config['index']['slug']) $p = 'index';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['index']['slug'] . '/') === 0) $p = 'article';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['tag']['slug'] . '/') === 0) $p = 'tag';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['archive']['slug'] . '/') === 0) $p = 'archive';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $p = 'search';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $p = 'manager';
+        $page = '404';
+        if($config['url_current'] === $config['url']) $page = 'home';
+        if(strpos($config['url_current'], $config['url'] . '/') === 0) $page = 'page';
+        if($config['url_current'] === $config['url'] . '/' . $config['index']['slug']) $page = 'index';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['index']['slug'] . '/') === 0) $page = 'article';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['tag']['slug'] . '/') === 0) $page = 'tag';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['archive']['slug'] . '/') === 0) $page = 'archive';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $page = 'search';
+        if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
 
-        $lang = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
-        $lang_alt = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
+        $lang = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
+        $lang_a = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
 
-        if( ! file_exists($lang) && ! file_exists($lang_alt)) {
+        if( ! file_exists($lang) && ! file_exists($lang_a)) {
             Guardian::abort('Language file not found.');
         }
 
         $lang = file_exists($lang) ? Text::toArray(File::open($lang)->read(), ':', '  ') : array();
-        $lang_alt = file_exists($lang_alt) ? Text::toArray(File::open($lang_alt)->read(), ':', '  ') : array();
 
-        $config['page_type'] = $p;
-        $config['speak'] = array_replace_recursive($lang_alt, $lang);
+        if($config['language'] !== 'en_US') {
+            $lang_a = file_exists($lang_a) ? Text::toArray(File::open($lang_a)->read(), ':', '  ') : array();
+            Mecha::extend($lang, $lang_a);
+        }
+
+        $config['page_type'] = $page;
+        $config['speak'] = $lang;
 
         self::$bucket = $config;
 

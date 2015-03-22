@@ -231,7 +231,7 @@ class Guardian {
      */
 
     public static function kick($path = "") {
-        $path = trim($path, '/');
+        $path = trim(File::url($path), '/');
         if(strpos($path, '://') === false) {
             $path = Config::get('url') . '/' . $path;
         }
@@ -401,7 +401,7 @@ class Guardian {
     public static function happy() {
         $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log';
         $auth = Session::get('cookie:' . self::$login);
-        return isset($auth['token']) && File::exist($file) && $auth['token'] === File::open($file)->read() ? true : false;
+        return isset($auth['token']) && file_exists($file) && $auth['token'] === file_get_contents($file) ? true : false;
     }
 
     /**

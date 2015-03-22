@@ -139,7 +139,7 @@ class Navigator {
 
     public static function configure($key, $value = null) {
         if(is_array($key)) {
-            self::$navigator = array_replace_recursive(self::$navigator, $key);
+            Mecha::extend(self::$navigator, $key);
         } else {
             if(is_array($value)) {
                 foreach($value as $k => $v) {

@@ -248,7 +248,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
     $new_config = file_exists($d) ? include $d : array();
     if($file = Get::state_config()) {
-        $new_config = array_replace_recursive($new_config, $file);
+        Mecha::extend($new_config, $file);
     }
     $new_config['shield'] = $path == 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
