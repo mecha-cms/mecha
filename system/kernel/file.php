@@ -329,7 +329,7 @@ class File {
     public static function size($file, $unit = null, $precision = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
         $base = log($size, 1024);
-        $suffix = array('Bytes', 'KB', 'MB', 'GB', 'TB');
+        $suffix = array('B', 'KB', 'MB', 'GB', 'TB');
         if ( ! $u = array_search((string) $unit, $suffix)) {
             $u = ($size > 0) ? floor($base) : 0;
         }
