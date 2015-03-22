@@ -8,10 +8,23 @@
   display:block;
   position:absolute;
   top:0;
-  left:0;
+  right:0;
   margin:0;
   padding:100%;
   width:200%;
   height:200%;
   opacity:0;
+}
+
+
+/* Dora the Explorer */
+
+.form-upload .input-outer input::-ms-value {display:none}
+
+.form-upload .input-outer input::-ms-browse {
+  display:block;
+  margin:0;
+  padding:0;
+  font-size:1000%;
+  cursor:inherit;
 }
