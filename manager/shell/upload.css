@@ -13,6 +13,7 @@
   padding:100%;
   width:200%;
   height:200%;
+  font-size:2000%;
   opacity:0;
 }
 
@@ -25,6 +26,5 @@
   display:block;
   margin:0;
   padding:0;
-  font-size:1000%;
   cursor:inherit;
 }

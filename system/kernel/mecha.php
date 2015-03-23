@@ -28,6 +28,7 @@ class Mecha {
     // Handle missing array variables
     public static function extend(&$default, $alternate) {
         $default = array_replace_recursive($default, $alternate);
+        return $default;
     }
 
     // Convert array to object
@@ -94,13 +95,7 @@ class Mecha {
 
     // Sort array based on its value's key
     public static function order($order = 'ASC', $key = null) {
-        if(is_null($key)) {
-            if($order == 'ASC') {
-                asort(self::$stomach);
-            } else {
-                arsort(self::$stomach);
-            }
-        } else {
+        if( ! is_null($key)) {
             $before = array();
             $after = array();
             if(self::$stomach && ! empty(self::$stomach)) {
@@ -117,6 +112,12 @@ class Mecha {
                 }
             }
             self::$stomach = $after;
+        } else {
+            if($order == 'ASC') {
+                asort(self::$stomach);
+            } else {
+                arsort(self::$stomach);
+            }
         }
         return new static;
     }
@@ -192,19 +193,19 @@ class Mecha {
     }
 
     // Get first array value
-    public static function first($show_value = true) {
-        return $show_value ? self::$stomach[0] : 0;
+    public static function first($value = true) {
+        return $value ? self::$stomach[0] : 0;
     }
 
     // Get last array value
-    public static function last($show_value = true) {
+    public static function last($value = true) {
         $end = self::count() - 1;
-        return $show_value ? self::$stomach[$end] : $end;
+        return $value ? self::$stomach[$end] : $end;
     }
 
     // Get current array value
-    public static function current($show_value = true) {
-        if($show_value) {
+    public static function current($value = true) {
+        if($value) {
             $i = 0;
             foreach(self::$stomach as $k => $v) {
                 if($i === self::$index) {

@@ -262,8 +262,11 @@ class Converter {
      *
      */
 
-    public static function attr($input, $element = array('<', '>', ' ', '/'), $attr = array('"', '"', '='), $str_eval = true) {
-        if( ! isset($element[3])) $element[3] = '/';
+    public static function attr($input, $element = array(), $attr = array(), $str_eval = true) {
+        $element_d = array('<', '>', ' ', '/');
+        $attr_d = array('"', '"', '=');
+        $element = Mecha::extend($element_d, $element);
+        $attr = Mecha::extend($attr_d, $attr);
         $e0 = preg_quote($element[0], '#');
         $e1 = preg_quote($element[1], '#');
         $e2 = preg_quote($element[2], '#');

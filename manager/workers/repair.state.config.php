@@ -9,7 +9,7 @@ return array(
     'language_direction' => 'ltr',
     'shield' => 'normal',
     'per_page' => 7,
-    'email_notification' => true,
+    'email_notification' => true, // currently unused
     'comments' => true,
     'comment_moderation' => false,
     'comment_notification_email' => true,
