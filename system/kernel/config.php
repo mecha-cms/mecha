@@ -143,10 +143,10 @@ class Config {
         $words = self::$bucket['speak'];
         if(strpos($key, 'file:') === 0) {
             if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
-                $wizard = Text::toPage(File::open($file)->read(), true, 'wizard:');
+                $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
                 return $wizard['content'];
             } elseif($file = File::exist(ROOT . DS . File::path(str_replace('file:', "", $key)) . '.txt')) {
-                $wizard = Text::toPage(File::open($file)->read(), true, 'wizard:');
+                $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
                 return $wizard['content'];
             } else {
                 return "";
@@ -190,7 +190,6 @@ class Config {
         $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
         $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
         $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
-        $config['url_query'] = ! empty($_SERVER['QUERY_STRING']) ? '?' . $_SERVER['QUERY_STRING'] : "";
         $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
 
         $config['page_title'] = $config['title'];
@@ -216,15 +215,21 @@ class Config {
         if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $page = 'search';
         if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
 
+        // Create a proper query string data
+        if($page != 'home') array_shift($_GET);
+        $queries = array();
+        foreach($_GET as $k => $v) {
+            $queries[] = $k . '=' . $v;
+        }
+        $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
+
+        // Loading the language files
         $lang = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
         $lang_a = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
-
         if( ! file_exists($lang) && ! file_exists($lang_a)) {
             Guardian::abort('Language file not found.');
         }
-
         $lang = file_exists($lang) ? Text::toArray(File::open($lang)->read(), ':', '  ') : array();
-
         if($config['language'] !== 'en_US') {
             $lang_a = file_exists($lang_a) ? Text::toArray(File::open($lang_a)->read(), ':', '  ') : array();
             Mecha::extend($lang, $lang_a);

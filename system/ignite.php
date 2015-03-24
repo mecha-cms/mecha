@@ -68,24 +68,6 @@ $speak = Config::speak();
 
 
 /**
- * Create Proper Query String Data
- * -------------------------------
- */
-
-if($config->page_type != 'home') {
-    array_shift($_GET);
-}
-
-$queries = array();
-foreach($_GET as $k => $v) {
-    $queries[] = $k . '=' . $v;
-}
-
-$config->url_query = ! empty($queries) ? '?' . implode('&', $queries) : "";
-Config::set('url_query', $config->url_query);
-
-
-/**
  * First Installation
  * ------------------
  */

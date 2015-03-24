@@ -89,7 +89,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
                 $file = $files[$i] . DS . 'about.txt';
             }
-            $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse(basename($files[$i]), '->text')))), true, 'plugin:');
+            $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse(basename($files[$i]), '->text')))), 'content', 'plugin:');
             $plugins[$i]['about'] = $about;
             $plugins[$i]['slug'] = basename($files[$i]);
         }
@@ -123,7 +123,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), true, 'plugin:');
+    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), 'content', 'plugin:');
     if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
         $about['author'] = $matches[1];
         $about['url'] = $matches[2] . $matches[3];
@@ -175,7 +175,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), true, 'plugin:');
+    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), 'content', 'plugin:');
     $about['slug'] = $slug;
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,

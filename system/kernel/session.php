@@ -46,7 +46,7 @@ class Session {
     public static function set($session, $value = "", $expire = 1, $path = '/', $domain = "", $secure = false, $http_only = false) {
         if(strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
-            $expire = time() + 60 * 60 * 24 * ((int) $expire);
+            $expire = time() + 60 * 60 * 24 * $expire;
             if(strpos($name, '.') !== false) {
                 $parts = explode('.', $name);
                 $name = array_shift($parts);
@@ -56,6 +56,7 @@ class Session {
                 $value = $old;
             }
             setcookie($name, json_encode($value, true), $expire, $path, $domain, $secure, $http_only);
+            setcookie($name . '_C', json_encode(array($expire, $path, $domain, $secure, $http_only), true), $expire, '/', "", false, false);
         } else {
             Mecha::SVR($_SESSION, $session, $value);
         }
@@ -63,7 +64,9 @@ class Session {
 
     public static function get($session = null, $fallback = "") {
         if(is_null($session)) return $_SESSION;
-        if($session == 'cookies') return $_COOKIE;
+        if($session == 'cookies') {
+			return Converter::strEval($_COOKIE);
+		}
         if(strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
             $cookie = isset($_COOKIE) ? Converter::strEval($_COOKIE) : $fallback;
@@ -88,14 +91,17 @@ class Session {
                 }
             }
         } elseif(strpos($session, 'cookie:') === 0) {
+            $name = substr($session, 7);
             if(strpos($session, '.') !== false) {
-                $old = Converter::strEval($_COOKIE);
-                Mecha::UVR($old, substr($session, 7));
+				$name_a = explode('.', $name);
+                $old = Converter::strEval($_COOKIE[$name_a[0]]);
+                Mecha::UVR($old, $name);
                 foreach($old as $key => $value) {
-                    $_COOKIE[$key] = is_array($value) ? json_encode($value, true) : $value;
+                    $_COOKIE[$name_a[0]][$key] = is_array($value) ? json_encode($value, true) : $value;
                 }
+                $c = Converter::strEval($_COOKIE[$name_a[0] . '_C']);
+				setcookie($name_a[0], json_encode($old, true), $c[0], $c[1], $c[2], $c[3], $c[4]);
             } else {
-                $name = substr($session, 7);
                 unset($_COOKIE[$name]);
                 self::set($session, null, -1);
             }

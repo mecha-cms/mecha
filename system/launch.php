@@ -436,22 +436,29 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $url = Text::ES(Request::post('url', '#'));
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
             $message = Text::ES($request['message']);
+            $field = Request::post('fields', array());
+            if( ! empty($field)) {
+                foreach($field as $k => $v) {
+                    if(isset($v['value']) && is_string($v['value'])) {
+                        $field[$k]['value'] = Text::ES($v['value']);
+                    }
+                }
+            }
 
             // Temporarily disallow images in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser == 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
             $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', $message);
             $message = str_replace('<img ', '&lt;img ', $message);
 
-            $data  = 'Name: ' . $name . "\n";
-            $data .= 'Email: ' . $email . "\n";
-            $data .= 'URL: ' . $url . "\n";
-            $data .= 'Status: ' . (Guardian::happy() ? 'pilot' : 'passenger') . "\n";
-            $data .= 'Content Type: ' . $parser . "\n";
-            $data .= 'UA: ' . Get::UA() . "\n";
-            $data .= 'IP: ' . Get::IP() . "\n";
-            $data .= "\n" . SEPARATOR . "\n\n" . $message;
-
-            File::write($data)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension, 0600);
+            Page::header(array(
+                'Name' => $name,
+                'Email' => $email,
+                'URL' => $url,
+                'Status' => Guardian::happy() ? 'pilot' : 'passenger',
+                'Content Type' => $parser,
+                'UA' => Get::UA(),
+                'IP' => Get::IP()
+            ))->content($message)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension);
 
             Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
 

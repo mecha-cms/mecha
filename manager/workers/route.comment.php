@@ -82,16 +82,26 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $email = Text::parse($request['email'], '->ascii');
             $url = Text::ES(Request::post('url', '#'));
             $message = Text::ES($request['message']);
+            $field = Request::post('fields', array());
+            if( ! empty($field)) {
+                foreach($field as $k => $v) {
+                    if(isset($v['value']) && is_string($v['value'])) {
+                        $field[$k]['value'] = Text::ES($v['value']);
+                    }
+                }
+            }
             // Update data
-            $data  = 'Name: ' . $name . "\n";
-            $data .= 'Email: ' . $email . "\n";
-            $data .= 'URL: ' . $url . "\n";
-            $data .= 'Status: ' . $request['status'] . "\n";
-            $data .= 'Content Type: ' . Request::post('content_type', 'HTML') . "\n";
-            $data .= 'UA: ' . $request['ua'] . "\n";
-            $data .= 'IP: ' . $request['ip'] . "\n";
-            $data .= "\n" . SEPARATOR . "\n\n" . $message;
-            File::open($comment->path)->write($data)->save(0600)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
+            Page::open($comment->path)->header(array(
+                'Name' => $name,
+                'Email' => $email,
+                'URL' => $url,
+                'Status' => $request['status'],
+                'Content Type' => Request::post('content_type', 'HTML'),
+                'UA' => $request['ua'],
+                'IP' => $request['ip'],
+                'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
+            ))->content($message)->save();
+            File::open($comment->path)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
             Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
             Weapon::fire('on_comment_update', array($G, $P));
             Weapon::fire('on_comment_repair', array($G, $P));

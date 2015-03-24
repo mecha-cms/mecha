@@ -4,18 +4,6 @@ class Get {
 
     public static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
 
-    private static function pathTrace($detector, $folder = PAGE) {
-        $results = false;
-        foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
-            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
-            if($slug == $detector || (is_numeric($detector) && (string) date('Y-m-d-H-i-s', $detector) === (string) $time)) {
-                $results = $path;
-                break;
-            }
-        }
-        return $results;
-    }
-
     // Apply the missing filters
     private static function AMF($data, $filter_prefix = "", $field) {
         $output = Filter::apply($field, $data);
@@ -618,6 +606,7 @@ class Get {
         $kind = explode(',', $kind);
         return array(
             'path' => self::AMF($input, $filter_prefix, 'path'),
+            'id' => self::AMF((int) Date::format($time, 'U'), $filter_prefix, 'id'),
             'time' => self::AMF(Date::format($time), $filter_prefix, 'time'),
             'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $filter_prefix, 'last_update'),
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $filter_prefix, 'update'),
@@ -715,7 +704,7 @@ class Get {
                 $results = self::pageExtract($reference);
             } else {
                 // By slug => `page-slug` or by ID => 12345
-                $results = self::pageExtract(self::pathTrace($reference, $folder));
+                $results = self::pageExtract(self::pagePath($reference, $folder));
             }
         }
 
@@ -727,7 +716,7 @@ class Get {
          * fields. For better performance.
          */
 
-        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : true), $filter_prefix);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $filter_prefix);
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
@@ -741,7 +730,6 @@ class Get {
         $results['excerpt'] = "";
         $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
-        $results['id'] = self::AMF(Date::format($results['time'], 'U'), $filter_prefix, 'id');
 
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
 
@@ -750,7 +738,7 @@ class Get {
             $results['description'] = self::AMF($summary, $filter_prefix, 'description');
         }
 
-        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, true, $filter_prefix) : $results;
+        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, 'content', $filter_prefix) : $results;
         $content_test = $content_test['content'];
 
         if(strpos($content_test, '<!-- cut+ ') !== false) {
@@ -900,7 +888,7 @@ class Get {
      */
 
     public static function comment($reference, $response_to = ARTICLE, $connector = null) {
-        $fp = 'comment:';
+        $filter_prefix = 'comment:';
         $config = Config::get();
         $results = array();
         $path = false;
@@ -921,15 +909,15 @@ class Get {
             }
         }
         if( ! $path || ! file_exists($path)) return false;
-        $results['date'] = self::AMF(Date::extract($results['time']), $fp, 'date');
-        $results = $results + Text::toPage(File::open($path)->read(), true, 'comment:', 'message');
+        $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
+        $results = $results + Text::toPage(File::open($path)->read(), 'message', 'comment:');
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
             if((int) Date::format($time, 'U') == $results['post']) {
-                $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $fp, 'permalink');
+                $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $filter_prefix, 'permalink');
                 break;
             }
         }
@@ -962,12 +950,11 @@ class Get {
     public static function pageHeader($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::pathTrace($path, $folder); // By page slug, ID or time
+            $path = self::pagePath($path, $folder); // By page slug, ID or time
         }
         if( ! $path) return false;
         $results = self::pageExtract($path) + Text::toPage($path, false, $filter_prefix);
         $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
-        $results['id'] = self::AMF((int) Date::format($results['time'], 'U'), $filter_prefix, 'id');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $filter_prefix, 'description');
@@ -1029,13 +1016,12 @@ class Get {
     public static function pageAnchor($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::pathTrace($path, $folder); // By page slug, ID or time
+            $path = self::pagePath($path, $folder); // By page slug, ID or time
         }
         if($path && $handle = fopen($path, 'r')) {
             $results = self::pageExtract($path);
             $parts = explode(':', fgets($handle, 4096), 2);
             fclose($handle);
-            $results['id'] = self::AMF((int) Date::format($results['time'], 'U'), $filter_prefix, 'id');
             $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
             $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $filter_prefix, 'title');
             return Mecha::O($results);
@@ -1058,6 +1044,60 @@ class Get {
 
     public static function articleAnchor($path) {
         return self::pageAnchor($path, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
+    }
+
+    /**
+     * ==========================================================================
+     *  GET PAGE PATH
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::pagePath('lorem-ipsum'));
+     *
+     * --------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------------
+     *  $detector | mixed  | Slug, ID or time of the page
+     *  --------- | ------ | ----------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
+    public static function pagePath($detector, $folder = PAGE) {
+        $results = false;
+        foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
+            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
+            if($slug == $detector || (is_numeric($detector) && (string) date('Y-m-d-H-i-s', $detector) === (string) $time)) {
+                $results = $path;
+                break;
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * ==========================================================================
+     *  GET ARTICLE PATH
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::articlePath('lorem-ipsum'));
+     *
+     * --------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------------
+     *  $detector | mixed  | Slug, ID or time of the article
+     *  --------- | ------ | ----------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     */
+
+    public static function articlePath($detector) {
+        return self::pagePath($detector, ARTICLE);
     }
 
     /**

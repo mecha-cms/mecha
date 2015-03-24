@@ -145,7 +145,7 @@ class Shield {
              "Version: 0.0.0\n" .
              "\n" . SEPARATOR . "\n" .
              "\n" . Config::speak('notify_not_available', array($speak->description));
-        $shield_info = Text::toPage(File::open($info)->read($e_shield_page), true, 'shield:');
+        $shield_info = Text::toPage(File::open($info)->read($e_shield_page), 'content', 'shield:');
         return Mecha::O($shield_info);
     }
 

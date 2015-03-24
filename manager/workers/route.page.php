@@ -110,7 +110,6 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $slug = Text::parse(Request::post('slug', $title), '->slug');
         $slug = $slug == '--' ? Text::parse($title, '->slug') : $slug;
         $content = Request::post('content', "");
-        $content_type = Request::post('content_type', 'HTML');
         $description = $request['description'];
         $author = strip_tags($request['author']);
         $css = trim(Request::post('css', ""));
@@ -146,19 +145,20 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             Notify::error($speak->notify_error_post_content_empty);
             Guardian::memorize($request);
         }
-        $data  = 'Title: ' . $title . "\n";
-        $data .= trim($description) !== "" ? 'Description: ' . trim(Text::parse($description, '->encoded_json')) . "\n" : "";
-        $data .= 'Author: ' . $author . "\n";
-        $data .= 'Content Type: ' . $content_type . "\n";
-        $data .= ! empty($field) ? 'Fields: ' . Text::parse($field, '->encoded_json') . "\n" : "";
-        $data .= "\n" . SEPARATOR . "\n\n" . $content;
+        $header = array(
+            'Title' => $title,
+            'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
+            'Author' => $author,
+            'Content Type' => Request::post('content_type', 'HTML'),
+            'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
+        );
         $P = array('data' => $request, 'action' => $request['action']);
         // New
         if( ! $id) {
             if( ! Notify::errors()) {
-                File::write($data)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension, 0600);
+                Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                    File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
+                    Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                 }
                 Notify::success(Config::speak('notify_success_created', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
@@ -177,18 +177,20 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             }
             // Start rewriting ...
             if( ! Notify::errors()) {
-                File::open($page->path)->write($data)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
+                Page::open($page->path)->header($header)->content($content)->save();
+                File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
                 $custom = CUSTOM . DS . Date::format($page->date->W3C, 'Y-m-d-H-i-s') . $extension;
                 if(File::exist($custom)) {
                     if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom)->delete();
                     } else {
-                        File::open($custom)->write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->save(0600)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
+                        Page::content($css)->content($js)->save();
+                        File::open($custom)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
                     if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
-                        File::write($css . "\n\n" . SEPARATOR . "\n\n" . $js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension, 0600);
+                        Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 }
                 if($page->slug != $slug && $php_file = File::exist(dirname($page->path) . DS . $page->slug . '.php')) {
