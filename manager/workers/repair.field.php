@@ -15,10 +15,12 @@
       <select name="type">
       <?php
 
+      $file = (object) Converter::str($file);
+
       $options = array(
           't' => $speak->text,
           's' => $speak->summary,
-          'b' => $speak->boolean,
+          'b' => $speak->yes . ' ' . strtolower($speak->and) . ' ' . $speak->no,
           'o' => $speak->option
       );
 
@@ -49,13 +51,6 @@
       foreach($options as $k => $v) {
           echo '<option value="' . $k . '"' . ($cache == $k ? ' selected' : "") . '>' . $v . '</option>';
       }
-
-      if($file->value === true) $file->value = 'true';
-      if($file->value === false) $file->value = 'false';
-      if($file->value === null) $file->value = 'null';
-      if($file->value === TRUE) $file->value = 'TRUE';
-      if($file->value === FALSE) $file->value = 'FALSE';
-      if($file->value === NULL) $file->value = 'NULL';
 
       ?>
       </select>

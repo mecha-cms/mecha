@@ -34,7 +34,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if($key === false) {
         $data = array(
             'title' => "",
-            'type' => "",
+            'type' => 't',
             'value' => ""
         );
         Config::set('page_title', Config::speak('manager.title_new_', array($speak->field)) . $config->title_separator . $config->manager->title);

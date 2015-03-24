@@ -11,12 +11,10 @@ Route::accept($config->manager->slug . '/ajax/preview:(article|page)', function(
     $P = array('data' => $request);
     $P['kind'] = $kind;
     Weapon::fire('preview_before', array($P, $P));
-    echo '<div class="preview">';
-    $file = 'Title: ' . (trim($request['title']) !== "" ? Text::ES($request['title']) : $speak->untitled . ' ' . date('Y/m/d H:i:s')) . "\n";
-    $file .= 'Content Type: ' . (isset($request['content_type']) ? $request['content_type'] : 'HTML') . "\n";
-    $file .= "\n" . SEPARATOR . "\n";
-    $file .= "\n" . (trim($request['content']) !== "" ? Text::ES($request['content']) : Config::speak('notify_empty', array(strtolower($speak->contents))));
-    $file = Text::toPage($file);
+    $file = Text::toPage(Page::header(array(
+        'Title' => trim($request['title']) !== "" ? Text::ES($request['title']) : $speak->untitled . ' ' . date('Y/m/d H:i:s'),
+        'Content Type' => isset($request['content_type']) ? $request['content_type'] : 'HTML'
+    ))->content(trim($request['content']) !== "" ? Text::ES($request['content']) : Config::speak('notify_empty', array(strtolower($speak->contents))))->put());
     Weapon::fire('preview_title_before', array($P, $P));
     echo '<h2 class="preview-title preview-' . $kind . '-title">' . $file['title'] . '</h2>';
     Weapon::fire('preview_title_after', array($P, $P));
@@ -40,10 +38,7 @@ Route::accept($config->manager->slug . '/ajax/preview:comment', function() use($
     $P['kind'] = 'comment';
     Weapon::fire('preview_before', array($P, $P));
     echo '<div class="preview">';
-    $file  = 'Content Type: ' . (isset($request['content_type']) ? $request['content_type'] : 'HTML') . "\n";
-    $file .= "\n" . SEPARATOR . "\n";
-    $file .= "\n" . (trim($request['message']) !== "" ? Text::ES($request['message']) : Config::speak('notify_empty', array(strtolower($speak->messages))));
-    $file = Text::toPage($file, true, 'comment:', 'message');
+    $file = Text::toPage(Page::header('Content Type', isset($request['content_type']) ? $request['content_type'] : 'HTML')->content(trim($request['message']) !== "" ? Text::ES($request['message']) : Config::speak('notify_empty', array(strtolower($speak->contents))))->put(), 'message', 'comment:');
     Weapon::fire('preview_content_before', array($P, $P));
     echo '<div class="preview-content preview-comment-content p">' . $file['message'] . '</div>';
     Weapon::fire('preview_content_after', array($P, $P));
