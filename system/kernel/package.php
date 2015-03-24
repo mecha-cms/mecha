@@ -74,14 +74,14 @@
 
 class Package {
 
-    private static $opened = null;
+    private static $open = null;
     private static $map = null;
 
     public static function take($files = null) {
         if( ! extension_loaded('zip')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
         }
-        self::$opened = null;
+        self::$open = null;
         self::$map = null;
         if(is_array($files)) {
             self::$map = array();
@@ -89,12 +89,12 @@ class Package {
             foreach($files as $key => $value) {
                 self::$map[$key] = File::path($value);
                 if( ! $taken) {
-                    self::$opened = $key;
+                    self::$open = $key;
                     $taken = true;
                 }
             }
         } else {
-            self::$opened = File::path($files);
+            self::$open = File::path($files);
         }
         return new static;
     }
@@ -116,12 +116,12 @@ class Package {
 
     public static function pack($destination = null, $bucket = false) {
         $zip = new ZipArchive();
-        if(is_dir(self::$opened)) {
-            $root = rtrim(self::$opened, '\\/');
-            $package = basename(self::$opened);
+        if(is_dir(self::$open)) {
+            $root = rtrim(self::$open, '\\/');
+            $package = basename(self::$open);
         } else {
-            $root = dirname(self::$opened);
-            $package = basename(self::$opened, '.' . pathinfo(self::$opened, PATHINFO_EXTENSION));
+            $root = dirname(self::$open);
+            $package = basename(self::$open, '.' . pathinfo(self::$open, PATHINFO_EXTENSION));
         }
         // Handling for `Package::take('foo/bar')->pack()`
         if(is_null($destination)) {
@@ -160,20 +160,20 @@ class Package {
             }
             $zip->close();
         } else {
-            if(is_dir(self::$opened)) {
-                foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$opened, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
+            if(is_dir(self::$open)) {
+                foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
                     if(is_dir($file)) {
-                        $zip->addEmptyDir(str_replace(self::$opened . DS, $dir, $file . DS));
+                        $zip->addEmptyDir(str_replace(self::$open . DS, $dir, $file . DS));
                     } elseif(is_file($file)) {
-                        $zip->addFromString(str_replace(self::$opened . DS, $dir, $file), file_get_contents($file));
+                        $zip->addFromString(str_replace(self::$open . DS, $dir, $file), file_get_contents($file));
                     }
                 }
-            } elseif(is_file(self::$opened)) {
-                $zip->addFromString($dir . basename(self::$opened), file_get_contents(self::$opened));
+            } elseif(is_file(self::$open)) {
+                $zip->addFromString($dir . basename(self::$open), file_get_contents(self::$open));
             }
             $zip->close();
         }
-        self::$opened = $destination;
+        self::$open = $destination;
         return new static;
     }
 
@@ -195,19 +195,19 @@ class Package {
     public static function extractTo($destination = null, $bucket = false) {
         $zip = new ZipArchive();
         if(is_null($destination)) {
-            $destination = dirname(self::$opened);
+            $destination = dirname(self::$open);
         } else {
             $destination = rtrim(File::path($destination), '\\/');
         }
         // Handling for `Package::take('file.zip')->extractTo('foo/bar', true)`
         if($bucket === true) {
-            $bucket = basename(self::$opened, '.' . pathinfo(self::$opened, PATHINFO_EXTENSION));
+            $bucket = basename(self::$open, '.' . pathinfo(self::$open, PATHINFO_EXTENSION));
         }
         if($bucket !== false && ! File::exist($destination . DS . $bucket)) {
             $bucket = File::path($bucket);
             mkdir($destination . DS . $bucket, 0777, true);
         }
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             if($bucket !== false) {
                 $zip->extractTo($destination . DS . $bucket);
             } else {
@@ -238,11 +238,11 @@ class Package {
 
     public static function addFiles($files = array(), $destination = null) {
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             if( ! is_array($files)) {
                 // Handling for `Package::take('file.zip')->addFile('test.txt')`
                 if(strpos($files, DS) === false) {
-                    $files = dirname(self::$opened) . DS . $files;
+                    $files = dirname(self::$open) . DS . $files;
                 }
                 if(File::exist($files)) {
                     if(is_null($destination)) {
@@ -256,7 +256,7 @@ class Package {
             foreach($files as $key => $value) {
                 // Handling for `Package::take('file.zip')->addFiles(array('test-1.txt' => 'test-1.txt'))`
                 if(strpos($key, DS) === false) {
-                    $key = dirname(self::$opened) . DS . $key;
+                    $key = dirname(self::$open) . DS . $key;
                 }
                 if(is_null($value)) {
                     $value = basename($key);
@@ -308,7 +308,7 @@ class Package {
         if( ! is_array($files)) {
             $files = array($files);
         }
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             foreach($files as $file) {
                 if($zip->locateName($file) !== false) {
                     $zip->deleteName($file);
@@ -353,7 +353,7 @@ class Package {
 
     public static function renameFiles($files, $new = "") {
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             if(is_array($old)) {
                 foreach($old as $k => $v) {
                     $k = File::path($k);
@@ -406,7 +406,7 @@ class Package {
     public static function getContent($file) {
         $zip = new ZipArchive();
         $results = false;
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             if($zip->locateName($file) !== false) {
                 $results = $zip->getFromName($file);
             }
@@ -433,17 +433,17 @@ class Package {
     public static function getInfo($key = null, $fallback = false) {
         $results = array();
         $zip = new ZipArchive();
-        if(File::exist(self::$opened) && $zip->open(self::$opened)) {
+        if(File::exist(self::$open) && $zip->open(self::$open)) {
             $extension = pathinfo($zip->filename, PATHINFO_EXTENSION);
             $results = array(
-                'path' => self::$opened,
+                'path' => self::$open,
                 'name' => basename($zip->filename, '.' . $extension),
-                'url' => File::url(self::$opened),
+                'url' => File::url(self::$open),
                 'extension' => strtolower($extension),
-                'last_update' => filemtime(self::$opened),
-                'update' => date('Y-m-d H:i:s', filemtime(self::$opened)),
-                'size_raw' => filesize(self::$opened),
-                'size' => File::size(self::$opened),
+                'last_update' => filemtime(self::$open),
+                'update' => date('Y-m-d H:i:s', filemtime(self::$open)),
+                'size_raw' => filesize(self::$open),
+                'size' => File::size(self::$open),
                 'status' => $zip->status,
                 'total' => $zip->numFiles
             );

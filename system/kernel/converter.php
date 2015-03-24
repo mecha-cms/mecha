@@ -171,6 +171,39 @@ class Converter {
 
     /**
      * ====================================================================
+     *  CONVERT PHP VALUE INTO STRING
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | mixed  | The value or array of value to be converted
+     *  --------- | ------ | ----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function str($input) {
+        $results = $input;
+        if( ! is_array($input) && ! is_object($input)) {
+            if($input === TRUE) $results = 'TRUE';
+            if($input === FALSE) $results = 'FALSE';
+            if($input === NULL) $results = 'NULL';
+            if($input === true) $results = 'true';
+            if($input === false) $results = 'false';
+            if($input === null) $results = 'null';
+            return (string) $results;
+        } else {
+            $results = array();
+            foreach(Mecha::A($input) as $key => $value) {
+                $results[$key] = self::str($value);
+            }
+        }
+        return $results;
+    }
+
+    /**
+     * ====================================================================
      *  CONVERT STRING OF VALUE INTO THEIR APPROPRIATE TYPE/FORMAT
      * ====================================================================
      *
@@ -184,24 +217,26 @@ class Converter {
      */
 
     public static function strEval($input) {
-        $results = false;
-        if(is_string($input) && preg_match('#^(true|false|yes|no|on|off|null|ok|okay|TRUE|FALSE|NULL)$#', $input, $matches)) {
+        $results = $input;
+        if(is_string($input) && preg_match('#^(TRUE|FALSE|NULL|true|false|null|yes|no|on|off|ok|okay)$#', $input, $matches)) {
             $results = Mecha::alter($matches[1], array(
+                'TRUE' => TRUE,
+                'FALSE' => FALSE,
+                'NULL' => NULL,
                 'true' => true,
                 'false' => false,
+                'null' => null,
                 'yes' => true,
                 'no' => false,
                 'on' => true,
                 'off' => false,
-                'null' => null,
                 'ok' => true,
-                'okay' => true,
-                'TRUE' => TRUE,
-                'FALSE' => FALSE,
-                'NULL' => NULL
+                'okay' => true
             ));
         } elseif(is_string($input) && ! is_null(json_decode($input, true))) {
             $results = self::strEval(json_decode($input, true));
+        } elseif(is_string($input) && ! preg_match('#^".*?"$#', $input)) {
+            $results = str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
         } elseif(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
         } elseif(is_array($input)) {
@@ -209,8 +244,6 @@ class Converter {
             foreach($input as $key => $value) {
                 $results[$key] = self::strEval($value);
             }
-        } else {
-            $results = $input;
         }
         return $results;
     }
@@ -235,6 +268,66 @@ class Converter {
         $output = ob_get_contents();
         ob_end_clean();
         return $output;
+    }
+
+    /**
+     * ====================================================================
+     *  CONVERT ARRAY DATA INTO NESTED STRING
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | array   | The array of data to be converted
+     *  $s        | string  | Separator between array key and array value
+     *  $indent   | string  | Indentation as nested array data level
+     *  --------- | ------- | ---------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function toText($array, $s = ':', $indent = '    ', $depth = 0) {
+        $results = "";
+        if( ! is_array($array) && ! is_object($array)) {
+            return false;
+        }
+        foreach($array as $key => $value) {
+            if( ! is_array($value) && ! is_object($value)) {
+                $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $value);
+                if(is_string($key) && trim($key) === "") { // Line break
+                    $results .= "\n";
+                } elseif(is_string($key) && strpos($key, '#') === 0) { // Comment
+                    $results .= str_repeat($indent, $depth) . trim($key) . "\n";
+                } elseif(is_int($key) && strpos($value, '#') === 0) { // Comment
+                    $results .= str_repeat($indent, $depth) . trim($value) . "\n";
+                } else {
+                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, "", $key)) . $s . ' ' . self::str($value) . "\n";
+                }
+            } else {
+                $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1) . "\n";
+            }
+        }
+        return rtrim($results);
+    }
+
+    /**
+     * ====================================================================
+     *  CONVERT NESTED STRING INTO ASSOCIATIVE ARRAY
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | string | The string of data to be converted
+     *  $s        | string | Separator between data key and data value
+     *  $indent   | string | Indentation of nested string data level
+     *  --------- | ------ | ----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function toArray($input, $s = ':', $indent = '    ') {
+        return Text::toArray($input, $s, $indent);
     }
 
     /**

@@ -40,8 +40,8 @@
 class File {
 
     private static $cache = "";
-    private static $opened = null;
-    private static $increment = 0;
+    private static $open = null;
+    private static $index = 0;
 
     public static $config = array(
         'file_size_min_allow' => 0, // Minimum allowed file size
@@ -117,30 +117,28 @@ class File {
 
     // Open a file
     public static function open($path) {
-        self::$cache = "";
-        self::$opened = null;
         $path = self::path($path);
-        if(file_exists($path)) {
-            self::$opened = $path;
-        }
+        self::$cache = "";
+        self::$index = 0;
+        self::$open = file_exists($path) ? $path : null;
         return new static;
     }
 
     // Append some data to the opened file
     public static function append($data) {
-        self::$cache = file_get_contents(self::$opened) . $data;
+        self::$cache = file_get_contents(self::$open) . $data;
         return new static;
     }
 
     // Prepend some data to the opened file
     public static function prepend($data) {
-        self::$cache = $data . file_get_contents(self::$opened);
+        self::$cache = $data . file_get_contents(self::$open);
         return new static;
     }
 
     // Show the opened file to the screen
     public static function read($fallback = "") {
-        return file_exists(self::$opened) ? file_get_contents(self::$opened) : $fallback;
+        return file_exists(self::$open) ? file_get_contents(self::$open) : $fallback;
     }
 
     // Write something before saving
@@ -157,8 +155,8 @@ class File {
 
     // Unserialize the serialized data to output
     public static function unserialize($fallback = array()) {
-        if(file_exists(self::$opened)) {
-            $data = file_get_contents(self::$opened);
+        if(file_exists(self::$open)) {
+            $data = file_get_contents(self::$open);
             return preg_match('#^([adObis]:|N;)#', $data) ? unserialize($data) : $fallback;
         }
         return $fallback;
@@ -166,25 +164,25 @@ class File {
 
     // Delete the opened file
     public static function delete() {
-        if( ! is_null(self::$opened)) {
-            if(is_dir(self::$opened)) {
-               foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$opened, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
+        if( ! is_null(self::$open)) {
+            if(is_dir(self::$open)) {
+               foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
                     if($file->isFile()) {
                         unlink($file->getPathname());
                     } else {
                         rmdir($file->getPathname());
                     }
                 }
-                rmdir(self::$opened);
+                rmdir(self::$open);
             } else {
-                unlink(self::$opened);
+                unlink(self::$open);
             }
         }
     }
 
     // Save the written data
     public static function save($permission = null) {
-        self::saveTo(self::$opened, $permission);
+        self::saveTo(self::$open, $permission);
         return new static;
     }
 
@@ -200,50 +198,50 @@ class File {
         if( ! is_null($permission)) {
             chmod($path, $permission);
         }
-        self::$opened = $path;
+        self::$open = $path;
         return new static;
     }
 
     // Rename a file
     public static function renameTo($new_name) {
-        $root = rtrim(dirname(self::$opened), '\\/') . DS; 
-        $old_name = ltrim(basename(self::$opened), '\\/');
+        $root = rtrim(dirname(self::$open), '\\/') . DS; 
+        $old_name = ltrim(basename(self::$open), '\\/');
         if($new_name != $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
-        self::$opened = $root . $new_name;
+        self::$open = $root . $new_name;
         return new static;
     }
 
     // Move file or folder to somewhere
     public static function moveTo($destination = ROOT) {
         $destination = rtrim($destination, '\\/');
-        if(file_exists(self::$opened)) {
+        if(file_exists(self::$open)) {
             if(is_dir($destination)) {
-                $destination .= DS . basename(self::$opened);
+                $destination .= DS . basename(self::$open);
             }
-            rename(self::$opened, $destination);
+            rename(self::$open, $destination);
         }
-        self::$opened = $destination;
+        self::$open = $destination;
         return new static;
     }
 
     // Copy a file
     public static function copyTo($destination = ROOT) {
-        if(file_exists(self::$opened)) {
+        if(file_exists(self::$open)) {
             if( ! is_array($destination)) {
                 $destination = array($destination);
             }
             foreach($destination as $dest) {
                 if(is_dir($dest)) {
-                    $dest = rtrim($dest, '\\/') . DS . basename(self::$opened);
+                    $dest = rtrim($dest, '\\/') . DS . basename(self::$open);
                 }
-                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest))) {
-                    self::$increment = 0;
-                    copy(self::$opened, $dest);
+                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
+                    self::$index = 0;
+                    copy(self::$open, $dest);
                 } else {
-                    self::$increment++;
-                    copy(self::$opened, preg_replace('#\.(.*?)$#', '.' . self::$increment . '.$1', $dest));
+                    self::$index++;
+                    copy(self::$open, preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest));
                 }
             }
         }
@@ -263,7 +261,7 @@ class File {
 
     // Set file permission
     public static function setPermission($permission) {
-        chmod(self::$opened, $permission);
+        chmod(self::$open, $permission);
         return new static;
     }
 
@@ -318,7 +316,7 @@ class File {
             } else {
                 Notify::success(implode('<br>', $html), "");
             }
-            self::$opened = $destination . DS . $file['name'];
+            self::$open = $destination . DS . $file['name'];
             return new static;
         } else {
             return false;

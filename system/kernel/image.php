@@ -2,7 +2,7 @@
 
 class Image {
 
-    private static $opened = null;
+    private static $open = null;
     private static $original = null;
     private static $placeholder = null;
     private static $GD = false;
@@ -12,14 +12,14 @@ class Image {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
         }
         if(is_array($files)) {
-            self::$opened = array();
+            self::$open = array();
             foreach($files as $file) {
-                self::$opened[] = File::path($file);
+                self::$open[] = File::path($file);
             }
         } else {
-            self::$opened = File::path($files);
+            self::$open = File::path($files);
         }
-        $file = is_array(self::$opened) ? self::$opened[0] : self::$opened;
+        $file = is_array(self::$open) ? self::$open[0] : self::$open;
         $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         self::$placeholder = dirname($file) . DS . '__p-l-a-c-e-h-o-l-d-e-r--i-m-a-g-e.' . $extension;
         self::$original = basename($file);
@@ -159,27 +159,27 @@ class Image {
     public static function getInfo($key = null, $fallback = false) {
         $results = false;
         File::open(self::$placeholder)->delete();
-        if(is_array(self::$opened)) {
+        if(is_array(self::$open)) {
             $results = array();
-            foreach(self::$opened as $file) {
+            foreach(self::$open as $file) {
                 $data = getimagesize($file);
                 $results[] = array(
                     'width' => $data[0],
                     'height' => $data[1],
                     'size_raw' => filesize($file),
-                    'size' => File::size($file, 'KB'),
+                    'size' => File::size($file),
                     'bits' => $data['bits'],
                     'mime' => $data['mime']
                 );
             }
             return $results;
         } else {
-            $data = getimagesize(self::$opened);
+            $data = getimagesize(self::$open);
             $results = array(
                 'width' => $data[0],
                 'height' => $data[1],
-                'size_raw' => filesize(self::$opened),
-                'size' => File::size(self::$opened, 'KB'),
+                'size_raw' => filesize(self::$open),
+                'size' => File::size(self::$open),
                 'bits' => $data['bits'],
                 'mime' => $data['mime']
             );
@@ -666,8 +666,8 @@ class Image {
         $height = 0;
         $max_width = array();
         $max_height = array();
-        if( ! is_array(self::$opened)) {
-            self::$opened = array(self::$opened);
+        if( ! is_array(self::$open)) {
+            self::$open = array(self::$open);
         }
         foreach(self::getInfo() as $info) {
             $bucket[] = array(
@@ -707,8 +707,8 @@ class Image {
         imagesavealpha($pallete, true);
         $start_width_from = 0;
         $start_height_from = 0;
-        for($i = 0, $count = count(self::$opened); $i < $count; ++$i) {
-            self::gen(self::$opened[$i]);
+        for($i = 0, $count = count(self::$open); $i < $count; ++$i) {
+            self::gen(self::$open[$i]);
             imagealphablending(self::$GD, false);
             imagesavealpha(self::$GD, true);
             imagecopyresampled($pallete, self::$GD, $start_width_from, $start_height_from, 0, 0, $bucket[$i]['width'], $bucket[$i]['height'], $bucket[$i]['width'], $bucket[$i]['height']);
