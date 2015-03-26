@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data .= $_POST['name'] . ':pilot) ';
         $data .= $_POST['email'];
         if( ! file_exists($user_file)) file_put_contents($user_file, $data);
-        $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p><strong>Username:</strong> ' . $_POST['username'] . '<br><strong>Password:</strong> ' . $_POST['password'] . '</p></div>';
+        $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cf code"><strong>Username:</strong> ' . $_POST['username'] . '<br><strong>Password:</strong> ' . $_POST['password'] . '</p></div>';
         chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'plugins', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'articles', 0766);
