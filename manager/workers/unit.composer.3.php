@@ -51,7 +51,7 @@ if( ! empty($fields)) {
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }
-        if( ! isset($value['scope']) || $value['scope'] !== 'article' && $value['scope'] !== 'page') {
+        if( ! isset($value['scope']) || $value['scope'] !== 'article' && $value['scope'] !== 'page' && $value['scope'] !== 'comment') {
             $value['scope'] = $segment;
         }
         if(Notify::errors()) {

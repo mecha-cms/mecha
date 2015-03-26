@@ -718,6 +718,7 @@ class Get {
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
+        $extension = $results['state'] == 'published' ? '.txt' : '.draft';
 
         if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
@@ -760,7 +761,7 @@ class Get {
         }
 
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
-            if($file = File::exist(CUSTOM . DS . $time . '.txt')) {
+            if($file = File::exist(CUSTOM . DS . $time . $extension)) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $results['css_raw'] = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
                 $results['js_raw'] = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
@@ -806,7 +807,7 @@ class Get {
         if( ! isset($excludes['fields'])) {
 
             /**
-             * Initialize custom fields with empty values so that users
+             * Initialize custom fields with the default values so that users
              * don't have to write `isset()` function multiple times just
              * to prevent error messages because of the object key that
              * is not available in the old posts.
@@ -818,7 +819,7 @@ class Get {
 
             foreach($fields as $key => $value) {
                 if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
-                    $init[$key] = "";
+                    $init[$key] = $value['value'];
                 }
             }
 
@@ -919,6 +920,18 @@ class Get {
                 break;
             }
         }
+        if( ! isset($results['fields'])) $results['fields'] = array();
+        $fields = self::state_field(array());
+        $init = array();
+        foreach($fields as $key => $value) {
+            if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                $init[$key] = $value['value'];
+            }
+        }
+        foreach($results['fields'] as $key => $value) {
+            $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+        }
+        $results['fields'] = $init;
         return Mecha::O($results);
     }
 
@@ -961,7 +974,7 @@ class Get {
         $init = array();
         foreach($fields as $key => $value) {
             if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
-                $init[$key] = "";
+                $init[$key] = $value['value'];
             }
         }
         foreach($results['fields'] as $key => $value) {

@@ -456,6 +456,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 'URL' => $url,
                 'Status' => Guardian::happy() ? 'pilot' : 'passenger',
                 'Content Type' => $parser,
+                'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false,
                 'UA' => Get::UA(),
                 'IP' => Get::IP()
             ))->content($message)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension);

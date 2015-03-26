@@ -20,7 +20,7 @@
       $options = array(
           't' => $speak->text,
           's' => $speak->summary,
-          'b' => $speak->yes . ' ' . strtolower($speak->and) . ' ' . $speak->no,
+          'b' => $speak->boolean,
           'o' => $speak->option
       );
 
@@ -42,9 +42,10 @@
       if( ! isset($file->scope)) $file->scope = "";
 
       $options = array(
+          "" => $speak->article . ' ' . strtolower($speak->and) . ' ' . $speak->page,
           'article' => $speak->article,
           'page' => $speak->page,
-          "" => $speak->article . ' ' . strtolower($speak->and) . ' ' . $speak->page
+          'comment' => $speak->comment
       );
 
       $cache = Guardian::wayback('scope', $file->scope);
