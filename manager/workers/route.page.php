@@ -36,6 +36,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.page.php');
     if($id && $page = Get::page($id, array('content', 'excerpt', 'tags', 'comments'))) {
+        $extension_o = $page->state == 'published' ? '.txt' : '.draft';
         if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $page->author) {
             Shield::abort();
         }
@@ -45,7 +46,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         if( ! isset($page->content_type)) {
             $page->content_type = $config->html_parser;
         }
-        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . '.txt')) {
+        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . $extension_o)) {
             $page->css_raw = $config->defaults->page_custom_css;
             $page->js_raw = $config->defaults->page_custom_js;
         }
@@ -180,14 +181,13 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 Page::open($page->path)->header($header)->content($content)->save();
                 File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
                 $custom_ = CUSTOM . DS . Date::format($page->date->W3C, 'Y-m-d-H-i-s');
-                File::open($custom_ . '.draft')->delete();
-                if(File::exist($custom_ . $extension)) {
-                    if(trim(File::open($custom_ . $extension)->read()) === "" || trim(File::open($custom_ . $extension)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {
+                if(File::exist($custom_ . $extension_o)) {
+                    if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
-                        File::open($custom_ . $extension)->delete();
+                        File::open($custom_ . $extension_o)->delete();
                     } else {
-                        Page::content($css)->content($js)->saveTo($custom_ . $extension);
-                        File::open($custom_ . $extension)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
+                        Page::content($css)->content($js)->saveTo($custom_ . $extension_o);
+                        File::open($custom_ . $extension_o)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
                     if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {

@@ -22,13 +22,30 @@ class Page {
     public static $bucket = array();
     public static $bucket_alt = "";
 
+    // Remove `:` in field key
     private static function fix($key) {
         return trim(str_replace(':', "", $key));
     }
 
+    // Reset the cached data
+    private static function reset() {
+        self::$open = null;
+        self::$bucket = array();
+        self::$bucket_alt = "";
+    }
+
+    // Create the page
+    private static function create() {
+        $output = "";
+        foreach(self::$bucket as $key => $value) {
+            $output .= $key . ': ' . $value . "\n";
+        }
+        return trim($output) !== "" ? trim($output) . (trim(self::$bucket_alt) !== "" ? "\n\n" . SEPARATOR . "\n\n" . self::$bucket_alt : "") : self::$bucket_alt;
+    }
+
     // Open the page file
     public static function open($path) {
-        self::$bucket = array();
+        self::reset();
         self::$open = $path;
         $parts = explode(SEPARATOR, file_get_contents($path), 2);
         $headers = explode("\n", trim($parts[0]));
@@ -62,27 +79,26 @@ class Page {
 
     // Show page data as plain text
     public static function put() {
-        $output = "";
-        foreach(self::$bucket as $key => $value) {
-            $output .= $key . ': ' . $value . "\n";
-        }
-        return trim($output) !== "" ? trim($output) . (trim(self::$bucket_alt) !== "" ? "\n\n" . SEPARATOR . "\n\n" . self::$bucket_alt : "") : self::$bucket_alt;
+        $output = self::create();
+        self::reset();
+        return $output;
     }
 
     // Show page data as object
     public static function read($content = 'content', $FP = 'page:') {
-        $results = Text::toPage(self::put(), $content, $FP);
+        $results = Text::toPage(self::create(), $content, $FP);
         if($content === false) {
             unset($results['content']);
             unset($results['content_raw']);
         }
+        self::reset();
         return $results;
     }
 
     // Save the opened page
     public static function save($permission = 0600) {
-        File::write(self::put())->saveTo(self::$open, $permission);
-        self::$open = null;
+        File::write(self::create())->saveTo(self::$open, $permission);
+        self::reset();
     }
 
     // Save the generated page to ...
