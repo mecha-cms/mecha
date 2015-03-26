@@ -13,6 +13,8 @@ class Config {
      *
      *    Config::set('foo', 'bar');
      *
+     * -------------------------------------------------------------
+     *
      *    Config::set(array(
      *        'a' => 1,
      *        'b' => 2
@@ -23,9 +25,9 @@ class Config {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of variable to call
-     *  $key      | array  | Array of variable's key and value
-     *  $value    | mixed  | The value of your variable key
+     *  $key      | string | Key of data to be called
+     *  $key      | array  | Array of data's key and value
+     *  $value    | mixed  | The value of your data key
      *  --------- | ------ | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -52,23 +54,30 @@ class Config {
      *
      * -- CODE: ----------------------------------------------------
      *
-     *    [1]. echo Config::get('url');
+     *    echo Config::get('url');
      *
-     *    [2]. echo Config::get('index')->slug;
+     * -------------------------------------------------------------
      *
-     *         $config = Config::get();
+     *    echo Config::get('index')->slug;
      *
-     *    [3]. echo $config->url;
+     * -------------------------------------------------------------
      *
-     *    [4]. echo $config->index->slug;
+     *    echo Config::get('index.slug');
+     *
+     * -------------------------------------------------------------
+     *
+     *    $config = Config::get();
+     *
+     *    echo $config->url;
+     *    echo $config->index->slug;
      *
      * -------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of variable to call
-     *  $fallback | mixed  | Fallback value if key does not exist
+     *  $key      | string | Key of data to be called
+     *  $fallback | mixed  | Fallback value if data does not exist
      *  --------- | ------ | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -117,22 +126,29 @@ class Config {
      *
      * -- CODE: ----------------------------------------------------
      *
-     *    [1]. echo Config::speak('home');
+     *    echo Config::speak('home');
      *
-     *    [2]. echo Config::speak('action')->save;
+     * -------------------------------------------------------------
      *
-     *         $speak = Config::speak();
+     *    echo Config::speak('action')->save;
      *
-     *    [3]. echo $speak->home;
+     * -------------------------------------------------------------
      *
-     *    [4]. echo $speak->action->save;
+     *    echo Config::speak('action.save');
+     *
+     * -------------------------------------------------------------
+     *
+     *    $speak = Config::speak();
+     *
+     *    echo $speak->home;
+     *    echo $speak->action->save;
      *
      * -------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of word variable to call
+     *  $key      | string | Key of language data to be called
      *  $vars     | array  | Array of value used in PHP `vsprintf()`
      *  --------- | ------ | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -164,7 +180,7 @@ class Config {
 
     /**
      * =============================================================
-     *  INJECT ALL CONFIGURATION DATA INTO `$bucket`
+     *  INJECT ALL CONFIGURATION DATA TO `$bucket`
      * =============================================================
      *
      * -- CODE: ----------------------------------------------------
@@ -216,7 +232,9 @@ class Config {
         if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
 
         // Create a proper query string data
-        if($page != 'home') array_shift($_GET);
+        if($page != 'home') {
+            array_shift($_GET);
+        }
         $queries = array();
         foreach($_GET as $k => $v) {
             $queries[] = $k . '=' . $v;

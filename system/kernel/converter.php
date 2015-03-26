@@ -11,6 +11,8 @@ class Converter {
      *
      *    var_dump(Converter::RGB('rgb(255, 255, 255)'));
      *
+     * --------------------------------------------------------------------
+     *
      *    var_dump(Converter::RGB('rgba(255, 255, 255, .5)'));
      *
      * --------------------------------------------------------------------
@@ -60,7 +62,7 @@ class Converter {
     public static function HEX2RGB($hex, $output = null) {
         if(is_string($hex) && preg_match('#\#?([a-f0-9]{3,6})#i', $hex, $matches)) {
             $color = $matches[1];
-            if(strlen($color) == 3) {
+            if(strlen($color) === 3) {
                 $color = preg_replace('#(.)#', '$1$1', $color);
             }
             $colors = array(
@@ -83,9 +85,15 @@ class Converter {
      *
      *    echo Converter::RGB2HEX(255, 255, 255);
      *
+     * --------------------------------------------------------------------
+     *
      *    echo Converter::RGB2HEX(array(255, 255, 255));
      *
+     * --------------------------------------------------------------------
+     *
      *    echo Converter::RGB2HEX('rgb(255, 255, 255)');
+     *
+     * --------------------------------------------------------------------
      *
      *    echo Converter::RGB2HEX('rgba(255, 255, 255, .5)');
      *
@@ -139,12 +147,12 @@ class Converter {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type    | Description
-     *  ----------- | ------- | -------------------------------------------------
-     *  $input      | string  | The source text
-     *  $chars      | integer | The maximum length of summary
-     *  $tail       | string  | Character that follows at the end of the summary
-     *  ----------- | ------- | -------------------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------------
+     *  $input    | string  | The source text
+     *  $chars    | integer | The maximum length of summary
+     *  $tail     | string  | Character that follows at the end of the summary
+     *  --------- | ------- | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -289,7 +297,7 @@ class Converter {
     public static function toText($array, $s = ':', $indent = '    ', $depth = 0) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
-            return false;
+            return self::str($array);
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
@@ -338,6 +346,8 @@ class Converter {
      * -- CODE: -----------------------------------------------------------
      *
      *    var_dump(Converter::attr('<div id="foo">'));
+     *
+     * --------------------------------------------------------------------
      *
      *    var_dump(Converter::attr('<div id="foo">test content</div>'));
      *
@@ -452,7 +462,7 @@ class Converter {
                 array(
                     '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
                     '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
-                    '#([\s:])(0)(cm|em|ex|in|mm|pc|pt|px|%)#', // Replace `0(cm|em|ex|in|mm|pc|pt|px|%)` with `0`
+                    '#([\s:])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#', // Replace `0(cm|em|ex|in|mm|pc|pt|px|%)` with `0`
                     '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
                     '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
                     '#([\s:])0+\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space

@@ -7,17 +7,17 @@
  *
  * -- CODE: -----------------------------------------------------------------------
  *
- *    echo Asset:url('foo.css');
- *
  *    echo Asset:stylesheet('foo.css');
- *    echo Asset:stylesheet('foo.css', ' id="main"');
  *
- * -- RESULT: ---------------------------------------------------------------------
+ * --------------------------------------------------------------------------------
  *
- *    http://example.org/foo.css
+ *    echo Asset:stylesheet('foo.css', ' type="text/css"');
  *
- *    <link href="http://example.org/foo.css" rel="stylesheet">
- *    <link href="http://example.org/foo.css" rel="stylesheet" id="main">
+ * --------------------------------------------------------------------------------
+ *
+ *    echo Asset::stylesheet(array(
+ *        'foo.css', 'bar.css', 'baz.css', 'qux.css'
+ *    ));
  *
  * --------------------------------------------------------------------------------
  *

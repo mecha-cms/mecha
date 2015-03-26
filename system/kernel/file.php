@@ -10,28 +10,40 @@
  *    // Create a file
  *    File::write('some text')->saveTo('path/to/file.txt');
  *
- *    // Show file content to a web page
+ * ----------------------------------------------------------------------
+ *
+ *    // Show file content to page
  *    echo File::open('path/to/file.txt')->read();
  *
- *    // Append some text to file
+ * ----------------------------------------------------------------------
+ *
+ *    // Append text to file
  *    File::open('path/to/file.txt')->append('test append.')->save();
  *
- *    // Prepend some text to file
+ * ----------------------------------------------------------------------
+ *
+ *    // Prepend text to file
  *    File::open('path/to/file.txt')->prepend('test prepend.')->save();
+ *
+ * ----------------------------------------------------------------------
  *
  *    // Update a file
  *    File::open('path/to/file.txt')->write('some text')->save();
  *
+ * ----------------------------------------------------------------------
+ *
  *    // Rename a file
  *    File::open('path/to/file.txt')->renameTo('file-1.txt');
+ *
+ * ----------------------------------------------------------------------
  *
  *    // Delete a file
  *    File::open('path/to/file.txt')->delete();
  *
+ * ----------------------------------------------------------------------
+ *
  *    // Upload a file
  *    File::upload($_FILES['file'], 'path/to/folder');
- *
- *    // etc.
  *
  * ----------------------------------------------------------------------
  *
@@ -186,7 +198,7 @@ class File {
         return new static;
     }
 
-    // Save the written data to somewhere
+    // Save the written data to ...
     public static function saveTo($path, $permission = null) {
         $path = self::path($path);
         if( ! file_exists(dirname($path))) {
@@ -213,7 +225,7 @@ class File {
         return new static;
     }
 
-    // Move file or folder to somewhere
+    // Move file or folder to ...
     public static function moveTo($destination = ROOT) {
         $destination = rtrim($destination, '\\/');
         if(file_exists(self::$open)) {
@@ -272,8 +284,8 @@ class File {
         $destination = self::path($destination);
         $errors = Mecha::A($speak->notify_file);
         // Create a safe file name
-        $extension = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
         $file['name'] = Text::parse($file['name'], '->safe_file_name');
+        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
         // Something goes wrong
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);
@@ -308,7 +320,7 @@ class File {
             $html = array(
                 '<strong>' . $speak->uploaded . ':</strong> ' . $file['name'],
                 '<strong>' . $speak->type . ':</strong> ' . $file['type'],
-                '<strong>' . $speak->size . ':</strong> ' . ($file['size'] / 1024) . ' KB',
+                '<strong>' . $speak->size . ':</strong> ' . self::size($file['size']),
                 '<strong>' . $speak->link . ':</strong> <a href="' . $link . '" target="_blank">' . $link . '</a>'
             );
             if( ! empty($custom_success_message)) {

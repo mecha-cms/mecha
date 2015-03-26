@@ -4,7 +4,7 @@ class Navigator {
 
     protected static $bucket = array();
 
-    public static $navigator = array(
+    public static $config = array(
         'step' => 5,
         'classes' => array(
             'pagination' => 'pagination',
@@ -30,14 +30,14 @@ class Navigator {
      *  $pages     | array   | Array of files to be paginated
      *  $current   | integer | The current page offset
      *  $current   | string  | The current page path
-     *  $perpage   | integer | Number of files to show per page request
+     *  $per_page  | integer | Number of files to show per page request
      *  $connector | string  | Extra path to be inserted into URL
      *  ---------- | ------- | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function extract($pages = array(), $current = 1, $perpage = 10, $connector = '/') {
+    public static function extract($pages = array(), $current = 1, $per_page = 10, $connector = '/') {
 
         // Set default next, previous and step data
         self::$bucket = array('prev' => false, 'next' => false, 'step' => false);
@@ -47,7 +47,7 @@ class Navigator {
         $base = $config->url;
         $q = str_replace('&', '&amp;', $config->url_query);
         $total = count($pages);
-        $sn = self::$navigator;
+        $sn = self::$config;
 
         if(trim($connector, '/') !== "") $connector = '/' . trim($connector, '/') . '/';
 
@@ -56,7 +56,7 @@ class Navigator {
             $current = (int) $current;
 
             $prev = $current > 1 ? $current - 1 : false;
-            $next = $current < ceil($total / $perpage) ? $current + 1 : false;
+            $next = $current < ceil($total / $per_page) ? $current + 1 : false;
 
             // Generate next/previous URL for index page
             self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . $connector . $prev . $q : $base . $q, $prev, $connector), $prev, $connector);
@@ -72,8 +72,8 @@ class Navigator {
 
             // Generate pagination links for index page
             $html = '<span' . ($sn['classes']['pagination'] !== false ? ' class="' . $sn['classes']['pagination'] . '"' : "") . '>';
-            $chunk = (int) ceil($total / $perpage);
-            $step = $chunk > self::$navigator['step'] ? self::$navigator['step'] : $chunk;
+            $chunk = (int) ceil($total / $per_page);
+            $step = $chunk > self::$config['step'] ? self::$config['step'] : $chunk;
             $left = $current - $step;
             if($left < 1) $left = 1;
             if($chunk > 1) {
@@ -137,16 +137,17 @@ class Navigator {
         return isset($parts[2]) ? $parts[2] : $base . '.' . $extension;
     }
 
+    // Configure ...
     public static function configure($key, $value = null) {
         if(is_array($key)) {
-            Mecha::extend(self::$navigator, $key);
+            Mecha::extend(self::$config, $key);
         } else {
             if(is_array($value)) {
                 foreach($value as $k => $v) {
-                    self::$navigator[$key][$k] = $v;
+                    self::$config[$key][$k] = $v;
                 }
             } else {
-                self::$navigator[$key] = $value;
+                self::$config[$key] = $value;
             }
         }
         return new static;

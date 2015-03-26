@@ -2,11 +2,11 @@
 
 class Guardian {
 
-    public static $token = 'mecha_token';
-    public static $login = 'mecha_login';
-    public static $cache = 'mecha_form';
-    public static $math = 'mecha_math';
-    public static $captcha = 'mecha_captcha';
+    public static $token = 'token';
+    public static $user = 'user';
+    public static $form = 'form';
+    public static $math = 'math';
+    public static $captcha = 'captcha';
 
     private static $validators = array();
 
@@ -19,6 +19,8 @@ class Guardian {
      *
      *    echo Guardian::get('name');
      *
+     * ------------------------------------------------------------
+     *
      *    var_dump(Guardian::get());
      *
      * ------------------------------------------------------------
@@ -26,7 +28,7 @@ class Guardian {
      */
 
     public static function get($key = null, $fallback = "") {
-        $log = Session::get('cookie:' . self::$login);
+        $log = Session::get('cookie:' . self::$user);
         if( ! is_null($key)) {
             return isset($log[$key]) ? $log[$key] : $fallback;
         }
@@ -167,8 +169,8 @@ class Guardian {
      *
      * -- CODE: ---------------------------------------------------
      *
-     *    if( ! Guardian::checkerExist('this_is_me')) {
-     *        Guardian::checker('this_is_me', function($input) {
+     *    if( ! Guardian::checkerExist('this_is_foo')) {
+     *        Guardian::checker('this_is_foo', function($input) {
      *            ...
      *        });
      *    }
@@ -192,6 +194,8 @@ class Guardian {
      *    if(Guardian::check('email@domain.com')->this_is_email) {
      *        echo 'OK.';
      *    }
+     *
+     * ------------------------------------------------------------
      *
      *    if(Guardian::check('email@domain.com', '->email')) {
      *        echo 'OK.';
@@ -257,14 +261,14 @@ class Guardian {
      *
      */
 
-    public static function memorize($memo = "") {
-        if(empty($memo)) {
+    public static function memorize($memo = null) {
+        if(is_null($memo)) {
             $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : "";
         }
         if(is_object($memo)) {
             $memo = Mecha::A($memo);
         }
-        Session::set(self::$cache, $memo);
+        Session::set(self::$form, $memo);
     }
 
     /**
@@ -281,7 +285,7 @@ class Guardian {
      */
 
     public static function forget() {
-        Session::kill(self::$cache);
+        Session::kill(self::$form);
     }
 
     /**
@@ -298,13 +302,13 @@ class Guardian {
      */
 
     public static function wayback($name = null, $fallback = "") {
-        $cache = Session::get(self::$cache);
+        $form = Session::get(self::$form);
         if(is_null($name)) {
             self::forget();
-            return $cache;
+            return $form;
         }
-        $value = Mecha::GVR($cache, $name, $fallback);
-        Session::kill(self::$cache . '.' . $name);
+        $value = Mecha::GVR($form, $name, $fallback);
+        Session::kill(self::$form . '.' . $name);
         return $value;
     }
 
@@ -323,9 +327,18 @@ class Guardian {
      *
      */
 
-    public static function authorize() {
+    public static function authorize($username = null, $password = null, $token = null) {
         $config = Config::get();
         $speak = Config::speak();
+        if(is_null($username)) {
+            $username = isset($_POST['username']) ? $_POST['username'] : "";
+        }
+        if(is_null($password)) {
+            $password = isset($_POST['password']) ? $_POST['password'] : "";
+        }
+        if(is_null($token)) {
+            $token = isset($_POST['token']) ? $_POST['token'] : "";
+        }
         $users = Text::toArray(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read());
         $authors = array();
         foreach($users as $user => $detail) {
@@ -337,19 +350,19 @@ class Guardian {
                 'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : $config->author_email
             );
         }
-        self::checkToken($_POST['token']);
-        if(isset($_POST['username']) && isset($_POST['password']) && ! empty($_POST['username']) && ! empty($_POST['password'])) {
-            if(isset($authors[$_POST['username']]) && $_POST['password'] === $authors[$_POST['username']]['password']) {
-                $token = self::token();
-                Session::set('cookie:' . self::$login, array(
-                    'token' => $token,
-                    'username' => $_POST['username'],
+        self::checkToken($token);
+        if(trim($username) !== "" && trim($password) !== "") {
+            if(isset($authors[$username]) && $password === $authors[$username]['password']) {
+                $token_o = self::token();
+                Session::set('cookie:' . self::$user, array(
+                    'token' => $token_o,
+                    'username' => $username,
                     // 'password' => $authors[$_POST['username']]['password'],
-                    'author' => $authors[$_POST['username']]['author'],
-                    'status' => $authors[$_POST['username']]['status'],
-                    'email' => $authors[$_POST['username']]['email']
+                    'author' => $authors[$username]['author'],
+                    'status' => $authors[$username]['status'],
+                    'email' => $authors[$username]['email']
                 ), 30, '/', "", false, true);
-                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($_POST['username'], '->safe_file_name') . '.log', 0600);
+                File::write($token_o)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($username, '->safe_file_name') . '.log', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
@@ -379,7 +392,7 @@ class Guardian {
 
     public static function reject() {
         self::deleteToken();
-        Session::kill('cookie:' . self::$login);
+        Session::kill('cookie:' . self::$user);
         return new static;
     }
 
@@ -400,7 +413,7 @@ class Guardian {
 
     public static function happy() {
         $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log';
-        $auth = Session::get('cookie:' . self::$login);
+        $auth = Session::get('cookie:' . self::$user);
         return isset($auth['token']) && file_exists($file) && $auth['token'] === file_get_contents($file) ? true : false;
     }
 

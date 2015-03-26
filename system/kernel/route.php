@@ -8,26 +8,38 @@
  * -- CODE: ---------------------------------------------------------------------------
  *
  *    Route::accept('test/page', function() {
- *        echo 'We are in http://example.org/test/page page.
+ *        echo 'We are in "http://example.org/test/page" page.
  *    });
+ *
+ * ------------------------------------------------------------------------------------
  *
  *    Route::accept('test/page/(:num)', function($offset = 1) {
- *        echo 'We are in http://example.org/test/page/' . $offset . ' page.
+ *        echo 'We are in "http://example.org/test/page/' . $offset . '" page.
  *    });
+ *
+ * ------------------------------------------------------------------------------------
  *
  *    Route::accept('test/(:any)/(:num)', function($slug = "", $offset = 1) {
- *        echo 'We are in http://example.org/test/' . $slug . '/' . $offset . ' page.
+ *        echo 'We are in "http://example.org/test/' . $slug . '/' . $offset . '" page.
  *    });
  *
+ * ------------------------------------------------------------------------------------
+ *
  *    Route::accept('test/(article|page)', function($slug = "") {
- *        echo 'We are in http://example.org/test/' . $slug . ' page.
+ *        echo 'We are in "http://example.org/test/' . $slug . '" page.
  *    });
+ *
+ * ------------------------------------------------------------------------------------
  *
  *    Route::accept(array('test/page', 'test/page/(:num)'), function($offset = 1) {
  *        echo 'Page ' . $offset;
  *    });
  *
+ * ------------------------------------------------------------------------------------
+ *
  *    Route::execute(); // Execute the added routes
+ *
+ * ------------------------------------------------------------------------------------
  *
  *    Route::execute('article/(:any)', array('foo')); // Re-execute this route
  *

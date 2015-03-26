@@ -116,13 +116,13 @@ class Date {
      *  Parameter | Type    | Description
      *  --------- | ------- | -----------------------------------
      *  $date     | mixed   | The date input
-     *  $simplify | boolean | Remove empty leading offset(s)?
+     *  $compact  | boolean | Remove empty leading offset(s)?
      *  --------- | ------- | -----------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function ago($input, $simplify = true) {
+    public static function ago($input, $compact = true) {
         $speak = Config::speak();
         $date = new DateTime();
         $date->setTimestamp((int) self::format($input, 'U'));
@@ -138,9 +138,9 @@ class Date {
             $speak->minute . '/' . $speak->minute_p => $time[4],
             $speak->second . '/' . $speak->second_p => $time[5]
         );
-        if($simplify) {
+        if($compact) {
             foreach($data as $name => $offset) {
-                if($data[$name] === 0) {
+                if($offset === 0) {
                     unset($data[$name]);
                 } else {
                     break;

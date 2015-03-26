@@ -4,18 +4,6 @@ class Shield {
 
     private static $defines = array();
 
-    private static function pathTrace($name) {
-        $name = rtrim($name, '\\/') . '.php';
-        if($file = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
-            return $file;
-        } else {
-            if($file = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
-                return $file;
-            }
-        }
-        return $name;
-    }
-
     /**
      * Do Nothing
      * ----------
@@ -68,6 +56,32 @@ class Shield {
 
     /**
      * ==========================================================
+     *  GET SHIELD PATH BY ITS NAME
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    echo Shield::path('article');
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function path($name) {
+        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $name = rtrim(File::path($name), '\\/') . '.' . ($extension === "" ? 'php' : $extension);
+        if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
+            return $path;
+        } else {
+            if($path = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
+                return $path;
+            }
+        }
+        return $name;
+    }
+
+    /**
+     * ==========================================================
      *  DEFINE NEW SHORTCUT VARIABLE(S)
      * ==========================================================
      *
@@ -75,10 +89,12 @@ class Shield {
      *
      *    Shield::define('foo', 'bar')->attach('file');
      *
+     * ----------------------------------------------------------
+     *
      *    Shield::define(array(
      *        'foo' => 'bar',
      *        'baz' => 'qux'
-     *    ))->attach('file');
+     *    ))->attach('page');
      *
      * ----------------------------------------------------------
      *
@@ -100,9 +116,11 @@ class Shield {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    Shield::undefine('foo')->attach('file');
+     *    Shield::undefine('foo')->attach('page');
      *
-     *    Shield::undefine(array('foo', 'bar'))->attach('file');
+     * ----------------------------------------------------------
+     *
+     *    Shield::undefine(array('foo', 'bar'))->attach('page');
      *
      * ----------------------------------------------------------
      *
@@ -139,14 +157,13 @@ class Shield {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $e_shield_page = "Title: " . ucwords(Text::parse($folder, '->text')) . "\n" .
-             "Author: " . $speak->anon . "\n" .
-             "URL: #\n" .
-             "Version: 0.0.0\n" .
-             "\n" . SEPARATOR . "\n" .
-             "\n" . Config::speak('notify_not_available', array($speak->description));
-        $shield_info = Text::toPage(File::open($info)->read($e_shield_page), 'content', 'shield:');
-        return Mecha::O($shield_info);
+        $page_default = "Title: " . ucwords(Text::parse($folder, '->text')) . "\n" .
+            "Author: " . $speak->anon . "\n" .
+            "URL: #\n" .
+            "Version: 0.0.0\n" .
+            "\n" . SEPARATOR . "\n" .
+            "\n" . Config::speak('notify_not_available', array($speak->description));
+        return Mecha::O(Text::toPage(File::open($info)->read($page_default), 'content', 'shield:'));
     }
 
     /**
@@ -172,68 +189,50 @@ class Shield {
      */
 
     public static function attach($name, $minify = null, $cache = false) {
-
-        if(is_null($minify)) $minify = Config::get('html_minifier');
-
+        if(is_null($minify)) {
+            $minify = Config::get('html_minifier');
+        }
         $G = array('data' => array(
             'name' => $name,
             'minify' => $minify,
             'cache' => $cache
         ));
-
         Weapon::fire('before_shield_config_redefine', array($G, $G));
-
         extract(self::defines());
-
         Weapon::fire('after_shield_config_redefine', array($G, $G));
-
         $shield = false;
         $shield_base = explode('-', $name, 2);
-
-        if($_file = File::exist(self::pathTrace($name))) {
+        if($_file = File::exist(self::path($name))) {
             $shield = $_file;
-        } elseif($_file = File::exist(self::pathTrace($shield_base[0]))) {
+        } elseif($_file = File::exist(self::path($shield_base[0]))) {
             $shield = $_file;
         } else {
-            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::pathTrace($name) . '</code>')));
+            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::path($name) . '</code>')));
         }
-
         $G['data']['path'] = $shield;
-
-        self::$defines = array();
-
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
-
+        self::$defines = array();
         if($G['data']['cache'] && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;
         }
-
+        // Shield begin
         Weapon::fire('shield_before', array($G, $G));
-
         ob_start($minify ? 'self::s_o' : 'self::s_o_d');
-
         require Filter::apply('shield:path', $shield);
-
         Notify::clear();
-
         Guardian::forget();
-
         $G['data']['content'] = ob_get_contents();
-
         if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
             File::write(ob_get_contents())->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
-
         ob_end_flush();
-
         Weapon::fire('shield_after', array($G, $G));
-
+        // Shield end
         exit;
-
     }
 
     /**
@@ -243,24 +242,20 @@ class Shield {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    [1]. Shield::abort();
+     *    Shield::abort();
      *
-     *    [2]. Shield::abort('404-custom');
+     * ----------------------------------------------------------
+     *
+     *    Shield::abort('404-custom');
      *
      * ----------------------------------------------------------
      *
      */
 
-    public static function abort($name = null, $minify = null, $cache = false) {
-
-        if(is_null($name)) $name = '404';
-
+    public static function abort($name = '404', $minify = null, $cache = false) {
         Config::set('page_type', '404');
-
         Guardian::setResponseStatus(404);
-
         self::attach($name, $minify, $cache);
-
     }
 
 }

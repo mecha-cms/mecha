@@ -7,6 +7,13 @@ class Image {
     private static $placeholder = null;
     private static $GD = false;
 
+    public static function placeholder($url = null) {
+        if(is_array($url)) {
+            return Mecha::eat($url)->shake()->vomit();
+        }
+        return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+
     public static function take($files = null) {
         if( ! extension_loaded('gd')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
@@ -112,6 +119,8 @@ class Image {
      *
      *    Image::take('photo.jpg')->draw();
      *
+     * --------------------------------------------------------------------
+     *
      *    Image::take('photo.jpg')->draw('path/to/saved-image.jpg');
      *
      * --------------------------------------------------------------------
@@ -140,7 +149,11 @@ class Image {
      *
      *    var_dump(Image::take('photo.jpg')->getInfo());
      *
+     * --------------------------------------------------------------------
+     *
      *    var_dump(Image::take(array('a.jpg', 'b.jpg'))->getInfo());
+     *
+     * --------------------------------------------------------------------
      *
      *    echo Image::take('photo.jpg')->getInfo('width', 0);
      *
@@ -149,7 +162,7 @@ class Image {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type  | Description
      *  --------- | ----- | -----------------------------------------------
-     *  $key      | mixed | Key of the resulted array (object) data
+     *  $key      | mixed | Key of the resulted array data
      *  $fallback | mixed | Fallback value if data is not available
      *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -279,12 +292,14 @@ class Image {
      *
      * -- CODE: -----------------------------------------------------------
      *
-     *    // [1]. Cropping also Resizing (centered)
+     *    // Cropping also Resizing (centered)
      *    Image::take('photo.jpg')
      *         ->crop(200, 200)
      *         ->saveAs('cropped-photo.jpg');
      *
-     *    // [2]. Cropping without Resizing (need X and Y coordinates)
+     * --------------------------------------------------------------------
+     *
+     *    // Cropping without Resizing (need X and Y coordinates)
      *    Image::take('photo.jpg')
      *         ->crop(4, 4, 200, 200)
      *         ->saveAs('cropped-photo.jpg');
@@ -361,13 +376,19 @@ class Image {
      *         ->colorize(255, 255, 255, .8)
      *         ->saveAs('photo-2.jpg');
      *
+     * --------------------------------------------------------------------
+     *
      *    Image::take('photo.jpg')
      *         ->colorize(array(255, 255, 255, .8))
      *         ->saveAs('photo-2.jpg');
      *
+     * --------------------------------------------------------------------
+     *
      *    Image::take('photo.jpg')
      *         ->colorize('rgba(255, 255, 255, .8)')
      *         ->saveAs('photo-2.jpg');
+     *
+     * --------------------------------------------------------------------
      *
      *    Image::take('photo.jpg')
      *         ->colorize('#FFFFFF', .8)
@@ -538,6 +559,8 @@ class Image {
      *    Image::take('photo.jpg')
      *         ->pixelate(5)
      *         ->saveAs('photo-2.jpg');
+     *
+     * --------------------------------------------------------------------
      *
      *    Image::take('photo.jpg')
      *         ->pixelate(5, true)

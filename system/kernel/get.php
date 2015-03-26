@@ -2,13 +2,11 @@
 
 class Get {
 
-    public static $placeholder = 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-
     // Apply the missing filters
-    private static function AMF($data, $filter_prefix = "", $field) {
-        $output = Filter::apply($field, $data);
-        if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
-            $output = Filter::apply($filter_prefix . $field, $output);
+    private static function AMF($data, $FP = "", $F) {
+        $output = Filter::apply($F, $data);
+        if(is_string($FP) && trim($FP) !== "") {
+            $output = Filter::apply($FP . $F, $output);
         }
         return $output;
     }
@@ -599,20 +597,20 @@ class Get {
      *
      */
 
-    public static function pageExtract($input, $filter_prefix = 'page:') {
+    public static function pageExtract($input, $FP = 'page:') {
         if( ! $input) return false;
         $extension = pathinfo($input, PATHINFO_EXTENSION);
         list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension), 3);
         $kind = explode(',', $kind);
         return array(
-            'path' => self::AMF($input, $filter_prefix, 'path'),
-            'id' => self::AMF((int) Date::format($time, 'U'), $filter_prefix, 'id'),
-            'time' => self::AMF(Date::format($time), $filter_prefix, 'time'),
-            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $filter_prefix, 'last_update'),
-            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $filter_prefix, 'update'),
-            'kind' => self::AMF(Converter::strEval($kind), $filter_prefix, 'kind'),
-            'slug' => self::AMF($slug, $filter_prefix, 'slug'),
-            'state' => self::AMF($extension == 'txt' ? 'published' : 'draft', $filter_prefix, 'state')
+            'path' => self::AMF($input, $FP, 'path'),
+            'id' => self::AMF((int) Date::format($time, 'U'), $FP, 'id'),
+            'time' => self::AMF(Date::format($time), $FP, 'time'),
+            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'last_update'),
+            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
+            'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
+            'slug' => self::AMF($slug, $FP, 'slug'),
+            'state' => self::AMF($extension == 'txt' ? 'published' : 'draft', $FP, 'state')
         );
     }
 
@@ -647,19 +645,19 @@ class Get {
      */
 
     public static function commentExtract($input) {
-        $fp = 'comment:';
+        $FP = 'comment:';
         if( ! $input) return false;
         $extension = pathinfo($input, PATHINFO_EXTENSION);
         list($post, $id, $parent) = explode('_', basename($input, '.' . $extension), 3);
         return array(
-            'path' => self::AMF($input, $fp, 'path'),
-            'time' => self::AMF(Date::format($id), $fp, 'time'),
-            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $fp, 'last_update'),
-            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $fp, 'update'),
-            'post' => self::AMF((int) Date::format($post, 'U'), $fp, 'post'),
-            'id' => self::AMF((int) Date::format($id, 'U'), $fp, 'id'),
-            'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $fp, 'parent'),
-            'state' => self::AMF($extension == 'txt' ? 'approved' : 'pending', $fp, 'state')
+            'path' => self::AMF($input, $FP, 'path'),
+            'time' => self::AMF(Date::format($id), $FP, 'time'),
+            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'last_update'),
+            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
+            'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
+            'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
+            'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),
+            'state' => self::AMF($extension == 'txt' ? 'approved' : 'pending', $FP, 'state')
         );
     }
 
@@ -675,19 +673,19 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter      | Type   | Description
-     *  -------------- | ------ | -----------------------------------------------
-     *  $reference     | mixed  | Slug, ID, path or array of `Get::pageExtract()`
-     *  $excludes      | array  | Exclude some fields from results
-     *  $folder        | string | Folder of the pages
-     *  $connector     | string | Path connector for page URL
-     *  $filter_prefix | string | Filter prefix for `Text::toPage()`
-     *  -------------- | ------ | -----------------------------------------------
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $reference | mixed  | Slug, ID, path or array of `Get::pageExtract()`
+     *  $excludes  | array  | Exclude some fields from results
+     *  $folder    | string | Folder of the pages
+     *  $connector | string | Path connector for page URL
+     *  $FP        | string | Filter prefix for `Text::toPage()`
+     *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
+    public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/', $FP = 'page:') {
 
         $config = Config::get();
         $speak = Config::speak();
@@ -716,7 +714,7 @@ class Get {
          * fields. For better performance.
          */
 
-        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $filter_prefix);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $FP);
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
@@ -728,17 +726,17 @@ class Get {
         }
 
         $results['excerpt'] = "";
-        $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
 
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
+        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
 
         if( ! isset($results['description'])) {
             $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
-            $results['description'] = self::AMF($summary, $filter_prefix, 'description');
+            $results['description'] = self::AMF($summary, $FP, 'description');
         }
 
-        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, 'content', $filter_prefix) : $results;
+        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, 'content', $FP) : $results;
         $content_test = $content_test['content'];
 
         if(strpos($content_test, '<!-- cut+ ') !== false) {
@@ -749,7 +747,7 @@ class Get {
 
         if(strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = self::AMF(preg_replace('#<\/p>[\n\r]*<p><a class="fi-link"#', ' <a class="fi-link"', trim($parts[0])), $filter_prefix, 'excerpt');
+            $results['excerpt'] = self::AMF(preg_replace('#<\/p>[\n\r]*<p><a class="fi-link"#', ' <a class="fi-link"', trim($parts[0])), $FP, 'excerpt');
             $results['content'] = trim($parts[0]) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
         }
 
@@ -758,7 +756,7 @@ class Get {
             foreach($results['kind'] as $id) {
                 $tags[] = self::rawTagsBy($id);
             }
-            $results['tags'] = self::AMF($tags, $filter_prefix, 'tags');
+            $results['tags'] = self::AMF($tags, $FP, 'tags');
         }
 
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
@@ -770,12 +768,12 @@ class Get {
                 $css_raw = self::AMF($results['css_raw'], 'custom:', 'shortcode');
                 $css_raw = Filter::apply('custom:css', $css_raw);
                 $css_raw = Filter::apply('css:shortcode', $css_raw);
-                $results['css'] = self::AMF($css_raw, $filter_prefix, 'css');
+                $results['css'] = self::AMF($css_raw, $FP, 'css');
                 $js_raw = self::AMF($results['js_raw'], 'custom:', 'js_raw');
                 $js_raw = self::AMF($results['js_raw'], 'custom:', 'shortcode');
                 $js_raw = Filter::apply('custom:js', $js_raw);
                 $js_raw = Filter::apply('js:shortcode', $js_raw);
-                $results['js'] = self::AMF($js_raw, $filter_prefix, 'js');
+                $results['js'] = self::AMF($js_raw, $FP, 'js');
             } else {
                 $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
             }
@@ -784,19 +782,19 @@ class Get {
             $custom = "";
         }
 
-        $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $filter_prefix, 'images');
-        $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : self::$placeholder, $filter_prefix, 'image');
+        $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $FP, 'images');
+        $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
 
         $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
-        $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $filter_prefix, 'total_comments');
-        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] > 1 ? $speak->comments : $speak->comment), $filter_prefix, 'total_comments_text');
+        $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
+        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] > 1 ? $speak->comments : $speak->comment), $FP, 'total_comments_text');
 
         if($comments && ! isset($excludes['comments'])) {
             $results['comments'] = array();
             foreach($comments as $comment) {
                 $results['comments'][] = self::comment($comment);
             }
-            $results['comments'] = self::AMF($results['comments'], $filter_prefix, 'comments');
+            $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
         }
 
         /**
@@ -819,7 +817,7 @@ class Get {
             $init = array();
 
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] == rtrim($filter_prefix, ':')) {
+                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
                     $init[$key] = "";
                 }
             }
@@ -829,7 +827,7 @@ class Get {
              */
 
             foreach($results['fields'] as $key => $value) {
-                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $filter_prefix, 'fields.' . $key);
+                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
 
             $results['fields'] = $init;
@@ -888,7 +886,7 @@ class Get {
      */
 
     public static function comment($reference, $response_to = ARTICLE, $connector = null) {
-        $filter_prefix = 'comment:';
+        $FP = 'comment:';
         $config = Config::get();
         $results = array();
         $path = false;
@@ -909,7 +907,7 @@ class Get {
             }
         }
         if( ! $path || ! file_exists($path)) return false;
-        $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results = $results + Text::toPage(File::open($path)->read(), 'message', 'comment:');
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         $results['permalink'] = '#';
@@ -917,7 +915,7 @@ class Get {
         for($i = 0, $total = count($posts); $i < $total; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
             if((int) Date::format($time, 'U') == $results['post']) {
-                $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $filter_prefix, 'permalink');
+                $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $FP, 'permalink');
                 break;
             }
         }
@@ -941,33 +939,33 @@ class Get {
      *  $path          | string | The URL path of the page file, or a page slug
      *  $folder        | string | Folder of the pages
      *  $connector     | string | See `Get::page()`
-     *  $filter_prefix | string | See `Get::page()`
+     *  $FP | string | See `Get::page()`
      *  -------------- | ------ | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pageHeader($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
+    public static function pageHeader($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::pagePath($path, $folder); // By page slug, ID or time
         }
         if( ! $path) return false;
-        $results = self::pageExtract($path) + Text::toPage($path, false, $filter_prefix);
-        $results['date'] = self::AMF(Date::extract($results['time']), $filter_prefix, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $filter_prefix, 'author');
-        if( ! isset($results['description'])) $results['description'] = self::AMF("", $filter_prefix, 'description');
+        $results = self::pageExtract($path) + Text::toPage($path, false, $FP);
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
+        if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         if( ! isset($results['fields'])) $results['fields'] = array();
         $fields = self::state_field(array());
         $init = array();
         foreach($fields as $key => $value) {
-            if( ! isset($value['scope']) || $value['scope'] == rtrim($filter_prefix, ':')) {
+            if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
                 $init[$key] = "";
             }
         }
         foreach($results['fields'] as $key => $value) {
-            $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $filter_prefix, 'fields.' . $key);
+            $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
         }
         $results['fields'] = $init;
         return Mecha::O($results);
@@ -1007,13 +1005,13 @@ class Get {
      *  $path          | string | The URL path of the page file, or a page slug
      *  $folder        | string | Folder of the pages
      *  $connector     | string | See `Get::page()`
-     *  $filter_prefix | string | See `Get::page()`
+     *  $FP | string | See `Get::page()`
      *  -------------- | ------ | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $filter_prefix = 'page:') {
+    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::pagePath($path, $folder); // By page slug, ID or time
@@ -1022,8 +1020,8 @@ class Get {
             $results = self::pageExtract($path);
             $parts = explode(':', fgets($handle, 4096), 2);
             fclose($handle);
-            $results['url'] = self::AMF($config->url . $connector . $results['slug'], $filter_prefix, 'url');
-            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $filter_prefix, 'title');
+            $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $FP, 'title');
             return Mecha::O($results);
         }
         return false;
@@ -1223,7 +1221,7 @@ class Get {
 
     public static function imageURL($source, $sequence = 1, $fallback = '?') {
         $images = self::imagesURL($source, array());
-        return isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? self::$placeholder : $fallback);
+        return isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? Image::placeholder() : $fallback);
     }
 
     /**

@@ -1,30 +1,5 @@
 <?php
 
-/**
- * =======================================================
- *  TEXT PARSERS
- * =======================================================
- *
- * -- CODE: ----------------------------------------------
- *
- *    // Basic parser
- *    echo Text::parse('some text')->to_slug;
- *    echo Text::parse('some text', $foo, $bar)->to_slug;
- *
- *    // Fast parser
- *    echo Text::parse('some text', '->slug');
- *    echo Text::parse('some text', '->slug', $foo, $bar);
- *
- *    // Perform a test
- *    var_dump(Text::parse('some text'));
- *
- *    // Convert text into array
- *    Text::toArray("Key 1: Value 1\nKey 2: Value 2");
- *
- * -------------------------------------------------------
- *
- */
-
 class Text {
 
     private static $parsers = array();
@@ -77,7 +52,11 @@ class Text {
      *
      *    var_dump(Text::parse($input));
      *
+     * ---------------------------------------------------------------------
+     *
      *    echo Text::parse($input)->to_upper_case;
+     *
+     * ---------------------------------------------------------------------
      *
      *    echo Text::parse($input, '->upper_case');
      *
@@ -110,16 +89,18 @@ class Text {
      *
      *    var_dump(Text::toPage($path));
      *
+     * ---------------------------------------------------------------------
+     *
      *    var_dump(Text::toPage($content));
      *
      * ---------------------------------------------------------------------
      *
      */
 
-    public static function toPage($text, $parse_content = 'content', $filter_prefix = 'page:') {
+    public static function toPage($text, $parse_content = 'content', $FP = 'page:') {
         $results = array();
         $c = $parse_content !== false ? $parse_content : 'content';
-        $FP = is_string($filter_prefix) && trim($filter_prefix) !== "";
+        $FP = is_string($FP) && trim($FP) !== "";
         if( ! $parse_content) {
             // By file path
             if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) {
@@ -132,7 +113,7 @@ class Text {
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                    if($FP) $value = Filter::apply($filter_prefix . $key, $value);
+                    if($FP) $value = Filter::apply($FP . $key, $value);
                     $results[$key] = $value;
                 }
             // By file content
@@ -146,7 +127,7 @@ class Text {
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
                         $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                        if($FP) $value = Filter::apply($filter_prefix . $key, $value);
+                        if($FP) $value = Filter::apply($FP . $key, $value);
                         $results[$key] = $value;
                     }
                     $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
@@ -169,8 +150,8 @@ class Text {
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                    if(is_string($filter_prefix) && trim($filter_prefix) !== "") {
-                        $value = Filter::apply($filter_prefix . $key, $value);
+                    if(is_string($FP) && trim($FP) !== "") {
+                        $value = Filter::apply($FP . $key, $value);
                     }
                     $results[$key] = $value;
                 }
@@ -198,14 +179,14 @@ class Text {
                     $v = Filter::apply($c . '_raw', $v, $k);
                     $v = Filter::apply('shortcode', $v, $k);
                     if($FP) {
-                        $v = Filter::apply($filter_prefix . $c . '_raw', $v, $k);
-                        $v = Filter::apply($filter_prefix . 'shortcode', $v, $k);
+                        $v = Filter::apply($FP . $c . '_raw', $v, $k);
+                        $v = Filter::apply($FP . 'shortcode', $v, $k);
                     }
                     $results[$c . '_raw'][$k] = $v;
                     $vv = $parse && $parse_content ? Text::parse($v, '->html') : $v;
                     $vv = Filter::apply($c, $vv, $k);
                     if($FP) {
-                        $vv = Filter::apply($filter_prefix . $c, $vv, $k);
+                        $vv = Filter::apply($FP . $c, $vv, $k);
                     }
                     $results[$c][$k] = $vv;
                 }
@@ -213,13 +194,13 @@ class Text {
                 $results[$c . '_raw'] = Filter::apply($c . '_raw', $results[$c . '_raw'], 0);
                 $results[$c . '_raw'] = Filter::apply('shortcode', $results[$c . '_raw'], 0);
                 if($FP) {
-                    $results[$c . '_raw'] = Filter::apply($filter_prefix . $c . '_raw', $results[$c . '_raw'], 0);
-                    $results[$c . '_raw'] = Filter::apply($filter_prefix . 'shortcode', $results[$c . '_raw'], 0);
+                    $results[$c . '_raw'] = Filter::apply($FP . $c . '_raw', $results[$c . '_raw'], 0);
+                    $results[$c . '_raw'] = Filter::apply($FP . 'shortcode', $results[$c . '_raw'], 0);
                 }
                 $the_content = $parse && $parse_content ? Text::parse($results[$c . '_raw'], '->html') : $results[$c . '_raw'];
                 $the_content = Filter::apply($c, $the_content, 0);
                 if($FP) {
-                    $the_content = Filter::apply($filter_prefix . $c, $the_content, 0);
+                    $the_content = Filter::apply($FP . $c, $the_content, 0);
                 }
                 $results[$c] = $the_content;
             }
@@ -234,19 +215,15 @@ class Text {
      *
      * -- CODE: ------------------------------------------------------------
      *
-     *    var_dump(Text::toArray($input));
+     *    var_dump(Text::toArray("key 1: value 1\nkey 2: value 2"));
      *
      * ---------------------------------------------------------------------
      *
      */
 
     public static function toArray($text, $s = ':', $indent = '    ') {
-        if(is_array($text)) {
-            return $text;
-        }
-        if(is_object($text)) {
-            return Mecha::A($text);
-        }
+        if(is_array($text)) return $text;
+        if(is_object($text)) return Mecha::A($text);
         $results = array();
         $data = array();
         $indent_length = strlen($indent);
@@ -283,8 +260,8 @@ class Text {
             foreach($data as $depth => $key) {
                 if( ! isset($parent[$key])) {
                     if($is_assoc) {
-                        $values = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
-                        $parent[rtrim($parts[0])] = Converter::strEval($values);
+                        $value = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
+                        $parent[rtrim($parts[0])] = Converter::strEval($value);
                     } else {
                         $parent[$key] = array();
                     }

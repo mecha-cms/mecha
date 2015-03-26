@@ -18,14 +18,15 @@
 
 class Page {
 
+    public static $open = null;
     public static $bucket = array();
     public static $bucket_alt = "";
-    public static $open = null;
 
     private static function fix($key) {
         return trim(str_replace(':', "", $key));
     }
 
+    // Open the page file
     public static function open($path) {
         self::$bucket = array();
         self::$open = $path;
@@ -39,6 +40,7 @@ class Page {
         return new static;
     }
 
+    // Add page header or update the existing page header data
     public static function header($data = array(), $value = "") {
         if( ! is_array($data)) {
             $data = array(self::fix($data) => $value);
@@ -52,11 +54,13 @@ class Page {
         return new static;
     }
 
+    // Add page content or update the existing page content
     public static function content($data = "") {
         self::$bucket_alt = trim(self::$bucket_alt) !== "" && is_null(self::$open) ? trim(self::$bucket_alt) . (trim($data) !== "" ? "\n\n" . SEPARATOR . "\n\n" . $data : "") : $data;
         return new static;
     }
 
+    // Show page data as plain text
     public static function put() {
         $output = "";
         foreach(self::$bucket as $key => $value) {
@@ -65,8 +69,9 @@ class Page {
         return trim($output) !== "" ? trim($output) . (trim(self::$bucket_alt) !== "" ? "\n\n" . SEPARATOR . "\n\n" . self::$bucket_alt : "") : self::$bucket_alt;
     }
 
-    public static function read($content = 'content', $filter_prefix = 'page:') {
-        $results = Text::toPage(self::put(), $content, $filter_prefix);
+    // Show page data as object
+    public static function read($content = 'content', $FP = 'page:') {
+        $results = Text::toPage(self::put(), $content, $FP);
         if($content === false) {
             unset($results['content']);
             unset($results['content_raw']);
@@ -74,11 +79,13 @@ class Page {
         return $results;
     }
 
+    // Save the opened page
     public static function save($permission = 0600) {
         File::write(self::put())->saveTo(self::$open, $permission);
         self::$open = null;
     }
 
+    // Save the generated page to ...
     public static function saveTo($path, $permission = 0600) {
         self::$open = $path;
         return self::save($permission);

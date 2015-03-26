@@ -12,61 +12,110 @@
  *        'file-2.txt' => 'file-2.txt'
  *    ))->pack('file.zip');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack();
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack();
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack('package.zip');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack('package.zip');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack('foo/bar/package.zip');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack('foo/bar/package.zip');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack('file.zip', 'folder');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack('file.zip', 'folder');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack('file.zip', 'folder/again');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack('file.zip', 'folder/again');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('path/to/directory')->pack(null, true);
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('path/to/file.txt')->pack(null, true);
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->extract();
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('file.zip')->extract('folder');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->extractTo('path/to/directory');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('file.zip')->extractTo('path/to/directory', 'folder');
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->addFile('file-1.txt', 'file-1.txt');
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('file.zip')->addFiles(array(
  *        'file-1.txt' => 'file-1.txt',
  *        'file-2.txt' => 'file-2.txt'
  *    ));
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->deleteFile('file-1.txt');
  *
- *    Package::take('file.zip')->deleteFiles('file-1.txt', 'file-2.txt'));
+ * -------------------------------------------------------------------------
+ *
+ *    Package::take('file.zip')->deleteFiles(
+ *        'file-1.txt',
+ *        'file-2.txt'
+ *    ));
+ *
+ * -------------------------------------------------------------------------
  *
  *    Package::take('file.zip')->renameFiles(array(
  *        'foo.txt' => 'bar.txt',
  *        'baz.txt' => 'foo.txt'
  *    ));
  *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->renameFile('foo.txt', 'bar.txt');
+ *
+ * -------------------------------------------------------------------------
  *
  *    echo Package::take('file.zip')->getContent('file-1.txt');
  *
- *    var_dump(Package::take('file.zip')->getInfo());
+ * -------------------------------------------------------------------------
  *
- *    // etc.
+ *    var_dump(Package::take('file.zip')->getInfo());
  *
  * -------------------------------------------------------------------------
  *
@@ -345,18 +394,19 @@ class Package {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ----------------------------------------------
-     *  $files    | array  | Array of old file name and new file name
+     *  $old      | array  | Array of old file name and new file name
      *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function renameFiles($files, $new = "") {
+    public static function renameFiles($old, $new = "") {
         $zip = new ZipArchive();
         if(File::exist(self::$open) && $zip->open(self::$open)) {
             if(is_array($old)) {
                 foreach($old as $k => $v) {
                     $k = File::path($k);
+                    $v = File::path($v);
                     $root = trim(dirname($k), '\\/.') !== "" ? dirname($k) . DS : "";
                     $zip->renameName($k, $root . basename($v));
                 }

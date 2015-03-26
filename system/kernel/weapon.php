@@ -16,6 +16,8 @@ class Weapon {
      *        echo 'Tank added!';
      *    });
      *
+     * --------------------------------------------------------------
+     *
      *    Weapon::add('jet', function($color, $version) {
      *        echo $color . ' version ' . $version . ' jet added!';
      *    });
@@ -48,6 +50,8 @@ class Weapon {
      * -- CODE: -----------------------------------------------------
      *
      *    Weapon::fire('tank');
+     *
+     * --------------------------------------------------------------
      *
      *    Weapon::fire('jet', array('Blue', '1.1.0'));
      *
@@ -128,6 +132,8 @@ class Weapon {
      *    if(Weapon::exist('bazooka')) {
      *        echo 'You are safe. And you are a terrorist.';
      *    }
+     *
+     * --------------------------------------------------------------
      *
      *    var_dump(Weapon::exist()); // inspect!
      *

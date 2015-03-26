@@ -7,12 +7,19 @@
  *
  * -- CODE: -------------------------------------
  *
- *    // [1]. Set
+ *    // Set
  *    Notify::error('Hi, there was an error!');
  *    Notify::info('PS: Hi again!');
  *
- *    // [2]. Get
+ * ----------------------------------------------
+ *
+ *    // Get
  *    echo Notify::read();
+ *
+ * ----------------------------------------------
+ *
+ *    // Clear
+ *    echo Notify::clear();
  *
  * ----------------------------------------------
  *
@@ -20,7 +27,7 @@
 
 class Notify {
 
-    public static $message = 'mecha_notification';
+    public static $message = 'message';
     public static $errors = 0;
 
     public static $config = array(
@@ -77,7 +84,7 @@ class Notify {
         Session::kill(self::$message);
     }
 
-    public static function send($from, $to, $subject, $message, $filter_prefix = 'common:') {
+    public static function send($from, $to, $subject, $message, $FP = 'common:') {
 
         if(trim($to) === "" || ! Guardian::check($to, '->email')) return false;
 
@@ -88,26 +95,11 @@ class Notify {
         $header .= "Return-Path: " . $from . "\r\n";
         $header .= "X-Mailer: PHP/" . phpversion();
 
-        $header = Filter::apply($filter_prefix . 'notification.email.header', $header);
-        $message = Filter::apply($filter_prefix . 'notification.email.message', $message);
+        $header = Filter::apply($FP . 'notification.email.header', $header);
+        $message = Filter::apply($FP . 'notification.email.message', $message);
 
         return mail($to, $subject, $message, $header);
 
-    }
-
-    public static function configure($key, $value = null) {
-        if(is_array($key)) {
-            Mecha::extend(self::$config, $key);
-        } else {
-            if(is_array($value)) {
-                foreach($value as $k => $v) {
-                    self::$config[$key][$k] = $v;
-                }
-            } else {
-                self::$config[$key] = $value;
-            }
-        }
-        return new static;
     }
 
 }

@@ -45,6 +45,8 @@ class Widget {
          *        ...
          *    ));
          *
+         * --------------------------------------------------------------------------------------------------
+         *
          *    Config::merge('manager_menu', array(
          *        '<i class="fa fa-fw fa-name"></i> <span class="label">Menu 1</span>' => '/page-1',
          *        '<i class="fa fa-fw fa-name"></i> <span class="label">Menu 2</span>' => '/page-2',
@@ -342,7 +344,7 @@ class Widget {
      * -------------------
      *
      * [1]. Widget::relatedPost();
-     * [2]. Widget::relatedPost(10);
+     * [2]. Widget::relatedPost(5);
      *
      */
 
@@ -381,7 +383,7 @@ class Widget {
      * ---------------------
      *
      * [1]. Widget::recentComment();
-     * [2]. Widget::recentComment(10);
+     * [2]. Widget::recentComment(5);
      *
      */
 

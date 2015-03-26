@@ -181,14 +181,15 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             if( ! Notify::errors()) {
                 Page::open($article->path)->header($header)->content($content)->save();
                 File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
-                $custom = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s') . $extension;
-                if(File::exist($custom)) {
-                    if(trim(File::open($custom)->read()) === "" || trim(File::open($custom)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->article_custom_css && $js == $config->defaults->article_custom_js)) {
+                $custom_ = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s');
+                File::open($custom_ . '.draft')->delete();
+                if(File::exist($custom_ . $extension)) {
+                    if(trim(File::open($custom_ . $extension)->read()) === "" || trim(File::open($custom_ . $extension)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->article_custom_css && $js == $config->defaults->article_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
-                        File::open($custom)->delete();
+                        File::open($custom_ . $extension)->delete();
                     } else {
-                        Page::content($css)->content($js)->save();
-                        File::open($custom)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
+                        Page::content($css)->content($js)->saveTo($custom_ . $extension);
+                        File::open($custom_ . $extension)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
                     if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
