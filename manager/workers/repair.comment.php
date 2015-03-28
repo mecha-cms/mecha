@@ -1,7 +1,9 @@
 <?php $segment = 'comment'; ?>
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><i class="fa fa-fw fa-pencil"></i> <?php echo $speak->edit; ?></a>
+  <?php if(isset($default->fields)): ?>
   <a class="tab" href="#tab-content-3"><i class="fa fa-fw fa-th-list"></i> <?php echo $speak->fields; ?></a>
+  <?php endif; ?>
   <a class="tab ajax-post" href="#tab-content-2" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:comment'; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-repair" data-target="#form-repair-preview"><i class="fa fa-fw fa-eye"></i> <?php echo $speak->preview; ?></a>
 </div>
 <div class="tab-content-area">

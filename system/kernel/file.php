@@ -153,6 +153,24 @@ class File {
         return file_exists(self::$open) ? file_get_contents(self::$open) : $fallback;
     }
 
+    // Read the opened file line by line
+    public static function get($stop_at = 9999, $fallback = false, $chars = 1024) {
+        $i = 0;
+        if($handle = fopen(self::$open, 'r')) {
+            $results = "";
+            while(($buffer = fgets($handle, $chars)) !== false) {
+                if(is_int($stop_at) && $stop_at === $i || is_string($stop_at) && strpos($buffer, $stop_at) !== false) {
+                    break;
+                }
+                $results .= $buffer;
+                $i++;
+            }
+            fclose($handle);
+            return rtrim($results);
+        }
+        return $fallback;
+    }
+
     // Write something before saving
     public static function write($data) {
         self::$cache = $data;

@@ -157,7 +157,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         // New
         if( ! $id) {
             if( ! Notify::errors()) {
-                Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
+                Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
                     Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                 }
@@ -179,7 +179,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // Start rewriting ...
             if( ! Notify::errors()) {
                 Page::open($page->path)->header($header)->content($content)->save();
-                File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_0_' . $slug . $extension);
+                File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 $custom_ = CUSTOM . DS . Date::format($page->date->W3C, 'Y-m-d-H-i-s');
                 if(File::exist($custom_ . $extension_o)) {
                     if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->page_custom_css && $js == $config->defaults->page_custom_js)) {

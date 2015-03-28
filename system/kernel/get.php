@@ -802,9 +802,7 @@ class Get {
          * Custom fields ...
          */
 
-        if( ! isset($results['fields'])) $results['fields'] = array();
-
-        if( ! isset($excludes['fields'])) {
+        if( ! isset($excludes['fields']) && isset($results['fields']) && is_array($results['fields'])) {
 
             /**
              * Initialize custom fields with the default values so that users
@@ -915,23 +913,24 @@ class Get {
         $posts = glob($response_to . DS . '*.txt');
         for($i = 0, $total = count($posts); $i < $total; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
-            if((int) Date::format($time, 'U') == $results['post']) {
+            if((int) Date::format($time, 'U') === $results['post']) {
                 $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $FP, 'permalink');
                 break;
             }
         }
-        if( ! isset($results['fields'])) $results['fields'] = array();
-        $fields = self::state_field(array());
-        $init = array();
-        foreach($fields as $key => $value) {
-            if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
-                $init[$key] = $value['value'];
+        if(isset($results['fields']) && is_array($results['fields'])) {
+            $fields = self::state_field(array());
+            $init = array();
+            foreach($fields as $key => $value) {
+                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                    $init[$key] = $value['value'];
+                }
             }
+            foreach($results['fields'] as $key => $value) {
+                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+            }
+            $results['fields'] = $init;
         }
-        foreach($results['fields'] as $key => $value) {
-            $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
-        }
-        $results['fields'] = $init;
         return Mecha::O($results);
     }
 
@@ -969,18 +968,19 @@ class Get {
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
-        if( ! isset($results['fields'])) $results['fields'] = array();
-        $fields = self::state_field(array());
-        $init = array();
-        foreach($fields as $key => $value) {
-            if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
-                $init[$key] = $value['value'];
+        if(isset($results['fields']) && is_array($results['fields'])) {
+            $fields = self::state_field(array());
+            $init = array();
+            foreach($fields as $key => $value) {
+                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                    $init[$key] = $value['value'];
+                }
             }
+            foreach($results['fields'] as $key => $value) {
+                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+            }
+            $results['fields'] = $init;
         }
-        foreach($results['fields'] as $key => $value) {
-            $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
-        }
-        $results['fields'] = $init;
         return Mecha::O($results);
     }
 
@@ -1029,10 +1029,9 @@ class Get {
         if(strpos($path, ROOT) === false) {
             $path = self::pagePath($path, $folder); // By page slug, ID or time
         }
-        if($path && $handle = fopen($path, 'r')) {
+        if($path && ($buffer = File::open($path)->get(1)) !== false) {
             $results = self::pageExtract($path);
-            $parts = explode(':', fgets($handle, 4096), 2);
-            fclose($handle);
+            $parts = explode(':', $buffer, 2);
             $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
             $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $FP, 'title');
             return Mecha::O($results);

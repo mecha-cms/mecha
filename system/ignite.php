@@ -120,8 +120,8 @@ if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
     }
     for($j = 0; $j < $plugins_payload; ++$j) {
         if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {
-            $index = Mecha::edge(((int) file_get_contents($overtake)) - 1, 0, $plugins_payload - 1);
-            $plugins = Mecha::walk($plugins)->to($index)->before(dirname($plugins_list[$j]))->vomit();
+            $to_index = Mecha::edge((int) file_get_contents($overtake) - 1, 0, $plugins_payload - 1);
+            array_splice($plugins, $to_index, 0, array(dirname($plugins_list[$j])));
         } else {
             $plugins[$j] = dirname($plugins_list[$j]);
         }

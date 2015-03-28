@@ -103,13 +103,9 @@ class Text {
         $FP = is_string($FP) && trim($FP) !== "";
         if( ! $parse_content) {
             // By file path
-            if(strpos($text, ROOT) === 0 && $handle = fopen($text, 'r')) {
-                while(($buffer = fgets($handle, 4096)) !== false) {
-                    if(trim($buffer) === "" || trim($buffer) == SEPARATOR) {
-                        fclose($handle);
-                        break;
-                    }
-                    $field = explode(':', $buffer, 2);
+            if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
+                foreach(explode("\n", $buffer) as $header) {
+                    $field = explode(':', $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
