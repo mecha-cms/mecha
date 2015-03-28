@@ -203,7 +203,7 @@ class Converter {
             return (string) $results;
         } else {
             $results = array();
-            foreach(Mecha::A($input) as $key => $value) {
+            foreach($input as $key => $value) {
                 $results[$key] = self::str($value);
             }
         }
@@ -247,7 +247,7 @@ class Converter {
             $results = str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
         } elseif(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
-        } elseif(is_array($input)) {
+        } elseif(is_array($input) || is_object($input)) {
             $results = array();
             foreach($input as $key => $value) {
                 $results[$key] = self::strEval($value);

@@ -327,23 +327,17 @@ class Guardian {
      *
      */
 
-    public static function authorize($username = null, $password = null, $token = null) {
+    public static function authorize($user = 'username', $pass = 'password', $token = 'token') {
         $config = Config::get();
         $speak = Config::speak();
-        if(is_null($username)) {
-            $username = isset($_POST['username']) ? $_POST['username'] : "";
-        }
-        if(is_null($password)) {
-            $password = isset($_POST['password']) ? $_POST['password'] : "";
-        }
-        if(is_null($token)) {
-            $token = isset($_POST['token']) ? $_POST['token'] : "";
-        }
         $users = Text::toArray(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read());
+        $user = isset($_POST[$user]) ? $_POST[$user] : "";
+        $pass = isset($_POST[$pass]) ? $_POST[$pass] : "";
+        $token = isset($_POST[$token]) ? $_POST[$token] : "";
         $authors = array();
-        foreach($users as $user => $detail) {
-            preg_match('#^(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)( +(.*?))?$#', $detail, $matches);
-            $authors[$user] = array(
+        foreach($users as $key => $value) {
+            preg_match('#^(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)( +(.*?))?$#', $value, $matches);
+            $authors[$key] = array(
                 'password' => trim($matches[1]),
                 'author' => trim($matches[2]),
                 'status' => trim($matches[3]),
@@ -351,18 +345,18 @@ class Guardian {
             );
         }
         self::checkToken($token);
-        if(trim($username) !== "" && trim($password) !== "") {
-            if(isset($authors[$username]) && $password === $authors[$username]['password']) {
+        if(trim($user) !== "" && trim($pass) !== "") {
+            if(isset($authors[$user]) && $pass === $authors[$user]['password']) {
                 $token_o = self::token();
                 Session::set('cookie:' . self::$user, array(
                     'token' => $token_o,
-                    'username' => $username,
-                    // 'password' => $authors[$_POST['username']]['password'],
-                    'author' => $authors[$username]['author'],
-                    'status' => $authors[$username]['status'],
-                    'email' => $authors[$username]['email']
+                    'username' => $user,
+                    // 'password' => $authors[$user]['password'],
+                    'author' => $authors[$user]['author'],
+                    'status' => $authors[$user]['status'],
+                    'email' => $authors[$user]['email']
                 ), 30, '/', "", false, true);
-                File::write($token_o)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($username, '->safe_file_name') . '.log', 0600);
+                File::write($token_o)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
@@ -491,7 +485,7 @@ class Guardian {
 
     /**
      * ============================================================
-     *  SET HTTP RESPONSE STATUS
+     *  SET HTTP RESPONSE STATUS (DEPRECATED)
      * ============================================================
      *
      * -- CODE: ---------------------------------------------------

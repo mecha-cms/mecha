@@ -63,8 +63,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 Package::take($uploaded)->extract(); // Extract the ZIP file
                 File::open($uploaded)->delete(); // Delete the ZIP file
                 if(File::exist(PLUGIN . DS . $path . DS . 'launch.php')) {
-                    Weapon::fire('on_plugin_mounted', array($P, $P));
-                    Weapon::fire('on_plugin_' . md5($path) . '_mounted', array($P, $P));
+                    Weapon::fire('on_plugin_mount', array($P, $P));
+                    Weapon::fire('on_plugin_' . md5($path) . '_mount', array($P, $P));
                     Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                 } else {
                     Guardian::kick($config->manager->slug . '/plugin?q_id=' . $path);
@@ -152,7 +152,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'freeze' ? 'eject' : 'mounted';
+    $mode = $path == 'freeze' ? 'eject' : 'mount';
     Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
     Weapon::fire('on_plugin_update', array($G, $G));
     Weapon::fire('on_plugin_' . $mode, array($G, $G));

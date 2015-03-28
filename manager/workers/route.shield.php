@@ -253,7 +253,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     $new_config['shield'] = $path == 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'attach' ? 'mounted' : 'eject';
+    $mode = $path == 'eject' ? 'eject' : 'mount';
     Notify::success(Config::speak('notify_success_updated', array($speak->shield)));
     Weapon::fire('on_shield_update', array($G, $G));
     Weapon::fire('on_shield_' . $mode, array($G, $G));

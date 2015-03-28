@@ -254,6 +254,7 @@ class Shield {
 
     public static function abort($name = '404', $minify = null, $cache = false) {
         Config::set('page_type', '404');
+        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
         Guardian::setResponseStatus(404);
         self::attach($name, $minify, $cache);
     }

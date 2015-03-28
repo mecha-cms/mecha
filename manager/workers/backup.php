@@ -12,14 +12,14 @@
 
         $origins = array(
             $speak->site => 'root',
-            $speak->articles => basename(ARTICLE),
-            $speak->pages => basename(PAGE),
+            $speak->article => basename(ARTICLE),
+            $speak->page => basename(PAGE),
             $speak->manager->title_custom_css_and_js => basename(CUSTOM),
-            $speak->comments => basename(RESPONSE),
-            $speak->configs => basename(STATE),
-            $speak->assets => basename(ASSET),
-            $speak->shields => basename(SHIELD),
-            $speak->plugins => basename(PLUGIN)
+            $speak->comment => basename(RESPONSE),
+            $speak->config => basename(STATE),
+            $speak->asset => basename(ASSET),
+            $speak->shield => basename(SHIELD),
+            $speak->plugin => basename(PLUGIN)
         );
 
         ?>
@@ -38,14 +38,14 @@
     <?php
 
     $destinations = array(
-        $speak->articles => ARTICLE,
-        $speak->pages => PAGE,
+        $speak->article => ARTICLE,
+        $speak->page => PAGE,
         $speak->manager->title_custom_css_and_js => CUSTOM,
-        $speak->comments => RESPONSE,
-        $speak->configs => STATE,
-        $speak->assets => ASSET,
-        $speak->shields => SHIELD,
-        $speak->plugins => PLUGIN
+        $speak->comment => RESPONSE,
+        $speak->config => STATE,
+        $speak->asset => ASSET,
+        $speak->shield => SHIELD,
+        $speak->plugin => PLUGIN
     );
 
     ?>
