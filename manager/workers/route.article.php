@@ -114,22 +114,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Restrict users from inputting the `SEPARATOR` constant
-        // to prevent mistakes in parsing the file content
-        $title = Text::ES($title);
-        $description = Text::ES($description);
-        $content = Text::ES($content);
-        $author = Text::ES($author);
-        $css = Text::ES($css);
-        $js = Text::ES($js);
         sort($kinds);
-        if( ! empty($field)) {
-            foreach($field as $k => $v) {
-                if(isset($v['value']) && is_string($v['value'])) {
-                    $field[$k]['value'] = Text::ES($v['value']);
-                }
-            }
-        }
         // Check for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
             Notify::error(Config::speak('notify_error_slug_exist', array($slug)));

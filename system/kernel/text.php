@@ -126,7 +126,7 @@ class Text {
                         if($FP) $value = Filter::apply($FP . $key, $value);
                         $results[$key] = $value;
                     }
-                    $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
+                    $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
                 }
             }
         } else {
@@ -151,7 +151,7 @@ class Text {
                     }
                     $results[$key] = $value;
                 }
-                $results[$c . '_raw'] = isset($parts[1]) ? self::DS(trim($parts[1])) : "";
+                $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
             }
         }
 
@@ -171,7 +171,7 @@ class Text {
             if(count($content_extra) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_extra as $k => $v) {
-                    $v = trim($v);
+                    $v = self::DS(trim($v));
                     $v = Filter::apply($c . '_raw', $v, $k);
                     $v = Filter::apply('shortcode', $v, $k);
                     if($FP) {
@@ -187,18 +187,20 @@ class Text {
                     $results[$c][$k] = $vv;
                 }
             } else {
-                $results[$c . '_raw'] = Filter::apply($c . '_raw', $results[$c . '_raw'], 0);
-                $results[$c . '_raw'] = Filter::apply('shortcode', $results[$c . '_raw'], 0);
+                $v = self::DS($results[$c . '_raw']);
+                $v = Filter::apply($c . '_raw', $v, 0);
+                $v = Filter::apply('shortcode', $v, 0);
                 if($FP) {
-                    $results[$c . '_raw'] = Filter::apply($FP . $c . '_raw', $results[$c . '_raw'], 0);
-                    $results[$c . '_raw'] = Filter::apply($FP . 'shortcode', $results[$c . '_raw'], 0);
+                    $v = Filter::apply($FP . $c . '_raw', $v, 0);
+                    $v = Filter::apply($FP . 'shortcode', $v, 0);
                 }
-                $the_content = $parse && $parse_content ? Text::parse($results[$c . '_raw'], '->html') : $results[$c . '_raw'];
-                $the_content = Filter::apply($c, $the_content, 0);
+                $results[$c . '_raw'] = $v;
+                $v = $parse && $parse_content ? Text::parse($v, '->html') : $v;
+                $v = Filter::apply($c, $v, 0);
                 if($FP) {
-                    $the_content = Filter::apply($FP . $c, $the_content, 0);
+                    $v = Filter::apply($FP . $c, $v, 0);
                 }
-                $results[$c] = $the_content;
+                $results[$c] = $v;
             }
         }
         return $results;

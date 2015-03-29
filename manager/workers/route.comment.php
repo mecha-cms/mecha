@@ -76,20 +76,11 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         }
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
-            // Restrict users from inputting the `SEPARATOR` constant
-            // to prevent mistakes in parsing the file content
-            $name = Text::ES($request['name']);
+            $name = $request['name'];
             $email = Text::parse($request['email'], '->ascii');
-            $url = Text::ES(Request::post('url', '#'));
-            $message = Text::ES($request['message']);
+            $url = Request::post('url', '#');
+            $message = $request['message'];
             $field = Request::post('fields', array());
-            if( ! empty($field)) {
-                foreach($field as $k => $v) {
-                    if(isset($v['value']) && is_string($v['value'])) {
-                        $field[$k]['value'] = Text::ES($v['value']);
-                    }
-                }
-            }
             // Update data
             Page::open($comment->path)->header(array(
                 'Name' => $name,

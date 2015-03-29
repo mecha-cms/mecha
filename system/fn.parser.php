@@ -176,10 +176,10 @@ Text::parser('to_safe_file_name', function($input) {
     $parts = explode('.', $input);
     $parts_output = array();
     foreach($parts as $part) {
-        $parts_output[] = do_slug($part, '-', true, false);
+        $part = do_slug($part, '-', true, false);
+        $parts_output[] = trim($part, '-');
     }
-    $ext = array_pop($parts_output);
-    return implode('.', $parts_output) . '.' . trim(strtolower($ext), '-');
+    return implode('.', $parts_output);
 });
 
 // < 1.1.3

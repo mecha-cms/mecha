@@ -429,21 +429,12 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             $P = array('data' => $request);
 
-            // Restrict users from inputting the `SEPARATOR` constant
-            // to prevent mistakes in parsing the file content
-            $name = Text::ES(strip_tags($request['name']));
+            $name = strip_tags($request['name']);
             $email = Text::parse($request['email'], '->ascii');
-            $url = Text::ES(Request::post('url', '#'));
+            $url = Request::post('url', '#');
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
-            $message = Text::ES($request['message']);
+            $message = $request['message'];
             $field = Request::post('fields', array());
-            if( ! empty($field)) {
-                foreach($field as $k => $v) {
-                    if(isset($v['value']) && is_string($v['value'])) {
-                        $field[$k]['value'] = Text::ES($v['value']);
-                    }
-                }
-            }
 
             // Temporarily disallow images in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser == 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));

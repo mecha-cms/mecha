@@ -12,9 +12,9 @@ Route::accept($config->manager->slug . '/ajax/preview:(article|page)', function(
     $P['kind'] = $kind;
     Weapon::fire('preview_before', array($P, $P));
     $file = Text::toPage(Page::header(array(
-        'Title' => trim($request['title']) !== "" ? Text::ES($request['title']) : $speak->untitled . ' ' . date('Y/m/d H:i:s'),
+        'Title' => trim($request['title']) !== "" ? $request['title'] : $speak->untitled . ' ' . date('Y/m/d H:i:s'),
         'Content Type' => isset($request['content_type']) ? $request['content_type'] : 'HTML'
-    ))->content(trim($request['content']) !== "" ? Text::ES($request['content']) : Config::speak('notify_empty', array(strtolower($speak->contents))))->put());
+    ))->content(trim($request['content']) !== "" ? $request['content'] : Config::speak('notify_empty', array(strtolower($speak->contents))))->put());
     Weapon::fire('preview_title_before', array($P, $P));
     echo '<h2 class="preview-title preview-' . $kind . '-title">' . $file['title'] . '</h2>';
     Weapon::fire('preview_title_after', array($P, $P));
@@ -38,7 +38,7 @@ Route::accept($config->manager->slug . '/ajax/preview:comment', function() use($
     $P['kind'] = 'comment';
     Weapon::fire('preview_before', array($P, $P));
     echo '<div class="preview">';
-    $file = Text::toPage(Page::header('Content Type', isset($request['content_type']) ? $request['content_type'] : 'HTML')->content(trim($request['message']) !== "" ? Text::ES($request['message']) : Config::speak('notify_empty', array(strtolower($speak->contents))))->put(), 'message', 'comment:');
+    $file = Text::toPage(Page::header('Content Type', isset($request['content_type']) ? $request['content_type'] : 'HTML')->content(trim($request['message']) !== "" ? $request['message'] : Config::speak('notify_empty', array(strtolower($speak->contents))))->put(), 'message', 'comment:');
     Weapon::fire('preview_content_before', array($P, $P));
     echo '<div class="preview-content preview-comment-content p">' . $file['message'] . '</div>';
     Weapon::fire('preview_content_after', array($P, $P));

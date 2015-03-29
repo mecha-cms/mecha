@@ -65,6 +65,10 @@ class Page {
         foreach($data as $k => $v) {
             if($v === false) {
                 unset($data[self::fix($k)]);
+            } else {
+                // Restrict users from inputting the `SEPARATOR` constant
+                // to prevent mistakes in parsing the file content
+                $data[self::fix($k)] = Text::ES($v);
             }
         }
         Mecha::extend(self::$bucket, $data);
@@ -73,6 +77,12 @@ class Page {
 
     // Add page content or update the existing page content
     public static function content($data = "") {
+        if($data === false) {
+            $data = "";
+        }
+        // Restrict users from inputting the `SEPARATOR` constant
+        // to prevent mistakes in parsing the file content
+        $data = Text::ES($data);
         self::$bucket_alt = trim(self::$bucket_alt) !== "" && is_null(self::$open) ? trim(self::$bucket_alt) . (trim($data) !== "" ? "\n\n" . SEPARATOR . "\n\n" . $data : "") : $data;
         return new static;
     }
