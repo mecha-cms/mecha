@@ -57,9 +57,11 @@ if (typeof DASHBOARD !== "undefined") {
         config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
         base.fire('on_control_begin', {
-            'segment': base.segment,
-            'name': name,
-            'index': i
+            'index': i,
+            'info': {
+                'segment': base.segment,
+                'name': name
+            }
         });
         base[prefix + '_' + hook] = /(^| )(MTE|code)( |$)/.test(area[i].className) && !/(^| )MTE-ignore( |$)/.test(area[i].className) ? new MTE(area[i], extend({
             tabSize: TAB || '    ',
@@ -161,9 +163,11 @@ if (typeof DASHBOARD !== "undefined") {
             base[prefix] = base[prefix + '_' + hook];
         }
         base.fire('on_control_end', {
-            'segment': base.segment,
-            'name': name,
-            'index': i
+            'index': i,
+            'info' {
+                'segment': base.segment,
+                'name': name
+            }
         });
         c_nu++;
     }
