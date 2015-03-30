@@ -11,15 +11,15 @@
         <?php
 
         $origins = array(
-            $speak->site => 'root',
-            $speak->article => basename(ARTICLE),
-            $speak->page => basename(PAGE),
-            $speak->manager->title_custom_css_and_js => basename(CUSTOM),
-            $speak->comment => basename(RESPONSE),
-            $speak->config => basename(STATE),
-            $speak->asset => basename(ASSET),
-            $speak->shield => basename(SHIELD),
-            $speak->plugin => basename(PLUGIN)
+            '<i class="fa fa-fw fa-database"></i> ' . $speak->site => 'root',
+            '<i class="fa fa-fw fa-file-text"></i> ' . $speak->article => basename(ARTICLE),
+            '<i class="fa fa-fw fa-file"></i> ' . $speak->page => basename(PAGE),
+            '<i class="fa fa-fw fa-leaf"></i> ' . $speak->manager->title_custom_css_and_js => basename(CUSTOM),
+            '<i class="fa fa-fw fa-comments"></i> ' . $speak->comment => basename(RESPONSE),
+            '<i class="fa fa-fw fa-cogs"></i> ' . $speak->config => basename(STATE),
+            '<i class="fa fa-fw fa-briefcase"></i> ' . $speak->asset => basename(ASSET),
+            '<i class="fa fa-fw fa-shield"></i> ' . $speak->shield => basename(SHIELD),
+            '<i class="fa fa-fw fa-plug"></i> ' . $speak->plugin => basename(PLUGIN)
         );
 
         ?>
@@ -38,14 +38,14 @@
     <?php
 
     $destinations = array(
-        $speak->article => ARTICLE,
-        $speak->page => PAGE,
-        $speak->manager->title_custom_css_and_js => CUSTOM,
-        $speak->comment => RESPONSE,
-        $speak->config => STATE,
-        $speak->asset => ASSET,
-        $speak->shield => SHIELD,
-        $speak->plugin => PLUGIN
+        '<i class="fa fa-file-text"></i> ' . $speak->article => ARTICLE,
+        '<i class="fa fa-file"></i> ' . $speak->page => PAGE,
+        '<i class="fa fa-leaf"></i> ' . $speak->manager->title_custom_css_and_js => CUSTOM,
+        '<i class="fa fa-comments"></i> ' . $speak->comment => RESPONSE,
+        '<i class="fa fa-cogs"></i> ' . $speak->config => STATE,
+        '<i class="fa fa-briefcase"></i> ' . $speak->asset => ASSET,
+        '<i class="fa fa-shield"></i> ' . $speak->shield => SHIELD,
+        '<i class="fa fa-plug"></i> ' . $speak->plugin => PLUGIN
     );
 
     ?>

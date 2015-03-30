@@ -86,7 +86,7 @@ class Get {
             if(empty($filter)) {
                 $results_inclusive[] = self::fileExtract($file);
             } else {
-                if(strpos($file, $filter) !== false) {
+                if(strpos(basename($file), $filter) !== false) {
                     $results_inclusive[] = self::fileExtract($file);
                 }
             }
@@ -104,13 +104,13 @@ class Get {
                 if(empty($filter)) {
                     $results[] = self::fileExtract($file);
                 } else {
-                    if(strpos($file, $filter) !== false) {
+                    if(strpos(basename($file), $filter) !== false) {
                         $results[] = self::fileExtract($file);
                     }
                 }
             }
         }
-        if($inclusive) {
+        if( ! $inclusive) {
             return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
         } else {
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
@@ -145,7 +145,7 @@ class Get {
             if(empty($filter)) {
                 $results_inclusive[] = self::fileExtract($file);
             } else {
-                if(strpos($file, $filter) !== false) {
+                if(strpos(basename($file), $filter) !== false) {
                     $results_inclusive[] = self::fileExtract($file);
                 }
             }
@@ -158,7 +158,7 @@ class Get {
                 if(empty($filter)) {
                     $results[] = self::fileExtract($file);
                 } else {
-                    if(strpos($file, $filter) !== false) {
+                    if(strpos(basename($file), $filter) !== false) {
                         $results[] = self::fileExtract($file);
                     }
                 }

@@ -25,7 +25,7 @@
         <td><input name="slug[]" type="text" class="input-block" value="<?php echo Guardian::wayback('slug.' . $id_max); ?>"></td>
         <td><input name="description[]" type="text" class="input-block" value="<?php echo Guardian::wayback('description.' . $id_max); ?>"></td>
       </tr>
-      <tr class="row-more-less" data-min="3" data-max="9999">
+      <tr class="row-more-less" data-min="<?php echo $id_max + 1; ?>" data-max="9999">
         <td colspan="4"><a class="btn btn-small btn-default row-more" href="#row:more"><i class="fa fa-plus-circle"></i> <?php echo $speak->more; ?></a> <a class="btn btn-small btn-default row-less" href="#row:less"><i class="fa fa-minus-circle"></i> <?php echo $speak->less; ?></a></td>
       </tr>
     </tbody>

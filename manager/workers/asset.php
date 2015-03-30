@@ -3,7 +3,6 @@
   <a class="tab" href="#tab-content-2"><i class="fa fa-fw fa-cloud-upload"></i> <?php echo $speak->upload; ?></a>
 </div>
 <div class="tab-content-area">
-  <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <?php if($files): ?>
     <h3><?php echo Config::speak('manager.title_your_', array($speak->assets)); ?></h3>
@@ -12,6 +11,7 @@
       <div class="main-action-group">
         <button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></button>
       </div>
+      <?php echo $messages; ?>
       <table class="table-bordered table-full-width">
         <thead>
           <tr>
@@ -47,6 +47,7 @@
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
+    <?php echo $messages; ?>
     <h3><?php echo Config::speak('manager.title__upload_alt', array($speak->asset)); ?></h3>
     <form class="form-upload" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset" method="post" enctype="multipart/form-data">
       <input name="token" type="hidden" value="<?php echo $token; ?>">

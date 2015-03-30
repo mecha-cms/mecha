@@ -217,7 +217,7 @@ class Shield {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;
         }
-        // Shield begin
+        // Begin shield
         Weapon::fire('shield_before', array($G, $G));
         ob_start($minify ? 'self::s_o' : 'self::s_o_d');
         require Filter::apply('shield:path', $shield);
@@ -231,7 +231,7 @@ class Shield {
         }
         ob_end_flush();
         Weapon::fire('shield_after', array($G, $G));
-        // Shield end
+        // End shield
         exit;
     }
 
@@ -255,7 +255,6 @@ class Shield {
     public static function abort($name = '404', $minify = null, $cache = false) {
         Config::set('page_type', '404');
         header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
-        Guardian::setResponseStatus(404);
         self::attach($name, $minify, $cache);
     }
 

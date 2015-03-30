@@ -1,10 +1,10 @@
-<?php echo $messages; ?>
 <?php if($files): ?>
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <input name="token" type="hidden" value="<?php echo $token; ?>">
   <div class="main-action-group">
     <button class="btn btn-destruct" type="submit"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></button>
   </div>
+  <?php echo $messages; ?>
   <table class="table-bordered table-full-width">
     <thead>
       <tr>
@@ -41,5 +41,6 @@
 </form>
 <?php endif; ?>
 <?php else: ?>
+<?php echo $messages; ?>
 <p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->caches))); ?></p>
 <?php endif; ?>

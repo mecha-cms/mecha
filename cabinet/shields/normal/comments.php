@@ -7,7 +7,7 @@
     <?php foreach($article->comments as $comment): ?>
     <li class="comment comment-<?php echo $comment->status; ?>" id="comment-<?php echo $comment->id; ?>">
       <div class="comment-avatar">
-        <img alt="<?php echo $comment->name; ?>" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">
+        <img alt="<?php echo strip_tags($comment->name); ?>" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">
       </div>
       <div class="comment-header">
         <?php if( ! empty($comment->url) && $comment->url != '#'): ?>

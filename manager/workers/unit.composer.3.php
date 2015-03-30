@@ -44,6 +44,10 @@ foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $folder) {
 
 Weapon::fire('unit_composer_3_before', array($segment, $fields));
 
+if( ! isset($default->fields)) {
+    $default->fields = array();
+}
+
 if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($default->fields));

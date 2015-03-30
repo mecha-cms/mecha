@@ -128,7 +128,7 @@ class Widget {
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
-                    $html .= str_repeat(TAB, 2) . '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . ($query == $year ? ' selected' : "") . '">' . NL . str_repeat(TAB, 3) . '<a href="javascript:;" class="toggle"><span class="zippy toggle-' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a><span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                    $html .= str_repeat(TAB, 2) . '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . ($query == $year ? ' selected' : "") . '">' . NL . str_repeat(TAB, 3) . '<a href="javascript:;" class="toggle"><span class="zippy toggle-' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
                     $html .= str_repeat(TAB, 3) . '<ul class="' . ($expand ? 'expanded' : 'collapsed') . '">' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
@@ -407,7 +407,7 @@ class Widget {
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= str_repeat(TAB, 3) . '<div class="recent-comment-avatar">' . NL;
-                    $html .= str_repeat(TAB, 4) . '<img alt="' . $comment->name . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
+                    $html .= str_repeat(TAB, 4) . '<img alt="' . Text::parse($comment->name, '->encoded_html') . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
                     $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-header">' . NL;

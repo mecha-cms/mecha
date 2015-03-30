@@ -62,9 +62,19 @@ class Date {
         $day_names = explode(',', $speak->days);
         $month_names_short = explode(',', $speak->months_short);
         $day_names_short = explode(',', $speak->days_short);
-        list($year, $year_short, $month, $month_number, $day, $day_number, $hour_24, $hour_12, $minute, $second, $am_pm) = explode('.', self::format($date, 'Y.y.m.n.d.j.H.h.i.s.A'));
-        $date_GMT = new DateTime(self::format($date, 'c'));
-        $date_GMT->setTimeZone(new DateTimeZone('UTC'));
+        list(
+            $year,
+            $year_short,
+            $month,
+            $month_number,
+            $day,
+            $day_number,
+            $hour_24,
+            $hour_12,
+            $minute,
+            $second,
+            $am_pm
+        ) = explode('.', self::format($date, 'Y.y.m.n.d.j.H.h.i.s.A'));
         $month_name = $month_names[(int) $month - 1];
         $day_name = $day_names[(int) self::format($date, 'w')];
         $month_name_short = $month_names_short[(int) $month - 1];
@@ -72,7 +82,7 @@ class Date {
         $results = array(
             'unix' => (int) self::format($date, 'U'),
             'W3C' => self::format($date, 'c'),
-            'GMT' => $date_GMT->format('Y-m-d H:i:s'),
+            'GMT' => self::GMT($date, 'Y-m-d H:i:s'),
             'year' => $year,
             'year_short' => $year_short,
             'month' => $month,
@@ -153,6 +163,34 @@ class Date {
             $output[strtolower($name[0])] = $offset . ' ' . ($offset > 1 ? $name[1] : $name[0]);
         }
         return $output;
+    }
+
+    /**
+     * ==========================================================
+     *  GMT DATE FORMATTER
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    $input = '2014-05-30 09:22:42';
+     *
+     *    echo Date::GMT($input);
+     *
+     * ----------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -------------------------------------
+     *  $date     | mixed | The date input
+     *  --------- | ----- | -------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function GMT($date, $format = 'Y-m-d H:i:s') {
+        $date_GMT = new DateTime(self::format($date, 'c'));
+        $date_GMT->setTimeZone(new DateTimeZone('UTC'));
+        return $date_GMT->format($format);
     }
 
 }

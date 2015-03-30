@@ -100,7 +100,7 @@ class Text {
     public static function toPage($text, $parse_content = 'content', $FP = 'page:') {
         $results = array();
         $c = $parse_content !== false ? $parse_content : 'content';
-        $FP = is_string($FP) && trim($FP) !== "";
+        $FP = is_string($FP) && trim($FP) !== "" ? $FP : false;
         if( ! $parse_content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
@@ -109,7 +109,9 @@ class Text {
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                    if($FP) $value = Filter::apply($FP . $key, $value);
+                    if($FP) {
+                        $value = Filter::apply($FP . $key, $value);
+                    }
                     $results[$key] = $value;
                 }
             // By file content
@@ -123,7 +125,9 @@ class Text {
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
                         $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                        if($FP) $value = Filter::apply($FP . $key, $value);
+                        if($FP) {
+                            $value = Filter::apply($FP . $key, $value);
+                        }
                         $results[$key] = $value;
                     }
                     $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
@@ -146,7 +150,7 @@ class Text {
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
-                    if(is_string($FP) && trim($FP) !== "") {
+                    if($FP) {
                         $value = Filter::apply($FP . $key, $value);
                     }
                     $results[$key] = $value;
