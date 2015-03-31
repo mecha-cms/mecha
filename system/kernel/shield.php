@@ -204,7 +204,7 @@ class Shield {
         $shield_base = explode('-', $name, 2);
         if($_file = File::exist(self::path($name))) {
             $shield = $_file;
-        } elseif($_file = File::exist(self::path($shield_base[0]))) {
+        } else if($_file = File::exist(self::path($shield_base[0]))) {
             $shield = $_file;
         } else {
             Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::path($name) . '</code>')));

@@ -169,7 +169,7 @@ class Asset {
                             if(strpos(basename($path), '.min.') === false) {
                                 if(strpos(basename($the_file), '.min.css') !== false) {
                                     $merged_content .= Converter::detractShell($c) . "\n";
-                                } elseif(strpos(basename($the_file), '.min.js') !== false) {
+                                } else if(strpos(basename($the_file), '.min.js') !== false) {
                                     $merged_content .= Converter::detractSword($c) . "\n";
                                 } else {
                                     $merged_content .= $c . "\n\n";
@@ -187,9 +187,9 @@ class Asset {
         if(is_null($call)) {
             if($e == 'css') {
                 return self::stylesheet($the_file, $addon);
-            } elseif($e == 'js') {
+            } else if($e == 'js') {
                 return self::javascript($the_file, $addon);
-            } elseif($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
+            } else if($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
                 return self::image($the_file, $addon);
             } else {
                 return "";

@@ -238,7 +238,7 @@ Weapon::add('meta', function() {
     $html .= str_repeat(TAB, 2) . '<meta name="viewport" content="width=device-width"' . ES . NL;
     if(isset($config->article->description)) {
         $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->article->description) . '"' . ES . NL;
-    } elseif(isset($config->page->description)) {
+    } else if(isset($config->page->description)) {
         $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->page->description) . '"' . ES . NL;
     } else {
         $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->description) . '"' . ES . NL;

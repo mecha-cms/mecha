@@ -410,7 +410,7 @@ class Image {
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $color['a'];
-            } elseif($color = Converter::HEX2RGB($r)) {
+            } else if($color = Converter::HEX2RGB($r)) {
                 $a = $g;
                 $r = $color['r'];
                 $g = $color['g'];
@@ -603,7 +603,7 @@ class Image {
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $color['a'];
-            } elseif($color = Converter::HEX2RGB($bg)) {
+            } else if($color = Converter::HEX2RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
@@ -711,7 +711,7 @@ class Image {
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $color['a'];
-            } elseif($color = Converter::HEX2RGB($bg)) {
+            } else if($color = Converter::HEX2RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];

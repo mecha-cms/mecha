@@ -71,14 +71,14 @@ if( ! empty($fields)) {
                 $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
                 $html .= '</span>';
                 $html .= '</label>';
-            } elseif($type == 'b') {
+            } else if($type == 'b') {
                 $html .= '<div class="grid-group">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
                 $html .= '<label><input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($value['value']) ? ' value="' . $value['value'] . '"' : "") . (isset($field[$key]) && ! empty($field[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span></label>';
                 $html .= '</span>';
                 $html .= '</div>';
-            } elseif($type == 'o') {
+            } else if($type == 'o') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';

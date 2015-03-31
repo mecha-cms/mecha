@@ -97,7 +97,7 @@ class Session {
     public static function kill($session = null) {
         if(is_null($session)) {
             session_destroy();
-        } elseif($session == 'cookies') {
+        } else if($session == 'cookies') {
             $_COOKIE = array();
             if(isset($_SERVER['HTTP_COOKIE'])) {
                 $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
@@ -108,7 +108,7 @@ class Session {
                     setcookie($name, null, -1, '/');
                 }
             }
-        } elseif(strpos($session, 'cookie:') === 0) {
+        } else if(strpos($session, 'cookie:') === 0) {
             $name = substr($session, 7);
             if(strpos($session, '.') !== false) {
                 $name_a = explode('.', $name);

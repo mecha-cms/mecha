@@ -161,7 +161,7 @@ class Config {
             if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
                 $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
                 return $wizard['content'];
-            } elseif($file = File::exist(ROOT . DS . File::path(str_replace('file:', "", $key)) . '.txt')) {
+            } else if($file = File::exist(ROOT . DS . File::path(str_replace('file:', "", $key)) . '.txt')) {
                 $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
                 return $wizard['content'];
             } else {

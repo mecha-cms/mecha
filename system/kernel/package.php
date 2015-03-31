@@ -213,11 +213,11 @@ class Package {
                 foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
                     if(is_dir($file)) {
                         $zip->addEmptyDir(str_replace(self::$open . DS, $dir, $file . DS));
-                    } elseif(is_file($file)) {
+                    } else if(is_file($file)) {
                         $zip->addFromString(str_replace(self::$open . DS, $dir, $file), file_get_contents($file));
                     }
                 }
-            } elseif(is_file(self::$open)) {
+            } else if(is_file(self::$open)) {
                 $zip->addFromString($dir . basename(self::$open), file_get_contents(self::$open));
             }
             $zip->close();

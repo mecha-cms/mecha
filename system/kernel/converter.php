@@ -241,13 +241,13 @@ class Converter {
                 'ok' => true,
                 'okay' => true
             ));
-        } elseif(is_string($input) && ! is_null(json_decode($input, true))) {
+        } else if(is_string($input) && ! is_null(json_decode($input, true))) {
             $results = self::strEval(json_decode($input, true));
-        } elseif(is_string($input) && ! preg_match('#^".*?"$#', $input)) {
+        } else if(is_string($input) && ! preg_match('#^".*?"$#', $input)) {
             $results = str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
-        } elseif(is_numeric($input)) {
+        } else if(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
-        } elseif(is_array($input) || is_object($input)) {
+        } else if(is_array($input) || is_object($input)) {
             $results = array();
             foreach($input as $key => $value) {
                 $results[$key] = self::strEval($value);
@@ -304,9 +304,9 @@ class Converter {
                 $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $value);
                 if(is_string($key) && trim($key) === "") { // Line break
                     $results .= "\n";
-                } elseif(is_string($key) && strpos($key, '#') === 0) { // Comment
+                } else if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
-                } elseif(is_int($key) && strpos($value, '#') === 0) { // Comment
+                } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($value) . "\n";
                 } else {
                     $results .= str_repeat($indent, $depth) . trim(str_replace($s, "", $key)) . $s . ' ' . self::str($value) . "\n";

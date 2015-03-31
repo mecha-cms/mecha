@@ -379,7 +379,7 @@ class Get {
                     }
                 }
                 return ! empty($results) ? $results : false;
-            } elseif($key == 'kind') {
+            } else if($key == 'kind') {
                 if(strpos($value, ',') !== false) {
                     $kinds = explode(',', $value);
                     for($i = 0; $i < $total_pages; ++$i) {
@@ -410,7 +410,7 @@ class Get {
                     }
                     return ! empty($results) ? $results : false;
                 }
-            } elseif($key == 'slug') {
+            } else if($key == 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
                     if(strpos($slug, $value) !== false) {
