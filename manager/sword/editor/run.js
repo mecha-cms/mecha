@@ -164,7 +164,7 @@ if (typeof DASHBOARD !== "undefined") {
         }
         base.fire('on_control_end', {
             'index': i,
-            'info' {
+            'info': {
                 'segment': base.segment,
                 'name': name
             }
