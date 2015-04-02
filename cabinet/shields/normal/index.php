@@ -5,9 +5,17 @@
   <?php foreach($articles as $article): ?>
   <article class="post post-index" id="post-<?php echo $article->id; ?>">
     <p class="post-time"><i class="fa fa-calendar"></i> <time datetime="<?php echo $article->date->W3C; ?>"><?php echo $article->date->FORMAT_1; ?></time></p>
+    <?php if($article->link): ?>
+    <h4 class="post-title"><a href="<?php echo $article->link; ?>"><?php echo $article->title; ?></a></h4>
+    <?php else: ?>
     <h4 class="post-title"><a href="<?php echo $article->url; ?>"><?php echo $article->title; ?></a></h4>
+    <?php endif; ?>
     <div class="post-body">
+      <?php if($article->excerpt): ?>
+      <div class="post-excerpt"><?php echo $article->excerpt; ?></div>
+      <?php else: ?>
       <div class="post-description"><?php echo $article->description; ?></div>
+      <?php endif; ?>
     </div>
     <div><?php Weapon::fire('article_footer', array($article)); ?></div>
   </article>

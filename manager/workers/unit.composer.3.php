@@ -35,8 +35,8 @@ if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'field
  * This file contains array of fields data.
  */
 
-foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $folder) {
-    if(File::exist($folder . DS . 'launch.php') && $e = File::exist($folder . DS . 'workers' . DS . 'fields.php')) {
+foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $active) {
+    if($e = File::exist(dirname($active) . DS . 'workers' . DS . 'fields.php')) {
         $extra_fields = include $e;
         $fields = $fields + $extra_fields;
     }
@@ -55,7 +55,7 @@ if( ! empty($fields)) {
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }
-        if( ! isset($value['scope']) || $value['scope'] !== 'article' && $value['scope'] !== 'page' && $segment !== 'comment') {
+        if( ! isset($value['scope']) || $value['scope'] != 'article' && $value['scope'] != 'page' && $value['scope'] != 'comment' && $segment != 'comment') {
             $value['scope'] = $segment;
         }
         if(Notify::errors()) {

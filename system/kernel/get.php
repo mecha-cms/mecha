@@ -610,7 +610,7 @@ class Get {
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
             'slug' => self::AMF($slug, $FP, 'slug'),
-            'state' => self::AMF($extension == 'txt' ? 'published' : 'draft', $FP, 'state')
+            'state' => self::AMF($extension != 'draft' ? 'published' : 'draft', $FP, 'state')
         );
     }
 
@@ -729,27 +729,43 @@ class Get {
         $results['excerpt'] = "";
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        $results['link'] = "";
 
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
 
         if( ! isset($results['description'])) {
-            $summary = self::summary($content, $config->excerpt_length, $config->excerpt_tail);
+            $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
             $results['description'] = self::AMF($summary, $FP, 'description');
         }
 
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, 'content', $FP) : $results;
         $content_test = $content_test['content'];
 
+        // Redirect 301 with `<!-- kick: "http://example.com" -->`
+        if(strpos($content_test, '<!-- kick:') !== false && $config->page_type == rtrim($FP, ':')) {
+            preg_match('#<!-- kick\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
+            Guardian::kick($matches[2]);
+        }
+
+        // External link with `<!-- link: "http://example.com" -->`
+        if(strpos($content_test, '<!-- link:') !== false) {
+            preg_match('#<!-- link\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
+            $results['link'] = $matches[2];
+            $results['content'] = preg_replace('#<!-- link\:.*? -->#', "", $results['content']);
+        }
+
+        // Manual post excerpt with `<!-- cut+ "Read More" -->`
         if(strpos($content_test, '<!-- cut+ ') !== false) {
             preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
             $content_more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
             $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '" rel="nofollow">' . $content_more . '</a></p><!-- cut -->', $content_test);
         }
 
+        // ... or `<!-- cut -->`
         if(strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = self::AMF(preg_replace('#<\/p>[\n\r]*<p><a class="fi-link"#', ' <a class="fi-link"', trim($parts[0])), $FP, 'excerpt');
-            $results['content'] = trim($parts[0]) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
+            $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt');
+            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
         }
 
         if( ! isset($excludes['tags'])) {
@@ -798,8 +814,10 @@ class Get {
             $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
         }
 
+
         /**
-         * Custom fields ...
+         * Custom Fields
+         * -------------
          */
 
         if( ! isset($excludes['fields']) && isset($results['fields']) && is_array($results['fields'])) {
@@ -946,13 +964,13 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter      | Type   | Description
-     *  -------------- | ------ | -----------------------------------------------
-     *  $path          | string | The URL path of the page file, or a page slug
-     *  $folder        | string | Folder of the pages
-     *  $connector     | string | See `Get::page()`
-     *  $FP | string | See `Get::page()`
-     *  -------------- | ------ | -----------------------------------------------
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $path      | string | The URL path of the page file, or a page slug
+     *  $folder    | string | Folder of the pages
+     *  $connector | string | See `Get::page()`
+     *  $FP        | string | See `Get::page()`
+     *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -1013,13 +1031,13 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter      | Type   | Description
-     *  -------------- | ------ | -----------------------------------------------
-     *  $path          | string | The URL path of the page file, or a page slug
-     *  $folder        | string | Folder of the pages
-     *  $connector     | string | See `Get::page()`
-     *  $FP | string | See `Get::page()`
-     *  -------------- | ------ | -----------------------------------------------
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $path      | string | The URL path of the page file, or a page slug
+     *  $folder    | string | Folder of the pages
+     *  $connector | string | See `Get::page()`
+     *  $FP        | string | See `Get::page()`
+     *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -1077,7 +1095,7 @@ class Get {
 
     public static function pagePath($detector, $folder = PAGE) {
         $results = false;
-        foreach(glob($folder . DS . '*.{txt,draft}', GLOB_BRACE) as $path) {
+        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
             if($slug == $detector || (is_numeric($detector) && (string) date('Y-m-d-H-i-s', $detector) === (string) $time)) {
                 $results = $path;

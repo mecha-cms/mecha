@@ -182,8 +182,8 @@ Weapon::add('after_shield_config_redefine', function() {
         $speak->shortcode => array('icon' => 'coffee', 'url' => $config->manager->slug . '/shortcode', 'stack' => 10.08),
         $speak->shield => array('icon' => 'shield', 'url' => $config->manager->slug . '/shield', 'stack' => 10.09),
         $speak->plugin => array('icon' => 'plug', 'url' => $config->manager->slug . '/plugin', 'stack' => 10.1),
-        $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 10.2),
-        $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 10.3)
+        $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 10.11),
+        $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 10.12)
     );
 
     if($errors = File::exist(SYSTEM . DS . 'log' . DS . 'errors.log')) {
@@ -199,7 +199,7 @@ Weapon::add('after_shield_config_redefine', function() {
             'icon' => 'exclamation-triangle',
             'url' => $config->manager->slug . '/error',
             'count' => $total,
-            'stack' => 10.4
+            'stack' => 10.13
         );
     }
 
@@ -209,16 +209,15 @@ Weapon::add('after_shield_config_redefine', function() {
         $menus[Config::speak('manager._this_' . $type, array($speak->edit))] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
-            'stack' => 10.5
+            'stack' => 10.14
         );
         $menus[Config::speak('manager._this_' . $type, array($speak->delete))] = array(
             'icon' => 'trash',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
-            'stack' => 10.6
+            'stack' => 10.15
         );
     }
 
-    $menus = $menus + array('|' => "");
     Config::merge('manager_menu', $menus);
 
 });
@@ -233,6 +232,5 @@ Weapon::add('after_shield_config_redefine', function() {
  */
 
 if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end . '.php')) {
-    Config::set('page_type', 'manager');
     require $detour;
 }
