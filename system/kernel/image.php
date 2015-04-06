@@ -2,19 +2,14 @@
 
 class Image {
 
+    private static $o = array();
+
     private static $open = null;
     private static $original = null;
     private static $placeholder = null;
     private static $GD = false;
 
-    public static function placeholder($url = null) {
-        if(is_array($url)) {
-            return Mecha::eat($url)->shake()->vomit();
-        }
-        return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    }
-
-    public static function take($files = null) {
+    public static function take($files) {
         if( ! extension_loaded('gd')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
         }
@@ -36,6 +31,15 @@ class Image {
         return new static;
     }
 
+    // Generate a 1 x 1 pixel transparent image
+    // or a random image URL output from array
+    public static function placeholder($url = null) {
+        if(is_array($url)) {
+            return Mecha::eat($url)->shake()->get(0);
+        }
+        return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+    }
+
     private static function gen($file = null) {
         if(is_null($file)) $file = self::$placeholder;
         switch(strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
@@ -46,8 +50,9 @@ class Image {
         }
     }
 
-    private static function twin($resource, $extension = null) {
+    private static function twin($resource = null, $extension = null) {
         $file = self::$placeholder;
+        if(is_null($resource)) $resource = self::$GD;
         $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
         $new_extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         if( ! is_null($extension)) {
@@ -78,7 +83,7 @@ class Image {
      *
      */
 
-    public static function saveTo($destination = null) {
+    public static function saveTo($destination) {
         if(is_dir($destination)) {
             $destination .= DS . basename(self::$original);
         }
@@ -86,7 +91,7 @@ class Image {
         $new_extension = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
         if($old_extension != $new_extension) {
             self::gen();
-            self::twin(self::$GD, $new_extension);
+            self::twin(null, $new_extension);
         }
         File::open(self::$placeholder)->moveTo($destination);
         imagedestroy(self::$GD);
@@ -163,14 +168,13 @@ class Image {
      *  Parameter | Type  | Description
      *  --------- | ----- | -----------------------------------------------
      *  $key      | mixed | Key of the resulted array data
-     *  $fallback | mixed | Fallback value if data is not available
+     *  $fallback | mixed | Fallback value if data does not exist
      *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function getInfo($key = null, $fallback = false) {
-        $results = false;
         File::open(self::$placeholder)->delete();
         if(is_array(self::$open)) {
             $results = array();
@@ -201,7 +205,7 @@ class Image {
             }
             return $results;
         }
-        return $results;
+        return false;
     }
 
     /**
@@ -246,7 +250,7 @@ class Image {
         if($proportional) {
             // Don't do anything if the new image size is bigger than the original image size
             if($old_width < $max_width && $old_height < $max_height) {
-                self::twin(self::$GD);
+                self::twin();
                 return new static;
             }
             if($crop) {
@@ -292,14 +296,14 @@ class Image {
      *
      * -- CODE: -----------------------------------------------------------
      *
-     *    // Cropping also Resizing (centered)
+     *    // Crop and resize (centered)
      *    Image::take('photo.jpg')
      *         ->crop(200, 200)
      *         ->saveAs('cropped-photo.jpg');
      *
      * --------------------------------------------------------------------
      *
-     *    // Cropping without Resizing (need X and Y coordinates)
+     *    // Crop without resize (need X and Y coordinates)
      *    Image::take('photo.jpg')
      *         ->crop(4, 4, 200, 200)
      *         ->saveAs('cropped-photo.jpg');
@@ -308,10 +312,13 @@ class Image {
      *
      */
 
-    public static function crop($x = 0, $y = 0, $width = null, $height = null) {
-        self::gen();
-        if(is_null($width)) return self::resize($x, $y, true, true);
+    public static function crop($x = 72, $y = null, $width = null, $height = null) {
+        if(is_null($width)) {
+            if(is_null($y)) $y = $x;
+            return self::resize($x, $y, true, true);
+        }
         if(is_null($height)) $height = $width;
+        self::gen();
         $pallete = imagecreatetruecolor($width, $height);
         imagecopy($pallete, self::$GD, 0, 0, $x, $y, $width, $height);
         self::twin($pallete);
@@ -338,7 +345,7 @@ class Image {
         self::gen();
         // -255 = min brightness, 0 = no change, +255 = max brightness
         imagefilter(self::$GD, IMG_FILTER_BRIGHTNESS, $level);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -361,7 +368,7 @@ class Image {
         self::gen();
         // -100 = max contrast, 0 = no change, +100 = min contrast (it's inverted)
         imagefilter(self::$GD, IMG_FILTER_CONTRAST, $level * -1);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -402,25 +409,28 @@ class Image {
         self::gen();
         // For red, green and blue: -255 = min, 0 = no change, +255 = max
         if(is_array($r)) {
+            if(count($r) === 3) {
+                $r[] = 1; // missing alpha channel
+            }
             list($r, $g, $b, $a) = array_values($r);
         } else {
-            $r = (string) $r;
-            if($color = Converter::RGB($r)) {
-                $r = $color['r'];
-                $g = $color['g'];
-                $b = $color['b'];
-                $a = $color['a'];
-            } else if($color = Converter::HEX2RGB($r)) {
+            $bg = (string) $r;
+            if($bg[0] === '#' && $color = Converter::HEX2RGB($r)) {
                 $a = $g;
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
+            } else if($color = Converter::RGB($r)) {
+                $r = $color['r'];
+                $g = $color['g'];
+                $b = $color['b'];
+                $a = $color['a'];
             }
         }
         // For alpha: 127 = transparent, 0 = opaque
         $a = 127 - ($a * 127);
         imagefilter(self::$GD, IMG_FILTER_COLORIZE, $r, $g, $b, $a);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -442,7 +452,7 @@ class Image {
     public static function grayscale() {
         self::gen();
         imagefilter(self::$GD, IMG_FILTER_GRAYSCALE);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -464,7 +474,7 @@ class Image {
     public static function negate() {
         self::gen();
         imagefilter(self::$GD, IMG_FILTER_NEGATE);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -488,7 +498,7 @@ class Image {
         for($i = 0; $i < $level; ++$i) {
             self::gen();
             imagefilter(self::$GD, IMG_FILTER_EMBOSS);
-            self::twin(self::$GD);
+            self::twin();
         }
         return new static;
     }
@@ -513,7 +523,7 @@ class Image {
         for($i = 0; $i < $level; ++$i) {
             self::gen();
             imagefilter(self::$GD, IMG_FILTER_GAUSSIAN_BLUR);
-            self::twin(self::$GD);
+            self::twin();
         }
         return new static;
     }
@@ -544,7 +554,7 @@ class Image {
         for($i = 0; $i < $level; ++$i) {
             self::gen();
             imageconvolution(self::$GD, $matrix, $divisor, 0);
-            self::twin(self::$GD);
+            self::twin();
         }
         return new static;
     }
@@ -573,7 +583,7 @@ class Image {
     public static function pixelate($level = 1, $advanced_pixelation_effect = false) {
         self::gen();
         imagefilter(self::$GD, IMG_FILTER_PIXELATE, $level, $advanced_pixelation_effect);
-        self::twin(self::$GD);
+        self::twin();
         return new static;
     }
 
@@ -592,22 +602,28 @@ class Image {
      *
      */
 
-     public static function rotate($angle = 0, $bg = array(255, 255, 255, 1), $alpha_for_hex = 1) {
+    public static function rotate($angle = 0, $bg = false, $alpha_for_hex = 1) {
         self::gen();
+        if( ! $bg) {
+            $bg = array(0, 0, 0, 0); // transparent
+        }
         if(is_array($bg)) {
+            if(count($bg) === 3) {
+                $bg[] = 1; // missing alpha channel
+            }
             list($r, $g, $b, $a) = array_values($bg);
         } else {
             $bg = (string) $bg;
-            if($color = Converter::RGB($bg)) {
-                $r = $color['r'];
-                $g = $color['g'];
-                $b = $color['b'];
-                $a = $color['a'];
-            } else if($color = Converter::HEX2RGB($bg)) {
+            if($bg[0] === '#' && $color = Converter::HEX2RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $alpha_for_hex;
+            } else if($color = Converter::RGB($bg)) {
+                $r = $color['r'];
+                $g = $color['g'];
+                $b = $color['b'];
+                $a = $color['a'];
             }
         }
         $a = 127 - ($a * 127);
@@ -619,8 +635,9 @@ class Image {
         imagealphablending($rotated, false);
         imagesavealpha($rotated, true);
         self::twin($rotated);
+        imagedestroy($rotated);
         return new static;
-     }
+    }
 
     /**
      * ====================================================================
@@ -637,7 +654,7 @@ class Image {
      *
      */
 
-     public static function flip($direction = 'horizontal') {
+    public static function flip($direction = 'horizontal') {
         self::gen();
         // Function `imageflip` only available in PHP 5 >= 5.5.0
         // Fallback to a simple horizontal image flipper if `imageflip` is not available
@@ -662,9 +679,9 @@ class Image {
             }
             imagedestroy($pallete);
         }
-        self::twin(self::$GD);
+        self::twin();
         return new static;
-     }
+    }
 
     /**
      * ====================================================================
@@ -683,12 +700,13 @@ class Image {
      *
      */
 
-    public static function merge($gap = 0, $orientation = 'vertical', $bg = array(0, 0, 0, 0), $alpha_for_hex = 1) {
+    public static function merge($gap = 0, $orientation = 'vertical', $bg = false, $alpha_for_hex = 1) {
         $bucket = array();
         $width = 0;
         $height = 0;
         $max_width = array();
         $max_height = array();
+        $orientation = strtolower($orientation);
         if( ! is_array(self::$open)) {
             self::$open = array(self::$open);
         }
@@ -702,20 +720,26 @@ class Image {
             $width += $info['width'] + $gap;
             $height += $info['height'] + $gap;
         }
+        if( ! $bg) {
+            $bg = array(0, 0, 0, 0); // transparent
+        }
         if(is_array($bg)) {
+            if(count($bg) === 3) {
+                $bg[] = 1; // missing alpha channel
+            }
             list($r, $g, $b, $a) = array_values($bg);
         } else {
             $bg = (string) $bg;
-            if($color = Converter::RGB($bg)) {
-                $r = $color['r'];
-                $g = $color['g'];
-                $b = $color['b'];
-                $a = $color['a'];
-            } else if($color = Converter::HEX2RGB($bg)) {
+            if($bg[0] === '#' && $color = Converter::HEX2RGB($bg)) {
                 $r = $color['r'];
                 $g = $color['g'];
                 $b = $color['b'];
                 $a = $alpha_for_hex;
+            } else if($color = Converter::RGB($bg)) {
+                $r = $color['r'];
+                $g = $color['g'];
+                $b = $color['b'];
+                $a = $color['a'];
             }
         }
         $a = 127 - ($a * 127);
@@ -739,7 +763,6 @@ class Image {
             $start_height_from += $orientation[0] == 'v' ? $bucket[$i]['height'] + $gap : 0;
         }
         self::twin($pallete, 'png');
-        imagedestroy($pallete);
         return new static;
     }
 

@@ -89,29 +89,36 @@ class Mecha {
         return new static;
     }
 
+    // Walk through the array
     public static function walk($array) {
         return self::eat($array);
     }
 
     // Sort array based on its value's key
-    public static function order($order = 'ASC', $key = null) {
+    public static function order($order = 'ASC', $key = null, $include_missing_key = false) {
         if( ! is_null($key)) {
             $before = array();
             $after = array();
             if(self::$stomach && ! empty(self::$stomach)) {
                 foreach(self::$stomach as $k => $v) {
-                    $before[$k] = strtolower($v[$key]);
+                    if(array_key_exists($key, $v)) {
+                        $before[$k] = $v[$key];
+                    } else if($include_missing_key) {
+                        $before[$k] = null;
+                    }
                 }
-                if ($order == 'ASC') {
+                if($order == 'ASC') {
                     asort($before);
                 } else {
                     arsort($before);
                 }
                 foreach($before as $k => $v) {
-                    $after[] = self::$stomach[$k];
+                    $after[$k] = self::$stomach[$k];
                 }
             }
             self::$stomach = $after;
+            unset($before);
+            unset($after);
         } else {
             if($order == 'ASC') {
                 asort(self::$stomach);
@@ -134,20 +141,20 @@ class Mecha {
     }
 
     // Move to next array index
-    public static function next() {
-        self::$index = self::edge(self::$index + 1, 0, self::count() - 1);
+    public static function next($skip = 0) {
+        self::$index = self::edge(self::$index + 1 + $skip, 0, self::count() - 1);
         return new static;
     }
 
     // Move to previous array index
-    public static function prev() {
-        self::$index = self::edge(self::$index - 1, 0, self::count() - 1);
+    public static function prev($skip = 0) {
+        self::$index = self::edge(self::$index - 1 - $skip, 0, self::count() - 1);
         return new static;
     }
 
     // Move to `$index` array index
-    public static function to($index = 0) {
-        self::$index = is_int($index) ? $index : array_search($index, array_keys(self::$stomach));
+    public static function to($index) {
+        self::$index = is_int($index) ? $index : self::index($index, $index);
         return new static;
     }
 
@@ -193,14 +200,15 @@ class Mecha {
     }
 
     // Get first array value
-    public static function first($value = true) {
-        return $value ? self::$stomach[0] : 0;
+    public static function first() {
+        self::$index = 0;
+        return reset(self::$stomach);
     }
 
     // Get last array value
-    public static function last($value = true) {
-        $end = self::count() - 1;
-        return $value ? self::$stomach[$end] : $end;
+    public static function last() {
+        self::$index = self::count() - 1;
+        return end(self::$stomach);
     }
 
     // Get current array value
@@ -218,7 +226,13 @@ class Mecha {
     }
 
     // Get selected array value
-    public static function get() {
+    public static function get($index = null, $fallback = false) {
+        if( ! is_null($index)) {
+            if(is_int($index)) {
+                $index = self::key($index, $index);
+            }
+            return array_key_exists($index, self::$stomach) ? self::$stomach[$index] : $fallback;
+        }
         return self::current(true);
     }
 
@@ -244,7 +258,19 @@ class Mecha {
     // Shortcut for string-based `switch` and `case`
     public static function alter($case, $cases, $default = null) {
         if(is_null($default)) $default = $case;
-        return isset($cases[$case]) ? $cases[$case] : $default;
+        return array_key_exists($case, $cases) ? $cases[$case] : $default;
+    }
+
+    // Get array key by position
+    public static function key($index, $fallback = false) {
+        $array = array_keys(self::$stomach);
+        return isset($array[$index]) ? $array[$index] : $fallback;
+    }
+
+    // Get position by array key
+    public static function index($key, $fallback = false) {
+        $key = array_search($key, array_keys(self::$stomach));
+        return $key !== false ? $key : $fallback;
     }
 
 }

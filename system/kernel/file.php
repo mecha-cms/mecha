@@ -131,8 +131,8 @@ class File {
     public static function open($path) {
         $path = self::path($path);
         self::$cache = "";
-        self::$index = 0;
         self::$open = file_exists($path) ? $path : null;
+        self::$index = 0;
         return new static;
     }
 
@@ -194,7 +194,7 @@ class File {
 
     // Delete the opened file
     public static function delete() {
-        if( ! is_null(self::$open)) {
+        if(file_exists(self::$open)) {
             if(is_dir(self::$open)) {
                foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
                     if($file->isFile()) {
@@ -315,15 +315,15 @@ class File {
             // Bad file extension
             $extension_allow = array_flip(self::$config['file_extension_allow']);
             if( ! isset($extension_allow[$extension])) {
-                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+                Notify::error(Config::speak('notify_error_file_extension', $extension));
             }
             // Too small
             if($file['size'] < self::$config['file_size_min_allow']) {
-                Notify::error(Config::speak('notify_error_file_size_min', array(self::size(self::$config['file_size_min_allow'], 'KB'))));
+                Notify::error(Config::speak('notify_error_file_size_min', self::size(self::$config['file_size_min_allow'], 'KB')));
             }
             // Too large
             if($file['size'] > self::$config['file_size_max_allow']) {
-                Notify::error(Config::speak('notify_error_file_size_max', array(self::size(self::$config['file_size_max_allow'], 'KB'))));
+                Notify::error(Config::speak('notify_error_file_size_max', self::size(self::$config['file_size_max_allow'], 'KB')));
             }
         }
         if( ! Notify::errors()) {
@@ -331,7 +331,7 @@ class File {
             if( ! file_exists($destination . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
             } else {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $file['name'] . '</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $file['name'] . '</code>'));
             }
             // Create public asset link to show on file uploaded
             $link = self::url($destination) . '/' . $file['name'];
@@ -341,16 +341,15 @@ class File {
                 '<strong>' . $speak->size . ':</strong> ' . self::size($file['size']),
                 '<strong>' . $speak->link . ':</strong> <a href="' . $link . '" target="_blank">' . $link . '</a>'
             );
-            if( ! empty($custom_success_message)) {
+            if($custom_success_message) {
                 Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], $file['size'], $link)));
             } else {
                 Notify::success(implode('<br>', $html), "");
             }
             self::$open = $destination . DS . $file['name'];
             return new static;
-        } else {
-            return false;
         }
+        return false;
     }
 
     // Convert file size
@@ -385,9 +384,7 @@ class File {
             Mecha::extend(self::$config, $key);
         } else {
             if(is_array($value)) {
-                foreach($value as $k => $v) {
-                    self::$config[$key][$k] = $v;
-                }
+                Mecha::extend(self::$config[$key], $value);
             } else {
                 self::$config[$key] = $value;
             }

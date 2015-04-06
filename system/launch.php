@@ -30,7 +30,6 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
     }
 
     Config::set(array(
-        'page_type' => 'manager',
         'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'login.php'
     ));
@@ -85,7 +84,6 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
     }
 
     Config::set(array(
-        'page_type' => 'index',
         'page_title' => $config->index->title . $config->title_separator . $config->title,
         'offset' => $offset,
         'articles' => $articles,
@@ -120,7 +118,6 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
     }
 
     Config::set(array(
-        'page_type' => 'archive',
         'page_title' => (strpos($config->archive->title, '%s') !== false ? sprintf($config->archive->title, $slug) : $config->archive->title . ' ' . $slug) . $config->title_separator . $config->title,
         'offset' => $offset,
         'archive_query' => $slug,
@@ -160,7 +157,6 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     $time = ($config->widget_year_first ? $year . ', ' . $months[(int) $month - 1] : $months[(int) $month - 1] . ' ' . $year);
 
     Config::set(array(
-        'page_type' => 'archive',
         'page_title' => (strpos($config->archive->title, '%s') !== false ? sprintf($config->archive->title, $time) : $config->archive->title . ' ' . $time) . $config->title_separator . $config->title,
         'offset' => $offset,
         'archive_query' => $slug,
@@ -200,7 +196,6 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     }
 
     Config::set(array(
-        'page_type' => 'tag',
         'page_title' => (strpos($config->tag->title, '%s') !== false ? sprintf($config->tag->title, $tag->name) : $config->tag->title . ' ' . $tag->name) . $config->title_separator . $config->title,
         'offset' => $offset,
         'tag_query' => $slug,
@@ -276,7 +271,6 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             $_articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
         Config::set(array(
-            'page_type' => 'search',
             'page_title' => $title . $config->title_separator . $config->title,
             'offset' => $offset,
             'search_query' => $query,
@@ -337,7 +331,6 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     }
 
     Config::set(array(
-        'page_type' => 'article',
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
         'pagination' => Navigator::extract(Get::articles('DESC', "", pathinfo($article->path, PATHINFO_EXTENSION)), $article->path, 1, $config->index->slug)
@@ -492,8 +485,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
  *
  */
 
-Route::accept('sitemap', function() {
-    header('Content-Type: text/xml; charset=UTF-8');
+Route::accept('sitemap', function() use($config) {
+    HTTP::mime('text/xml', $config->charset);
     Shield::attach(SHIELD . DS . 'sitemap', true, true);
 }, 80);
 
@@ -508,9 +501,9 @@ Route::accept('sitemap', function() {
  *
  */
 
-Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)'), function($path = "", $offset = 1) {
+Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)'), function($path = "", $offset = 1) use($config) {
     Config::set('offset', (int) $offset);
-    header('Content-Type: text/xml; charset=UTF-8');
+    HTTP::mime('text/xml', $config->charset);
     Shield::attach(SHIELD . DS . 'rss', true, true);
 }, 81);
 
@@ -526,9 +519,9 @@ Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)
  *
  */
 
-Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($path = "", $offset = 1) {
+Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($path = "", $offset = 1) use($config) {
     Config::set('offset', (int) $offset);
-    header('Content-Type: application/json');
+    HTTP::mime('application/json', $config->charset);
     Shield::attach(SHIELD . DS . 'json', true, true);
 }, 82);
 
@@ -543,10 +536,11 @@ Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($
 
 Route::accept('captcha.png', function() {
 
-    header('Content-Type: image/png');
-    header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
-    header('Cache-Control: post-check=0, pre-check=0', false);
-    header('Pragma: no-cache');
+    HTTP::mime('image/png')->status(array(
+        'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
+        'Cache-Control' => 'post-check=0, pre-check=0',
+        'Pragma' => 'no-cache'
+    ));
 
     $bg = (string) Request::get('bg', '333333');
     $color = (string) Request::get('color', 'FFFFAA');
@@ -620,7 +614,6 @@ Route::accept('(:any)', function($slug = "") use($config) {
     });
 
     Config::set(array(
-        'page_type' => 'page',
         'page_title' => $page->title . $config->title_separator . $config->title,
         'page' => $page
     ));
@@ -653,7 +646,6 @@ Route::accept('/', function() use($config) {
     }
 
     Config::set(array(
-        'page_type' => 'home',
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles(), 1, $config->index->per_page, $config->index->slug)
     ));

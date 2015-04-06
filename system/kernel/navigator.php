@@ -143,9 +143,7 @@ class Navigator {
             Mecha::extend(self::$config, $key);
         } else {
             if(is_array($value)) {
-                foreach($value as $k => $v) {
-                    self::$config[$key][$k] = $v;
-                }
+                Mecha::extend(self::$config[$key], $value);
             } else {
                 self::$config[$key] = $value;
             }

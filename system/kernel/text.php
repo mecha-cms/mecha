@@ -105,7 +105,7 @@ class Text {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
                 foreach(explode("\n", $buffer) as $header) {
-                    $field = explode(':', $header, 2);
+                    $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
@@ -121,7 +121,7 @@ class Text {
                     $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
                     $headers = explode("\n", trim($parts[0]));
                     foreach($headers as $header) {
-                        $field = explode(':', $header, 2);
+                        $field = explode(S, $header, 2);
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
                         $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
@@ -146,7 +146,7 @@ class Text {
                 $parts = explode(SEPARATOR, trim($text), 2);
                 $headers = explode("\n", trim($parts[0]));
                 foreach($headers as $header) {
-                    $field = explode(':', $header, 2);
+                    $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
                     $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
@@ -176,33 +176,37 @@ class Text {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_extra as $k => $v) {
                     $v = self::DS(trim($v));
-                    $v = Filter::apply($c . '_raw', $v, $k);
-                    $v = Filter::apply('shortcode', $v, $k);
+                    $v = Filter::apply($c . '_raw', $v, $k + 1);
                     if($FP) {
-                        $v = Filter::apply($FP . $c . '_raw', $v, $k);
-                        $v = Filter::apply($FP . 'shortcode', $v, $k);
+                        $v = Filter::apply($FP . $c . '_raw', $v, $k + 1);
                     }
                     $results[$c . '_raw'][$k] = $v;
-                    $vv = $parse && $parse_content ? Text::parse($v, '->html') : $v;
-                    $vv = Filter::apply($c, $vv, $k);
+                    $v = Filter::apply('shortcode', $v, $k + 1);
                     if($FP) {
-                        $vv = Filter::apply($FP . $c, $vv, $k);
+                        $v = Filter::apply($FP . 'shortcode', $v, $k + 1);
+                    }
+                    $vv = $parse && $parse_content ? Text::parse($v, '->html') : $v;
+                    $vv = Filter::apply($c, $vv, $k + 1);
+                    if($FP) {
+                        $vv = Filter::apply($FP . $c, $vv, $k + 1);
                     }
                     $results[$c][$k] = $vv;
                 }
             } else {
                 $v = self::DS($results[$c . '_raw']);
-                $v = Filter::apply($c . '_raw', $v, 0);
-                $v = Filter::apply('shortcode', $v, 0);
+                $v = Filter::apply($c . '_raw', $v, 1);
                 if($FP) {
-                    $v = Filter::apply($FP . $c . '_raw', $v, 0);
-                    $v = Filter::apply($FP . 'shortcode', $v, 0);
+                    $v = Filter::apply($FP . $c . '_raw', $v, 1);
                 }
                 $results[$c . '_raw'] = $v;
-                $v = $parse && $parse_content ? Text::parse($v, '->html') : $v;
-                $v = Filter::apply($c, $v, 0);
+                $v = Filter::apply('shortcode', $v, 1);
                 if($FP) {
-                    $v = Filter::apply($FP . $c, $v, 0);
+                    $v = Filter::apply($FP . 'shortcode', $v, 1);
+                }
+                $v = $parse && $parse_content ? Text::parse($v, '->html') : $v;
+                $v = Filter::apply($c, $v, 1);
+                if($FP) {
+                    $v = Filter::apply($FP . $c, $v, 1);
                 }
                 $results[$c] = $v;
             }
@@ -223,7 +227,7 @@ class Text {
      *
      */
 
-    public static function toArray($text, $s = ':', $indent = '    ') {
+    public static function toArray($text, $s = S, $indent = '    ') {
         if(is_array($text)) return $text;
         if(is_object($text)) return Mecha::A($text);
         $results = array();
@@ -234,14 +238,16 @@ class Text {
             array(
                 '#\r#',
                 '#(^|\n)( *\#[^\n]*)#',
-                '#\n+#'
+                '#\n+#',
+                '#^\n+|\n$#'
             ),
             array(
                 "",
                 '$1',
-                "\n"
+                "\n",
+                ""
             ),
-        trim($text));
+        $text);
         foreach(explode("\n", $text) as $line) {
             $depth = 0;
             $is_assoc = strpos($line, $s) > 0;

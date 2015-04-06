@@ -27,11 +27,11 @@ class Converter {
      */
 
     public static function RGB($rgba, $output = null) {
-        if(is_string($rgba) && preg_match('#^rgba?\(([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3})( *, *([0-9\.]+))?\)$#i', $rgba, $matches)) {
+        if(is_string($rgba) && preg_match('#^rgba?\( *([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3})( *, *([0-9\.]+))? *\)$#i', $rgba, $matches)) {
             $colors = array(
-                'r' => (float) $matches[1],
-                'g' => (float) $matches[2],
-                'b' => (float) $matches[3],
+                'r' => (int) $matches[1],
+                'g' => (int) $matches[2],
+                'b' => (int) $matches[3],
                 'a' => isset($matches[5]) ? (float) $matches[5] : 1
             );
             return ! is_null($output) ? $colors[$output] : $colors;
@@ -62,6 +62,9 @@ class Converter {
     public static function HEX2RGB($hex, $output = null) {
         if(is_string($hex) && preg_match('#\#?([a-f0-9]{3,6})#i', $hex, $matches)) {
             $color = $matches[1];
+            if(strlen($color) !== 3 && strlen($color) !== 6){
+                return false;
+            }
             if(strlen($color) === 3) {
                 $color = preg_replace('#(.)#', '$1$1', $color);
             }
@@ -100,10 +103,10 @@ class Converter {
      * --------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter      | Type   | Description
-     *  -------------- | ------ | -----------------------------------------
-     *  $r, $g, $b, $a | mixed  | The RGB or RGBA color string or array
-     *  -------------- | ------ | -----------------------------------------
+     *  Parameter      | Type  | Description
+     *  -------------- | ----- | ------------------------------------------
+     *  $r, $g, $b, $a | mixed | The RGB or RGBA color string or array
+     *  -------------- | ----- | ------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -157,24 +160,28 @@ class Converter {
      *
      */
 
-    public static function curt($input, $chars = 100, $tail = '&hellip;') {
+    public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = 'UTF-8') {
         $input = preg_replace(
             array(
-                '#<br *\/?>|<\/(div|p)>#', // New line to a single white-space
-                '#(\s|&nbsp;)+#', // Multiple white-spaces to a single white-space
+                '#<br *\/?>|<\/.*?>#i', // New line to a single white-space
                 '#<.*?>#', // Remove all HTML tags
-                '#^[`~\#*-=+]{2,}#m', // Remove all possible raw Markdown( Extra)? patterns
-                '#<|>#' // Fix all broken HTML tags. Replace `<div></di` to `div/di`
+                '#[`~\#*-=+_]{2,}#', // Remove all possible raw Markdown( Extra)? patterns
+                '#\b([`~*_]+)(.*?)\1\b#', // --ibid
+                '#<|>#', // Fix all broken HTML tags. Replace `<div></di` to `div/di`
+                '#(\s|&nbsp;)+#', // Multiple white-spaces to a single white-space
+                '# (?=[!:;,.\/?])#' // Remove leading white-spaces before `!:;,./?`
             ),
             array(
                 ' ',
+                "",
+                "",
+                '$2',
+                "",
                 ' ',
-                "",
-                "",
                 ""
             ),
-        trim($input));
-        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, 'UTF-8') : substr($input, 0, $chars)) . ($chars < strlen($input) ? $tail : ""));
+        $input);
+        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < strlen($input) ? $tail : "");
     }
 
     /**
@@ -194,12 +201,9 @@ class Converter {
     public static function str($input) {
         $results = $input;
         if( ! is_array($input) && ! is_object($input)) {
-            if($input === TRUE) $results = 'TRUE';
-            if($input === FALSE) $results = 'FALSE';
-            if($input === NULL) $results = 'NULL';
-            if($input === true) $results = 'true';
-            if($input === false) $results = 'false';
-            if($input === null) $results = 'null';
+            if($input === TRUE || $input === true) $results = 'true';
+            if($input === FALSE || $input === false) $results = 'false';
+            if($input === NULL || $input === null) $results = 'null';
             return (string) $results;
         } else {
             $results = array();
@@ -273,9 +277,7 @@ class Converter {
     public static function phpEval($input) {
         ob_start();
         eval($input);
-        $output = ob_get_contents();
-        ob_end_clean();
-        return $output;
+        return ob_get_clean();
     }
 
     /**
@@ -294,22 +296,20 @@ class Converter {
      *
      */
 
-    public static function toText($array, $s = ':', $indent = '    ', $depth = 0) {
+    public static function toText($array, $s = S, $indent = '    ', $depth = 0) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
             return self::str($array);
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
-                $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $value);
-                if(is_string($key) && trim($key) === "") { // Line break
-                    $results .= "\n";
-                } else if(is_string($key) && strpos($key, '#') === 0) { // Comment
+                $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), self::str($value));
+                if(is_string($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($value) . "\n";
                 } else {
-                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, "", $key)) . $s . ' ' . self::str($value) . "\n";
+                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . self::str($value) . "\n";
                 }
             } else {
                 $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1) . "\n";
@@ -334,7 +334,7 @@ class Converter {
      *
      */
 
-    public static function toArray($input, $s = ':', $indent = '    ') {
+    public static function toArray($input, $s = S, $indent = '    ') {
         return Text::toArray($input, $s, $indent);
     }
 
@@ -366,8 +366,8 @@ class Converter {
      */
 
     public static function attr($input, $element = array(), $attr = array(), $str_eval = true) {
-        $element_d = array('<', '>', ' ', '/');
-        $attr_d = array('"', '"', '=');
+        $element_d = array('<', '>', ' ', '/', '[a-zA-Z0-9\-._:]+');
+        $attr_d = array('"', '"', '=', '[a-zA-Z0-9\-._:]+');
         $element = Mecha::extend($element_d, $element);
         $attr = Mecha::extend($attr_d, $attr);
         $e0 = preg_quote($element[0], '#');
@@ -377,14 +377,14 @@ class Converter {
         $a0 = preg_quote($attr[0], '#');
         $a1 = preg_quote($attr[1], '#');
         $a2 = preg_quote($attr[2], '#');
-        if( ! preg_match('#^(' . $e0 . ')([a-z0-9\-._:]+)((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')' . $e3 . '\2(' . $e1 . '))|(' . $e2 . ')*' . $e3 . '?(' . $e1 . '))$#im', $input, $matches)) return false;
-        $matches[5] = preg_replace('#(^|(' . $e2 . ')+)([a-z0-9\-]+)(' . $a2 . ')(' . $a0 . ')(' . $a1 . ')#i', '$1$2$3$4$5<attr:value>$6', $matches[5]);
+        if( ! preg_match('#^\s*(' . $e0 . ')(' . $element[4] . ')((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')' . $e3 . '\2(' . $e1 . '))|(' . $e2 . ')*' . $e3 . '?(' . $e1 . '))\s*$#', $input, $matches)) return false;
+        $matches[5] = preg_replace('#(^|(' . $e2 . ')+)(' . $attr[3] . ')(' . $a2 . ')(' . $a0 . ')(' . $a1 . ')#', '$1$2$3$4$5<attr:value>$6', $matches[5]);
         $results = array(
             'element' => $matches[2],
             'attributes' => null,
             'content' => isset($matches[8]) && $matches[9] == $element[0] . $element[3] . $matches[2] . $element[1] ? $matches[8] : null
         );
-        if(preg_match_all('#([a-z0-9\-]+)((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#i', $matches[5], $attrs)) {
+        if(preg_match_all('#(' . $attr[3] . ')((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#', $matches[5], $attrs)) {
             $results['attributes'] = array();
             foreach($attrs[1] as $i => $attr) {
                 $results['attributes'][$attr] = isset($attrs[5][$i]) && ! empty($attrs[5][$i]) ? (strpos($attrs[5][$i], '<attr:value>') === false ? $attrs[5][$i] : str_replace('<attr:value>', "", $attrs[5][$i])) : $attr;
@@ -415,20 +415,74 @@ class Converter {
 
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
+        // Remove extra white-spaces between HTML attributes
+        $input = preg_replace_callback('#<([^\/\s<>]+?)\s+([^<>]*?)>#s', function($matches) {
+            return '<' . $matches[1] . ' ' . trim(preg_replace('#\s+([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1 ', $matches[2])) . '>';
+        }, $input);
         return preg_replace(
             array(
-                '#<\!--(?!\[if)([\s\S]+?)-->#s', // Remove HTML comments except IE comments
-                '#>[^\S ]+#s',
-                '#[^\S ]+<#s',
-                '#>\s{2,}<#s'
+
+                // Remove HTML comments except IE comments
+                '#\s*(<\!--(?=\[if).*?-->)\s*|\s*<\!--.*?-->\s*#s',
+
+                // Remove two or more white-spaces between tags
+                '#(<\!--.*?-->)|(>)[^\S ]{2,}|[^\S ]{2,}(<)|(>)\s{2,}(<)#s',
+
+                // Proofing ...
+                // o: tag open, c: tag close, t: text
+                // If `<tag> </tag>` remove white-space
+                // If `</tag> <tag>` keep white-space
+                // If `<tag> <tag>` remove white-space
+                // If `</tag> </tag>` remove white-space
+                // If `<tag>    ...</tag>` remove white-spaces
+                // If `</tag>    ...<tag>` remove white-spaces
+                // If `<tag>    ...<tag>` remove white-spaces
+                // If `</tag>    ...</tag>` remove white-spaces
+                // If `<tag> abc` remove white-space
+                // If `abc </tag>` remove white-space
+                // If `</tag> abc` keep white-space
+                // If `abc    ...<tag>` keep one white-space
+                // If `<tag>    ...abc` remove white-spaces
+                // If `abc    ...</tag>` remove white-spaces
+                // If `</tag>    ...abc` keep one white-space
+                // If `</tag>    ...abc` keep one white-space
+                // If `abc    ...<tag>` keep one white-space
+                // If `abc    ...</tag>` remove white-spaces
+                '#(<\!--.*?-->)|(<(?:img|input)(?:\s[^<>]*?>|>))\s+(?!\<\/)#s', // o+t | o+o
+                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:\s[^<>]*?>|>))\s+(?=\<[^\/])#s', // o+o
+                '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?=\<\/)#s', // c+c
+                '#(<\!--.*?-->)|(<([^\/\s<>]+)(?:\s[^<>]*?>|>))\s+(<\/\3>)#s', // o+c
+                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:\s[^<>]*?>|>))\s+(?!\<)#s', // o+t
+                '#(<\!--.*?-->)|(?!\>)\s+(<\/[^\/\s<>]+?>)#s', // t+c
+                '#(<\!--.*?-->)|(?!\>)\s+(?=\<[^\/])#s', // t+o
+                '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?!\<)#s', // c+t
+
+                // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
+                '#&nbsp;&nbsp;#',
+                '#&nbsp;(?!\s|<)#s',
+                '#([^\s])&nbsp;([^\s])#',
+
+                // Others
+                '#-->(\s|&nbsp;)+<#s'
+
             ),
             array(
-                "",
-                '>',
-                '<',
-                '><'
+                '$1',
+                '$1$2$3$4$5',
+                '$1$2&nbsp;', // o+t | o+o
+                '$1$2', // o+o
+                '$1$2', //c+c
+                '$1$2$4', // o+c
+                '$1$2', // o+t
+                '$1$2', // t+c
+                '$1$2 ', // t+o
+                '$1$2 ', // c+t
+                '&nbsp; ',
+                ' ',
+                '$1 $2',
+                '--><'
             ),
-        $input);
+        trim($input));
     }
 
     /**
@@ -455,29 +509,47 @@ class Converter {
 
     public static function detractShell($input) {
         if(trim($input) === "") return $input;
-        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-        $results = "";
-        foreach($input_parts as $s) {
-            $results .= (strpos($s, '/*!') === 0 ? $s : preg_replace(
-                array(
-                    '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|/\*(?>.*?\*/)#s', // Remove comments
-                    '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
-                    '#([\s:])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#', // Replace `0(cm|em|ex|in|mm|pc|pt|px|%)` with `0`
-                    '#:0 0 0 0([;\}])#', // Replace `:0 0 0 0` with `:0`
-                    '#background-position:0([;\}])#', // Replace `background-position:0` with `background-position:0 0`
-                    '#([\s:])0+\.(\d+)#' // Replace `0.6` to `.6`, but only when preceded by `:` or a white-space
-                ),
-                array(
-                    '$1',
-                    '$1$2$3$4$5$6$7',
-                    '$1$2',
-                    ':0$1',
-                    'background-position:0 0$1',
-                    '$1.$2'
-                ),
-            $s)) . "\n";
-        }
-        return trim($results);
+        return preg_replace(
+            array(
+
+                // Remove comments
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)#s',
+
+                // Remove unused white-spaces
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/))|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
+
+                // Replace `0(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)` with `0`
+                '#(?<=[:\s])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#s',
+
+                // Replace `:0 0 0 0` with `:0`
+                '#:0 0 0 0(?=[;\}]|\!important)#s',
+
+                // Replace `background-position:0` with `background-position:0 0`
+                '#background-position:0(?=[;\}])#s',
+
+                // Replace `0.6` with `.6`, but only when preceded by `:`, `-` or a white-space
+                '#(?<=[:\s\-])0+\.(\d+)#s',
+
+                // Minify string value
+                '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z0-9]+?)\2(?=[\s\{\}\];,])#si',
+                '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
+
+                // Remove empty selectors
+                '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#si'
+
+            ),
+            array(
+                '$1',
+                '$1$2$3$4$5$6$7',
+                '$1',
+                ':0',
+                'background-position:0 0',
+                '.$1',
+                '$1$3',
+                '$1$2$4$5',
+                '$1$2'
+            ),
+        trim($input));
     }
 
     /**
@@ -502,23 +574,45 @@ class Converter {
 
     public static function detractSword($input) {
         if(trim($input) === "") return $input;
-        $input_parts = preg_split('#(\/\*\![\s\S]*?\*\/|\/\*\s*@cc_on[\s\S]*?@\s*\*\/)#', $input, null, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
-        $results = "";
-        foreach($input_parts as $s) {
-            $results .= (strpos($s, '/*!') === 0 || strpos($s, '@cc_on') !== false ? $s : preg_replace(
-                array(
-                    '#\/\*([\s\S]*?)\*\/|(?<!:)\/\/.*([\n\r]+|$)#', // Remove comments
-                    '#(?|\s*(".*?"|\'.*?\'|(?<=[\(=\s])\/.*?\/[gimuy]*(?=[.,;\s]))\s*|\s*([+-=\/%(){}\[\]<>|&?!:;.,])\s*)#s', // Remove unused white-space characters outside the string and regex
-                    '#;+\}#' // Remove the last semicolon
-                ),
-                array(
-                    "",
-                    '$1',
-                    '}'
-                ),
-            $s)) . "\n";
-        }
-        return trim($results);
+        return preg_replace(
+            array(
+                // '#(?<!\\\)\\\\\"#',
+                // '#(?<!\\\)\\\\\'#',
+
+                // Remove comments
+                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*\s*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*[\n\r]*#',
+
+                // Remove unused white-space characters outside the string and regex
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/)|\/(?!\/)[^\n\r]*?\/(?=[\.,;]|[gimuy]))|\s*([+\-\=\/%\(\)\{\}\[\]<>\|&\?\!\:;\.,])\s*#s',
+
+                // Remove the last semicolon
+                '#;+\}#',
+
+                // Replace `true` with `!0`
+                // '#\btrue\b#',
+
+                // Replace `false` with `!1`
+                // '#\bfalse\b#',
+
+                // Minify object attribute except JSON attribute. From `{'foo':'bar'}` to `{foo:'bar'}`
+                '#([\{,])([\'])(\d+|[a-z_][a-z0-9_]*)\2(?=\:)#i',
+
+                // --ibid. From `foo['bar']` to `foo.bar`
+                '#([a-z0-9_\)\]])\[([\'"])([a-z_][a-z0-9_]*)\2\]#i'
+
+            ),
+            array(
+                // '\\u0022',
+                // '\\u0027',
+                '$1',
+                '$1$2',
+                '}',
+                // '!0',
+                // '!1',
+                '$1$3',
+                '$1.$3'
+            ),
+        trim($input));
     }
 
 }

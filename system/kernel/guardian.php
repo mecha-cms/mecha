@@ -89,7 +89,7 @@ class Guardian {
      *
      * -- CODE: ---------------------------------------------------
      *
-     *    if(Guardian::checkMath('your answer goes here')) {
+     *    if(Guardian::checkMath('your answer goes here...')) {
      *        echo 'OK.';
      *    }
      *
@@ -97,8 +97,8 @@ class Guardian {
      *
      */
 
-    public static function checkMath($answer = "") {
-        return is_numeric($answer) && self::check((int) $answer, '->correct', Session::get(self::$math));
+    public static function checkMath($answer) {
+        return is_numeric($answer) && (int) $answer === (int) Session::get(self::$math);
     }
 
     /**
@@ -108,7 +108,7 @@ class Guardian {
      *
      * -- CODE: ---------------------------------------------------
      *
-     *    if(Guardian::checkCaptcha('your answer goes here')) {
+     *    if(Guardian::checkCaptcha('your answer goes here...')) {
      *        echo 'OK.';
      *    }
      *
@@ -116,13 +116,13 @@ class Guardian {
      *
      */
 
-    public static function checkCaptcha($answer = "", $case_sensitive = true) {
+    public static function checkCaptcha($answer, $case_sensitive = true) {
         $answer = (string) $answer;
         $answer_key = (string) Session::get(self::$captcha);
         if( ! $case_sensitive) {
-            return self::check(strtolower($answer), '->correct', strtolower($answer_key));
+            return strtolower($answer) === strtolower($answer_key);
         }
-        return self::check($answer, '->correct', $answer_key);
+        return $answer === $answer_key;
     }
 
     /**
@@ -237,7 +237,7 @@ class Guardian {
     public static function kick($path = "") {
         $path = trim(File::url($path), '/');
         if(strpos($path, '://') === false) {
-            $path = Config::get('url') . '/' . $path;
+            $path = rtrim(Config::get('url') . '/' . $path, '/');
         }
         $G = array('data' => array('url' => $path));
         Weapon::fire('before_kick', array($G));
@@ -263,7 +263,7 @@ class Guardian {
 
     public static function memorize($memo = null) {
         if(is_null($memo)) {
-            $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : "";
+            $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : array();
         }
         if(is_object($memo)) {
             $memo = Mecha::A($memo);
@@ -347,16 +347,16 @@ class Guardian {
         self::checkToken($token);
         if(trim($user) !== "" && trim($pass) !== "") {
             if(isset($authors[$user]) && $pass === $authors[$user]['password']) {
-                $token_o = self::token();
+                $token = self::token();
                 Session::set('cookie:' . self::$user, array(
-                    'token' => $token_o,
+                    'token' => $token,
                     'username' => $user,
                     // 'password' => $authors[$user]['password'],
                     'author' => $authors[$user]['author'],
                     'status' => $authors[$user]['status'],
                     'email' => $authors[$user]['email']
                 ), 30, '/', "", false, true);
-                File::write($token_o)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
+                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
@@ -408,7 +408,7 @@ class Guardian {
     public static function happy() {
         $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log';
         $auth = Session::get('cookie:' . self::$user);
-        return isset($auth['token']) && file_exists($file) && $auth['token'] === file_get_contents($file) ? true : false;
+        return isset($auth['token']) && file_exists($file) && $auth['token'] === file_get_contents($file);
     }
 
     /**
@@ -424,8 +424,8 @@ class Guardian {
      *
      */
 
-    public static function abort($reasons = "") {
-        echo '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em">' . $reasons . '</div>';
+    public static function abort($reason = "") {
+        echo $reason ? '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em">' . $reason . '</div>' : "";
         exit;
     }
 
@@ -442,17 +442,16 @@ class Guardian {
      *
      */
 
-    public static function math($min = 1, $max = 10, $extra = "") {
+    public static function math($min = 1, $max = 10) {
         $x = mt_rand($min, $max);
         $y = mt_rand($min, $max);
         if($x - $y > 0) {
-            $question = $x . ' - ' . $y;
             Session::set(self::$math, $x - $y);
+            return $x . ' - ' . $y;
         } else {
-            $question = $x . ' + ' . $y;
             Session::set(self::$math, $x + $y);
+            return $x . ' + ' . $y;
         }
-        return $question . $extra;
     }
 
     /**
@@ -483,83 +482,9 @@ class Guardian {
         return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($params) ? '?' . implode('&amp;', $params) : "") . '" alt="captcha"' . ES;
     }
 
-    /**
-     * ============================================================
-     *  SET HTTP RESPONSE STATUS (DEPRECATED)
-     * ============================================================
-     *
-     * -- CODE: ---------------------------------------------------
-     *
-     *    Guardian::setResponseStatus(404); // 404 Not Found
-     *
-     * ------------------------------------------------------------
-     *
-     */
-
+    // DEPRECATED. Please use `HTTP::status()`
     public static function setResponseStatus($status = 200) {
-        $messages = array(
-            100 => 'Continue',
-            101 => 'Switching Protocols',
-            102 => 'Processing', // RFC2518
-            200 => 'OK',
-            201 => 'Created',
-            202 => 'Accepted',
-            203 => 'Non-Authoritative Information',
-            204 => 'No Content',
-            205 => 'Reset Content',
-            206 => 'Partial Content',
-            207 => 'Multi-Status', // RFC4918
-            208 => 'Already Reported', // RFC5842
-            226 => 'IM Used', // RFC3229
-            300 => 'Multiple Choices',
-            301 => 'Moved Permanently',
-            302 => 'Found',
-            303 => 'See Other',
-            304 => 'Not Modified',
-            305 => 'Use Proxy',
-            306 => 'Reserved',
-            307 => 'Temporary Redirect',
-            308 => 'Permanent Redirect', // RFC-reschke-http-status-308-07
-            400 => 'Bad Request',
-            401 => 'Unauthorized',
-            402 => 'Payment Required',
-            403 => 'Forbidden',
-            404 => 'Not Found',
-            405 => 'Method Not Allowed',
-            406 => 'Not Acceptable',
-            407 => 'Proxy Authentication Required',
-            408 => 'Request Timeout',
-            409 => 'Conflict',
-            410 => 'Gone',
-            411 => 'Length Required',
-            412 => 'Precondition Failed',
-            413 => 'Request Entity Too Large',
-            414 => 'Request-URI Too Long',
-            415 => 'Unsupported Media Type',
-            416 => 'Requested Range Not Satisfiable',
-            417 => 'Expectation Failed',
-            418 => 'I\'m a teapot', // RFC2324
-            422 => 'Unprocessable Entity', // RFC4918
-            423 => 'Locked', // RFC4918
-            424 => 'Failed Dependency', // RFC4918
-            425 => 'Reserved for WebDAV advanced collections expired proposal', // RFC2817
-            426 => 'Upgrade Required', // RFC2817
-            428 => 'Precondition Required', // RFC6585
-            429 => 'Too Many Requests', // RFC6585
-            431 => 'Request Header Fields Too Large', // RFC6585
-            500 => 'Internal Server Error',
-            501 => 'Not Implemented',
-            502 => 'Bad Gateway',
-            503 => 'Service Unavailable',
-            504 => 'Gateway Timeout',
-            505 => 'HTTP Version Not Supported',
-            506 => 'Variant Also Negotiates (Experimental)', // RFC2295
-            507 => 'Insufficient Storage', // RFC4918
-            508 => 'Loop Detected', // RFC5842
-            510 => 'Not Extended', // RFC2774
-            511 => 'Network Authentication Required', // RFC6585
-        );
-        if(isset($messages[$status])) header($_SERVER['SERVER_PROTOCOL'] . ' ' . $status . ' ' . $messages[$status]);
+        HTTP::status($status);
     }
 
     /**

@@ -107,6 +107,7 @@ class Weapon {
     public static function eject($name = null, $stack = null) {
         self::$armaments_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
         if( ! is_null($name)) {
+            if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
                 $stack = (float) $stack;
                 for($i = 0, $length = count(self::$armaments[$name]); $i < $length; ++$i) {

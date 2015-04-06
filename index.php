@@ -24,6 +24,7 @@ define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
 define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
+define('S', ':'); // Separator between the page header key and page header value
 define('ASSET_VERSION_FORMAT', 'v=%d'); // For `foo/bar/baz.css?v=1425800809`
 define('ES', '>'); // Self closing HTML tag's end character(s)
 define('TAB', '  '); // Standard indentation on the page

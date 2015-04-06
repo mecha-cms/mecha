@@ -28,7 +28,7 @@ class Date {
     public static function format($date, $format = 'Y-m-d H:i:s') {
         if(is_numeric($date)) return date($format, $date);
         $m = explode('-', $date);
-        if(strlen($date) >= 19 && count($m) == 6) {
+        if(strlen($date) >= 19 && count($m) === 6) {
             $date = $m[0] . '-' . $m[1] . '-' . $m[2] . ' ' . $m[3] . ':' . $m[4] . ':' . $m[5];
         }
         return date($format, strtotime($date));
@@ -66,15 +66,13 @@ class Date {
             $year,
             $year_short,
             $month,
-            $month_number,
             $day,
-            $day_number,
             $hour_24,
             $hour_12,
             $minute,
             $second,
-            $am_pm
-        ) = explode('.', self::format($date, 'Y.y.m.n.d.j.H.h.i.s.A'));
+            $AP
+        ) = explode('.', self::format($date, 'Y.y.m.d.H.h.i.s.A'));
         $month_name = $month_names[(int) $month - 1];
         $day_name = $day_names[(int) self::format($date, 'w')];
         $month_name_short = $month_names_short[(int) $month - 1];
@@ -87,8 +85,8 @@ class Date {
             'year_short' => $year_short,
             'month' => $month,
             'day' => $day,
-            'month_number' => (int) $month_number,
-            'day_number' => (int) $day_number,
+            'month_number' => (int) $month,
+            'day_number' => (int) $day,
             'month_name' => $month_name,
             'day_name' => $day_name,
             'month_name_short' => $month_name_short,
@@ -98,13 +96,18 @@ class Date {
             'hour_24' => $hour_24, // alias for `hour`
             'minute' => $minute,
             'second' => $second,
-            'AM_PM' => $am_pm,
+            'hour_number' => (int) $hour_24,
+            'hour_12_number' => (int) $hour_12,
+            'hour_24_number' => (int) $hour_24,
+            'minute_number' => (int) $minute,
+            'second_number' => (int) $second,
+            'AM_PM' => $AP,
             'FORMAT_1' => $day_name . ', ' . $day . ' ' . $month_name . ' ' . $year,
             'FORMAT_2' => $month_name . ' ' . $day . ', ' . $year,
             'FORMAT_3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
-            'FORMAT_4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $am_pm,
+            'FORMAT_4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AP,
             'FORMAT_5' => $hour_24 . ':' . $minute,
-            'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $am_pm
+            'FORMAT_6' => $hour_12 . ':' . $minute . ' ' . $AP
         );
         return ! is_null($output) ? $results[$output] : $results;
     }

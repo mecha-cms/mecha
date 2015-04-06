@@ -39,12 +39,9 @@ spl_autoload_register(function($worker) {
  * -----------------
  */
 
-foreach(glob(SYSTEM . DS . 'fn.*.php') as $fn) {
-    require $fn;
+foreach(glob(SYSTEM . DS . 'plug' . DS . 'plug.*.php') as $plug) {
+    require $plug;
 }
-
-// internal only
-define('SEPARATOR_ENCODED', Text::parse(SEPARATOR, '->ascii'));
 
 
 /**

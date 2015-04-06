@@ -19,12 +19,12 @@ class Filter {
      * -------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type    | Description
-     *  ---------- | ------- | -------------------------------------------
-     *  $name      | string  | Filter name
-     *  $fn        | mixed   | Filter function
-     *  $stack     | float   | Filter function priority
-     *  ---------- | ------- | -------------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | --------------------------------------------
+     *  $name     | string  | Filter name
+     *  $fn       | mixed   | Filter function
+     *  $stack    | float   | Filter function priority
+     *  --------- | ------- | --------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -97,10 +97,10 @@ class Filter {
     public static function remove($name = null, $stack = null) {
         self::$filters_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
         if( ! is_null($name)) {
+            if( ! isset(self::$filters[$name])) return;
             if( ! is_null($stack)) {
-                $stack = (float) $stack;
                 for($i = 0, $length = count(self::$filters[$name]); $i < $length; ++$i) {
-                    if(self::$filters[$name][$i]['stack'] === $stack) {
+                    if(self::$filters[$name][$i]['stack'] === (float) $stack) {
                         unset(self::$filters[$name][$i]);
                     }
                 }

@@ -86,7 +86,7 @@ class Widget {
         foreach(Mecha::eat($menus)->order('ASC', 'stack')->vomit() as $menu) {
             $_menus[$menu['html']] = $menu['link'];
         }
-        $html .= Menu::get($_menus, 'ul', 'manager:', TAB);
+        $html .= Menu::get($_menus, 'ul', TAB, 'manager:');
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
         return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));
@@ -407,7 +407,7 @@ class Widget {
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= str_repeat(TAB, 3) . '<div class="recent-comment-avatar">' . NL;
-                    $html .= str_repeat(TAB, 4) . '<img alt="' . Text::parse($comment->name, '->encoded_html') . '" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
+                    $html .= str_repeat(TAB, 4) . '<img alt="" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
                     $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-header">' . NL;
@@ -475,7 +475,9 @@ class Widget {
      */
 
     public static function __callStatic($method, $arguments = array()) {
-        if( ! isset(self::$macros[$method])) Guardian::abort(Config::speak('notify_not_exist', array('<code>Widget::' . $method . '()</code>')));
+        if( ! isset(self::$macros[$method])) {
+            Guardian::abort('Widget <code>Widget::' . $method . '()</code> does not exist.');
+        }
         $html = call_user_func_array(self::$macros[$method], $arguments);
         $html = Filter::apply('widget', $html);
         return Filter::apply('widget:custom.' . Text::parse($method, '->snake_case'), Filter::apply('widget:custom.' . $method, Filter::apply('widget:custom', $html)));

@@ -50,7 +50,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             $request[$page]['slug'] = Text::parse(Request::post($page . '.slug', $default), '->slug');
             if( // If ...
                 // Should be greater than 0
-                (int) Request::post($page . '.per_page') < 1 ||
+                Request::post($page . '.per_page') < 1 ||
                 // Should be a fixed number
                 floor(Request::post($page . '.per_page')) != Request::post($page . '.per_page')
             ) {
@@ -63,7 +63,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 Guardian::memorize($request);
             }
         }
-        if((int) Request::post('per_page') < 1 || floor(Request::post('per_page')) != Request::post('per_page')) {
+        if(Request::post('per_page') < 1 || floor(Request::post('per_page')) != Request::post('per_page')) {
             Notify::error($speak->notify_invalid_per_page_number);
             Guardian::memorize($request);
         }

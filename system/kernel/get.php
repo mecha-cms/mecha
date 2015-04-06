@@ -80,10 +80,10 @@ class Get {
         if( ! file_exists($folder)) return false;
         $results = array();
         $results_inclusive = array();
-        $extension = $extensions == '*' ? '.*?' : str_replace(array(', ', ','), '|', $extensions);
+        $extension = $extensions === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $extensions);
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
-            if(empty($filter)) {
+            if( ! $filter) {
                 $results_inclusive[] = self::fileExtract($file);
             } else {
                 if(strpos(basename($file), $filter) !== false) {
@@ -101,7 +101,7 @@ class Get {
                 strpos(basename(dirname($file)), '.') !== 0 &&
                 strpos(basename($file), '.') !== 0
             ) {
-                if(empty($filter)) {
+                if( ! $filter) {
                     $results[] = self::fileExtract($file);
                 } else {
                     if(strpos(basename($file), $filter) !== false) {
@@ -110,7 +110,7 @@ class Get {
                 }
             }
         }
-        if( ! $inclusive) {
+        if($inclusive) {
             return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
         } else {
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
@@ -139,10 +139,10 @@ class Get {
         if( ! file_exists($folder)) return false;
         $results = array();
         $results_inclusive = array();
-        $extension = str_replace(', ', ',', $extensions);
+        $extension = str_replace(' ', "", $extensions);
         $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
         foreach($files as $file) {
-            if(empty($filter)) {
+            if( ! $filter) {
                 $results_inclusive[] = self::fileExtract($file);
             } else {
                 if(strpos(basename($file), $filter) !== false) {
@@ -155,7 +155,7 @@ class Get {
                 strpos(basename(dirname($file)), '.') !== 0 &&
                 strpos(basename($file), '.') !== 0
             ) {
-                if(empty($filter)) {
+                if( ! $filter) {
                     $results[] = self::fileExtract($file);
                 } else {
                     if(strpos(basename($file), $filter) !== false) {
@@ -281,15 +281,13 @@ class Get {
      */
 
     public static function rawTagsBy($filter) {
-        $tags = self::rawTags('ASC', 'id');
-        $result = false;
+        $tags = self::rawTags();
         for($i = 0, $count = count($tags); $i < $count; ++$i) {
             if((is_numeric($filter) && (int) $filter === (int) $tags[$i]['id']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['name']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['slug'])) {
-                $result = $tags[$i];
-                break;
+                return $tags[$i];
             }
         }
-        return $result;
+        return false;
     }
 
     /**
@@ -347,19 +345,20 @@ class Get {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type    | Description
-     *  ---------- | ------- | --------------------------------------------------
-     *  $order     | string  | Ascending or descending? ASC/DESC?
-     *  $filter    | string  | Filter the resulted array by a keyword
-     *  $extension | boolean | The file extension(s)
-     *  $folder    | string  | Folder of the pages
-     *  ---------- | ------- | --------------------------------------------------
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $order     | string | Ascending or descending? ASC/DESC?
+     *  $filter    | string | Filter the resulted array by a keyword
+     *  $extension | string | The file extension(s)
+     *  $folder    | string | Folder of the pages
+     *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
     public static function pages($order = 'DESC', $filter = "", $extension = 'txt', $folder = PAGE) {
         $results = array();
+        $extension = str_replace(' ', "", $extension);
         $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
         $total_pages = count($pages);
         if( ! is_array($pages) || $total_pages === 0) return false;
@@ -368,7 +367,7 @@ class Get {
         } else {
             rsort($pages);
         }
-        if(empty($filter)) return $pages;
+        if( ! $filter) return $pages;
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
             if($key == 'time') {
@@ -386,7 +385,6 @@ class Get {
                         $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
                         foreach($kinds as $kind) {
                             if(
-                                strpos($name, '_' . $kind . '_') !== false ||
                                 strpos($name, ',' . $kind . ',') !== false ||
                                 strpos($name, '_' . $kind . ',') !== false ||
                                 strpos($name, ',' . $kind . '_') !== false
@@ -399,12 +397,7 @@ class Get {
                 } else {
                     for($i = 0; $i < $total_pages; ++$i) {
                         $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
-                        if(
-                            strpos($name, '_' . $value . '_') !== false ||
-                            strpos($name, ',' . $value . ',') !== false ||
-                            strpos($name, '_' . $value . ',') !== false ||
-                            strpos($name, ',' . $value . '_') !== false
-                        ) {
+                        if(strpos($name, '_' . $value . '_') !== false) {
                             $results[] = $pages[$i];
                         }
                     }
@@ -481,6 +474,7 @@ class Get {
      */
 
     public static function comments($post = null, $order = 'ASC', $extension = 'txt') {
+        $extension = str_replace(' ', "", $extension);
         if( ! is_null($post)) {
             $post = Date::format($post, 'Y-m-d-H-i-s');
             $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . $post . '_*.{' . $extension . '}', GLOB_BRACE) : glob(RESPONSE . DS . $post . '_*.' . $extension);
@@ -697,7 +691,7 @@ class Get {
         if(is_array($reference)) {
             $results = $reference;
         } else {
-            // By path => `root:cabinet/pages/0000-00-00-00-00-00_1,2,3_page-slug.txt`
+            // By path => `cabinet/pages/0000-00-00-00-00-00_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
                 $results = self::pageExtract($reference);
             } else {
@@ -718,7 +712,7 @@ class Get {
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
-        $extension = $results['state'] == 'published' ? '.txt' : '.draft';
+        $extension = pathinfo($results['path'], PATHINFO_EXTENSION);
 
         if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
@@ -726,10 +720,10 @@ class Get {
             $results['content'] = ob_get_clean();
         }
 
-        $results['excerpt'] = "";
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
         $results['link'] = "";
+        $results['excerpt'] = "";
 
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
 
@@ -751,21 +745,21 @@ class Get {
         if(strpos($content_test, '<!-- link:') !== false) {
             preg_match('#<!-- link\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
             $results['link'] = $matches[2];
-            $results['content'] = preg_replace('#<!-- link\:.*? -->#', "", $results['content']);
+            $results['content'] = preg_replace('#<!-- link\: .*? -->#', "", $results['content']);
         }
 
         // Manual post excerpt with `<!-- cut+ "Read More" -->`
         if(strpos($content_test, '<!-- cut+ ') !== false) {
             preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
-            $content_more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
-            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '" rel="nofollow">' . $content_more . '</a></p><!-- cut -->', $content_test);
+            $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
+            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '">' . $more . '</a></p><!-- cut -->', $content_test);
         }
 
         // ... or `<!-- cut -->`
         if(strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
             $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt');
-            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . "<span class=\"fi\" id=\"read-more:" . $results['id'] . "\" aria-hidden=\"true\"></span>" . NL . NL . trim($parts[1]);
+            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="read-more:' . $results['id'] . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
         }
 
         if( ! isset($excludes['tags'])) {
@@ -779,18 +773,58 @@ class Get {
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
             if($file = File::exist(CUSTOM . DS . $time . $extension)) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
-                $results['css_raw'] = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
-                $results['js_raw'] = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
-                $css_raw = self::AMF($results['css_raw'], 'custom:', 'css_raw');
-                $css_raw = self::AMF($results['css_raw'], 'custom:', 'shortcode');
-                $css_raw = Filter::apply('custom:css', $css_raw);
-                $css_raw = Filter::apply('css:shortcode', $css_raw);
-                $results['css'] = self::AMF($css_raw, $FP, 'css');
-                $js_raw = self::AMF($results['js_raw'], 'custom:', 'js_raw');
-                $js_raw = self::AMF($results['js_raw'], 'custom:', 'shortcode');
-                $js_raw = Filter::apply('custom:js', $js_raw);
-                $js_raw = Filter::apply('js:shortcode', $js_raw);
-                $results['js'] = self::AMF($js_raw, $FP, 'js');
+                $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
+                $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
+
+                /**
+                 * CSS
+                 * ---
+                 *
+                 * css_raw
+                 * page:css_raw
+                 * custom:css_raw
+                 *
+                 * shortcode
+                 * page:shortcode
+                 * custom:shortcode
+                 *
+                 * css
+                 * page:css
+                 * custom:css
+                 *
+                 */
+
+                $css = self::AMF($css, $FP, 'css_raw');
+                $results['css_raw'] = Filter::apply('custom:css_raw', $css);
+                $css = self::AMF($css, $FP, 'shortcode');
+                $css = Filter::apply('custom:shortcode', $css);
+                $css = self::AMF($css, $FP, 'css');
+                $results['css'] = Filter::apply('custom:css', $css);
+
+                /**
+                 * JS
+                 * --
+                 *
+                 * js_raw
+                 * page:js_raw
+                 * custom:js_raw
+                 *
+                 * shortcode
+                 * page:shortcode
+                 * custom:shortcode
+                 *
+                 * js
+                 * page:js
+                 * custom:js
+                 *
+                 */
+
+                $js = self::AMF($js, $FP, 'js_raw');
+                $results['js_raw'] = Filter::apply('custom:js_raw', $js);
+                $js = self::AMF($js, $FP, 'shortcode');
+                $js = Filter::apply('custom:shortcode', $js);
+                $js = self::AMF($js, $FP, 'js');
+                $results['js'] = Filter::apply('custom:js', $js);
             } else {
                 $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
             }
@@ -823,10 +857,10 @@ class Get {
         if( ! isset($excludes['fields']) && isset($results['fields']) && is_array($results['fields'])) {
 
             /**
-             * Initialize custom fields with the default values so that users
-             * don't have to write `isset()` function multiple times just
-             * to prevent error messages because of the object key that
-             * is not available in the old posts.
+             * Initialize custom fields with the default values so that
+             * users don't have to write `isset()` function multiple times
+             * just to prevent error messages because of the object keys
+             * that is not available in the old posts.
              */
 
             $fields = self::state_field(array());
@@ -929,7 +963,7 @@ class Get {
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt');
-        for($i = 0, $total = count($posts); $i < $total; ++$i) {
+        for($i = 0, $count = count($posts); $i < $count; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
             if((int) Date::format($time, 'U') === $results['post']) {
                 $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $FP, 'permalink');
@@ -1049,9 +1083,9 @@ class Get {
         }
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
             $results = self::pageExtract($path);
-            $parts = explode(':', $buffer, 2);
+            $parts = explode(S, $buffer, 2);
             $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : '?'), $FP, 'title');
+            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title');
             return Mecha::O($results);
         }
         return false;
@@ -1091,18 +1125,17 @@ class Get {
      *  $detector | mixed  | Slug, ID or time of the page
      *  --------- | ------ | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
      */
 
     public static function pagePath($detector, $folder = PAGE) {
-        $results = false;
         foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
-            if($slug == $detector || (is_numeric($detector) && (string) date('Y-m-d-H-i-s', $detector) === (string) $time)) {
-                $results = $path;
-                break;
+            if($slug == $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
+                return $path;
             }
         }
-        return $results;
+        return false;
     }
 
     /**
@@ -1122,29 +1155,14 @@ class Get {
      *  $detector | mixed  | Slug, ID or time of the article
      *  --------- | ------ | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
      */
 
     public static function articlePath($detector) {
         return self::pagePath($detector, ARTICLE);
     }
 
-    /**
-     * ==========================================================================
-     *  GET SUMMARY FROM LONG TEXT SOURCE
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    $summary = Get::summary('Very very long text...');
-     *
-     * --------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  See => `Converter::curt()`
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
+    // DEPRECATED. Please use `Converter::curt()`
     public static function summary($input, $chars = 100, $tail = '&hellip;') {
         return Converter::curt($input, $chars, $tail);
     }
@@ -1226,7 +1244,7 @@ class Get {
          *
          */
 
-        if(preg_match_all('#(background(-image)?|content)\:.*?url\(([\'"]|)?([^\'"]+?)\3\)#i', $source, $matches)) {
+        if(preg_match_all('#(background(-image)?|content)\:.*?url\(([\'"]?)?([^\'"]+?)\3\)#i', $source, $matches)) {
             return $matches[4];
         }
 
@@ -1247,11 +1265,12 @@ class Get {
      *  $fallback  | string  | Fallback image URL if nothing matched
      *  ---------- | ------- | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
      */
 
-    public static function imageURL($source, $sequence = 1, $fallback = '?') {
+    public static function imageURL($source, $sequence = 1, $fallback = null) {
         $images = self::imagesURL($source, array());
-        return isset($images[$sequence - 1]) ? $images[$sequence - 1] : ($fallback == '?' ? Image::placeholder() : $fallback);
+        return isset($images[$sequence - 1]) ? $images[$sequence - 1] : (is_null($fallback) ? Image::placeholder() : $fallback);
     }
 
     /**
@@ -1328,7 +1347,6 @@ class Get {
         );
         $timezones = array();
         $timezone_offsets = array();
-        $timezone_list = array();
         foreach($regions as $region) {
             $timezones = array_merge($timezones, DateTimeZone::listIdentifiers($region));
         }
@@ -1336,7 +1354,7 @@ class Get {
             $tz = new DateTimeZone($timezone);
             $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
         }
-        ksort($timezone_offsets);
+        $a = $b = array();
         foreach($timezone_offsets as $timezone => $offset) {
             $offset_prefix = $offset < 0 ? '-' : '+';
             $offset_formatted = gmdate('H:i', abs($offset));
@@ -1344,8 +1362,16 @@ class Get {
             $t = new DateTimeZone($timezone);
             $c = new DateTime(null, $t);
             $current_time = $c->format('g:i A');
-            $timezone_list[$timezone] = sprintf($format, $pretty_offset, str_replace('_', ' ', $timezone), $current_time);
+            $text = sprintf($format, $pretty_offset, str_replace('_', ' ', $timezone), $current_time);
+            if($offset < 0) {
+                $b[$timezone] = $text;
+            } else {
+                $a[$timezone] = $text;
+            }
         }
+        asort($a);
+        arsort($b);
+        $timezone_list = $b + $a;
         if( ! is_null($identifier)) {
             return isset($timezone_list[$identifier]) ? $timezone_list[$identifier] : $fallback;
         }

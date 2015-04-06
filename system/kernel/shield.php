@@ -72,10 +72,8 @@ class Shield {
         $name = rtrim(File::path($name), '\\/') . '.' . ($extension === "" ? 'php' : $extension);
         if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
             return $path;
-        } else {
-            if($path = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
-                return $path;
-            }
+        } else if($path = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
+            return $path;
         }
         return $name;
     }
@@ -223,13 +221,14 @@ class Shield {
         require Filter::apply('shield:path', $shield);
         Notify::clear();
         Guardian::forget();
-        $G['data']['content'] = ob_get_contents();
+        $content = ob_get_contents();
+        ob_end_flush();
+        $G['data']['content'] = $minify ? self::s_o($content) : self::s_o_d($content);
         if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
-            File::write(ob_get_contents())->saveTo($cache_path);
+            File::write($G['data']['content'])->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
-        ob_end_flush();
         Weapon::fire('shield_after', array($G, $G));
         // End shield
         exit;
@@ -253,8 +252,8 @@ class Shield {
      */
 
     public static function abort($name = '404', $minify = null, $cache = false) {
+        HTTP::status(404);
         Config::set('page_type', '404');
-        header($_SERVER['SERVER_PROTOCOL'] . ' 404 Not Found');
         self::attach($name, $minify, $cache);
     }
 

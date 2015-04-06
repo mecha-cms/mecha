@@ -222,18 +222,25 @@ Text::parser('to_html', function($input) {
 
 // Convert `foo_bar_baz` to `fooBarBaz`
 Text::parser('to_camel_case', function($input, $connector = '[_\s]') {
+    if( ! is_string($input)) return $input;
     return preg_replace_callback('#(' . $connector . ')([a-z])#i', function($matches) {
-            return strtoupper($matches[2]);
+        return strtoupper($matches[2]);
     }, strtolower($input));
 });
 
 // Convert `foo_bar_baz` to `FooBarBaz`
 Text::parser('to_pascal_case', function($input, $connector = '[_\s]') {
+    if( ! is_string($input)) return $input;
     return ucfirst(Text::parse($input, '->camel_case', $connector));
 });
 
 // Convert `FooBarBaz` to `foo_bar_baz`
 Text::parser('to_snake_case', function($input, $connector = '_', $lower = true) {
+    if( ! is_string($input)) return $input;
     $output = preg_replace('#([a-z0-9])([A-Z])#', '$1' . $connector . '$2', $input);
     return $lower ? strtolower($output) : $output;
 });
+
+
+// internal only
+define('SEPARATOR_ENCODED', Text::parse(SEPARATOR, '->ascii'));

@@ -24,7 +24,7 @@ class Page {
 
     // Remove `:` in field key
     private static function fix($key) {
-        return trim(str_replace(':', "", $key));
+        return trim(str_replace(S, '_', $key));
     }
 
     // Reset the cached data
@@ -50,7 +50,7 @@ class Page {
         $parts = explode(SEPARATOR, file_get_contents($path), 2);
         $headers = explode("\n", trim($parts[0]));
         foreach($headers as $header) {
-            $field = explode(':', $header, 2);
+            $field = explode(S, $header, 2);
             self::$bucket[trim($field[0])] = isset($field[1]) ? trim($field[1]) : false;
         }
         self::$bucket_alt = trim($parts[1]);
@@ -94,7 +94,7 @@ class Page {
         return $output;
     }
 
-    // Show page data as object
+    // Show page data as array
     public static function read($content = 'content', $FP = 'page:') {
         $results = Text::toPage(self::create(), $content, $FP);
         if($content === false) {

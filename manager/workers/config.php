@@ -12,8 +12,6 @@
         $timezones = Get::timezone();
         $cache = Guardian::wayback('timezone', $config->timezone);
 
-        arsort($timezones);
-
         foreach($timezones as $key => $value) {
             echo '<option value="' . $key . '"' . ($cache == $key ? ' selected' : "") . '>' . $value . '</option>';
         }

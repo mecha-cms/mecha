@@ -3,6 +3,7 @@
 class Config {
 
     protected static $bucket = array();
+    protected static $o = array();
 
     /**
      * =============================================================
@@ -49,6 +50,24 @@ class Config {
 
     /**
      * =============================================================
+     *  REMOVE ALL DATA
+     * =============================================================
+     *
+     * -- CODE: ----------------------------------------------------
+     *
+     *    Config::reset();
+     *
+     * -------------------------------------------------------------
+     *
+     */
+
+    public static function reset() {
+        self::$bucket = array();
+        return new static;
+    }
+
+    /**
+     * =============================================================
      *  GET CONFIGURATION VALUE BY ITS KEY
      * =============================================================
      *
@@ -84,14 +103,14 @@ class Config {
      */
 
     public static function get($key = null, $fallback = false) {
+        if(is_null($key)) {
+            return Mecha::O(self::$bucket);
+        }
         if(is_string($key) && strpos($key, '.') !== false) {
             $output = Mecha::GVR(self::$bucket, $key, $fallback);
             return is_array($output) ? Mecha::O($output) : $output;
         }
-        if( ! is_null($key) && ! isset(self::$bucket[$key])) {
-            return $fallback;
-        }
-        return ! is_null($key) ? Mecha::O(self::$bucket[$key]) : Mecha::O(self::$bucket);
+        return isset(self::$bucket[$key]) ? Mecha::O(self::$bucket[$key]) : $fallback;
     }
 
     /**
@@ -119,145 +138,27 @@ class Config {
         self::set($key, $value);
     }
 
-    /**
-     * =============================================================
-     *  GET LANGUAGE FILE TO SPEAK
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    echo Config::speak('home');
-     *
-     * -------------------------------------------------------------
-     *
-     *    echo Config::speak('action')->save;
-     *
-     * -------------------------------------------------------------
-     *
-     *    echo Config::speak('action.save');
-     *
-     * -------------------------------------------------------------
-     *
-     *    $speak = Config::speak();
-     *
-     *    echo $speak->home;
-     *    echo $speak->action->save;
-     *
-     * -------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of language data to be called
-     *  $vars     | array  | Array of value used in PHP `vsprintf()`
-     *  --------- | ------ | ---------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function speak($key = null, $vars = array()) {
-        $words = self::$bucket['speak'];
-        if(strpos($key, 'file:') === 0) {
-            if($file = File::exist(LANGUAGE . DS . self::$bucket['language'] . DS . 'yapping' . DS . str_replace('file:', "", $key) . '.txt')) {
-                $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-                return $wizard['content'];
-            } else if($file = File::exist(ROOT . DS . File::path(str_replace('file:', "", $key)) . '.txt')) {
-                $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-                return $wizard['content'];
-            } else {
-                return "";
-            }
-        }
-        if(is_null($key)) {
-            return Mecha::O($words);
-        }
-        if(strpos($key, '.') !== false) {
-            $value = Mecha::GVR($words, $key, false);
-            return $value ? vsprintf($value, $vars) : "";
-        }
-        return ! is_array($words[$key]) ? vsprintf($words[$key], $vars) : Mecha::O($words[$key]);
+    // Add new method to `Config`
+    public static function plug($kin, $callback) {
+        self::$o[$kin] = $callback;
     }
 
-    /**
-     * =============================================================
-     *  INJECT ALL CONFIGURATION DATA TO `$bucket`
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    Config::load();
-     *
-     * -------------------------------------------------------------
-     *
-     */
-
-    public static function load() {
-
-        // Extract the configuration file
-        $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
-        $config = file_exists($d) ? include $d : array();
-        if($file = Get::state_config()) {
-            Mecha::extend($config, $file);
+    // Call the added method or use them as
+    // a shortcut for the default `get` method
+    // Example: `Config::get('foo')` becomes `Config::foo()`
+    // if `foo` is not defined yet by `Config::plug()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if(isset(self::$o[$kin])) {
+            return call_user_func_array(self::$o[$kin], $arguments);
+        } else {
+            $key = $kin;
+            $fallback = false;
+            if(count($arguments) > 0) {
+                $key .= '.' . array_shift($arguments);
+                $fallback = array_shift($arguments);
+            }
+            return self::get($key, $fallback);
         }
-
-        // Define some default variables
-        $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
-        $config['host'] = $_SERVER['HTTP_HOST'];
-        $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
-        $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-        $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
-        $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
-
-        $config['page_title'] = $config['title'];
-        $config['offset'] = 1;
-        $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
-        $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
-
-        $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
-        $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));
-        $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt'));
-
-        $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft}', GLOB_BRACE));
-        $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft}', GLOB_BRACE));
-        $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
-
-        $page = '404';
-        if($config['url_current'] === $config['url']) $page = 'home';
-        if(strpos($config['url_current'], $config['url'] . '/') === 0) $page = 'page';
-        if($config['url_current'] === $config['url'] . '/' . $config['index']['slug']) $page = 'index';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['index']['slug'] . '/') === 0) $page = 'article';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['tag']['slug'] . '/') === 0) $page = 'tag';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['archive']['slug'] . '/') === 0) $page = 'archive';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['search']['slug'] . '/') === 0) $page = 'search';
-        if(strpos($config['url_current'], $config['url'] . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
-
-        // Create a proper query string data
-        if($page != 'home') {
-            array_shift($_GET);
-        }
-        $queries = array();
-        foreach($_GET as $k => $v) {
-            $queries[] = $k . '=' . $v;
-        }
-        $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
-
-        // Loading the language files
-        $lang = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
-        $lang_a = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
-        if( ! file_exists($lang) && ! file_exists($lang_a)) {
-            Guardian::abort('Language file not found.');
-        }
-        $lang = file_exists($lang) ? Text::toArray(File::open($lang)->read(), ':', '  ') : array();
-        if($config['language'] !== 'en_US') {
-            $lang_a = file_exists($lang_a) ? Text::toArray(File::open($lang_a)->read(), ':', '  ') : array();
-            Mecha::extend($lang, $lang_a);
-        }
-
-        $config['page_type'] = $page;
-        $config['speak'] = $lang;
-
-        self::$bucket = $config;
-
     }
 
 }
