@@ -416,8 +416,8 @@ class Converter {
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
         // Remove extra white-spaces between HTML attributes
-        $input = preg_replace_callback('#<([^\/\s<>]+?)\s+([^<>]*?)>#s', function($matches) {
-            return '<' . $matches[1] . ' ' . trim(preg_replace('#\s+([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1 ', $matches[2])) . '>';
+        $input = preg_replace_callback('#<([^\/\s<>]+?)\s+([^<>]*?) *(\/?)>#s', function($matches) {
+            return '<' . $matches[1] . ' ' . trim(preg_replace('#\s+([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1 ', $matches[2])) . $matches[3] . '>';
         }, $input);
         return preg_replace(
             array(
@@ -438,13 +438,13 @@ class Converter {
                 // If `</tag>    ...<tag>` remove white-spaces
                 // If `<tag>    ...<tag>` remove white-spaces
                 // If `</tag>    ...</tag>` remove white-spaces
+                // If `abc <tag>` keep white-space
                 // If `<tag> abc` remove white-space
                 // If `abc </tag>` remove white-space
                 // If `</tag> abc` keep white-space
                 // If `abc    ...<tag>` keep one white-space
                 // If `<tag>    ...abc` remove white-spaces
                 // If `abc    ...</tag>` remove white-spaces
-                // If `</tag>    ...abc` keep one white-space
                 // If `</tag>    ...abc` keep one white-space
                 // If `abc    ...<tag>` keep one white-space
                 // If `abc    ...</tag>` remove white-spaces
@@ -458,12 +458,11 @@ class Converter {
                 '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?!\<)#s', // c+t
 
                 // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
-                '#&nbsp;&nbsp;#',
-                '#&nbsp;(?!\s|<)#s',
-                '#([^\s])&nbsp;([^\s])#',
+                '#(?<=&nbsp;)(&nbsp;){2}#s',
 
-                // Others
-                '#-->(\s|&nbsp;)+<#s'
+                // Proofing ...
+                '#(?<=\>)&nbsp;(?!\s|&nbsp;)#',
+                '#(?<=--\>)(?:\s|&nbsp;)+(?=\<)#'
 
             ),
             array(
@@ -477,10 +476,9 @@ class Converter {
                 '$1$2', // t+c
                 '$1$2 ', // t+o
                 '$1$2 ', // c+t
-                '&nbsp; ',
+                ' $1',
                 ' ',
-                '$1 $2',
-                '--><'
+                ""
             ),
         trim($input));
     }
