@@ -419,8 +419,8 @@ class Converter {
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
         // Remove extra white-spaces between HTML attributes
-        $input = preg_replace_callback('#<([^\/\s<>]+?)\s+([^<>]*?) *(\/?)>#s', function($matches) {
-            return '<' . $matches[1] . ' ' . trim(preg_replace('#\s+([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1 ', $matches[2])) . $matches[3] . '>';
+        $input = preg_replace_callback('#<([^\/\s<>!]+?)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
+            return '<' . $matches[1] . preg_replace('#([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1', $matches[2]) . $matches[3] . '>';
         }, $input);
         return preg_replace(
             array(
@@ -463,6 +463,7 @@ class Converter {
                 '#(<\!--.*?-->)|(?!\>)\s+(<\/[^\/\s<>]+?>)#s', // t+c
                 '#(<\!--.*?-->)|(?!\>)\s+(?=\<[^\/])#s', // t+o
                 '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?!\<)#s', // c+t
+                '#(<\!--.*?-->)|(\/>)\s+(?!\<)#', // o+t
 
                 // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
                 '#(?<=&nbsp;)(&nbsp;){2}#s',
@@ -484,6 +485,7 @@ class Converter {
                 '$1$2', // t+c
                 '$1$2 ', // t+o
                 '$1$2 ', // c+t
+                '$1$2 ', // o+t
                 ' $1',
                 ' ',
                 ""

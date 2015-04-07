@@ -180,7 +180,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
 
 Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config) {
 
-    if( ! $tag = Get::tagsBy($slug)) {
+    if( ! $tag = Get::tag($slug)) {
         Shield::abort('404-tag');
     }
 
@@ -536,7 +536,7 @@ Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($
 
 Route::accept('captcha.png', function() {
 
-    HTTP::mime('image/png')->status(array(
+    HTTP::mime('image/png')->header(array(
         'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
         'Cache-Control' => 'post-check=0, pre-check=0',
         'Pragma' => 'no-cache'

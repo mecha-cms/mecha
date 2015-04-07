@@ -134,7 +134,7 @@ class Route {
     public static function reject($pattern, $stack = null) {
         $pattern = self::path($pattern);
         self::$routes_e[$pattern . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
-        for($i = 0, $length = count(self::$routes); $i < $length; ++$i) {
+        for($i = 0, $count = count(self::$routes); $i < $count; ++$i) {
             if(self::$routes[$i]['pattern'] === $pattern) {
                 if( ! is_null($stack)) {
                     if((float) self::$routes[$i]['stack'] === (float) $stack) {

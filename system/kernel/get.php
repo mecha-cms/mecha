@@ -2,6 +2,8 @@
 
 class Get {
 
+    private static $o = array();
+
     // Apply the missing filters
     private static function AMF($data, $FP = "", $F) {
         $output = Filter::apply($F, $data);
@@ -274,14 +276,14 @@ class Get {
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    $tag = Get::rawTagsBy('lorem-ipsum');
+     *    $tag = Get::rawTag('lorem-ipsum');
      *    echo $tag['name'] . '<br>';
      *
      * --------------------------------------------------------------------------
      *
      */
 
-    public static function rawTagsBy($filter) {
+    public static function rawTag($filter) {
         $tags = self::rawTags();
         for($i = 0, $count = count($tags); $i < $count; ++$i) {
             if((is_numeric($filter) && (int) $filter === (int) $tags[$i]['id']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['name']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['slug'])) {
@@ -303,12 +305,12 @@ class Get {
 
     /**
      * ==========================================================================
-     *  `Get::rawTagsBy()` AS OBJECT
+     *  `Get::rawTag()` AS OBJECT
      * ==========================================================================
      */
 
-    public static function tagsBy($id_or_name_or_slug) {
-        return Mecha::O(self::rawTagsBy($id_or_name_or_slug));
+    public static function tag($id_or_name_or_slug) {
+        return Mecha::O(self::rawTag($id_or_name_or_slug));
     }
 
     /**
@@ -766,7 +768,7 @@ class Get {
         if( ! isset($excludes['tags'])) {
             $tags = array();
             foreach($results['kind'] as $id) {
-                $tags[] = self::rawTagsBy($id);
+                $tags[] = self::rawTag($id);
             }
             $results['tags'] = self::AMF($tags, $FP, 'tags');
         }
@@ -1163,11 +1165,6 @@ class Get {
         return self::pagePath($detector, ARTICLE);
     }
 
-    // DEPRECATED. Please use `Converter::curt()`
-    public static function summary($input, $chars = 100, $tail = '&hellip;') {
-        return Converter::curt($input, $chars, $tail);
-    }
-
     /**
      * ==========================================================================
      *  GET IMAGES URL FROM TEXT SOURCE
@@ -1274,109 +1271,17 @@ class Get {
         return isset($images[$sequence - 1]) ? $images[$sequence - 1] : (is_null($fallback) ? Image::placeholder() : $fallback);
     }
 
-    /**
-     * ==========================================================================
-     *  GET CLIENT IP ADDRESS
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    echo Get::IP();
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function IP() {
-        $ip = 'N/A';
-        if(array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && ! empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-            if(strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') > 0) {
-                $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
-                $ip = trim($addresses[0]);
-            } else {
-                $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
-            }
-        } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
-        }
-        return Guardian::check($ip, '->IP') ? $ip : 'N/A';
+    // Add new method with `Get::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
     }
 
-    /**
-     * ==========================================================================
-     *  GET CLIENT USER AGENT INFO
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    echo Get::UA();
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function UA() {
-        return $_SERVER['HTTP_USER_AGENT'];
-    }
-
-    /**
-     * ==========================================================================
-     *  GET TIMEZONE LIST
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::timezone());
-     *    var_dump(Get::timezone('Asia/Jakarta'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-     public static function timezone($identifier = null, $fallback = false, $format = '(UTC%1$s) %2$s &ndash; %3$s') {
-        // http://pastebin.com/vBmW1cnX
-        static $regions = array(
-            DateTimeZone::AFRICA,
-            DateTimeZone::AMERICA,
-            DateTimeZone::ANTARCTICA,
-            DateTimeZone::ASIA,
-            DateTimeZone::ATLANTIC,
-            DateTimeZone::AUSTRALIA,
-            DateTimeZone::EUROPE,
-            DateTimeZone::INDIAN,
-            DateTimeZone::PACIFIC
-        );
-        $timezones = array();
-        $timezone_offsets = array();
-        foreach($regions as $region) {
-            $timezones = array_merge($timezones, DateTimeZone::listIdentifiers($region));
+    // Call the added method with `Get::foo()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if( ! isset(self::$o[$kin])) {
+            Guardian::abort('Method <code>Get::' . $kin . '()</code> does not exist.');
         }
-        foreach($timezones as $timezone) {
-            $tz = new DateTimeZone($timezone);
-            $timezone_offsets[$timezone] = $tz->getOffset(new DateTime);
-        }
-        $a = $b = array();
-        foreach($timezone_offsets as $timezone => $offset) {
-            $offset_prefix = $offset < 0 ? '-' : '+';
-            $offset_formatted = gmdate('H:i', abs($offset));
-            $pretty_offset = $offset_prefix . $offset_formatted;
-            $t = new DateTimeZone($timezone);
-            $c = new DateTime(null, $t);
-            $current_time = $c->format('g:i A');
-            $text = sprintf($format, $pretty_offset, str_replace('_', ' ', $timezone), $current_time);
-            if($offset < 0) {
-                $b[$timezone] = $text;
-            } else {
-                $a[$timezone] = $text;
-            }
-        }
-        asort($a);
-        arsort($b);
-        $timezone_list = $b + $a;
-        if( ! is_null($identifier)) {
-            return isset($timezone_list[$identifier]) ? $timezone_list[$identifier] : $fallback;
-        }
-        return $timezone_list;
+        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

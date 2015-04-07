@@ -27,6 +27,8 @@
 
 class Notify {
 
+    private static $o = array();
+
     public static $message = 'message';
     public static $errors = 0;
 
@@ -100,6 +102,19 @@ class Notify {
 
         return mail($to, $subject, $message, $header);
 
+    }
+
+    // Add new method with `Notify::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
+    }
+
+    // Call the added method with `Notify::foo()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if( ! isset(self::$o[$kin])) {
+            Guardian::abort('Method <code>Notify::' . $kin . '()</code> does not exist.');
+        }
+        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

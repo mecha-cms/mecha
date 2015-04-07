@@ -25,8 +25,10 @@
 
 class Asset {
 
-    public static $loaded = array();
-    public static $ignored = array();
+    private static $o = array();
+
+    private static $loaded = array();
+    private static $ignored = array();
 
     // Get full version of private asset path
     public static function path($path) {
@@ -92,11 +94,6 @@ class Asset {
             }
         }
         return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
-    }
-
-    // DEPRECATED. Please use `Asset::javascript()`
-    public static function script($path, $addon = "", $merge = false) {
-        return self::javascript($path, $addon, $merge);
     }
 
     // Return the HTML image of asset
@@ -213,6 +210,19 @@ class Asset {
     public static function ignored($path = null) {
         if(is_null($path)) return self::$ignored;
         return isset(self::$ignored[$path]);
+    }
+
+    // Add new method to `Asset` with `Asset::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
+    }
+
+    // Call the added method with `Asset::foo()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if( ! isset(self::$o[$kin])) {
+            Guardian::abort('Method <code>Asset::' . $kin . '()</code> does not exist.');
+        }
+        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

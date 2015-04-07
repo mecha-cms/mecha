@@ -65,6 +65,8 @@ class HTTP {
         511 => 'Network Authentication Required', // RFC6585
     );
 
+    private static $o = array();
+
     /**
      * ============================================================
      *  SET HTTP RESPONSE STATUS
@@ -85,18 +87,39 @@ class HTTP {
             } else {
                 header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$messages[$code]);
             }
-        } else if(is_string($code)) {
-            if( ! is_null($value)) {
-                header($code . ': ' . $value);
+        } else 
+        return new static;
+    }
+
+    /**
+     * ============================================================
+     *  SET HTTP RESPONSE HEADER
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    HTTP::header('Content-Type', 'text/plain');
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function header($key, $value = null) {
+        if( ! is_array($key)) {
+            if(is_int($key)) {
+                self::status($key);
             } else {
-                header($code);
+                if( ! is_null($value)) {
+                    header($key . ': ' . $value);
+                } else {
+                    header($key);
+                }
             }
-        } else if(is_array($code)) {
-            foreach($code as $k => $v) {
+        } else {
+            foreach($key as $k => $v) {
                 header($k . ': ' . $v);
             }
         }
-        return new static;
     }
 
     /**
@@ -115,6 +138,19 @@ class HTTP {
     public static function mime($mime, $charset = null) {
         header('Content-Type: ' . $mime . ( ! is_null($charset) ? '; charset=' . $charset : ""));
         return new static;
+    }
+
+    // Add new method with `HTTP::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
+    }
+
+    // Call the added method with `HTTP::foo()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if( ! isset(self::$o[$kin])) {
+            Guardian::abort('Method <code>HTTP::' . $kin . '()</code> does not exist.');
+        }
+        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

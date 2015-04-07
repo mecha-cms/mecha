@@ -138,15 +138,14 @@ class Config {
         self::set($key, $value);
     }
 
-    // Add new method to `Config`
-    public static function plug($kin, $callback) {
-        self::$o[$kin] = $callback;
+    // Add new method with `Config::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
     }
 
-    // Call the added method or use them as
-    // a shortcut for the default `get` method
-    // Example: `Config::get('foo')` becomes `Config::foo()`
-    // if `foo` is not defined yet by `Config::plug()`
+    // Call the added method or use them as a shortcut for the default `get` method.
+    // Example: You can use `Config::foo()` as a shortcut for `Config::get('foo')` as
+    // long as `foo` is not defined yet by `Config::plug()`
     public static function __callStatic($kin, $arguments = array()) {
         if(isset(self::$o[$kin])) {
             return call_user_func_array(self::$o[$kin], $arguments);

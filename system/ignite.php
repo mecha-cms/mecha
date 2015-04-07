@@ -39,7 +39,7 @@ spl_autoload_register(function($worker) {
  * -----------------
  */
 
-foreach(glob(SYSTEM . DS . 'plug' . DS . 'plug.*.php') as $plug) {
+foreach(glob(SYSTEM . DS . 'plug' . DS . '*.php') as $plug) {
     require $plug;
 }
 

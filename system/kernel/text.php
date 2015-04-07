@@ -3,6 +3,7 @@
 class Text {
 
     private static $parsers = array();
+    private static $o = array();
 
     /**
      * =====================================================================
@@ -19,8 +20,8 @@ class Text {
      *
      */
 
-    public static function parser($name, $callback) {
-        self::$parsers[$name] = $callback;
+    public static function parser($name, $action) {
+        self::$parsers[$name] = $action;
     }
 
     /**
@@ -74,8 +75,8 @@ class Text {
             return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : false;
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
-        foreach(self::$parsers as $name => $callback) {
-            $results[$name] = call_user_func_array($callback, $arguments);
+        foreach(self::$parsers as $name => $action) {
+            $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;
     }
@@ -289,6 +290,19 @@ class Text {
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
         return str_replace(SEPARATOR_ENCODED, SEPARATOR, $text);
+    }
+
+    // Add new method with `Text::plug('foo')`
+    public static function plug($kin, $action) {
+        self::$o[$kin] = $action;
+    }
+
+    // Call the added method with `Text::foo()`
+    public static function __callStatic($kin, $arguments = array()) {
+        if( ! isset(self::$o[$kin])) {
+            Guardian::abort('Method <code>Text::' . $kin . '()</code> does not exist.');
+        }
+        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

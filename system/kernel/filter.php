@@ -99,7 +99,7 @@ class Filter {
         if( ! is_null($name)) {
             if( ! isset(self::$filters[$name])) return;
             if( ! is_null($stack)) {
-                for($i = 0, $length = count(self::$filters[$name]); $i < $length; ++$i) {
+                for($i = 0, $count = count(self::$filters[$name]); $i < $count; ++$i) {
                     if(self::$filters[$name][$i]['stack'] === (float) $stack) {
                         unset(self::$filters[$name][$i]);
                     }

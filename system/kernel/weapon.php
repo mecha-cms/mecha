@@ -110,7 +110,7 @@ class Weapon {
             if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
                 $stack = (float) $stack;
-                for($i = 0, $length = count(self::$armaments[$name]); $i < $length; ++$i) {
+                for($i = 0, $count = count(self::$armaments[$name]); $i < $count; ++$i) {
                     if(self::$armaments[$name][$i]['stack'] === $stack) {
                         unset(self::$armaments[$name][$i]);
                     }

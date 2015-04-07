@@ -50,3 +50,14 @@ Guardian::checker('this_is_too_short', function($input, $min = 0) {
 Guardian::checker('this_is_correct', function($a = true, $b = false) {
     return $a === $b;
 });
+
+
+// DEPRECATED. Please use `Guardian::token()`
+Guardian::plug('makeToken', function() {
+    return Guardian::token();
+});
+
+// DEPRECATED. Please use `HTTP::status()`
+Guardian::plug('setResponseStatus', function($status = 200) {
+    HTTP::status($status);
+});
