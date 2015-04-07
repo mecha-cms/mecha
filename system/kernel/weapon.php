@@ -68,7 +68,7 @@ class Weapon {
      */
 
     public static function fire($name, $arguments = array()) {
-        if(isset(self::$armaments[$name])) {
+        if(isset(self::$armaments[$name]) && is_array(self::$armaments[$name])) {
             if(func_num_args() > 2) {
                 $arguments = array_slice(func_get_args(), 1);
             }
@@ -79,7 +79,7 @@ class Weapon {
                 }
             }
         } else {
-            self::$armaments[$name] = false;
+            self::$armaments[$name] = true;
         }
     }
 

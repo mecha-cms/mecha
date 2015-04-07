@@ -101,7 +101,7 @@ class Mecha {
             $after = array();
             if(self::$stomach && ! empty(self::$stomach)) {
                 foreach(self::$stomach as $k => $v) {
-                    if(array_key_exists($key, $v)) {
+                    if(is_array($v) && array_key_exists($key, $v)) {
                         $before[$k] = $v[$key];
                     } else if($include_missing_key) {
                         $before[$k] = null;

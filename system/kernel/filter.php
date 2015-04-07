@@ -58,8 +58,8 @@ class Filter {
      */
 
     public static function apply($name, $value) {
-        if( ! isset(self::$filters[$name])) {
-            self::$filters[$name] = false;
+        if( ! isset(self::$filters[$name]) || ! is_array(self::$filters[$name])) {
+            self::$filters[$name] = true;
             return $value;
         }
         $params = array_slice(func_get_args(), 2);

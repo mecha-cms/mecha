@@ -81,6 +81,7 @@ class Get {
         $results = array();
         $results_inclusive = array();
         $extension = $extensions === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $extensions);
+        $folder = rtrim(File::path($folder), '\\/');
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
             if( ! $filter) {
@@ -90,16 +91,15 @@ class Get {
                     $results_inclusive[] = self::fileExtract($file);
                 }
             }
+            $_file = str_replace($folder, "", $file);
             if(
                 // Exclude all files inside a folder from results if the
                 // folder name begins with two underscores. Example: `__folder-name`
-                strpos(basename(dirname($file)), '__') !== 0 &&
                 // Exclude file from results if the file name begins with
                 // two underscores. Example: `__file-name.txt`
-                strpos(basename($file), '__') !== 0 &&
+                strpos($_file, DS . '__') === false &&
                 // Linux?
-                strpos(basename(dirname($file)), '.') !== 0 &&
-                strpos(basename($file), '.') !== 0
+                strpos($_file, DS . '.') === false
             ) {
                 if( ! $filter) {
                     $results[] = self::fileExtract($file);
@@ -140,6 +140,8 @@ class Get {
         $results = array();
         $results_inclusive = array();
         $extension = str_replace(' ', "", $extensions);
+        $folder = rtrim(File::path($folder), '\\/');
+        // TODO: Access files with dot prefix using `glob()`
         $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
         foreach($files as $file) {
             if( ! $filter) {
@@ -149,11 +151,10 @@ class Get {
                     $results_inclusive[] = self::fileExtract($file);
                 }
             }
+            $_file = str_replace($folder, "", $file);
             if(
-                strpos(basename(dirname($file)), '__') !== 0 &&
-                strpos(basename($file), '__') !== 0 &&
-                strpos(basename(dirname($file)), '.') !== 0 &&
-                strpos(basename($file), '.') !== 0
+                strpos($_file, DS . '__') === false &&
+                strpos($_file, DS . '.') === false
             ) {
                 if( ! $filter) {
                     $results[] = self::fileExtract($file);

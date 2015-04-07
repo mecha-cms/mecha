@@ -201,9 +201,12 @@ class Converter {
     public static function str($input) {
         $results = $input;
         if( ! is_array($input) && ! is_object($input)) {
-            if($input === TRUE || $input === true) $results = 'true';
-            if($input === FALSE || $input === false) $results = 'false';
-            if($input === NULL || $input === null) $results = 'null';
+            if($input === TRUE) $results = 'TRUE';
+            if($input === FALSE) $results = 'FALSE';
+            if($input === NULL) $results = 'NULL';
+            if($input === true) $results = 'true';
+            if($input === false) $results = 'false';
+            if($input === null) $results = 'null';
             return (string) $results;
         } else {
             $results = array();
@@ -425,6 +428,10 @@ class Converter {
                 // Remove HTML comments except IE comments
                 '#\s*(<\!--(?=\[if).*?-->)\s*|\s*<\!--.*?-->\s*#s',
 
+                // Do not remove white-space after image and
+                // input tag that is followed by a tag open
+                '#(<(?:img|input)(?:\s[^<>]*?>|>))\s+(?=\<[^\/])#',
+
                 // Remove two or more white-spaces between tags
                 '#(<\!--.*?-->)|(>)[^\S ]{2,}|[^\S ]{2,}(<)|(>)\s{2,}(<)#s',
 
@@ -467,6 +474,7 @@ class Converter {
             ),
             array(
                 '$1',
+                '$1&nbsp;',
                 '$1$2$3$4$5',
                 '$1$2&nbsp;', // o+t | o+o
                 '$1$2', // o+o
@@ -525,11 +533,11 @@ class Converter {
                 // Replace `background-position:0` with `background-position:0 0`
                 '#background-position:0(?=[;\}])#s',
 
-                // Replace `0.6` with `.6`, but only when preceded by `:`, `-` or a white-space
-                '#(?<=[:\s\-])0+\.(\d+)#s',
+                // Replace `0.6` with `.6`, but only when preceded by `:`, `-`, `,` or a white-space
+                '#(?<=[:\-,\s])0+\.(\d+)#s',
 
                 // Minify string value
-                '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z0-9]+?)\2(?=[\s\{\}\];,])#si',
+                '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z0-9\-_]+?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
 
                 // Remove empty selectors
