@@ -121,10 +121,10 @@
  *
  */
 
-class Package {
+class Package extends Plugger {
 
-    private static $open = null;
-    private static $map = null;
+    protected static $open = null;
+    protected static $map = null;
 
     public static function take($files = null) {
         if( ! extension_loaded('zip')) {

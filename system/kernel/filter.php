@@ -1,6 +1,6 @@
 <?php
 
-class Filter {
+class Filter extends Plugger {
 
     protected static $filters = array();
     protected static $filters_e = array();
@@ -30,7 +30,7 @@ class Filter {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        self::$filters[$name][] = array(
+        self::$filters[get_called_class() . '::' . $name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -58,6 +58,7 @@ class Filter {
      */
 
     public static function apply($name, $value) {
+        $name = get_called_class() . '::' . $name;
         if( ! isset(self::$filters[$name]) || ! is_array(self::$filters[$name])) {
             self::$filters[$name] = true;
             return $value;
@@ -95,8 +96,9 @@ class Filter {
      */
 
     public static function remove($name = null, $stack = null) {
-        self::$filters_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
-        if( ! is_null($name)) {
+        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
+        if($name) {
+            self::$filters_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$filters[$name])) return;
             if( ! is_null($stack)) {
                 for($i = 0, $count = count(self::$filters[$name]); $i < $count; ++$i) {
@@ -140,7 +142,8 @@ class Filter {
      */
 
     public static function exist($name = null, $fallback = false) {
-        if(is_null($name)) {
+        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
+        if( ! $name) {
             return ! empty(self::$filters) ? self::$filters : $fallback;
         }
         return isset(self::$filters[$name]) ? self::$filters[$name] : $fallback;

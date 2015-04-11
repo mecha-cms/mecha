@@ -1,9 +1,8 @@
 <?php
 
-class Navigator {
+class Navigator extends Plugger {
 
-    private static $bucket = array();
-    private static $o = array();
+    protected static $bucket = array();
 
     public static $config = array(
         'step' => 5,
@@ -150,19 +149,6 @@ class Navigator {
             }
         }
         return new static;
-    }
-
-    // Add new method with `Navigator::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `Navigator::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>Navigator::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

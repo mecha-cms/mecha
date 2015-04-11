@@ -1,15 +1,15 @@
 <?php
 
-class Shield {
+class Shield extends Plugger {
 
-    private static $defines = array();
+    protected static $defines = array();
 
     /**
      * Do Nothing
      * ----------
      */
 
-    private static function s_o_d($buffer) {
+    protected static function s_o_d($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
         return Filter::apply('sanitize:output', $buffer);
     }
@@ -19,7 +19,7 @@ class Shield {
      * ------------------
      */
 
-    private static function s_o($buffer) {
+    protected static function s_o($buffer) {
         $buffer = Filter::apply('sanitize:input', $buffer);
         return Filter::apply('sanitize:output', Converter::detractSkeleton($buffer));
     }
@@ -29,7 +29,7 @@ class Shield {
      * --------------------------
      */
 
-    private static function defines() {
+    protected static function defines() {
         $config = Config::get();
         $token = Guardian::token();
         $message = Notify::read();
@@ -160,7 +160,7 @@ class Shield {
             "URL: #\n" .
             "Version: 0.0.0\n" .
             "\n" . SEPARATOR . "\n" .
-            "\n" . Config::speak('notify_not_available', array($speak->description));
+            "\n" . Config::speak('notify_not_available', $speak->description);
         return Mecha::O(Text::toPage(File::open($info)->read($page_default), 'content', 'shield:'));
     }
 
@@ -205,7 +205,7 @@ class Shield {
         } else if($_file = File::exist(self::path($shield_base[0]))) {
             $shield = $_file;
         } else {
-            Guardian::abort(Config::speak('notify_file_not_exist', array('<code>' . self::path($name) . '</code>')));
+            Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($name) . '</code>'));
         }
         $G['data']['path'] = $shield;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";

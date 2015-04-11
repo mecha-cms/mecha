@@ -49,11 +49,11 @@
  *
  */
 
-class File {
+class File extends Plugger {
 
-    private static $cache = "";
-    private static $open = null;
-    private static $index = 0;
+    protected static $cache = "";
+    protected static $open = null;
+    protected static $index = 0;
 
     public static $config = array(
         'file_size_min_allow' => 0, // Minimum allowed file size
@@ -296,7 +296,7 @@ class File {
     }
 
     // Upload a file
-    public static function upload($file, $destination = ROOT, $custom_success_message = "") {
+    public static function upload($file, $destination = ROOT, $callback = null) {
         $config = Config::get();
         $speak = Config::speak();
         $destination = self::path($destination);
@@ -333,20 +333,15 @@ class File {
             } else {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $file['name'] . '</code>'));
             }
-            // Create public asset link to show on file uploaded
-            $link = self::url($destination) . '/' . $file['name'];
-            $html = array(
-                '<strong>' . $speak->uploaded . ':</strong> ' . $file['name'],
-                '<strong>' . $speak->type . ':</strong> ' . $file['type'],
-                '<strong>' . $speak->size . ':</strong> ' . self::size($file['size']),
-                '<strong>' . $speak->link . ':</strong> <a href="' . $link . '" target="_blank">' . $link . '</a>'
-            );
-            if($custom_success_message) {
-                Notify::success(vsprintf($custom_success_message, array($file['name'], $file['type'], $file['size'], $link)));
-            } else {
-                Notify::success(implode('<br>', $html), "");
+            if( ! Notify::errors()) {
+                // Create public asset link to show on file uploaded
+                $link = self::url($destination) . '/' . $file['name'];
+                Notify::success(Config::speak('notify_file_uploaded', '<code>' . $file['name'] . '</code>'));
+                self::$open = $destination . DS . $file['name'];
+                if(is_callable($callback)) {
+                    call_user_func($callback, $file['name'], $file['type'], $file['size'], $link);
+                }
             }
-            self::$open = $destination . DS . $file['name'];
             return new static;
         }
         return false;
@@ -367,15 +362,15 @@ class File {
     // Convert URL to file path
     public static function path($url) {
         $base = Config::get('url');
-        $proof = str_replace(array('\\', '/'), array(DS, DS), $base);
-        return str_replace(array($base, '/', '\\', $proof), array(ROOT, DS, DS, ROOT), $url);
+        $proof = str_replace(array('\\', '/'), DS, $base);
+        return str_replace(array($base, '\\', '/', $proof), array(ROOT, DS, DS, ROOT), $url);
     }
 
     // Convert file path to URL
     public static function url($path) {
         $base = Config::get('url');
-        $proof = str_replace(array('\\', '/', DS), array('/', '/', '/'), ROOT);
-        return str_replace(array(ROOT, '\\', '/', DS, $proof), array($base, '/', '/', '/', $base), $path);
+        $proof = str_replace(array('\\', '/'), '/', ROOT);
+        return str_replace(array(ROOT, '\\', '/', $proof), array($base, '/', '/', $base), $path);
     }
 
     // Configure ...

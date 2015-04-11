@@ -41,9 +41,7 @@
  *
  */
 
-class Menu {
-
-    private static $o = array();
+class Menu extends Plugger {
 
     public static $config = array(
         'classes' => array(
@@ -145,19 +143,6 @@ class Menu {
             }
         }
         return new static;
-    }
-
-    // Add new method with `Menu::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `Menu::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>Menu::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

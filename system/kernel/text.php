@@ -1,9 +1,8 @@
 <?php
 
-class Text {
+class Text extends Plugger {
 
-    private static $parsers = array();
-    private static $o = array();
+    protected static $parsers = array();
 
     /**
      * =====================================================================
@@ -21,7 +20,7 @@ class Text {
      */
 
     public static function parser($name, $action) {
-        self::$parsers[$name] = $action;
+        self::$parsers[get_called_class() . '::' . $name] = $action;
     }
 
     /**
@@ -41,7 +40,7 @@ class Text {
 
     public static function parserExist($name = null) {
         if(is_null($name)) return self::$parsers;
-        return isset(self::$parsers[$name]);
+        return isset(self::$parsers[get_called_class() . '::' . $name]);
     }
 
     /**
@@ -70,12 +69,13 @@ class Text {
         $arguments = func_get_args();
         // Alternate function for faster parsing process => `Text::parse('foo', '->html')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
-            $parser = 'to_' . str_replace('->', "", $arguments[1]);
+            $parser = get_called_class() . '::to_' . str_replace('->', "", $arguments[1]);
             unset($arguments[1]);
             return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : false;
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
         foreach(self::$parsers as $name => $action) {
+            $name = str_replace(get_called_class() . '::', "", $name);
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;
@@ -117,7 +117,7 @@ class Text {
                 }
             // By file content
             } else {
-                $text = str_replace("\r", "", $text);
+                $text = str_replace("", "", $text);
                 if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
                     $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
                     $headers = explode("\n", trim($parts[0]));
@@ -139,7 +139,7 @@ class Text {
             if(strpos($text, ROOT) === 0 && file_exists($text)) {
                 $text = file_get_contents($text);
             }
-            $text = str_replace("\r", "", $text);
+            $text = str_replace("", "", $text);
             // By file content
             if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
                 $results[$c . '_raw'] = self::DS(trim($text));
@@ -237,7 +237,7 @@ class Text {
         // Remove comments and empty line breaks
         $text = preg_replace(
             array(
-                '#\r#',
+                '##',
                 '#(^|\n)( *\#[^\n]*)#',
                 '#\n+#',
                 '#^\n+|\n$#'
@@ -290,19 +290,6 @@ class Text {
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
         return str_replace(SEPARATOR_ENCODED, SEPARATOR, $text);
-    }
-
-    // Add new method with `Text::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `Text::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>Text::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

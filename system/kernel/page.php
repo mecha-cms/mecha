@@ -16,26 +16,26 @@
  *
  */
 
-class Page {
+class Page extends Plugger {
 
     public static $open = null;
     public static $bucket = array();
     public static $bucket_alt = "";
 
     // Remove `:` in field key
-    private static function fix($key) {
+    protected static function fix($key) {
         return trim(str_replace(S, '_', $key));
     }
 
     // Reset the cached data
-    private static function reset() {
+    protected static function reset() {
         self::$open = null;
         self::$bucket = array();
         self::$bucket_alt = "";
     }
 
     // Create the page
-    private static function create() {
+    protected static function create() {
         $output = "";
         foreach(self::$bucket as $key => $value) {
             $output .= $key . ': ' . $value . "\n";

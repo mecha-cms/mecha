@@ -352,7 +352,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         $extension = $config->comment_moderation && ! Guardian::happy() ? '.hold' : '.txt';
 
         if(trim($request['name']) === "") {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->comment_name));
         }
 
         if(trim($request['email']) !== "") {
@@ -367,7 +367,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             }
 
         } else {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->email)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->email));
         }
 
         if(trim($request['url']) !== "" && ! Guardian::check($request['url'], '->URL')) {
@@ -375,7 +375,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
 
         if(trim($request['message']) === "") {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_message)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->comment_message));
         }
 
         if( ! Guardian::checkMath($request['math'])) {
@@ -383,19 +383,19 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
 
         if(Guardian::check($request['name'], '->too_long', 100)) {
-            Notify::error(Config::speak('notify_error_too_long', array($speak->comment_name)));
+            Notify::error(Config::speak('notify_error_too_long', $speak->comment_name));
         }
 
         if(Guardian::check($request['email'], '->too_long', 100)) {
-            Notify::error(Config::speak('notify_error_too_long', array($speak->comment_email)));
+            Notify::error(Config::speak('notify_error_too_long', $speak->comment_email));
         }
 
         if(Guardian::check($request['url'], '->too_long', 100)) {
-            Notify::error(Config::speak('notify_error_too_long', array($speak->comment_url)));
+            Notify::error(Config::speak('notify_error_too_long', $speak->comment_url));
         }
 
         if(Guardian::check($request['message'], '->too_long', 1700)) {
-            Notify::error(Config::speak('notify_error_too_long', array($speak->comment_message)));
+            Notify::error(Config::speak('notify_error_too_long', $speak->comment_message));
         }
 
         // Check for spam keywords in comment
@@ -445,13 +445,13 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 'IP' => Get::IP()
             ))->content($message)->saveTo(RESPONSE . DS . $post . '_' . Date::format($id, 'Y-m-d-H-i-s') . '_' . ($parent ? Date::format($parent, 'Y-m-d-H-i-s') : '0000-00-00-00-00-00') . $extension);
 
-            Notify::success(Config::speak('notify_success_submitted', array($speak->comment)));
+            Notify::success(Config::speak('notify_success_submitted', $speak->comment));
 
             Weapon::fire('on_comment_update', array($P, $P));
             Weapon::fire('on_comment_construct', array($P, $P));
 
             if($config->comment_notification_email) {
-                $mail  = '<p>' . Config::speak('comment_notification', array($article->url . '#comment-' . Date::format($id, 'U'))) . '</p>';
+                $mail  = '<p>' . Config::speak('comment_notification', $article->url . '#comment-' . Date::format($id, 'U')) . '</p>';
                 $mail .= Text::parse('**' . $name . ':** ' . $message, '->html');
                 $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
                 // Sending email notification ...

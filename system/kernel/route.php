@@ -1,12 +1,12 @@
 <?php
 
-class Route {
+class Route extends Plugger {
 
     public static $routes = array();
     public static $routes_e = array();
     public static $routes_over = array();
 
-    private static function fix($string) {
+    protected static function fix($string) {
         return str_replace(
             array(
                 '\(',
@@ -29,7 +29,7 @@ class Route {
         preg_quote($string, '/'));
     }
 
-    private static function path($pattern) {
+    protected static function path($pattern) {
         return trim(str_replace(Config::get('url') . '/', "", $pattern), '/');
     }
 

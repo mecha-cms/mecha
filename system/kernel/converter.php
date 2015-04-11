@@ -1,6 +1,6 @@
 <?php
 
-class Converter {
+class Converter extends Plugger {
 
     /**
      * ====================================================================
@@ -419,9 +419,15 @@ class Converter {
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
         // Remove extra white-spaces between HTML attributes
-        $input = preg_replace_callback('#<([^\/\s<>!]+?)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
-            return '<' . $matches[1] . preg_replace('#([^\s\=\'"]*?\=([\'"]?).*?\2)(\s+|$)#s', ' $1', $matches[2]) . $matches[3] . '>';
+        $input = preg_replace_callback('#<([^\/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
+            return '<' . $matches[1] . preg_replace('#([^\s=]+)(\=([\'"]?)(.*?)\3)?(\s+|$)#s', ' $1$2', $matches[2]) . $matches[3] . '>';
         }, $input);
+        // Minify inline CSS declarations
+        if(strpos($input, ' style=') !== false) {
+            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1#', function($matches) {
+                return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
+            }, $input);
+        }
         return preg_replace(
             array(
 
@@ -430,10 +436,10 @@ class Converter {
 
                 // Do not remove white-space after image and
                 // input tag that is followed by a tag open
-                '#(<(?:img|input)(?:\s[^<>]*?>|>))\s+(?=\<[^\/])#',
+                '#(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?=\<[^\/])#s',
 
                 // Remove two or more white-spaces between tags
-                '#(<\!--.*?-->)|(>)[^\S ]{2,}|[^\S ]{2,}(<)|(>)\s{2,}(<)#s',
+                '#(<\!--.*?-->)|(>)\s{2,}|\s{2,}(<)|(>)\s{2,}(<)#s',
 
                 // Proofing ...
                 // o: tag open, c: tag close, t: text
@@ -455,11 +461,11 @@ class Converter {
                 // If `</tag>    ...abc` keep one white-space
                 // If `abc    ...<tag>` keep one white-space
                 // If `abc    ...</tag>` remove white-spaces
-                '#(<\!--.*?-->)|(<(?:img|input)(?:\s[^<>]*?>|>))\s+(?!\<\/)#s', // o+t | o+o
-                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:\s[^<>]*?>|>))\s+(?=\<[^\/])#s', // o+o
+                '#(<\!--.*?-->)|(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?!\<\/)#s', // o+t | o+o
+                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?=\<[^\/])#s', // o+o
                 '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?=\<\/)#s', // c+c
-                '#(<\!--.*?-->)|(<([^\/\s<>]+)(?:\s[^<>]*?>|>))\s+(<\/\3>)#s', // o+c
-                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:\s[^<>]*?>|>))\s+(?!\<)#s', // o+t
+                '#(<\!--.*?-->)|(<([^\/\s<>]+)(?:>|\s[^<>]*?>))\s+(<\/\3>)#s', // o+c
+                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?!\<)#s', // o+t
                 '#(<\!--.*?-->)|(?!\>)\s+(<\/[^\/\s<>]+?>)#s', // t+c
                 '#(<\!--.*?-->)|(?!\>)\s+(?=\<[^\/])#s', // t+o
                 '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?!\<)#s', // c+t
@@ -542,6 +548,9 @@ class Converter {
                 '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
 
+                // Minify HEX color code
+                '#(?<=[:\-,\s]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
+
                 // Remove empty selectors
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#si'
 
@@ -555,6 +564,7 @@ class Converter {
                 '.$1',
                 '$1$3',
                 '$1$2$4$5',
+                '$1$2$3',
                 '$1$2'
             ),
         trim($input));

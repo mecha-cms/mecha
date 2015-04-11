@@ -13,11 +13,10 @@
  *
  */
 
-class Mecha {
+class Mecha extends Plugger {
 
-    private static $stomach = array();
-    private static $index = 0;
-    private static $o = array();
+    protected static $stomach = array();
+    protected static $index = 0;
 
     // Prevent `$e` exceeds the value of `$min` and `$max`
     public static function edge($e, $min = 0, $max = 9999) {
@@ -272,19 +271,6 @@ class Mecha {
     public static function index($key, $fallback = false) {
         $key = array_search($key, array_keys(self::$stomach));
         return $key !== false ? $key : $fallback;
-    }
-
-    // Add new method with `Mecha::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `Mecha::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>Mecha::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

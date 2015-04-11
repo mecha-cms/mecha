@@ -1,6 +1,6 @@
 <?php
 
-class HTTP {
+class HTTP extends Plugger {
 
     public static $messages = array(
         100 => 'Continue',
@@ -64,8 +64,6 @@ class HTTP {
         510 => 'Not Extended', // RFC2774
         511 => 'Network Authentication Required', // RFC6585
     );
-
-    private static $o = array();
 
     /**
      * ============================================================
@@ -138,19 +136,6 @@ class HTTP {
     public static function mime($mime, $charset = null) {
         header('Content-Type: ' . $mime . ( ! is_null($charset) ? '; charset=' . $charset : ""));
         return new static;
-    }
-
-    // Add new method with `HTTP::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `HTTP::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>HTTP::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

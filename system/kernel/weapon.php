@@ -1,6 +1,6 @@
 <?php
 
-class Weapon {
+class Weapon extends Plugger {
 
     protected static $armaments = array();
     protected static $armaments_e = array();
@@ -36,7 +36,7 @@ class Weapon {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        self::$armaments[$name][] = array(
+        self::$armaments[get_called_class() . '::' . $name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -68,6 +68,7 @@ class Weapon {
      */
 
     public static function fire($name, $arguments = array()) {
+        $name = get_called_class() . '::' . $name;
         if(isset(self::$armaments[$name]) && is_array(self::$armaments[$name])) {
             if(func_num_args() > 2) {
                 $arguments = array_slice(func_get_args(), 1);
@@ -105,8 +106,9 @@ class Weapon {
      */
 
     public static function eject($name = null, $stack = null) {
-        self::$armaments_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
-        if( ! is_null($name)) {
+        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
+        if($name) {
+            self::$armaments_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
                 $stack = (float) $stack;
@@ -151,7 +153,8 @@ class Weapon {
      */
 
     public static function exist($name = null, $fallback = false) {
-        if(is_null($name)) {
+        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
+        if( ! $name) {
             return ! empty(self::$armaments) ? self::$armaments : $fallback;
         }
         return isset(self::$armaments[$name]) ? self::$armaments[$name] : $fallback;

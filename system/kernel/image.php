@@ -1,13 +1,42 @@
 <?php
 
-class Image {
+class Image extends Plugger {
 
-    private static $o = array();
+    protected static $o = array();
 
-    private static $open = null;
-    private static $original = null;
-    private static $placeholder = null;
-    private static $GD = false;
+    protected static $open = null;
+    protected static $original = null;
+    protected static $placeholder = null;
+    protected static $GD = false;
+
+    protected static function gen($file = null) {
+        if(is_null($file)) $file = self::$placeholder;
+        switch(strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+            case 'gif': self::$GD = imagecreatefromgif($file); break;
+            case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
+            case 'jpeg': self::$GD = imagecreatefromjpeg($file); break;
+            case 'png': self::$GD = imagecreatefrompng($file); break;
+        }
+    }
+
+    protected static function twin($resource = null, $extension = null) {
+        $file = self::$placeholder;
+        if(is_null($resource)) $resource = self::$GD;
+        $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
+        $new_extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        if( ! is_null($extension)) {
+            $file = preg_replace('#\.([a-z]+)$#i', '.' . $extension, $file);
+            File::open(self::$placeholder)->delete();
+            self::$placeholder = $file;
+            $new_extension = $extension;
+        }
+        switch($new_extension) {
+            case 'gif': imagegif($resource, $file); break;
+            case 'jpg': imagejpeg($resource, $file, 100); break;
+            case 'jpeg': imagejpeg($resource, $file, 100); break;
+            case 'png': imagepng($resource, $file); break;
+        }
+    }
 
     public static function take($files) {
         if( ! extension_loaded('gd')) {
@@ -38,35 +67,6 @@ class Image {
             return Mecha::eat($url)->shake()->get(0);
         }
         return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
-    }
-
-    private static function gen($file = null) {
-        if(is_null($file)) $file = self::$placeholder;
-        switch(strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
-            case 'gif': self::$GD = imagecreatefromgif($file); break;
-            case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
-            case 'jpeg': self::$GD = imagecreatefromjpeg($file); break;
-            case 'png': self::$GD = imagecreatefrompng($file); break;
-        }
-    }
-
-    private static function twin($resource = null, $extension = null) {
-        $file = self::$placeholder;
-        if(is_null($resource)) $resource = self::$GD;
-        $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
-        $new_extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        if( ! is_null($extension)) {
-            $file = preg_replace('#\.([a-z]+)$#i', '.' . $extension, $file);
-            File::open(self::$placeholder)->delete();
-            self::$placeholder = $file;
-            $new_extension = $extension;
-        }
-        switch($new_extension) {
-            case 'gif': imagegif($resource, $file); break;
-            case 'jpg': imagejpeg($resource, $file, 100); break;
-            case 'jpeg': imagejpeg($resource, $file, 100); break;
-            case 'png': imagepng($resource, $file); break;
-        }
     }
 
     /**
