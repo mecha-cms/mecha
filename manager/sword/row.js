@@ -29,7 +29,7 @@
                 'target': this
             };
 
-        if ($(this).is('.row-more') || state == 'more') {
+        if ($(this).is('.row-more') || state === 'more') {
             if (length < max + 1) {
                 $(this).closest('tr').before(clone);
                 base.fire('on_row_increase', data);
@@ -38,7 +38,7 @@
             return false;
         }
 
-        if ($(this).is('.row-less') || state == 'less') {
+        if ($(this).is('.row-less') || state === 'less') {
             if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
                 base.fire('on_row_decrease', data);

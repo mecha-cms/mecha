@@ -23,9 +23,9 @@
 
     $tab.on("click", function(e) {
         if (!this.href || this.href.match(/\#.*$/)) {
-            var hash = (this.hash || '#panel-' + (new Date()).getTime()).replace('#', "");
-            $panel = $('#' + hash);
-            if (!$panel.length || hash === "") {
+            var hash = (this.hash || "").replace('#', "");
+            $panel = hash !== "" ? $('#' + hash) : [];
+            if (!$panel.length) {
                 $panel = $tab.parent().parent().find('.tab-content').eq($(this).index());
             }
             $(this).addClass('active').siblings().removeClass('active');

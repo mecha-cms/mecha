@@ -109,7 +109,7 @@ label:hover .radio {color:#3A64A4}
 .radio.checked {color:#365D98}
 
 .sortable.active,
-.table-sortable tr.active {background-color:#FFA}
+.table-bordered tr.active {background-color:#FFA}
 
 .editor-toolbar-button {
   background-color:#333;

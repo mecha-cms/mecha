@@ -79,7 +79,6 @@ if (typeof DASHBOARD !== "undefined") {
             modalFooterClass: 'custom-modal-action custom-modal-%s-action cf',
             modalOverlayClass: 'custom-modal-overlay custom-modal-%s-overlay',
             emptyElementSuffix: ES || '>',
-            PRE: base.is_html_parser_enabled ? '~~~\n%s\n~~~' : 'pre',
             buttons: speak.buttons,
             prompts: speak.prompts,
             placeholders: speak.placeholders,

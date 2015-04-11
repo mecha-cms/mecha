@@ -382,7 +382,13 @@ input[type="radio"] {
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {height:auto}
 
-input[type="file"],
+input[type="file"] {
+  padding:0;
+  background:none;
+  color:inherit;
+  cursor:pointer;
+}
+
 label,select {cursor:pointer}
 
 input[type="image"] {

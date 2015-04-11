@@ -251,11 +251,7 @@ textarea.no-appearance {
 .widget-tag-cloud {overflow:hidden}
 
 .widget-tag-cloud .tag-size {
-  display:block;
-  float:left;
   vertical-align:middle;
-  margin:0 6px 0 0;
-  margin-right:.46153846153846156rem;
   white-space:nowrap;
 }
 

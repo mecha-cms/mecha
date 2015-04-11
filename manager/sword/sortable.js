@@ -10,14 +10,14 @@
  *        </tr>
  *      </thead>
  *      <tbody>
- *        <tr>
+ *        <tr draggable="true">
  *          <td class="handle">
  *            <a class="sort sort-up" href="#sort:up">&uarr;</a>
  *            <a class="sort sort-down" href="#sort:down">&darr;</a>
  *          </td>
  *          <td>Test item content 1.</td>
  *        </tr>
- *        <tr>
+ *        <tr draggable="true">
  *          <td class="handle">
  *            <a class="sort sort-up" href="#sort:up">&uarr;</a>
  *            <a class="sort sort-down" href="#sort:down">&darr;</a>
@@ -44,7 +44,7 @@
                 'target': this
             };
         $tr.addClass('active').siblings().removeClass('active');
-        if ($(this).is('.sort-up') || state == 'up') {
+        if ($(this).is('.sort-up') || state === 'up') {
             if ($tr.prev().is('tr')) {
                 $tr.insertBefore($tr.prev());
                 base.fire('on_row_move_up', data);
@@ -64,30 +64,30 @@
         $(this).siblings().removeClass('active');
     });
 
-    $tbody.find('.handle').each(function() {
-        if (!$(this).find('a').length) {
-            $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
-        }
-    }).parent().attr('draggable', true).on("dragstart", function(e) {
+    $tbody.on("mouseover mouseout", 'button, input, select, textarea', function(e) {
+        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
+    }).on("dragstart", 'tr[draggable]', function(e) {
         selected = this;
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text', this.innerHTML);
         $(this).addClass('origin');
-    }).on("dragover", function(e) {
+    }).on("dragover", 'tr[draggable]', function(e) {
         e.preventDefault();
         $(this).addClass('target');
-    }).on("dragleave", function() {
+    }).on("dragleave", 'tr[draggable]', function() {
         $(this).removeClass('target');
-    }).on("drop", function(e) {
+    }).on("drop", 'tr[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
             var center = $(this).offset().top + ($(this).height() / 2);
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
-    }).on("dragend", function() {
+    }).on("dragend", 'tr[draggable]', function() {
         $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
-    }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
-        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
+    }).find('.handle').each(function() {
+        if (!$(this).find('a').length) {
+            $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
+        }
     });
 
 })(window.Zepto || window.jQuery, DASHBOARD);
@@ -98,7 +98,7 @@
  * --------------
  *
  *    <div class="sortable-area">
- *      <div class="sortable">
+ *      <div class="sortable" draggable="true">
  *        <p>Test content.</p>
  *        <span class="handle">
  *          <a class="sort sort-up" href="#sort:up">&uarr;</a>
@@ -111,7 +111,7 @@
 
 (function($, base) {
 
-    var $sortable = $('.sortable'),
+    var $sortable = $('.sortable-area'),
         $base = $sortable.parent(),
         selected = null;
 
@@ -125,7 +125,7 @@
                 'target': this
             };
         $elem.addClass('active').siblings().removeClass('active');
-        if ($(this).is('.sort-up') || state == 'up') {
+        if ($(this).is('.sort-up') || state === 'up') {
             if ($elem.prev().is('.sortable')) {
                 $elem.insertBefore($elem.prev());
                 base.fire('on_item_move_up', data);
@@ -141,34 +141,34 @@
         base.fire('on_item_move', data);
         base.fire('on_item_sort', data);
         return false;
-    }).not('.active').on("click", function() {
+    }).find('.sortable').on("click", function() {
         $(this).siblings().removeClass('active');
     });
 
-    $sortable.find('.handle').each(function() {
-        if (!$(this).find('a').length) {
-            $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
-        }
-    }).parent().attr('draggable', true).on("dragstart", function(e) {
+    $sortable.on("mouseover mouseout", 'button, input, select, textarea', function(e) {
+        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
+    }).on("dragstart", '.sortable[draggable]', function(e) {
         selected = this;
         e.dataTransfer.effectAllowed = 'move';
         e.dataTransfer.setData('text', this.innerHTML);
         $(this).addClass('origin');
-    }).on("dragover", function(e) {
+    }).on("dragover", '.sortable[draggable]', function(e) {
         e.preventDefault();
         $(this).addClass('target');
-    }).on("dragleave", function() {
+    }).on("dragleave", '.sortable[draggable]', function() {
         $(this).removeClass('target');
-    }).on("drop", function(e) {
+    }).on("drop", '.sortable[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
             var center = $(this).offset().top + ($(this).height() / 2);
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
-    }).on("dragend", function() {
+    }).on("dragend", '.sortable[draggable]', function() {
         $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
-    }).on("mouseover mouseout", 'button, input, select, textarea', function(e) {
-        $(this).closest('[draggable]').attr('draggable', e.type === "mouseout");
+    }).find('.handle').each(function() {
+        if (!$(this).find('a').length) {
+            $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
+        }
     });
 
 })(window.Zepto || window.jQuery, DASHBOARD);
