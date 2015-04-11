@@ -63,51 +63,58 @@ if( ! empty($fields)) {
         }
         $type = $value['type'][0];
         if($value['scope'] == $segment) {
-            $html .= '<input name="fields[' . $key . '][type]" type="hidden" value="' . $type . '">';
+            $html .= Form::hidden('fields[' . $key . '][type]', $type);
             if($type == 't') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<input name="fields[' . $key . '][value]" type="text" class="input-block" value="' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '">';
+                $html .= Form::text('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
+                    'class' => 'input-block'
+                ));
                 $html .= '</span>';
                 $html .= '</label>';
             } else if($type == 'b') {
                 $html .= '<div class="grid-group">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<label><input name="fields[' . $key . '][value]" type="checkbox"' . ( ! empty($value['value']) ? ' value="' . $value['value'] . '"' : "") . (isset($field[$key]) && ! empty($field[$key]) ? ' checked' : "") . '> <span>' . $value['title'] . '</span></label>';
+                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : "", isset($field[$key]) && ! empty($field[$key]), $value['title']);
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type == 'o') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<select name="fields[' . $key . '][value]" class="select-block">';
+                $options = array();
+                $selected = isset($field[$key]) ? isset($field[$key]) : "";
                 foreach(explode("\n", $value['value']) as $v) {
                     $v = trim($v);
                     if(strpos($v, ':') !== false) {
                         $v = explode(':', $v, 2);
-                        $html .= '<option value="' . trim($v[1]) . '"' . (isset($field[$key]) && $field[$key] == trim($v[1]) ? ' selected': "") . '>' . trim($v[0]) . '</option>';
+                        $options[trim($v[1])] = trim($v[0]);
                     } else {
-                        $html .= '<option value="' . $v . '"' . (isset($field[$key]) && $field[$key] == trim($v) ? ' selected': "") . '>' . $v . '</option>';
+                        $options[$v] = $v;
                     }
                 }
-                $html .= '</select>';
+                $html .= Form::select('fields[' . $key . '][value]', $options, $selected, array(
+                    'class' => 'select-block'
+                ));
                 $html .= '</span>';
                 $html .= '</label>';
             } else { // if($value['type'][0] == 's') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= '<textarea name="fields[' . $key . '][value]" class="textarea-block">' . (isset($field[$key]) ? Text::parse($field[$key], '->encoded_html') : $value['value']) . '</textarea>';
+                $html .= Form::textarea('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
+                    'class' => 'input-block'
+                ));
                 $html .= '</span>';
                 $html .= '</label>';
             }
         }
     }
-    echo ! empty($html) ? $html : '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
+    echo ! empty($html) ? $html : Cell::p(Config::speak('notify_empty', strtolower($speak->fields)));
 } else {
-    echo '<p>' . Config::speak('notify_empty', array(strtolower($speak->fields))) . '</p>';
+    echo Cell::p(Config::speak('notify_empty', strtolower($speak->fields)));
 }
 
 Weapon::fire('unit_composer_3_after', array($segment, $fields));

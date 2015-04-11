@@ -1,6 +1,6 @@
 <?php
 
-$bucket = array();$bucket = array();
+$bucket = array();
 $url_base = rtrim($config->url_current, '\\/-.0123456789');
 $json_order = strtoupper(Request::get('order', 'DESC'));
 $json_filter = Text::parse(Request::get('filter', ""), '->decoded_url');

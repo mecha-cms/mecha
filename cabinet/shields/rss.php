@@ -89,8 +89,7 @@ if( ! empty($bucket)) {
         echo '<guid>' . $item->url . '</guid>';
         if( ! empty($kind)) {
             foreach($kind as $k) {
-                $kind_data = Get::rawTagsBy($k);
-                echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . $kind_data['slug'] . '">' . $kind_data['name'] . '</category>';
+                echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . Get::rawTag($k, 'slug') . '">' . $kind_data['name'] . '</category>';
             }
         }
         echo '<source url="' . $item->url . '">' . $config->title . ': ' . $title . '</source>';

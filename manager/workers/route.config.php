@@ -59,7 +59,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             }
             // Check if slug already exist on static pages
             if(isset($slugs[$request[$page]['slug']])) {
-                Notify::error(Config::speak('notify_error_slug_exist', array($request[$page]['slug'])));
+                Notify::error(Config::speak('notify_error_slug_exist', $request[$page]['slug']));
                 Guardian::memorize($request);
             }
         }
@@ -78,7 +78,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         if( ! Notify::errors()) {
             File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
             Config::load(); // Refresh the configuration data ...
-            Notify::success(Config::speak('notify_success_updated', array(Config::speak('config'))));
+            Notify::success(Config::speak('notify_success_updated', Config::speak('config')));
             foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log') as $asset_cache) {
                 File::open($asset_cache)->delete();
             }

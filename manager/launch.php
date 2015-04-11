@@ -1,6 +1,11 @@
 <?php if( ! defined('ROOT')) die('Rejected.');
 
 
+// Loading functions
+foreach(glob(DECK . DS . 'workers' . DS . 'plug' . DS . '*.php') as $plug) {
+    require $plug;
+}
+
 $uri_end_parts = explode('/', $config->url_path);
 $uri_end = $config->page_type == 'manager' ? $uri_end_parts[1] : $uri_end_parts[0];
 
@@ -125,7 +130,11 @@ Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($article->state == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
+        $status = Mecha::alter(pathinfo($article->path, PATHINFO_EXTENSION), array(
+            'draft' => UI::span('info', UI::icon('clock-o') . ' ' . $speak->draft) . '</span> &middot; ',
+            'archive' => UI::span('info', UI::icon('archive') . ' ' . $speak->archive) . ' &middot; '
+        ), "");
+        echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -133,7 +142,11 @@ Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type == 'manager') {
-        echo ($page->state == 'draft' ? '<span class="text-info"><i class="fa fa-clock-o"></i> ' . $speak->draft . '</span> &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
+        $status = Mecha::alter(pathinfo($page->path, PATHINFO_EXTENSION), array(
+            'draft' => UI::span('info', UI::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
+            'archive' => UI::span('info', UI::icon('archive') . ' ' . $speak->archive) . '</span> &middot; '
+        ), "");
+        echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
@@ -206,12 +219,12 @@ Weapon::add('after_shield_config_redefine', function() {
     if($config->page_type == 'article' || $config->page_type == 'page') {
         $type = $config->page_type;
         $id = $type == 'article' ? $config->article->id : $config->page->id;
-        $menus[Config::speak('manager._this_' . $type, array($speak->edit))] = array(
+        $menus[Config::speak('manager._this_' . $type, $speak->edit)] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
             'stack' => 10.14
         );
-        $menus[Config::speak('manager._this_' . $type, array($speak->delete))] = array(
+        $menus[Config::speak('manager._this_' . $type, $speak->delete)] = array(
             'icon' => 'trash',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
             'stack' => 10.15

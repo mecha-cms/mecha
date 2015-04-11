@@ -33,17 +33,17 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         $path = basename($name, '.' . $extension);
         if( ! empty($name)) {
             if(File::exist(SHIELD . DS . $path)) {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '/&hellip;</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '/&hellip;</code>'));
             } else {
                 if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                    Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+                    Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
                 }
             }
         } else {
             Notify::error($speak->notify_error_no_file_selected);
         }
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], SHIELD, Config::speak('notify_success_uploaded', array($speak->shield)));
+            File::upload($_FILES['file'], SHIELD, Config::speak('notify_success_uploaded', $speak->shield));
             $P = array('data' => $_FILES);
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
@@ -97,25 +97,25 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         Guardian::checkToken($request['token']);
         $path = File::path($request['name']);
         if( ! Request::post('name')) {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
             // Missing file extension
             if( ! preg_match('#^.*?\.(.+?)$#', $path)) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+                Notify::error(Config::speak('notify_error_file_extension', $extension));
             }
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::write($request['content'])->saveTo(SHIELD . DS . $folder . DS . $path);
-            Notify::success(Config::speak('notify_file_created', array('<code>' . basename($path) . '</code>')));
+            Notify::success(Config::speak('notify_file_created', '<code>' . basename($path) . '</code>'));
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
             Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder);
@@ -155,19 +155,19 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         Guardian::checkToken($request['token']);
         $name = File::path($request['name']);
         if( ! Request::post('name')) {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
             // Missing file extension
             if( ! preg_match('#^.*?\.(.+?)$#', $name)) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $name . '</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
             if( ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_error_file_extension', array($extension)));
+                Notify::error(Config::speak('notify_error_file_extension', $extension));
             }
         }
         $P = array('data' => $request);
@@ -176,7 +176,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path != $name) {
                 File::open($file)->moveTo(SHIELD . DS . $folder . DS . $name);
             }
-            Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($path) . '</code>')));
+            Notify::success(Config::speak('notify_file_updated', '<code>' . basename($path) . '</code>'));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
             Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
@@ -221,15 +221,15 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         $P = array('data' => array('path' => $file));
         File::open($file)->delete();
         if($path) {
-            Notify::success(Config::speak('notify_file_deleted', array('<code>' . basename($path) . '</code>')));
+            Notify::success(Config::speak('notify_file_deleted', '<code>' . basename($path) . '</code>'));
         } else {
-            Notify::success(Config::speak('notify_success_deleted', array($speak->shield)));
+            Notify::success(Config::speak('notify_success_deleted', $speak->shield));
         }
         Weapon::fire('on_shield_update', array($P, $P));
         Weapon::fire('on_shield_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', array($path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>')));
+        Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>'));
     }
     Shield::define(array(
         'the_shield' => $folder,
@@ -254,7 +254,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
     $G = array('data' => array('id' => $slug, 'action' => $path));
     $mode = $path == 'eject' ? 'eject' : 'mount';
-    Notify::success(Config::speak('notify_success_updated', array($speak->shield)));
+    Notify::success(Config::speak('notify_success_updated', $speak->shield));
     Weapon::fire('on_shield_update', array($G, $G));
     Weapon::fire('on_shield_' . $mode, array($G, $G));
     Weapon::fire('on_shield_' . md5($slug) . '_update', array($G, $G));

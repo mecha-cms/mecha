@@ -9,7 +9,7 @@
 Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '/page/(:num)'), function($offset = 1) use($config, $speak) {
     $pages = false;
     $offset = (int) $offset;
-    if($files = Mecha::eat(Get::pages('DESC', "", 'txt,draft'))->chunk($offset, $config->manager->per_page)->vomit()) {
+    if($files = Mecha::eat(Get::pages('DESC', "", 'txt,draft,archive'))->chunk($offset, $config->manager->per_page)->vomit()) {
         $pages = array();
         foreach($files as $file) {
             $pages[] = Get::pageHeader($file);
@@ -21,7 +21,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
         'page_title' => $speak->pages . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'pages' => $pages,
-        'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
+        'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
         'cargo' => DECK . DS . 'workers' . DS . 'page.php'
     ));
     Shield::attach('manager', false);
@@ -74,7 +74,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             'fields' => array()
         ));
         Config::set(array(
-            'page_title' => Config::speak('manager.title_new_', array($speak->page)) . $config->title_separator . $config->manager->title,
+            'page_title' => Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title,
             'page' => Mecha::A($page)
         ));
     }
@@ -93,7 +93,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
         // Collect all available slug to prevent duplicate
         $slugs = array();
-        if($files = Get::pages('DESC', "", 'txt,draft')) {
+        if($files = Get::pages('DESC', "", 'txt,draft,archive')) {
             foreach($files as $file) {
                 list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
                 $slugs[$_slug] = 1;
@@ -118,7 +118,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $field = Request::post('fields', array());
         // Check for duplicate slug
         if( ! $id && isset($slugs[$slug])) {
-            Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
+            Notify::error(Config::speak('notify_error_slug_exist', $slug));
             Guardian::memorize($request);
         }
         // Slug must contains at least one letter or one `-`
@@ -146,7 +146,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
                     Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                 }
-                Notify::success(Config::speak('notify_success_created', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_created', $title) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_construct', array($G, $P));
                 Guardian::kick($config->manager->slug . '/page/repair/id:' . Date::format($date, 'U'));
@@ -158,7 +158,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // do not type the slug of another post.
             unset($slugs[$page->slug]);
             if(isset($slugs[$slug])) {
-                Notify::error(Config::speak('notify_error_slug_exist', array($slug)));
+                Notify::error(Config::speak('notify_error_slug_exist', $slug));
                 Guardian::memorize($request);
             }
             // Start rewriting ...
@@ -182,7 +182,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 if($page->slug != $slug && $php_file = File::exist(dirname($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
-                Notify::success(Config::speak('notify_success_updated', array($title)) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_updated', $title) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_repair', array($G, $P));
                 Guardian::kick($config->manager->slug . '/page/repair/id:' . Date::format($date, 'U'));
@@ -222,13 +222,13 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();
         // Deleting custom PHP file of page ...
         File::open(dirname($page->path) . DS . $page->slug . '.php')->delete();
-        Notify::success(Config::speak('notify_success_deleted', array($page->title)));
+        Notify::success(Config::speak('notify_success_deleted', $page->title));
         Weapon::fire('on_page_update', array($G, $G));
         Weapon::fire('on_page_destruct', array($G, $G));
         Guardian::kick($config->manager->slug . '/page');
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $page->title . '</strong>')));
-        Notify::warning(Config::speak('notify_confirm_delete_page', array(strtolower($speak->page))));
+        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $page->title . '</strong>'));
+        Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->page)));
     }
     Shield::attach('manager', false);
 });

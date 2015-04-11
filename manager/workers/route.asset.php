@@ -10,13 +10,17 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $offset = (int) $offset;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        File::upload($_FILES['file'], ASSET);
+        File::upload($_FILES['file'], ASSET, function($name, $type, $size, $link) {
+            Session::set('recent_asset_uploaded', $name);
+        });
         $P = array('data' => $_FILES);
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_construct', array($P, $P));
     }
     if( ! Notify::errors()) {
-        /* ... */
+        Weapon::add('shield_after', function() {
+            Session::kill('recent_asset_uploaded');
+        });
     } else {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>
@@ -69,7 +73,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Guardian::checkToken($request['token']);
         // Empty field
         if( ! Request::post('name')) {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->name)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
             // Missing file extension
             if( ! preg_match('#^.*?\.(.+?)$#', $request['name'])) {
@@ -79,7 +83,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             $new_name = Text::parse($request['name'], '->safe_file_name');
             // File name already exist
             if($old_name !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $new_name . '</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $new_name . '</code>'));
             }
             $P = array('data' => $request);
             if( ! Notify::errors()) {
@@ -87,7 +91,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                     File::open($file)->write($request['content'])->save();
                 }
                 File::open($file)->renameTo($new_name);
-                Notify::success(Config::speak('notify_file_updated', array('<code>' . $old_name . '</code>')));
+                Notify::success(Config::speak('notify_file_updated', '<code>' . $old_name . '</code>'));
                 Weapon::fire('on_asset_update', array($P, $P));
                 Weapon::fire('on_asset_repair', array($P, $P));
                 Guardian::kick($config->manager->slug . '/asset');
@@ -130,12 +134,12 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
             File::open($_path)->delete();
         }
         $P = array('data' => array('files' => $info_path));
-        Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
+        Notify::success(Config::speak('notify_file_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/asset');
     } else {
-        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', array('<code>' . File::path($name) . '</code>')) : $speak->notify_confirm_delete);
+        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
     Shield::define('the_name', $deletes)->attach('manager', false);
 });

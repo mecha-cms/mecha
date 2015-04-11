@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/page/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->page)); ?></a>
+  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->page), $config->url . '/' . $config->manager->slug . '/page/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($pages): ?>
@@ -27,5 +27,5 @@
 <p class="pager cf"><?php echo $pager->step->link; ?></p>
 <?php endif; ?>
 <?php else: ?>
-<p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->pages))); ?></p>
+<p><?php echo Config::speak('notify_empty', strtolower($speak->pages)); ?></p>
 <?php endif; ?>

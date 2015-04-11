@@ -1,6 +1,6 @@
 <?php echo $messages; ?>
 <form class="form-kill form-field" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <?php echo Form::hidden('token', $token); ?>
   <table class="table-bordered table-full-width">
     <thead>
       <tr>
@@ -23,10 +23,13 @@
         ), 'Summary');
 
         ?>
-        <td><em class="text-info"><?php echo $s; ?></em></td>
+        <td><?php echo UI::em('info', $s); ?></td>
         <td><?php echo isset($file->scope) ? $file->scope : strtolower($speak->article . '/' . $speak->page); ?></td>
       </tr>
     </tbody>
   </table>
-  <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->yes; ?></button> <a href="<?php echo $config->url . '/' . $config->manager->slug; ?>/field/repair/key:<?php echo $the_key; ?>" class="btn btn-reject"><i class="fa fa-times-circle"></i> <?php echo $speak->no; ?></a></p>
+  <p>
+  <?php echo UI::button('action', $speak->yes); ?>
+  <?php echo UI::btn('reject', $speak->no, $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $the_key); ?>
+  </p>
 </form>

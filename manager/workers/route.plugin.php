@@ -11,7 +11,7 @@ $e_plugin_page = "Title: %s\n" .
      "URL: #\n" .
      "Version: 0.0.0\n" .
      "\n" . SEPARATOR . "\n" .
-     "\n" . Config::speak('notify_not_available', array($speak->description));
+     "\n" . Config::speak('notify_not_available', $speak->description);
 
 
 /**
@@ -43,17 +43,17 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         $path = basename($name, '.' . $extension);
         if( ! empty($name)) {
             if(File::exist(PLUGIN . DS . $path)) {
-                Notify::error(Config::speak('notify_file_exist', array('<code>' . $path . '/&hellip;</code>')));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '/&hellip;</code>'));
             } else {
                 if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                    Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+                    Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
                 }
             }
         } else {
             Notify::error($speak->notify_error_no_file_selected);
         }
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], PLUGIN, Config::speak('notify_success_uploaded', array($speak->plugin)));
+            File::upload($_FILES['file'], PLUGIN, Config::speak('notify_success_uploaded', $speak->plugin));
             $P = array('data' => $_FILES);
             Weapon::fire('on_plugin_update', array($P, $P));
             Weapon::fire('on_plugin_construct', array($P, $P));
@@ -153,7 +153,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
         ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
     $G = array('data' => array('id' => $slug, 'action' => $path));
     $mode = $path == 'freeze' ? 'eject' : 'mount';
-    Notify::success(Config::speak('notify_success_updated', array($speak->plugin)));
+    Notify::success(Config::speak('notify_success_updated', $speak->plugin));
     Weapon::fire('on_plugin_update', array($G, $G));
     Weapon::fire('on_plugin_' . $mode, array($G, $G));
     Weapon::fire('on_plugin_' . md5($slug) . '_update', array($G, $G));
@@ -186,14 +186,14 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         Guardian::checkToken($request['token']);
         File::open(PLUGIN . DS . $slug)->delete();
         $P = array('data' => array('id' => $slug));
-        Notify::success(Config::speak('notify_success_deleted', array($speak->plugin)));
+        Notify::success(Config::speak('notify_success_deleted', $speak->plugin));
         Weapon::fire('on_plugin_update', array($P, $P));
         Weapon::fire('on_plugin_destruct', array($P, $P));
         Weapon::fire('on_plugin_' . md5($slug) . '_update', array($P, $P));
         Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/plugin');
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $about['title'] . '</strong>')));
+        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $about['title'] . '</strong>'));
     }
     Shield::attach('manager', false);
 });

@@ -1,11 +1,25 @@
 <?php echo $messages; ?>
 <form class="form-repair form-shield" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo $token; ?>">
-  <p><textarea name="content" class="textarea-block textarea-expand code MTE"><?php echo Text::parse(Guardian::wayback('content', $the_content), '->encoded_html'); ?></textarea></p>
+  <?php echo Form::hidden('token', $token); ?>
+  <p>
+  <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
+      'class' => 'textarea-block'
+  )); ?>
+  </p>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->name; ?></span>
-    <span class="grid span-5"><input name="name" type="text" value="<?php echo Guardian::wayback('name', File::url($the_path)); ?>"></span>
+    <span class="grid span-5"><?php echo Form::text('name', Guardian::wayback('name', File::url($the_path))); ?></span>
   </label>
   <hr>
-  <p><?php if(strpos($config->url_current, 'file:') === false): ?><button class="btn btn-construct" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->create; ?></button><?php else: ?><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->update; ?></button><?php endif; ?> <?php if(strpos($config->url_current, 'file:') !== false): ?><a class="btn btn-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path)); ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a><?php else: ?><a class="btn btn-reject" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/shield/<?php echo $the_shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->cancel; ?></a><?php endif; ?></p>
+  <p>
+    <?php if(strpos($config->url_current, 'file:') === false): ?>
+    <?php echo UI::button('construct', $speak->create); ?>
+    <?php else: ?>
+    <?php echo UI::button('action', $speak->update); ?>
+    <?php endif; ?> <?php if(strpos($config->url_current, 'file:') !== false): ?>
+    <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path))); ?>
+    <?php else: ?>
+    <?php echo UI::btn('reject', $speak->cancel, $config->url . '/' . $config->manager->slug; ?>
+    <?php endif; ?>
+  </p>
 </form>

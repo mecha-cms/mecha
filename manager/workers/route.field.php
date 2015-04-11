@@ -37,7 +37,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             'type' => 't',
             'value' => ""
         );
-        Config::set('page_title', Config::speak('manager.title_new_', array($speak->field)) . $config->title_separator . $config->manager->title);
+        Config::set('page_title', Config::speak('manager.title_new_', $speak->field) . $config->title_separator . $config->manager->title);
     } else {
         if( ! isset($fields[$key])) {
             Shield::abort();
@@ -56,7 +56,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         Guardian::checkToken($request['token']);
         // Empty title field
         if(trim($request['title']) === "") {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->title)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->title));
         }
         // Empty key field
         if(trim($request['key']) === "") {
@@ -65,7 +65,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $request_key = Text::parse($request['key'], '->array_key', true);
         if($key === false) {
             if(isset($fields[$request_key])) {
-                Notify::error(Config::speak('notify_exist', array('<code>' . $request_key . '</code>')));
+                Notify::error(Config::speak('notify_exist', '<code>' . $request_key . '</code>'));
             }
         } else {
             unset($fields[$key]);
@@ -81,7 +81,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
-            Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), array($request['title'])));
+            Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), $request['title']));
             Weapon::fire('on_field_update', array($G, $P));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($G, $P));
             Guardian::kick($key === false ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
@@ -125,12 +125,12 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
         $deleted_field = $fields[$key]['title'];
         unset($fields[$key]); // delete ...
         File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
-        Notify::success(Config::speak('notify_success_deleted', array($deleted_field)));
+        Notify::success(Config::speak('notify_success_deleted', $deleted_field));
         Weapon::fire('on_field_update', array($P, $P));
         Weapon::fire('on_field_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/field');
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', array('<strong>' . $data['title'] . '</strong>')));
+        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $data['title'] . '</strong>'));
     }
     Shield::define('the_key', $key)->attach('manager', false);
 });

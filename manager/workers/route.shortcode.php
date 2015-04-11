@@ -27,14 +27,14 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $data = array();
-        for($i = 0, $keys = $request['keys'], $count = count($keys); $i < $count; ++$i) {
+        for($i = 0, $keys = $request['key'], $count = count($keys); $i < $count; ++$i) {
             if(trim($keys[$i]) !== "") {
-                $data[$keys[$i]] = $request['values'][$i];
+                $data[$keys[$i]] = $request['value'][$i];
             }
         }
         $P = array('data' => $data);
         File::serialize($data)->saveTo(STATE . DS . 'shortcode.txt', 0600);
-        Notify::success(Config::speak('notify_success_updated', array($speak->shortcode)));
+        Notify::success(Config::speak('notify_success_updated', $speak->shortcode));
         Weapon::fire('on_shortcode_update', array($G, $P));
         Guardian::kick($config->url_current);
     }

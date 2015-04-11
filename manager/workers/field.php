@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <a class="btn btn-begin" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/field/ignite"><i class="fa fa-plus-square"></i> <?php echo Config::speak('manager.title_new_', array($speak->field)); ?></a>
+  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->field), $config->url . '/' . $config->manager->slug . '/field/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($files): ?>
@@ -26,13 +26,21 @@
       ), 'Summary');
 
       ?>
-      <td><em class="text-info"><?php echo $s; ?></em></td>
-      <td class="td-icon"><a class="text-construct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key; ?>" title="<?php echo $speak->edit; ?>"><i class="fa fa-pencil"></i></a></td>
-      <td class="td-icon"><a class="text-destruct" href="<?php echo $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key; ?>" title="<?php echo $speak->delete; ?>"><i class="fa fa-times"></i></a></td>
+      <td><?php echo UI::em('info', $s); ?></td>
+      <td class="td-icon">
+      <?php echo UI::a('construct', $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key, UI::icon('pencil'), array(
+          'title' => $speak->edit
+      )); ?>
+      </td>
+      <td class="td-icon">
+      <?php echo UI::a('destruct', $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key, UI::icon('times'), array(
+          'title' => $speak->delete
+      )); ?>
+      </td>
     </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
 <?php else: ?>
-<p class="empty"><?php echo Config::speak('notify_empty', array(strtolower($speak->fields))); ?></p>
+<p><?php echo Config::speak('notify_empty', strtolower($speak->fields)); ?></p>
 <?php endif; ?>

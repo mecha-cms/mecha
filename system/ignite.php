@@ -105,36 +105,17 @@ if($config->widget_include_js) {
  * ---------------
  */
 
-if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
-    $plugins = File::open($plugins_order)->unserialize();
-} else {
-    $plugins = array();
-    $plugins_list = glob(PLUGIN . DS . '*' . DS . 'launch.php');
-    $plugins_payload = count($plugins_list);
-    sort($plugins_list);
-    for($i = 0; $i < $plugins_payload; ++$i) {
-        $plugins[] = false;
-    }
-    for($j = 0; $j < $plugins_payload; ++$j) {
-        if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {
-            $to_index = Mecha::edge((int) file_get_contents($overtake) - 1, 0, $plugins_payload - 1);
-            array_splice($plugins, $to_index, 0, array(dirname($plugins_list[$j])));
-        } else {
-            $plugins[$j] = dirname($plugins_list[$j]);
-        }
-    }
-    File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);
-}
+$plugins = Plugin::load();
 
-for($k = 0, $plugins_launched = count($plugins); $k < $plugins_launched; ++$k) {
-    if($plugins[$k]) {
-        if( ! $language = File::exist($plugins[$k] . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-            $language = $plugins[$k] . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+for($i = 0, $count = count($plugins); $i < $count; ++$i) {
+    if($plugins[$i]) {
+        if( ! $language = File::exist($plugins[$i] . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+            $language = $plugins[$i] . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
         }
         if(File::exist($language)) {
             Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
         }
-        if($launch = File::exist($plugins[$k] . DS . 'launch.php')) {
+        if($launch = File::exist($plugins[$i] . DS . 'launch.php')) {
             include $launch;
         }
     }

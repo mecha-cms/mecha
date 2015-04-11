@@ -28,6 +28,6 @@ Route::accept($config->manager->slug . '/error/kill', function() use($config, $s
     $G = array('data' => array('content' => File::open($errors)->read()));
     File::open($errors)->delete();
     Weapon::fire('on_error_destruct', array($G, $G));
-    Notify::success(Config::speak('notify_success_deleted', array($speak->file)));
+    Notify::success(Config::speak('notify_success_deleted', $speak->file));
     Guardian::kick(dirname($config->url_current));
 });

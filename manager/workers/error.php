@@ -1,5 +1,13 @@
 <?php echo $messages; ?>
 <?php if($the_content): ?>
-<p><textarea class="textarea-block textarea-expand code"><?php echo Text::parse($the_content, '->encoded_html'); ?></textarea></p>
-<p><a class="btn btn-destruct" href="<?php echo $config->url_current; ?>/kill"><i class="fa fa-times-circle"></i> <?php echo $speak->delete; ?></a></p>
+<p>
+<?php echo Form::textarea('content', $the_content, null, array(
+    'class' => array(
+        'textarea-block',
+        'textarea-expand',
+        'code'
+    )
+)); ?>
+</p>
+<p><?php echo UI::btn('destruct', $speak->delete, $config->url_current . '/kill'); ?></p>
 <?php endif; ?>

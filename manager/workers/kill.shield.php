@@ -1,6 +1,6 @@
 <?php echo $messages; ?>
 <form class="form-kill form-shield" action="<?php echo $config->url_current; ?>" method="post">
-  <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <?php echo Form::hidden('token', $token); ?>
   <h3><?php echo $speak->shield . ': ' . $info->title; ?></h3>
   <?php if(strpos($config->url_current, 'file:') !== false): ?>
   <p><strong><?php echo $the_shield; ?></strong> <i class="fa fa-arrow-right"></i> <?php echo str_replace(DS, ' <i class="fa fa-arrow-right"></i> ', $the_path); ?></p>
@@ -14,5 +14,8 @@
   </ul>
   <?php endif; ?>
   <?php endif; ?>
-  <p><button class="btn btn-action" type="submit"><i class="fa fa-check-circle"></i> <?php echo $speak->yes; ?></button> <a class="btn btn-reject" href="<?php echo $config->url . '/' . $config->manager->slug; ?>/shield/<?php echo $the_shield; ?>"><i class="fa fa-times-circle"></i> <?php echo $speak->no; ?></a></p>
+  <p>
+  <?php echo UI::button('action', $speak->yes); ?>
+  <?php echo UI::btn('reject', $speak->no, $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield); ?>
+  </p>
 </form>

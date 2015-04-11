@@ -30,13 +30,16 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         $extension = pathinfo($name, PATHINFO_EXTENSION);
         if( ! empty($name)) {
             if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_invalid_file_extension', array('ZIP')));
+                Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
             }
         } else {
             Notify::error($speak->notify_error_no_file_selected);
         }
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], $destination, Config::speak('notify_success_uploaded', array($title)));
+            File::upload($_FILES['file'], $destination, function() use($title) {
+                Notify::clear();
+                Notify::success(Config::speak('notify_success_uploaded', $title));
+            });
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));
             if($uploaded = File::exist($destination . DS . $name)) {

@@ -51,7 +51,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
-        Notify::success(Config::speak('notify_file_updated', array('<code>' . basename($name) . '</code>')));
+        Notify::success(Config::speak('notify_file_updated', '<code>' . basename($name) . '</code>'));
         Weapon::fire('on_cache_update', array($G, $P));
         Weapon::fire('on_cache_repair', array($G, $P));
         Guardian::kick($config->manager->slug . '/cache/repair/file:' . File::url($name));
@@ -95,12 +95,12 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
             File::open($_path)->delete();
         }
         $P = array('data' => array('files' => $info_path));
-        Notify::success(Config::speak('notify_file_deleted', array('<code>' . implode('</code>, <code>', $deletes) . '</code>')));
+        Notify::success(Config::speak('notify_file_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire('on_cache_update', array($P, $P));
         Weapon::fire('on_cache_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/cache');
     } else {
-        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', array('<code>' . File::path($name) . '</code>')) : $speak->notify_confirm_delete);
+        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
     Shield::define('the_name', $deletes)->attach('manager', false);
 });

@@ -26,7 +26,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::write($request['content'])->saveTo(STATE . DS . 'menu.txt', 0600);
-            Notify::success(Config::speak('notify_success_updated', array($speak->menu)));
+            Notify::success(Config::speak('notify_success_updated', $speak->menu));
             Weapon::fire('on_menu_update', array($G, $P));
             Guardian::kick($config->url_current);
         }

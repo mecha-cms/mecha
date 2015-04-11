@@ -1,11 +1,9 @@
 <?php
 
-class Get {
-
-    private static $o = array();
+class Get extends Plugger {
 
     // Apply the missing filters
-    private static function AMF($data, $FP = "", $F) {
+    protected static function AMF($data, $FP = "", $F) {
         $output = Filter::apply($F, $data);
         if(is_string($FP) && trim($FP) !== "") {
             $output = Filter::apply($FP . $F, $output);
@@ -283,11 +281,11 @@ class Get {
      *
      */
 
-    public static function rawTag($filter) {
+    public static function rawTag($filter, $output = null) {
         $tags = self::rawTags();
         for($i = 0, $count = count($tags); $i < $count; ++$i) {
             if((is_numeric($filter) && (int) $filter === (int) $tags[$i]['id']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['name']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['slug'])) {
-                return $tags[$i];
+                return ! is_null($output) ? $tags[$i][$output] : $tags[$i];
             }
         }
         return false;
@@ -309,8 +307,8 @@ class Get {
      * ==========================================================================
      */
 
-    public static function tag($id_or_name_or_slug) {
-        return Mecha::O(self::rawTag($id_or_name_or_slug));
+    public static function tag($id_or_name_or_slug, $output = null) {
+        return Mecha::O(self::rawTag($id_or_name_or_slug, $output));
     }
 
     /**
@@ -774,7 +772,7 @@ class Get {
         }
 
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
-            if($file = File::exist(CUSTOM . DS . $time . $extension)) {
+            if($file = File::exist(CUSTOM . DS . $time . '.' . $extension)) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
                 $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
@@ -841,7 +839,7 @@ class Get {
 
         $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
         $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
-        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] > 1 ? $speak->comments : $speak->comment), $FP, 'total_comments_text');
+        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
 
         if($comments && ! isset($excludes['comments'])) {
             $results['comments'] = array();
@@ -1269,19 +1267,6 @@ class Get {
     public static function imageURL($source, $sequence = 1, $fallback = null) {
         $images = self::imagesURL($source, array());
         return isset($images[$sequence - 1]) ? $images[$sequence - 1] : (is_null($fallback) ? Image::placeholder() : $fallback);
-    }
-
-    // Add new method with `Get::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[$kin] = $action;
-    }
-
-    // Call the added method with `Get::foo()`
-    public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[$kin])) {
-            Guardian::abort('Method <code>Get::' . $kin . '()</code> does not exist.');
-        }
-        return call_user_func_array(self::$o[$kin], $arguments);
     }
 
 }

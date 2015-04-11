@@ -19,14 +19,14 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
         // Check for duplicate ID
         foreach(array_count_values($request['id']) as $id => $count) {
             if(trim($id) !== "" && $count > 1) {
-                Notify::error(Config::speak('notify_invalid_duplicate', array($speak->id)));
+                Notify::error(Config::speak('notify_invalid_duplicate', $speak->id));
                 break;
             }
         }
         // Check for duplicate slug
         foreach(array_count_values($request['slug']) as $slug => $count) {
             if(trim($slug) !== "" && $count > 1) {
-                Notify::error(Config::speak('notify_invalid_duplicate', array(strtolower($speak->slug))));
+                Notify::error(Config::speak('notify_invalid_duplicate', strtolower($speak->slug)));
                 break;
             }
         }
@@ -46,7 +46,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
             }
             $P = array('data' => $data);
             File::serialize($data)->saveTo(STATE . DS . 'tag.txt', 0600);
-            Notify::success(Config::speak('notify_success_updated', array($speak->tags)));
+            Notify::success(Config::speak('notify_success_updated', $speak->tags));
             Weapon::fire('on_tag_update', array($G, $P));
         }
         Guardian::kick($config->url_current);

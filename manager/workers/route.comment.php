@@ -66,7 +66,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         Guardian::checkToken($request['token']);
         // Empty name field
         if(trim($request['name']) === "") {
-            Notify::error(Config::speak('notify_error_empty_field', array($speak->comment_name)));
+            Notify::error(Config::speak('notify_error_empty_field', $speak->comment_name));
             Guardian::memorize($request);
         }
         // Invalid email address
@@ -93,7 +93,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
             ))->content($message)->save();
             File::open($comment->path)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
-            Notify::success(Config::speak('notify_success_updated', array($speak->comment)));
+            Notify::success(Config::speak('notify_success_updated', $speak->comment));
             Weapon::fire('on_comment_update', array($G, $P));
             Weapon::fire('on_comment_repair', array($G, $P));
             Guardian::kick($config->manager->slug . '/comment/repair/id:' . $id);
@@ -125,7 +125,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
         File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
-        Notify::success(Config::speak('notify_success_deleted', array($speak->comment)));
+        Notify::success(Config::speak('notify_success_deleted', $speak->comment));
         Weapon::fire('on_comment_update', array($P, $P));
         Weapon::fire('on_comment_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/comment');
