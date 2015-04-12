@@ -103,7 +103,7 @@
       <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?>
       <?php echo UI::button('action', UI::icon('clock-o') . ' ' . $speak->save, 'action:save'); ?>
       <?php endif; ?>
-      <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/article/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+      <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/article/kill/id:' . Guardian::wayback('id', $default->id)); ?>
       <?php endif; ?>
     </p>
   </form>

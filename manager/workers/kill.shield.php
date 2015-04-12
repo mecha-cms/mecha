@@ -16,6 +16,6 @@
   <?php endif; ?>
   <p>
   <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield); ?>
+  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/shield/' . $the_shield); ?>
   </p>
 </form>

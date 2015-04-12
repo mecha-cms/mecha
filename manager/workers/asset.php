@@ -34,12 +34,12 @@
             <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
             <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo strpos($the_asset_url, '/') !== false ? UI::span('fade', dirname($the_asset_url) . '/') . basename($the_asset_url) : $the_asset_url; ?></a></td>
             <td class="td-icon">
-            <?php echo UI::a('construct', $config->url . '/' . $config->manager->slug . '/asset/repair/file:' . $the_asset_url, UI::icon('pencil'), array(
+            <?php echo UI::a('construct', $config->manager->slug . '/asset/repair/file:' . $the_asset_url, UI::icon('pencil'), array(
                 'title' => $speak->edit
             )); ?>
             </td>
             <td class="td-icon">
-            <?php echo UI::a('destruct', $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . $the_asset_url, UI::icon('times'), array(
+            <?php echo UI::a('destruct', $config->manager->slug . '/asset/kill/file:' . $the_asset_url, UI::icon('times'), array(
                 'title' => $speak->delete
             )); ?>
             </td>
@@ -52,7 +52,7 @@
     </form>
     <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
     <hr>
-    <?php echo UI::finder($config->url . '/' . $config->manager->slug . '/asset', 'q'); ?>
+    <?php echo UI::finder($config->manager->slug . '/asset', 'q'); ?>
     <?php endif; ?>
     <?php else: ?>
     <p><?php echo Config::speak('notify_' . (Request::get('q') || $config->offset !== 1 ? 'error_not_found' : 'empty'), strtolower($speak->assets)); ?></p>
@@ -61,6 +61,6 @@
   <div class="tab-content hidden" id="tab-content-2">
     <?php echo Notify::errors() ? $messages : ""; ?>
     <h3><?php echo Config::speak('manager.title__upload_alt', $speak->asset); ?></h3>
-<?php echo UI::uploader($config->url . '/' . $config->manager->slug . '/asset'); ?>
+<?php echo UI::uploader($config->manager->slug . '/asset'); ?>
   </div>
 </div>

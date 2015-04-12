@@ -118,7 +118,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             Notify::success(Config::speak('notify_file_created', '<code>' . basename($path) . '</code>'));
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
-            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder);
+            Guardian::kick($config->manager->slug . '/shield/' . $folder);
         }
     }
     Shield::define(array(
@@ -179,7 +179,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             Notify::success(Config::speak('notify_file_updated', '<code>' . basename($path) . '</code>'));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
-            Guardian::kick($config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
+            Guardian::kick($config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
         }
     }
     Shield::define(array(

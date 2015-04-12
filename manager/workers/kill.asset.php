@@ -8,6 +8,6 @@
   </ul>
   <p>
   <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->url . '/' . $config->manager->slug . '/asset'); ?>
+  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/asset'); ?>
   </p>
 </form>

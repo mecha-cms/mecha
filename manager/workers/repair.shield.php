@@ -3,7 +3,12 @@
   <?php echo Form::hidden('token', $token); ?>
   <p>
   <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
-      'class' => 'textarea-block'
+      'class' => array(
+          'textarea-block',
+          'textarea-expand',
+          'code',
+          'MTE'
+      )
   )); ?>
   </p>
   <label class="grid-group">
@@ -17,9 +22,9 @@
     <?php else: ?>
     <?php echo UI::button('action', $speak->update); ?>
     <?php endif; ?> <?php if(strpos($config->url_current, 'file:') !== false): ?>
-    <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path))); ?>
+    <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path))); ?>
     <?php else: ?>
-    <?php echo UI::btn('reject', $speak->cancel, $config->url . '/' . $config->manager->slug; ?>
+    <?php echo UI::btn('reject', $speak->cancel, $config->manager->slug . '/shield/' . $the_shield); ?>
     <?php endif; ?>
   </p>
 </form>

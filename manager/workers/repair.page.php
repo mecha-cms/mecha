@@ -72,7 +72,7 @@
       <?php echo UI::button('action', $speak->update, 'action:publish'); ?> <?php echo UI::button('action', UI::icon('history') . ' ' . $speak->unpublish, 'action:save'); ?>
       <?php else: ?>
       <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?> <?php echo UI::button('action', UI::icon('clock-o') . ' ' . $speak->save, 'action:save'); ?>
-      <?php endif; ?> <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/page/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+      <?php endif; ?> <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/page/kill/id:' . Guardian::wayback('id', $default->id)); ?>
       <?php endif; ?>
     </p>
   </form>

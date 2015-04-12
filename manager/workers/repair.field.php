@@ -64,7 +64,7 @@
     <span class="grid span-1"></span>
     <span class="grid span-5">
       <?php if($the_key): ?>
-      <?php echo UI::button('action', $speak->update); ?> <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $the_key); ?>
+      <?php echo UI::button('action', $speak->update); ?> <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $the_key); ?>
       <?php else: ?>
       <?php echo UI::button('construct', $speak->create); ?>
       <?php endif; ?>

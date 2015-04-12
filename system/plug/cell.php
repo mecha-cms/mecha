@@ -25,6 +25,9 @@ Cell::add('script', function($attr = array(), $content = "", $indent = "") {
 
 // `<a>`
 Cell::add('a', function($href = null, $content = "", $target = null, $attr = array(), $indent = "") {
+    if(is_string($href) && strpos($href, '://') === false) {
+        $href = Config::get('url') . '/' . ltrim($href, '/');
+    }
     $attr['href'] = $href;
     $attr['target'] = $target;
     return Cell::unit('a', $content, $attr, $indent);

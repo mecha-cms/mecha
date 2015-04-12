@@ -28,7 +28,7 @@
         <td><span title="<?php echo $file->size; ?>"><?php echo strpos($the_cache_url, '/') !== false ? UI::span('fade', dirname($the_cache_url) . '/') . basename($the_cache_url) : $the_cache_url; ?></span></td>
         <?php if(in_array($file->extension, $editable)): ?>
         <td class="td-icon">
-        <?php echo UI::a('construct', $config->url . '/' . $config->manager->slug . '/cache/repair/file:' . $the_cache_url, UI::icon('pencil'), array(
+        <?php echo UI::a('construct', $config->manager->slug . '/cache/repair/file:' . $the_cache_url, UI::icon('pencil'), array(
             'title' => $speak->edit
         )); ?>
         </td>
@@ -36,7 +36,7 @@
         <td></td>
         <?php endif; ?>
         <td class="td-icon">
-        <?php echo UI::a('destruct', $config->url . '/' . $config->manager->slug . '/cache/kill/file:' . $the_cache_url, UI::icon('times'), array(
+        <?php echo UI::a('destruct', $config->manager->slug . '/cache/kill/file:' . $the_cache_url, UI::icon('times'), array(
             'title' => $speak->delete
         )); ?>
         </td>
@@ -50,7 +50,7 @@
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>
-<?php echo UI::finder($config->url . '/' . $config->manager->slug . '/cache', 'q'); ?>
+<?php echo UI::finder($config->manager->slug . '/cache', 'q'); ?>
 <?php endif; ?>
 <?php else: ?>
 <?php echo $messages; ?>

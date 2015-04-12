@@ -11,6 +11,6 @@
   <?php endif; ?>
   <p>
   <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id); ?>
+  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/page/repair/id:' . $page->id); ?>
   </p>
 </form>

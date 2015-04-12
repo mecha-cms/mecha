@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->shield), $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/ignite'); ?>
+  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->shield), $config->manager->slug . '/shield/' . $the_shield_path . '/ignite'); ?>
 </div>
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><?php echo UI::icon('shield', 'fw') . ' ' . $speak->shield; ?></a>
@@ -22,12 +22,12 @@
         <tr>
           <td><?php echo strpos($the_shield_url, '/') !== false ? UI::span('fade', dirname($the_shield_url) . '/') . basename($the_shield_url) : $the_shield_url; ?></td>
           <td class="td-icon">
-          <?php echo UI::a('construct', $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/repair/file:' . $the_shield_url, UI::icon('pencil'), array(
+          <?php echo UI::a('construct', $config->manager->slug . '/shield/' . $the_shield_path . '/repair/file:' . $the_shield_url, UI::icon('pencil'), array(
               'title' => $speak->edit
           )); ?>
           </td>
           <td class="td-icon">
-          <?php echo UI::a('destruct', $config->url . '/' . $config->manager->slug . '/shield/' . $the_shield_path . '/kill/file:' . $the_shield_url, UI::icon('times'), array(
+          <?php echo UI::a('destruct', $config->manager->slug . '/shield/' . $the_shield_path . '/kill/file:' . $the_shield_url, UI::icon('times'), array(
               'title' => $speak->delete
           )); ?>
           </td>
@@ -45,7 +45,7 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <h3><?php echo Config::speak('manager.title__upload_package', $speak->shield); ?></h3>
-    <?php echo UI::uploader($config->url . '/' . $config->manager->slug . '/shield', 'zip'); ?>
+    <?php echo UI::uploader($config->manager->slug . '/shield', 'zip'); ?>
     <hr>
     <?php echo Config::speak('file:shield'); ?>
   </div>
@@ -62,7 +62,7 @@
       <div class="media-content">
         <p><?php echo Converter::curt($info->content); ?></p>
         <p>
-          <?php echo UI::btn('construct.small', UI::icon('cog') . ' ' . $speak->manage, $config->url . '/' . $config->manager->slug . '/shield/' . $shield); ?> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><?php echo UI::btn('action.small', UI::icon('shield') . ' ' . $speak->attach, $config->url . '/' . $config->manager->slug . '/shield/attach/id:' . $shield); ?> <?php endif; ?><?php echo UI::btn('destruct.small', UI::icon('times-circle') . ' ' . $speak->delete, $config->url . '/' . $config->manager->slug . '/shield/kill/id:' . $shield); ?>
+          <?php echo UI::btn('construct.small', UI::icon('cog') . ' ' . $speak->manage, $config->manager->slug . '/shield/' . $shield); ?> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><?php echo UI::btn('action.small', UI::icon('shield') . ' ' . $speak->attach, $config->manager->slug . '/shield/attach/id:' . $shield); ?> <?php endif; ?><?php echo UI::btn('destruct.small', UI::icon('times-circle') . ' ' . $speak->delete, $config->manager->slug . '/shield/kill/id:' . $shield); ?>
         </p>
       </div>
     </div>

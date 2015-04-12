@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->article), $config->url . '/' . $config->manager->slug . '/article/ignite'); ?>
+  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->article), $config->manager->slug . '/article/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($articles): ?>

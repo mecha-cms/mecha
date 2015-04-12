@@ -43,6 +43,9 @@ UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = arr
         'error' => UI::icon('exclamation-triangle'),
         'reject' => UI::icon('times-circle')
     ), "") : "";
+    if(is_string($href) && strpos($href, '://') === false) {
+        $href = Config::get('url') . '/' . ltrim($href, '/');
+    }
     $attr['href'] = $active ? $href : null;
     $attr['class'] = 'btn btn-' . str_replace('.', ' btn-', trim(implode('.', $slice), '.'));
     if($icon !== "") {
@@ -61,6 +64,9 @@ foreach(array('em', 'span', 'strong') as $tag) {
 
 // `<a class="text-error">`
 UI::add('a', function($kind = 'default', $href = null, $text = "", $attr = array(), $indent = "") {
+    if(is_string($href) && strpos($href, '://') === false) {
+        $href = Config::get('url') . '/' . ltrim($href, '/');
+    }
     $attr['href'] = $href;
     $attr['class'] = 'text-' . $kind;
     return Cell::unit('a', $text, $attr, $indent);
@@ -69,6 +75,9 @@ UI::add('a', function($kind = 'default', $href = null, $text = "", $attr = array
 // File uploader
 UI::add('uploader', function($action, $accept = null, $fields = array()) {
     $speak = Config::speak();
+    if(is_string($action) && strpos($action, '://') === false) {
+        $action = Config::get('url') . '/' . ltrim($action, '/');
+    }
     $html = Cell::begin('form', array(
         'class' => 'form-upload',
         'action' => $action,
@@ -102,6 +111,9 @@ UI::add('uploader', function($action, $accept = null, $fields = array()) {
 
 // File finder
 UI::add('finder', function($action, $name = 'q') {
+    if(is_string($action) && strpos($action, '://') === false) {
+        $action = Config::get('url') . '/' . ltrim($action, '/');
+    }
     $html = Cell::begin('form', array(
         'class' => 'form-find',
         'action' => $action,

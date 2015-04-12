@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->field), $config->url . '/' . $config->manager->slug . '/field/ignite'); ?>
+  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->field), $config->manager->slug . '/field/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($files): ?>
@@ -28,12 +28,12 @@
       ?>
       <td><?php echo UI::em('info', $s); ?></td>
       <td class="td-icon">
-      <?php echo UI::a('construct', $config->url . '/' . $config->manager->slug . '/field/repair/key:' . $key, UI::icon('pencil'), array(
+      <?php echo UI::a('construct', $config->manager->slug . '/field/repair/key:' . $key, UI::icon('pencil'), array(
           'title' => $speak->edit
       )); ?>
       </td>
       <td class="td-icon">
-      <?php echo UI::a('destruct', $config->url . '/' . $config->manager->slug . '/field/kill/key:' . $key, UI::icon('times'), array(
+      <?php echo UI::a('destruct', $config->manager->slug . '/field/kill/key:' . $key, UI::icon('times'), array(
           'title' => $speak->delete
       )); ?>
       </td>

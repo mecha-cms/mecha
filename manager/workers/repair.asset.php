@@ -20,12 +20,12 @@
   </p>
   <p>
   <?php echo UI::button('action', $speak->update); ?>
-  <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . $the_name); ?>
+  <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/asset/kill/file:' . $the_name); ?>
   </p>
   <?php else: ?>
   <p>
   <?php echo UI::button('action', $speak->rename); ?>
-  <?php echo UI::btn('destruct', $speak->delete, $config->url . '/' . $config->manager->slug . '/asset/kill/file:' . $the_name); ?>
+  <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/asset/kill/file:' . $the_name); ?>
   </p>
   <?php endif; ?>
 </form>

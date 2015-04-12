@@ -424,7 +424,7 @@ class Converter extends Plugger {
         }, $input);
         // Minify inline CSS declarations
         if(strpos($input, ' style=') !== false) {
-            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1#', function($matches) {
+            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1#s', function($matches) {
                 return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
             }, $input);
         }
@@ -472,7 +472,7 @@ class Converter extends Plugger {
                 '#(<\!--.*?-->)|(\/>)\s+(?!\<)#', // o+t
 
                 // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
-                '#(?<=&nbsp;)(&nbsp;){2}#s',
+                '#(?<=&nbsp;)(&nbsp;){2}#',
 
                 // Proofing ...
                 '#(?<=\>)&nbsp;(?!\s|&nbsp;)#',
