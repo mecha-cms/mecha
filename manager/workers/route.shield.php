@@ -99,17 +99,18 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
-            // Missing file extension
-            if( ! preg_match('#^.*?\.(.+?)$#', $path)) {
-                Notify::error($speak->notify_error_file_extension_missing);
-            }
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-            if( ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_error_file_extension', $extension));
+            if($extension !== "") {
+                if( ! in_array($extension, $accepted_extensions)) {
+                    Notify::error(Config::speak('notify_error_file_extension', $extension));
+                }
+            } else {
+                // Missing file extension
+                Notify::error($speak->notify_error_file_extension_missing);
             }
         }
         $P = array('data' => $request);
@@ -157,17 +158,18 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
-            // Missing file extension
-            if( ! preg_match('#^.*?\.(.+?)$#', $name)) {
-                Notify::error($speak->notify_error_file_extension_missing);
-            }
             if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
             $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-            if( ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_error_file_extension', $extension));
+            if($extension !== "") {
+                if( ! in_array($extension, $accepted_extensions)) {
+                    Notify::error(Config::speak('notify_error_file_extension', $extension));
+                }
+            } else {
+                // Missing file extension
+                Notify::error($speak->notify_error_file_extension_missing);
             }
         }
         $P = array('data' => $request);

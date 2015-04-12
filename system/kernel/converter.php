@@ -160,7 +160,7 @@ class Converter extends Plugger {
      *
      */
 
-    public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = 'UTF-8') {
+    public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = "") {
         $input = preg_replace(
             array(
                 '#<br *\/?>|<\/.*?>#i', // New line to a single white-space
@@ -181,7 +181,7 @@ class Converter extends Plugger {
                 ""
             ),
         $input);
-        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < strlen($input) ? $tail : "");
+        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, ($charset !== "" ? $charset : Config::get('charset'))) : substr($input, 0, $chars))) . ($chars < strlen($input) ? $tail : "");
     }
 
     /**
