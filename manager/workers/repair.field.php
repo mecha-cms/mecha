@@ -43,9 +43,9 @@
     $cache = Guardian::wayback('scope', isset($file->scope) ? $file->scope : "");
 
     echo Form::select('scope', array(
-        "" => $speak->article . ' ' . strtolower($speak->and) . ' ' . $speak->page,
         'article' => $speak->article,
         'page' => $speak->page,
+        "" => $speak->article . '/' . $speak->page,
         'comment' => $speak->comment
     ), $cache);
 
@@ -64,7 +64,8 @@
     <span class="grid span-1"></span>
     <span class="grid span-5">
       <?php if($the_key): ?>
-      <?php echo UI::button('action', $speak->update); ?> <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $the_key); ?>
+      <?php echo UI::button('action', $speak->update); ?>
+      <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $the_key); ?>
       <?php else: ?>
       <?php echo UI::button('construct', $speak->create); ?>
       <?php endif; ?>

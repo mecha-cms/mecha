@@ -11,7 +11,7 @@
         <?php
 
         $origins = array(
-            UI::icon('database', 'fw') . ' ' . $speak->site => 'root',
+            UI::icon('database', 'fw') . ' ' . $speak->site => 'ROOT',
             UI::icon('file-text', 'fw') . ' ' . $speak->article => basename(ARTICLE),
             UI::icon('file', 'fw') . ' ' . $speak->page => basename(PAGE),
             UI::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js => basename(CUSTOM),
@@ -27,7 +27,7 @@
         <tr>
           <td><?php echo $title; ?></td>
           <td class="td-icon">
-          <?php echo Cell::a($config->url_current . '/origin:' . $origin, UI::icon('download'), array(
+          <?php echo Cell::a($config->url_current . '/origin:' . $origin, UI::icon('download'), null, array(
               'title' => $speak->download
           )); ?>
           </td>
@@ -60,7 +60,7 @@
         <p><code><?php echo $destination; ?></code></p>
         <?php echo UI::uploader($config->url_current, 'zip', array(
             'destination' => $destination,
-            'title' => strip_tags($title)
+            'title' => trim(strip_tags($title))
         )); ?>
       </div>
     </div>

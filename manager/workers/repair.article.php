@@ -94,14 +94,14 @@
     <p>
       <?php if(strpos($config->url_current, 'id:') === false): ?>
       <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo UI::button('action', UI::icon('clock-o') . ' ' . $speak->save, 'action:save'); ?>
+      <?php echo UI::button('action:clock-o', $speak->save, 'action:save'); ?>
       <?php else: ?>
       <?php if(Guardian::wayback('state', $default->state) == 'published'): ?>
       <?php echo UI::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo UI::button('action', UI::icon('history') . ' ' . $speak->unpublish, 'action:save'); ?>
+      <?php echo UI::button('action:history', $speak->unpublish, 'action:save'); ?>
       <?php else: ?>
       <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo UI::button('action', UI::icon('clock-o') . ' ' . $speak->save, 'action:save'); ?>
+      <?php echo UI::button('action:clock-o', $speak->save, 'action:save'); ?>
       <?php endif; ?>
       <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/article/kill/id:' . Guardian::wayback('id', $default->id)); ?>
       <?php endif; ?>

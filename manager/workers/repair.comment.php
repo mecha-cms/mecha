@@ -82,10 +82,10 @@
     <p>
       <?php if(Guardian::wayback('state', $default->state) == 'pending'): ?>
       <?php echo UI::button('accept', $speak->approve, 'action:publish'); ?>
-      <?php echo UI::button('action', UI::icon('clock-o') . ' ' . $speak->update, 'action:save'); ?>
+      <?php echo UI::button('action:clock-o', $speak->update, 'action:save'); ?>
       <?php else: ?>
       <?php echo UI::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo UI::button('action', UI::icon('history') . ' ' . $speak->unpublish, 'action:save'); ?>
+      <?php echo UI::button('action:history', $speak->unpublish, 'action:save'); ?>
       <?php endif; ?>
       <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/comment/kill/id:' . Guardian::wayback('id', $default->id)); ?>
     </p>

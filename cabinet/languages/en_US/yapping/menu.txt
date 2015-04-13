@@ -46,7 +46,7 @@ Result:
 </ul>
 ~~~
 
-### Make the Parent Menu Becomes Active
+### Active Parent Menu
 
 ~~~ .no-highlight
 Menu (/some-where):

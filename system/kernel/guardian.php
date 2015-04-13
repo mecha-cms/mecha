@@ -231,12 +231,9 @@ class Guardian extends Plugger {
      */
 
     public static function kick($path = "") {
-        $path = trim(File::url($path), '/');
-        if(strpos($path, '://') === false) {
-            $path = rtrim(Config::get('url') . '/' . $path, '/');
-        }
+        $path = Converter::url(File::url($path));
         $G = array('data' => array('url' => $path));
-        Weapon::fire('before_kick', array($G));
+        Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
         exit;
     }

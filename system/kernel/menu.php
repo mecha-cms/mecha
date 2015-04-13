@@ -76,44 +76,16 @@ class Menu extends Plugger {
                     $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $key . '</li>' . NL, $i + 1);
                 // List item with link: `array('foo' => '/')`
                 } else {
-                    if($value[0] !== '?' && $value[0] !== '&' && $value[0] !== '#' && strpos($value, '://') === false) {
-                        $value = trim($value, '/');
-                        $value = str_replace(
-                            array(
-                                '/?',
-                                '/&',
-                                '/#'
-                            ),
-                            array(
-                                '?',
-                                '&',
-                                '#'
-                            ),
-                        trim($c_url . '/' . $value, '/'));
-                    }
+                    $value = Converter::url($value);
                     $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value == $c_url_current || ($value != $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
                 }
             } else {
                 if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $key, $matches)) {
                     $_key = $matches[1];
-                    $_value = trim($matches[2], '/');
+                    $_value = Converter::url($matches[2]);
                 } else {
                     $_key = $key;
                     $_value = '#';
-                }
-                if($_value[0] !== '?' && $_value[0] !== '&' && $_value[0] !== '#' && strpos($_value, '://') === false) {
-                    $_value = str_replace(
-                        array(
-                            '/?',
-                            '/&',
-                            '/#'
-                        ),
-                        array(
-                            '?',
-                            '&',
-                            '#'
-                        ),
-                    trim($c_url . '/' . $_value, '/'));
                 }
                 $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($_value == $c_url_current || ($_value != $c_url && strpos($c_url_current . '/', $_value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '>' . NL . str_repeat(TAB, $i + 2) . '<a href="' . $_value . '">' . $_key . '</a>' . NL . self::create($value, $type, $depth, $FP, $i + 2) . $depth . str_repeat(TAB, $i + 1) . '</li>' . NL, $i + 1);
             }

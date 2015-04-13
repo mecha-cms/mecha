@@ -3,7 +3,7 @@
   <?php echo Form::hidden('token', $token); ?>
   <h3><?php echo $speak->shield . ': ' . $info->title; ?></h3>
   <?php if(strpos($config->url_current, 'file:') !== false): ?>
-  <p><strong><?php echo $the_shield; ?></strong> <i class="fa fa-arrow-right"></i> <?php echo str_replace(DS, ' <i class="fa fa-arrow-right"></i> ', $the_path); ?></p>
+  <p><?php echo Cell::strong($the_shield) . ' ' . UI::icon('arrow-right') . ' ' . str_replace(DS, ' ' . UI::icon('arrow-right') . ' ', $the_path); ?></p>
   <pre><code><?php echo Text::parse(File::open(SHIELD . DS . $the_shield . DS . $the_path)->read(), '->encoded_html'); ?></code></pre>
   <?php else: ?>
   <?php if($files): ?>

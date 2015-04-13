@@ -1,18 +1,19 @@
 <?php
 
 // `<input type="hidden">`
-Form::add('hidden', function($name = null, $value = null, $attr = array(), $indent = "") {
+Form::add('hidden', function($name = null, $value = null, $attr = array(), $indent = 0) {
     return Form::input('hidden', $name, $value, null, $attr, $indent);
 });
 
 // `<input type="file">`
-Form::add('file', function($name = null, $attr = array(), $indent = "") {
+Form::add('file', function($name = null, $attr = array(), $indent = 0) {
     return Form::input('file', $name, null, null, $attr, $indent);
 });
 
 // `<input type="radio">`
-Form::add('radio', function($name = null, $option = array(), $select = null, $attr = array(), $indent = "") {
+Form::add('radio', function($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
     $output = array();
+    $indent = $indent ? str_repeat(TAB, $indent) : "";
     foreach($option as $key => $value) {
         $key_o = ltrim($key, '.');
         $attr['disabled'] = strpos($key, '.') === 0 ? true : null;
@@ -23,14 +24,15 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
 });
 
 // `<input type="checkbox">`
-Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = "") {
+Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
     $attr['checked'] = $check ? true : null;
+    $indent = $indent ? str_repeat(TAB, $indent) : "";
     return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? ' <span>' . $text . '</span>' : "") . '</label>';
 });
 
 // `<input type="date|color|email|number|search|tel|text|password|range|url">`
 foreach(array('date', 'color', 'email', 'number', 'search', 'tel', 'text', 'password', 'range', 'url') as $type) {
-    Form::add($type, function($name = null, $value = null, $placeholder = null, $attr = array(), $indent = "") use($type) {
+    Form::add($type, function($name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) use($type) {
         return Form::input($type, $name, $value, $placeholder, $attr, $indent);
     });
 }

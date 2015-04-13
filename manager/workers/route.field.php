@@ -35,7 +35,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $data = array(
             'title' => "",
             'type' => 't',
-            'value' => ""
+            'value' => "",
+            'scope' => 'article'
         );
         Config::set('page_title', Config::speak('manager.title_new_', $speak->field) . $config->title_separator . $config->manager->title);
     } else {
@@ -48,7 +49,6 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     $G = array('data' => $data);
     $G['data']['key'] = $key;
     Config::set(array(
-        'page_type' => 'manager',
         'file' => $data,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
     ));

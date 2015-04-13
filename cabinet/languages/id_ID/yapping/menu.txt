@@ -46,7 +46,7 @@ Hasil:
 </ul>
 ~~~
 
-### Membuat Menu Induk Menjadi Aktif
+### Menu Induk Aktif
 
 ~~~ .no-highlight
 Menu (/suatu-tempat):

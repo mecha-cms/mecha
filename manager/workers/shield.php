@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->shield), $config->manager->slug . '/shield/' . $the_shield_path . '/ignite'); ?>
+  <?php echo UI::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->shield), $config->manager->slug . '/shield/' . $the_shield_path . '/ignite'); ?>
 </div>
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><?php echo UI::icon('shield', 'fw') . ' ' . $speak->shield; ?></a>
@@ -58,11 +58,11 @@
       <?php if($c): ?>
       <div class="media-capture" style="background-image:url('<?php echo File::url($c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
-      <h4><?php echo UI::icon('shield') . ' ' . $info->title; ?></h4>
+      <h4 class="media-title"><?php echo UI::icon('shield') . ' ' . $info->title; ?></h4>
       <div class="media-content">
         <p><?php echo Converter::curt($info->content); ?></p>
         <p>
-          <?php echo UI::btn('construct.small', UI::icon('cog') . ' ' . $speak->manage, $config->manager->slug . '/shield/' . $shield); ?> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><?php echo UI::btn('action.small', UI::icon('shield') . ' ' . $speak->attach, $config->manager->slug . '/shield/attach/id:' . $shield); ?> <?php endif; ?><?php echo UI::btn('destruct.small', UI::icon('times-circle') . ' ' . $speak->delete, $config->manager->slug . '/shield/kill/id:' . $shield); ?>
+          <?php echo UI::btn('construct.small:cog', $speak->manage, $config->manager->slug . '/shield/' . $shield); ?> <?php if(File::exist(SHIELD . DS . $shield . DS . 'manager.php')): ?><?php echo UI::btn('action.small:shield', $speak->attach, $config->manager->slug . '/shield/attach/id:' . $shield); ?> <?php endif; ?><?php echo UI::btn('destruct.small:times-circle', $speak->delete, $config->manager->slug . '/shield/kill/id:' . $shield); ?>
         </p>
       </div>
     </div>

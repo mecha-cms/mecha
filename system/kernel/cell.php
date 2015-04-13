@@ -30,24 +30,10 @@ class Cell {
     protected static $tag = array();
     protected static $tag_indent = array();
 
-    // Encode `&"'<>` then ignore the rest
+    // Encode all HTML entities
     protected static function protect($value) {
         if( ! is_string($value)) return $value;
-        return str_replace(
-            array(
-                '<',
-                '>',
-                '"',
-                "'"
-            ),
-            array(
-                '&lt;',
-                '&gt;',
-                '&quot;',
-                '&#39;'
-            ),
-        // only stand-alone `&` (ampersand)
-        preg_replace('#(?<=^|\s)&(?=\s|$)#', '&amp;', $value));
+        return Text::parse($value, '->encoded_html');
     }
 
     // Setup HTML attributes ...
@@ -57,7 +43,7 @@ class Cell {
             $array = array();
         }
         $array = array_replace(self::$attr_order, $array);
-        // HTML5 `data-*` attributes
+        // HTML5 `data-*` attribute
         if(isset($array['data']) && is_array($array['data'])) {
             foreach($array['data'] as $k => $v) {
                 if( ! is_null($v)) {
@@ -69,12 +55,12 @@ class Cell {
         foreach($array as $attr => $value) {
             if( ! is_null($value)) {
                 if(is_array($value)) {
-                    // Inline CSS via `style` attributes
+                    // Inline CSS via `style` attribute
                     if($attr === 'style') {
                         $css = "";
                         foreach($value as $k => $v) {
                             if( ! is_null($v)) {
-                                $css .= $k . ': ' . $v . '; ';
+                                $css .= $k . ': ' . str_replace('"', '&quot;', $v) . '; ';
                             }
                         }
                         $value = rtrim($css);
@@ -90,13 +76,17 @@ class Cell {
     }
 
     // Base HTML tag constructor
-    public static function unit($tag = 'html', $content = "", $attr = array(), $indent = "") {
-        if($content === false) return $indent . '<' . $tag . self::bond($attr) . ES;
+    public static function unit($tag = 'html', $content = "", $attr = array(), $indent = 0) {
+        $indent = $indent ? str_repeat(TAB, $indent) : "";
+        if($content === false) {
+            return $indent . '<' . $tag . self::bond($attr) . ES;
+        }
         return $indent . '<' . $tag . self::bond($attr) . '>' . $content . '</' . $tag . '>';
     }
 
     // Base HTML tag open
-    public static function begin($tag = 'html', $attr = array(), $indent = "") {
+    public static function begin($tag = 'html', $attr = array(), $indent = 0) {
+        $indent = $indent ? str_repeat(TAB, $indent) : "";
         self::$tag[] = $tag;
         self::$tag_indent[] = $indent;
         return $indent . '<' . $tag . self::bond($attr) . '>';
@@ -109,6 +99,8 @@ class Cell {
         }
         if(is_null($indent)) {
             $indent = ! empty(self::$tag_indent) ? array_pop(self::$tag_indent) : "";
+        } else {
+            $indent = $indent ? str_repeat(TAB, $indent) : "";
         }
         return $tag ? $indent . '</' . $tag . '>' : "";
     }

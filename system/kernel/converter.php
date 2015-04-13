@@ -4,6 +4,44 @@ class Converter extends Plugger {
 
     /**
      * ====================================================================
+     *  CONVERT RELATIVE URL TO FULL URL
+     * ====================================================================
+     *
+     * -- CODE: -----------------------------------------------------------
+     *
+     *    echo Converter::url('foo/bar');
+     *
+     * --------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | string | The URL path to be converted
+     *  --------- | ------ | ----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function url($input) {
+        if(strpos($input, '://') === false && strpos($input, '?') !== 0 && strpos($input, '&') !== 0 && strpos($input, '#') !== 0 && strpos($input, 'javascript:') !== 0) {
+            return str_replace(
+                array(
+                    '/?',
+                    '/&',
+                    '/#'
+                ),
+                array(
+                    '?',
+                    '&',
+                    '#'
+                ),
+            trim(Config::get('url') . '/' . ltrim($input, '/'), '/'));
+        }
+        return $input;
+    }
+
+    /**
+     * ====================================================================
      *  CONVERT RGB/RGBA COLOR STRING INTO RGBA DATA
      * ====================================================================
      *
@@ -455,12 +493,10 @@ class Converter extends Plugger {
                 // If `<tag> abc` remove white-space
                 // If `abc </tag>` remove white-space
                 // If `</tag> abc` keep white-space
-                // If `abc    ...<tag>` keep one white-space
+                // TODO: If `abc    ...<tag>` keep one white-space
                 // If `<tag>    ...abc` remove white-spaces
                 // If `abc    ...</tag>` remove white-spaces
-                // If `</tag>    ...abc` keep one white-space
-                // If `abc    ...<tag>` keep one white-space
-                // If `abc    ...</tag>` remove white-spaces
+                // TODO: If `</tag>    ...abc` keep one white-space
                 '#(<\!--.*?-->)|(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?!\<\/)#s', // o+t | o+o
                 '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?=\<[^\/])#s', // o+o
                 '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?=\<\/)#s', // c+c
@@ -475,7 +511,7 @@ class Converter extends Plugger {
                 '#(?<=&nbsp;)(&nbsp;){2}#',
 
                 // Proofing ...
-                '#(?<=\>)&nbsp;(?!\s|&nbsp;)#',
+                '#(?<=\>)&nbsp;(?!\s|&nbsp;|<\/)#',
                 '#(?<=--\>)(?:\s|&nbsp;)+(?=\<)#'
 
             ),
@@ -533,13 +569,13 @@ class Converter extends Plugger {
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/))|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
 
                 // Replace `0(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)` with `0`
-                '#(?<=[:\s])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#s',
+                '#(?<=[:\s])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#si',
 
                 // Replace `:0 0 0 0` with `:0`
-                '#:0 0 0 0(?=[;\}]|\!important)#s',
+                '#:(0\s+0|0\s+0\s+0\s+0)(?=[;\}]|\!important)#i',
 
                 // Replace `background-position:0` with `background-position:0 0`
-                '#background-position:0(?=[;\}])#s',
+                '#(background-position):0(?=[;\}])#si',
 
                 // Replace `0.6` with `.6`, but only when preceded by `:`, `-`, `,` or a white-space
                 '#(?<=[:\-,\s])0+\.(\d+)#s',
@@ -552,7 +588,7 @@ class Converter extends Plugger {
                 '#(?<=[:\-,\s]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
 
                 // Remove empty selectors
-                '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#si'
+                '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
 
             ),
             array(
@@ -560,7 +596,7 @@ class Converter extends Plugger {
                 '$1$2$3$4$5$6$7',
                 '$1',
                 ':0',
-                'background-position:0 0',
+                '$1:0 0',
                 '.$1',
                 '$1$3',
                 '$1$2$4$5',

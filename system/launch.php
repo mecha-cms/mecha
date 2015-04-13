@@ -542,20 +542,20 @@ Route::accept('captcha.png', function() {
         'Pragma' => 'no-cache'
     ));
 
-    $bg = (string) Request::get('bg', '333333');
-    $color = (string) Request::get('color', 'FFFFAA');
-    $width = (int) Request::get('width', 100);
-    $height = (int) Request::get('height', 30);
-    $padding = (int) Request::get('padding', 7);
-    $size = (int) Request::get('size', 16);
-    $length = (int) Request::get('length', 7);
-    $font = (string) Request::get('font', 'special-elite-regular.ttf');
+    $bg = Request::get('bg', '333333', false);
+    $color = Request::get('color', 'FFFFAA', false);
+    $width = Request::get('width', 100);
+    $height = Request::get('height', 30);
+    $padding = Request::get('padding', 7);
+    $size = Request::get('size', 16);
+    $length = Request::get('length', 7);
+    $font = Request::get('font', 'special-elite-regular.ttf', false);
     $text = (string) Session::get(Guardian::$captcha, "");
 
-    if($bg !== false && $bg = Converter::HEX2RGB($bg)) {
+    if($bg !== 'false' && $bg = Converter::HEX2RGB($bg)) {
         $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
     } else {
-        $bg = $bg !== false ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
+        $bg = $bg !== 'false' ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
     }
 
     if($color = Converter::HEX2RGB($color)) {

@@ -64,7 +64,7 @@
         </td>
       </tr>
       <tr class="row-more-less" data-min="<?php echo max($id) + 2; ?>" data-max="9999">
-        <td colspan="4"><?php echo UI::btn('small.default row-more', UI::icon('plus-circle') . ' ' . $speak->more, '#row:more'); ?> <?php echo UI::btn('small.default row-less', UI::icon('minus-circle') . ' ' . $speak->less, '#row:less'); ?></td>
+        <td colspan="4"><?php echo UI::btn('default.small:plus-circle', $speak->more, '#row:more', array('class' => 'row-more')); ?> <?php echo UI::btn('default.small:minus-circle', $speak->less, '#row:less', array('class' => 'row-less')); ?></td>
       </tr>
     </tbody>
   </table>

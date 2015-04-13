@@ -1,6 +1,7 @@
 <?php echo $messages; ?>
 <form class="form-repair form-cache" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
+  <p>
   <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
       'class' => array(
           'textarea-block',

@@ -19,18 +19,18 @@ Hasil:
 Ini juga bisa diterima:
 
 ~~~ .no-highlight
-Label 1: Nilai 1
-Label 2: Nilai 2
-Label 3: Nilai 3
+nilai_1: Label 1
+nilai_2: Label 2
+nilai_3: Label 3
 ~~~
 
 Hasil:
 
 ~~~ .html
 <select>
-  <option value="Nilai 1">Label 1</option>
-  <option value="Nilai 2">Label 2</option>
-  <option value="Nilai 3">Label 3</option>
+  <option value="nilai_1">Label 1</option>
+  <option value="nilai_2">Label 2</option>
+  <option value="nilai_3">Label 3</option>
 </select>
 ~~~
 

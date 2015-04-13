@@ -380,30 +380,21 @@ class Get extends Plugger {
                 }
                 return ! empty($results) ? $results : false;
             } else if($key == 'kind') {
-                if(strpos($value, ',') !== false) {
-                    $kinds = explode(',', $value);
-                    for($i = 0; $i < $total_pages; ++$i) {
-                        $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
-                        foreach($kinds as $kind) {
-                            if(
-                                strpos($name, ',' . $kind . ',') !== false ||
-                                strpos($name, '_' . $kind . ',') !== false ||
-                                strpos($name, ',' . $kind . '_') !== false
-                            ) {
-                                $results[] = $pages[$i];
-                            }
-                        }
-                    }
-                    return ! empty($results) ? array_unique($results) : false;
-                } else {
-                    for($i = 0; $i < $total_pages; ++$i) {
-                        $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
-                        if(strpos($name, '_' . $value . '_') !== false) {
+                $kinds = explode(',', $value);
+                for($i = 0; $i < $total_pages; ++$i) {
+                    $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
+                    foreach($kinds as $kind) {
+                        if(
+                            strpos($name, ',' . $kind . ',') !== false ||
+                            strpos($name, '_' . $kind . ',') !== false ||
+                            strpos($name, ',' . $kind . '_') !== false ||
+                            strpos($name, '_' . $kind . '_') !== false
+                        ) {
                             $results[] = $pages[$i];
                         }
                     }
-                    return ! empty($results) ? $results : false;
                 }
+                return ! empty($results) ? array_unique($results) : false;
             } else if($key == 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);

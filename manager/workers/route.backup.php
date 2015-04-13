@@ -77,13 +77,13 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
     }
     $time = date('Y-m-d-H-i-s');
     $site = Text::parse($config->title, '->slug');
-    if($origin == 'root') {
+    if($origin === 'ROOT') {
         $name = $site . '_' . $time . '.zip';
         Package::take(ROOT)->pack(ROOT . DS . $name);
     } else {
         $name = $site . '.cabinet.' . $origin . '_' . $time . '.zip';
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
-        if($origin == 'shields') {
+        if($origin === 'shields') {
             Package::take(ROOT . DS . $name)->deleteFiles(array(
                 'json.php',
                 'rss.php',

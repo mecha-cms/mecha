@@ -12,21 +12,21 @@
       <?php if($c): ?>
       <div class="media-capture" style="background-image:url('<?php echo File::url($c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
-      <h4><?php echo UI::icon(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $plugin->about->title; ?></h4>
+      <h4 class="media-title"><?php echo UI::icon(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $plugin->about->title; ?></h4>
       <div class="media-content">
         <p><?php echo Converter::curt($plugin->about->content); ?></p>
         <p>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-          <?php echo UI::btn('begin.small', UI::icon('cog') . ' ' . $speak->manage, $config->manager->slug . '/plugin/' . $plugin->slug); ?> <?php echo UI::btn('action.small', UI::icon('minus-circle') . ' ' . $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset); ?>
+          <?php echo UI::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $plugin->slug); ?> <?php echo UI::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset); ?>
           <?php else: ?>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-          <?php echo UI::btn('action.small', UI::icon('plus-circle') . ' ' . $speak->install, $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset); ?>
+          <?php echo UI::btn('action.small:plus-circle', $speak->install, $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset); ?>
           <?php endif; ?>
           <?php endif; ?>
           <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-          <?php echo UI::btn('destruct.small.disabled', UI::icon('times-circle') . ' ' . $speak->remove, null); ?>
+          <?php echo UI::btn('destruct.small.disabled:times-circle', $speak->remove, null); ?>
           <?php else: ?>
-          <?php echo UI::btn('destruct.small', UI::icon('times-circle') . ' ' . $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $plugin->slug); ?>
+          <?php echo UI::btn('destruct.small:times-circle', $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $plugin->slug); ?>
           <?php endif; ?>
         </p>
       </div>

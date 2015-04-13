@@ -90,7 +90,7 @@ if( ! empty($fields)) {
                     $v = trim($v);
                     if(strpos($v, ':') !== false) {
                         $v = explode(':', $v, 2);
-                        $options[trim($v[1])] = trim($v[0]);
+                        $options[trim($v[0])] = trim($v[1]);
                     } else {
                         $options[$v] = $v;
                     }

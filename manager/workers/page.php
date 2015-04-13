@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin', Config::speak('manager.title_new_', $speak->page), $config->manager->slug . '/page/ignite'); ?>
+  <?php echo UI::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->page), $config->manager->slug . '/page/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($pages): ?>

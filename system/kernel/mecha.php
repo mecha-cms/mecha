@@ -7,7 +7,7 @@
  *
  * -- CODE: ----------------------------------------------------
  *
- *    Mecha::eat($array)->order('DESC', 'foo')->vomit();
+ *    Mecha::eat($array)->shake()->vomit();
  *
  * -------------------------------------------------------------
  *
@@ -211,17 +211,8 @@ class Mecha extends Plugger {
         return end(self::$stomach);
     }
 
-    // Get current array value
-    public static function current($value = true) {
-        if($value) {
-            $i = 0;
-            foreach(self::$stomach as $k => $v) {
-                if($i === self::$index) {
-                    return self::$stomach[$k];
-                }
-                $i++;
-            }
-        }
+    // Get current array index
+    public static function current() {
         return self::$index;
     }
 
@@ -233,7 +224,13 @@ class Mecha extends Plugger {
             }
             return array_key_exists($index, self::$stomach) ? self::$stomach[$index] : $fallback;
         }
-        return self::current(true);
+        $i = 0;
+        foreach(self::$stomach as $k => $v) {
+            if($i === self::$index) {
+                return self::$stomach[$k];
+            }
+            $i++;
+        }
     }
 
     // Get array count
