@@ -462,7 +462,7 @@ class Converter extends Plugger {
         }, $input);
         // Minify inline CSS declarations
         if(strpos($input, ' style=') !== false) {
-            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1#s', function($matches) {
+            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1(?=[\/\s>])#s', function($matches) {
                 return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
             }, $input);
         }
