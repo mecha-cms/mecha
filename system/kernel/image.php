@@ -2,11 +2,10 @@
 
 class Image extends Plugger {
 
-    protected static $o = array();
-
     protected static $open = null;
     protected static $original = null;
     protected static $placeholder = null;
+
     protected static $GD = false;
 
     protected static function gen($file = null) {
@@ -51,10 +50,8 @@ class Image extends Plugger {
             self::$open = File::path($files);
         }
         $file = is_array(self::$open) ? self::$open[0] : self::$open;
-        $extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
-        self::$placeholder = dirname($file) . DS . '__p-l-a-c-e-h-o-l-d-e-r--i-m-a-g-e.' . $extension;
-        self::$original = basename($file);
-        File::open(self::$placeholder)->delete();
+        self::$placeholder = dirname($file) . DS . '__' . basename($file);
+        self::$original = $file;
         File::open($file)->copyTo(self::$placeholder);
         self::gen($file);
         return new static;
