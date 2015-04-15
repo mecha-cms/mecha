@@ -1,9 +1,9 @@
 <?php
 
 // `<i class="fa fa-check-circle">`
-UI::add('icon', function($kind, $MOD = null) {
+UI::add('icon', function($kind, $modifier = null) {
     return Cell::i("", array(
-        'class' => 'fa fa-' . $kind . (is_string($MOD) ? ' fa-' . trim(str_replace('.', ' fa-', $MOD), '.') : "")
+        'class' => 'fa fa-' . $kind . (is_string($modifier) ? ' fa-' . trim(str_replace('.', ' fa-', $modifier), '.') : "")
     ));
 });
 
@@ -19,7 +19,6 @@ UI::add('button', function($kind = 'default', $text = "", $name = null, $type = 
         'danger' => 'times-circle',
         'destruct' => 'times-circle',
         'error' => 'exclamation-circle',
-        'info' => 'info-circle',
         'reject' => 'times-circle'
     ), "") : $kind[1];
     if($icon !== "") {
@@ -50,7 +49,6 @@ UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = arr
         'danger' => 'times-circle',
         'destruct' => 'times-circle',
         'error' => 'exclamation-circle',
-        'info' => 'info-circle',
         'reject' => 'times-circle'
     ), "") : $kind[1];
     if($icon !== "") {

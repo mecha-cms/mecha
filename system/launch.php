@@ -75,6 +75,7 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
         foreach($files as $file) {
             $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
     } else {
         if($offset !== 1) {
             Shield::abort('404-index');
@@ -113,6 +114,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
         foreach($files as $file) {
             $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
     } else {
         Shield::abort('404-archive');
     }
@@ -150,6 +152,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
         foreach($files as $file) {
             $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
     } else {
         Shield::abort('404-archive');
     }
@@ -191,6 +194,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
         foreach($files as $file) {
             $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
     } else {
         Shield::abort('404-tag');
     }
@@ -224,7 +228,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
     $query = Text::parse($query, '->decoded_url');
     $keywords = Text::parse($query, '->slug');
 
-    if(Session::get('search_query') == $query) {
+    if(Session::get('search_query') === $query) {
 
         $articles = Session::get('search_results');
 
@@ -240,6 +244,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                     $articles[] = $file;
                 }
             }
+            unset($files);
         }
 
         // Matched with a keyword
@@ -253,6 +258,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                         $articles[] = $file;
                     }
                 }
+                unset($files);
             }
         }
 
@@ -424,15 +430,15 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             $name = strip_tags($request['name']);
             $email = Text::parse($request['email'], '->ascii');
-            $url = Request::post('url', '#');
+            $url = Request::post('url', false);
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
             $message = $request['message'];
             $field = Request::post('fields', array());
 
             // Temporarily disallow images in comment to prevent XSS
-            $message = strip_tags($message, '<br><img>' . ($parser == 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
-            $message = preg_replace('#(\!\[.*?\]\(.*?\)|<img (.*?)' . preg_quote(ES, '/') . ')#','`$1`', $message);
-            $message = str_replace('<img ', '&lt;img ', $message);
+            $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
+            $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
+            $message = preg_replace('#<img(\s[^<>]*?)>#', '&lt;img$1&gt;', $message);
 
             Page::header(array(
                 'Name' => $name,
@@ -452,7 +458,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
             if($config->comment_notification_email) {
                 $mail  = '<p>' . Config::speak('comment_notification', $article->url . '#comment-' . Date::format($id, 'U')) . '</p>';
-                $mail .= Text::parse('**' . $name . ':** ' . $message, '->html');
+                $mail .= '<p><strong>' . $name . ':</strong></p>';
+                $mail .= Text::parse($message, '->html');
                 $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
                 // Sending email notification ...
                 if( ! Guardian::happy()) {
@@ -542,6 +549,7 @@ Route::accept('captcha.png', function() {
         'Pragma' => 'no-cache'
     ));
 
+    $str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $bg = Request::get('bg', '333333', false);
     $color = Request::get('color', 'FFFFAA', false);
     $width = Request::get('width', 100);
@@ -550,7 +558,8 @@ Route::accept('captcha.png', function() {
     $size = Request::get('size', 16);
     $length = Request::get('length', 7);
     $font = Request::get('font', 'special-elite-regular.ttf', false);
-    $text = (string) Session::get(Guardian::$captcha, "");
+    $text = substr(str_shuffle($str), 0, $length);
+    Session::set(Guardian::$captcha, $text);
 
     if($bg !== 'false' && $bg = Converter::HEX2RGB($bg)) {
         $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
@@ -641,6 +650,7 @@ Route::accept('/', function() use($config) {
         foreach($files as $file) {
             $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
     } else {
         $articles = false;
     }

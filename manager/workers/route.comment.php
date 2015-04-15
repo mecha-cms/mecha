@@ -23,6 +23,8 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         foreach(Mecha::eat($comments_id)->chunk($offset, $config->manager->per_page)->vomit() as $comment) {
             $comments[] = Get::comment($comment);
         }
+        unset($comments_id);
+        unset($files);
     } else {
         $comments = false;
     }
@@ -78,7 +80,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         if( ! Notify::errors()) {
             $name = $request['name'];
             $email = Text::parse($request['email'], '->ascii');
-            $url = Request::post('url', '#');
+            $url = Request::post('url', false);
             $message = $request['message'];
             $field = Request::post('fields', array());
             // Update data
@@ -88,8 +90,8 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
                 'URL' => $url,
                 'Status' => $request['status'],
                 'Content Type' => Request::post('content_type', 'HTML'),
-                'UA' => $request['ua'],
-                'IP' => $request['ip'],
+                'UA' => $request['ua'] !== 'N/A' ? $request['ua'] : false,
+                'IP' => $request['ip'] !== 'N/A' ? $request['ip'] : false,
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
             ))->content($message)->save();
             File::open($comment->path)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);

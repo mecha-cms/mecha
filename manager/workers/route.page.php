@@ -14,6 +14,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
         foreach($files as $file) {
             $pages[] = Get::pageHeader($file);
         }
+        unset($files);
     } else {
         if($offset !== 1) Shield::abort();
     }
@@ -98,6 +99,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
                 $slugs[$_slug] = 1;
             }
+            unset($files);
         }
         $slugs[$config->index->slug] = 1;
         $slugs[$config->tag->slug] = 1;

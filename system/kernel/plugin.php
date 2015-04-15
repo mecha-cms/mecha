@@ -24,6 +24,9 @@ class Plugin extends Plugger {
             }
         }
         File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);
+        unset($plugins_list);
+        unset($plugins_order);
+        unset($plugins_payload);
         return $plugins;
     }
 

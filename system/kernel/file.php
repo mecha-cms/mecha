@@ -250,6 +250,9 @@ class File extends Plugger {
             if(is_dir($destination)) {
                 $destination .= DS . basename(self::$open);
             }
+            if( ! file_exists(dirname($destination))) {
+                mkdir(dirname($destination), 0777, true);
+            }
             rename(self::$open, $destination);
         }
         self::$open = $destination;

@@ -30,7 +30,11 @@ class Filter extends Plugger {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        self::$filters[get_called_class() . '::' . $name][] = array(
+        $name = get_called_class() . '::' . $name;
+        if( ! isset(self::$filters[$name])) {
+            self::$filters[$name] = array();
+        }
+        self::$filters[$name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -59,14 +63,14 @@ class Filter extends Plugger {
 
     public static function apply($name, $value) {
         $name = get_called_class() . '::' . $name;
-        if( ! isset(self::$filters[$name]) || ! is_array(self::$filters[$name])) {
-            self::$filters[$name] = true;
+        if( ! isset(self::$filters[$name])) {
+            self::$filters[$name] = array();
             return $value;
         }
         $params = array_slice(func_get_args(), 2);
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
-            if( ! isset(self::$filters_e[$name . ' ' . $cargo['stack']])) {
+            if( ! isset(self::$filters_e[$name . '->' . $cargo['stack']])) {
                 $arguments = array_merge(array($value), $params);
                 $value = call_user_func_array($cargo['fn'], $arguments);
             }
@@ -98,7 +102,7 @@ class Filter extends Plugger {
     public static function remove($name = null, $stack = null) {
         $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
         if($name) {
-            self::$filters_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            self::$filters_e[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$filters[$name])) return;
             if( ! is_null($stack)) {
                 for($i = 0, $count = count(self::$filters[$name]); $i < $count; ++$i) {

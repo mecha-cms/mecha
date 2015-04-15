@@ -35,7 +35,10 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $takes = Get::files(ASSET, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
-        foreach($_files as $_file) $files[] = $_file;
+        foreach($_files as $_file) {
+            $files[] = $_file;
+        }
+        unset($_files);
     } else {
         $files = false;
     }

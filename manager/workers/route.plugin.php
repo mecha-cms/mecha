@@ -93,8 +93,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             $plugins[$i]['about'] = $about;
             $plugins[$i]['slug'] = basename($files[$i]);
         }
-    } else {
-        $files = false;
+        unset($files);
     }
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,

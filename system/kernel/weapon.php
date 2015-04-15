@@ -36,7 +36,11 @@ class Weapon extends Plugger {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        self::$armaments[get_called_class() . '::' . $name][] = array(
+        $name = get_called_class() . '::' . $name;
+        if( ! isset(self::$armaments[$name])) {
+            self::$armaments[$name] = array();
+        }
+        self::$armaments[$name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -69,18 +73,18 @@ class Weapon extends Plugger {
 
     public static function fire($name, $arguments = array()) {
         $name = get_called_class() . '::' . $name;
-        if(isset(self::$armaments[$name]) && is_array(self::$armaments[$name])) {
+        if(isset(self::$armaments[$name])) {
             if(func_num_args() > 2) {
                 $arguments = array_slice(func_get_args(), 1);
             }
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                if( ! isset(self::$armaments_e[$name . ' ' . $cargo['stack']])) {
+                if( ! isset(self::$armaments_e[$name . '->' . $cargo['stack']])) {
                     call_user_func_array($cargo['fn'], $arguments);
                 }
             }
         } else {
-            self::$armaments[$name] = true;
+            self::$armaments[$name] = array();
         }
     }
 
@@ -108,7 +112,7 @@ class Weapon extends Plugger {
     public static function eject($name = null, $stack = null) {
         $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
         if($name) {
-            self::$armaments_e[$name . ' ' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            self::$armaments_e[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
                 $stack = (float) $stack;

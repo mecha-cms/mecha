@@ -25,15 +25,15 @@ class Form extends Cell {
         $attr['name'] = $name;
         foreach($option as $key => $value) {
             $key_o = ltrim($key, '.');
-            $attr_o = array('value' => $key);
+            $attr_o = array('value' => self::protect($key));
             if(strpos($key, '.') === 0) {
                 $attr_o['disabled'] = true;
-                $attr_o['value'] = $key_o;
+                $attr_o['value'] = self::protect($key_o);
             }
             if(ltrim($select, '.') === $key_o) {
                 $attr_o['selected'] = true;
             }
-            $o .= NL . self::unit('option', self::protect($value), $attr_o, $indent + 1);
+            $o .= NL . self::unit('option', $value, $attr_o, $indent + 1);
         }
         return self::unit('select', $o . NL . ($indent ? str_repeat(TAB, $indent) : ""), $attr, $indent);
     }

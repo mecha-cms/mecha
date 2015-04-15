@@ -17,7 +17,7 @@ var Widget = function() {
                     ref.onclick = function() {
                         var parent = this.parentNode,
                             children = this.children,
-                            s = / selected$/i.test(parent.className) ? ' selected' : "";
+                            s = /\sselected$/i.test(parent.className) ? ' selected' : "";
                         if (children[0].className == 'zippy toggle-close') {
                             children[0].className = 'zippy toggle-open';
                             children[0].innerHTML = arrow[0];
@@ -34,7 +34,7 @@ var Widget = function() {
                 };
             if (!toggle) return;
             for (var i = 0, toggles = toggle.length; i < toggles; ++i) {
-                if (/(^| )toggle( |$)/.test(toggle[i].className)) click(toggle[i]);
+                if (/(^|\s)toggle(\s|$)/.test(toggle[i].className)) click(toggle[i]);
             }
         }
 
@@ -81,13 +81,13 @@ var Widget = function() {
     for (var i = 0, len = elem.length; i < len; ++i) {
         var e_class = elem[i].className,
             e_id = elem[i].id;
-        if (/(^| )widget-archive widget-archive-hierarchy( |$)/.test(e_class)) {
+        if (/(^|\s)widget-archive widget-archive-hierarchy(\s|$)/.test(e_class)) {
             widget.archive('HIERARCHY', e_id);
         }
-        if (/(^| )widget-archive widget-archive-dropdown( |$)/.test(e_class)) {
+        if (/(^|\s)widget-archive widget-archive-dropdown(\s|$)/.test(e_class)) {
             widget.archive('DROPDOWN', e_id);
         }
-        if (/(^| )widget-tag widget-tag-dropdown( |$)/.test(e_class)) {
+        if (/(^|\s)widget-tag widget-tag-dropdown(\s|$)/.test(e_class)) {
             widget.tag('DROPDOWN', e_id);
         }
     }

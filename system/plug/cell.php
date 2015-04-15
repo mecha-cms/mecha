@@ -3,7 +3,7 @@
 // `<meta>`
 Cell::add('meta', function($name = null, $content = null, $attr = array(), $indent = 0) {
     $attr['name'] = $name;
-    $attr['content'] = $content;
+    $attr['content'] = Cell::protect($content);
     return Cell::unit('meta', false, $attr, $indent);
 });
 
@@ -33,7 +33,7 @@ Cell::add('a', function($href = null, $content = "", $target = null, $attr = arr
 // `<img>`
 Cell::add('img', function($src = null, $alt = null, $attr = array(), $indent = 0) {
     $attr['src'] = Converter::url($src);
-    $attr['alt'] = $alt;
+    $attr['alt'] = Cell::protect($alt);
     return Cell::unit('img', false, $attr, $indent);
 });
 

@@ -68,7 +68,7 @@ class Cell {
                         $value = implode(' ', $value);
                     }
                 }
-                $q = is_string($value) && ! is_null(json_decode($value, true)) ? "'" : '"';
+                $q = is_string($value) && strpos($value, '"') !== false ? "'" : '"';
                 $output .= ' ' . ($value !== true ? $attr . '=' . $q . $value . $q : $attr);
             }
         }

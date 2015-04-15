@@ -40,6 +40,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
                 $slugs[$_slug] = 1;
             }
+            unset($files);
         }
         foreach($bools as $bool => $fallback) {
             // Fixes for checkbox inputs

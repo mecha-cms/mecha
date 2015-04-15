@@ -5,18 +5,18 @@ class Widget {
     protected static $o = array();
 
     public static $id = array(
-        'manager-menu' => 1,
-        'archive-hierarchy' => 1,
-        'archive-list' => 1,
-        'archive-dropdown' => 1,
-        'tag-list' => 1,
-        'tag-cloud' => 1,
-        'tag-dropdown' => 1,
-        'search' => 1,
-        'recent-post' => 1,
-        'recent-comment' => 1,
-        'random-post' => 1,
-        'related-post' => 1
+        'manager_menu' => 1,
+        'archive_hierarchy' => 1,
+        'archive_list' => 1,
+        'archive_dropdown' => 1,
+        'tag_list' => 1,
+        'tag_cloud' => 1,
+        'tag_dropdown' => 1,
+        'recent_post' => 1,
+        'recent_comment' => 1,
+        'random_post' => 1,
+        'related_post' => 1,
+        'search_form' => 1
     );
 
 
@@ -67,10 +67,10 @@ class Widget {
                     $menus[] = array(
                         'html' => $k,
                         'link' => $v,
-                        'stack' => 20
+                        'stack' => 10
                     );
                 } else {
-                    $stack = isset($v['stack']) ? $v['stack'] : 20;
+                    $stack = isset($v['stack']) ? $v['stack'] : 10;
                     $menus[] = array(
                         'html' => '<i class="fa fa-fw fa-' . $v['icon'] . '"></i> <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : ""),
                         'link' => $v['url'],
@@ -80,8 +80,8 @@ class Widget {
             }
         }
 
-        $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$id['manager-menu'] . '">' . NL;
-        self::$id['manager-menu']++;
+        $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$id['manager_menu'] . '">' . NL;
+        self::$id['manager_menu']++;
         $_menus = array();
         foreach(Mecha::eat($menus)->order('ASC', 'stack')->vomit() as $menu) {
             $_menus[$menu['html']] = $menu['link'];
@@ -118,8 +118,8 @@ class Widget {
                 list($year, $month, $day) = explode('-', basename($file, '.txt'));
                 $archives[$year][$month][] = $file;
             }
-            $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy-' . self::$id['archive-hierarchy'] . '">' . NL;
-            self::$id['archive-hierarchy']++;
+            $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy-' . self::$id['archive_hierarchy'] . '">' . NL;
+            self::$id['archive_hierarchy']++;
             $html .= TAB . '<ul>' . NL;
             foreach($archives as $year => $months) {
                 if(is_array($months)) {
@@ -153,8 +153,8 @@ class Widget {
             $archives = array_unique($archives);
             $i = 0;
             if($type == 'LIST') {
-                $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-list" id="widget-archive-list-' . self::$id['archive-list'] . '">' . NL;
-                self::$id['archive-list']++;
+                $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-list" id="widget-archive-list-' . self::$id['archive_list'] . '">' . NL;
+                self::$id['archive_list']++;
                 $html .= TAB . '<ul>' . NL;
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
@@ -166,8 +166,8 @@ class Widget {
                 $html  = Filter::apply('widget', $html);
                 return Filter::apply('widget:archive.list', Filter::apply('widget:archive', $html));
             } else {
-                $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown-' . self::$id['archive-dropdown'] . '">' . NL;
-                self::$id['archive-dropdown']++;
+                $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-dropdown" id="widget-archive-dropdown-' . self::$id['archive_dropdown'] . '">' . NL;
+                self::$id['archive_dropdown']++;
                 $html .= TAB . '<select>' . NL . ($query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
@@ -225,8 +225,8 @@ class Widget {
         }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
         if($type == 'LIST') {
-            $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-list" id="widget-tag-list-' . self::$id['tag-list'] . '">' . NL;
-            self::$id['tag-list']++;
+            $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-list" id="widget-tag-list-' . self::$id['tag_list'] . '">' . NL;
+            self::$id['tag_list']++;
             $html .= TAB . '<ul>' . NL;
             foreach($tags as $tag) {
                 $html .= str_repeat(TAB, 2) . '<li' . ($config->tag_query == $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
@@ -242,8 +242,8 @@ class Widget {
                 $tags_counter[] = $tag['count'];
             }
             $highest_count = max($tags_counter);
-            $html = O_BEGIN . '<div class="widget widget-tag widget-tag-cloud" id="widget-tag-cloud-' . self::$id['tag-cloud']. '">' . NL . TAB;
-            self::$id['tag-cloud']++;
+            $html = O_BEGIN . '<div class="widget widget-tag widget-tag-cloud" id="widget-tag-cloud-' . self::$id['tag_cloud']. '">' . NL . TAB;
+            self::$id['tag_cloud']++;
             $_html = array();
             foreach($tags as $tag) {
                 $size = ceil(($tag['count'] / $highest_count) * $max_level);
@@ -254,8 +254,8 @@ class Widget {
             return Filter::apply('widget:tag.cloud', Filter::apply('widget:tag', $html));
         }
         if($type == 'DROPDOWN') {
-            $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-dropdown" id="widget-tag-dropdown-' . self::$id['tag-dropdown'] . '">' . NL;
-            self::$id['tag-dropdown']++;
+            $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-dropdown" id="widget-tag-dropdown-' . self::$id['tag_dropdown'] . '">' . NL;
+            self::$id['tag_dropdown']++;
             $html .= TAB . '<select>' . NL . ($config->tag_query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
             foreach($tags as $tag) {
                 $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query == $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
@@ -281,8 +281,8 @@ class Widget {
     public static function search($placeholder = "", $submit = "") {
         $config = Config::get();
         $speak = Config::speak();
-        $html  = O_BEGIN . '<div class="widget widget-search" id="widget-search-' . self::$id['search'] . '">' . NL;
-        self::$id['search']++;
+        $html  = O_BEGIN . '<div class="widget widget-search" id="widget-search-' . self::$id['search_form'] . '">' . NL;
+        self::$id['search_form']++;
         $html .= TAB . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
         $html .= str_repeat(TAB, 2) . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>' . NL;
         $html .= TAB . '</form>' . NL;
@@ -310,8 +310,8 @@ class Widget {
         if($class == 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
         }
-        $html  = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . self::$id[$class . '-post'] . '">' . NL;
-        self::$id[$class . '-post']++;
+        $html  = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . self::$id[$class . '_post'] . '">' . NL;
+        self::$id[$class . '_post']++;
         $html .= TAB . '<ul>' . NL;
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i === $count) break;
@@ -360,8 +360,8 @@ class Widget {
                 return self::randomPost($total);
             }
             $files = Mecha::eat($files)->shake()->vomit();
-            $html  = O_BEGIN . '<div class="widget widget-related widget-related-post" id="widget-related-post-' . self::$id['related-post'] . '">' . NL;
-            self::$id['related-post']++;
+            $html  = O_BEGIN . '<div class="widget widget-related widget-related-post" id="widget-related-post-' . self::$id['related_post'] . '">' . NL;
+            self::$id['related_post']++;
             $html .= TAB . '<ul>' . NL;
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
@@ -390,8 +390,8 @@ class Widget {
     public static function recentComment($total = 7, $avatar_size = 50, $summary = 100, $d = 'monsterid') {
         $config = Config::get();
         $speak = Config::speak();
-        $html = O_BEGIN . '<div class="widget widget-recent widget-recent-comment" id="widget-recent-comment-' . self::$id['recent-comment'] . '">' . NL;
-        self::$id['recent-comment']++;
+        $html = O_BEGIN . '<div class="widget widget-recent widget-recent-comment" id="widget-recent-comment-' . self::$id['recent_comment'] . '">' . NL;
+        self::$id['recent_comment']++;
         if($comments = Get::comments()) {
             $comments_id = array();
             foreach($comments as $comment) {

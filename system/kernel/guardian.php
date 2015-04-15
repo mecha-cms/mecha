@@ -440,10 +440,10 @@ class Guardian extends Plugger {
         $y = mt_rand($min, $max);
         if($x - $y > 0) {
             Session::set(self::$math, $x - $y);
-            return $x . ' - ' . $y;
+            return $x . ' &minus; ' . $y;
         } else {
             Session::set(self::$math, $x + $y);
-            return $x . ' + ' . $y;
+            return $x . ' &plus; ' . $y;
         }
     }
 
@@ -460,19 +460,25 @@ class Guardian extends Plugger {
      *
      */
 
-    public static function captcha($bg = '333333', $color = 'FFFFFF', $width = 100, $height = 30, $padding = 7, $size = 16, $length = 7, $font = 'special-elite-regular.ttf') {
-        $str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        Session::set(self::$captcha, substr(str_shuffle($str), 0, $length));
-        $params = array();
-        if($bg != '333333') $params[] = $bg === false ? 'bg=false' : 'bg=' . (string) $bg;
-        if($color != 'FFFFFF') $params[] = 'color=' . (string) $color;
-        if($width !== 100) $params[] = 'width=' . (string) $width;
-        if($height !== 30) $params[] = 'height=' . (string) $height;
-        if($padding !== 7) $params[] = 'padding=' . (string) $padding;
-        if($size !== 16) $params[] = 'size=' . (string) $size;
-        if($length !== 7) $params[] = 'length=' . (string) $length;
-        if($font != 'special-elite-regular.ttf') $params[] = 'font=' . (string) $font;
-        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($params) ? '?' . implode('&amp;', $params) : "") . '" alt="captcha"' . ES;
+    public static function captcha($bg = null, $color = null, $width = null, $height = null, $padding = null, $size = null, $length = null, $font = null) {
+        $param = array();
+        if(is_null($bg)) $bg = '333333';
+        if(is_null($color)) $color = 'FFFFAA';
+        if(is_null($width)) $width = 100;
+        if(is_null($height)) $height = 30;
+        if(is_null($padding)) $padding = 7;
+        if(is_null($size)) $size = 16;
+        if(is_null($length)) $length = 7;
+        if(is_null($font)) $font = 'special-elite-regular.ttf';
+        if($bg !== '333333') $param[] = $bg === false ? 'bg=false' : 'bg=' . strtoupper((string) $bg);
+        if($color !== 'FFFFAA') $param[] = 'color=' . strtoupper((string) $color);
+        if($width !== 100) $param[] = 'width=' . (string) $width;
+        if($height !== 30) $param[] = 'height=' . (string) $height;
+        if($padding !== 7) $param[] = 'padding=' . (string) $padding;
+        if($size !== 16) $param[] = 'size=' . (string) $size;
+        if($length !== 7) $param[] = 'length=' . (string) $length;
+        if($font !== 'special-elite-regular.ttf') $param[] = 'font=' . (string) $font;
+        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($param) ? '?' . implode('&amp;', $param) : "") . '" alt="captcha"' . ES;
     }
 
     /**

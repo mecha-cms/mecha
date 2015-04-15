@@ -111,8 +111,10 @@ class Get extends Plugger {
             }
         }
         if($inclusive) {
+            unset($results);
             return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
         } else {
+            unset($results_inclusive);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
         }
     }
@@ -166,8 +168,10 @@ class Get extends Plugger {
             }
         }
         if($inclusive) {
+            unset($results);
             return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
         } else {
+            unset($results_inclusive);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
         }
     }
@@ -507,12 +511,13 @@ class Get extends Plugger {
      *
      */
 
-    public static function pagesExtract($order = 'DESC', $sorter = 'time', $filter = "", $extension = 'txt', $folder = PAGE) {
+    public static function pagesExtract($order = 'DESC', $sorter = 'time', $filter = "", $extension = 'txt', $FP = 'page:', $folder = PAGE) {
         if($files = self::pages($order, $filter, $extension, $folder)) {
             $results = array();
             foreach($files as $file) {
-                $results[] = self::pageExtract($file);
+                $results[] = self::pageExtract($file, $FP);
             }
+            unset($files);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
         }
         return false;
@@ -534,7 +539,7 @@ class Get extends Plugger {
      */
 
     public static function articlesExtract($order = 'DESC', $sorter = 'time', $filter = "", $extension = 'txt') {
-        return self::pagesExtract($order, $sorter, $filter, $extension, ARTICLE);
+        return self::pagesExtract($order, $sorter, $filter, $extension, 'article:', ARTICLE);
     }
 
     /**
@@ -565,6 +570,7 @@ class Get extends Plugger {
             foreach($files as $file) {
                 $results[] = self::commentExtract($file);
             }
+            unset($files);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
         }
         return false;
@@ -685,10 +691,10 @@ class Get extends Plugger {
         } else {
             // By path => `cabinet/pages/0000-00-00-00-00-00_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
-                $results = self::pageExtract($reference);
+                $results = self::pageExtract($reference, $FP);
             } else {
                 // By slug => `page-slug` or by ID => 12345
-                $results = self::pageExtract(self::pagePath($reference, $folder));
+                $results = self::pageExtract(self::pagePath($reference, $folder), $FP);
             }
         }
 
@@ -875,6 +881,9 @@ class Get extends Plugger {
 
             $results['fields'] = $init;
 
+            unset($fields);
+            unset($init);
+
         }
 
         /**
@@ -962,6 +971,9 @@ class Get extends Plugger {
                 break;
             }
         }
+        if( ! isset($results['url'])) {
+            $results['url'] = self::AMF('#', $FP, 'url');
+        }
         if(isset($results['fields']) && is_array($results['fields'])) {
             $fields = self::state_field(array());
             $init = array();
@@ -974,6 +986,8 @@ class Get extends Plugger {
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
+            unset($fields);
+            unset($init);
         }
         return Mecha::O($results);
     }
@@ -1218,21 +1232,18 @@ class Get extends Plugger {
          * Matched with ...
          * ----------------
          *
-         * [1]. `background:url("IMAGE URL")`
-         * [2]. `background-image:url("IMAGE URL")`
-         * [3]. `background: url("IMAGE URL")`
-         * [4]. `background-image: url("IMAGE URL")`
-         * [5]. `background: foo url("IMAGE URL")`
-         * [6]. `background-image: foo url("IMAGE URL")`
-         * [7]. `content:url("IMAGE URL")`
-         * [8]. `content: url("IMAGE URL")`
+         * [1]. `background: url("IMAGE URL")`
+         * [2]. `background-image: url("IMAGE URL")`
+         * [3]. `background: foo url("IMAGE URL")`
+         * [4]. `background-image: foo url("IMAGE URL")`
+         * [5]. `content: url("IMAGE URL")`
          *
          * ... and the uppercased version of them, and the single-quoted version of them, and the un-quoted version of them
          *
          */
 
-        if(preg_match_all('#(background(-image)?|content)\:.*?url\(([\'"]?)?([^\'"]+?)\3\)#i', $source, $matches)) {
-            return $matches[4];
+        if(preg_match_all('#(background-image|background|content)\: *.*?url\(([\'"]?)([^\'"]+?)\2\)#i', $source, $matches)) {
+            return $matches[3];
         }
 
         return $fallback; // No images!

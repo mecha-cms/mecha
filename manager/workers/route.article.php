@@ -14,6 +14,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
         foreach($files as $file) {
             $articles[] = Get::articleHeader($file);
         }
+        unset($files);
     } else {
         if($offset !== 1) Shield::abort();
     }
@@ -100,6 +101,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
                 $slugs[$_slug] = 1;
             }
+            unset($files);
         }
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);

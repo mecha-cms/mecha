@@ -29,7 +29,7 @@ Config::merge('DASHBOARD.languages', array(
  */
 
 Weapon::add('meta', function() use($config) {
-    echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^| )no-js( |$)/.test(b)?b.replace(/(^| )no-js( |$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
+    echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
     if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
         echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
     }
@@ -179,24 +179,24 @@ Weapon::add('after_shield_config_redefine', function() {
     }
 
     $menus = array(
-        $speak->config => array('icon' => 'cogs', 'url' => $config->manager->slug . '/config', 'stack' => 10),
-        $speak->article => array('icon' => 'file-text', 'url' => $config->manager->slug . '/article', 'stack' => 10.01),
-        $speak->page => array('icon' => 'file', 'url' => $config->manager->slug . '/page', 'stack' => 10.02),
+        $speak->config => array('icon' => 'cogs', 'url' => $config->manager->slug . '/config', 'stack' => 9),
+        $speak->article => array('icon' => 'file-text', 'url' => $config->manager->slug . '/article', 'stack' => 9.01),
+        $speak->page => array('icon' => 'file', 'url' => $config->manager->slug . '/page', 'stack' => 9.02),
         $speak->comment => array(
             'icon' => 'comments',
             'url' => $config->manager->slug . '/comment',
             'count' => $total,
-            'stack' => 10.03
+            'stack' => 9.03
         ),
-        $speak->tag => array('icon' => 'tags', 'url' => $config->manager->slug . '/tag', 'stack' => 10.04),
-        $speak->menu => array('icon' => 'bars', 'url' => $config->manager->slug . '/menu', 'stack' => 10.05),
-        $speak->asset => array('icon' => 'briefcase', 'url' => $config->manager->slug . '/asset', 'stack' => 10.06),
-        $speak->field => array('icon' => 'th-list', 'url' => $config->manager->slug . '/field', 'stack' => 10.07),
-        $speak->shortcode => array('icon' => 'coffee', 'url' => $config->manager->slug . '/shortcode', 'stack' => 10.08),
-        $speak->shield => array('icon' => 'shield', 'url' => $config->manager->slug . '/shield', 'stack' => 10.09),
-        $speak->plugin => array('icon' => 'plug', 'url' => $config->manager->slug . '/plugin', 'stack' => 10.1),
-        $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 10.11),
-        $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 10.12)
+        $speak->tag => array('icon' => 'tags', 'url' => $config->manager->slug . '/tag', 'stack' => 9.04),
+        $speak->menu => array('icon' => 'bars', 'url' => $config->manager->slug . '/menu', 'stack' => 9.05),
+        $speak->asset => array('icon' => 'briefcase', 'url' => $config->manager->slug . '/asset', 'stack' => 9.06),
+        $speak->field => array('icon' => 'th-list', 'url' => $config->manager->slug . '/field', 'stack' => 9.07),
+        $speak->shortcode => array('icon' => 'coffee', 'url' => $config->manager->slug . '/shortcode', 'stack' => 9.08),
+        $speak->shield => array('icon' => 'shield', 'url' => $config->manager->slug . '/shield', 'stack' => 9.09),
+        $speak->plugin => array('icon' => 'plug', 'url' => $config->manager->slug . '/plugin', 'stack' => 9.1),
+        $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 9.11),
+        $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 9.12)
     );
 
     if($errors = File::exist(SYSTEM . DS . 'log' . DS . 'errors.log')) {
@@ -212,7 +212,7 @@ Weapon::add('after_shield_config_redefine', function() {
             'icon' => 'exclamation-triangle',
             'url' => $config->manager->slug . '/error',
             'count' => $total,
-            'stack' => 10.13
+            'stack' => 9.13
         );
     }
 
@@ -222,12 +222,12 @@ Weapon::add('after_shield_config_redefine', function() {
         $menus[Config::speak('manager._this_' . $type, $speak->edit)] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
-            'stack' => 10.14
+            'stack' => 9.14
         );
         $menus[Config::speak('manager._this_' . $type, $speak->delete)] = array(
             'icon' => 'trash',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
-            'stack' => 10.15
+            'stack' => 9.15
         );
     }
 

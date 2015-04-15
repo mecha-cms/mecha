@@ -382,10 +382,20 @@ input[type="radio"] {
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {height:auto}
 
-input[type="file"] {
+input[type="file"],
+input[type="range"] {
   padding:0;
   background:none;
   color:inherit;
+  cursor:pointer;
+}
+
+input[type="color"] {
+  font-size:1em;
+  line-height:1em;
+  padding:0;
+  width:2em;
+  height:2em;
   cursor:pointer;
 }
 
