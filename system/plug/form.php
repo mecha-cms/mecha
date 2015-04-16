@@ -10,6 +10,13 @@ Form::add('file', function($name = null, $attr = array(), $indent = 0) {
     return Form::input('file', $name, null, null, $attr, $indent);
 });
 
+// `<input type="checkbox">`
+Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
+    $attr['checked'] = $check ? true : null;
+    $indent = $indent ? str_repeat(TAB, $indent) : "";
+    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? ' <span>' . $text . '</span>' : "") . '</label>';
+});
+
 // `<input type="radio">`
 Form::add('radio', function($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
     $output = array();
@@ -20,13 +27,6 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
         $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? ' <span>' . $value . '</span>' : "") . '</label>';
     }
     return implode(NL, $output);
-});
-
-// `<input type="checkbox">`
-Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
-    $attr['checked'] = $check ? true : null;
-    $indent = $indent ? str_repeat(TAB, $indent) : "";
-    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? ' <span>' . $text . '</span>' : "") . '</label>';
 });
 
 // `<input type="date|color|email|number|search|tel|text|password|range|url">`

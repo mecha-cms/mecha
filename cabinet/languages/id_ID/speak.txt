@@ -451,6 +451,10 @@ approve: Setujui
 approving: Menyetujui
 approved: Disetujui
 
+unapprove: Batal Menyetujui
+unapproving: Membatalkan Persetujuan
+unapproved: Persetujuan Dibatalkan
+
 install: Pasang
 installing: Memasang
 installed: Dipasang

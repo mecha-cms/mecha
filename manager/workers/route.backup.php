@@ -10,6 +10,12 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
+    // Remove backup files that is failed to delete
+    if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip')) {
+        foreach($backup as $back) {
+            unlink($back);
+        }
+    }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT);

@@ -451,6 +451,10 @@ approve: Approve
 approving: Approving
 approved: Approved
 
+unapprove: Unapprove
+unapproving: Unapproving
+unapproved: Unapproved
+
 install: Install
 installing: Installing
 installed: Installed

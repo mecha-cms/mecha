@@ -126,7 +126,7 @@ Config::plug('load', function() {
  *
  */
 
-Config::plug('speak', function($key = null, $vars = array('NULL')) {
+Config::plug('speak', function($key = null, $vars = array()) {
     if(is_null($key)) return Config::get('speak');
     $speak = Mecha::A(Config::get('speak'));
     $fallback = $key;

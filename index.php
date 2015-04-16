@@ -16,11 +16,11 @@ define('LANGUAGE', ROOT . DS . 'cabinet' . DS . 'languages');
 define('ARTICLE', ROOT . DS . 'cabinet' . DS . 'articles');
 define('PAGE', ROOT . DS . 'cabinet' . DS . 'pages');
 define('RESPONSE', ROOT . DS . 'cabinet' . DS . 'responses');
-define('STATE', ROOT . DS . 'cabinet' . DS . 'states');
 define('CUSTOM', ROOT . DS . 'cabinet' . DS . 'custom');
-define('ASSET', ROOT . DS . 'cabinet' . DS . 'assets');
+define('STATE', ROOT . DS . 'cabinet' . DS . 'states');
 define('PLUGIN', ROOT . DS . 'cabinet' . DS . 'plugins');
 define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
+define('ASSET', ROOT . DS . 'cabinet' . DS . 'assets');
 define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
@@ -38,7 +38,7 @@ define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font
 define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.js');
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
-define('IMAGE_EXT', 'bmp,cur,gif,ico,jpg,jpeg,png,svg');
+define('IMAGE_EXT', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
 define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
 define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');
 define('SCRIPT_EXT', 'cache,css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
