@@ -15,10 +15,9 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
     $output = array();
     $indent = $indent ? str_repeat(TAB, $indent) : "";
     foreach($option as $key => $value) {
-        $key_o = ltrim($key, '.');
         $attr['disabled'] = strpos($key, '.') === 0 ? true : null;
-        $attr['checked'] = ltrim($select, '.') === $key_o ? true : null;
-        $output[] = $indent . '<label>' . Form::input('radio', $name, $key_o, null, $attr) . ($value ? ' <span>' . $value . '</span>' : "") . '</label>';
+        $attr['checked'] = ltrim($select, '.') === ltrim($key, '.') ? true : null;
+        $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? ' <span>' . $value . '</span>' : "") . '</label>';
     }
     return implode(NL, $output);
 });

@@ -28,6 +28,7 @@
 }
 
 .tab .fa {margin-left:-.15384615384615385em}
+.tab abbr {cursor:inherit}
 
 .tab:focus,
 .tab:hover,

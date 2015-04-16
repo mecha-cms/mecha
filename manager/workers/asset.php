@@ -31,7 +31,7 @@
             <td class="td-icon">
             <?php echo Form::checkbox('selected[]', $the_asset_url); ?>
             </td>
-            <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
+            <td class="td-collapse"><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
             <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo strpos($the_asset_url, '/') !== false ? UI::span('fade', dirname($the_asset_url) . '/') . basename($the_asset_url) : $the_asset_url; ?></a></td>
             <td class="td-icon">
             <?php echo UI::a('construct', $config->manager->slug . '/asset/repair/file:' . $the_asset_url, UI::icon('pencil'), array(

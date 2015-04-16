@@ -49,22 +49,19 @@ Config::plug('load', function() {
     $current = $config['url_current'];
     if($current === $url) $page = 'home';
     if(strpos($current, $url . '/') === 0) $page = 'page';
-    if($current === $url . '/' . $config['index']['slug']) $page = 'index';
+    if($current . '/' === $url . '/' . $config['index']['slug'] . '/') $page = 'index';
     if(strpos($current, $url . '/' . $config['index']['slug'] . '/') === 0) $page = 'article';
     if(strpos($current, $url . '/' . $config['tag']['slug'] . '/') === 0) $page = 'tag';
     if(strpos($current, $url . '/' . $config['archive']['slug'] . '/') === 0) $page = 'archive';
     if(strpos($current, $url . '/' . $config['search']['slug'] . '/') === 0) $page = 'search';
     if(strpos($current, $url . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
-    if(strpos($current, $url . '/sitemap') === 0) $page = 'sitemap';
-    if(strpos($current, $url . '/feed') === 0) $page = 'feed';
-    if(strpos($current, $url . '/feed/rss') === 0) $page = 'rss';
-    if(strpos($current, $url . '/feed/json') === 0) $page = 'json';
-    if(strpos($current, $url . '/feeds') === 0) $page = 'feed';
-    if(strpos($current, $url . '/feeds/rss') === 0) $page = 'rss';
-    if(strpos($current, $url . '/feeds/json') === 0) $page = 'json';
+    if(strpos($current . '/', $url . '/sitemap/') === 0) $page = 'sitemap';
+    if(strpos($current . '/', $url . '/feed/') === 0 || strpos($current . '/', $url . '/feeds/') === 0) $page = 'feed';
+    if(strpos($current . '/', $url . '/feed/rss/') === 0 || strpos($current . '/', $url . '/feeds/rss/') === 0) $page = 'rss';
+    if(strpos($current . '/', $url . '/feed/json/') === 0 || strpos($current . '/', $url . '/feeds/json/') === 0) $page = 'json';
 
     // Create a proper query string data
-    if($page != 'home') {
+    if($page !== 'home') {
         array_shift($_GET);
     }
     $queries = array();

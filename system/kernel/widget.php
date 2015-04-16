@@ -30,6 +30,8 @@ class Widget {
 
     public static function manager() {
 
+        if( ! Guardian::happy()) return "";
+
         /**
          * ==================================================================================================
          *  ADD MORE MANAGER MENU
@@ -58,8 +60,6 @@ class Widget {
          */
 
         $menus = array();
-        if( ! Guardian::happy()) return "";
-
         if($_menus = Mecha::A(Config::get('manager_menu'))) {
             foreach($_menus as $k => $v) {
                 // < 1.1.3
@@ -453,8 +453,8 @@ class Widget {
 
 
     /**
-     * Call the Custom Widget
-     * ----------------------
+     * Custom Widget
+     * -------------
      *
      * [1]. Widget::call('my_custom_widget', $a, $b, $c);
      *
@@ -473,8 +473,8 @@ class Widget {
 
 
     /**
-     * Alternative Method for Calling the Custom Widget
-     * ------------------------------------------------
+     * Alternate Method for Calling the Custom Widget
+     * ----------------------------------------------
      *
      * [1]. Widget::my_custom_widget($a, $b, $c);
      *

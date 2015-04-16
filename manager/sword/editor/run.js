@@ -63,7 +63,7 @@ if (typeof DASHBOARD !== "undefined") {
                 'name': name
             }
         });
-        base[prefix + '_' + hook] = /(^| )(MTE|code)( |$)/.test(area[i].className) && !/(^| )MTE-ignore( |$)/.test(area[i].className) ? new MTE(area[i], extend({
+        base[prefix + '_' + hook] = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className) ? new MTE(area[i], extend({
             tabSize: TAB || '    ',
             toolbar: false,
             shortcut: false,
@@ -158,7 +158,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             }
         }, config)) : {};
-        if (i === 0 || /(^| )MTE-main( |$)/.test(area[i].className)) {
+        if (i === 0 || /(^|\s)MTE-main(\s|$)/.test(area[i].className)) {
             base[prefix] = base[prefix + '_' + hook];
         }
         base.fire('on_control_end', {

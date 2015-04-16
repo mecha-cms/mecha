@@ -24,7 +24,7 @@
         <td class="td-icon">
         <?php echo Form::checkbox('selected[]', $the_cache_url); ?>
         </td>
-        <td><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
+        <td class="td-collapse"><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
         <td><span title="<?php echo $file->size; ?>"><?php echo strpos($the_cache_url, '/') !== false ? UI::span('fade', dirname($the_cache_url) . '/') . basename($the_cache_url) : $the_cache_url; ?></span></td>
         <?php if(in_array($file->extension, $editable)): ?>
         <td class="td-icon">

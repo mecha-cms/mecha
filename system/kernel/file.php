@@ -84,8 +84,8 @@ class File extends Plugger {
             'cur',
             'gif',
             'ico',
-            'jpg',
             'jpeg',
+            'jpg',
             'png',
             'svg',
 
@@ -159,7 +159,10 @@ class File extends Plugger {
         if($handle = fopen(self::$open, 'r')) {
             $results = "";
             while(($buffer = fgets($handle, $chars)) !== false) {
-                if(is_int($stop_at) && $stop_at === $i || is_string($stop_at) && strpos($buffer, $stop_at) !== false) {
+                if(
+                    is_int($stop_at) && $stop_at === $i ||
+                    is_string($stop_at) && strpos($buffer, $stop_at) !== false
+                ) {
                     break;
                 }
                 $results .= $buffer;

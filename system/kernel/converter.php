@@ -65,7 +65,7 @@ class Converter extends Plugger {
      */
 
     public static function RGB($rgba, $output = null) {
-        if(is_string($rgba) && preg_match('#^rgba?\( *([0-9]{1,3}) *, *([0-9]{1,3}) *, *([0-9]{1,3})( *, *([0-9\.]+))? *\)$#i', $rgba, $matches)) {
+        if(is_string($rgba) && preg_match('#^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})(\s*,\s*([0-9\.]+))?\s*\)$#i', $rgba, $matches)) {
             $colors = array(
                 'r' => (int) $matches[1],
                 'g' => (int) $matches[2],
@@ -110,7 +110,7 @@ class Converter extends Plugger {
                 'r' => (int) hexdec(substr($color, 0, 2)),
                 'g' => (int) hexdec(substr($color, 2, 2)),
                 'b' => (int) hexdec(substr($color, 4, 2)),
-                'a' => 1
+                'a' => (float) 1
             );
             return ! is_null($output) ? $colors[$output] : $colors;
         }
@@ -228,10 +228,10 @@ class Converter extends Plugger {
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------------
-     *  $input    | mixed  | The value or array of value to be converted
-     *  --------- | ------ | ----------------------------------------------
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -----------------------------------------------
+     *  $input    | mixed | The value or array of value to be converted
+     *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -261,10 +261,10 @@ class Converter extends Plugger {
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------------
-     *  $input    | mixed  | The string or array of string to be converted
-     *  --------- | ------ | ----------------------------------------------
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -----------------------------------------------
+     *  $input    | mixed | The string or array of string to be converted
+     *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -327,12 +327,12 @@ class Converter extends Plugger {
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type    | Description
-     *  --------- | ------- | ---------------------------------------------
-     *  $input    | array   | The array of data to be converted
-     *  $s        | string  | Separator between array key and array value
-     *  $indent   | string  | Indentation as nested array data level
-     *  --------- | ------- | ---------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | array  | The array of data to be converted
+     *  $s        | string | Separator between array key and array value
+     *  $indent   | string | Indentation as nested array data level
+     *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -345,7 +345,7 @@ class Converter extends Plugger {
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
                 $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), self::str($value));
-                if(is_string($key) && strpos($value, '#') === 0) { // Comment
+                if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($value) . "\n";
@@ -446,10 +446,10 @@ class Converter extends Plugger {
      * --------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type    | Description
-     *  --------- | ------- | ---------------------------------------------
-     *  $input    | string  | The HTML string to be compressed
-     *  --------- | ------- | ---------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | string | The HTML string to be compressed
+     *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -462,7 +462,7 @@ class Converter extends Plugger {
         }, $input);
         // Minify inline CSS declarations
         if(strpos($input, ' style=') !== false) {
-            $input = preg_replace_callback('#\s+style=([\'"]?)(.*?)\1(?=[\/\s>])#s', function($matches) {
+            $input = preg_replace_callback('#\s+style=([\'"])(.*?)\1(?=[\/\s>])#s', function($matches) {
                 return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
             }, $input);
         }
@@ -479,7 +479,7 @@ class Converter extends Plugger {
                 // Remove two or more white-spaces between tags
                 '#(<\!--.*?-->)|(>)\s{2,}|\s{2,}(<)|(>)\s{2,}(<)#s',
 
-                // Proofing ...
+                // PROOFING ...
                 // o: tag open, c: tag close, t: text
                 // If `<tag> </tag>` remove white-space
                 // If `</tag> <tag>` keep white-space
@@ -510,8 +510,8 @@ class Converter extends Plugger {
                 // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
                 '#(?<=&nbsp;)(&nbsp;){2}#',
 
-                // Proofing ...
-                '#(?<=\>)&nbsp;(?!\s|&nbsp;|<\/)#',
+                // PROOFING ...
+                '#(?<=\>)&nbsp;(?!\s|&nbsp;|\<\/)#',
                 '#(?<=--\>)(?:\s|&nbsp;)+(?=\<)#'
 
             ),
@@ -549,10 +549,10 @@ class Converter extends Plugger {
      * --------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type    | Description
-     *  --------- | ------- | ---------------------------------------------
-     *  $input    | string  | The CSS string to be compressed
-     *  --------- | ------- | ---------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | string | The CSS string to be compressed
+     *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -577,15 +577,15 @@ class Converter extends Plugger {
                 // Replace `background-position:0` with `background-position:0 0`
                 '#(background-position):0(?=[;\}])#si',
 
-                // Replace `0.6` with `.6`, but only when preceded by `:`, `-`, `,` or a white-space
-                '#(?<=[:\-,\s])0+\.(\d+)#s',
+                // Replace `0.6` with `.6`, but only when preceded by `:`, `,`, `-` or a white-space
+                '#(?<=[:,\-\s])0+\.(\d+)#s',
 
                 // Minify string value
                 '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
 
                 // Minify HEX color code
-                '#(?<=[:\-,\s]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
+                '#(?<=[:,\-\s]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
 
                 // Remove empty selectors
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
@@ -618,10 +618,10 @@ class Converter extends Plugger {
      * --------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type    | Description
-     *  --------- | ------- | ---------------------------------------------
-     *  $input    | string  | The JavaScript string to be compressed
-     *  --------- | ------- | ---------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $input    | string | The JavaScript string to be compressed
+     *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
@@ -634,7 +634,7 @@ class Converter extends Plugger {
                 // '#(?<!\\\)\\\\\'#',
 
                 // Remove comments
-                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*\s*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*[\n\r]*#',
+                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*[\n\r]*#',
 
                 // Remove unused white-space characters outside the string and regex
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/)|\/(?!\/)[^\n\r]*?\/(?=[\.,;]|[gimuy]))|\s*([+\-\=\/%\(\)\{\}\[\]<>\|&\?\!\:;\.,])\s*#s',

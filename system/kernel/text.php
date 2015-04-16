@@ -160,8 +160,6 @@ class Text extends Plugger {
             }
         }
 
-        $parse = ! isset($results['content_type']) || $results['content_type'] === HTML_PARSER;
-
         /**
          * NOTES: The `content_type` field is very specific and the name
          * cannot be dynamically changed as you might think that I have
@@ -170,6 +168,8 @@ class Text extends Plugger {
          * came from any field in the page header, but the `content_type` is created
          * purely by the field in the page header called `Content Type`.
          */
+
+        $parse = ! isset($results['content_type']) || $results['content_type'] === HTML_PARSER;
 
         if(isset($results[$c . '_raw'])) {
             $content_extra = explode(SEPARATOR, $results[$c . '_raw']);
@@ -237,15 +237,15 @@ class Text extends Plugger {
         // Remove comments and empty line breaks
         $text = preg_replace(
             array(
-                '##',
-                '#(^|\n)( *\#[^\n]*)#',
+                '#\r#',
                 '#\n+#',
-                '#^\n+|\n$#'
+                '#(^|\n)(\s*\#[^\n]*)#',
+                '#^\n+|\n+$#'
             ),
             array(
                 "",
-                '$1',
                 "\n",
+                '$1',
                 ""
             ),
         $text);

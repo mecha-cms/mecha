@@ -28,29 +28,29 @@
             _progress = $this.data('textProgress') || "",
             _is_get = $this.is('.ajax-get'),
             $destination = $($this.data('target')) || $this.next(),
-            data = {
+            _data = {
                 'event': e,
                 'target': _this
             };
 
         $destination.html(_progress);
 
-        base.fire('on_ajax_begin', data);
+        base.fire('on_ajax_begin', _data);
 
         $.ajax({
             url: _action,
             type: _is_get ? 'GET' : 'POST',
             data: _is_get || _source === false ? "" : $source.serializeArray(),
-            success: function(data, status, xhr) {
-                $destination.html(_is_get ? (_source !== false ? $(data).find(_source) : $(data)) : data);
+            success: function(response, status, xhr) {
+                $destination.html(_is_get ? (_source !== false ? $(response).find(_source) : $(response)) : response);
                 base.fire('on_ajax_success', {
-                    'data': data,
+                    'data': response,
                     'status': status,
                     'xhr': xhr,
                     'event': e,
                     'target': _this
                 });
-                base.fire('on_ajax_end', data);
+                base.fire('on_ajax_end', _data);
             },
             error: function(xhr, status, error) {
                 $destination.html(_error);
@@ -61,7 +61,7 @@
                     'event': e,
                     'target': _this
                 });
-                base.fire('on_ajax_end', data);
+                base.fire('on_ajax_end', _data);
             }
         });
 

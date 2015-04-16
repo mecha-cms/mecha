@@ -233,7 +233,7 @@ class Mecha extends Plugger {
         }
     }
 
-    // Get array count
+    // Get array length
     public static function count($data = null) {
         return is_null($data) ? count(self::$stomach) : count($data);
     }

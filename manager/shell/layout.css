@@ -12,7 +12,11 @@ html {
   width:1em;
 }
 
-.table-bordered time {white-space:nowrap}
+.th-collapse,
+.td-collapse {
+  white-space:nowrap;
+  width:1em;
+}
 
 .main-action-group {
   padding:1.3846153846153846em 0;

@@ -179,8 +179,8 @@ class Asset extends Plugger {
                 'css' => 'stylesheet',
                 'js' => 'javascript',
                 'gif' => 'image',
-                'jpg' => 'image',
                 'jpeg' => 'image',
+                'jpg' => 'image',
                 'png' => 'image'
             ));
         }

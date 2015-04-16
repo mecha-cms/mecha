@@ -29,8 +29,8 @@
                     .replace(/[^a-z0-9\-]+/gi, '-')
                     .replace(/\-+/g, '-')
                     .replace(/^\-|\-$/g, "")
-                    .toLowerCase()
                     .replace(/\-/g, connector)
+                    .toLowerCase()
             );
 
         });

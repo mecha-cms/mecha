@@ -31,8 +31,8 @@ class Image extends Plugger {
         }
         switch($new_extension) {
             case 'gif': imagegif($resource, $file); break;
-            case 'jpg': imagejpeg($resource, $file, 100); break;
             case 'jpeg': imagejpeg($resource, $file, 100); break;
+            case 'jpg': imagejpeg($resource, $file, 100); break;
             case 'png': imagepng($resource, $file); break;
         }
     }
@@ -108,8 +108,8 @@ class Image extends Plugger {
      *
      */
 
-    public static function saveAs($name = 'image.jpg') {
-        return self::saveTo(dirname(self::$placeholder) . DS . $name);
+    public static function saveAs($name = 'image-%d.png') {
+        return self::saveTo(dirname(self::$placeholder) . DS . sprintf($name, time()));
     }
 
     /**

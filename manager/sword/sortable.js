@@ -36,7 +36,7 @@
 
     if (!$tbody) return;
 
-    $tbody.on("click", '.handle > a, td > .sort', function(e) {
+    $tbody.on("click", '.handle > a', function(e) {
         var $tr = $(this).closest('tr'),
             state = (this.hash || ':').replace('#', "").split(/[:\-]/)[1],
             data = {
@@ -73,9 +73,10 @@
         $(this).addClass('origin');
     }).on("dragover", 'tr[draggable]', function(e) {
         e.preventDefault();
-        $(this).addClass('target');
+        var center = $(this).offset().top + ($(this).height() / 2);
+        $(this).removeClass('target-top target-bottom').addClass('target target-' + (e.pageY >= center ? 'bottom' : 'top'));
     }).on("dragleave", 'tr[draggable]', function() {
-        $(this).removeClass('target');
+        $(this).removeClass('target target-top target-bottom');
     }).on("drop", 'tr[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
@@ -83,7 +84,7 @@
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
     }).on("dragend", 'tr[draggable]', function() {
-        $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
+        $(this).removeClass('origin target target-top target-bottom').addClass('active').siblings().removeClass('active origin target target-top target-bottom');
     }).find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');
@@ -154,9 +155,10 @@
         $(this).addClass('origin');
     }).on("dragover", '.sortable[draggable]', function(e) {
         e.preventDefault();
-        $(this).addClass('target');
+        var center = $(this).offset().top + ($(this).height() / 2);
+        $(this).removeClass('target-top target-bottom').addClass('target target-' + (e.pageY >= center ? 'bottom' : 'top'));
     }).on("dragleave", '.sortable[draggable]', function() {
-        $(this).removeClass('target');
+        $(this).removeClass('target target-top target-bottom');
     }).on("drop", '.sortable[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
@@ -164,7 +166,7 @@
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
         }
     }).on("dragend", '.sortable[draggable]', function() {
-        $(this).removeClass('origin target').addClass('active').siblings().removeClass('active origin target');
+        $(this).removeClass('origin target target-top target-bottom').addClass('active').siblings().removeClass('active origin target target-top target-bottom');
     }).find('.handle').each(function() {
         if (!$(this).find('a').length) {
             $(this).append('<a class="sort sort-up" href="#sort:up"><i class="fa fa-angle-up"></i></a><a class="sort sort-down" href="#sort:down"><i class="fa fa-angle-down"></i></a>');

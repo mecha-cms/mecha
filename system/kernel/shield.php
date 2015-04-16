@@ -176,12 +176,12 @@ class Shield extends Plugger {
      * ----------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type    | Description
-     *  ---------- | ------- | ----------------------------------
-     *  $name      | string  | Name of the shield
-     *  $minify    | boolean | Minify HTML output?
-     *  $cache     | boolean | Create a cache file on page visit?
-     *  ---------- | ------- | ----------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | -----------------------------------
+     *  $name     | string  | Name of the shield
+     *  $minify   | boolean | Minify HTML output?
+     *  $cache    | boolean | Create a cache file on page visit?
+     *  --------- | ------- | -----------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */

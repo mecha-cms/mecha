@@ -67,10 +67,17 @@ UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = arr
     return Cell::unit($active ? 'a' : 'span', $text, $attr, $indent);
 });
 
-// `<em|span|strong class="text-error">`
-foreach(array('em', 'span', 'strong') as $tag) {
+// `<b|em|i|span|strong class="text-error">`
+foreach(array('b', 'em', 'i', 'span', 'strong') as $tag) {
     UI::add($tag, function($kind = 'default', $text = "", $attr = array(), $indent = 0) use($tag) {
-        $attr['class'] = 'text-' . $kind;
+        if( ! isset($attr['class'])) {
+            $attr['class'] = array();
+        } else {
+            if( ! is_array($attr['class'])) {
+                $attr['class'] = array($attr['class']);
+            }
+        }
+        $attr['class'] = array_merge(array('text-' . $kind), $attr['class']);
         return Cell::unit($tag, $text, $attr, $indent);
     });
 }
@@ -78,7 +85,14 @@ foreach(array('em', 'span', 'strong') as $tag) {
 // `<a class="text-error">`
 UI::add('a', function($kind = 'default', $href = null, $text = "", $attr = array(), $indent = 0) {
     $attr['href'] = Converter::url($href);
-    $attr['class'] = 'text-' . $kind;
+    if( ! isset($attr['class'])) {
+        $attr['class'] = array();
+    } else {
+        if( ! is_array($attr['class'])) {
+            $attr['class'] = array($attr['class']);
+        }
+    }
+    $attr['class'] = array_merge(array('text-' . $kind), $attr['class']);
     return Cell::unit('a', $text, $attr, $indent);
 });
 
