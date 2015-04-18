@@ -18,7 +18,6 @@
     if (!$btn.length) return;
 
     $btn.on("click", function(e) {
-
         var _this = this,
             $this = $(_this),
             _source = $this.data('scope') || false,
@@ -32,11 +31,8 @@
                 'event': e,
                 'target': _this
             };
-
         $destination.html(_progress);
-
         base.fire('on_ajax_begin', _data);
-
         $.ajax({
             url: _action,
             type: _is_get ? 'GET' : 'POST',
@@ -64,9 +60,7 @@
                 base.fire('on_ajax_end', _data);
             }
         });
-
         return false;
-
     });
 
 })(window.Zepto || window.jQuery, DASHBOARD);

@@ -98,7 +98,7 @@ class Menu extends Plugger {
         if(is_null($array)) {
             $speak = Config::speak();
             $FP = 'navigation:';
-            $array = Text::toArray(Get::state_menu($speak->home . S . " /\n" . $speak->feed . S . " /feed"), S, '    ');
+            $array = Text::toArray(Get::state_menu($speak->home . S . " /\nRSS" . S . " /feed"), S, '    ');
         }
         return O_BEGIN . rtrim(self::create($array, $type, $depth, $FP, 0), NL) . O_END;
     }

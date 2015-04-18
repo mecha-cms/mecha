@@ -4,14 +4,16 @@
  * Custom Functions
  * ----------------
  *
- * Your custom functions goes here ...
+ * Add your own custom functions here. You can do something like
+ * making custom widgets, making custom routes, making custom filters,
+ * making custom weapons, loading custom assets, etc. So that you can
+ * manipulate the site outputs without having to touch the CMS core.
  *
  */
 
-// Tag link generator for the current article
-Widget::add('tagLinks', function($connector = ', ') {
+// Link generator for the current article tags
+Widget::add('tagLinks', function($connect = ', ') use($speak) {
     $config = Config::get();
-    $speak = Config::speak();
     $links = array();
     $source = $config->article->tags;
     if( ! isset($source) || ! is_object($source)) return "";
@@ -20,11 +22,14 @@ Widget::add('tagLinks', function($connector = ', ') {
             $links[] = '<a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag->slug . '" rel="tag">' . $tag->name . '</a>';
         }
     }
-    return ! empty($links) ? (count($links) > 1 ? $speak->tags : $speak->tag) . ': ' . implode($connector, $links) : "";
+    $text = count($links) > 1 ? $speak->tags : $speak->tag;
+    return ! empty($links) ? $text . ': ' . implode($connect, $links) : "";
 });
 
 // Add an arrow to the older and newer link text
+$speak->older = $speak->older . ' <i class="fa fa-angle-right"></i>';
+$speak->newer = '<i class="fa fa-angle-left"></i> ' . $speak->newer;
 Config::set(array(
-    'speak.older' => $speak->older . ' <i class="fa fa-angle-right"></i>',
-    'speak.newer' => '<i class="fa fa-angle-left"></i> ' . $speak->newer
+    'speak.older' => $speak->older,
+    'speak.newer' => $speak->newer
 ));

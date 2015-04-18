@@ -271,11 +271,12 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
     $title = (strpos($config->search->title, '%s') !== false ? sprintf($config->search->title, $query) : $config->search->title . ' &ldquo;' . $query . '&rdquo;');
 
-    if( ! empty($articles)) {
+    if( ! empty($articles) && $files = Mecha::eat($articles)->chunk($offset, $config->search->per_page)->vomit()) {
         $_articles = array();
-        foreach(Mecha::eat($articles)->chunk($offset, $config->search->per_page)->vomit() as $file) {
+        foreach($files as $file) {
             $_articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
         }
+        unset($files);
         Config::set(array(
             'page_title' => $title . $config->title_separator . $config->title,
             'offset' => $offset,

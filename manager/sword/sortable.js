@@ -2,7 +2,7 @@
  * Sortable Table Rows
  * -------------------
  *
- *    <table class="table-sortable">
+ *    <table class="table-bordered table-sortable">
  *      <thead>
  *        <tr>
  *          <th>Test 1</th>

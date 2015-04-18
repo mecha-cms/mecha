@@ -12,17 +12,13 @@
         }
 
         input.off("keyup").on("keyup", function() {
-
             var value = this.value;
-
             // Remove accents ...
             var from = '¹²³°æǽÀÁÂÃÅǺĂǍÆǼàáâãåǻăǎª@ĈĊĉċ©ÐĐðđÈÉÊËĔĖèéêëĕėƒĜĠĝġĤĦĥħÌÍÎÏĨĬǏĮĲìíîïĩĭǐįĳĴĵĹĽĿĺľŀÑñŉÒÔÕŌŎǑŐƠØǾŒòôõōŏǒőơøǿºœŔŖŕŗŜȘŝșſŢȚŦÞţțŧþÙÚÛŨŬŰŲƯǓǕǗǙǛùúûũŭűųưǔǖǘǚǜŴŵÝŸŶýÿŷЪЬАБЦЧДЕЁЭФГХИЙЯЮКЛМНОПРСШЩТУВЫЗЖъьабцчдеёэфгхийяюклмнопрсшщтувызжÄÖÜßäöüÇĞİŞçğışĀĒĢĪĶĻŅŪāēģīķļņūҐІЇЄґіїєČĎĚŇŘŠŤŮŽčďěňřšťůžĄĆĘŁŃÓŚŹŻąćęłńóśźżΑΒΓΔΕΖΗΘΙΚΛΜΝΞΟΠΡΣΤΥΦΧΨΩΪΫάέήίΰαβγδεζηθικλμνξοπρςστυφχψωϊϋόύώϐϑϒأبتثجحخدذرزسشصضطظعغفقكلمنهويạảầấậẩẫằắặẳẵẹẻẽềếệểễịỉọỏồốộổỗờớợởỡụủừứựửữỳỵỷỹẠẢẦẤẬẨẪẰẮẶẲẴẸẺẼỀẾỆỂỄỊỈỌỎỒỐỘỔỖỜỚỢỞỠỤỦỪỨỰỬỮỲỴỶỸ',
                 to = '1230aeaeAAAAAAAAAEAEaaaaaaaaaatCCcccDjDdjdEEEEEEeeeeeefGGggHHhhIIIIIIIIIJiiiiiiiiijJjLLLlllNnnOOOOOOOOOOOEooooooooooooeRRrrSSsssTTTTHtttthUUUUUUUUUUUUUuuuuuuuuuuuuuWwYYYyyyABCChDEEEFGHIJJaJuKLMNOPRSShShchTUVYZZhabcchdeeefghijjajuklmnoprsshshchtuvyzzhAEOEUEssaeoeueCGIScgisAEGIKLNUaegiklnuGIJiYegijiyeCDENRSTUZcdenrstuzACELNOSZZacelnoszzABGDEZEThIKLMNXOPRSTYPhChPsOIYaeeiYabgdezethiklmnxoprsstyphchpsoiyoyobthYabtthghkhdthrzsshsdtthaaghfkklmnhoyaaaaaaaaaaaaeeeeeeeeiioooooooooooouuuuuuuyyyyAAAAAAAAAAAAEEEEEEEEIIOOOOOOOOOOOOUUUUUUUYYYY';
-
             for (var i = 0, len = from.length; i < len; ++i) {
                 value = value.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
             }
-
             output.val(
                 value
                     .replace(/<.*?>|&(?:[a-z0-9]+|#[0-9]+|#x[a-f0-9]+);/gi, ' ')
@@ -32,7 +28,6 @@
                     .replace(/\-/g, connector)
                     .toLowerCase()
             );
-
         });
 
         return input;

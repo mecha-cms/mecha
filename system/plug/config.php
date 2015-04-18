@@ -45,20 +45,20 @@ Config::plug('load', function() {
     $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
 
     $page = '404';
-    $url = $config['url'];
-    $current = $config['url_current'];
-    if($current === $url) $page = 'home';
-    if(strpos($current, $url . '/') === 0) $page = 'page';
-    if($current . '/' === $url . '/' . $config['index']['slug'] . '/') $page = 'index';
-    if(strpos($current, $url . '/' . $config['index']['slug'] . '/') === 0) $page = 'article';
-    if(strpos($current, $url . '/' . $config['tag']['slug'] . '/') === 0) $page = 'tag';
-    if(strpos($current, $url . '/' . $config['archive']['slug'] . '/') === 0) $page = 'archive';
-    if(strpos($current, $url . '/' . $config['search']['slug'] . '/') === 0) $page = 'search';
-    if(strpos($current, $url . '/' . $config['manager']['slug'] . '/') === 0) $page = 'manager';
-    if(strpos($current . '/', $url . '/sitemap/') === 0) $page = 'sitemap';
-    if(strpos($current . '/', $url . '/feed/') === 0 || strpos($current . '/', $url . '/feeds/') === 0) $page = 'feed';
-    if(strpos($current . '/', $url . '/feed/rss/') === 0 || strpos($current . '/', $url . '/feeds/rss/') === 0) $page = 'rss';
-    if(strpos($current . '/', $url . '/feed/json/') === 0 || strpos($current . '/', $url . '/feeds/json/') === 0) $page = 'json';
+    $path = $config['url_path'];
+    $s = explode('/', $path);
+    if($path === "") $page = 'home';
+    if(strpos($path, '/') === false && $path !== "") $page = 'page';
+    if($path === $config['index']['slug']) $page = 'index';
+    if($s[0] === $config['index']['slug'] && isset($s[1])) $page = is_numeric($s[1]) ? 'index' : 'article';
+    if(strpos($path, $config['tag']['slug'] . '/') === 0) $page = 'tag';
+    if(strpos($path, $config['archive']['slug'] . '/') === 0) $page = 'archive';
+    if(strpos($path, $config['search']['slug'] . '/') === 0) $page = 'search';
+    if(strpos($path, $config['manager']['slug'] . '/') === 0) $page = 'manager';
+    if($path === 'sitemap') $page = 'sitemap';
+    if($path === 'feed' || $path === 'feeds') $page = 'feed';
+    if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0 || $path === 'feeds/rss' || strpos($path, 'feeds/rss/') === 0) $page = 'rss';
+    if($path === 'feed/json' || strpos($path, 'feed/json/') === 0 || $path === 'feeds/json' || strpos($path, 'feeds/json/') === 0) $page = 'json';
 
     // Create a proper query string data
     if($page !== 'home') {

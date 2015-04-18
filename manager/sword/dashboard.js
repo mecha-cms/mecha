@@ -26,7 +26,7 @@ window.DASHBOARD = {
                 DASHBOARD.hooks[name][i].fn(arguments);
             }
         } else {
-            DASHBOARD.hooks[name] = false;
+            DASHBOARD.hooks[name] = [];
         }
     },
     eject: function(name, stack) {
