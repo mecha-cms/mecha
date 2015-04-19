@@ -239,13 +239,22 @@ class Mecha extends Plugger {
     }
 
     // Generate chunks of array
-    public static function chunk($index = 1, $count = 25) {
+    public static function chunk($index = null, $count = 25, $fallback = false) {
         if( ! is_array(self::$stomach)) return new static;
         $results = array();
+        // 0-based index with `vomit($index)`
+        // `Mecha::eat($foo)->chunk(25)->vomit(1);`
+        if(func_num_args() === 1) {
+            $count = $index;
+            $index = null;
+        }
         $chunk = array_chunk(self::$stomach, $count, true);
+        // 1-based index with `chunk($index)`
+        // `Mecha::eat($foo)->chunk(2, 25)->vomit();`
         if( ! is_null($index)) {
-            $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : false;
-            self::$stomach = $chunk ? array_values($chunk) : false;
+            $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : $fallback;
+            self::$stomach = $chunk ? array_values($chunk) : $fallback;
+        // `Mecha::eat($foo)->chunk(null, 25)->vomit()`
         } else {
             self::$stomach = $chunk;
         }
