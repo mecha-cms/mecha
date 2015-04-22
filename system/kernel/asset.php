@@ -46,7 +46,6 @@ class Asset extends Plugger {
         $url = File::url($path);
         if(strpos($path, ROOT) === false) {
             if(strpos($url, '://') === false) return false;
-            $url = preg_replace('#(https?\:\/\/)+#', '$1', $url);
             return Filter::apply('asset:url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin);
         }
         if( ! file_exists($path)) return false;

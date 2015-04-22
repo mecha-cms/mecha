@@ -740,7 +740,7 @@ class Image extends Plugger {
             }
         }
         $a = 127 - ($a * 127);
-        if($orientation[0] == 'v') {
+        if($orientation[0] === 'v') {
             $pallete = imagecreatetruecolor(max($max_width), $height - $gap);
         } else {
             $pallete = imagecreatetruecolor($width - $gap, max($max_height));
@@ -756,8 +756,8 @@ class Image extends Plugger {
             imagealphablending(self::$GD, false);
             imagesavealpha(self::$GD, true);
             imagecopyresampled($pallete, self::$GD, $start_width_from, $start_height_from, 0, 0, $bucket[$i]['width'], $bucket[$i]['height'], $bucket[$i]['width'], $bucket[$i]['height']);
-            $start_width_from += $orientation[0] == 'h' ? $bucket[$i]['width'] + $gap : 0;
-            $start_height_from += $orientation[0] == 'v' ? $bucket[$i]['height'] + $gap : 0;
+            $start_width_from += $orientation[0] === 'h' ? $bucket[$i]['width'] + $gap : 0;
+            $start_height_from += $orientation[0] === 'v' ? $bucket[$i]['height'] + $gap : 0;
         }
         self::twin($pallete, 'png');
         return new static;

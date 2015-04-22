@@ -38,9 +38,10 @@ class Text extends Plugger {
      *
      */
 
-    public static function parserExist($name = null) {
+    public static function parserExist($name = null, $fallback = false) {
         if(is_null($name)) return self::$parsers;
-        return isset(self::$parsers[get_called_class() . '::' . $name]);
+        $name = get_called_class() . '::' . $name;
+        return isset(self::$parsers[$name]) ? self::$parsers[$name] : $fallback;
     }
 
     /**
@@ -117,7 +118,7 @@ class Text extends Plugger {
                 }
             // By file content
             } else {
-                $text = str_replace("", "", $text);
+                $text = str_replace("\r", "", $text);
                 if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
                     $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
                     $headers = explode("\n", trim($parts[0]));
@@ -239,7 +240,7 @@ class Text extends Plugger {
             array(
                 '#\r#',
                 '#\n+#',
-                '#(^|\n)(\s*\#[^\n]*)#',
+                '#(^|\n)\s*\#[^\n]*#',
                 '#^\n+|\n+$#'
             ),
             array(

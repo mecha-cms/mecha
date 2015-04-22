@@ -242,7 +242,7 @@ class Widget {
                 $tags_counter[] = $tag['count'];
             }
             $highest_count = max($tags_counter);
-            $html = O_BEGIN . '<div class="widget widget-tag widget-tag-cloud" id="widget-tag-cloud-' . self::$id['tag_cloud']. '">' . NL . TAB;
+            $html = O_BEGIN . '<div class="widget widget-tag widget-tag-cloud" id="widget-tag-cloud-' . self::$id['tag_cloud'] . '">' . NL . TAB;
             self::$id['tag_cloud']++;
             $_html = array();
             foreach($tags as $tag) {

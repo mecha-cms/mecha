@@ -49,8 +49,7 @@ foreach(glob(SYSTEM . DS . 'plug' . DS . '*.php') as $plug) {
  * ------------------
  */
 
-session_save_path(SYSTEM . DS . 'log' . DS . 'sessions');
-session_start();
+Session::start(SYSTEM . DS . 'log' . DS . 'sessions');
 
 
 /**

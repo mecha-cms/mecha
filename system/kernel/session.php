@@ -82,7 +82,7 @@ class Session extends Plugger {
 
     public static function get($session = null, $fallback = "") {
         if(is_null($session)) return $_SESSION;
-        if($session == 'cookies') {
+        if($session === 'cookies') {
             return Converter::strEval($_COOKIE);
         }
         if(strpos($session, 'cookie:') === 0) {
@@ -97,12 +97,12 @@ class Session extends Plugger {
     public static function kill($session = null) {
         if(is_null($session)) {
             session_destroy();
-        } else if($session == 'cookies') {
+        } else if($session === 'cookies') {
             $_COOKIE = array();
             if(isset($_SERVER['HTTP_COOKIE'])) {
                 $cookies = explode(';', $_SERVER['HTTP_COOKIE']);
                 foreach($cookies as $cookie) {
-                    $parts = explode('=', $cookie);
+                    $parts = explode('=', $cookie, 2);
                     $name = trim($parts[0]);
                     setcookie($name, null, -1);
                     setcookie($name, null, -1, '/');
@@ -112,13 +112,15 @@ class Session extends Plugger {
             $name = substr($session, 7);
             if(strpos($session, '.') !== false) {
                 $name_a = explode('.', $name);
-                $old = Converter::strEval($_COOKIE[$name_a[0]]);
-                Mecha::UVR($old, $name);
-                foreach($old as $key => $value) {
-                    $_COOKIE[$name_a[0]][$key] = is_array($value) ? json_encode($value, true) : $value;
+                if(isset($_COOKIE[$name_a[0]])) {
+                    $old = Converter::strEval($_COOKIE[$name_a[0]]);
+                    Mecha::UVR($old, $name);
+                    foreach($old as $key => $value) {
+                        $_COOKIE[$name_a[0]][$key] = is_array($value) ? json_encode($value, true) : $value;
+                    }
+                    $c = Converter::strEval($_COOKIE['__' . $name_a[0]]);
+                    setcookie($name_a[0], json_encode($old, true), $c[0], $c[1], $c[2], $c[3], $c[4]);
                 }
-                $c = Converter::strEval($_COOKIE['__' . $name_a[0]]);
-                setcookie($name_a[0], json_encode($old, true), $c[0], $c[1], $c[2], $c[3], $c[4]);
             } else {
                 unset($_COOKIE[$name]);
                 self::set($session, null, -1);
@@ -126,6 +128,13 @@ class Session extends Plugger {
         } else {
             Mecha::UVR($_SESSION, $session);
         }
+    }
+
+    public static function start($path = null) {
+        if( ! is_null($path)) {
+            session_save_path($path);
+        }
+        session_start();
     }
 
 }

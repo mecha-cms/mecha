@@ -137,7 +137,7 @@ class Route extends Plugger {
         for($i = 0, $count = count(self::$routes); $i < $count; ++$i) {
             if(self::$routes[$i]['pattern'] === $pattern) {
                 if( ! is_null($stack)) {
-                    if((float) self::$routes[$i]['stack'] === (float) $stack) {
+                    if(self::$routes[$i]['stack'] === (float) $stack) {
                         unset(self::$routes[$i]);
                     }
                 } else {

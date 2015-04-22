@@ -174,9 +174,10 @@ class Guardian extends Plugger {
      *
      */
 
-    public static function checkerExist($name = null) {
+    public static function checkerExist($name = null, $fallback = false) {
         if(is_null($name)) return self::$validators;
-        return isset(self::$validators[get_called_class() . '::' . $name]);
+        $name = get_called_class() . '::' . $name;
+        return isset(self::$validators[$name]) ? self::$validators[$name] : $fallback;
     }
 
     /**
@@ -256,7 +257,7 @@ class Guardian extends Plugger {
 
     public static function memorize($memo = null) {
         if(is_null($memo)) {
-            $memo = $_SERVER['REQUEST_METHOD'] == 'POST' ? $_POST : array();
+            $memo = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : array();
         }
         if(is_object($memo)) {
             $memo = Mecha::A($memo);

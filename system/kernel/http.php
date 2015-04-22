@@ -2,7 +2,7 @@
 
 class HTTP extends Plugger {
 
-    public static $messages = array(
+    public static $message = array(
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing', // RFC2518
@@ -79,11 +79,11 @@ class HTTP extends Plugger {
      */
 
     public static function status($code = 200, $value = null) {
-        if(is_int($code) && isset(self::$messages[$code])) {
+        if(is_int($code) && isset(self::$message[$code])) {
             if(strpos(PHP_SAPI, 'cgi') !== false) {
-                header('Status: ' . $code . ' ' . self::$messages[$code]);
+                header('Status: ' . $code . ' ' . self::$message[$code]);
             } else {
-                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$messages[$code]);
+                header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$message[$code]);
             }
         } else 
         return new static;

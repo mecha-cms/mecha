@@ -115,9 +115,8 @@ class Weapon extends Plugger {
             self::$armaments_e[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
-                $stack = (float) $stack;
                 for($i = 0, $count = count(self::$armaments[$name]); $i < $count; ++$i) {
-                    if(self::$armaments[$name][$i]['stack'] === $stack) {
+                    if(self::$armaments[$name][$i]['stack'] === (float) $stack) {
                         unset(self::$armaments[$name][$i]);
                     }
                 }
