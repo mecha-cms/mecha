@@ -31,7 +31,7 @@ class Cell {
     protected static $tag_indent = array();
 
     // Encode all HTML entities
-    protected static function protect($value) {
+    public static function protect($value) {
         if( ! is_string($value)) return $value;
         return Text::parse($value, '->encoded_html');
     }

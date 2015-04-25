@@ -1,11 +1,21 @@
 <?php if( ! defined('ROOT')) die('Rejected.');
 
 
-// error_reporting(E_ALL);
-// ini_set('display_errors', 1);
+/**
+ * Error Reporting
+ * ---------------
+ */
 
-ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.log');
-ini_set('session.gc_probability', 1);
+if(DEBUG) {
+    error_reporting(E_ALL | E_STRICT);
+    ini_set('display_errors', TRUE);
+    ini_set('display_startup_errors', TRUE);
+    ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.log');
+} else {
+    error_reporting(0);
+    ini_set('display_errors', FALSE);
+    ini_set('display_startup_errors', FALSE);
+}
 
 
 /**
@@ -191,7 +201,7 @@ Filter::add('content', function($content) use($config) {
         return preg_replace(
             array(
                 '#<table>#',
-                '#<a href="(?!' . preg_quote($config->url, '/') . '|[\.\/\?\#])#'
+                '#<a href="(?!' . preg_quote($config->url, '/') . '|javascript:|[\.\/\?\#])#'
             ),
             array(
                 '<table class="table-bordered table-full-width">',

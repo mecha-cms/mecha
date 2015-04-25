@@ -6,12 +6,12 @@
  * -----------------
  */
 
-$e_plugin_page = "Title: %s\n" .
-     "Author: " . $speak->anon . "\n" .
-     "URL: #\n" .
-     "Version: 0.0.0\n" .
-     "\n" . SEPARATOR . "\n" .
-     "\n" . Config::speak('notify_not_available', $speak->description);
+$e_plugin_page = 'Title' . S . ' %s' . "\n" .
+    'Author' . S . ' ' . $speak->anon . "\n" .
+    'URL' . S . ' #' . "\n" .
+    'Version' . S . ' 0.0.0' . "\n" .
+    "\n" . SEPARATOR . "\n" .
+    "\n" . Config::speak('notify_not_available', $speak->description);
 
 
 /**

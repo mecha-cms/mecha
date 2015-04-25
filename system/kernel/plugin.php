@@ -2,8 +2,6 @@
 
 class Plugin extends Plugger {
 
-    public static $bucket = array();
-
     public static function load() {
         if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
             return File::open($plugins_order)->unserialize();

@@ -136,7 +136,9 @@ class Package extends Plugger {
             self::$map = array();
             $taken = false;
             foreach($files as $key => $value) {
-                self::$map[$key] = File::path($value);
+                $key = File::path($key);
+                $value = File::path($value);
+                self::$map[$key] = $value;
                 if( ! $taken) {
                     self::$open = $key;
                     $taken = true;

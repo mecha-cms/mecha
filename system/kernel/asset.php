@@ -137,7 +137,7 @@ class Asset extends Plugger {
         $merged_content = "";
         $e = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         if( ! file_exists($the_file) || ! $is_valid) {
-            if($e == 'gif' || $e == 'jpg' || $e == 'jpeg' || $e == 'png') {
+            if($e == 'gif' || $e == 'jpeg' || $e == 'jpg' || $e == 'png') {
                 foreach($files as $file) {
                     if( ! self::ignored($file)) {
                         $path = self::path($file);

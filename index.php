@@ -43,6 +43,7 @@ define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
 define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');
 define('SCRIPT_EXT', 'cache,css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
 
+define('DEBUG', false); // `true` to enable debug mode
 define('MAX_ERROR_FILE_SIZE', 1048576); // 1 MB
 
 require SYSTEM . DS . 'ignite.php';
