@@ -131,8 +131,8 @@ Weapon::add('article_footer', function($article) {
     $speak = Config::speak();
     if($config->page_type == 'manager') {
         $status = Mecha::alter(pathinfo($article->path, PATHINFO_EXTENSION), array(
-            'draft' => UI::span('info', UI::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => UI::span('info', UI::icon('archive') . ' ' . $speak->archive) . ' &middot; '
+            'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
+            'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
         ), "");
         echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
     }
@@ -143,8 +143,8 @@ Weapon::add('page_footer', function($page) {
     $speak = Config::speak();
     if($config->page_type == 'manager') {
         $status = Mecha::alter(pathinfo($page->path, PATHINFO_EXTENSION), array(
-            'draft' => UI::span('info', UI::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => UI::span('info', UI::icon('archive') . ' ' . $speak->archive) . ' &middot; '
+            'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
+            'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
         ), "");
         echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
     }
@@ -154,7 +154,7 @@ Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
     if(Guardian::happy()) {
-        echo ($comment->state == 'pending' ? UI::span('info', UI::icon('clock-o') . ' ' . $speak->pending) . ' &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+        echo ($comment->state == 'pending' ? Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 
