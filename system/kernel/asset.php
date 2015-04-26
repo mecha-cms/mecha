@@ -30,10 +30,10 @@ class Asset extends Plugger {
 
     // Get full version of private asset path
     public static function path($path) {
-        $path = trim(File::path($path), '\\/');
-        if($_path = File::exist(SHIELD . DS . Config::get('shield') . DS . $path)) {
+        $path = File::path($path);
+        if($_path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($path, DS))) {
             return $_path;
-        } else if($_path = File::exist(ROOT . DS . $path)) {
+        } else if($_path = File::exist(ROOT . DS . ltrim($path, DS))) {
             return $_path;
         }
         return $path;

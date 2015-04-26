@@ -81,7 +81,7 @@ class Get extends Plugger {
         $results = array();
         $results_inclusive = array();
         $extension = $extensions === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $extensions);
-        $folder = rtrim(File::path($folder), '\\/');
+        $folder = rtrim(File::path($folder), DS);
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
             if( ! $filter) {
@@ -142,7 +142,7 @@ class Get extends Plugger {
         $results = array();
         $results_inclusive = array();
         $extension = str_replace(' ', "", $extensions);
-        $folder = rtrim(File::path($folder), '\\/');
+        $folder = rtrim(File::path($folder), DS);
         // TODO: Access files with dot prefix using `glob()`
         $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
         foreach($files as $file) {

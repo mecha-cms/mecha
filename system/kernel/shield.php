@@ -69,10 +69,10 @@ class Shield extends Plugger {
 
     public static function path($name) {
         $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        $name = rtrim(File::path($name), '\\/') . '.' . ($extension === "" ? 'php' : $extension);
-        if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, '\\/'))) {
+        $name = File::path($name) . '.' . ($extension === "" ? 'php' : $extension);
+        if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
             return $path;
-        } else if($path = File::exist(ROOT . DS . ltrim($name, '\\/'))) {
+        } else if($path = File::exist(ROOT . DS . ltrim($name, DS))) {
             return $path;
         }
         return $name;

@@ -168,7 +168,7 @@ class Package extends Plugger {
     public static function pack($destination = null, $bucket = false) {
         $zip = new ZipArchive();
         if(is_dir(self::$open)) {
-            $root = rtrim(self::$open, '\\/');
+            $root = rtrim(self::$open, DS);
             $package = basename(self::$open);
         } else {
             $root = dirname(self::$open);
@@ -409,12 +409,12 @@ class Package extends Plugger {
                 foreach($old as $k => $v) {
                     $k = File::path($k);
                     $v = File::path($v);
-                    $root = trim(dirname($k), '\\/.') !== "" ? dirname($k) . DS : "";
+                    $root = trim(dirname($k), DS . '.') !== "" ? dirname($k) . DS : "";
                     $zip->renameName($k, $root . basename($v));
                 }
             } else {
                 $old = File::path($old);
-                $root = trim(dirname($old), '\\/.') !== "" ? dirname($old) . DS : "";
+                $root = trim(dirname($old), DS . '.') !== "" ? dirname($old) . DS : "";
                 $zip->renameName($old, $root . basename($new));
             }
             $zip->close();

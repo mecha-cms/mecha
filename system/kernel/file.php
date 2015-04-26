@@ -237,8 +237,8 @@ class File extends Plugger {
 
     // Rename a file
     public static function renameTo($new_name) {
-        $root = rtrim(dirname(self::$open), '\\/') . DS; 
-        $old_name = ltrim(basename(self::$open), '\\/');
+        $root = rtrim(dirname(self::$open), DS) . DS; 
+        $old_name = ltrim(basename(self::$open), DS);
         if($new_name != $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
@@ -248,7 +248,7 @@ class File extends Plugger {
 
     // Move file or folder to ...
     public static function moveTo($destination = ROOT) {
-        $destination = rtrim($destination, '\\/');
+        $destination = rtrim(File::path($destination), DS);
         if(file_exists(self::$open)) {
             if(is_dir($destination)) {
                 $destination .= DS . basename(self::$open);
@@ -270,7 +270,7 @@ class File extends Plugger {
             }
             foreach($destination as $dest) {
                 if(is_dir($dest)) {
-                    $dest = rtrim($dest, '\\/') . DS . basename(self::$open);
+                    $dest = rtrim(File::path($dest), DS) . DS . basename(self::$open);
                 }
                 if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
                     self::$index = 0;
