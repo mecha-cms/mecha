@@ -181,7 +181,8 @@ class Package extends Plugger {
             $destination = File::path($destination);
             // Handling for `Package::take('foo/bar')->pack('package.zip')`
             if(strpos($destination, DS) === false) {
-                $destination = dirname($root) . DS . $destination;
+                $root = ! is_array(self::$map) ? dirname($root) : $root;
+                $destination = $root . DS . $destination;
             }
             // Handling for `Package::take('foo/bar')->pack('bar/baz')`
             if(is_dir($destination)) {
@@ -269,6 +270,7 @@ class Package extends Plugger {
         return new static;
     }
 
+    // --ibid
     public static function extract($bucket = false) {
         return self::extractTo(null, $bucket);
     }

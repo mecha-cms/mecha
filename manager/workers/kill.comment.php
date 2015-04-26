@@ -5,7 +5,7 @@
   <p><?php echo $response->message; ?></p>
   <p><strong><?php echo $speak->date; ?>:</strong> <?php echo Date::format($response->time, 'Y/m/d H:i:s'); ?></p>
   <p>
-  <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/comment/repair/id:' . $response->id); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/comment/repair/id:' . $response->id); ?>
   </p>
 </form>

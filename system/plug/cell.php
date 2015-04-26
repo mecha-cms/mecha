@@ -17,7 +17,7 @@ Cell::add('link', function($href = null, $rel = null, $type = null, $attr = arra
 
 // `<script>`
 Cell::add('script', function($attr = array(), $content = "", $indent = 0) {
-    if( ! is_array($attr)) {
+    if(is_string($attr)) {
         $attr = array('src' => Converter::url($attr));
     }
     return Cell::unit('script', $content, $attr, $indent);

@@ -1,12 +1,12 @@
 <?php $segment = 'page'; ?>
 <div class="tab-area">
   <?php if(strpos($config->url_current, 'id:') !== false): ?>
-  <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/page/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><?php echo UI::icon('plus-square', 'fw') . ' ' . $speak->new; ?></a>
+  <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/page/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><?php echo Jot::icon('plus-square', 'fw') . ' ' . $speak->new; ?></a>
   <?php endif; ?>
-  <a class="tab active" href="#tab-content-1"><?php echo UI::icon('pencil', 'fw') . ' ' . $speak->compose; ?></a>
-  <a class="tab" href="#tab-content-2"><?php echo UI::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js; ?></a>
-  <a class="tab" href="#tab-content-3"><?php echo UI::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>
-  <a class="tab ajax-post" href="#tab-content-4" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:' . $segment; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-compose" data-target="#form-compose-preview"><?php echo UI::icon('eye', 'fw') . ' ' . $speak->preview; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('pencil', 'fw') . ' ' . $speak->compose; ?></a>
+  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js; ?></a>
+  <a class="tab" href="#tab-content-3"><?php echo Jot::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>
+  <a class="tab ajax-post" href="#tab-content-4" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:' . $segment; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-compose" data-target="#form-compose-preview"><?php echo Jot::icon('eye', 'fw') . ' ' . $speak->preview; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
@@ -65,18 +65,18 @@
     <hr>
     <p>
       <?php if(strpos($config->url_current, 'id:') === false): ?>
-      <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo UI::button('action:clock-o', $speak->save, 'action:save'); ?>
+      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
+      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
       <?php else: ?>
       <?php echo Form::hidden('date', Guardian::wayback('date', $default->date->W3C)); ?>
       <?php if(Guardian::wayback('state', $default->state) == 'published'): ?>
-      <?php echo UI::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo UI::button('action:history', $speak->unpublish, 'action:save'); ?>
+      <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
+      <?php echo Jot::button('action:history', $speak->unpublish, 'action:save'); ?>
       <?php else: ?>
-      <?php echo UI::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo UI::button('action:clock-o', $speak->save, 'action:save'); ?>
+      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
+      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
       <?php endif; ?>
-      <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/page/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/page/kill/id:' . Guardian::wayback('id', $default->id)); ?>
       <?php endif; ?>
     </p>
   </form>

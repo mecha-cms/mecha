@@ -1,6 +1,6 @@
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><?php echo UI::icon('cog', 'fw') . ' ' . $speak->config; ?></a>
-  <a class="tab" href="#tab-content-2"><?php echo UI::icon('user', 'fw') . ' ' . $speak->about; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('cog', 'fw') . ' ' . $speak->config; ?></a>
+  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('user', 'fw') . ' ' . $speak->about; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
@@ -13,7 +13,7 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <p class="plugin-author">
-    <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url != '#'): ?> <?php echo UI::a('help', UI::icon('external-link-square'), $file->url, array(
+    <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url != '#'): ?> <?php echo Jot::a('help', Jot::icon('external-link-square'), $file->url, array(
         'rel' => 'nofollow',
         'target' => '_blank'
     )); ?>

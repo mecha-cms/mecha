@@ -4,7 +4,7 @@
   <table class="table-bordered table-full-width table-sortable">
     <thead>
       <tr>
-        <th class="th-icon"><?php echo UI::icon('sort'); ?></th>
+        <th class="th-icon"><?php echo Jot::icon('sort'); ?></th>
         <th><?php echo $speak->key; ?></th>
         <th><?php echo $speak->value; ?></th>
       </tr>
@@ -41,11 +41,11 @@
         </td>
       </tr>
       <tr class="row-more-less" data-min="<?php echo $count + 1; ?>" data-max="9999">
-        <td colspan="3"><?php echo UI::btn('default.small:plus-circle', $speak->more, '#row:more', array('class' => 'row-more')); ?> <?php echo UI::btn('default.small:minus-circle', $speak->less, '#row:less', array('class' => 'row-less')); ?></td>
+        <td colspan="3"><?php echo Jot::btn('default.small:plus-circle', $speak->more, '#row:more', array('class' => 'row-more')); ?> <?php echo Jot::btn('default.small:minus-circle', $speak->less, '#row:less', array('class' => 'row-less')); ?></td>
       </tr>
     </tbody>
   </table>
-  <p><?php echo UI::button('action', $speak->update); ?></p>
+  <p><?php echo Jot::button('action', $speak->update); ?></p>
 </form>
 <hr>
 <?php echo Config::speak('file:shortcode'); ?>

@@ -1,8 +1,8 @@
 <?php $segment = 'comment'; ?>
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><?php echo UI::icon('pencil', 'fw') . ' ' . $speak->edit; ?></a>
-  <a class="tab" href="#tab-content-3"><?php echo UI::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>
-  <a class="tab ajax-post" href="#tab-content-2" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:comment'; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-repair" data-target="#form-repair-preview"><?php echo UI::icon('eye', 'fw') . ' ' . $speak->preview; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('pencil', 'fw') . ' ' . $speak->edit; ?></a>
+  <a class="tab" href="#tab-content-3"><?php echo Jot::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>
+  <a class="tab ajax-post" href="#tab-content-2" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:comment'; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-repair" data-target="#form-repair-preview"><?php echo Jot::icon('eye', 'fw') . ' ' . $speak->preview; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
@@ -81,13 +81,13 @@
     <hr>
     <p>
       <?php if(Guardian::wayback('state', $default->state) == 'pending'): ?>
-      <?php echo UI::button('accept', $speak->approve, 'action:publish'); ?>
-      <?php echo UI::button('action:clock-o', $speak->update, 'action:save'); ?>
+      <?php echo Jot::button('accept', $speak->approve, 'action:publish'); ?>
+      <?php echo Jot::button('action:clock-o', $speak->update, 'action:save'); ?>
       <?php else: ?>
-      <?php echo UI::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo UI::button('action:history', $speak->unapprove, 'action:save'); ?>
+      <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
+      <?php echo Jot::button('action:history', $speak->unapprove, 'action:save'); ?>
       <?php endif; ?>
-      <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/comment/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/comment/kill/id:' . Guardian::wayback('id', $default->id)); ?>
     </p>
   </form>
 </div>

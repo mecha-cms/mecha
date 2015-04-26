@@ -1,14 +1,14 @@
 <?php
 
 // `<i class="fa fa-check-circle">`
-UI::add('icon', function($kind, $modifier = null) {
+Jot::add('icon', function($kind, $modifier = null) {
     return Cell::i("", array(
         'class' => 'fa fa-' . $kind . (is_string($modifier) ? ' fa-' . trim(str_replace('.', ' fa-', $modifier), '.') : "")
     ));
 });
 
 // `<button class="btn">`
-UI::add('button', function($kind = 'default', $text = "", $name = null, $type = 'submit', $attr = array(), $indent = 0) {
+Jot::add('button', function($kind = 'default', $text = "", $name = null, $type = 'submit', $attr = array(), $indent = 0) {
     $kind = explode(':', $kind);
     $k = explode('.', trim($kind[0], '.'));
     $icon = count($kind) === 1 ? Mecha::alter($k[0], array(
@@ -22,7 +22,7 @@ UI::add('button', function($kind = 'default', $text = "", $name = null, $type = 
         'reject' => 'times-circle'
     ), "") : $kind[1];
     if($icon !== "") {
-        $text = UI::icon($icon) . ' ' . $text;
+        $text = Jot::icon($icon) . ' ' . $text;
     }
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
@@ -38,7 +38,7 @@ UI::add('button', function($kind = 'default', $text = "", $name = null, $type = 
 });
 
 // `<a class="btn">`
-UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = array(), $indent = 0) {
+Jot::add('btn', function($kind = 'default', $text = "", $href = null, $attr = array(), $indent = 0) {
     $kind = explode(':', $kind);
     $k = explode('.', trim($kind[0], '.'));
     $icon = count($kind) === 1 ? Mecha::alter($k[0], array(
@@ -52,7 +52,7 @@ UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = arr
         'reject' => 'times-circle'
     ), "") : $kind[1];
     if($icon !== "") {
-        $text = UI::icon($icon) . ' ' . $text;
+        $text = Jot::icon($icon) . ' ' . $text;
     }
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
@@ -69,7 +69,7 @@ UI::add('btn', function($kind = 'default', $text = "", $href = null, $attr = arr
 
 // `<b|em|i|span|strong class="text-error">`
 foreach(array('b', 'em', 'i', 'span', 'strong') as $tag) {
-    UI::add($tag, function($kind = 'default', $text = "", $attr = array(), $indent = 0) use($tag) {
+    Jot::add($tag, function($kind = 'default', $text = "", $attr = array(), $indent = 0) use($tag) {
         if( ! isset($attr['class'])) {
             $attr['class'] = array();
         } else {
@@ -83,7 +83,7 @@ foreach(array('b', 'em', 'i', 'span', 'strong') as $tag) {
 }
 
 // `<a class="text-error">`
-UI::add('a', function($kind = 'default', $href = null, $text = "", $attr = array(), $indent = 0) {
+Jot::add('a', function($kind = 'default', $href = null, $text = "", $attr = array(), $indent = 0) {
     $attr['href'] = Converter::url($href);
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
@@ -97,7 +97,7 @@ UI::add('a', function($kind = 'default', $href = null, $text = "", $attr = array
 });
 
 // File uploader
-UI::add('uploader', function($action, $accept = null, $fields = array()) {
+Jot::add('uploader', function($action, $accept = null, $fields = array()) {
     $speak = Config::speak();
     $html = Cell::begin('form', array(
         'class' => 'form-upload',
@@ -116,7 +116,7 @@ UI::add('uploader', function($action, $accept = null, $fields = array()) {
             'btn-default'
         )
     ), 1) . NL;
-    $html .= Cell::unit('span', UI::icon('folder-open') . ' ' . $speak->manager->placeholder_file, array(), 2) . NL;
+    $html .= Cell::unit('span', Jot::icon('folder-open') . ' ' . $speak->manager->placeholder_file, array(), 2) . NL;
     $html .= Form::file('file', array(
         'title' => $speak->manager->placeholder_file,
         'data' => array(
@@ -125,19 +125,19 @@ UI::add('uploader', function($action, $accept = null, $fields = array()) {
             'accepted-extensions' => ! is_null($accept) ? $accept : implode(',', File::$config['file_extension_allow'])
         )
     ), 2) . NL;
-    $html .= Cell::end() . ' ' . UI::button('action:cloud-upload', $speak->upload) . NL;
+    $html .= Cell::end() . ' ' . Jot::button('action:cloud-upload', $speak->upload) . NL;
     $html .= Cell::end();
     return $html;
 });
 
 // File finder
-UI::add('finder', function($action, $name = 'q') {
+Jot::add('finder', function($action, $name = 'q') {
     $html = Cell::begin('form', array(
         'class' => 'form-find',
         'action' => Converter::url($action),
         'method' => 'get'
     )) . NL;
-    $html .= Form::text($name, Request::get($name, null), null, array(), 1) . ' ' . UI::button('action:search', Config::speak('find')) . NL;
+    $html .= Form::text($name, Request::get($name, null), null, array(), 1) . ' ' . Jot::button('action:search', Config::speak('find')) . NL;
     $html .= Cell::end();
     return $html;
 });

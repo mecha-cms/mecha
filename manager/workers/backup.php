@@ -1,6 +1,6 @@
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><?php echo UI::icon('file-archive-o', 'fw') . ' ' . $speak->backup; ?></a>
-  <a class="tab" href="#tab-content-2"><?php echo UI::icon('recycle', 'fw') . ' ' . $speak->restore; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('file-archive-o', 'fw') . ' ' . $speak->backup; ?></a>
+  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('recycle', 'fw') . ' ' . $speak->restore; ?></a>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
@@ -11,15 +11,15 @@
         <?php
 
         $origins = array(
-            UI::icon('database', 'fw') . ' ' . $speak->site => 'ROOT',
-            UI::icon('file-text', 'fw') . ' ' . $speak->article => basename(ARTICLE),
-            UI::icon('file', 'fw') . ' ' . $speak->page => basename(PAGE),
-            UI::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js => basename(CUSTOM),
-            UI::icon('comments', 'fw') . ' ' . $speak->comment => basename(RESPONSE),
-            UI::icon('cogs', 'fw') . ' ' . $speak->config => basename(STATE),
-            UI::icon('briefcase', 'fw') . ' ' . $speak->asset => basename(ASSET),
-            UI::icon('shield', 'fw') . ' ' . $speak->shield => basename(SHIELD),
-            UI::icon('plug', 'fw') . ' ' . $speak->plugin => basename(PLUGIN)
+            Jot::icon('database', 'fw') . ' ' . $speak->site => 'ROOT',
+            Jot::icon('file-text', 'fw') . ' ' . $speak->article => basename(ARTICLE),
+            Jot::icon('file', 'fw') . ' ' . $speak->page => basename(PAGE),
+            Jot::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js => basename(CUSTOM),
+            Jot::icon('comments', 'fw') . ' ' . $speak->comment => basename(RESPONSE),
+            Jot::icon('cogs', 'fw') . ' ' . $speak->config => basename(STATE),
+            Jot::icon('briefcase', 'fw') . ' ' . $speak->asset => basename(ASSET),
+            Jot::icon('shield', 'fw') . ' ' . $speak->shield => basename(SHIELD),
+            Jot::icon('plug', 'fw') . ' ' . $speak->plugin => basename(PLUGIN)
         );
 
         ?>
@@ -27,7 +27,7 @@
         <tr>
           <td><?php echo $title; ?></td>
           <td class="td-icon">
-          <?php echo Cell::a($config->url_current . '/origin:' . $origin, UI::icon('download'), null, array(
+          <?php echo Cell::a($config->url_current . '/origin:' . $origin, Jot::icon('download'), null, array(
               'title' => $speak->download
           )); ?>
           </td>
@@ -42,14 +42,14 @@
     <?php
 
     $destinations = array(
-        UI::icon('file-text') . ' ' . $speak->article => ARTICLE,
-        UI::icon('file') . ' ' . $speak->page => PAGE,
-        UI::icon('leaf') . ' ' . $speak->manager->title_custom_css_and_js => CUSTOM,
-        UI::icon('comments') . ' ' . $speak->comment => RESPONSE,
-        UI::icon('cogs') . ' ' . $speak->config => STATE,
-        UI::icon('briefcase') . ' ' . $speak->asset => ASSET,
-        UI::icon('shield') . ' ' . $speak->shield => SHIELD,
-        UI::icon('plug') . ' ' . $speak->plugin => PLUGIN
+        Jot::icon('file-text') . ' ' . $speak->article => ARTICLE,
+        Jot::icon('file') . ' ' . $speak->page => PAGE,
+        Jot::icon('leaf') . ' ' . $speak->manager->title_custom_css_and_js => CUSTOM,
+        Jot::icon('comments') . ' ' . $speak->comment => RESPONSE,
+        Jot::icon('cogs') . ' ' . $speak->config => STATE,
+        Jot::icon('briefcase') . ' ' . $speak->asset => ASSET,
+        Jot::icon('shield') . ' ' . $speak->shield => SHIELD,
+        Jot::icon('plug') . ' ' . $speak->plugin => PLUGIN
     );
 
     ?>
@@ -58,7 +58,7 @@
       <h4 class="media-title"><?php echo $title; ?></h4>
       <div class="media-content">
         <p><code><?php echo $destination; ?></code></p>
-        <?php echo UI::uploader($config->url_current, 'zip', array(
+        <?php echo Jot::uploader($config->url_current, 'zip', array(
             'destination' => $destination,
             'title' => trim(strip_tags($title))
         )); ?>

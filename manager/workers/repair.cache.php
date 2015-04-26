@@ -12,7 +12,7 @@
   )); ?>
   </p>
   <p>
-  <?php echo UI::button('action', $speak->update); ?>
-  <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/cache/kill/file:' . File::url(str_replace(CACHE . DS, "", $the_name))); ?>
+  <?php echo Jot::button('action', $speak->update); ?>
+  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/cache/kill/file:' . File::url(str_replace(CACHE . DS, "", $the_name))); ?>
   </p>
 </form>

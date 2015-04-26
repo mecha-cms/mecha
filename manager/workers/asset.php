@@ -1,6 +1,6 @@
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><?php echo UI::icon('briefcase', 'fw') . ' ' . $speak->assets; ?></a>
-  <a class="tab" href="#tab-content-2"><?php echo UI::icon('cloud-upload', 'fw') . ' ' . $speak->upload; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('briefcase', 'fw') . ' ' . $speak->assets; ?></a>
+  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('cloud-upload', 'fw') . ' ' . $speak->upload; ?></a>
 </div>
 <div class="tab-content-area">
   <div class="tab-content" id="tab-content-1">
@@ -9,7 +9,7 @@
     <form class="form-asset" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/asset/kill" method="post">
       <?php echo Form::hidden('token', $token); ?>
       <div class="main-action-group">
-        <?php echo UI::button('destruct', $speak->delete); ?>
+        <?php echo Jot::button('destruct', $speak->delete); ?>
       </div>
       <?php echo Notify::errors() ? "" : $messages; ?>
       <table class="table-bordered table-full-width">
@@ -32,14 +32,14 @@
             <?php echo Form::checkbox('selected[]', $the_asset_url); ?>
             </td>
             <td class="td-collapse"><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
-            <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo strpos($the_asset_url, '/') !== false ? UI::span('fade', dirname($the_asset_url) . '/') . basename($the_asset_url) : $the_asset_url; ?></a></td>
+            <td><a href="<?php echo $file->url; ?>" title="<?php echo $file->size; ?>" target="_blank"><?php echo strpos($the_asset_url, '/') !== false ? Jot::span('fade', dirname($the_asset_url) . '/') . basename($the_asset_url) : $the_asset_url; ?></a></td>
             <td class="td-icon">
-            <?php echo UI::a('construct', $config->manager->slug . '/asset/repair/file:' . $the_asset_url, UI::icon('pencil'), array(
+            <?php echo Jot::a('construct', $config->manager->slug . '/asset/repair/file:' . $the_asset_url, Jot::icon('pencil'), array(
                 'title' => $speak->edit
             )); ?>
             </td>
             <td class="td-icon">
-            <?php echo UI::a('destruct', $config->manager->slug . '/asset/kill/file:' . $the_asset_url, UI::icon('times'), array(
+            <?php echo Jot::a('destruct', $config->manager->slug . '/asset/kill/file:' . $the_asset_url, Jot::icon('times'), array(
                 'title' => $speak->delete
             )); ?>
             </td>
@@ -52,7 +52,7 @@
     </form>
     <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
     <hr>
-    <?php echo UI::finder($config->manager->slug . '/asset', 'q'); ?>
+    <?php echo Jot::finder($config->manager->slug . '/asset', 'q'); ?>
     <?php endif; ?>
     <?php else: ?>
     <p><?php echo Config::speak('notify_' . (Request::get('q') || $config->offset !== 1 ? 'error_not_found' : 'empty'), strtolower($speak->assets)); ?></p>
@@ -61,6 +61,6 @@
   <div class="tab-content hidden" id="tab-content-2">
     <?php echo Notify::errors() ? $messages : ""; ?>
     <h3><?php echo Config::speak('manager.title__upload_alt', $speak->asset); ?></h3>
-<?php echo UI::uploader($config->manager->slug . '/asset'); ?>
+<?php echo Jot::uploader($config->manager->slug . '/asset'); ?>
   </div>
 </div>

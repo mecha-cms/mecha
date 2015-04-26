@@ -398,5 +398,5 @@
       </span>
     </label>
   </fieldset>
-  <p><?php echo UI::button('action', $speak->update); ?></p>
+  <p><?php echo Jot::button('action', $speak->update); ?></p>
 </form>

@@ -10,7 +10,7 @@
   <pre><code><?php echo substr(Text::parse($page->js, '->encoded_html'), 0, $config->excerpt_length); ?><?php if(strlen($page->js) > $config->excerpt_length) echo ' &hellip;'; ?></code></pre>
   <?php endif; ?>
   <p>
-  <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/page/repair/id:' . $page->id); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/page/repair/id:' . $page->id); ?>
   </p>
 </form>

@@ -2,7 +2,7 @@
 <form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <div class="main-action-group">
-    <?php echo UI::button('destruct', $speak->delete); ?>
+    <?php echo Jot::button('destruct', $speak->delete); ?>
   </div>
   <?php echo $messages; ?>
   <table class="table-bordered table-full-width">
@@ -25,10 +25,10 @@
         <?php echo Form::checkbox('selected[]', $the_cache_url); ?>
         </td>
         <td class="td-collapse"><time datetime="<?php echo Date::format($file->update, 'c'); ?>"><?php echo Date::format($file->update, 'Y/m/d H:i:s'); ?></time></td>
-        <td><span title="<?php echo $file->size; ?>"><?php echo strpos($the_cache_url, '/') !== false ? UI::span('fade', dirname($the_cache_url) . '/') . basename($the_cache_url) : $the_cache_url; ?></span></td>
+        <td><span title="<?php echo $file->size; ?>"><?php echo strpos($the_cache_url, '/') !== false ? Jot::span('fade', dirname($the_cache_url) . '/') . basename($the_cache_url) : $the_cache_url; ?></span></td>
         <?php if(in_array($file->extension, $editable)): ?>
         <td class="td-icon">
-        <?php echo UI::a('construct', $config->manager->slug . '/cache/repair/file:' . $the_cache_url, UI::icon('pencil'), array(
+        <?php echo Jot::a('construct', $config->manager->slug . '/cache/repair/file:' . $the_cache_url, Jot::icon('pencil'), array(
             'title' => $speak->edit
         )); ?>
         </td>
@@ -36,7 +36,7 @@
         <td></td>
         <?php endif; ?>
         <td class="td-icon">
-        <?php echo UI::a('destruct', $config->manager->slug . '/cache/kill/file:' . $the_cache_url, UI::icon('times'), array(
+        <?php echo Jot::a('destruct', $config->manager->slug . '/cache/kill/file:' . $the_cache_url, Jot::icon('times'), array(
             'title' => $speak->delete
         )); ?>
         </td>
@@ -50,7 +50,7 @@
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>
-<?php echo UI::finder($config->manager->slug . '/cache', 'q'); ?>
+<?php echo Jot::finder($config->manager->slug . '/cache', 'q'); ?>
 <?php endif; ?>
 <?php else: ?>
 <?php echo $messages; ?>

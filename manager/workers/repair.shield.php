@@ -18,13 +18,13 @@
   <hr>
   <p>
     <?php if(strpos($config->url_current, 'file:') === false): ?>
-    <?php echo UI::button('construct', $speak->create); ?>
+    <?php echo Jot::button('construct', $speak->create); ?>
     <?php else: ?>
-    <?php echo UI::button('action', $speak->update); ?>
+    <?php echo Jot::button('action', $speak->update); ?>
     <?php endif; ?> <?php if(strpos($config->url_current, 'file:') !== false): ?>
-    <?php echo UI::btn('destruct', $speak->delete, $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path))); ?>
+    <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/shield/' . $the_shield . '/kill/file:' . File::url(str_replace(SHIELD . DS . $shield . DS, "", $the_path))); ?>
     <?php else: ?>
-    <?php echo UI::btn('reject', $speak->cancel, $config->manager->slug . '/shield/' . $the_shield); ?>
+    <?php echo Jot::btn('reject', $speak->cancel, $config->manager->slug . '/shield/' . $the_shield); ?>
     <?php endif; ?>
   </p>
 </form>

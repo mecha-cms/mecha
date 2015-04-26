@@ -23,13 +23,13 @@
         ), 'Summary');
 
         ?>
-        <td><?php echo UI::em('info', $s); ?></td>
+        <td><?php echo Jot::em('info', $s); ?></td>
         <td><?php echo isset($file->scope) ? $file->scope : strtolower($speak->article . '/' . $speak->page); ?></td>
       </tr>
     </tbody>
   </table>
   <p>
-  <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $the_key); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $the_key); ?>
   </p>
 </form>

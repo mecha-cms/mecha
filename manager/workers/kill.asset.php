@@ -7,7 +7,7 @@
     <?php endforeach; ?>
   </ul>
   <p>
-  <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/asset'); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/asset'); ?>
   </p>
 </form>

@@ -9,5 +9,5 @@
     )
 )); ?>
 </p>
-<p><?php echo UI::btn('destruct', $speak->delete, $config->url_current . '/kill'); ?></p>
+<p><?php echo Jot::btn('destruct', $speak->delete, $config->url_current . '/kill'); ?></p>
 <?php endif; ?>

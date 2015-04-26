@@ -38,10 +38,11 @@ class Cell {
 
     // Setup HTML attributes ...
     public static function bond($array) {
-        $output = "";
-        if( ! is_array($array)) {
-            $array = array();
+        if(is_string($array)) {
+            $attr = trim($array);
+            return strlen($attr) ? ' ' . $attr : "";
         }
+        $output = "";
         $array = array_replace(self::$attr_order, $array);
         // HTML5 `data-*` attribute
         if(isset($array['data']) && is_array($array['data'])) {

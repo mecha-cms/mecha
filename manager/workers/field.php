@@ -1,5 +1,5 @@
 <div class="main-action-group">
-  <?php echo UI::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->field), $config->manager->slug . '/field/ignite'); ?>
+  <?php echo Jot::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->field), $config->manager->slug . '/field/ignite'); ?>
 </div>
 <?php echo $messages; ?>
 <?php if($files): ?>
@@ -26,14 +26,14 @@
       ), 'Summary');
 
       ?>
-      <td><?php echo UI::em('info', $s); ?></td>
+      <td><?php echo Jot::em('info', $s); ?></td>
       <td class="td-icon">
-      <?php echo UI::a('construct', $config->manager->slug . '/field/repair/key:' . $key, UI::icon('pencil'), array(
+      <?php echo Jot::a('construct', $config->manager->slug . '/field/repair/key:' . $key, Jot::icon('pencil'), array(
           'title' => $speak->edit
       )); ?>
       </td>
       <td class="td-icon">
-      <?php echo UI::a('destruct', $config->manager->slug . '/field/kill/key:' . $key, UI::icon('times'), array(
+      <?php echo Jot::a('destruct', $config->manager->slug . '/field/kill/key:' . $key, Jot::icon('times'), array(
           'title' => $speak->delete
       )); ?>
       </td>

@@ -4,7 +4,7 @@
   <h3><?php echo $file->title; ?></h3>
   <p><?php echo $file->content; ?></p>
   <p>
-  <?php echo UI::button('action', $speak->yes); ?>
-  <?php echo UI::btn('reject', $speak->no, $config->manager->slug . '/plugin'); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/plugin'); ?>
   </p>
 </form>

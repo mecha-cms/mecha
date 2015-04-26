@@ -60,8 +60,8 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
 
 Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($path = "", $old = "") use($config, $speak) {
     $old = File::path($old);
-    $dir_name = rtrim(dirname($old), '\\/');
-    $old_name = ltrim(basename($old), '\\/');
+    $dir_name = rtrim(dirname($old), DS);
+    $old_name = ltrim(basename($old), DS);
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }

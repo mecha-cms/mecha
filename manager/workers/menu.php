@@ -12,7 +12,7 @@
       'data-MTE-config' => '{"tabSize":"    "}'
   )); ?>
   </p>
-  <p><?php echo UI::button('action', $speak->update); ?></p>
+  <p><?php echo Jot::button('action', $speak->update); ?></p>
 </form>
 <hr>
 <?php echo Config::speak('file:menu'); ?>
