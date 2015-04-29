@@ -140,7 +140,7 @@ class Text extends Plugger {
             if(strpos($text, ROOT) === 0 && file_exists($text)) {
                 $text = file_get_contents($text);
             }
-            $text = str_replace("", "", $text);
+            $text = str_replace("\r", "", $text);
             // By file content
             if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
                 $results[$c . '_raw'] = self::DS(trim($text));
@@ -239,14 +239,14 @@ class Text extends Plugger {
         $text = preg_replace(
             array(
                 '#\r#',
-                '#\n+#',
                 '#(^|\n)\s*\#[^\n]*#',
+                '#\n+#',
                 '#^\n+|\n+$#'
             ),
             array(
                 "",
                 "\n",
-                '$1',
+                "\n",
                 ""
             ),
         $text);

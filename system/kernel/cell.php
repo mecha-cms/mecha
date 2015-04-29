@@ -38,8 +38,8 @@ class Cell {
 
     // Setup HTML attributes ...
     public static function bond($array) {
-        if(is_string($array)) {
-            $attr = trim($array);
+        if( ! is_array($array)) {
+            $attr = trim((string) $array);
             return strlen($attr) ? ' ' . $attr : "";
         }
         $output = "";

@@ -407,7 +407,7 @@ class Widget {
                 $html .= str_repeat(TAB, 2) . '<li class="recent-comment">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= str_repeat(TAB, 3) . '<div class="recent-comment-avatar">' . NL;
-                    $html .= str_repeat(TAB, 4) . '<img alt="" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . $d . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
+                    $html .= str_repeat(TAB, 4) . '<img alt="" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=' . $avatar_size . '&amp;d=' . urlencode($d) . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
                     $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-header">' . NL;

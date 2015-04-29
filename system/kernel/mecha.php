@@ -95,7 +95,7 @@ class Mecha extends Plugger {
     }
 
     // Sort array based on its value's key
-    public static function order($order = 'ASC', $key = null, $include_missing_key = false) {
+    public static function order($order = 'ASC', $key = null, $preserve_key = false, $include_missing_key = false) {
         if( ! is_null($key)) {
             $before = array();
             $after = array();
@@ -107,20 +107,24 @@ class Mecha extends Plugger {
                         $before[$k] = null;
                     }
                 }
-                if($order == 'ASC') {
+                if($order === 'ASC') {
                     asort($before);
                 } else {
                     arsort($before);
                 }
                 foreach($before as $k => $v) {
-                    $after[$k] = self::$stomach[$k];
+                    if($preserve_key) {
+                        $after[$k] = self::$stomach[$k];
+                    } else {
+                        $after[] = self::$stomach[$k];
+                    }
                 }
             }
             self::$stomach = $after;
             unset($before);
             unset($after);
         } else {
-            if($order == 'ASC') {
+            if($order === 'ASC') {
                 asort(self::$stomach);
             } else {
                 arsort(self::$stomach);
