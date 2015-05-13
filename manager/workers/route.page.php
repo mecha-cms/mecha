@@ -92,20 +92,6 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $request['path'] = $page->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
-        // Collect all available slug to prevent duplicate
-        $slugs = array();
-        if($files = Get::pages('DESC', "", 'txt,draft,archive')) {
-            foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
-                $slugs[$_slug] = 1;
-            }
-            unset($files);
-        }
-        $slugs[$config->index->slug] = 1;
-        $slugs[$config->tag->slug] = 1;
-        $slugs[$config->archive->slug] = 1;
-        $slugs[$config->search->slug] = 1;
-        $slugs[$config->manager->slug] = 1;
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
         // General fields
@@ -119,7 +105,13 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
         // Check for duplicate slug
-        if( ! $id && isset($slugs[$slug])) {
+        if(
+            $slug === $config->index->slug ||
+            $slug === $config->tag->slug ||
+            $slug === $config->archive->slug ||
+            $slug === $config->search->slug ||
+            $slug === $config->manager->slug
+        ) {
             Notify::error(Config::speak('notify_error_slug_exist', $slug));
             Guardian::memorize($request);
         }
@@ -143,6 +135,17 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $P = array('data' => $request, 'action' => $request['action']);
         // New
         if( ! $id) {
+            // Check for duplicate slug
+            if($files = Get::pages('DESC', "", 'txt,draft,archive')) {
+                foreach($files as $file) {
+                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                        Guardian::memorize($request);
+                        break;
+                    }
+                }
+                unset($files);
+            }
             if( ! Notify::errors()) {
                 Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 if(( ! empty($css) && $css != $config->defaults->page_custom_css) || ( ! empty($js) && $js != $config->defaults->page_custom_js)) {
@@ -158,10 +161,15 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // Check for duplicate slug, except for the current old slug.
             // Allow users to change their post slug, but make sure they
             // do not type the slug of another post.
-            unset($slugs[$page->slug]);
-            if(isset($slugs[$slug])) {
-                Notify::error(Config::speak('notify_error_slug_exist', $slug));
-                Guardian::memorize($request);
+            if($files = Get::pages('DESC', "", 'txt,draft,archive') && $slug !== $page->slug) {
+                foreach($files as $file) {
+                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                        Guardian::memorize($request);
+                        break;
+                    }
+                }
+                unset($files);
             }
             // Start rewriting ...
             if( ! Notify::errors()) {

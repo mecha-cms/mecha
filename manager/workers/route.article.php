@@ -94,15 +94,6 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $request['path'] = $article->path;
         $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
         $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
-        // Collect all available slug to prevent duplicate
-        $slugs = array();
-        if($files = Get::articles('DESC', "", 'txt,draft,archive')) {
-            foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
-                $slugs[$_slug] = 1;
-            }
-            unset($files);
-        }
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
         // General fields
@@ -117,11 +108,6 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
         sort($kinds);
-        // Check for duplicate slug
-        if( ! $id && isset($slugs[$slug])) {
-            Notify::error(Config::speak('notify_error_slug_exist', $slug));
-            Guardian::memorize($request);
-        }
         // Slug must contains at least one letter or one `-`. This validation added
         // to prevent users from inputting a page offset instead of article slug.
         // Because the URL pattern of article's index page is `article/1` and the
@@ -145,6 +131,17 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $P = array('data' => $request, 'action' => $request['action']);
         // New
         if( ! $id) {
+            // Check for duplicate slug
+            if($files = Get::articles('DESC', "", 'txt,draft,archive')) {
+                foreach($files as $file) {
+                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                        Guardian::memorize($request);
+                        break;
+                    }
+                }
+                unset($files);
+            }
             if( ! Notify::errors()) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
                 if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
@@ -160,10 +157,15 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // Check for duplicate slug, except for the current old slug.
             // Allow users to change their post slug, but make sure they
             // do not type the slug of another post.
-            unset($slugs[$article->slug]);
-            if(isset($slugs[$slug])) {
-                Notify::error(Config::speak('notify_error_slug_exist', $slug));
-                Guardian::memorize($request);
+            if($files = Get::articles('DESC', "", 'txt,draft,archive') && $slug !== $article->slug) {
+                foreach($files as $file) {
+                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                        Guardian::memorize($request);
+                        break;
+                    }
+                }
+                unset($files);
             }
             // Start rewriting ...
             if( ! Notify::errors()) {
