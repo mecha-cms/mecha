@@ -18,8 +18,8 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        $destination = Request::post('destination', ROOT);
-        $title = Request::post('title', $speak->files);
+        $destination = Request::post('destination', ROOT, false);
+        $title = Request::post('title', $speak->files, false);
         $accepted_mimes = array(
             'application/download',
             'application/octet-stream',
