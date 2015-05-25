@@ -196,7 +196,7 @@ class Shield extends Plugger {
             'cache' => $cache
         ));
         Weapon::fire('before_shield_config_redefine', array($G, $G));
-        extract(self::defines());
+        extract(Filter::apply('shield:lot', self::defines()));
         Weapon::fire('after_shield_config_redefine', array($G, $G));
         $shield = false;
         $shield_base = explode('-', $name, 2);

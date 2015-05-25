@@ -65,6 +65,7 @@ class Page extends Plugger {
         foreach($data as $k => $v) {
             if($v === false) {
                 unset($data[self::fix($k)]);
+                unset(self::$bucket[self::fix($k)]);
             } else {
                 // Restrict users from inputting the `SEPARATOR` constant
                 // to prevent mistakes in parsing the file content
