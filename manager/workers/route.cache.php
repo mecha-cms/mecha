@@ -56,7 +56,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         Weapon::fire('on_cache_repair', array($G, $P));
         Guardian::kick($config->manager->slug . '/cache/repair/file:' . File::url($name));
     }
-    Shield::define(array(
+    Shield::lot(array(
         'the_name' => $name,
         'the_content' => File::open($file)->read()
     ))->attach('manager', false);
@@ -102,7 +102,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::define('the_name', $deletes)->attach('manager', false);
+    Shield::lot('the_name', $deletes)->attach('manager', false);
 });
 
 

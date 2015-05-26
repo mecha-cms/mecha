@@ -31,5 +31,5 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
             Guardian::kick($config->url_current);
         }
     }
-    Shield::define('the_content', $menus)->attach('manager', false);
+    Shield::lot('the_content', $menus)->attach('manager', false);
 });

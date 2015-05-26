@@ -202,7 +202,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/sword/editor.compose.js', "", 'editor.compose.min.js');
     }, 11);
-    Shield::define('default', $page)->attach('manager', false);
+    Shield::lot('default', $page)->attach('manager', false);
 });
 
 

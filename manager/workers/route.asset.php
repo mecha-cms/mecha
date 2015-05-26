@@ -101,7 +101,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             }
         }
     }
-    Shield::define('the_name', $old_name)->attach('manager', false);
+    Shield::lot('the_name', $old_name)->attach('manager', false);
 });
 
 
@@ -144,7 +144,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::define('the_name', $deletes)->attach('manager', false);
+    Shield::lot('the_name', $deletes)->attach('manager', false);
 });
 
 

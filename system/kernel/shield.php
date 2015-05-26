@@ -2,7 +2,7 @@
 
 class Shield extends Plugger {
 
-    protected static $defines = array();
+    protected static $lot = array();
 
     /**
      * Do Nothing
@@ -29,7 +29,7 @@ class Shield extends Plugger {
      * --------------------------
      */
 
-    protected static function defines() {
+    protected static function cargo() {
         $config = Config::get();
         $token = Guardian::token();
         $message = Notify::read();
@@ -51,7 +51,7 @@ class Shield extends Plugger {
         );
         Session::set(Guardian::$token, $token);
         Session::set(Notify::$message, $message);
-        return array_merge($results, self::$defines);
+        return array_merge($results, self::$lot);
     }
 
     /**
@@ -85,11 +85,11 @@ class Shield extends Plugger {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    Shield::define('foo', 'bar')->attach('file');
+     *    Shield::lot('foo', 'bar')->attach('file');
      *
      * ----------------------------------------------------------
      *
-     *    Shield::define(array(
+     *    Shield::lot(array(
      *        'foo' => 'bar',
      *        'baz' => 'qux'
      *    ))->attach('page');
@@ -98,11 +98,11 @@ class Shield extends Plugger {
      *
      */
 
-    public static function define($key, $value = "") {
+    public static function lot($key, $value = "") {
         if(is_array($key)) {
-            self::$defines = array_merge(self::$defines, $key);
+            self::$lot = array_merge(self::$lot, $key);
         } else {
-            self::$defines[$key] = $value;
+            self::$lot[$key] = $value;
         }
         return new static;
     }
@@ -114,20 +114,22 @@ class Shield extends Plugger {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    Shield::undefine('foo')->attach('page');
+     *    Shield::lot($data)->apart('foo')->attach('page');
      *
      * ----------------------------------------------------------
      *
-     *    Shield::undefine(array('foo', 'bar'))->attach('page');
+     *    Shield::lot($data)
+     *          ->apart(array('foo', 'bar'))
+     *          ->attach('page');
      *
      * ----------------------------------------------------------
      *
      */
 
-    public static function undefine($defines) {
-        if( ! is_array($defines)) $defines = array($defines);
-        foreach($defines as $define) {
-            unset(self::$defines[$define]);
+    public static function apart($data) {
+        if( ! is_array($data)) $data = array($data);
+        foreach($data as $d) {
+            unset(self::$lot[$d]);
         }
         return new static;
     }
@@ -196,7 +198,7 @@ class Shield extends Plugger {
             'cache' => $cache
         ));
         Weapon::fire('before_shield_config_redefine', array($G, $G));
-        extract(Filter::apply('shield:lot', self::defines()));
+        extract(Filter::apply('shield:lot', self::cargo()));
         Weapon::fire('after_shield_config_redefine', array($G, $G));
         $shield = false;
         $shield_base = explode('-', $name, 2);
@@ -210,7 +212,7 @@ class Shield extends Plugger {
         $G['data']['path'] = $shield;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
-        self::$defines = array();
+        self::$lot = array();
         if($G['data']['cache'] && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());
             exit;

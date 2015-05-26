@@ -133,7 +133,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
-    Shield::define('the_plugin_path', $slug)->attach('manager', false);
+    Shield::lot('the_plugin_path', $slug)->attach('manager', false);
 }, 10.2); // => `manager/plugin` is on priority 10, `manager/plugin/(:num)` is on priority 10.1
 
 

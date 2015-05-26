@@ -101,7 +101,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Guardian::kick($config->manager->slug . '/comment/repair/id:' . $id);
         }
     }
-    Shield::define('default', $comment)->attach('manager', false);
+    Shield::lot('default', $comment)->attach('manager', false);
 });
 
 

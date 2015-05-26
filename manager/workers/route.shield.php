@@ -68,7 +68,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     ));
     $the_shields = glob(SHIELD . DS . '*', GLOB_ONLYDIR);
     sort($the_shields);
-    Shield::define(array(
+    Shield::lot(array(
         'info' => Shield::info($folder),
         'the_shield_path' => $folder,
         'the_shield_contents' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'name'),
@@ -122,7 +122,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             Guardian::kick($config->manager->slug . '/shield/' . $folder);
         }
     }
-    Shield::define(array(
+    Shield::lot(array(
         'the_shield' => $folder,
         'the_path' => "",
         'the_content' => ""
@@ -184,7 +184,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             Guardian::kick($config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
         }
     }
-    Shield::define(array(
+    Shield::lot(array(
         'the_shield' => $folder,
         'the_path' => $path,
         'the_file' => $file,
@@ -233,7 +233,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>'));
     }
-    Shield::define(array(
+    Shield::lot(array(
         'the_shield' => $folder,
         'the_path' => $path,
         'info' => $info

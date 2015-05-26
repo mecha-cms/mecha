@@ -94,7 +94,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 })(window.Zepto || window.jQuery);
 </script>';
     }, 11);
-    Shield::define('the_key', $key)->attach('manager', false);
+    Shield::lot('the_key', $key)->attach('manager', false);
 });
 
 
@@ -132,5 +132,5 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $data['title'] . '</strong>'));
     }
-    Shield::define('the_key', $key)->attach('manager', false);
+    Shield::lot('the_key', $key)->attach('manager', false);
 });
