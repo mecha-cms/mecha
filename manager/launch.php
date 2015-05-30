@@ -2,7 +2,7 @@
 
 
 // Loading functions
-foreach(glob(DECK . DS . 'workers' . DS . 'plug' . DS . '*.php') as $plug) {
+foreach(glob(DECK . DS . 'workers' . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
     require $plug;
 }
 
@@ -103,7 +103,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
 function do_remove_cache() {
     global $config;
     File::open(CACHE . DS . 'sitemap.cache')->delete();
-    foreach(glob(CACHE . DS . 'feeds.*.cache') as $cache) {
+    foreach(glob(CACHE . DS . 'feeds.*.cache', GLOB_NOSORT) as $cache) {
         File::open($cache)->delete();
     }
 }

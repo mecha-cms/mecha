@@ -144,7 +144,7 @@ class Get extends Plugger {
         $extension = str_replace(' ', "", $extensions);
         $folder = rtrim(File::path($folder), DS);
         // TODO: Access files with dot prefix using `glob()`
-        $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
+        $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
         foreach($files as $file) {
             if( ! $filter) {
                 $results_inclusive[] = self::fileExtract($file);
@@ -364,7 +364,7 @@ class Get extends Plugger {
     public static function pages($order = 'DESC', $filter = "", $extension = 'txt', $folder = PAGE) {
         $results = array();
         $extension = str_replace(' ', "", $extension);
-        $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob($folder . DS . '*.' . $extension);
+        $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
         $total_pages = count($pages);
         if( ! is_array($pages) || $total_pages === 0) return false;
         if($order == 'ASC') {
@@ -473,9 +473,9 @@ class Get extends Plugger {
         $extension = str_replace(' ', "", $extension);
         if( ! is_null($post)) {
             $post = Date::format($post, 'Y-m-d-H-i-s');
-            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . $post . '_*.{' . $extension . '}', GLOB_BRACE) : glob(RESPONSE . DS . $post . '_*.' . $extension);
+            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . $post . '_*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . $post . '_*.' . $extension, GLOB_NOSORT);
         } else {
-            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension);
+            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension, GLOB_NOSORT);
         }
         if( ! is_array($results) || count($results) === 0) return false;
         if($order == 'ASC') {
@@ -963,7 +963,7 @@ class Get extends Plugger {
         $results = $results + Text::toPage(File::open($path)->read(), 'message', 'comment:');
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         $results['permalink'] = '#';
-        $posts = glob($response_to . DS . '*.txt');
+        $posts = glob($response_to . DS . '*.txt', GLOB_NOSORT);
         for($i = 0, $count = count($posts); $i < $count; ++$i) {
             list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
             if((int) Date::format($time, 'U') === $results['post']) {
@@ -1135,7 +1135,7 @@ class Get extends Plugger {
      */
 
     public static function pagePath($detector, $folder = PAGE) {
-        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_BRACE) as $path) {
+        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
             if($slug == $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
                 return $path;

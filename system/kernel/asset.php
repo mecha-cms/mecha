@@ -87,6 +87,7 @@ class Asset extends Plugger {
                 self::$loaded[$path[$i]] = 1;
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
             } else {
+                // File does not exist
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
@@ -107,6 +108,7 @@ class Asset extends Plugger {
                 self::$loaded[$path[$i]] = 1;
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
             } else {
+                // File does not exist
                 $html .= '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }

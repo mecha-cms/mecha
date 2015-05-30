@@ -219,7 +219,8 @@ class Converter extends Plugger {
                 ""
             ),
         $input);
-        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, ($charset !== "" ? $charset : Config::get('charset'))) : substr($input, 0, $chars))) . ($chars < strlen($input) ? $tail : "");
+        $charset = $charset !== "" ? $charset : Config::get('charset');
+        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < (function_exists('mb_strlen') ? mb_strlen($input, $charset) : strlen($input)) ? $tail : "");
     }
 
     /**

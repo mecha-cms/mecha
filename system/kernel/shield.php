@@ -211,7 +211,7 @@ class Shield extends Plugger {
         }
         $G['data']['path'] = $shield;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
-        $cache_path = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
+        $cache_path = is_string($cache) ? $cache : CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
         self::$lot = array();
         if($G['data']['cache'] && File::exist($cache_path)) {
             echo Filter::apply('shield:cache', File::open($cache_path)->read());

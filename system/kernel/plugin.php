@@ -7,7 +7,7 @@ class Plugin extends Plugger {
             return File::open($plugins_order)->unserialize();
         }
         $plugins = array();
-        $plugins_list = glob(PLUGIN . DS . '*' . DS . 'launch.php');
+        $plugins_list = glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT);
         $plugins_payload = count($plugins_list);
         sort($plugins_list);
         for($i = 0; $i < $plugins_payload; ++$i) {
