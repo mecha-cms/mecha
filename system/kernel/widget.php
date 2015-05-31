@@ -115,7 +115,7 @@ class Widget {
         if($type == 'HIERARCHY') {
             $i = 0;
             foreach($files as $file) {
-                list($year, $month, $day) = explode('-', basename($file, '.txt'));
+                list($year, $month) = explode('-', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
                 $archives[$year][$month][] = $file;
             }
             $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy-' . self::$id['archive_hierarchy'] . '">' . NL;
@@ -147,7 +147,7 @@ class Widget {
         }
         if($type == 'LIST' || $type == 'DROPDOWN') {
             foreach($files as $name) {
-                $archives[] = substr(basename($name, '.txt'), 0, 7);
+                $archives[] = substr(basename($name, '.' . pathinfo($name, PATHINFO_EXTENSION)), 0, 7);
             }
             $counter = array_count_values($archives);
             $archives = array_unique($archives);
@@ -350,7 +350,7 @@ class Widget {
 
     public static function relatedPost($total = 7) {
         $config = Config::get();
-        if($config->page_type != 'article') {
+        if($config->page_type !== 'article') {
             return self::randomPost($total);
         } else {
             if( ! $files = Get::articles('DESC', 'kind:' . implode(',', (array) $config->article->kind))) {
