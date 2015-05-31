@@ -183,19 +183,21 @@ class Shield extends Plugger {
      *  $name     | string  | Name of the shield
      *  $minify   | boolean | Minify HTML output?
      *  $cache    | boolean | Create a cache file on page visit?
+     *  $expire   | integer | Define cache file expiration time
      *  --------- | ------- | -----------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function attach($name, $minify = null, $cache = false) {
+    public static function attach($name, $minify = null, $cache = false, $expire = null) {
         if(is_null($minify)) {
             $minify = Config::get('html_minifier');
         }
         $G = array('data' => array(
             'name' => $name,
             'minify' => $minify,
-            'cache' => $cache
+            'cache' => $cache,
+            'expire' => $expire
         ));
         Weapon::fire('before_shield_config_redefine', array($G, $G));
         extract(Filter::apply('shield:lot', self::cargo()));
@@ -214,8 +216,10 @@ class Shield extends Plugger {
         $cache_path = is_string($cache) ? $cache : CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
         self::$lot = array();
         if($G['data']['cache'] && File::exist($cache_path)) {
-            echo Filter::apply('shield:cache', File::open($cache_path)->read());
-            exit;
+            if(is_null($expire) || is_int($expire) && time() - $expire < filemtime($cache_path)) {
+                echo Filter::apply('shield:cache', File::open($cache_path)->read());
+                exit;
+            }
         }
         // Begin shield
         Weapon::fire('shield_before', array($G, $G));
@@ -253,10 +257,10 @@ class Shield extends Plugger {
      *
      */
 
-    public static function abort($name = '404', $minify = null, $cache = false) {
+    public static function abort($name = '404', $minify = null, $cache = false, $expire = null) {
         HTTP::status(404);
         Config::set('page_type', '404');
-        self::attach($name, $minify, $cache);
+        self::attach($name, $minify, $cache, $expire);
     }
 
 }

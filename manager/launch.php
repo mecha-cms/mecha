@@ -103,7 +103,9 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
 function do_remove_cache() {
     global $config;
     File::open(CACHE . DS . 'sitemap.cache')->delete();
-    foreach(glob(CACHE . DS . 'feeds.*.cache', GLOB_NOSORT) as $cache) {
+    File::open(CACHE . DS . 'feed.cache')->delete();
+    File::open(CACHE . DS . 'feeds.cache')->delete();
+    foreach(glob(CACHE . DS . '{feed,feeds}.*.cache', GLOB_NOSORT | GLOB_BRACE) as $cache) {
         File::open($cache)->delete();
     }
 }
