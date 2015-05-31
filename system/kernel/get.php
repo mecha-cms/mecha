@@ -876,6 +876,9 @@ class Get extends Plugger {
              */
 
             foreach($results['fields'] as $key => $value) {
+                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
+                    $value['value'] = 'true';
+                }
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
 
@@ -983,6 +986,9 @@ class Get extends Plugger {
                 }
             }
             foreach($results['fields'] as $key => $value) {
+                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
+                    $value['value'] = 'true';
+                }
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
@@ -1035,6 +1041,9 @@ class Get extends Plugger {
                 }
             }
             foreach($results['fields'] as $key => $value) {
+                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
+                    $value['value'] = 'true';
+                }
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
