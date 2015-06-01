@@ -147,11 +147,14 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
         Shield::abort();
     }
     $page_current = (int) Request::get('o', 1);
-    // Toggle file name from `launch.php` to `pending.php` or vice-versa.
-    File::open(PLUGIN . DS . $slug . DS . ($path == 'freeze' ? 'launch' : 'pending') . '.php')
-        ->renameTo(($path == 'freeze' ? 'pending' : 'launch') . '.php');
+    // Toggle file name from `launch.php` to `pending.php` or vice-versa
+    File::open(PLUGIN . DS . $slug . DS . ($path === 'freeze' ? 'launch' : 'pending') . '.php')
+        ->renameTo(($path === 'freeze' ? 'pending' : 'launch') . '.php');
+    // Toggle file name from `__launch.php` to `__pending.php` or vice-versa
+    File::open(PLUGIN . DS . $slug . DS . '__' . ($path === 'freeze' ? 'launch' : 'pending') . '.php')
+        ->renameTo('__' . ($path === 'freeze' ? 'pending' : 'launch') . '.php');
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'freeze' ? 'eject' : 'mount';
+    $mode = $path === 'freeze' ? 'eject' : 'mount';
     Notify::success(Config::speak('notify_success_updated', $speak->plugin));
     Weapon::fire('on_plugin_update', array($G, $G));
     Weapon::fire('on_plugin_' . $mode, array($G, $G));

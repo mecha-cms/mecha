@@ -5,7 +5,9 @@ Version: 0.0.0
 
 ====
 
-> This is just a sample plugin.
+> This is just a plugin sample.
+
+This simple guide will help you to create your own plugin.
 
 ### File Structure
 
@@ -41,12 +43,12 @@ This file contains a form to set up the plugin configuration:
 <form class="form-plugin" action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Please add a token input -->
-  <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <?php echo Form::hidden('token', $token); ?>
 
   <!-- Other form elements goes here… -->
 
   <!-- The submit button -->
-  <p><button type="submit">Update</button></p>
+  <p><?php echo Jot::button('action', $speak->update); ?></p>
 
 </form>
 ~~~

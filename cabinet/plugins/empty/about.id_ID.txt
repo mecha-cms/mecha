@@ -5,7 +5,9 @@ Version: 0.0.0
 
 ====
 
-> Ini hanyalah sebuah plugin contoh.
+> Ini hanyalah sebuah contoh plugin.
+
+Panduan sederhana ini akan membantu Anda untuk membuat plugin Anda sendiri.
 
 ### Struktur Berkas
 
@@ -41,12 +43,12 @@ Berkas ini berisi formulir untuk mengatur konfigurasi plugin:
 <form class="form-plugin" action="<?php echo $config->url_current; ?>/update" method="post">
 
   <!-- Mohon tambahkan sebuah masukan token -->
-  <input name="token" type="hidden" value="<?php echo $token; ?>">
+  <?php echo Form::hidden('token', $token); ?>
 
   <!-- Elemen-elemen formulir yang lain bisa diletakkan di sini… -->
 
   <!-- Tombol eksekusi -->
-  <p><button type="submit">Perbaharui</button></p>
+  <p><?php echo Jot::button('action', $speak->update); ?></p>
 
 </form>
 ~~~

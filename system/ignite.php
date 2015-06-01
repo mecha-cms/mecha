@@ -125,7 +125,18 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
             Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
         }
         if($launch = File::exist($plugins[$i] . DS . 'launch.php')) {
-            include $launch;
+            if(strpos(basename($plugins[$i]), '__') === 0) {
+                if($config->page_type === 'manager') {
+                    include $launch; // backend
+                }
+            } else {
+                include $launch; // frontend
+            }
+        }
+        if($launch = File::exist($plugins[$i] . DS . '__launch.php')) {
+            if($config->page_type === 'manager') {
+                include $launch; // backend
+            }
         }
     }
 }

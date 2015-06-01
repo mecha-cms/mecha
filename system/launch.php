@@ -590,7 +590,7 @@ Route::accept('captcha.png', function() {
 
     exit;
 
-}, 100);
+}, 90);
 
 
 /**
@@ -630,7 +630,7 @@ Route::accept('(:any)', function($slug = "") use($config) {
 
     Shield::attach('page-' . $slug);
 
-}, 110);
+}, 100);
 
 
 /**
@@ -663,7 +663,7 @@ Route::accept('/', function() use($config) {
 
     Shield::attach('page-home');
 
-}, 120);
+}, 110);
 
 
 /**
