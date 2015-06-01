@@ -126,7 +126,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
         }
         if($launch = File::exist($plugins[$i] . DS . 'launch.php')) {
             if(strpos(basename($plugins[$i]), '__') === 0) {
-                if($config->page_type === 'manager') {
+                if(Guardian::happy() && $config->page_type === 'manager') {
                     include $launch; // backend
                 }
             } else {
@@ -134,7 +134,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
             }
         }
         if($launch = File::exist($plugins[$i] . DS . '__launch.php')) {
-            if($config->page_type === 'manager') {
+            if(Guardian::happy() && $config->page_type === 'manager') {
                 include $launch; // backend
             }
         }
