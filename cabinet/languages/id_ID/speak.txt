@@ -596,6 +596,8 @@ manager:
   _this_article: %s Artikel Ini
   _this_page: %s Halaman Ini
 
+  description_redirect_to_: Alihkan ke %s
+
 
 # -------------
 # NOTIFICATIONS

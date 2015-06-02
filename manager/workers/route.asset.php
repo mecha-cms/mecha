@@ -119,8 +119,6 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Shield::abort();
     }
     $old = File::path($old);
-    //$dir_name = rtrim(dirname($old), DS);
-    //$old_name = ltrim(basename($old), DS);
     $p = Request::get('path');
     $p = $p ? '?path=' . urlencode($p) : "";
     if( ! $file = File::exist(ASSET . DS . $old)) {

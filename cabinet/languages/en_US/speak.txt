@@ -596,6 +596,8 @@ manager:
   _this_article: %s This Article
   _this_page: %s This Page
 
+  description_redirect_to_: Redirect to %s
+
 
 # -------------
 # NOTIFICATIONS
