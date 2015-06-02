@@ -25,7 +25,7 @@
  *
  */
 
-class Notify extends Plugger {
+class Notify extends Base {
 
     public static $message = 'message';
     public static $errors = 0;

@@ -81,7 +81,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         }
     }
     $plugins = array();
-    $folders = glob(PLUGIN . DS . Request::get('q_id', '*'), GLOB_ONLYDIR);
+    $folders = glob(PLUGIN . DS . Request::get('q_id', '*'), GLOB_NOSORT | GLOB_ONLYDIR);
     sort($folders);
     if($files = Mecha::eat($folders)->chunk($offset, $config->manager->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {

@@ -41,7 +41,7 @@
  *
  */
 
-class Menu extends Plugger {
+class Menu extends Base {
 
     public static $config = array(
         'classes' => array(

@@ -1,6 +1,6 @@
 <?php
 
-class Converter extends Plugger {
+class Converter extends Base {
 
     /**
      * ====================================================================

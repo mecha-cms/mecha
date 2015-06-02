@@ -36,30 +36,36 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
  * ------------
  */
 
-Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($path = "", $name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $name = File::path($name);
-    if( ! $file = File::exist(CACHE . DS . $name)) {
+    $path = File::path($path);
+    if( ! $file = File::exist(CACHE . DS . $path)) {
         Shield::abort(); // File not found!
     }
     $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . basename($name) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.cache.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
-        Notify::success(Config::speak('notify_file_updated', '<code>' . basename($name) . '</code>'));
+        Notify::success(Config::speak('notify_file_updated', '<code>' . $path . '</code>'));
+        Session::set('recent_file_update', basename($path));
+        $name = File::path($request['name']);
+        if($name !== $path) {
+            File::open($file)->moveTo(CACHE . DS . $name);
+            Guardian::kick($config->manager->slug . '/cache');
+        }
         Weapon::fire('on_cache_update', array($G, $P));
         Weapon::fire('on_cache_repair', array($G, $P));
-        Guardian::kick($config->manager->slug . '/cache/repair/file:' . File::url($name));
+        Guardian::kick($config->manager->slug . '/cache/repair/file:' . File::url($request['name']));
     }
     Shield::lot(array(
-        'the_name' => $name,
+        'the_name' => $path,
         'the_content' => File::open($file)->read()
     ))->attach('manager', false);
 });
@@ -70,22 +76,23 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
  * ------------
  */
 
-Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', function($path = "", $name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $name = File::path($name);
-    if(strpos($name, ';') !== false) {
-        $deletes = explode(';', $name);
+    $path = File::path($path);
+    if(strpos($path, ';') !== false) {
+        $deletes = explode(';', $path);
     } else {
-        if( ! File::exist(CACHE . DS . $name)) {
+        if( ! File::exist(CACHE . DS . $path)) {
             Shield::abort(); // File not found!
         } else {
-            $deletes = array($name);
+            $deletes = array($path);
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->caches) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($path) : $speak->caches) . $config->title_separator . $config->manager->title,
+        'files' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.cache.php'
     ));
     if($request = Request::post()) {
@@ -102,9 +109,9 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         Weapon::fire('on_cache_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/cache');
     } else {
-        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
+        Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . $path . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::lot('the_name', $deletes)->attach('manager', false);
+    Shield::attach('manager', false);
 });
 
 
@@ -113,7 +120,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
  * ---------------------
  */
 
-Route::accept($config->manager->slug . '/cache/kill', function($path = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/kill', function() use($config, $speak) {
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {

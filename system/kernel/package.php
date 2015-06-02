@@ -121,7 +121,7 @@
  *
  */
 
-class Package extends Plugger {
+class Package extends Base {
 
     protected static $open = null;
     protected static $map = null;

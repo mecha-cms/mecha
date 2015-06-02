@@ -1,6 +1,6 @@
 <?php
 
-class Date extends Plugger {
+class Date extends Base {
 
     /**
      * ==========================================================

@@ -1,10 +1,10 @@
 <?php echo $messages; ?>
-<form class="form-kill form-shield" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-kill form-shield" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
-  <h3><?php echo $speak->shield . ': ' . $info->title; ?></h3>
-  <?php if(strpos($config->url_current, 'file:') !== false): ?>
-  <p><?php echo Cell::strong($the_shield) . ' ' . Jot::icon('arrow-right') . ' ' . str_replace(DS, ' ' . Jot::icon('arrow-right') . ' ', $the_path); ?></p>
-  <pre><code><?php echo Text::parse(File::open(SHIELD . DS . $the_shield . DS . $the_path)->read(), '->encoded_html'); ?></code></pre>
+  <h3><?php echo $speak->shield . ': ' . $the_info->title; ?></h3>
+  <?php if(strpos($config->url_path, '/kill/file:') !== false): ?>
+  <p><?php echo Cell::strong($the_shield) . ' ' . Jot::icon('arrow-right') . ' ' . str_replace(DS, ' ' . Jot::icon('arrow-right') . ' ', $the_name); ?></p>
+  <pre><code><?php echo Text::parse(File::open(SHIELD . DS . $the_shield . DS . $the_name)->read(), '->encoded_html'); ?></code></pre>
   <?php else: ?>
   <?php if($files): ?>
   <ul>

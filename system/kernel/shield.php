@@ -1,6 +1,6 @@
 <?php
 
-class Shield extends Plugger {
+class Shield extends Base {
 
     protected static $lot = array();
 

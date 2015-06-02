@@ -1,6 +1,6 @@
 <?php
 
-class Get extends Plugger {
+class Get extends Base {
 
     // Apply the missing filters
     protected static function AMF($data, $FP = "", $F) {
@@ -884,8 +884,7 @@ class Get extends Plugger {
 
             $results['fields'] = $init;
 
-            unset($fields);
-            unset($init);
+            unset($fields, $init);
 
         }
 
@@ -992,8 +991,7 @@ class Get extends Plugger {
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
-            unset($fields);
-            unset($init);
+            unset($fields, $init);
         }
         return Mecha::O($results);
     }

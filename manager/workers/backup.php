@@ -58,7 +58,7 @@
       <h4 class="media-title"><?php echo $title; ?></h4>
       <div class="media-content">
         <p><code><?php echo $destination; ?></code></p>
-        <?php echo Jot::uploader($config->url_current, 'zip', array(
+        <?php echo Jot::uploader($config->manager->slug . '/backup', 'zip', array(
             'destination' => $destination,
             'title' => trim(strip_tags($title))
         )); ?>

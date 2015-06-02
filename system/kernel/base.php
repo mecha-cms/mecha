@@ -1,6 +1,6 @@
 <?php
 
-class Plugger {
+class Base {
 
     protected static $o = array();
 
@@ -13,12 +13,12 @@ class Plugger {
         return isset(self::$o[$kin]) ? self::$o[$kin] : $fallback;
     }
 
-    // Add new method with `Plugger::plug('foo')`
+    // Add new method with `Base::plug('foo')`
     public static function plug($kin, $action) {
         self::$o[get_called_class() . '::' . $kin] = $action;
     }
 
-    // Call the added method with `Plugger::foo()`
+    // Call the added method with `Base::foo()`
     public static function __callStatic($kin, $arguments = array()) {
         $kin = get_called_class() . '::' . $kin;
         if( ! isset(self::$o[$kin])) {

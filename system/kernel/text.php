@@ -1,6 +1,6 @@
 <?php
 
-class Text extends Plugger {
+class Text extends Base {
 
     protected static $parsers = array();
 

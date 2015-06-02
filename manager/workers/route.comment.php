@@ -23,8 +23,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         foreach(Mecha::eat($comments_id)->chunk($offset, $config->manager->per_page)->vomit() as $comment) {
             $comments[] = Get::comment($comment);
         }
-        unset($comments_id);
-        unset($files);
+        unset($comments_id, $files);
     } else {
         $comments = false;
     }

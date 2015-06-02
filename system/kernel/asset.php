@@ -23,7 +23,7 @@
  *
  */
 
-class Asset extends Plugger {
+class Asset extends Base {
 
     protected static $loaded = array();
     protected static $ignored = array();

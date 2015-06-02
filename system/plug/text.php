@@ -177,7 +177,8 @@ Text::parser('to_safe_file_name', function($input) {
     $parts_output = array();
     foreach($parts as $part) {
         $part = do_slug($part, '-', true, false);
-        $parts_output[] = trim($part, '-');
+        $part = trim($part, '-');
+        $parts_output[] = $part !== "" ? $part : time();
     }
     return implode('.', $parts_output);
 });

@@ -1,6 +1,6 @@
 <?php
 
-class Plugin extends Plugger {
+class Plugin extends Base {
 
     public static function load() {
         if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
@@ -22,9 +22,7 @@ class Plugin extends Plugger {
             }
         }
         File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);
-        unset($plugins_list);
-        unset($plugins_order);
-        unset($plugins_payload);
+        unset($plugins_list, $plugins_order, $plugins_payload);
         return $plugins;
     }
 

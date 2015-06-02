@@ -73,6 +73,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
 }, 1);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+    Session::kill('recent_file_update');
     echo Asset::javascript(array(
         'manager/sword/editor/editor.min.js',
         'manager/sword/editor/mte.min.js',

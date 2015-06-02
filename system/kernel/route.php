@@ -1,6 +1,6 @@
 <?php
 
-class Route extends Plugger {
+class Route extends Base {
 
     public static $routes = array();
     public static $routes_e = array();

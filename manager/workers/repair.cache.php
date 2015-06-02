@@ -1,18 +1,12 @@
 <?php echo $messages; ?>
-<form class="form-repair form-cache" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Form::hidden('token', $token); ?>
-  <p>
-  <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
-      'class' => array(
-          'textarea-block',
-          'textarea-expand',
-          'code',
-          'MTE'
-      )
-  )); ?>
-  </p>
-  <p>
-  <?php echo Jot::button('action', $speak->update); ?>
-  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/cache/kill/file:' . File::url(str_replace(CACHE . DS, "", $the_name))); ?>
-  </p>
+<form class="form-repair form-cache" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
+<?php echo Form::hidden('token', $token); ?>
+<?php
+
+$path_reject = $config->manager->slug . '/cache';
+$path_destruct = $path_reject . '/kill/file:' . File::url(str_replace(CACHE . DS, "", $the_name));
+
+include DECK . DS . 'workers' . DS . 'unit.editor.2.php';
+
+?>
 </form>

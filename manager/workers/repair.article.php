@@ -1,6 +1,6 @@
 <?php $segment = 'article'; ?>
 <div class="tab-area">
-  <?php if(strpos($config->url_current, 'id:') !== false): ?>
+  <?php if(strpos($config->url_path, '/id:') !== false): ?>
   <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/article/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><?php echo Jot::icon('plus-square', 'fw') . ' ' . $speak->new; ?></a>
   <?php endif; ?>
   <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('pencil', 'fw') . ' ' . $speak->compose; ?></a>
@@ -14,7 +14,7 @@
     <?php echo Form::hidden('token', $token); ?>
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($segment)); ?>
-      <?php if(strpos($config->url_current, 'id:') !== false): ?>
+      <?php if(strpos($config->url_path, '/id:') !== false): ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->date; ?></span>
         <span class="grid span-5">
@@ -92,7 +92,7 @@
     </div>
     <hr>
     <p>
-      <?php if(strpos($config->url_current, 'id:') === false): ?>
+      <?php if(strpos($config->url_path, '/id:') === false): ?>
       <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
       <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
       <?php else: ?>

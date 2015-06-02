@@ -1,6 +1,6 @@
 <?php
 
-class Guardian extends Plugger {
+class Guardian extends Base {
 
     public static $token = 'token';
     public static $user = 'user';

@@ -13,7 +13,7 @@
  *
  */
 
-class Mecha extends Plugger {
+class Mecha extends Base {
 
     protected static $stomach = array();
     protected static $index = 0;
@@ -121,8 +121,7 @@ class Mecha extends Plugger {
                 }
             }
             self::$stomach = $after;
-            unset($before);
-            unset($after);
+            unset($before, $after);
         } else {
             if($order === 'ASC') {
                 asort(self::$stomach);

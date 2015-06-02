@@ -1,6 +1,6 @@
 <?php
 
-class Filter extends Plugger {
+class Filter extends Base {
 
     protected static $filters = array();
     protected static $filters_e = array();

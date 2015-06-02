@@ -8,26 +8,43 @@
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
     $offset = (int) $offset;
-    $p = File::path(Request::get('path', ""));
-    $dir_path = ASSET . ($p ? DS . $p : "") . DS;
+    $p = Request::get('path');
+    $d = ASSET . File::path($p ? DS . $p : "");
+    // Disallow `htaccess` and `php` file extension(s)
+    $ee = File::$config['file_extension_allow'];
+    foreach(array('htaccess', 'php') as $e) {
+        if(($_e = array_search($e, $ee)) !== false) {
+            unset(File::$config['file_extension_allow'][$_e]);
+        }
+    }
     if($request = Request::post()) {
         // New folder
         if(isset($request['folder'])) {
-            $folder = Text::parse($request['folder'], '->safe_file_name');
-            if(trim($request['folder']) !== "") {
-                if(File::exist($dir_path . $folder)) {
+            $folder = explode(DS, File::path($request['folder']));
+            foreach($folder as &$f) {
+                $f = Text::parse($f, '->safe_file_name');
+            }
+            unset($f);
+            $folder = implode(DS, $folder);
+            if(trim($folder) !== "") {
+                if(File::exist($d . DS . $folder)) {
                     Notify::error(Config::speak('notify_folder_exist', '<code>' . $folder . '</code>'));
                 }
             } else {
                 Notify::error(Config::speak('notify_error_empty_field', $speak->folder));
             }
             if( ! Notify::errors()) {
-                File::dir($dir_path . $folder);
+                File::dir($d . DS . $folder);
                 Notify::success(Config::speak('notify_folder_created', '<code>' . $folder . '</code>'));
-                Session::set('recent_asset_updated', $folder);
+                $fo = explode(DS, $folder);
+                Session::set('recent_file_update', $fo[0]);
                 $P = array('data' => $request);
                 Weapon::fire('on_asset_update', array($P, $P));
                 Weapon::fire('on_asset_construct', array($P, $P));
+                if(isset($request['redirect'])) {
+                    $folder = File::url($folder);
+                    Guardian::kick($config->manager->slug . '/asset?path=' . urlencode($p ? $p . '/' . $folder : $folder));
+                }
             } else {
                 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                     echo '<script>
@@ -41,8 +58,8 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         } else {
             if(isset($_FILES) && ! empty($_FILES)) {
                 Guardian::checkToken(Request::post('token'));
-                File::upload($_FILES['file'], ASSET, function($name, $type, $size, $link) {
-                    Session::set('recent_asset_updated', $name);
+                File::upload($_FILES['file'], $d, function($name, $type, $size, $link) {
+                    Session::set('recent_file_update', $name);
                 });
                 $P = array('data' => $_FILES);
                 Weapon::fire('on_asset_update', array($P, $P));
@@ -61,9 +78,16 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
             }
         }
     }
-    $filter = Request::get('q', false);
-    $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
-    $takes = glob($dir_path . ($filter ? $filter : '*'));
+    $filter = Request::get('q', "");
+    $filter = $filter ? Text::parse($filter, '->safe_file_name') : false;
+    $takes = glob($d . DS . '*', GLOB_NOSORT);
+    if($filter) {
+        foreach($takes as $k => $v) {
+            if(strpos(basename($v, '.' . pathinfo($v, PATHINFO_EXTENSION)), $filter) === false) {
+                unset($takes[$k]);
+            }
+        }
+    }
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
         foreach($_files as $_file) {
@@ -81,7 +105,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => DECK . DS . 'workers' . DS . 'asset.php'
     ));
-    Shield::lot('path', $p)->attach('manager', false);
+    Shield::attach('manager', false);
 });
 
 
@@ -95,15 +119,15 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Shield::abort();
     }
     $old = File::path($old);
-    $dir_name = rtrim(dirname($old), DS);
-    $old_name = ltrim(basename($old), DS);
-    $p = Request::get('path', "");
-    $p = $p ? '?path=' . $p : "";
-    if( ! $file = File::exist(ASSET . DS . $dir_name . DS . $old_name)) {
+    //$dir_name = rtrim(dirname($old), DS);
+    //$old_name = ltrim(basename($old), DS);
+    $p = Request::get('path');
+    $p = $p ? '?path=' . urlencode($p) : "";
+    if( ! $file = File::exist(ASSET . DS . $old)) {
         Shield::abort(); // File not found!
     }
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . $old_name . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . basename($old) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
     ));
     if($request = Request::post()) {
@@ -113,30 +137,39 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
             // Safe file name
-            $new_name = Text::parse($request['name'], '->safe_file_name');
+            $new = explode(DS, File::path($request['name']));
+            foreach($new as &$n) {
+                $n = Text::parse($n, '->safe_file_name');
+            }
+            unset($n);
+            $new = implode(DS, $new);
             // Missing file extension
-            if(is_file(dirname($file) . DS . $new_name) && ! preg_match('#^.*?\.(.+?)$#', $new_name)) {
+            if(is_file(ASSET . DS . $new) && ! preg_match('#^.*?\.(.+?)$#', $new)) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             // File name already exist
-            if($old_name !== $new_name && File::exist(dirname($file) . DS . $new_name)) {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . $new_name . '</code>'));
+            if($old !== $new && File::exist(ASSET . DS . $new)) {
+                Notify::error(Config::speak('notify_file_exist', '<code>' . basename($new) . '</code>'));
             }
             $P = array('data' => $request);
             if( ! Notify::errors()) {
                 if(Request::post('content')) {
                     File::open($file)->write($request['content'])->save();
                 }
-                File::open($file)->renameTo($new_name);
-                Notify::success(Config::speak('notify_file_updated', '<code>' . $old_name . '</code>'));
-                Session::set('recent_asset_updated', $new_name);
+                File::open($file)->moveTo(ASSET . DS . $new);
+                Notify::success(Config::speak('notify_file_updated', '<code>' . basename($old) . '</code>'));
+                $new = explode(DS, $new);
+                Session::set('recent_file_update', $new[0]);
                 Weapon::fire('on_asset_update', array($P, $P));
                 Weapon::fire('on_asset_repair', array($P, $P));
                 Guardian::kick($config->manager->slug . '/asset' . $p);
             }
         }
     }
-    Shield::lot('the_name', $old)->attach('manager', false);
+    Shield::lot(array(
+        'the_name' => $old,
+        'the_content' => is_file(ASSET . DS . $old) && in_array(strtolower(pathinfo($old, PATHINFO_EXTENSION)), explode(',', SCRIPT_EXT)) ? File::open(ASSET . DS . $old)->read() : false
+    ))->attach('manager', false);
 });
 
 
@@ -150,8 +183,8 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         Shield::abort();
     }
     $name = File::path($name);
-    $p = Request::get('path', "");
-    $p = $p ? '?path=' . $p : "";
+    $p = Request::get('path');
+    $p = $p ? '?path=' . urlencode($p) : "";
     if(strpos($name, ';') !== false) {
         $deletes = explode(';', $name);
     } else {

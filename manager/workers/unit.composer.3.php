@@ -35,7 +35,7 @@ if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'field
  * This file contains array of fields data.
  */
 
-foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php') as $active) {
+foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
     if($e = File::exist(dirname($active) . DS . 'workers' . DS . 'fields.php')) {
         $extra_fields = include $e;
         $fields = $fields + $extra_fields;

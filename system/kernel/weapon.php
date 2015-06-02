@@ -1,6 +1,6 @@
 <?php
 
-class Weapon extends Plugger {
+class Weapon extends Base {
 
     protected static $armaments = array();
     protected static $armaments_e = array();

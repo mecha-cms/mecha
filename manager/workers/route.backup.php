@@ -11,7 +11,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         Shield::abort();
     }
     // Remove backup files that is failed to delete
-    if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip')) {
+    if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip', GLOB_NOSORT)) {
         foreach($backup as $back) {
             unlink($back);
         }

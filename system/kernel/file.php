@@ -49,7 +49,7 @@
  *
  */
 
-class File extends Plugger {
+class File extends Base {
 
     protected static $cache = "";
     protected static $open = null;

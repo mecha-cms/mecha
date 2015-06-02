@@ -1,6 +1,6 @@
 <?php
 
-class Navigator extends Plugger {
+class Navigator extends Base {
 
     protected static $bucket = array();
 

@@ -64,15 +64,15 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
+        'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'name'),
         'cargo' => DECK . DS . 'workers' . DS . 'shield.php'
     ));
-    $the_shields = glob(SHIELD . DS . '*', GLOB_ONLYDIR);
+    $the_shields = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
     sort($the_shields);
     Shield::lot(array(
-        'info' => Shield::info($folder),
-        'the_shield_path' => $folder,
-        'the_shield_contents' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'name'),
-        'the_shields' => $the_shields
+        'the_shield_info' => Shield::info($folder),
+        'the_shield_folder' => $folder,
+        'the_shield_folders' => $the_shields
     ))->attach('manager', false);
 });
 
@@ -117,6 +117,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         if( ! Notify::errors()) {
             File::write($request['content'])->saveTo(SHIELD . DS . $folder . DS . $path);
             Notify::success(Config::speak('notify_file_created', '<code>' . basename($path) . '</code>'));
+            Session::set('recent_file_update', basename($path));
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
             Guardian::kick($config->manager->slug . '/shield/' . $folder);
@@ -124,8 +125,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     }
     Shield::lot(array(
         'the_shield' => $folder,
-        'the_path' => "",
-        'the_content' => ""
+        'the_name' => null,
+        'the_content' => null
     ))->attach('manager', false);
 });
 
@@ -175,7 +176,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::open($file)->write($request['content'])->save();
-            if($path != $name) {
+            if($path !== $name) {
                 File::open($file)->moveTo(SHIELD . DS . $folder . DS . $name);
             }
             Notify::success(Config::speak('notify_file_updated', '<code>' . basename($path) . '</code>'));
@@ -186,8 +187,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     }
     Shield::lot(array(
         'the_shield' => $folder,
-        'the_path' => $path,
-        'the_file' => $file,
+        'the_name' => $path,
         'the_content' => $content
     ))->attach('manager', false);
 });
@@ -235,8 +235,8 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     }
     Shield::lot(array(
         'the_shield' => $folder,
-        'the_path' => $path,
-        'info' => $info
+        'the_name' => $path,
+        'the_info' => $info
     ))->attach('manager', false);
 });
 
@@ -261,7 +261,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     Weapon::fire('on_shield_' . $mode, array($G, $G));
     Weapon::fire('on_shield_' . md5($slug) . '_update', array($G, $G));
     Weapon::fire('on_shield_' . md5($slug) . '_' . $mode, array($G, $G));
-    foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log') as $asset_cache) {
+    foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
         File::open($asset_cache)->delete();
     }
     Guardian::kick($config->manager->slug . '/shield/' . $slug);

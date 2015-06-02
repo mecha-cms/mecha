@@ -1,6 +1,6 @@
 <?php
 
-class Image extends Plugger {
+class Image extends Base {
 
     protected static $open = null;
     protected static $original = null;

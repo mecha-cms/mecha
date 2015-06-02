@@ -80,7 +80,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
             Config::load(); // Refresh the configuration data ...
             Notify::success(Config::speak('notify_success_updated', Config::speak('config')));
-            foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log') as $asset_cache) {
+            foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
                 File::open($asset_cache)->delete();
             }
             Weapon::fire('on_config_update', array($G, $P));

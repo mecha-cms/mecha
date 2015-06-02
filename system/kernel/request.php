@@ -21,7 +21,7 @@
  *
  */
 
-class Request extends Plugger {
+class Request extends Base {
 
     public static function post($param = null, $fallback = false, $str_eval = true) {
         if(is_null($param)) {

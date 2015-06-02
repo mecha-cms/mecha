@@ -82,7 +82,7 @@ class Cell {
         if($content === false) {
             return $indent . '<' . $tag . self::bond($attr) . ES;
         }
-        return $indent . '<' . $tag . self::bond($attr) . '>' . $content . '</' . $tag . '>';
+        return $indent . '<' . $tag . self::bond($attr) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>';
     }
 
     // Base HTML tag open

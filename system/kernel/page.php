@@ -16,7 +16,7 @@
  *
  */
 
-class Page extends Plugger {
+class Page extends Base {
 
     public static $open = null;
     public static $bucket = array();
@@ -64,8 +64,7 @@ class Page extends Plugger {
         }
         foreach($data as $k => $v) {
             if($v === false) {
-                unset($data[self::fix($k)]);
-                unset(self::$bucket[self::fix($k)]);
+                unset($data[self::fix($k)], self::$bucket[self::fix($k)]);
             } else {
                 // Restrict users from inputting the `SEPARATOR` constant
                 // to prevent mistakes in parsing the file content
@@ -99,8 +98,7 @@ class Page extends Plugger {
     public static function read($content = 'content', $FP = 'page:') {
         $results = Text::toPage(self::create(), $content, $FP);
         if($content === false) {
-            unset($results['content']);
-            unset($results['content_raw']);
+            unset($results['content'], $results['content_raw']);
         }
         self::reset();
         return $results;
