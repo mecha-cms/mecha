@@ -11,7 +11,9 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         Shield::abort();
     }
     $offset = (int) $offset;
-    $takes = Get::files(CACHE, '*', 'DESC', 'update');
+    $filter = Request::get('q', false);
+    $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
+    $takes = Get::files(CACHE, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
         foreach($_files as $_file) $files[] = $_file;

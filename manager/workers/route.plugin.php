@@ -146,7 +146,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $page_current = (int) Request::get('o', 1);
+    $page_current = Request::get('o', 1);
     // Toggle file name from `launch.php` to `pending.php` or vice-versa
     File::open(PLUGIN . DS . $slug . DS . ($path === 'freeze' ? 'launch' : 'pending') . '.php')
         ->renameTo(($path === 'freeze' ? 'pending' : 'launch') . '.php');

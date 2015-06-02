@@ -58,67 +58,7 @@ class File extends Plugger {
     public static $config = array(
         'file_size_min_allow' => 0, // Minimum allowed file size
         'file_size_max_allow' => 2097152, // Maximum allowed file size
-        'file_extension_allow' => array( // List of allowed file extensions
-
-            ## Script
-            'cache',
-            'css',
-            'draft',
-            // 'htaccess',
-            'hold',
-            'htm',
-            'html',
-            'js',
-            'json',
-            'jsonp',
-            'less',
-            'md',
-            'markdown',
-            // 'php',
-            'scss',
-            'txt',
-            'xml',
-
-            ## Image
-            'bmp',
-            'cur',
-            'gif',
-            'ico',
-            'jpeg',
-            'jpg',
-            'png',
-            'svg',
-
-            ## Font
-            'eot',
-            'otf',
-            'svg',
-            'ttf',
-            'woff',
-            'woff2',
-
-            ## Media
-            'avi',
-            'flv',
-            'mkv',
-            'mov',
-            'mp3',
-            'mp4',
-            'm4a',
-            'm4v',
-            'swf',
-            'wav',
-            'wma',
-
-            ## Package
-            'gz',
-            'iso',
-            'rar',
-            'tar',
-            'zip',
-            'zipx'
-
-        )
+        'file_extension_allow' => array() // List of allowed file extensions
     );
 
     // Check if file already exist

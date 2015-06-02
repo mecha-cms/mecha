@@ -66,7 +66,7 @@ Config::plug('load', function() {
     }
     $queries = array();
     foreach($_GET as $k => $v) {
-        $queries[] = $k . '=' . $v;
+        $queries[] = $k . '=' . urlencode($v);
     }
     $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
 

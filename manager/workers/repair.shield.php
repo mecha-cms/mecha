@@ -11,12 +11,8 @@
       )
   )); ?>
   </p>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->name; ?></span>
-    <span class="grid span-5"><?php echo Form::text('name', Guardian::wayback('name', File::url($the_path))); ?></span>
-  </label>
-  <hr>
   <p>
+    <?php echo Form::text('name', Guardian::wayback('name', File::url($the_path)), $speak->manager->placeholder_file_name); ?>
     <?php if(strpos($config->url_current, 'file:') === false): ?>
     <?php echo Jot::button('construct', $speak->create); ?>
     <?php else: ?>

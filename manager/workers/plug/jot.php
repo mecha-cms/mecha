@@ -100,7 +100,7 @@ Jot::add('a', function($kind = 'default', $href = null, $text = "", $attr = arra
 Jot::add('uploader', function($action, $accept = null, $fields = array()) {
     $speak = Config::speak();
     $html = Cell::begin('form', array(
-        'class' => 'form-upload',
+        'class' => 'form-ignite form-upload',
         'action' => Converter::url($action),
         'method' => 'post',
         'enctype' => 'multipart/form-data'
@@ -122,7 +122,7 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
         'data' => array(
             'icon-ready' => 'fa fa-check',
             'icon-error' => 'fa fa-times',
-            'accepted-extensions' => ! is_null($accept) ? $accept : implode(',', File::$config['file_extension_allow'])
+            'accepted-extensions' => $accept
         )
     ), 2) . NL;
     $html .= Cell::end() . ' ' . Jot::button('action:cloud-upload', $speak->upload) . NL;
@@ -131,12 +131,15 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
 });
 
 // File finder
-Jot::add('finder', function($action, $name = 'q') {
+Jot::add('finder', function($action, $name = 'q', $fields = array()) {
     $html = Cell::begin('form', array(
         'class' => 'form-find',
         'action' => Converter::url($action),
         'method' => 'get'
     )) . NL;
+    foreach($fields as $key => $value) {
+        $html .= Form::hidden($key, $value) . NL;
+    }
     $html .= Form::text($name, Request::get($name, null), null, array(), 1) . ' ' . Jot::button('action:search', Config::speak('find')) . NL;
     $html .= Cell::end();
     return $html;

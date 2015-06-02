@@ -276,6 +276,9 @@ plugins: Plugin
 file: Berkas
 files: Berkas
 
+folder: Folder
+folders: Folder
+
 last: Terakhir
 last_: Terakhir %s
 
@@ -525,6 +528,7 @@ manager:
   placeholder_js: JavaScript di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
   placeholder_file_name: contoh-nama-berkas.txt
+  placeholder_folder_name: contoh-nama-folder
   placeholder_asset_name: contoh-nama-aset.jpg
   placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
 
@@ -617,11 +621,18 @@ notify_file:
 notify_file_exist: Berkas %s sudah ada.
 notify_file_not_exist: Berkas %s sudah tidak ada.
 
+notify_folder_exist: Folder %s sudah ada.
+notify_folder_not_exist: Folder %s sudah tidak ada.
+
 notify_file_created: Berkas %s berhasil dibuat.
 notify_file_submitted: Berkas %s berhasil dikirim.
 notify_file_updated: Berkas %s berhasil diperbaharui.
 notify_file_uploaded: Berkas %s berhasil diunggah.
 notify_file_deleted: Berkas %s berhasil dihapus.
+
+notify_folder_created: Folder %s berhasil dibuat.
+notify_folder_updated: Folder %s berhasil diperbaharui.
+notify_folder_deleted: Folder %s berhasil dihapus.
 
 notify_success_created: <strong>%s</strong> berhasil dibuat.
 notify_success_submitted: <strong>%s</strong> berhasil dikirim.

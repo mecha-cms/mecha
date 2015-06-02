@@ -39,7 +39,7 @@ define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.4/zepto.min.
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
-define('MEDIA_EXT', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma');
+define('MEDIA_EXT', '3gp,avi,flv,mkv,mov,mp3,mp4,m4a,m4v,ogg,swf,wav,wma');
 define('PACKAGE_EXT', 'gz,iso,rar,tar,zip,zipx');
 define('SCRIPT_EXT', 'cache,css,draft,htaccess,hold,htm,html,js,json,jsonp,less,md,markdown,php,scss,txt,xml');
 

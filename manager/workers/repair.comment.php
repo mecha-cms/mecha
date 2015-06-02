@@ -60,7 +60,7 @@
                 'code',
                 'MTE'
             ),
-            'data-MTE-config' => '{"toolbar":true,"shortcut":true}'
+            'data-MTE-config' => '{"shortcut":true}'
         )); ?>
         </span>
       </label>

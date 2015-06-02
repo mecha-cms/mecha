@@ -325,7 +325,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>
@@ -337,7 +338,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>
@@ -349,7 +351,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>
@@ -369,7 +372,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>
@@ -381,7 +385,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>
@@ -393,7 +398,8 @@
               'textarea-block',
               'code',
               'MTE'
-          )
+          ),
+          'data-MTE-config' => '{"toolbar":false}'
       )); ?>
       </span>
     </label>

@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-kill form-asset" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-kill form-asset" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <ul>
     <?php foreach($the_name as $name): ?>

@@ -14,7 +14,7 @@
 (function($, base) {
 
     var $uploader = $('.form-upload input[type="file"]'),
-        accepted = ($uploader.data('acceptedExtensions') || 'cache,css,draft,hold,htm,html,js,json,jsonp,less,md,markdown,scss,txt,xml,bmp,cur,gif,ico,jpeg,jpg,png,svg,eot,otf,ttf,woff,woff2,avi,flv,mkv,mov,mp3,mp4,m4a,m4v,swf,wav,wma,gz,iso,rar,tar,zip,zipx').split(','),
+        accepted = ($uploader.data('acceptedExtensions') || base.file_extension_allow).split(','),
         cache = $uploader.prev().html();
 
     if (!$uploader.length) return;

@@ -54,5 +54,5 @@
 <?php endif; ?>
 <?php else: ?>
 <?php echo $messages; ?>
-<p><?php echo Config::speak('notify_empty', strtolower($speak->caches)); ?></p>
+<p><?php echo Config::speak('notify_' . ($config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->caches)); ?></p>
 <?php endif; ?>

@@ -276,6 +276,9 @@ plugins: Plugins
 file: File
 files: Files
 
+folder: Folder
+folders: Folders
+
 last: Last
 last_: Last %s
 
@@ -525,6 +528,7 @@ manager:
   placeholder_js: Custom JavaScript goes here&hellip;
   placeholder_file: Select a file&hellip;
   placeholder_file_name: example-file-name.txt
+  placeholder_folder_name: example-folder-name
   placeholder_asset_name: example-asset-name.jpg
   placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
 
@@ -617,11 +621,18 @@ notify_file:
 notify_file_exist: File %s already exist.
 notify_file_not_exist: File %s does not exist.
 
+notify_folder_exist: Folder %s already exist.
+notify_folder_not_exist: Folder %s does not exist.
+
 notify_file_created: File %s successfully created.
 notify_file_submitted: File %s successfully submitted.
 notify_file_updated: File %s successfully updated.
 notify_file_uploaded: File %s successfully uploaded.
 notify_file_deleted: File %s successfully deleted.
+
+notify_folder_created: Folder %s successfully created.
+notify_folder_updated: Folder %s successfully updated.
+notify_folder_deleted: Folder %s successfully deleted.
 
 notify_success_created: <strong>%s</strong> successfully created.
 notify_success_submitted: <strong>%s</strong> successfully submitted.

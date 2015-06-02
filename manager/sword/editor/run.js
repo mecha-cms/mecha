@@ -56,6 +56,14 @@ if (typeof DASHBOARD !== "undefined") {
         config = area[i].getAttribute('data-MTE-config') || '{}';
         config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
+        if (prefix === 'editor') {
+            for (var j in speak.buttons) {
+                // Show only `undo` and `redo` button in code editor mode
+                if (j !== 'undo' && j !== 'redo') {
+                    speak.buttons[j] = false;
+                }
+            }
+        }
         base.fire('on_control_begin', {
             'index': i,
             'info': {
@@ -65,7 +73,6 @@ if (typeof DASHBOARD !== "undefined") {
         });
         base[prefix + '_' + hook] = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className) ? new MTE(area[i], extend({
             tabSize: TAB || '    ',
-            toolbar: false,
             shortcut: false,
             areaClass: 'editor-area',
             toolbarClass: 'editor-toolbar cf',

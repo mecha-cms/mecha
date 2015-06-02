@@ -68,7 +68,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
     $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') == HTML_PARSER ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
     //  Please use the `TAB` and `ES` variable as declared in the PHP constants.
-    $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";';
+    $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";DASHBOARD.file_extension_allow="' . implode(',', File::$config['file_extension_allow']) . '";';
     echo $output . '</script>' . O_END;
 }, 1);
 

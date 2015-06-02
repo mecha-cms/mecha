@@ -74,6 +74,20 @@ $speak = Config::speak();
 
 
 /**
+ * Define Allowed File Extensions
+ * ------------------------------
+ */
+
+$e = explode(',', FONT_EXT . ',' . IMAGE_EXT . ',' . MEDIA_EXT . ',' . PACKAGE_EXT . ',' . SCRIPT_EXT);
+foreach(array('htaccess', 'php') as $exclude) {
+    if(($ee = array_search($exclude, $e)) !== false) {
+        unset($e[$ee]);
+    }
+}
+File::configure('file_extension_allow', array_unique($e));
+
+
+/**
  * First Installation
  * ------------------
  */

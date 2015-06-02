@@ -36,7 +36,7 @@
     <p class="pager cf"><?php echo $pager->step->link; ?></p>
     <?php endif; ?>
     <?php else: ?>
-    <p><?php echo Config::speak('notify_' . (Request::get('q_id') || $config->offset !== 1 ? 'error_not_found' : 'empty'), strtolower($speak->plugins)); ?></p>
+    <p><?php echo Config::speak('notify_' . (Request::get('q_id') || $config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->plugins)); ?></p>
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
