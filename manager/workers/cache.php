@@ -6,18 +6,15 @@
   <?php echo $messages; ?>
   <?php
 
-  $b_path = CACHE . DS;
+  $c_path = CACHE . DS;
 
-  $b_url = $config->manager->slug . '/cache';
-  $b_url_kill = $b_url . '/kill/file:';
-  $b_url_repair = $b_url . '/repair/file:';
+  $c_url = $config->manager->slug . '/cache';
+  $c_url_kill = $c_url . '/kill/file:';
+  $c_url_repair = $c_url . '/repair/file:';
 
   include DECK . DS . 'workers' . DS . 'unit.explorer.2.php';
 
   ?>
-  <?php if( ! empty($pager->step->url)): ?>
-  <p class="pager cf"><?php echo $pager->step->link; ?></p>
-  <?php endif; ?>
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>

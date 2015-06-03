@@ -3,7 +3,7 @@
 $bucket = array();
 $url_base = rtrim($config->url_current, '\\/-.0123456789');
 $json_order = strtoupper(Request::get('order', 'DESC'));
-$json_filter = Text::parse(Request::get('filter', ""), '->decoded_url');
+$json_filter = Request::get('filter', "");
 $json_limit = Request::get('limit', 25);
 
 if($pages = Mecha::eat(Get::articles($json_order, $json_filter))->chunk($config->offset, $json_limit)->vomit()) {

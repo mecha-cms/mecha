@@ -51,6 +51,12 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             $article->css_raw = $config->defaults->article_custom_css;
             $article->js_raw = $config->defaults->article_custom_js;
         }
+        // Remove automatic article description data from article composer
+        $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($article->path)), 2);
+        if(strpos($test[0], "\n" . 'Description: ') === false) {
+            $article->description = "";
+        }
+        unset($test);
         Config::set(array(
             'page_title' => $speak->editing . ': ' . $article->title . $config->title_separator . $config->manager->title,
             'article' => Mecha::A($article)
@@ -107,6 +113,17 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
+        // Remove empty field value
+        foreach($field as $k => $v) {
+            if(
+                $v['type'][0] === 't' && $v['value'] === "" ||
+                $v['type'][0] === 's' && $v['value'] === "" ||
+                $v['type'][0] === 'b' && ! isset($v['value']) ||
+                $v['type'][0] === 'o' && ! isset($v['value'])
+            ) {
+                unset($field[$k]);
+            }
+        }
         sort($kinds);
         // Slug must contains at least one letter or one `-`. This validation added
         // to prevent users from inputting a page offset instead of article slug.

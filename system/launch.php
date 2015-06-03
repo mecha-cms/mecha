@@ -436,6 +436,18 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $message = $request['message'];
             $field = Request::post('fields', array());
 
+            // Remove empty field value
+            foreach($field as $k => $v) {
+                if(
+                    $v['type'][0] === 't' && $v['value'] === "" ||
+                    $v['type'][0] === 's' && $v['value'] === "" ||
+                    $v['type'][0] === 'b' && ! isset($v['value']) ||
+                    $v['type'][0] === 'o' && ! isset($v['value'])
+                ) {
+                    unset($field[$k]);
+                }
+            }
+
             // Temporarily disallow images in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
             $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);

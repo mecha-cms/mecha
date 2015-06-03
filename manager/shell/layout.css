@@ -8,6 +8,7 @@ html {
 .th-icon,
 .td-icon {
   text-align:center;
+  line-height:1em;
   vertical-align:middle;
   width:1em;
 }

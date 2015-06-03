@@ -51,6 +51,12 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             $page->css_raw = $config->defaults->page_custom_css;
             $page->js_raw = $config->defaults->page_custom_js;
         }
+        // Remove automatic page description data from page composer
+        $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($page->path)), 2);
+        if(strpos($test[0], "\n" . 'Description: ') === false) {
+            $page->description = "";
+        }
+        unset($test);
         Config::set(array(
             'page_title' => $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title,
             'page' => Mecha::A($page)
@@ -104,6 +110,17 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
+        // Remove empty field value
+        foreach($field as $k => $v) {
+            if(
+                $v['type'][0] === 't' && $v['value'] === "" ||
+                $v['type'][0] === 's' && $v['value'] === "" ||
+                $v['type'][0] === 'b' && ! isset($v['value']) ||
+                $v['type'][0] === 'o' && ! isset($v['value'])
+            ) {
+                unset($field[$k]);
+            }
+        }
         // Check for duplicate slug
         if(
             $slug === $config->index->slug ||

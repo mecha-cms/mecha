@@ -14,27 +14,25 @@
       </div>
       <?php
 
-      $b_path = ASSET . DS;
+      $c_path = ASSET . DS;
 
-      $b_url = $config->manager->slug . '/asset';
-      $b_url_kill = $b_url . '/kill/file:';
-      $b_url_repair = $b_url . '/repair/file:';
+      $c_url = $config->manager->slug . '/asset';
+      $c_url_kill = $c_url . '/kill/file:';
+      $c_url_repair = $c_url . '/repair/file:';
 
       include DECK . DS . 'workers' . DS . 'unit.explorer.3.php';
+      include DECK . DS . 'workers' . DS . 'unit.pager.1.php';
 
       ?>
-      <?php if( ! empty($pager->step->url)): ?>
-      <p class="pager cf"><?php echo $pager->step->link; ?></p>
-      <?php endif; ?>
     </form>
     <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
     <hr>
-    <?php echo Jot::finder($config->manager->slug . '/asset', 'q', array('path' => Text::parse($g_path, '->encoded_url'))); ?>
+    <?php echo Jot::finder($config->manager->slug . '/asset', 'q', array('path' => Text::parse($q_path, '->encoded_url'))); ?>
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <form class="form-ignite form-asset" action="<?php echo $config->url . '/' . $config->manager->slug . '/asset' . $q; ?>" method="post">
-      <p><code><?php echo ASSET . DS . ($g_path ? File::path($g_path) . DS : ""); ?> &hellip;</code></p>
+      <p><code><?php echo ASSET . DS . ($q_path ? File::path($q_path) . DS : ""); ?> &hellip;</code></p>
       <p><?php echo Form::text('folder', Guardian::wayback('folder'), $speak->manager->placeholder_folder_name) . ' ' . Jot::button('construct', $speak->create); ?></p>
       <p><?php echo Form::checkbox('redirect', 1, $_SERVER['REQUEST_METHOD'] === 'GET' ? true : Guardian::wayback('redirect', false), Config::speak('manager.description_redirect_to_', $speak->folder)); ?></p>
     </form>

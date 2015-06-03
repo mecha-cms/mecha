@@ -82,6 +82,17 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $url = Request::post('url', false);
             $message = $request['message'];
             $field = Request::post('fields', array());
+            // Remove empty field value
+            foreach($field as $k => $v) {
+                if(
+                    $v['type'][0] === 't' && $v['value'] === "" ||
+                    $v['type'][0] === 's' && $v['value'] === "" ||
+                    $v['type'][0] === 'b' && ! isset($v['value']) ||
+                    $v['type'][0] === 'o' && ! isset($v['value'])
+                ) {
+                    unset($field[$k]);
+                }
+            }
             // Update data
             Page::open($comment->path)->header(array(
                 'Name' => $name,

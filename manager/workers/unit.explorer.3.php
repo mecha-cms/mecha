@@ -1,8 +1,8 @@
 <?php
 
-$g_path = Request::get('path', "");
-$g_path_dir = rtrim(dirname($g_path), '.');
-$q = $g_path ? '?path=' . Text::parse($g_path, '->encoded_url') : "";
+$q_path = Request::get('path', "");
+$q_path_dir = rtrim(dirname($q_path), '.');
+$q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
 
 ?>
 <table class="table-bordered table-full-width">
@@ -21,7 +21,7 @@ $q = $g_path ? '?path=' . Text::parse($g_path, '->encoded_url') : "";
   <tbody>
     <?php if($files): ?>
     <?php foreach($files as $file): ?>
-    <?php $url = File::url(str_replace($b_path, "", $file->path)); ?>
+    <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
     <tr<?php echo Session::get('recent_file_update') === basename($file->path) ? ' class="active"' : ""; ?>>
       <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
       <td class="td-collapse"><time datetime="<?php echo Date::format($file->last_update, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
@@ -71,18 +71,18 @@ $q = $g_path ? '?path=' . Text::parse($g_path, '->encoded_url') : "";
       ?>
       <td>
         <?php if(is_dir($file->path)): ?>
-        <a href="<?php echo $config->url_current . '?path=' . Text::parse(ltrim($g_path . '/' . basename($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
+        <a href="<?php echo $config->url_current . '?path=' . Text::parse(ltrim($q_path . '/' . basename($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
         <?php else: ?>
         <a href="<?php echo $file->url; ?>" title="<?php echo File::size($file->path); ?>" target="_blank"><?php echo $n; ?></a>
         <?php endif; ?>
       </td>
       <td class="td-icon">
-      <?php echo Jot::a('construct', $b_url_repair . $url . $q, Jot::icon('pencil'), array(
+      <?php echo Jot::a('construct', $c_url_repair . $url . $q, Jot::icon('pencil'), array(
           'title' => $speak->edit
       )); ?>
       </td>
       <td class="td-icon">
-      <?php echo Jot::a('destruct', $b_url_kill . $url . $q, Jot::icon('times'), array(
+      <?php echo Jot::a('destruct', $c_url_kill . $url . $q, Jot::icon('times'), array(
           'title' => $speak->delete
       )); ?>
       </td>
@@ -99,11 +99,11 @@ $q = $g_path ? '?path=' . Text::parse($g_path, '->encoded_url') : "";
     <?php endif; ?>
     <?php if(isset($_GET['path'])): ?>
     <tr>
-      <td colspan="3"><?php echo basename($g_path); ?></td>
-      <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . ($g_path_dir ? '?path=' . Text::parse($g_path_dir, '->encoded_url') : ""), Jot::icon('folder-open'), array(
+      <td colspan="3"><?php echo basename($q_path); ?></td>
+      <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . ($q_path_dir ? '?path=' . Text::parse($q_path_dir, '->encoded_url') : ""), Jot::icon('folder-open'), array(
           'title' => $speak->exit . '&hellip;'
       )); ?></td>
-      <td class="td-icon"><?php echo Jot::a('destruct', $b_url_kill . $g_path . ($g_path_dir ? '?path=' . Text::parse($g_path_dir, '->encoded_url') : ""), Jot::icon('times'), array(
+      <td class="td-icon"><?php echo Jot::a('destruct', $c_url_kill . $q_path . ($q_path_dir ? '?path=' . Text::parse($q_path_dir, '->encoded_url') : ""), Jot::icon('times'), array(
           'title' => $speak->delete
       )); ?></td>
     </tr>

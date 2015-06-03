@@ -55,8 +55,9 @@ if( ! empty($fields)) {
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }
-        if( ! isset($value['scope']) || $value['scope'] != 'article' && $value['scope'] != 'page' && $value['scope'] != 'comment' && $segment != 'comment') {
-            $value['scope'] = $segment;
+        // "" means `article` or `page`
+        if( ! isset($value['scope']) || $value['scope'] === "") {
+            $value['scope'] = $segment != 'comment' ? $segment : "";
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";

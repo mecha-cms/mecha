@@ -19,11 +19,11 @@
     <?php endif; ?>
     <?php
 
-    $b_path = SHIELD . DS . $the_shield_folder . DS;
+    $c_path = SHIELD . DS . $the_shield_folder . DS;
 
-    $b_url = $config->manager->slug . '/shield/' . $the_shield_folder;
-    $b_url_kill = $b_url . '/kill/file:';
-    $b_url_repair = $b_url . '/repair/file:';
+    $c_url = $config->manager->slug . '/shield/' . $the_shield_folder;
+    $c_url_kill = $c_url . '/kill/file:';
+    $c_url_repair = $c_url . '/repair/file:';
 
     include DECK . DS . 'workers' . DS . 'unit.explorer.1.php';
 

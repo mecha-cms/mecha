@@ -20,13 +20,13 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     if($request = Request::post()) {
         // New folder
         if(isset($request['folder'])) {
-            $folder = explode(DS, File::path($request['folder']));
-            foreach($folder as &$f) {
-                $f = Text::parse($f, '->safe_file_name');
-            }
-            unset($f);
-            $folder = implode(DS, $folder);
-            if(trim($folder) !== "") {
+            if(trim($request['folder']) !== "") {
+                $folder = explode(DS, File::path($request['folder']));
+                foreach($folder as &$f) {
+                    $f = Text::parse($f, '->safe_file_name');
+                }
+                unset($f);
+                $folder = implode(DS, $folder);
                 if(File::exist($d . DS . $folder)) {
                     Notify::error(Config::speak('notify_folder_exist', '<code>' . $folder . '</code>'));
                 }

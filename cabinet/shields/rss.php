@@ -3,7 +3,7 @@
 $bucket = array();
 $url_base = rtrim($config->url_current, '\\/-.0123456789');
 $rss_order = strtoupper(Request::get('order', 'DESC'));
-$rss_filter = Text::parse(Request::get('filter', ""), '->decoded_url');
+$rss_filter = Request::get('filter', "");
 $rss_limit = Request::get('limit', 25);
 
 $str_replace = array(
