@@ -6,14 +6,14 @@
     <tr<?php echo Session::get('recent_file_update') === basename($file->path) ? ' class="active"' : ""; ?>>
       <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', dirname($url) . '/') . basename($url) : $url; ?></td>
       <td class="td-icon">
-      <?php echo Jot::a('construct', $c_url_repair . $url, Jot::icon('pencil'), array(
+      <?php echo isset($c_url_repair) && $c_url_repair !== false ? Jot::a('construct', $c_url_repair . $url, Jot::icon('pencil'), array(
           'title' => $speak->edit
-      )); ?>
+      )) : Jot::icon('pencil'); ?>
       </td>
       <td class="td-icon">
-      <?php echo Jot::a('destruct', $c_url_kill . $url, Jot::icon('times'), array(
+      <?php echo isset($c_url_kill) && $c_url_kill !== false ? Jot::a('destruct', $c_url_kill . $url, Jot::icon('times'), array(
           'title' => $speak->delete
-      )); ?>
+      )) : Jot::icon('times'); ?>
       </td>
     </tr>
     <?php endforeach; ?>

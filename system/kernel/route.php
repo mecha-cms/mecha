@@ -188,7 +188,7 @@ class Route extends Base {
 
     public static function is($pattern) {
         $pattern = self::path($pattern);
-        if(strpos($pattern, '(:') === false) {
+        if(strpos($pattern, '(') === false) {
             return Config::get('url_path') === $pattern;
         }
         return preg_match('#^' . self::fix($pattern) . '$#', Config::get('url_path'));

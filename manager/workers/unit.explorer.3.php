@@ -77,14 +77,14 @@ $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
         <?php endif; ?>
       </td>
       <td class="td-icon">
-      <?php echo Jot::a('construct', $c_url_repair . $url . $q, Jot::icon('pencil'), array(
+      <?php echo isset($c_url_repair) && $c_url_repair !== false ? Jot::a('construct', $c_url_repair . $url . $q, Jot::icon('pencil'), array(
           'title' => $speak->edit
-      )); ?>
+      )) : Jot::icon('pencil'); ?>
       </td>
       <td class="td-icon">
-      <?php echo Jot::a('destruct', $c_url_kill . $url . $q, Jot::icon('times'), array(
+      <?php echo isset($c_url_kill) && $c_url_kill !== false ? Jot::a('destruct', $c_url_kill . $url . $q, Jot::icon('times'), array(
           'title' => $speak->delete
-      )); ?>
+      )) : Jot::icon('times'); ?>
       </td>
     </tr>
     <?php endforeach; ?>

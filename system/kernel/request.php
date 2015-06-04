@@ -19,6 +19,12 @@
  *
  * -----------------------------------------------------------
  *
+ *    if(Request::method('post')) { ... }
+ *
+ *    if(Request::method() === 'post') { ... }
+ *
+ * -----------------------------------------------------------
+ *
  */
 
 class Request extends Base {
@@ -37,6 +43,13 @@ class Request extends Base {
         }
         $output = Mecha::GVR($_GET, $param, $fallback);
         return ! empty($output) ? ($str_eval ? Converter::strEval($output) : $output) : $fallback;
+    }
+
+    public static function method($method = null, $fallback = false) {
+        if(is_null($method)) {
+            return strtolower($_SERVER['REQUEST_METHOD']);
+        }
+        return strtolower($_SERVER['REQUEST_METHOD']) === strtolower($method) ? strtolower($method) : $fallback;
     }
 
 }
