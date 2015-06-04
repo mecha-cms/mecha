@@ -578,23 +578,18 @@ manager:
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
   title_widget_include_js: JavaScript Widget Bawaan ke Tameng
 
-  title_defaults_article_title: Judul Artikel Standar
-  title_defaults_article_content: Konten Artikel Standar
-  title_defaults_article_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Artikel Standar
-  title_defaults_article_custom_js: JavaScript Artikel Standar
-
-  title_defaults_page_title: Judul Halaman Standar
-  title_defaults_page_content: Konten Halaman Standar
-  title_defaults_page_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Halaman Standar
-  title_defaults_page_custom_js: JavaScript Halaman Standar
+  title_defaults__title: Judul %s Standar
+  title_defaults__content: Konten %s Standar
+  title_defaults__custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> %s Standar
+  title_defaults__custom_js: JavaScript %s Standar
 
   title__upload: Unggah Sebuah %s
   title__upload_alt: Unggah Sebuah %s
   title__upload_package: Unggah Sebuah Paket %s
   title__upload_package_alt: Unggah Sebuah Paket %s
 
-  _this_article: %s Artikel Ini
-  _this_page: %s Halaman Ini
+  _this_: %s %s Ini
+  _these_: %s %s Ini
 
   description_redirect_to_: Alihkan ke %s
 

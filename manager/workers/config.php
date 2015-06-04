@@ -310,7 +310,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_title; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->article); ?></span>
       <span class="grid span-4">
       <?php echo Form::text('defaults[article_title]', Guardian::wayback('defaults.article_title', $config->defaults->article_title), null, array(
           'class' => 'input-block'
@@ -318,7 +318,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_content ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__content', $speak->article); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[article_content]', Guardian::wayback('defaults.article_content', $config->defaults->article_content), null, array(
           'class' => array(
@@ -330,7 +330,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_css; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_css', $speak->article); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[article_custom_css]', Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css), null, array(
           'class' => array(
@@ -342,7 +342,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_article_custom_js; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_js', $speak->article); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[article_custom_js]', Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js), null, array(
           'class' => array(
@@ -354,7 +354,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_title; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->page); ?></span>
       <span class="grid span-4">
       <?php echo Form::text('defaults[page_title]', Guardian::wayback('defaults.page_title', $config->defaults->page_title), null, array(
           'class' => 'input-block'
@@ -362,7 +362,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_content ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->page); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[page_content]', Guardian::wayback('defaults.page_content', $config->defaults->page_content), null, array(
           'class' => array(
@@ -374,7 +374,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_css; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_css', $speak->page); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[page_custom_css]', Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css), null, array(
           'class' => array(
@@ -386,7 +386,7 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_defaults_page_custom_js; ?></span>
+      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_js', $speak->page); ?></span>
       <span class="grid span-4">
       <?php echo Form::textarea('defaults[page_custom_js]', Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js), null, array(
           'class' => array(

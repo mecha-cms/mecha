@@ -578,23 +578,18 @@ manager:
   title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
   title_widget_include_js: Include Default Widget&rsquo;s JavaScript to the Shield
 
-  title_defaults_article_title: Default Article Title
-  title_defaults_article_content: Default Article Content
-  title_defaults_article_custom_css: Default Article <abbr title="Cascading Style Sheet">CSS</abbr>
-  title_defaults_article_custom_js: Default Article JavaScript
-
-  title_defaults_page_title: Default Page Title
-  title_defaults_page_content: Default Page Content
-  title_defaults_page_custom_css: Default Page <abbr title="Cascading Style Sheet">CSS</abbr>
-  title_defaults_page_custom_js: Default Page JavaScript
+  title_defaults__title: Default %s Title
+  title_defaults__content: Default %s Content
+  title_defaults__custom_css: Default %s <abbr title="Cascading Style Sheet">CSS</abbr>
+  title_defaults__custom_js: Default %s JavaScript
 
   title__upload: Upload a %s
   title__upload_alt: Upload an %s
   title__upload_package: Upload a %s Package
   title__upload_package_alt: Upload an %s Package
 
-  _this_article: %s This Article
-  _this_page: %s This Page
+  _this_: %s This %s
+  _these_: %s These %s
 
   description_redirect_to_: Redirect to %s
 

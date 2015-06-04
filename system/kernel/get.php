@@ -852,7 +852,7 @@ class Get extends Base {
          * -------------
          */
 
-        if( ! isset($excludes['fields']) && isset($results['fields']) && is_array($results['fields'])) {
+        if( ! isset($excludes['fields'])) {
 
             /**
              * Initialize custom fields with the default values so that
@@ -866,7 +866,7 @@ class Get extends Base {
             $init = array();
 
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
                     $init[$key] = $value['value'];
                 }
             }
@@ -875,11 +875,10 @@ class Get extends Base {
              * Start re-writing ...
              */
 
-            foreach($results['fields'] as $key => $value) {
-                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
-                    $value['value'] = 'true';
+            if(isset($results['fields']) && is_array($results['fields'])) {
+                foreach($results['fields'] as $key => $value) {
+                    $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
                 }
-                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
 
             $results['fields'] = $init;
@@ -980,14 +979,11 @@ class Get extends Base {
             $fields = self::state_field(array());
             $init = array();
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
                     $init[$key] = $value['value'];
                 }
             }
             foreach($results['fields'] as $key => $value) {
-                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
-                    $value['value'] = 'true';
-                }
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
@@ -1034,14 +1030,11 @@ class Get extends Base {
             $fields = self::state_field(array());
             $init = array();
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] == rtrim($FP, ':')) {
+                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
                     $init[$key] = $value['value'];
                 }
             }
             foreach($results['fields'] as $key => $value) {
-                if($value['type'][0] === 'b' && isset($value['value']) && trim($value['value']) === "") {
-                    $value['value'] = 'true';
-                }
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;

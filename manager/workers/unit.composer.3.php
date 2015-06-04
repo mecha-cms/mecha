@@ -78,7 +78,7 @@ if( ! empty($fields)) {
                 $html .= '<div class="grid-group">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : "", isset($field[$key]) && ! empty($field[$key]), $value['title']);
+                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $value['title']);
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type == 'o') {

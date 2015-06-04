@@ -219,15 +219,15 @@ Weapon::add('after_shield_config_redefine', function() {
         );
     }
 
-    if($config->page_type == 'article' || $config->page_type == 'page') {
+    if($config->page_type === 'article' || $config->page_type === 'page') {
         $type = $config->page_type;
-        $id = $type == 'article' ? $config->article->id : $config->page->id;
-        $menus[Config::speak('manager._this_' . $type, $speak->edit)] = array(
+        $id = $type === 'article' ? $config->article->id : $config->page->id;
+        $menus[Config::speak('manager._this_', array($speak->edit, $speak->article))] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
             'stack' => 9.14
         );
-        $menus[Config::speak('manager._this_' . $type, $speak->delete)] = array(
+        $menus[Config::speak('manager._this_', array($speak->delete, $speak->page))] = array(
             'icon' => 'trash',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
             'stack' => 9.15
