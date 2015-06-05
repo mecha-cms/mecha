@@ -36,19 +36,19 @@ Config::plug('load', function() {
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
     $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
 
-    $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt'));
-    $config['total_pages'] = count(glob(PAGE . DS . '*.txt'));
-    $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt'));
+    $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt', GLOB_NOSORT));
+    $config['total_pages'] = count(glob(PAGE . DS . '*.txt', GLOB_NOSORT));
+    $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt', GLOB_NOSORT));
 
-    $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft,archive}', GLOB_BRACE));
-    $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft,archive}', GLOB_BRACE));
-    $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_BRACE));
+    $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE));
+    $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE));
+    $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
 
     $page = '404';
     $path = $config['url_path'];
     $s = explode('/', $path);
     if($path === "") $page = 'home';
-    if(strpos($path, '/') === false && $path !== "") $page = 'page';
+    if($path !== "" && strpos($path, '/') === false) $page = 'page';
     if($path === $config['index']['slug']) $page = 'index';
     if($s[0] === $config['index']['slug'] && isset($s[1])) $page = is_numeric($s[1]) ? 'index' : 'article';
     if(strpos($path, $config['tag']['slug'] . '/') === 0) $page = 'tag';

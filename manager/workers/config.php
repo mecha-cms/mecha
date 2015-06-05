@@ -58,7 +58,6 @@
               $info[$s] = Shield::info($s)->title;
           }
       }
-      asort($info);
       echo Form::select('shield', $info, Guardian::wayback('shield', $config->shield), array(
           'class' => 'select-block'
       ));

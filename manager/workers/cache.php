@@ -3,8 +3,9 @@
   <div class="main-action-group">
     <?php echo Jot::button('destruct', $speak->delete); ?>
   </div>
-  <?php echo $messages; ?>
   <?php
+
+  echo $messages;
 
   $c_path = CACHE . DS;
 
@@ -18,5 +19,5 @@
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>
-<?php echo Jot::finder($config->manager->slug . '/cache', 'q'); ?>
+<?php echo Jot::finder($c_url, 'q'); ?>
 <?php endif; ?>

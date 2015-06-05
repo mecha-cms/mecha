@@ -1,5 +1,6 @@
-<?php echo $messages; ?>
 <?php
+
+echo $messages;
 
 if($the_content) {
     $path_destruct = $config->url_path . '/kill';

@@ -43,8 +43,9 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
                 Weapon::fire('on_asset_construct', array($P, $P));
                 if(isset($request['redirect'])) {
                     $folder = File::url($folder);
-                    Guardian::kick($config->manager->slug . '/asset?path=' . urlencode($p ? $p . '/' . $folder : $folder));
+                    Guardian::kick($config->manager->slug . '/asset/' . $offset . '?path=' . urlencode($p ? $p . '/' . $folder : $folder));
                 }
+                Guardian::kick($config->manager->slug . '/asset/' . $offset);
             } else {
                 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                     echo '<script>
@@ -160,7 +161,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                 Session::set('recent_file_update', $new[0]);
                 Weapon::fire('on_asset_update', array($P, $P));
                 Weapon::fire('on_asset_repair', array($P, $P));
-                Guardian::kick($config->manager->slug . '/asset' . $p);
+                Guardian::kick($config->manager->slug . '/asset/' . $p);
             }
         }
     }
@@ -194,6 +195,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->assets) . $config->title_separator . $config->manager->title,
+        'files' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
     ));
     if($request = Request::post()) {
@@ -212,7 +214,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::lot('the_name', $deletes)->attach('manager', false);
+    Shield::attach('manager', false);
 });
 
 
