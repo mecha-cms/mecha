@@ -1,6 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-kill form-article" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Form::hidden('token', $token); ?>
+<form class="form-kill form-article" id="form-kill" action="<?php echo $config->url_current; ?>" method="post">
   <h3><?php echo $article->title; ?></h3>
   <p><?php echo $article->description; ?></p>
   <p><strong><?php echo $article->total_comments_text; ?></strong></p>
@@ -14,4 +13,5 @@
   <?php echo Jot::button('action', $speak->yes); ?>
   <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/article/repair/id:' . $article->id); ?>
   </p>
+  <?php echo Form::hidden('token', $token); ?>
 </form>

@@ -1,4 +1,4 @@
-<form class="form-cache" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
+<form class="form-kill form-cache" id="form-kill" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/kill" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <div class="main-action-group">
     <?php echo Jot::button('destruct', $speak->delete); ?>

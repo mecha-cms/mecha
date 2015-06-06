@@ -6,7 +6,7 @@
 (function($, base) {
 
     var $base = $(document.body),
-        $form = $('#form-compose'),
+        $form = $('#form-ignite, #form-repair'),
         $tab = $('.tab-area a'),
         $title = $($form[0].title),
         $slug = $($form[0].slug),

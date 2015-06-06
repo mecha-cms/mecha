@@ -7,13 +7,13 @@
  */
 
 Route::accept($config->manager->slug . '/config', function() use($config, $speak) {
+    if(Guardian::get('status') != 'pilot') {
+        Shield::abort();
+    }
     Config::set(array(
         'page_title' => $speak->configs . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'config.php'
     ));
-    if(Guardian::get('status') != 'pilot') {
-        Shield::abort();
-    }
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $bools = array(

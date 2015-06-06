@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-repair form-menu" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-menu" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <?php
 

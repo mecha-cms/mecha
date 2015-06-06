@@ -1,4 +1,4 @@
-<form class="form-shortcode" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-shortcode" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php $count = 0; echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
   <table class="table-bordered table-full-width table-sortable">

@@ -102,4 +102,18 @@ class Notify extends Base {
 
     }
 
+    // Configure ...
+    public static function configure($key, $value = null) {
+        if(is_array($key)) {
+            Mecha::extend(self::$config, $key);
+        } else {
+            if(is_array($value)) {
+                Mecha::extend(self::$config[$key], $value);
+            } else {
+                self::$config[$key] = $value;
+            }
+        }
+        return new static;
+    }
+
 }

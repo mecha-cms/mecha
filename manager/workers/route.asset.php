@@ -18,6 +18,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         }
     }
     if($request = Request::post()) {
+        Guardian::checkToken($request['token']);
         // New folder
         if(isset($request['folder'])) {
             if(trim($request['folder']) !== "") {
@@ -58,7 +59,6 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         // New file
         } else {
             if(isset($_FILES) && ! empty($_FILES)) {
-                Guardian::checkToken(Request::post('token'));
                 File::upload($_FILES['file'], $d, function($name, $type, $size, $link) {
                     Session::set('recent_file_update', $name);
                 });

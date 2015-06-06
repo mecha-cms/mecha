@@ -1,6 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-kill form-page" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Form::hidden('token', $token); ?>
+<form class="form-kill form-page" id="form-kill" action="<?php echo $config->url_current; ?>" method="post">
   <h3><?php echo $page->title; ?></h3>
   <p><?php echo $page->description; ?></p>
   <?php if( ! empty($page->css)): ?>
@@ -13,4 +12,5 @@
   <?php echo Jot::button('action', $speak->yes); ?>
   <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/page/repair/id:' . $page->id); ?>
   </p>
+  <?php echo Form::hidden('token', $token); ?>
 </form>

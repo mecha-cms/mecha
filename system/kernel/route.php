@@ -61,7 +61,7 @@ class Route extends Base {
      *
      */
 
-    public static function accept($pattern, $fn, $stack = 10, $action = null) {
+    public static function accept($pattern, $fn, $stack = 10) {
         $url = Config::get('url');
         if(is_array($pattern)) {
             $i = 0;
@@ -69,8 +69,7 @@ class Route extends Base {
                 self::$routes[] = array(
                     'pattern' => self::path($p),
                     'fn' => $fn,
-                    'stack' => (float) (( ! is_null($stack) ? $stack : 10) + $i),
-                    'action' => $action
+                    'stack' => (float) (( ! is_null($stack) ? $stack : 10) + $i)
                 );
                 $i += .1;
             }
@@ -78,8 +77,7 @@ class Route extends Base {
             self::$routes[] = array(
                 'pattern' => self::path($pattern),
                 'fn' => $fn,
-                'stack' => (float) ( ! is_null($stack) ? $stack : 10),
-                'action' => $action
+                'stack' => (float) ( ! is_null($stack) ? $stack : 10)
             );
         }
     }
@@ -98,7 +96,9 @@ class Route extends Base {
      */
 
     public static function get($pattern, $fn, $stack = 10) {
-        self::accept($pattern, $fn, $stack, 'GET');
+        if($_SERVER['REQUEST_METHOD'] === 'GET') {
+            self::accept($pattern, $fn, $stack);
+        }
     }
 
     /**
@@ -115,7 +115,9 @@ class Route extends Base {
      */
 
     public static function post($pattern, $fn, $stack = 10) {
-        self::accept($pattern, $fn, $stack, 'POST');
+        if($_SERVER['REQUEST_METHOD'] === 'POST') {
+            self::accept($pattern, $fn, $stack);
+        }
     }
 
     /**
@@ -235,18 +237,15 @@ class Route extends Base {
                     // If matched with URL path
                     if(preg_match('#^' . self::fix($pattern) . '$#', $url, $arguments)) {
                         array_shift($arguments);
-                        // If request method is valid || null
-                        if(is_null($route['action']) || $route['action'] === $_SERVER['REQUEST_METHOD']) {
-                            // Loading cargos ...
-                            if(isset(self::$routes_over[$pattern]) && is_array(self::$routes_over[$pattern])) {
-                                $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
-                                foreach($fn as $v) {
-                                    call_user_func_array($v['fn'], array_values($arguments));
-                                }
+                        // Loading cargos ...
+                        if(isset(self::$routes_over[$pattern]) && is_array(self::$routes_over[$pattern])) {
+                            $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
+                            foreach($fn as $v) {
+                                call_user_func_array($v['fn'], array_values($arguments));
                             }
-                            // Passed!
-                            return call_user_func_array($route['fn'], array_values($arguments));
                         }
+                        // Passed!
+                        return call_user_func_array($route['fn'], array_values($arguments));
                     }
                 }
             }

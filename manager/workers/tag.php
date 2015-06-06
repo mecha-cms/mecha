@@ -1,4 +1,4 @@
-<form class="form-tag" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-tag" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php $id = array(); echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
   <table class="table-bordered table-full-width">

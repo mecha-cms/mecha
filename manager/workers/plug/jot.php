@@ -133,7 +133,7 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
 // File finder
 Jot::add('finder', function($action, $name = 'q', $fields = array()) {
     $html = Cell::begin('form', array(
-        'class' => 'form-find',
+        'class' => 'form-ignite form-find',
         'action' => Converter::url($action),
         'method' => 'get'
     )) . NL;

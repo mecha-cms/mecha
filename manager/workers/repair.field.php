@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-repair form-field" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-<?php echo $the_key ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $the_key ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>

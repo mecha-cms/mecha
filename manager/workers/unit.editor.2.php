@@ -1,12 +1,12 @@
 <?php
 
-$e = strtolower(pathinfo($the_name, PATHINFO_EXTENSION));
+$e = strtolower(pathinfo( ! is_null($the_name) ? $the_name : "", PATHINFO_EXTENSION));
 $is_text = explode(',', SCRIPT_EXT);
 $is_text = is_null($the_name) || in_array($e, $is_text);
 
 ?>
-<p>
 <?php if($is_text): ?>
+<p>
 <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
     'class' => array(
         'textarea-block',

@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-config" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-config" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <fieldset>
     <legend><?php echo $speak->manager->title_general; ?></legend>

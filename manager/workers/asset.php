@@ -16,7 +16,7 @@ $c_url_repair = $c_url . '/repair/file:';
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <h3><?php echo Config::speak('manager.title_your_', $speak->assets); ?></h3>
-    <form class="form-asset" action="<?php echo $config->url . '/' . $c_url . '/kill'; ?>" method="post">
+    <form class="form-kill form-asset" id="form-kill" action="<?php echo $config->url . '/' . $c_url . '/kill'; ?>" method="post">
       <?php echo Form::hidden('token', $token); ?>
       <div class="main-action-group">
         <?php echo Jot::button('destruct', $speak->delete); ?>
@@ -30,10 +30,11 @@ $c_url_repair = $c_url . '/repair/file:';
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <form class="form-asset" action="<?php echo $config->url . '/' . $c_url . $q; ?>" method="post">
+    <form class="form-ignite form-asset" id="form-ignite" action="<?php echo $config->url . '/' . $c_url . $q; ?>" method="post">
       <p><code><?php echo ASSET . DS . ($q_path ? File::path($q_path) . DS : ""); ?> &hellip;</code></p>
       <p><?php echo Form::text('folder', Guardian::wayback('folder'), $speak->manager->placeholder_folder_name) . ' ' . Jot::button('construct', $speak->create); ?></p>
       <p><?php echo Form::checkbox('redirect', 1, Request::method('get') ? true : Guardian::wayback('redirect', false), Config::speak('manager.description_redirect_to_', $speak->folder)); ?></p>
+      <?php echo Form::hidden('token', $token); ?>
     </form>
   </div>
   <div class="tab-content hidden" id="tab-content-3">

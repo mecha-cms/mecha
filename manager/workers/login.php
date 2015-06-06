@@ -1,12 +1,11 @@
 <?php echo $messages; ?>
-<form class="form-login" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-login" id="form-login" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->username; ?></span>
     <span class="grid span-4">
     <?php echo Form::text('username', Guardian::wayback('username'), null, array(
-        'autocomplete' => 'off',
-        'autofocus' => true
+        'autocomplete' => 'off'
     )); ?>
     </span>
   </label>
@@ -35,3 +34,4 @@
     </span>
   </div>
 </form>
+<script>document.getElementById('form-login').username.focus();</script>

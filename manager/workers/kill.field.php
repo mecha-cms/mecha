@@ -1,6 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-kill form-field" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Form::hidden('token', $token); ?>
+<form class="form-kill form-field" id="form-kill" action="<?php echo $config->url_current; ?>" method="post">
   <table class="table-bordered table-full-width">
     <thead>
       <tr>
@@ -32,4 +31,5 @@
   <?php echo Jot::button('action', $speak->yes); ?>
   <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $the_key); ?>
   </p>
+  <?php echo Form::hidden('token', $token); ?>
 </form>
