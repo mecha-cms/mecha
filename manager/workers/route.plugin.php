@@ -43,7 +43,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         $path = basename($name, '.' . $extension);
         if( ! empty($name)) {
             if(File::exist(PLUGIN . DS . $path)) {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '/&hellip;</code>'));
+                Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
             } else {
                 if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
                     Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
