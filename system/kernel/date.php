@@ -163,7 +163,7 @@ class Date extends Base {
         $output = array();
         foreach($data as $name => $offset) {
             $name = explode('/', $name);
-            $output[strtolower($name[0])] = $offset . ' ' . ($offset > 1 ? $name[1] : $name[0]);
+            $output[strtolower($name[0])] = $offset . ' ' . ($offset === 1 ? $name[0] : $name[1]);
         }
         return $output;
     }

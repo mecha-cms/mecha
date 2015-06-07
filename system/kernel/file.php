@@ -66,33 +66,40 @@ class File extends Base {
         $path = self::path($path);
         $extension = pathinfo($path, PATHINFO_EXTENSION);
         $update = file_exists($path) ? filemtime($path) : null;
+        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         return array(
             'path' => $path,
             'name' => basename($path, '.' . $extension),
             'url' => File::url($path),
             'extension' => strtolower($extension),
-            'last_update' => $update, // alias for `update_raw`
             'update_raw' => $update, // >= 1.1.3
-            'update' => ! is_null($update) ? date('Y-m-d H:i:s', $update) : null,
+            'update' => $update_date,
+            'last_update' => $update_date, // alias for `update`
             'size_raw' => file_exists($path) ? filesize($path) : null,
             'size' => self::size($path)
         );
     }
 
-    // List all files
-    public static function explore($folder = ROOT, $recursive = false) {
+    // List all files in a folder
+    public static function explore($folder = ROOT, $recursive = false, $flat = false, $fallback = false) {
         $results = array();
-        $files = array_merge(glob($folder . DS . '*'), glob($folder . DS . '.*'));
+        $folder = rtrim(self::path($folder), DS);
+        $files = array_merge(glob($folder . DS . '*', GLOB_NOSORT), glob($folder . DS . '.*', GLOB_NOSORT));
         foreach($files as $file) {
             if(basename($file) !== '.' && basename($file) !== '..') {
                 if(is_dir($file)) {
-                    $results[$file] = $recursive ? self::explore($file, true) : 0;
+                    if( ! $flat) {
+                        $results[$file] = $recursive ? self::explore($file, $recursive, $flat, array()) : 0;
+                    } else {
+                        $results[$file] = 0;
+                        $results = array_merge($results, self::explore($file, $recursive, $flat, array()));
+                    }
                 } else {
                     $results[$file] = 1;
                 }
             }
         }
-        return ! empty($results) ? $results : false;
+        return ! empty($results) ? $results : $fallback;
     }
 
     // Check if file already exist

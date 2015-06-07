@@ -23,7 +23,13 @@ class Converter extends Base {
      */
 
     public static function url($input) {
-        if(strpos($input, '://') === false && strpos($input, '?') !== 0 && strpos($input, '&') !== 0 && strpos($input, '#') !== 0 && strpos($input, 'javascript:') !== 0) {
+        if(
+            strpos($input, '://') === false &&
+            strpos($input, '?') !== 0 &&
+            strpos($input, '&') !== 0 &&
+            strpos($input, '#') !== 0 &&
+            strpos($input, 'javascript:') !== 0
+        ) {
             return str_replace(
                 array(
                     '/?',
@@ -70,7 +76,7 @@ class Converter extends Base {
                 'r' => (int) $matches[1],
                 'g' => (int) $matches[2],
                 'b' => (int) $matches[3],
-                'a' => isset($matches[5]) ? (float) $matches[5] : 1
+                'a' => (float) (isset($matches[5]) ? $matches[5] : 1)
             );
             return ! is_null($output) ? $colors[$output] : $colors;
         }

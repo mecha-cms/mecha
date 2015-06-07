@@ -63,15 +63,15 @@ class Get extends Base {
                     $results_inclusive[] = File::inspect($file);
                 }
             }
-            $_file = str_replace($folder, "", $file);
+            $_file = str_replace($folder . DS, "", $file);
             if(
                 // Exclude all files inside a folder from results if the
                 // folder name begins with two underscores. Example: `__folder-name`
                 // Exclude file from results if the file name begins with
                 // two underscores. Example: `__file-name.txt`
-                strpos($_file, DS . '__') === false &&
+                strpos($_file, '__') !== 0 &&
                 // Linux?
-                strpos($_file, DS . '.') === false
+                strpos($_file, '.') !== 0
             ) {
                 if( ! $filter) {
                     $results[] = File::inspect($file);
@@ -118,26 +118,27 @@ class Get extends Base {
         $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
         if($inclusive) {
             $files = array_merge($files, glob($folder . DS . '.*', GLOB_NOSORT));
-            $files = array_filter($files, 'is_file');
         }
         foreach($files as $file) {
-            if( ! $filter) {
-                $results_inclusive[] = File::inspect($file);
-            } else {
-                if(strpos(basename($file), $filter) !== false) {
-                    $results_inclusive[] = File::inspect($file);
-                }
-            }
-            $_file = str_replace($folder, "", $file);
-            if(
-                strpos($_file, DS . '__') === false &&
-                strpos($_file, DS . '.') === false
-            ) {
+            if(is_file($file)) {
                 if( ! $filter) {
-                    $results[] = File::inspect($file);
+                    $results_inclusive[] = File::inspect($file);
                 } else {
                     if(strpos(basename($file), $filter) !== false) {
+                        $results_inclusive[] = File::inspect($file);
+                    }
+                }
+                $_file = str_replace($folder . DS, "", $file);
+                if(
+                    strpos($_file, '__') !== 0 &&
+                    strpos($_file, '.') !== 0
+                ) {
+                    if( ! $filter) {
                         $results[] = File::inspect($file);
+                    } else {
+                        if(strpos(basename($file), $filter) !== false) {
+                            $results[] = File::inspect($file);
+                        }
                     }
                 }
             }

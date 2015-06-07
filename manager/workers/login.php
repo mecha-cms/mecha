@@ -1,5 +1,5 @@
-<?php echo $messages; ?>
-<form class="form-login" id="form-login" action="<?php echo $config->url_current; ?>" method="post">
+<?php echo $form_id = time(); $messages; ?>
+<form class="form-login" id="form-login:<?php echo $form_id; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->username; ?></span>
@@ -34,4 +34,4 @@
     </span>
   </div>
 </form>
-<script>document.getElementById('form-login').username.focus();</script>
+<script>document.getElementById('form-login:<?php echo $form_id; ?>').username.focus();</script>

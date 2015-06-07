@@ -167,7 +167,7 @@ Weapon::add('comment_footer', function($comment, $article) {
  * --------------------
  */
 
-Weapon::add('after_shield_config_redefine', function() {
+Weapon::add('shield_before', function() {
 
     $config = Config::get();
     $speak = Config::speak();
