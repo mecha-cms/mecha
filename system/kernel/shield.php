@@ -199,9 +199,7 @@ class Shield extends Base {
             'cache' => $cache,
             'expire' => $expire
         ));
-        Weapon::fire('before_shield_config_redefine', array($G, $G));
         extract(Filter::apply('shield:lot', self::cargo()));
-        Weapon::fire('after_shield_config_redefine', array($G, $G));
         $shield = false;
         $shield_base = explode('-', $name, 2);
         if($_file = File::exist(self::path($name))) {

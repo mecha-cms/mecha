@@ -13,34 +13,6 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF FILE DETAILS
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::fileExtract($input));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function fileExtract($input) {
-        if( ! $input) return false;
-        $extension = pathinfo($input, PATHINFO_EXTENSION);
-        return array(
-            'path' => $input,
-            'name' => basename($input, '.' . $extension),
-            'url' => File::url($input),
-            'extension' => strtolower($extension),
-            'last_update' => file_exists($input) ? filemtime($input) : null,
-            'update' => file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null,
-            'size_raw' => file_exists($input) ? filesize($input) : null,
-            'size' => File::size($input)
-        );
-    }
-
-    /**
-     * ==========================================================================
      *  GET ALL FILES RECURSIVELY
      * ==========================================================================
      *
@@ -85,10 +57,10 @@ class Get extends Base {
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
             if( ! $filter) {
-                $results_inclusive[] = self::fileExtract($file);
+                $results_inclusive[] = File::inspect($file);
             } else {
                 if(strpos(basename($file), $filter) !== false) {
-                    $results_inclusive[] = self::fileExtract($file);
+                    $results_inclusive[] = File::inspect($file);
                 }
             }
             $_file = str_replace($folder, "", $file);
@@ -102,10 +74,10 @@ class Get extends Base {
                 strpos($_file, DS . '.') === false
             ) {
                 if( ! $filter) {
-                    $results[] = self::fileExtract($file);
+                    $results[] = File::inspect($file);
                 } else {
                     if(strpos(basename($file), $filter) !== false) {
-                        $results[] = self::fileExtract($file);
+                        $results[] = File::inspect($file);
                     }
                 }
             }
@@ -143,14 +115,17 @@ class Get extends Base {
         $results_inclusive = array();
         $extension = str_replace(' ', "", $extensions);
         $folder = rtrim(File::path($folder), DS);
-        // TODO: Access files with dot prefix using `glob()`
         $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
+        if($inclusive) {
+            $files = array_merge($files, glob($folder . DS . '.*', GLOB_NOSORT));
+            $files = array_filter($files, 'is_file');
+        }
         foreach($files as $file) {
             if( ! $filter) {
-                $results_inclusive[] = self::fileExtract($file);
+                $results_inclusive[] = File::inspect($file);
             } else {
                 if(strpos(basename($file), $filter) !== false) {
-                    $results_inclusive[] = self::fileExtract($file);
+                    $results_inclusive[] = File::inspect($file);
                 }
             }
             $_file = str_replace($folder, "", $file);
@@ -159,10 +134,10 @@ class Get extends Base {
                 strpos($_file, DS . '.') === false
             ) {
                 if( ! $filter) {
-                    $results[] = self::fileExtract($file);
+                    $results[] = File::inspect($file);
                 } else {
                     if(strpos(basename($file), $filter) !== false) {
-                        $results[] = self::fileExtract($file);
+                        $results[] = File::inspect($file);
                     }
                 }
             }
@@ -598,7 +573,7 @@ class Get extends Base {
             'path' => self::AMF($input, $FP, 'path'),
             'id' => self::AMF((int) Date::format($time, 'U'), $FP, 'id'),
             'time' => self::AMF(Date::format($time), $FP, 'time'),
-            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'last_update'),
+            'update_raw' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'update_raw'),
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
             'slug' => self::AMF($slug, $FP, 'slug'),
@@ -644,7 +619,7 @@ class Get extends Base {
         return array(
             'path' => self::AMF($input, $FP, 'path'),
             'time' => self::AMF(Date::format($id), $FP, 'time'),
-            'last_update' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'last_update'),
+            'update_raw' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'update_raw'),
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
             'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
             'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),

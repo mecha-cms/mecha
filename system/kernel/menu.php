@@ -94,11 +94,13 @@ class Menu extends Base {
     }
 
     public static function get($array = null, $type = 'ul', $depth = "", $FP = "") {
-        // Use menu file from the cabinet when `$array` is not defined
+        // Use menu file from the cabinet if `$array` is not defined
         if(is_null($array)) {
-            $speak = Config::speak();
             $FP = 'navigation:';
-            $array = Text::toArray(Get::state_menu($speak->home . S . " /\nRSS" . S . " /feed"), S, '    ');
+            $speak = Config::speak();
+            $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
+            $menu = file_exists($d) ? include $d : "";
+            $array = Text::toArray(Get::state_menu($menu), S, '    ');
         }
         return O_BEGIN . rtrim(self::create($array, $type, $depth, $FP, 0), NL) . O_END;
     }

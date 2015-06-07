@@ -92,7 +92,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
         foreach($_files as $_file) {
-            $files[] = Get::fileExtract($_file);
+            $files[] = File::inspect($_file);
         }
         $files = Mecha::eat($files)->order('ASC', 'path')->vomit();
         unset($_files);

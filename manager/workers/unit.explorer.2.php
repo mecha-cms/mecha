@@ -17,7 +17,7 @@
     <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
     <tr<?php echo Session::get('recent_file_update') === basename($file->path) ? ' class="active"' : ""; ?>>
       <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
-      <td class="td-collapse"><time datetime="<?php echo Date::format($file->last_update, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
+      <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
       <td><span title="<?php echo $file->size; ?>"><?php echo strpos($url, '/') !== false ? Jot::span('fade', dirname($url) . '/') . basename($url) : $url; ?></span></td>
       <td class="td-icon">
       <?php echo isset($c_url_repair) && $c_url_repair !== false ? Jot::a('construct', $c_url_repair . $url, Jot::icon('pencil'), array(

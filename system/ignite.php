@@ -216,8 +216,8 @@ Filter::add('shortcode', function($content) use($config, $speak) {
  *
  */
 
-Filter::add('content', function($content) use($config) {
-    if($config->html_parser) {
+if($config->html_parser) {
+    Filter::add('content', function($content) use($config) {
         return preg_replace(
             array(
                 '#<table>#',
@@ -228,9 +228,9 @@ Filter::add('content', function($content) use($config) {
                 '<a rel="nofollow" href="'
             ),
         $content);
-    }
-    return $content;
-}, 20);
+        return $content;
+    }, 20);
+}
 
 
 /**

@@ -61,6 +61,40 @@ class File extends Base {
         'file_extension_allow' => array() // List of allowed file extensions
     );
 
+    // Inspect file path
+    public static function inspect($path) {
+        $path = self::path($path);
+        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $update = file_exists($path) ? filemtime($path) : null;
+        return array(
+            'path' => $path,
+            'name' => basename($path, '.' . $extension),
+            'url' => File::url($path),
+            'extension' => strtolower($extension),
+            'last_update' => $update, // alias for `update_raw`
+            'update_raw' => $update, // >= 1.1.3
+            'update' => ! is_null($update) ? date('Y-m-d H:i:s', $update) : null,
+            'size_raw' => file_exists($path) ? filesize($path) : null,
+            'size' => self::size($path)
+        );
+    }
+
+    // List all files
+    public static function explore($folder = ROOT, $recursive = false) {
+        $results = array();
+        $files = array_merge(glob($folder . DS . '*'), glob($folder . DS . '.*'));
+        foreach($files as $file) {
+            if(basename($file) !== '.' && basename($file) !== '..') {
+                if(is_dir($file)) {
+                    $results[$file] = $recursive ? self::explore($file, true) : 0;
+                } else {
+                    $results[$file] = 1;
+                }
+            }
+        }
+        return ! empty($results) ? $results : false;
+    }
+
     // Check if file already exist
     public static function exist($path, $fallback = false) {
         $path = self::path($path);
@@ -209,8 +243,16 @@ class File extends Base {
                 $destination = array($destination);
             }
             foreach($destination as $dest) {
+                $dest = self::path($dest);
                 if(is_dir($dest)) {
+                    if( ! file_exists($dest)) {
+                        mkdir($dest, 0777, true);
+                    }
                     $dest = rtrim(File::path($dest), DS) . DS . basename(self::$open);
+                } else {
+                    if( ! file_exists(dirname($dest))) {
+                        mkdir(dirname($dest), 0777, true);
+                    }
                 }
                 if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
                     self::$index = 0;
@@ -220,6 +262,7 @@ class File extends Base {
                     copy(self::$open, preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest));
                 }
             }
+            self::$index = 0;
         }
     }
 

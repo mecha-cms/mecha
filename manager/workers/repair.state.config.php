@@ -31,9 +31,9 @@ return array(
     'spam_keywords' => "",
 
     // Authorization
-    'author' => "",
+    'author' => Guardian::get('author'),
     'author_profile_url' => "",
-    'author_email' => "",
+    'author_email' => Guardian::get('email'),
 
     // Index Page
     'index' => array(

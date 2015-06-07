@@ -177,26 +177,22 @@ class Image extends Base {
             $results = array();
             foreach(self::$open as $file) {
                 $data = getimagesize($file);
-                $results[] = array(
+                $results[] = array_merge(File::inspect($file), array(
                     'width' => $data[0],
                     'height' => $data[1],
-                    'size_raw' => filesize($file),
-                    'size' => File::size($file),
                     'bits' => $data['bits'],
                     'mime' => $data['mime']
-                );
+                ));
             }
             return $results;
         } else {
             $data = getimagesize(self::$open);
-            $results = array(
+            $results = array_merge(File::inspect(self::$open), array(
                 'width' => $data[0],
                 'height' => $data[1],
-                'size_raw' => filesize(self::$open),
-                'size' => File::size(self::$open),
                 'bits' => $data['bits'],
                 'mime' => $data['mime']
-            );
+            ));
             if( ! is_null($key)) {
                 return isset($results[$key]) ? $results[$key] : $fallback;
             }

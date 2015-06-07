@@ -489,18 +489,10 @@ class Package extends Base {
         $zip = new ZipArchive();
         if(File::exist(self::$open) && $zip->open(self::$open)) {
             $extension = pathinfo($zip->filename, PATHINFO_EXTENSION);
-            $results = array(
-                'path' => self::$open,
-                'name' => basename($zip->filename, '.' . $extension),
-                'url' => File::url(self::$open),
-                'extension' => strtolower($extension),
-                'last_update' => filemtime(self::$open),
-                'update' => date('Y-m-d H:i:s', filemtime(self::$open)),
-                'size_raw' => filesize(self::$open),
-                'size' => File::size(self::$open),
+            $results = array_merge(File::inspect(self::$open), array(
                 'status' => $zip->status,
                 'total' => $zip->numFiles
-            );
+            ));
             for($i = 0; $i < $results['total']; ++$i) {
                 $results['files'][$i] = $zip->statIndex($i);
             }

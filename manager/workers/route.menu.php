@@ -10,7 +10,9 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     if(Guardian::get('status') != 'pilot') {
         Shield::abort();
     }
-    $menus = Get::state_menu($speak->home . S . " /\nRSS" . S . " /feed");
+    $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
+    $menu = file_exists($d) ? include $d : "";
+    $menus = Get::state_menu($menu);
     Config::set(array(
         'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'menu.php'

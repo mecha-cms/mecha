@@ -37,6 +37,46 @@ class Guardian extends Base {
 
     /**
      * ============================================================
+     *  GET ACCEPTED USERS DATA
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Guardian::ally('mecha');
+     *
+     * ------------------------------------------------------------
+     *
+     *    var_dump(Guardian::ally());
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function ally($user = null, $fallback = false) {
+        if($file = File::exist(SYSTEM . DS . 'log' . DS . 'users.txt')) {
+            $ally = array();
+            foreach(explode("\n", file_get_contents($file)) as $a) {
+                // Pattern 1: `username: password (Author Name: status) email@domain.com`
+                // Pattern 2: `username: password (Author Name @status) email@domain.com`
+                preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $a, $matches);
+                $ally[$matches[1]] = array(
+                    'password' => $matches[2],
+                    'author' => $matches[3],
+                    'status' => $matches[4],
+                    'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false
+                );
+            }
+            if(is_null($user)) {
+                return $ally;
+            }
+            return isset($ally[$user]) ? $ally[$user] : $fallback;
+        } else {
+            self::abort('Missing <code>users.txt</code> file.');
+        }
+    }
+
+    /**
+     * ============================================================
      *  GENERATE A UNIQUE TOKEN
      * ============================================================
      *
@@ -233,6 +273,7 @@ class Guardian extends Base {
 
     public static function kick($path = "") {
         $path = Converter::url(File::url($path));
+        $path = Filter::apply('guardian:kick', $path);
         $G = array('data' => array('url' => $path));
         Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
@@ -324,31 +365,21 @@ class Guardian extends Base {
     public static function authorize($user = 'username', $pass = 'password', $token = 'token') {
         $config = Config::get();
         $speak = Config::speak();
-        $users = Text::toArray(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read());
         $user = isset($_POST[$user]) ? $_POST[$user] : "";
         $pass = isset($_POST[$pass]) ? $_POST[$pass] : "";
         $token = isset($_POST[$token]) ? $_POST[$token] : "";
-        $authors = array();
-        foreach($users as $key => $value) {
-            preg_match('#^(.*?) +\((.*?)\:(pilot|[a-z0-9]+)\)( +(.*?))?$#', $value, $matches);
-            $authors[$key] = array(
-                'password' => trim($matches[1]),
-                'author' => trim($matches[2]),
-                'status' => trim($matches[3]),
-                'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : $config->author_email
-            );
-        }
         self::checkToken($token);
         if(trim($user) !== "" && trim($pass) !== "") {
-            if(isset($authors[$user]) && $pass === $authors[$user]['password']) {
+            $author = self::ally($user);
+            if($author && $pass === $author['password']) {
                 $token = self::token();
                 Session::set('cookie:' . self::$user, array(
                     'token' => $token,
                     'username' => $user,
-                    // 'password' => $authors[$user]['password'],
-                    'author' => $authors[$user]['author'],
-                    'status' => $authors[$user]['status'],
-                    'email' => $authors[$user]['email']
+                    // 'password' => $author['password'],
+                    'author' => $author['author'],
+                    'status' => $author['status'],
+                    'email' => $author['email'] ? $author['email'] : $config->author_email
                 ), 30, '/', "", false, true);
                 File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
                 File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
