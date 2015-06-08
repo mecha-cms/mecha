@@ -57,15 +57,15 @@ if( ! empty($fields)) {
         }
         // "" means `article` or `page`
         if( ! isset($value['scope']) || $value['scope'] === "") {
-            $value['scope'] = $segment != 'comment' ? $segment : "";
+            $value['scope'] = $segment !== 'comment' ? $segment : "";
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
         $type = $value['type'][0];
-        if($value['scope'] == $segment) {
+        if($value['scope'] === $segment) {
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
-            if($type == 't') {
+            if($type === 't') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -74,14 +74,14 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else if($type == 'b') {
+            } else if($type === 'b') {
                 $html .= '<div class="grid-group">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $value['title']);
                 $html .= '</span>';
                 $html .= '</div>';
-            } else if($type == 'o') {
+            } else if($type === 'o') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -101,7 +101,7 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else { // if($value['type'][0] == 's') {
+            } else { // if($value['type'][0] === 's') {
                 $html .= '<label class="grid-group">';
                 $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
                 $html .= '<span class="grid span-4">';

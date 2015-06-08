@@ -77,7 +77,7 @@ class Menu extends Base {
                 // List item with link: `array('foo' => '/')`
                 } else {
                     $value = Converter::url($value);
-                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value == $c_url_current || ($value != $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value === $c_url_current || ($value !== $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
                 }
             } else {
                 if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $key, $matches)) {
@@ -87,7 +87,7 @@ class Menu extends Base {
                     $_key = $key;
                     $_value = '#';
                 }
-                $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($_value == $c_url_current || ($_value != $c_url && strpos($c_url_current . '/', $_value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '>' . NL . str_repeat(TAB, $i + 2) . '<a href="' . $_value . '">' . $_key . '</a>' . NL . self::create($value, $type, $depth, $FP, $i + 2) . $depth . str_repeat(TAB, $i + 1) . '</li>' . NL, $i + 1);
+                $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($_value === $c_url_current || ($_value !== $c_url && strpos($c_url_current . '/', $_value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '>' . NL . str_repeat(TAB, $i + 2) . '<a href="' . $_value . '">' . $_key . '</a>' . NL . self::create($value, $type, $depth, $FP, $i + 2) . $depth . str_repeat(TAB, $i + 1) . '</li>' . NL, $i + 1);
             }
         }
         return Filter::apply($FP . 'list', rtrim($html, NL) . ( ! empty($array) ? NL . $depth . str_repeat(TAB, $i) : "") . '</' . $type . '>' . NL, $i);

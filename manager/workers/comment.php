@@ -4,7 +4,7 @@
   <?php foreach($responses as $response): ?>
   <li class="page" id="page-<?php echo $response->id; ?>">
     <div class="page-header">
-      <?php if($response->url != '#'): ?>
+      <?php if($response->url !== '#'): ?>
       <a class="page-title" href="<?php echo $response->url; ?>" rel="nofollow" target="_blank"><?php echo $response->name; ?></a>
       <?php else: ?>
       <span class="page-title"><?php echo $response->name; ?></span>

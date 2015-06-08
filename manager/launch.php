@@ -7,7 +7,7 @@ foreach(glob(DECK . DS . 'workers' . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as
 }
 
 $uri_end_parts = explode('/', $config->url_path);
-$uri_end = $config->page_type == 'manager' ? $uri_end_parts[1] : $uri_end_parts[0];
+$uri_end = $config->page_type === 'manager' ? $uri_end_parts[1] : $uri_end_parts[0];
 
 // Hide `paragraph`, `superscript` and `subscript` button by default
 $speak->MTE->buttons->paragraph = false;
@@ -65,7 +65,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
         $constants_js .= $constant . '=' . json_encode($value) . ',';
     }
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
-    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') == HTML_PARSER ? 'true' : 'false') . ';';
+    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
     //  Please use the `TAB` and `ES` variable as declared in the PHP constants.
     $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";DASHBOARD.file_extension_allow="' . implode(',', File::$config['file_extension_allow']) . '";';
@@ -132,7 +132,7 @@ Weapon::add('on_plugin_update', function() {
 Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
-    if($config->page_type == 'manager') {
+    if($config->page_type === 'manager') {
         $status = Mecha::alter(pathinfo($article->path, PATHINFO_EXTENSION), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
@@ -144,7 +144,7 @@ Weapon::add('article_footer', function($article) {
 Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
-    if($config->page_type == 'manager') {
+    if($config->page_type === 'manager') {
         $status = Mecha::alter(pathinfo($page->path, PATHINFO_EXTENSION), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
@@ -157,7 +157,7 @@ Weapon::add('comment_footer', function($comment, $article) {
     $config = Config::get();
     $speak = Config::speak();
     if(Guardian::happy()) {
-        echo ($comment->state == 'pending' ? Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
+        echo ($comment->state === 'pending' ? Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
     }
 }, 20);
 

@@ -333,7 +333,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         Guardian::kick($config->manager->slug . '/article/repair/id:' . $article->id);
     }
 
-    if($article->state == 'draft') {
+    if($article->state === 'draft') {
         Shield::abort('404-article');
     }
 
@@ -368,7 +368,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 Notify::error($speak->notify_invalid_email);
             } else {
                 // Disallow passengers from entering your email address in the comment email field
-                if( ! Guardian::happy() && $request['email'] == $config->author_email) {
+                if( ! Guardian::happy() && $request['email'] === $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                 }
             }
@@ -411,8 +411,8 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             $fuck = trim($spam);
             if($fuck !== "") {
                 if(
-                    $request['email'] == $fuck || // Block by email address
-                    $fuck != 'N/A' && Get::IP() == $fuck || // Block by IP address
+                    $request['email'] === $fuck || // Block by email address
+                    $fuck !== 'N/A' && Get::IP() === $fuck || // Block by IP address
                     strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
                 ) {
                     Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
@@ -623,7 +623,7 @@ Route::accept('(:any)', function($slug = "") use($config) {
         Guardian::kick($config->manager->slug . '/page/repair/id:' . $page->id);
     }
 
-    if($page->state == 'draft') {
+    if($page->state === 'draft') {
         Shield::abort('404-page');
     }
 

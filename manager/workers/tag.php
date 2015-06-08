@@ -20,19 +20,19 @@
         <td>
         <?php echo Form::text('name[]', $tag->name, null, array(
             'class' => 'input-block',
-            'readonly' => Guardian::get('status') != 'pilot' ? true : null
+            'readonly' => Guardian::get('status') !== 'pilot' ? true : null
         )); ?>
         </td>
         <td>
         <?php echo Form::text('slug[]', $tag->slug, null, array(
             'class' => 'input-block',
-            'readonly' => Guardian::get('status') != 'pilot' ? true : null
+            'readonly' => Guardian::get('status') !== 'pilot' ? true : null
         )); ?>
         </td>
         <td>
         <?php echo Form::text('description[]', $tag->description, null, array(
             'class' => 'input-block',
-            'readonly' => Guardian::get('status') != 'pilot' ? true : null
+            'readonly' => Guardian::get('status') !== 'pilot' ? true : null
         )); ?>
         </td>
       </tr>

@@ -80,7 +80,7 @@ class File extends Base {
         );
     }
 
-    // List all files in a folder
+    // List all files from a folder
     public static function explore($folder = ROOT, $recursive = false, $flat = false, $fallback = false) {
         $results = array();
         $folder = rtrim(self::path($folder), DS);
@@ -220,7 +220,7 @@ class File extends Base {
     public static function renameTo($new_name) {
         $root = rtrim(dirname(self::$open), DS) . DS; 
         $old_name = ltrim(basename(self::$open), DS);
-        if($new_name != $old_name) {
+        if($new_name !== $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
         self::$open = $root . $new_name;

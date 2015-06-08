@@ -13,7 +13,7 @@
   <div class="tab-content" id="tab-content-1">
     <?php if($files): ?>
     <h3><?php echo $speak->shield . ': ' . $the_shield_info->title; ?></h3>
-    <p><?php echo Cell::strong($speak->author . ':'); ?> <?php echo Text::parse($the_shield_info->author, '->encoded_html'); ?><?php if(isset($the_shield_info->url) && $the_shield_info->url != '#'): ?><br><?php echo Cell::strong($speak->url . ':'); ?> <?php echo Cell::a($the_shield_info->url, $the_shield_info->url, '_blank', array(
+    <p><?php echo Cell::strong($speak->author . ':'); ?> <?php echo Text::parse($the_shield_info->author, '->encoded_html'); ?><?php if(isset($the_shield_info->url) && $the_shield_info->url !== '#'): ?><br><?php echo Cell::strong($speak->url . ':'); ?> <?php echo Cell::a($the_shield_info->url, $the_shield_info->url, '_blank', array(
         'rel' => 'nofollow'
     )); ?><?php endif; ?></p>
     <?php endif; ?>

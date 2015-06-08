@@ -45,11 +45,9 @@ class Asset extends Base {
         $path = self::path($path_origin);
         $url = File::url($path);
         if(strpos($path, ROOT) === false) {
-            if(strpos($url, '://') === false) return false;
-            return Filter::apply('asset:url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin);
+            return strpos($url, '://') !== false ? Filter::apply('asset:url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin) : false;
         }
-        if( ! file_exists($path)) return false;
-        return Filter::apply('asset:url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin);
+        return file_exists($path) ? Filter::apply('asset:url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin) : false;
     }
 
     // Return the HTML stylesheet of asset
@@ -139,7 +137,7 @@ class Asset extends Base {
         $merged_content = "";
         $e = strtolower(pathinfo($name, PATHINFO_EXTENSION));
         if( ! file_exists($the_file) || ! $is_valid) {
-            if($e == 'gif' || $e == 'jpeg' || $e == 'jpg' || $e == 'png') {
+            if($e === 'gif' || $e === 'jpeg' || $e === 'jpg' || $e === 'png') {
                 foreach($files as $file) {
                     if( ! self::ignored($file)) {
                         $path = self::path($file);

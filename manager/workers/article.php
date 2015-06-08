@@ -7,7 +7,7 @@
   <?php foreach($articles as $article): ?>
   <li class="page" id="page-<?php echo $article->id; ?>">
     <div class="page-header">
-      <?php if($article->state == 'draft'): ?>
+      <?php if($article->state === 'draft'): ?>
       <span class="page-title"><?php echo $article->title; ?></span>
       <?php else: ?>
       <a class="page-title" href="<?php echo $article->url; ?>" target="_blank"><?php echo $article->title; ?></a>

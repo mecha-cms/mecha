@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     // Remove backup files that is failed to delete
@@ -81,7 +81,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
  */
 
 Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $time = date('Y-m-d-H-i-s');
@@ -112,7 +112,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
  */
 
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     if($backup = File::exist(ROOT . DS . $file)) {

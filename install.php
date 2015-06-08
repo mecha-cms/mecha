@@ -8,7 +8,7 @@ session_start();
 
 $errors = array();
 
-if($_SERVER['REQUEST_METHOD'] == 'POST') {
+if($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if( ! isset($_SESSION['token']) || ! isset($_POST['token'])) {
         $errors[] = '<p>Invalid token.</p>';
@@ -44,6 +44,8 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         $data .= $_POST['email'];
         if( ! file_exists($user_file)) file_put_contents($user_file, $data);
         $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cf code"><strong>Username:</strong> ' . $_POST['username'] . '<br><strong>Password:</strong> ' . $_POST['password'] . '</p></div>';
+        unset($_SESSION['meet_mecha']);
+        unset($_SESSION['token']);
         chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'plugins', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'articles', 0766);
@@ -61,8 +63,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         unlink(ROOT . DS . 'cabinet' . DS . 'states' . DS . '.empty');
         unlink(ROOT . DS . 'system' . DS . 'log' . DS . 'sessions' . DS . '.empty');
         unlink(ROOT . DS . 'install.php');
-        unset($_SESSION['meet_mecha']);
-        unset($_SESSION['token']);
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
         header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login');
         exit;

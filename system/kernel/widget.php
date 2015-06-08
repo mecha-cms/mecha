@@ -112,7 +112,7 @@ class Widget {
         if( ! $files = Get::articles($sort)) {
             return O_BEGIN . '<div class="widget widget-archive">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
         }
-        if($type == 'HIERARCHY') {
+        if($type === 'HIERARCHY') {
             $i = 0;
             foreach($files as $file) {
                 list($year, $month) = explode('-', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
@@ -128,11 +128,11 @@ class Widget {
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
-                    $html .= str_repeat(TAB, 2) . '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . ($query == $year ? ' selected' : "") . '">' . NL . str_repeat(TAB, 3) . '<a href="javascript:;" class="toggle"><span class="zippy toggle-' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                    $html .= str_repeat(TAB, 2) . '<li class="archive-date ' . ($expand ? 'expanded' : 'collapsed') . ((int) $query === (int) $year ? ' selected' : "") . '">' . NL . str_repeat(TAB, 3) . '<a href="javascript:;" class="toggle"><span class="zippy toggle-' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</span></a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
                     $html .= str_repeat(TAB, 3) . '<ul class="' . ($expand ? 'expanded' : 'collapsed') . '">' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
-                            $html .= str_repeat(TAB, 4) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                            $html .= str_repeat(TAB, 4) . '<li' . ((int) $query === (int) $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                         }
                     }
                     $html .= str_repeat(TAB, 3) . '</ul>' . NL;
@@ -145,20 +145,20 @@ class Widget {
             $html  = Filter::apply('widget', $html);
             return Filter::apply('widget:archive.hierarchy', Filter::apply('widget:archive', $html));
         }
-        if($type == 'LIST' || $type == 'DROPDOWN') {
+        if($type === 'LIST' || $type === 'DROPDOWN') {
             foreach($files as $name) {
                 $archives[] = substr(basename($name, '.' . pathinfo($name, PATHINFO_EXTENSION)), 0, 7);
             }
             $counter = array_count_values($archives);
             $archives = array_unique($archives);
             $i = 0;
-            if($type == 'LIST') {
+            if($type === 'LIST') {
                 $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-list" id="widget-archive-list-' . self::$id['archive_list'] . '">' . NL;
                 self::$id['archive_list']++;
                 $html .= TAB . '<ul>' . NL;
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= str_repeat(TAB, 2) . '<li' . ($query == $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                    $html .= str_repeat(TAB, 2) . '<li' . ((int) $query === (int) $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
                     $i++;
                 }
                 $html .= TAB . '</ul>' . NL;
@@ -171,7 +171,7 @@ class Widget {
                 $html .= TAB . '<select>' . NL . ($query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ($query == $year . '-' . $month ? ' selected' : "") . '>' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . ' (' . $counter[$archive] . ')</option>' . NL;
+                    $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ((int) $query === (int) $year . '-' . $month ? ' selected' : "") . '>' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . ' (' . $counter[$archive] . ')</option>' . NL;
                 }
                 $html .= TAB . '</select>' . NL;
                 $html .= '</div>' . O_END;
@@ -224,19 +224,19 @@ class Widget {
             return O_BEGIN . '<div class="widget widget-tag">' . Config::speak('notify_empty', strtolower($speak->tags)) . '</div>' . O_END;
         }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
-        if($type == 'LIST') {
+        if($type === 'LIST') {
             $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-list" id="widget-tag-list-' . self::$id['tag_list'] . '">' . NL;
             self::$id['tag_list']++;
             $html .= TAB . '<ul>' . NL;
             foreach($tags as $tag) {
-                $html .= str_repeat(TAB, 2) . '<li' . ($config->tag_query == $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
+                $html .= str_repeat(TAB, 2) . '<li' . ($config->tag_query === $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
             }
             $html .= TAB . '</ul>' . NL;
             $html .= '</div>' . O_END;
             $html  = Filter::apply('widget', $html);
             return Filter::apply('widget:tag.list', Filter::apply('widget:tag', $html));
         }
-        if($type == 'CLOUD') {
+        if($type === 'CLOUD') {
             $tags_counter = array();
             foreach($tags as $tag) {
                 $tags_counter[] = $tag['count'];
@@ -247,18 +247,18 @@ class Widget {
             $_html = array();
             foreach($tags as $tag) {
                 $size = ceil(($tag['count'] / $highest_count) * $max_level);
-                $_html[] = '<span class="tag-size tag-size-' . $size . ($config->tag_query == $tag['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
+                $_html[] = '<span class="tag-size tag-size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
             }
             $html .= implode(' ', $_html) . NL . '</div>' . O_END;
             $html  = Filter::apply('widget', $html);
             return Filter::apply('widget:tag.cloud', Filter::apply('widget:tag', $html));
         }
-        if($type == 'DROPDOWN') {
+        if($type === 'DROPDOWN') {
             $html  = O_BEGIN . '<div class="widget widget-tag widget-tag-dropdown" id="widget-tag-dropdown-' . self::$id['tag_dropdown'] . '">' . NL;
             self::$id['tag_dropdown']++;
             $html .= TAB . '<select>' . NL . ($config->tag_query === "" ? str_repeat(TAB, 2) . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
             foreach($tags as $tag) {
-                $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query == $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
+                $html .= str_repeat(TAB, 2) . '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
             }
             $html .= TAB . '</select>' . NL;
             $html .= '</div>' . O_END;
@@ -307,7 +307,7 @@ class Widget {
         if( ! $files = Get::articles()) {
             return O_BEGIN . '<div class="widget widget-' . $class . '">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
         }
-        if($class == 'random') {
+        if($class === 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
         }
         $html  = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . self::$id[$class . '_post'] . '">' . NL;
@@ -316,7 +316,7 @@ class Widget {
         for($i = 0, $count = count($files); $i < $total; ++$i) {
             if($i === $count) break;
             $article = Get::articleAnchor($files[$i]);
-            $html .= str_repeat(TAB, 2) . '<li' . ($config->url_current == $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
+            $html .= str_repeat(TAB, 2) . '<li' . ($config->url_current === $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
         }
         $html .= TAB . '</ul>' . NL;
         $html .= '</div>' . O_END;
@@ -365,7 +365,7 @@ class Widget {
             $html .= TAB . '<ul>' . NL;
             for($i = 0, $count = count($files); $i < $total; ++$i) {
                 if($i === $count) break;
-                if($files[$i] != $config->article->path) {
+                if($files[$i] !== $config->article->path) {
                     $article = Get::articleAnchor($files[$i]);
                     $html .= str_repeat(TAB, 2) . '<li><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
                 }
@@ -411,7 +411,7 @@ class Widget {
                     $html .= str_repeat(TAB, 3) . '</div>' . NL;
                 }
                 $html .= str_repeat(TAB, 3) . '<div class="recent-comment-header">' . NL;
-                if(trim($comment->url) === "" || $comment->url == '#') {
+                if(trim($comment->url) === "" || $comment->url === '#') {
                     $html .= str_repeat(TAB, 4) . '<span class="recent-comment-name">' . $comment->name . '</span>' . NL;
                 } else {
                     $html .= str_repeat(TAB, 4) . '<a class="recent-comment-name" href="' . $comment->url . '" rel="nofollow">' . $comment->name . '</a>' . NL;

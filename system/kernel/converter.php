@@ -307,7 +307,7 @@ class Converter extends Base {
             ));
         } else if(is_string($input) && ! is_null(json_decode($input, true))) {
             $results = self::strEval(json_decode($input, true));
-        } else if(is_string($input) && ! preg_match('#^".*?"$#', $input)) {
+        } else if(is_string($input) && strpos($input, '"') !== 0) {
             $results = str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
         } else if(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
@@ -466,7 +466,7 @@ class Converter extends Base {
         $results = array(
             'element' => $matches[2],
             'attributes' => null,
-            'content' => isset($matches[8]) && $matches[9] == $element[0] . $element[3] . $matches[2] . $element[1] ? $matches[8] : null
+            'content' => isset($matches[8]) && $matches[9] === $element[0] . $element[3] . $matches[2] . $element[1] ? $matches[8] : null
         );
         if(preg_match_all('#(' . $attr[3] . ')((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#', $matches[5], $attrs)) {
             $results['attributes'] = array();

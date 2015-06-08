@@ -37,8 +37,8 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
 Route::accept(array($config->manager->slug . '/article/ignite', $config->manager->slug . '/article/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
     if($id && $article = Get::article($id, array('content', 'excerpt', 'tags', 'comments'))) {
-        $extension_o = $article->state == 'published' ? '.txt' : '.draft';
-        if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
+        $extension_o = $article->state === 'published' ? '.txt' : '.draft';
+        if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $article->author) {
             Shield::abort();
         }
         if( ! isset($article->fields)) {
@@ -98,14 +98,14 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
         $request['kind'] = isset($request['kind']) ? $request['kind'] : array(0);
         $request['path'] = $article->path;
-        $request['state'] = $request['action'] == 'publish' ? 'published' : 'draft';
-        $extension = $request['action'] == 'publish' ? '.txt' : '.draft';
+        $request['state'] = $request['action'] === 'publish' ? 'published' : 'draft';
+        $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
         // General fields
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
         $slug = Text::parse(Request::post('slug', $title), '->slug');
-        $slug = $slug == '--' ? Text::parse($title, '->slug') : $slug;
+        $slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
         $content = Request::post('content', "");
         $description = $request['description'];
         $author = strip_tags($request['author']);
@@ -161,10 +161,10 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
             if( ! Notify::errors()) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
-                if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
+                if(( ! empty($css) && $css !== $config->defaults->article_custom_css) || ( ! empty($js) && $js !== $config->defaults->article_custom_js)) {
                     Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                 }
-                Notify::success(Config::speak('notify_success_created', $title) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_construct', array($G, $P));
                 Guardian::kick($config->manager->slug . '/article/repair/id:' . Date::format($date, 'U'));
@@ -190,7 +190,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
                 $custom_ = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s');
                 if(File::exist($custom_ . $extension_o)) {
-                    if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css == $config->defaults->article_custom_css && $js == $config->defaults->article_custom_js)) {
+                    if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->article_custom_css && $js === $config->defaults->article_custom_js)) {
                         // Always delete empty custom CSS and JavaScript files ...
                         File::open($custom_ . $extension_o)->delete();
                     } else {
@@ -198,14 +198,14 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                         File::open($custom_ . $extension_o)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 } else {
-                    if(( ! empty($css) && $css != $config->defaults->article_custom_css) || ( ! empty($js) && $js != $config->defaults->article_custom_js)) {
+                    if(( ! empty($css) && $css !== $config->defaults->article_custom_css) || ( ! empty($js) && $js !== $config->defaults->article_custom_js)) {
                         Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension_o);
                     }
                 }
-                if($article->slug != $slug && $php_file = File::exist(dirname($article->path) . DS . $article->slug . '.php')) {
+                if($article->slug !== $slug && $php_file = File::exist(dirname($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
-                Notify::success(Config::speak('notify_success_updated', $title) . ($extension == '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_repair', array($G, $P));
                 // Rename all comment files related to article if article date has been changed
@@ -236,7 +236,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
     if( ! $article = Get::article($id, array('comments'))) {
         Shield::abort();
     }
-    if(Guardian::get('status') != 'pilot' && Guardian::get('author') != $article->author) {
+    if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $article->author) {
         Shield::abort();
     }
     Config::set(array(

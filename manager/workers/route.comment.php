@@ -7,7 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/comment', $config->manager->slug . '/comment/(:num)'), function($offset = 1) use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $offset = (int) $offset;
@@ -44,7 +44,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
  */
 
 Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot' || ! $comment = Get::comment($id)) {
+    if(Guardian::get('status') !== 'pilot' || ! $comment = Get::comment($id)) {
         Shield::abort();
     }
     if( ! isset($comment->content_type)) {
@@ -63,7 +63,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         $request['ua'] = isset($comment->ua) ? $comment->ua : 'N/A';
         $request['ip'] = isset($comment->ip) ? $comment->ip : 'N/A';
         $request['message_raw'] = $request['message'];
-        $extension = $request['action'] == 'publish' ? '.txt' : '.hold';
+        $extension = $request['action'] === 'publish' ? '.txt' : '.hold';
         Guardian::checkToken($request['token']);
         // Empty name field
         if(trim($request['name']) === "") {
@@ -121,7 +121,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
  */
 
 Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     if( ! $comment = Get::comment($id)) {

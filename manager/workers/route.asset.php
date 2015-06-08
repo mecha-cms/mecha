@@ -116,7 +116,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
  */
 
 Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($path = "", $old = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $old = File::path($old);
@@ -178,7 +178,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
  */
 
 Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', function($path = "", $name = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $name = File::path($name);

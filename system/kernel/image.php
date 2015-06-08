@@ -86,7 +86,7 @@ class Image extends Base {
         }
         $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
         $new_extension = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
-        if($old_extension != $new_extension) {
+        if($old_extension !== $new_extension) {
             self::gen();
             self::twin(null, $new_extension);
         }

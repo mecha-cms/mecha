@@ -83,8 +83,8 @@ class Navigator extends Base {
                 for($i = $current - $step + 1; $i < $current + $step; ++$i) {
                     if($chunk > 1) {
                         if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
-                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i != $current ? '<a href="' . $base . $connector . $i . $q . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
-                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i != $current ? $base . $connector . $i . $q : false, $i, $connector), $i, $connector);
+                            $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i !== $current ? '<a href="' . $base . $connector . $i . $q . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
+                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i !== $current ? $base . $connector . $i . $q : false, $i, $connector), $i, $connector);
                         }
                     }
                 }
@@ -101,7 +101,7 @@ class Navigator extends Base {
 
             for($i = 0; $i < $total; ++$i) {
 
-                if($pages[$i] == $current) {
+                if($pages[$i] === $current) {
 
                     $prev = isset($pages[$i - 1]) ? self::slug($pages[$i - 1]) : false;
                     $next = isset($pages[$i + 1]) ? self::slug($pages[$i + 1]) : false;
@@ -115,8 +115,8 @@ class Navigator extends Base {
                     self::$bucket['next']['text'] = $next ? $speak->older : $speak->home;
 
                     // Generate next/previous link for single page
-                    self::$bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', (self::$bucket['prev']['url'] != $base) ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
-                    self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', (self::$bucket['next']['url'] != $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
+                    self::$bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', (self::$bucket['prev']['url'] !== $base) ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
+                    self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', (self::$bucket['next']['url'] !== $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
 
                     break;
 

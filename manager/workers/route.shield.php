@@ -7,7 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/shield', $config->manager->slug . '/shield/(:any)'), function($folder = false) use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     if( ! $folder) $folder = $config->shield;
@@ -83,7 +83,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
  */
 
 Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot' || $folder === "") {
+    if(Guardian::get('status') !== 'pilot' || $folder === "") {
         Shield::abort();
     }
     if( ! $file = File::exist(SHIELD . DS . $folder)) {
@@ -137,7 +137,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
  */
 
 Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', function($folder = "", $path = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot' || $folder === "" || $path === "") {
+    if(Guardian::get('status') !== 'pilot' || $folder === "" || $path === "") {
         Shield::abort();
     }
     $path = File::path($path);
@@ -159,7 +159,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         if( ! Request::post('name')) {
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
-            if($path != $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
+            if($path !== $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
@@ -199,7 +199,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
  */
 
 Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->manager->slug . '/shield/(:any)/kill/file:(:all)'), function($folder = "", $path = false) use($config, $speak) {
-    if(Guardian::get('status') != 'pilot' || $folder === "") {
+    if(Guardian::get('status') !== 'pilot' || $folder === "") {
         Shield::abort();
     }
     $info = Shield::info($folder);
@@ -252,10 +252,10 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     if($file = Get::state_config()) {
         Mecha::extend($new_config, $file);
     }
-    $new_config['shield'] = $path == 'attach' ? $slug : 'normal';
+    $new_config['shield'] = $path === 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    $mode = $path == 'eject' ? 'eject' : 'mount';
+    $mode = $path === 'eject' ? 'eject' : 'mount';
     Notify::success(Config::speak('notify_success_updated', $speak->shield));
     Weapon::fire('on_shield_update', array($G, $G));
     Weapon::fire('on_shield_' . $mode, array($G, $G));

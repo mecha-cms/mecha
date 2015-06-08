@@ -343,7 +343,7 @@ class Get extends Base {
         $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
         $total_pages = count($pages);
         if( ! is_array($pages) || $total_pages === 0) return false;
-        if($order == 'ASC') {
+        if($order === 'ASC') {
             sort($pages);
         } else {
             rsort($pages);
@@ -351,7 +351,7 @@ class Get extends Base {
         if( ! $filter) return $pages;
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
-            if($key == 'time') {
+            if($key === 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
                     if(strpos($time, $value) !== false) {
@@ -359,7 +359,7 @@ class Get extends Base {
                     }
                 }
                 return ! empty($results) ? $results : false;
-            } else if($key == 'kind') {
+            } else if($key === 'kind') {
                 $kinds = explode(',', $value);
                 for($i = 0; $i < $total_pages; ++$i) {
                     $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
@@ -375,7 +375,7 @@ class Get extends Base {
                     }
                 }
                 return ! empty($results) ? array_unique($results) : false;
-            } else if($key == 'slug') {
+            } else if($key === 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
                     if(strpos($slug, $value) !== false) {
@@ -383,7 +383,7 @@ class Get extends Base {
                     }
                 }
                 return ! empty($results) ? $results : false;
-            } else { // if($key == 'keyword') {
+            } else { // if($key === 'keyword') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $value) !== false) {
                         $results[] = $pages[$i];
@@ -454,7 +454,7 @@ class Get extends Base {
             $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension, GLOB_NOSORT);
         }
         if( ! is_array($results) || count($results) === 0) return false;
-        if($order == 'ASC') {
+        if($order === 'ASC') {
             sort($results);
         } else {
             rsort($results);
@@ -578,7 +578,7 @@ class Get extends Base {
             'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
             'slug' => self::AMF($slug, $FP, 'slug'),
-            'state' => self::AMF($extension != 'draft' ? 'published' : 'draft', $FP, 'state')
+            'state' => self::AMF($extension !== 'draft' ? 'published' : 'draft', $FP, 'state')
         );
     }
 
@@ -625,7 +625,7 @@ class Get extends Base {
             'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
             'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
             'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),
-            'state' => self::AMF($extension == 'txt' ? 'approved' : 'pending', $FP, 'state')
+            'state' => self::AMF($extension === 'txt' ? 'approved' : 'pending', $FP, 'state')
         );
     }
 
@@ -710,7 +710,7 @@ class Get extends Base {
         $content_test = $content_test['content'];
 
         // Redirect 301 with `<!-- kick: "http://example.com" -->`
-        if(strpos($content_test, '<!-- kick:') !== false && $config->page_type == rtrim($FP, ':')) {
+        if(strpos($content_test, '<!-- kick:') !== false && $config->page_type === rtrim($FP, ':')) {
             preg_match('#<!-- kick\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
             Guardian::kick($matches[2]);
         }
@@ -1113,7 +1113,7 @@ class Get extends Base {
     public static function pagePath($detector, $folder = PAGE) {
         foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
-            if($slug == $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
+            if($slug === $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
                 return $path;
             }
         }

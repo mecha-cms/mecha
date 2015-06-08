@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/shortcode', function() use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';

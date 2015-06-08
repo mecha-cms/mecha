@@ -80,7 +80,7 @@
     </div>
     <hr>
     <p>
-      <?php if(Guardian::wayback('state', $default->state) == 'pending'): ?>
+      <?php if(Guardian::wayback('state', $default->state) === 'pending'): ?>
       <?php echo Jot::button('accept', $speak->approve, 'action:publish'); ?>
       <?php echo Jot::button('action:clock-o', $speak->update, 'action:save'); ?>
       <?php else: ?>

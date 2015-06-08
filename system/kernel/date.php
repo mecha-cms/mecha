@@ -141,8 +141,8 @@ class Date extends Base {
         $date->setTimestamp((int) self::format($input, 'U'));
         $interval = $date->diff(new DateTime('now'));
         $time = $interval->format('%y.%m.%d.%h.%i.%s');
-        $times = explode('.', $time);
-        $time = Converter::strEval($times);
+        $time = explode('.', $time);
+        $time = Converter::strEval($time);
         $data = array(
             $speak->year . '/' . $speak->year_p => $time[0],
             $speak->month . '/' . $speak->month_p => $time[1],

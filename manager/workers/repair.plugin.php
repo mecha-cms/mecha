@@ -13,7 +13,7 @@
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <p class="plugin-author">
-    <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url != '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), '_blank', array(
+    <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url !== '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), '_blank', array(
         'class' => 'help',
         'title' => $speak->link,
         'rel' => 'nofollow'

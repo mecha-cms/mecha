@@ -20,7 +20,7 @@ $e_plugin_page = 'Title' . S . ' %s' . "\n" .
  */
 
 Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak, $e_plugin_page) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $offset = (int) $offset;
@@ -112,7 +112,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  */
 
 Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
@@ -143,7 +143,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
  */
 
 Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $page_current = Request::get('o', 1);
@@ -170,7 +170,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  */
 
 Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
-    if(Guardian::get('status') != 'pilot') {
+    if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     // Check whether the localized "about" file is available
