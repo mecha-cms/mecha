@@ -62,7 +62,7 @@ class HTTP extends Base {
         507 => 'Insufficient Storage', // RFC4918
         508 => 'Loop Detected', // RFC5842
         510 => 'Not Extended', // RFC2774
-        511 => 'Network Authentication Required', // RFC6585
+        511 => 'Network Authentication Required' // RFC6585
     );
 
     /**
@@ -85,7 +85,7 @@ class HTTP extends Base {
             } else {
                 header($_SERVER['SERVER_PROTOCOL'] . ' ' . $code . ' ' . self::$message[$code]);
             }
-        } else 
+        }
         return new static;
     }
 
