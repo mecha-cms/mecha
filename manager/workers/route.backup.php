@@ -41,6 +41,9 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         } else {
             Notify::error($speak->notify_error_no_file_selected);
         }
+        if( ! file_exists($destination)) {
+            Notify::error(Config::speak('notify_folder_not_exist', '<code>' . $destination . '</code>'));
+        }
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
                 Notify::clear();

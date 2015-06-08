@@ -304,6 +304,10 @@ class File extends Base {
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);
         } else {
+            // Destination not found
+            if( ! file_exists($destination)) {
+                self::dir($destination);
+            }
             // Unknown file type
             if( ! isset($file['type']) || empty($file['type'])) {
                 Notify::error($speak->notify_error_file_type_unknown);
