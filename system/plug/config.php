@@ -24,15 +24,14 @@ Config::plug('load', function() {
     }
 
     // Define some default variables
-    $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] == 443) ? 'https://' : 'http://';
+    $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
     $config['host'] = $_SERVER['HTTP_HOST'];
-    $config['base'] = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $config['base'] = trim(File::url(dirname($_SERVER['SCRIPT_NAME'])), '/');
     $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-    $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/'));
+    $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim('?' . $_SERVER['QUERY_STRING'], '/?') ? "" : preg_replace('#[?&].*$#', "", trim('?' . $_SERVER['QUERY_STRING'], '/?'));
     $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
 
     $config['page_title'] = $config['title'];
-    $config['offset'] = 1;
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
     $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
 
@@ -61,14 +60,13 @@ Config::plug('load', function() {
     if($path === 'feed/json' || strpos($path, 'feed/json/') === 0 || $path === 'feeds/json' || strpos($path, 'feeds/json/') === 0) $page = 'json';
 
     // Create a proper query string data
-    if($page !== 'home') {
+    if($path !== "") {
         array_shift($_GET);
     }
     $queries = array();
     foreach($_GET as $k => $v) {
         $queries[] = $k . '=' . urlencode($v);
     }
-    $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
 
     // Loading the language files
     $lang = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
@@ -82,6 +80,8 @@ Config::plug('load', function() {
         Mecha::extend($lang, $lang_a);
     }
 
+    $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
+    $config['offset'] = isset($s[1]) && is_numeric($s[1]) ? (int) $s[1] : 1;
     $config['page_type'] = $page;
     $config['speak'] = $lang;
 

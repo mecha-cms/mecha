@@ -450,9 +450,11 @@ class Guardian extends Base {
      */
 
     public static function abort($reason = "", $stop = true) {
-        $id = 'guardian-' . time();
-        echo $reason ? '<style>#' . $id . '{font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em;margin:0 0 1px}#' . $id . ' a{font:inherit;background:none;color:#F97F71;text-decoration:none}#' . $id . ' a:focus,#' . $id . ' a:hover{text-decoration:underline}</style><div id="' . $id . '">' . $reason . '</div>' : "";
-        if($stop) exit;
+        if(DEBUG) {
+            $id = 'guardian-' . time();
+            echo $reason ? '<style>#' . $id . '{font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em;margin:0 0 1px}#' . $id . ' a{font:inherit;background:none;color:#F97F71;text-decoration:none}#' . $id . ' a:focus,#' . $id . ' a:hover{text-decoration:underline}</style><div id="' . $id . '">' . $reason . '</div>' : "";
+            if($stop) exit;
+        }
     }
 
     /**
