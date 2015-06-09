@@ -72,9 +72,8 @@ class File extends Base {
             'name' => basename($path, '.' . $extension),
             'url' => File::url($path),
             'extension' => strtolower($extension),
-            'update_raw' => $update, // >= 1.1.3
+            'update_raw' => $update,
             'update' => $update_date,
-            'last_update' => $update_date, // alias for `update`
             'size_raw' => file_exists($path) ? filesize($path) : null,
             'size' => self::size($path)
         );
