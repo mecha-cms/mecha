@@ -72,7 +72,7 @@ class Widget {
                 } else {
                     $stack = isset($v['stack']) ? $v['stack'] : 10;
                     $menus[] = array(
-                        'html' => '<i class="fa fa-fw fa-' . $v['icon'] . '"></i> <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : ""),
+                        'html' => (strpos($v['icon'], '<') === false ? '<i class="fa fa-fw fa-' . $v['icon'] . '"></i>' : $v['icon']) . ' <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : ""),
                         'link' => $v['url'],
                         'stack' => $stack
                     );
