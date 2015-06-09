@@ -58,7 +58,7 @@ class Guardian extends Base {
             foreach(explode("\n", file_get_contents($file)) as $a) {
                 // Pattern 1: `username: password (Author Name: status) email@domain.com`
                 // Pattern 2: `username: password (Author Name @status) email@domain.com`
-                preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $a, $matches);
+                preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', trim($a), $matches);
                 $ally[$matches[1]] = array(
                     'password' => $matches[2],
                     'author' => $matches[3],

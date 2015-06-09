@@ -8,7 +8,7 @@ var Widget = function() {
     base.archive = function(type, id) {
 
         // Hierarchy
-        if (type == 'HIERARCHY') {
+        if (type === 'HIERARCHY') {
             var elem = doc.getElementById(id);
             if (!elem) return;
             var toggle = elem.getElementsByTagName('ul')[0].getElementsByTagName('a'),
@@ -18,13 +18,13 @@ var Widget = function() {
                         var parent = this.parentNode,
                             children = this.children,
                             s = /\sselected$/i.test(parent.className) ? ' selected' : "";
-                        if (children[0].className == 'zippy toggle-close') {
-                            children[0].className = 'zippy toggle-open';
+                        if (children[0].className === 'zippy close') {
+                            children[0].className = 'zippy open';
                             children[0].innerHTML = arrow[0];
                             parent.className = 'archive-date expanded' + s;
                             parent.getElementsByTagName('ul')[0].className = 'expanded';
                         } else {
-                            children[0].className = 'zippy toggle-close';
+                            children[0].className = 'zippy close';
                             children[0].innerHTML = arrow[1];
                             parent.className = 'archive-date collapsed' + s;
                             parent.getElementsByTagName('ul')[0].className = 'collapsed';
@@ -39,7 +39,7 @@ var Widget = function() {
         }
 
         // Dropdown
-        if (type == 'DROPDOWN') {
+        if (type === 'DROPDOWN') {
             elem = doc.getElementById(id);
             if (!elem) return;
             var select = elem.getElementsByTagName('select')[0];
@@ -55,7 +55,7 @@ var Widget = function() {
     base.tag = function(type, id) {
 
         // Dropdown
-        if (type == 'DROPDOWN') {
+        if (type === 'DROPDOWN') {
             elem = doc.getElementById(id);
             if (!elem) return;
             var select = elem.getElementsByTagName('select')[0];
