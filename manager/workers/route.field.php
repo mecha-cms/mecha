@@ -84,7 +84,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), $request['title']));
             Weapon::fire('on_field_update', array($G, $P));
             Weapon::fire('on_field_' . ($key === false ? 'construct' : 'repair'), array($G, $P));
-            Guardian::kick($key === false ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
+            Guardian::kick($key !== $request_key ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
         }
     }
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {

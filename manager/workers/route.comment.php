@@ -88,7 +88,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
                     $v['type'][0] === 't' && $v['value'] === "" ||
                     $v['type'][0] === 's' && $v['value'] === "" ||
                     $v['type'][0] === 'b' && ! isset($v['value']) ||
-                    $v['type'][0] === 'o' && ! isset($v['value'])
+                    $v['type'][0] === 'o' && ( ! isset($v['value']) || $v['value'] === "")
                 ) {
                     unset($field[$k]);
                 }

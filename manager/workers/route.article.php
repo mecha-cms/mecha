@@ -119,7 +119,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 $v['type'][0] === 't' && $v['value'] === "" ||
                 $v['type'][0] === 's' && $v['value'] === "" ||
                 $v['type'][0] === 'b' && ! isset($v['value']) ||
-                $v['type'][0] === 'o' && ! isset($v['value'])
+                $v['type'][0] === 'o' && ( ! isset($v['value']) || $v['value'] === "")
             ) {
                 unset($field[$k]);
             }
