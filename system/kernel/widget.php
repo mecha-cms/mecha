@@ -288,7 +288,7 @@ class Widget {
         $html .= TAB . '</form>' . NL;
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
-        return Filter::apply('widget:search', $html);
+        return Filter::apply('widget:search.form', Filter::apply('widget:search', $html));
     }
 
 
