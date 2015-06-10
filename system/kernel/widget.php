@@ -281,7 +281,7 @@ class Widget {
     public static function search($placeholder = "", $submit = "") {
         $config = Config::get();
         $speak = Config::speak();
-        $html  = O_BEGIN . '<div class="widget widget-search" id="widget-search-' . self::$id['search_form'] . '">' . NL;
+        $html  = O_BEGIN . '<div class="widget widget-search widget-search-form" id="widget-search-' . self::$id['search_form'] . '">' . NL;
         self::$id['search_form']++;
         $html .= TAB . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
         $html .= str_repeat(TAB, 2) . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>' . NL;
