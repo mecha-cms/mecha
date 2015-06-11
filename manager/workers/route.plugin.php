@@ -53,7 +53,10 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             Notify::error($speak->notify_error_no_file_selected);
         }
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], PLUGIN, Config::speak('notify_success_uploaded', $speak->plugin));
+            File::upload($_FILES['file'], PLUGIN, function() use($speak) {
+                Notify::clear();
+                Notify::success(Config::speak('notify_success_uploaded', $speak->plugin));
+            });
             $P = array('data' => $_FILES);
             Weapon::fire('on_plugin_update', array($P, $P));
             Weapon::fire('on_plugin_construct', array($P, $P));

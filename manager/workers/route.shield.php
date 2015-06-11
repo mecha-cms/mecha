@@ -33,7 +33,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         $path = basename($name, '.' . $extension);
         if( ! empty($name)) {
             if(File::exist(SHIELD . DS . $path)) {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '/&hellip;</code>'));
+                Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
             } else {
                 if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
                     Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
@@ -43,7 +43,10 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             Notify::error($speak->notify_error_no_file_selected);
         }
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], SHIELD, Config::speak('notify_success_uploaded', $speak->shield));
+            File::upload($_FILES['file'], SHIELD, function() use($speak) {
+                Notify::clear();
+                Notify::success(Config::speak('notify_success_uploaded', $speak->shield));
+            });
             $P = array('data' => $_FILES);
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));

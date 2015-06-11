@@ -1,4 +1,4 @@
-<?php echo $form_id = time(); $messages; ?>
+<?php $form_id = time(); echo $messages; ?>
 <form class="form-login" id="form-login:<?php echo $form_id; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">

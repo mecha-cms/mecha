@@ -109,7 +109,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $content = Request::post('content', "");
         $description = $request['description'];
         $author = strip_tags($request['author']);
-        $kinds = $request['kind'];
+        $kind = $request['kind'];
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
@@ -124,7 +124,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 unset($field[$k]);
             }
         }
-        sort($kinds);
+        sort($kind);
         // Slug must contains at least one letter or one `-`. This validation added
         // to prevent users from inputting a page offset instead of article slug.
         // Because the URL pattern of article's index page is `article/1` and the
@@ -160,7 +160,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 unset($files);
             }
             if( ! Notify::errors()) {
-                Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
+                Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
                 if(( ! empty($css) && $css !== $config->defaults->article_custom_css) || ( ! empty($js) && $js !== $config->defaults->article_custom_js)) {
                     Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                 }
@@ -187,7 +187,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // Start rewriting ...
             if( ! Notify::errors()) {
                 Page::open($article->path)->header($header)->content($content)->save();
-                File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kinds) . '_' . $slug . $extension);
+                File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
                 $custom_ = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s');
                 if(File::exist($custom_ . $extension_o)) {
                     if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->article_custom_css && $js === $config->defaults->article_custom_js)) {
