@@ -10,18 +10,20 @@
 define('DS', DIRECTORY_SEPARATOR);
 define('MECHA_VERSION', '1.1.3');
 define('ROOT', rtrim(__DIR__, '\\/'));
-define('SYSTEM', ROOT . DS . 'system');
+define('CARGO', ROOT . DS . 'cabinet');
 define('DECK', ROOT . DS . 'manager');
-define('LANGUAGE', ROOT . DS . 'cabinet' . DS . 'languages');
-define('ARTICLE', ROOT . DS . 'cabinet' . DS . 'articles');
-define('PAGE', ROOT . DS . 'cabinet' . DS . 'pages');
-define('RESPONSE', ROOT . DS . 'cabinet' . DS . 'responses');
-define('CUSTOM', ROOT . DS . 'cabinet' . DS . 'custom');
-define('STATE', ROOT . DS . 'cabinet' . DS . 'states');
-define('PLUGIN', ROOT . DS . 'cabinet' . DS . 'plugins');
-define('SHIELD', ROOT . DS . 'cabinet' . DS . 'shields');
-define('ASSET', ROOT . DS . 'cabinet' . DS . 'assets');
-define('CACHE', ROOT . DS . 'cabinet' . DS . 'scraps');
+define('SYSTEM', ROOT . DS . 'system');
+define('LANGUAGE', CARGO . DS . 'languages');
+define('ASSET', CARGO . DS . 'assets');
+define('ARTICLE', CARGO . DS . 'articles');
+define('PAGE', CARGO . DS . 'pages');
+define('RESPONSE', CARGO . DS . 'responses');
+define('EXTEND', CARGO . DS . 'extends');
+define('CUSTOM', EXTEND . DS . 'custom');
+define('STATE', CARGO . DS . 'states');
+define('PLUGIN', CARGO . DS . 'plugins');
+define('SHIELD', CARGO . DS . 'shields');
+define('CACHE', CARGO . DS . 'scraps');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
 define('S', ':'); // Separator between the page header key and page header value
