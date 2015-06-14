@@ -241,33 +241,36 @@ if($config->html_parser) {
 Weapon::add('meta', function() {
     $config = Config::get();
     $speak = Config::speak();
-    $html  = O_BEGIN . '<meta charset="' . $config->charset . '"' . ES . NL;
-    $html .= str_repeat(TAB, 2) . '<meta name="viewport" content="width=device-width"' . ES . NL;
+    $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
+    $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
     if(isset($config->article->description)) {
-        $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->article->description) . '"' . ES . NL;
+        $description = strip_tags($config->article->description);
     } else if(isset($config->page->description)) {
-        $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->page->description) . '"' . ES . NL;
+        $description = strip_tags($config->page->description);
     } else {
-        $html .= str_repeat(TAB, 2) . '<meta name="description" content="' . strip_tags($config->description) . '"' . ES . NL;
+        $description = strip_tags($config->description);
     }
-    $html .= str_repeat(TAB, 2) . '<meta name="author" content="' . $config->author . '"' . ES . NL;
+    $html .= Cell::meta('description', $description, array(), 2) . NL;
+    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = str_repeat(TAB, 2) . '<title>' . strip_tags($config->page_title) . '</title>' . NL;
-    $html .= str_repeat(TAB, 2) . '<!--[if IE]><script src="' . $config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js"></script><![endif]-->' . NL;
+    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
+    $html .= str_repeat(TAB, 2) . '<!--[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]-->' . NL;
     echo Filter::apply('meta', $html, 2);
 }, 20);
 
 Weapon::add('meta', function() {
     $config = Config::get();
     $speak = Config::speak();
-    $html  = str_repeat(TAB, 2) . '<link href="' . $config->url . '/favicon.ico" rel="shortcut icon" type="image/x-icon"' . ES . NL;
-    $html .= str_repeat(TAB, 2) . '<link href="' . $config->url_current . '" rel="canonical"' . ES . NL;
-    $html .= str_repeat(TAB, 2) . '<link href="' . $config->url . '/sitemap" rel="sitemap"' . ES . NL;
-    $html .= str_repeat(TAB, 2) . '<link href="' . $config->url . '/feed/rss" rel="alternate" type="application/rss+xml" title="' . $speak->feeds . $config->title_separator . $config->title . '"' . ES . O_END;
+    $html  = Cell::link($config->url . '/favicon.ico', 'shortcut icon', 'image/x-icon', array(), 2) . NL;
+    $html .= Cell::link($config->url_current, 'canonical', null, array(), 2) . NL;
+    $html .= Cell::link($config->url . '/sitemap', 'sitemap', null, array(), 2) . NL;
+    $html .= Cell::link($config->url . '/feed/rss', 'alternate', 'application/rss+xml', array(
+        'title' => $speak->feeds . $config->title_separator . $config->title
+    ), 2) . O_END;
     echo Filter::apply('meta', $html, 3);
 }, 30);
 

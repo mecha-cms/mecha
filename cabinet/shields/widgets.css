@@ -76,6 +76,11 @@ time {display:inline}
   text-align:center;
 }
 
+.align-left + p,
+.align-left + .p,
+.align-right + p,
+.align-right + .p {margin-top:0}
+
 .align-top {vertical-align:top}
 .align-bottom {vertical-align:bottom}
 .align-middle {vertical-align:middle}
@@ -144,11 +149,22 @@ textarea.no-appearance {
   box-shadow:none;
 }
 
+.table-bordered,
+table[border="1"] {border-collapse:collapse}
+
+.table-bordered th,
+.table-bordered td,
+table[border="1"] th,
+table[border="1"] td {border:1px solid}
+
 .table-full-width {width:100%}
 
 .code {font-family:"Courier New",Courier,"Nimbus Mono L",Monospace}
 
-.image-container {display:block}
+.image-container,
+.p {display:block}
+
+.image-container img {display:inline-block}
 
 .fluid-media,
 .fluid-video {
