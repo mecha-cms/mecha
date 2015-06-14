@@ -164,7 +164,11 @@ table[border="1"] td {border:1px solid}
 .image-container,
 .p {display:block}
 
-.image-container img {display:inline-block}
+.image-container img {
+  display:block;
+  margin-right:auto;
+  margin-left:auto;
+}
 
 .fluid-media,
 .fluid-video {
