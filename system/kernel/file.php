@@ -138,8 +138,7 @@ class File extends Base {
         $i = 0;
         $results = "";
         if($handle = fopen(self::$open, 'r')) {
-            $buffer = fgets($handle, $chars);
-            while($buffer !== false) {
+            while(($buffer = fgets($handle, $chars)) !== false) {
                 $buffer = str_replace("\r", "", $buffer);
                 if(
                     is_int($stop_at) && $stop_at === $i ||
@@ -371,7 +370,7 @@ class File extends Base {
     public static function url($path) {
         $base = Config::get('url');
         $p = str_replace(array('\\', DS), '/', ROOT);
-        return str_replace(array(ROOT, '\\', '/', $p), array($base, '/', '/', $base), $path);
+        return str_replace(array(ROOT, '\\', DS, $p), array($base, '/', '/', $base), $path);
     }
 
     // Configure ...
