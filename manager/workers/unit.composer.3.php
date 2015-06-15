@@ -4,9 +4,9 @@ $fields = Get::state_field(array());
 
 
 /**
- * Allow shield to add custom fields dynamically by creating
- * a file called `fields.php` saved inside a folder named as `workers`.
- * This file contains array of fields data.
+ * Allow shield to add custom field(s) dynamically by creating a file
+ * called `fields.php` saved inside a folder named as `workers`.
+ * This file contains array of field(s) data.
  *
  * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
  *
@@ -30,9 +30,9 @@ if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'field
 
 
 /**
- * Allow plugin to add custom fields dynamically by creating
- * a file called `fields.php` saved inside a folder named as `workers`.
- * This file contains array of fields data.
+ * Allow plugin to add custom field(s) dynamically by creating a file
+ * called `fields.php` saved inside a folder named as `workers`.
+ * This file contains array of field(s) data.
  */
 
 foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {

@@ -1,4 +1,4 @@
-<?php if( ! defined('ROOT')) die('Rejected.');
+<?php if( ! defined('ROOT')) die('Rejected!');
 
 
 /**
@@ -34,8 +34,8 @@ array_walk_recursive($gpc, function(&$value) {
 
 
 /**
- * Loading Workers
- * ---------------
+ * Loading Worker(s)
+ * -----------------
  */
 
 spl_autoload_register(function($worker) {
@@ -45,8 +45,8 @@ spl_autoload_register(function($worker) {
 
 
 /**
- * Loading Functions
- * -----------------
+ * Loading Function(s)
+ * -------------------
  */
 
 foreach(glob(SYSTEM . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
@@ -55,8 +55,8 @@ foreach(glob(SYSTEM . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
 
 
 /**
- * Start the Sessions
- * ------------------
+ * Start the Session(s)
+ * --------------------
  */
 
 Session::start(SYSTEM . DS . 'log' . DS . 'sessions');
@@ -74,22 +74,12 @@ $speak = Config::speak();
 
 
 /**
- * Define Allowed File Extensions
- * ------------------------------
+ * Define Allowed File Extension(s)
+ * --------------------------------
  */
 
 $e = explode(',', FONT_EXT . ',' . IMAGE_EXT . ',' . MEDIA_EXT . ',' . PACKAGE_EXT . ',' . SCRIPT_EXT);
 File::configure('file_extension_allow', array_unique($e));
-
-
-/**
- * First Installation
- * ------------------
- */
-
-if(File::exist(ROOT . DS . 'install.php')) {
-    Guardian::kick($config->url . '/install.php');
-}
 
 
 /**
@@ -119,8 +109,8 @@ if($config->widget_include_js) {
 
 
 /**
- * Loading Plugins
- * ---------------
+ * Loading Plugin(s)
+ * -----------------
  */
 
 $plugins = Plugin::load();
@@ -152,16 +142,16 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
 
 
 /**
- * Check the Plugins Order
- * -----------------------
+ * Check the Plugin(s) Order
+ * -------------------------
  */
 
 // var_dump($plugins); exit;
 
 
 /**
- * Include User Defined Functions
- * ------------------------------
+ * Include User Defined Function(s)
+ * --------------------------------
  */
 
 if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
@@ -170,8 +160,8 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 
 /**
- * Handle Shortcodes in Content
- * ----------------------------
+ * Handle Shortcode(s) in Content
+ * ------------------------------
  */
 
 Filter::add('shortcode', function($content) use($config, $speak) {
@@ -206,8 +196,8 @@ Filter::add('shortcode', function($content) use($config, $speak) {
 
 
 /**
- * Others
- * ------
+ * Other(s)
+ * --------
  *
  * I'm trying to not touching the source code of the Markdown plugin at all.
  *

@@ -30,13 +30,13 @@ class Cell {
     protected static $tag = array();
     protected static $tag_indent = array();
 
-    // Encode all HTML entities
+    // Encode all HTML entit(y|ies)
     public static function protect($value) {
         if( ! is_string($value)) return $value;
         return Text::parse($value, '->encoded_html');
     }
 
-    // Setup HTML attributes ...
+    // Setup HTML attribute(s) ...
     public static function bond($array) {
         if( ! is_array($array)) {
             $attr = trim((string) $array);

@@ -70,7 +70,7 @@ return array(
         'per_page' => 7
     ),
 
-    // Defaults
+    // Default(s)
     'defaults' => array(
         'article_title' => "",
         'article_content' => "",

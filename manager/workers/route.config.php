@@ -43,11 +43,11 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             unset($files);
         }
         foreach($bools as $bool => $fallback) {
-            // Fixes for checkbox inputs
+            // Fix(es) for checkbox input(s)
             $request[$bool] = Request::post($bool, $fallback);
         }
         foreach($pages as $page => $default) {
-            // Fixes for slug pattern inputs
+            // Fix(es) for slug pattern input(s)
             $request[$page]['slug'] = Text::parse(Request::post($page . '.slug', $default), '->slug');
             if( // If ...
                 // Should be greater than 0
@@ -58,7 +58,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 Notify::error($speak->notify_invalid_per_page_number);
                 Guardian::memorize($request);
             }
-            // Check if slug already exist on static pages
+            // Check if slug already exist on static page(s)
             if(isset($slugs[$request[$page]['slug']])) {
                 Notify::error(Config::speak('notify_error_slug_exist', $request[$page]['slug']));
                 Guardian::memorize($request);

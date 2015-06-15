@@ -14,7 +14,7 @@ class Navigator extends Base {
 
     /**
      * ============================================================================
-     *  PAGINATION EXTRACTOR FOR LIST OF FILES
+     *  PAGINATION EXTRACTOR FOR LIST OF FILE(S)
      * ============================================================================
      *
      * -- CODE: -------------------------------------------------------------------
@@ -27,10 +27,10 @@ class Navigator extends Base {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
      *  ---------- | ------- | ----------------------------------------------------
-     *  $pages     | array   | Array of files to be paginated
+     *  $pages     | array   | Array of file(s) to be paginated
      *  $current   | integer | The current page offset
      *  $current   | string  | The current page path
-     *  $per_page  | integer | Number of files to show per page request
+     *  $per_page  | integer | Number of file(s) to show per page request
      *  $connector | string  | Extra path to be inserted into URL
      *  ---------- | ------- | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -70,7 +70,7 @@ class Navigator extends Base {
             self::$bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', $prev ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
             self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', $next ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
 
-            // Generate pagination links for index page
+            // Generate pagination link(s) for index page
             $html = '<span' . ($sn['classes']['pagination'] !== false ? ' class="' . $sn['classes']['pagination'] . '"' : "") . '>';
             $chunk = (int) ceil($total / $per_page);
             $step = $chunk > self::$config['step'] ? self::$config['step'] : $chunk;

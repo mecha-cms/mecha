@@ -25,8 +25,8 @@ class Shield extends Base {
     }
 
     /**
-     * Default Shortcut Variables
-     * --------------------------
+     * Default Shortcut Variable(s)
+     * ----------------------------
      */
 
     protected static function cargo() {

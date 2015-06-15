@@ -15,8 +15,8 @@ $e_plugin_page = 'Title' . S . ' %s' . "\n" .
 
 
 /**
- * Plugins Manager
- * ---------------
+ * Plugin Manager
+ * --------------
  */
 
 Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak, $e_plugin_page) {

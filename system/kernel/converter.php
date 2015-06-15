@@ -32,11 +32,13 @@ class Converter extends Base {
         ) {
             return str_replace(
                 array(
+                    '\\',
                     '/?',
                     '/&',
                     '/#'
                 ),
                 array(
+                    '/',
                     '?',
                     '&',
                     '#'
@@ -208,12 +210,12 @@ class Converter extends Base {
         $input = preg_replace(
             array(
                 '#<br *\/?>|<\/.*?>#i', // New line to a single white-space
-                '#<.*?>#', // Remove all HTML tags
-                '#[`~\#*-=+_]{2,}#', // Remove all possible raw Markdown( Extra)? patterns
+                '#<.*?>#', // Remove all HTML tag(s)
+                '#[`~\#*-=+_]{2,}#', // Remove all possible raw Markdown( Extra)? pattern(s)
                 '#\b([`~*_]+)(.*?)\1\b#', // --ibid
-                '#<|>#', // Fix all broken HTML tags. Replace `<div></di` to `div/di`
-                '#(\s|&nbsp;)+#', // Multiple white-spaces to a single white-space
-                '# (?=[!:;,.\/?])#' // Remove leading white-spaces before `!:;,./?`
+                '#<|>#', // Fix all broken HTML tag(s). Replace `<div></di` to `div/di`
+                '#(\s|&nbsp;)+#', // Multiple white-space(s) to a single white-space
+                '# (?=[!:;,.\/?])#' // Remove leading white-space(s) before `!:;,./?`
             ),
             array(
                 ' ',
@@ -424,7 +426,7 @@ class Converter extends Base {
 
     /**
      * ====================================================================
-     *  CONVERT ATTRIBUTES OF ELEMENT INTO ARRAY OF DATA
+     *  CONVERT ATTRIBUTE(S) OF ELEMENT INTO ARRAY OF DATA
      * ====================================================================
      *
      * -- CODE: -----------------------------------------------------------
@@ -499,11 +501,11 @@ class Converter extends Base {
 
     public static function detractSkeleton($input) {
         if(trim($input) === "") return $input;
-        // Remove extra white-spaces between HTML attributes
+        // Remove extra white-space(s) between HTML attribute(s)
         $input = preg_replace_callback('#<([^\/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
             return '<' . $matches[1] . preg_replace('#([^\s=]+)(\=([\'"]?)(.*?)\3)?(\s+|$)#s', ' $1$2', $matches[2]) . $matches[3] . '>';
         }, $input);
-        // Minify inline CSS declarations
+        // Minify inline CSS declaration(s)
         if(strpos($input, ' style=') !== false) {
             $input = preg_replace_callback('#\s+style=([\'"])(.*?)\1(?=[\/\s>])#s', function($matches) {
                 return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
@@ -512,14 +514,14 @@ class Converter extends Base {
         return preg_replace(
             array(
 
-                // Remove HTML comments except IE comments
+                // Remove HTML comment(s) except IE comment(s)
                 '#\s*(<\!--(?=\[if).*?-->)\s*|\s*<\!--.*?-->\s*#s',
 
                 // Do not remove white-space after image and
                 // input tag that is followed by a tag open
                 '#(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?=\<[^\/])#s',
 
-                // Remove two or more white-spaces between tags
+                // Remove two or more white-space(s) between tag(s)
                 '#(<\!--.*?-->)|(>)\s{2,}|\s{2,}(<)|(>)\s{2,}(<)#s',
 
                 // PROOFING ...
@@ -528,17 +530,17 @@ class Converter extends Base {
                 // If `</tag> <tag>` keep white-space
                 // If `<tag> <tag>` remove white-space
                 // If `</tag> </tag>` remove white-space
-                // If `<tag>    ...</tag>` remove white-spaces
-                // If `</tag>    ...<tag>` remove white-spaces
-                // If `<tag>    ...<tag>` remove white-spaces
-                // If `</tag>    ...</tag>` remove white-spaces
+                // If `<tag>    ...</tag>` remove white-space(s)
+                // If `</tag>    ...<tag>` remove white-space(s)
+                // If `<tag>    ...<tag>` remove white-space(s)
+                // If `</tag>    ...</tag>` remove white-space(s)
                 // If `abc <tag>` keep white-space
                 // If `<tag> abc` remove white-space
                 // If `abc </tag>` remove white-space
                 // If `</tag> abc` keep white-space
                 // TODO: If `abc    ...<tag>` keep one white-space
-                // If `<tag>    ...abc` remove white-spaces
-                // If `abc    ...</tag>` remove white-spaces
+                // If `<tag>    ...abc` remove white-space(s)
+                // If `abc    ...</tag>` remove white-space(s)
                 // TODO: If `</tag>    ...abc` keep one white-space
                 '#(<\!--.*?-->)|(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?!\<\/)#s', // o+t | o+o
                 '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?=\<[^\/])#s', // o+o
@@ -605,10 +607,10 @@ class Converter extends Base {
         return preg_replace(
             array(
 
-                // Remove comments
+                // Remove comment(s)
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)#s',
 
-                // Remove unused white-spaces
+                // Remove unused white-space(s)
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/))|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
 
                 // Replace `0(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)` with `0`
@@ -630,7 +632,7 @@ class Converter extends Base {
                 // Minify HEX color code
                 '#(?<=[:,\-\s]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
 
-                // Remove empty selectors
+                // Remove empty selector(s)
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
 
             ),
@@ -673,23 +675,15 @@ class Converter extends Base {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-                // '#(?<!\\\)\\\\\"#',
-                // '#(?<!\\\)\\\\\'#',
 
-                // Remove comments
+                // Remove comment(s)
                 '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*[\n\r]*#',
 
-                // Remove unused white-space characters outside the string and regex
+                // Remove unused white-space character(s) outside the string and regex
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/)|\/(?!\/)[^\n\r]*?\/(?=[\.,;]|[gimuy]))|\s*([+\-\=\/%\(\)\{\}\[\]<>\|&\?\!\:;\.,])\s*#s',
 
                 // Remove the last semicolon
                 '#;+\}#',
-
-                // Replace `true` with `!0`
-                // '#\btrue\b#',
-
-                // Replace `false` with `!1`
-                // '#\bfalse\b#',
 
                 // Minify object attribute except JSON attribute. From `{'foo':'bar'}` to `{foo:'bar'}`
                 '#([\{,])([\'])(\d+|[a-z_][a-z0-9_]*)\2(?=\:)#i',
@@ -699,13 +693,9 @@ class Converter extends Base {
 
             ),
             array(
-                // '\\u0022',
-                // '\\u0027',
                 '$1',
                 '$1$2',
                 '}',
-                // '!0',
-                // '!1',
                 '$1$3',
                 '$1.$3'
             ),

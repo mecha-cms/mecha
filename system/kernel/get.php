@@ -2,7 +2,7 @@
 
 class Get extends Base {
 
-    // Apply the missing filters
+    // Apply the missing filter(s)
     protected static function AMF($data, $FP = "", $F) {
         $output = Filter::apply($F, $data);
         if(is_string($FP) && trim($FP) !== "") {
@@ -13,7 +13,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ALL FILES RECURSIVELY
+     *  GET ALL FILE(S) RECURSIVELY
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -37,12 +37,12 @@ class Get extends Base {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter   | Type    | Desription
      *  ----------- | ------- | -------------------------------------------------
-     *  $folder     | string  | Path to folder of files you want to be listed
-     *  $extensions | string  | The file extensions
+     *  $folder     | string  | Path to folder of file(s) you want to be listed
+     *  $extensions | string  | The file extension(s)
      *  $order      | string  | Ascending or descending? ASC/DESC?
      *  $sorter     | string  | The key of array item as sorting reference
      *  $filter     | string  | Filter the resulted array by a keyword
-     *  $inclusive  | boolean | Include hidden files to results?
+     *  $inclusive  | boolean | Include hidden file(s) to result(s)?
      *  ----------- | ------- | -------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -65,10 +65,10 @@ class Get extends Base {
             }
             $_file = str_replace($folder . DS, "", $file);
             if(
-                // Exclude all files inside a folder from results if the
-                // folder name begins with two underscores. Example: `__folder-name`
-                // Exclude file from results if the file name begins with
-                // two underscores. Example: `__file-name.txt`
+                // Exclude all file(s) inside a folder from result(s) if the
+                // folder name begins with two underscore(s). Example: `__folder-name`
+                // Exclude file from result(s) if the file name begins with
+                // two underscore(s). Example: `__file-name.txt`
                 strpos($_file, '__') !== 0 &&
                 // Linux?
                 strpos($_file, '.') !== 0
@@ -93,7 +93,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ADJACENT FILES
+     *  GET ADJACENT FILE(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -154,7 +154,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ALL FILES RECURSIVELY INCLUDING THE EXCLUDED FILES
+     *  GET ALL FILE(S) RECURSIVELY INCLUDING THE EXCLUDED FILE(S)
      * ==========================================================================
      */
 
@@ -164,7 +164,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ADJACENT FILES INCLUDING THE EXCLUDED FILES
+     *  GET ADJACENT FILE(S) INCLUDING THE EXCLUDED FILE(S)
      * ==========================================================================
      */
 
@@ -211,7 +211,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  EXTRACT ARRAY OF TAGS FROM TAG FILES
+     *  EXTRACT ARRAY OF TAG(S) FROM TAG FILE
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -293,7 +293,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGES PATH
+     *  GET LIST OF PAGE(S) PATH
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -315,11 +315,11 @@ class Get extends Base {
      *    Get::pages('DESC', 'slug:lorem');
      *    Get::pages('DESC', 'slug:lorem-ipsum');
      *
-     *    // [4]. The Old Ways
+     *    // [4]. The Old Way(s)
      *    Get::pages('DESC', 'lorem');
      *    Get::pages('DESC', 'lorem-ipsum');
      *
-     *    // [5]. The Old Ways' Alias
+     *    // [5]. The Old Way(s)' Alias
      *    Get::pages('DESC', 'keyword:lorem');
      *    Get::pages('DESC', 'keyword:lorem-ipsum');
      *
@@ -404,7 +404,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF ARTICLES PATH
+     *  GET LIST OF ARTICLE(S) PATH
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -423,7 +423,7 @@ class Get extends Base {
 
     /**
      * ===========================================================================
-     *  GET LIST OF COMMENTS PATH
+     *  GET LIST OF COMMENT(S) PATH
      * ===========================================================================
      *
      * -- CODE: ------------------------------------------------------------------
@@ -437,7 +437,7 @@ class Get extends Base {
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type    | Description
      *  ---------- | ------- | ---------------------------------------------------
-     *  $post      | string  | Post time as results filter
+     *  $post      | string  | Post time as result(s) filter
      *  $order     | string  | Ascending or descending? ASC/DESC?
      *  $extension | boolean | The file extension(s)
      *  ---------- | ------- | ---------------------------------------------------
@@ -464,7 +464,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGES DETAILS
+     *  GET LIST OF PAGE(S) DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -501,7 +501,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF ARTICLES DETAILS
+     *  GET LIST OF ARTICLE(S) DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -520,7 +520,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF COMMENTS DETAILS
+     *  GET LIST OF COMMENT(S) DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -554,7 +554,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGE DETAILS
+     *  GET LIST OF PAGE DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -584,7 +584,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF ARTICLE DETAILS
+     *  GET LIST OF ARTICLE DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -601,7 +601,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF COMMENT DETAILS
+     *  GET LIST OF COMMENT DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -644,8 +644,8 @@ class Get extends Base {
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
      *  $reference | mixed  | Slug, ID, path or array of `Get::pageExtract()`
-     *  $excludes  | array  | Exclude some fields from results
-     *  $folder    | string | Folder of the pages
+     *  $excludes  | array  | Exclude some field(s) from result(s)
+     *  $folder    | string | Folder of the page(s)
      *  $connector | string | Path connector for page URL
      *  $FP        | string | Filter prefix for `Text::toPage()`
      *  ---------- | ------ | ---------------------------------------------------
@@ -665,7 +665,7 @@ class Get extends Base {
         if(is_array($reference)) {
             $results = $reference;
         } else {
-            // By path => `cabinet/pages/0000-00-00-00-00-00_1,2,3_page-slug.txt`
+            // By path => `cabinet\pages\0000-00-00-00-00-00_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
                 $results = self::pageExtract($reference, $FP);
             } else {
@@ -679,7 +679,7 @@ class Get extends Base {
         /**
          * RULES: Do not do any tags looping, content Markdown-ing
          * and external file requesting if it has been marked as
-         * the excluded fields. For better performance.
+         * the excluded field(s). For better performance.
          */
 
         $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $FP);
@@ -824,17 +824,17 @@ class Get extends Base {
 
 
         /**
-         * Custom Fields
-         * -------------
+         * Custom Field(s)
+         * ---------------
          */
 
         if( ! isset($excludes['fields'])) {
 
             /**
-             * Initialize custom fields with the default values so that
-             * users don't have to write `isset()` function multiple times
-             * just to prevent error messages because of the object keys
-             * that is not available in the old posts.
+             * Initialize custom field(s) with the default value(s) so that
+             * user(s) don't have to write `isset()` function multiple time(s)
+             * just to prevent error message(s) because of the object key(s)
+             * that is not available in the old post(s).
              */
 
             $fields = self::state_field(array());
@@ -864,7 +864,7 @@ class Get extends Base {
         }
 
         /**
-         * Exclude some fields from results
+         * Exclude some field(s) from result(s)
          */
 
         foreach($results as $key => $value) {
@@ -970,7 +970,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET PAGE HEADERS ONLY
+     *  GET PAGE HEADER(S) ONLY
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -1020,7 +1020,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ARTICLE HEADERS ONLY
+     *  GET ARTICLE HEADER(S) ONLY
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -1050,7 +1050,7 @@ class Get extends Base {
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
      *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the pages
+     *  $folder    | string | Folder of the page(s)
      *  $connector | string | See `Get::page()`
      *  $FP        | string | See `Get::page()`
      *  ---------- | ------ | ---------------------------------------------------
@@ -1146,7 +1146,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET IMAGES URL FROM TEXT SOURCE
+     *  GET IMAGE(S) URL FROM TEXT SOURCE
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -1222,7 +1222,7 @@ class Get extends Base {
             return $matches[3];
         }
 
-        return $fallback; // No images!
+        return $fallback; // No image(s)!
 
     }
 

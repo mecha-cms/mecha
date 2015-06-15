@@ -23,7 +23,7 @@ Config::plug('load', function() {
         Mecha::extend($config, $file);
     }
 
-    // Define some default variables
+    // Define some default variable(s)
     $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
     $config['host'] = $_SERVER['HTTP_HOST'];
     $config['base'] = trim(File::url(dirname($_SERVER['SCRIPT_NAME'])), '/');
@@ -68,7 +68,7 @@ Config::plug('load', function() {
         $queries[] = $k . '=' . urlencode($v);
     }
 
-    // Loading the language files
+    // Loading the language file(s)
     $lang = LANGUAGE . DS . 'en_US' . DS . 'speak.txt';
     $lang_a = LANGUAGE . DS . $config['language'] . DS . 'speak.txt';
     if( ! file_exists($lang) && ! file_exists($lang_a)) {

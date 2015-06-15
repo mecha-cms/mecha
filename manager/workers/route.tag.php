@@ -2,8 +2,8 @@
 
 
 /**
- * Tags Manager
- * ------------
+ * Tag Manager
+ * -----------
  */
 
 Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {

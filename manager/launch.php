@@ -1,7 +1,7 @@
-<?php if( ! defined('ROOT')) die('Rejected.');
+<?php if( ! defined('ROOT')) die('Rejected!');
 
 
-// Loading functions
+// Loading function(s)
 foreach(glob(DECK . DS . 'workers' . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
     require $plug;
 }
@@ -21,10 +21,10 @@ Config::merge('DASHBOARD.languages', array(
 
 
 /**
- * Backend Assets
- * --------------
+ * Backend Asset(s)
+ * ----------------
  *
- * Inject the required assets for manager.
+ * Inject the required asset(s) for manager.
  *
  */
 
@@ -67,7 +67,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
     echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
     $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
-    //  Please use the `TAB` and `ES` variable as declared in the PHP constants.
+    //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
     $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";DASHBOARD.file_extension_allow="' . implode(',', File::$config['file_extension_allow']) . '";';
     echo $output . '</script>' . O_END;
 }, 1);
@@ -97,7 +97,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
  * Cache Killer
  * ------------
  *
- * Add global cache killer for articles and pages.
+ * Add global cache killer for article(s) and page(s).
  *
  */
 
@@ -111,21 +111,21 @@ function do_remove_cache() {
     }
 }
 
-// Articles and pages
+// Article(s) and page(s)
 Weapon::add('on_article_update', 'do_remove_cache', 10);
 Weapon::add('on_page_update', 'do_remove_cache', 10);
 
-// Plugins
+// Plugin(s)
 Weapon::add('on_plugin_update', function() {
     File::open(CACHE . DS . 'plugins.order.cache')->delete();
 });
 
 
 /**
- * Footer Links
- * ------------
+ * Footer Link(s)
+ * --------------
  *
- * Add default article, page and comment footer links.
+ * Add default article, page and comment footer link(s).
  *
  */
 
@@ -163,8 +163,8 @@ Weapon::add('comment_footer', function($comment, $article) {
 
 
 /**
- * Widget Manager Menus
- * --------------------
+ * Widget Manager Menu(s)
+ * ----------------------
  */
 
 Weapon::add('shield_before', function() {
@@ -240,8 +240,8 @@ Weapon::add('shield_before', function() {
 
 
 /**
- * Backend Routes
- * --------------
+ * Backend Route(s)
+ * ----------------
  *
  * Load the routes.
  *

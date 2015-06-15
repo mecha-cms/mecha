@@ -2,8 +2,8 @@
 
 
 /**
- * Set Default Validators
- * ----------------------
+ * Set Default Validator(s)
+ * ------------------------
  */
 
 // Check for IP address

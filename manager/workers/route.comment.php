@@ -2,8 +2,8 @@
 
 
 /**
- * Comments Manager
- * ----------------
+ * Comment Manager
+ * ---------------
  */
 
 Route::accept(array($config->manager->slug . '/comment', $config->manager->slug . '/comment/(:num)'), function($offset = 1) use($config, $speak) {

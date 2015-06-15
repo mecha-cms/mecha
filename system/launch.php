@@ -1,4 +1,4 @@
-<?php if( ! defined('ROOT')) die('Rejected.');
+<?php if( ! defined('ROOT')) die('Rejected!');
 
 
 /**
@@ -234,7 +234,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
 
     } else {
 
-        // Matched with all keywords combined
+        // Matched with all keyword(s) combined
         if($files = Get::articles('DESC', 'keyword:' . $keywords)) {
             foreach($files as $file) {
                 $articles[] = $file;
@@ -262,7 +262,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             }
         }
 
-        $articles = array_unique($articles); // Remove search results duplicates
+        $articles = array_unique($articles); // Remove search result(s) duplicate
 
         Session::set('search_query', $query);
         Session::set('search_results', $articles);
@@ -367,7 +367,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             if( ! Guardian::check($request['email'], '->email')) {
                 Notify::error($speak->notify_invalid_email);
             } else {
-                // Disallow passengers from entering your email address in the comment email field
+                // Disallow passenger(s) from entering your email address in the comment email field
                 if( ! Guardian::happy() && $request['email'] === $config->author_email) {
                     Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                 }
@@ -405,7 +405,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
             Notify::error(Config::speak('notify_error_too_long', $speak->comment_message));
         }
 
-        // Check for spam keywords in comment
+        // Check for spam keyword(s) in comment
         $fucking_words = explode(',', $config->spam_keywords);
         foreach($fucking_words as $spam) {
             $fuck = trim($spam);
@@ -448,7 +448,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
                 }
             }
 
-            // Temporarily disallow images in comment to prevent XSS
+            // Temporarily disallow image(s) in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
             $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
             $message = preg_replace('#<img(\s[^<>]*?)>#', '&lt;img$1&gt;', $message);

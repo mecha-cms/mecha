@@ -102,7 +102,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
-        // General fields
+        // General field(s)
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
         $slug = Text::parse(Request::post('slug', $title), '->slug');
         $slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
@@ -126,7 +126,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         }
         sort($kind);
         // Slug must contains at least one letter or one `-`. This validation added
-        // to prevent users from inputting a page offset instead of article slug.
+        // to prevent user(s) from inputting a page offset instead of article slug.
         // Because the URL pattern of article's index page is `article/1` and the
         // URL pattern of article's single page is `article/article-slug`
         if( ! preg_match('#[a-z\-]#i', $slug)) {
@@ -172,7 +172,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         // Repair
         } else {
             // Check for duplicate slug, except for the current old slug.
-            // Allow users to change their post slug, but make sure they
+            // Allow user(s) to change their post slug, but make sure they
             // do not type the slug of another post.
             if($files = Get::articles('DESC', "", 'txt,draft,archive') && $slug !== $article->slug) {
                 foreach($files as $file) {
@@ -191,7 +191,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 $custom_ = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s');
                 if(File::exist($custom_ . $extension_o)) {
                     if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->article_custom_css && $js === $config->defaults->article_custom_js)) {
-                        // Always delete empty custom CSS and JavaScript files ...
+                        // Always delete empty custom CSS and JavaScript file(s) ...
                         File::open($custom_ . $extension_o)->delete();
                     } else {
                         Page::content($css)->content($js)->saveTo($custom_ . $extension_o);
@@ -208,7 +208,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_repair', array($G, $P));
-                // Rename all comment files related to article if article date has been changed
+                // Rename all comment file(s) related to article if article date has been changed
                 if(((string) $date !== (string) $article->date->W3C) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
                     foreach($comments as $comment) {
                         $parts = explode('_', basename($comment));
@@ -248,7 +248,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         File::open($article->path)->delete();
-        // Deleting comments ...
+        // Deleting comment(s) ...
         if($comments = Get::comments($id, 'DESC', 'txt,hold')) {
             foreach($comments as $comment) {
                 File::open($comment)->delete();

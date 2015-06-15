@@ -678,7 +678,7 @@ class Image extends Base {
 
     /**
      * ====================================================================
-     *  COMBINE MULTIPLE IMAGE FILES INTO A SINGLE IMAGE (SPRITES)
+     *  COMBINE MULTIPLE IMAGE FILE(S) INTO A SINGLE IMAGE (SPRITE)
      * ====================================================================
      *
      * -- CODE: -----------------------------------------------------------

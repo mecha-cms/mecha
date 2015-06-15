@@ -66,8 +66,8 @@ class Page extends Base {
             if($v === false) {
                 unset($data[self::fix($k)], self::$bucket[self::fix($k)]);
             } else {
-                // Restrict users from inputting the `SEPARATOR` constant
-                // to prevent mistakes in parsing the file content
+                // Restrict user(s) from inputting the `SEPARATOR` constant
+                // to prevent mistake(s) in parsing the file content
                 $data[self::fix($k)] = Text::ES($v);
             }
         }
@@ -80,8 +80,8 @@ class Page extends Base {
         if($data === false) {
             $data = "";
         }
-        // Restrict users from inputting the `SEPARATOR` constant
-        // to prevent mistakes in parsing the file content
+        // Restrict user(s) from inputting the `SEPARATOR` constant
+        // to prevent mistake(s) in parsing the file content
         $data = Text::ES($data);
         self::$bucket_alt = trim(self::$bucket_alt) !== "" && is_null(self::$open) ? trim(self::$bucket_alt) . (trim($data) !== "" ? "\n\n" . SEPARATOR . "\n\n" . $data : "") : $data;
         return new static;

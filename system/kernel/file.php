@@ -58,7 +58,7 @@ class File extends Base {
     public static $config = array(
         'file_size_min_allow' => 0, // Minimum allowed file size
         'file_size_max_allow' => 2097152, // Maximum allowed file size
-        'file_extension_allow' => array() // List of allowed file extensions
+        'file_extension_allow' => array() // List of allowed file extension(s)
     );
 
     // Inspect file path
@@ -79,7 +79,7 @@ class File extends Base {
         );
     }
 
-    // List all files from a folder
+    // List all file(s) from a folder
     public static function explore($folder = ROOT, $recursive = false, $flat = false, $fallback = false) {
         $results = array();
         $folder = rtrim(self::path($folder), DS);
@@ -134,11 +134,13 @@ class File extends Base {
     }
 
     // Read the opened file line by line
-    public static function get($stop_at = 9999, $fallback = false, $chars = 1024) {
+    public static function get($stop_at = null, $fallback = false, $chars = 1024) {
         $i = 0;
+        $results = "";
         if($handle = fopen(self::$open, 'r')) {
-            $results = "";
-            while(($buffer = fgets($handle, $chars)) !== false) {
+            $buffer = fgets($handle, $chars);
+            while($buffer !== false) {
+                $buffer = str_replace("\r", "", $buffer);
                 if(
                     is_int($stop_at) && $stop_at === $i ||
                     is_string($stop_at) && strpos($buffer, $stop_at) !== false
@@ -346,7 +348,7 @@ class File extends Base {
         return false;
     }
 
-    // Convert file size
+    // Convert file size to ...
     public static function size($file, $unit = null, $precision = 2) {
         $size = is_numeric($file) ? $file : filesize($file);
         $base = log($size, 1024);
@@ -361,15 +363,15 @@ class File extends Base {
     // Convert URL to file path
     public static function path($url) {
         $base = Config::get('url');
-        $proof = str_replace(array('\\', '/'), DS, $base);
-        return str_replace(array($base, '\\', '/', $proof), array(ROOT, DS, DS, ROOT), $url);
+        $p = str_replace(array('\\', '/'), DS, $base);
+        return str_replace(array($base, '\\', '/', $p), array(ROOT, DS, DS, ROOT), $url);
     }
 
     // Convert file path to URL
     public static function url($path) {
         $base = Config::get('url');
-        $proof = str_replace(array('\\', '/'), '/', ROOT);
-        return str_replace(array(ROOT, '\\', '/', $proof), array($base, '/', '/', $base), $path);
+        $p = str_replace(array('\\', DS), '/', ROOT);
+        return str_replace(array(ROOT, '\\', '/', $p), array($base, '/', '/', $base), $path);
     }
 
     // Configure ...

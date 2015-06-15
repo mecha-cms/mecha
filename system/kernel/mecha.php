@@ -2,7 +2,7 @@
 
 /**
  * =============================================================
- *  SUCH MECHA . VERY ARRAY . MANY FUNCTIONS
+ *  SUCH MECHA . VERY ARRAY . MANY FUNCTION(S)
  * =============================================================
  *
  * -- CODE: ----------------------------------------------------
@@ -25,7 +25,7 @@ class Mecha extends Base {
         return $e;
     }
 
-    // Handle missing array variables
+    // Handle missing array variable(s)
     public static function extend(&$default, $alternate) {
         $default = array_replace_recursive($default, $alternate);
         return $default;
@@ -241,7 +241,7 @@ class Mecha extends Base {
         return is_null($data) ? count(self::$stomach) : count($data);
     }
 
-    // Generate chunks of array
+    // Generate chunk(s) of array
     public static function chunk($index = null, $count = 25, $fallback = false) {
         if( ! is_array(self::$stomach)) return new static;
         $results = array();

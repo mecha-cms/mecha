@@ -235,7 +235,7 @@ class Text extends Base {
         $results = array();
         $data = array();
         $indent_length = strlen($indent);
-        // Remove comments and empty line breaks
+        // Remove comment(s) and empty line break(s)
         $text = preg_replace(
             array(
                 '#\r#',

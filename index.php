@@ -2,7 +2,7 @@
 
 /**
  * ================================================================
- *  Mecha - Content Management System
+ *  Mecha -- Content Management System
  *  Copyright (c) 2014-2015 Taufik Nurrohman <http://mecha-cms.com>
  * ================================================================
  */
@@ -26,7 +26,7 @@ define('SHIELD', CARGO . DS . 'shields');
 define('CACHE', CARGO . DS . 'scraps');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
-define('S', ':'); // Separator between the page header key and page header value
+define('S', ':'); // Separator between the page header's field key and page header's field value
 define('ASSET_VERSION_FORMAT', 'v=%d'); // For `foo/bar/baz.css?v=1425800809`
 define('ES', '>'); // Self closing HTML tag's end character(s)
 define('TAB', '  '); // Standard indentation on the page

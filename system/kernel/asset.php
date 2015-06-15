@@ -2,7 +2,7 @@
 
 /**
  * ================================================================================
- *  ASSETS STUFF
+ *  ASSET STUFF
  * ================================================================================
  *
  * -- CODE: -----------------------------------------------------------------------
@@ -113,7 +113,7 @@ class Asset extends Base {
         return O_BEGIN . rtrim($html, NL) . O_END;
     }
 
-    // Merge multiple asset files into a single file
+    // Merge multiple asset file(s) into a single file
     public static function merge($files, $name = null, $addon = "", $call = null) {
         if( ! is_array($files)) {
             $files = strpos($files, ';') !== false ? explode(';', $files) : array($files);
@@ -192,7 +192,7 @@ class Asset extends Base {
         return isset(self::$loaded[$path]);
     }
 
-    // Do not let the `Asset` loads these files ...
+    // Do not let the `Asset` loads these file(s) ...
     public static function ignore($path) {
         if(is_array($path)) {
             foreach($path as $p) {

@@ -198,7 +198,7 @@ class Route extends Base {
 
     /**
      * ===========================================================================
-     *  EXECUTE THE ADDED ROUTES
+     *  EXECUTE THE ADDED ROUTE(S)
      * ===========================================================================
      *
      * -- CODE: ------------------------------------------------------------------
@@ -237,7 +237,7 @@ class Route extends Base {
                     // If matched with URL path
                     if(preg_match('#^' . self::fix($pattern) . '$#', $url, $arguments)) {
                         array_shift($arguments);
-                        // Loading cargos ...
+                        // Loading cargo(s) ...
                         if(isset(self::$routes_over[$pattern]) && is_array(self::$routes_over[$pattern])) {
                             $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
                             foreach($fn as $v) {

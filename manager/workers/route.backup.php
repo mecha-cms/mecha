@@ -10,7 +10,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    // Remove backup files that is failed to delete
+    // Remove backup file(s) that is failed to delete
     if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip', GLOB_NOSORT)) {
         foreach($backup as $back) {
             unlink($back);
@@ -76,8 +76,8 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
 
 
 /**
- * Backup Actions
- * --------------
+ * Backup Action(s)
+ * ----------------
  */
 
 Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin = "") use($config, $speak) {
@@ -107,8 +107,8 @@ Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin
 
 
 /**
- * Downloading Backup Files
- * ------------------------
+ * Downloading Backup File(s)
+ * --------------------------
  */
 
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {

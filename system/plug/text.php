@@ -2,8 +2,8 @@
 
 
 /**
- * Set Default Parsers
- * -------------------
+ * Set Default Parser(s)
+ * ---------------------
  */
 
 // Convert text to ASCII character
@@ -48,7 +48,7 @@ Text::parser('to_decoded_json', function($input, $a = false) {
 
 function do_slug($text, $connector = '-', $lower = true, $strip_underscores = true) {
     $text_accents = array(
-        // Numeric characters
+        // Numeric character(s)
         '¹' => 1, '²' => 2, '³' => 3, '°' => 0,
         // Latin
         'æ' => 'ae', 'ǽ' => 'ae', 'À' => 'A',  'Á' => 'A',  'Â' => 'A',  'Ã' => 'A',
@@ -90,10 +90,10 @@ function do_slug($text, $connector = '-', $lower = true, $strip_underscores = tr
         'л' => 'l',  'м' => 'm',  'н' => 'n',  'о' => 'o',  'п' => 'p',  'р' => 'r',
         'с' => 's',  'ш' => 'sh', 'щ' => 'shch',
         'т' => 't',  'у' => 'u',  'в' => 'v',  'ы' => 'y',  'з' => 'z',  'ж' => 'zh',
-        // German characters
+        // German character(s)
         'Ä' => 'AE', 'Ö' => 'OE', 'Ü' => 'UE', 'ß' => 'ss', 'ä' => 'ae', 'ö' => 'oe',
         'ü' => 'ue',
-        // Turkish characters
+        // Turkish character(s)
         'Ç' => 'C',  'Ğ' => 'G',  'İ' => 'I',  'Ş' => 'S',  'ç' => 'c',  'ğ' => 'g',
         'ı' => 'i',  'ş' => 's',
         // Latvian

@@ -2,8 +2,8 @@
 
 
 /**
- * Shields Manager
- * ---------------
+ * Shield Manager
+ * --------------
  */
 
 Route::accept(array($config->manager->slug . '/shield', $config->manager->slug . '/shield/(:any)'), function($folder = false) use($config, $speak) {

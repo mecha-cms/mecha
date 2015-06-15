@@ -1,17 +1,17 @@
 <?php
 
 /**
- * Custom Functions
- * ----------------
+ * Custom Function(s)
+ * ------------------
  *
- * Add your own custom functions here. You can do something like
- * making custom widgets, making custom routes, making custom filters,
- * making custom weapons, loading custom assets, etc. So that you can
- * manipulate the site outputs without having to touch the CMS core.
+ * Add your own custom function(s) here. You can do something like
+ * making custom widget(s), custom route(s), custom filter(s),
+ * custom weapon(s), loading custom asset(s), etc. So that you can
+ * manipulate the site output without having to touch the CMS core.
  *
  */
 
-// Link generator for the current article tags
+// Link generator for the current article tag(s)
 Widget::add('tagLinks', function($connect = ', ') use($speak) {
     $config = Config::get();
     $links = array();

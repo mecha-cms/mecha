@@ -2,8 +2,8 @@
 
 
 /**
- * Fields Manager
- * --------------
+ * Field Manager
+ * -------------
  */
 
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {

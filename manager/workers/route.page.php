@@ -100,7 +100,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         // Set post date by submitted time, or by input value if available
         $date = date('c', $request['id']);
-        // General fields
+        // General field(s)
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
         $slug = Text::parse(Request::post('slug', $title), '->slug');
         $slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
@@ -176,7 +176,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         // Repair
         } else {
             // Check for duplicate slug, except for the current old slug.
-            // Allow users to change their post slug, but make sure they
+            // Allow user(s) to change their post slug, but make sure they
             // do not type the slug of another post.
             if($files = Get::pages('DESC', "", 'txt,draft,archive') && $slug !== $page->slug) {
                 foreach($files as $file) {
@@ -195,7 +195,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 $custom_ = CUSTOM . DS . Date::format($page->date->W3C, 'Y-m-d-H-i-s');
                 if(File::exist($custom_ . $extension_o)) {
                     if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->page_custom_css && $js === $config->defaults->page_custom_js)) {
-                        // Always delete empty custom CSS and JavaScript files ...
+                        // Always delete empty custom CSS and JavaScript file(s) ...
                         File::open($custom_ . $extension_o)->delete();
                     } else {
                         Page::content($css)->content($js)->saveTo($custom_ . $extension_o);

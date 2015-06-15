@@ -2,8 +2,8 @@
 
 
 /**
- * Assets Manager
- * --------------
+ * Asset Manager
+ * -------------
  */
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
