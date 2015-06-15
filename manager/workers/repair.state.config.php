@@ -45,7 +45,7 @@ return array(
     // Tag Page
     'tag' => array(
         'title' => 'Tagged in %s',
-        'slug' => 'tagged',
+        'slug' => 'tag',
         'per_page' => 7
     ),
 
