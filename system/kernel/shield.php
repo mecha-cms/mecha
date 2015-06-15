@@ -51,6 +51,7 @@ class Shield extends Base {
         );
         Session::set(Guardian::$token, $token);
         Session::set(Notify::$message, $message);
+        unset($config, $token, $message);
         return array_merge($results, self::$lot);
     }
 
@@ -190,8 +191,9 @@ class Shield extends Base {
      */
 
     public static function attach($name, $minify = null, $cache = false, $expire = null) {
+        $config = Config::get();
         if(is_null($minify)) {
-            $minify = Config::get('html_minifier');
+            $minify = $config->html_minifier;
         }
         $G = array('data' => array(
             'name' => $name,
@@ -199,7 +201,6 @@ class Shield extends Base {
             'cache' => $cache,
             'expire' => $expire
         ));
-        extract(Filter::apply('shield:lot', self::cargo()));
         $shield = false;
         $shield_base = explode('-', $name, 2);
         if($_file = File::exist(self::path($name))) {
@@ -212,29 +213,41 @@ class Shield extends Base {
         $G['data']['path'] = $shield;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache_path = is_string($cache) ? $cache : CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
-        self::$lot = array();
         if($G['data']['cache'] && File::exist($cache_path)) {
             if(is_null($expire) || is_int($expire) && time() - $expire < filemtime($cache_path)) {
+                // Begin shield cache
+                Weapon::fire('shield_cache_before', array($G, $G));
                 echo Filter::apply('shield:cache', File::open($cache_path)->read());
+                // Clear session
+                Notify::clear();
+                Guardian::forget();
+                self::$lot = array();
+                // End shield cache
+                Weapon::fire('shield_cache_after', array($G, $G));
                 exit;
             }
         }
         // Begin shield
         Weapon::fire('shield_before', array($G, $G));
         ob_start($minify ? 'self::s_o' : 'self::s_o_d');
+        extract(Filter::apply('shield:lot', self::cargo()));
         require Filter::apply('shield:path', $shield);
+        // Clear session
         Notify::clear();
         Guardian::forget();
+        self::$lot = array();
+        // Get shield content
         $content = ob_get_contents();
         ob_end_flush();
+        // Create shield cache
         $G['data']['content'] = $minify ? self::s_o($content) : self::s_o_d($content);
         if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
             File::write($G['data']['content'])->saveTo($cache_path);
             Weapon::fire('on_cache_construct', array($G, $G));
         }
-        Weapon::fire('shield_after', array($G, $G));
         // End shield
+        Weapon::fire('shield_after', array($G, $G));
         exit;
     }
 

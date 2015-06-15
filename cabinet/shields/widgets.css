@@ -76,11 +76,6 @@ time {display:inline}
   text-align:center;
 }
 
-.align-left + p,
-.align-left + .p,
-.align-right + p,
-.align-right + .p {margin-top:0}
-
 .align-top {vertical-align:top}
 .align-bottom {vertical-align:bottom}
 .align-middle {vertical-align:middle}

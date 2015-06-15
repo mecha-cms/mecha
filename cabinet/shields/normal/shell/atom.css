@@ -532,10 +532,7 @@ figcaption,figure,ol,ul,p,pre,table,iframe,
 .fluid-media,.fluid-video,.grid-group,
 .image-container {margin:1.3846153846153846em 0 0}
 
-.p {
-  display:block;
-  margin:1.3846153846153846em 0 0;
-}
+.p {margin:1.3846153846153846em 0 0}
 
 ol {
   margin-left:2.3846153846153846em;
@@ -611,13 +608,26 @@ iframe:first-child,
 .h3:first-child,
 .h4:first-child,
 .h5:first-child,
-.h6:first-child {margin-top:0}
+.h6:first-child,
+.align-left:first-child + p,
+.align-right:first-child + p,
+.align-left:first-child + .p,
+.align-right:first-child + .p {margin-top:0}
 
 
 /* ALIGNMENTS */
 
-.align-left {margin:.5em 1.3846153846153846em .5em 0}
-.align-right {margin:.5em 0 .5em 1.3846153846153846em}
+.align-left {
+  margin-right:1.3846153846153846em;
+  padding-top:.38461538461538464em;
+  padding-bottom:.38461538461538464em;
+}
+
+.align-right {
+  margin-left:1.3846153846153846em;
+  padding-top:.38461538461538464em;
+  padding-bottom:.38461538461538464em;
+}
 
 
 /* TEXT */
