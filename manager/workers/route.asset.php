@@ -35,7 +35,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
                 Notify::error(Config::speak('notify_error_empty_field', $speak->folder));
             }
             if( ! Notify::errors()) {
-                File::dir($d . DS . $folder);
+                File::pocket($d . DS . $folder);
                 Notify::success(Config::speak('notify_folder_created', '<code>' . $folder . '</code>'));
                 $fo = explode(DS, $folder);
                 Session::set('recent_file_update', $fo[0]);

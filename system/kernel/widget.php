@@ -269,8 +269,8 @@ class Widget {
 
 
     /**
-     * Widget Search Box
-     * -----------------
+     * Widget Search Form
+     * ------------------
      *
      * [1]. Widget::search();
      * [2]. Widget::search('search query...');

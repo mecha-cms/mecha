@@ -274,7 +274,7 @@ class File extends Base {
     }
 
     // Create new directory
-    public static function dir($paths, $permission = 0777) {
+    public static function pocket($paths, $permission = 0777) {
         if( ! is_array($paths)) {
             $paths = array($paths);
         }
@@ -306,7 +306,7 @@ class File extends Base {
         } else {
             // Destination not found
             if( ! file_exists($destination)) {
-                self::dir($destination);
+                self::pocket($destination);
             }
             // Unknown file type
             if( ! isset($file['type']) || empty($file['type'])) {

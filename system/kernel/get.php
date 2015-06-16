@@ -179,33 +179,21 @@ class Get extends Base {
 
     // Get stored custom field data (internal only)
     public static function state_field($fallback = false) {
-        if($pre_113 = File::exist(STATE . DS . 'fields.txt')) {
-            File::open($pre_113)->renameTo('field.txt');
-        }
         return File::open(STATE . DS . 'field.txt')->unserialize($fallback);
     }
 
     // Get stored menu data (internal only)
     public static function state_menu($fallback = false) {
-        if($pre_113 = File::exist(STATE . DS . 'menus.txt')) {
-            File::open($pre_113)->renameTo('menu.txt');
-        }
         return File::open(STATE . DS . 'menu.txt')->read($fallback);
     }
 
     // Get stored shortcode data (internal only)
     public static function state_shortcode($fallback = false) {
-        if($pre_113 = File::exist(STATE . DS . 'shortcodes.txt')) {
-            File::open($pre_113)->renameTo('shortcode.txt');
-        }
         return File::open(STATE . DS . 'shortcode.txt')->unserialize($fallback);
     }
 
     // Get stored tag data (internal only)
     public static function state_tag($fallback = false) {
-        if($pre_113 = File::exist(STATE . DS . 'tags.txt')) {
-            File::open($pre_113)->renameTo('tag.txt');
-        }
         return File::open(STATE . DS . 'tag.txt')->unserialize($fallback);
     }
 
@@ -331,7 +319,7 @@ class Get extends Base {
      *  $order     | string | Ascending or descending? ASC/DESC?
      *  $filter    | string | Filter the resulted array by a keyword
      *  $extension | string | The file extension(s)
-     *  $folder    | string | Folder of the pages
+     *  $folder    | string | Folder of the page(s)
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -983,7 +971,7 @@ class Get extends Base {
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
      *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the pages
+     *  $folder    | string | Folder of the page(s)
      *  $connector | string | See `Get::page()`
      *  $FP        | string | See `Get::page()`
      *  ---------- | ------ | ---------------------------------------------------
