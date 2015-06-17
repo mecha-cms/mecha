@@ -65,7 +65,7 @@ class Weapon extends Base {
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------
      *  $name      | string | Hook name
-     *  $arguments | array  | Hook function arguments
+     *  $arguments | array  | Hook function argument(s)
      *  ---------- | ------ | ---------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *

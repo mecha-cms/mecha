@@ -118,6 +118,7 @@ class HTTP extends Base {
                 header($k . ': ' . $v);
             }
         }
+        return new static;
     }
 
     /**

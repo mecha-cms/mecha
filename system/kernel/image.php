@@ -296,7 +296,7 @@ class Image extends Base {
      *
      * --------------------------------------------------------------------
      *
-     *    // Crop without resize (need X and Y coordinates)
+     *    // Crop without resize (need X and Y coordinate)
      *    Image::take('photo.jpg')
      *         ->crop(4, 4, 200, 200)
      *         ->saveAs('cropped-photo.jpg');

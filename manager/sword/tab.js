@@ -1,6 +1,6 @@
 /**
- * Tabs
- * ----
+ * Tab
+ * ---
  *
  *    <div class="tab-area">
  *      <a class="tab active" href="#tab-content-1">Tab 1</a>

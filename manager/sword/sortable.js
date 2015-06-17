@@ -1,6 +1,6 @@
 /**
- * Sortable Table Rows
- * -------------------
+ * Sortable Table Row
+ * ------------------
  *
  *    <table class="table-bordered table-sortable">
  *      <thead>
@@ -95,8 +95,8 @@
 
 
 /**
- * Sortable Items
- * --------------
+ * Sortable Item
+ * -------------
  *
  *    <div class="sortable-area">
  *      <div class="sortable" draggable="true">

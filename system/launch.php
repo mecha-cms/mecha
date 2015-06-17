@@ -38,7 +38,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
         Guardian::authorize()->kick($config->manager->slug . '/article');
     }
 
-    Shield::attach('manager');
+    Shield::attach('manager-login');
 
 }, 20);
 
@@ -91,7 +91,7 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
         'pagination' => Navigator::extract(Get::articles(), $offset, $config->index->per_page, $config->index->slug)
     ));
 
-    Shield::attach('index');
+    Shield::attach('index-article');
 
 }, 30);
 
@@ -127,7 +127,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
         'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
 
-    Shield::attach('index');
+    Shield::attach('index-archive');
 
 }, 40);
 
@@ -167,7 +167,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
         'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
 
-    Shield::attach('index');
+    Shield::attach('index-archive');
 
 }, 41);
 
@@ -207,7 +207,7 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
         'pagination' => Navigator::extract(Get::articles('DESC', 'kind:' . $tag->id), $offset, $config->tag->per_page, $config->tag->slug . '/' . $slug)
     ));
 
-    Shield::attach('index');
+    Shield::attach('index-tag');
 
 }, 50);
 
@@ -284,7 +284,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'articles' => $_articles,
             'pagination' => Navigator::extract($articles, $offset, $config->search->per_page, $config->search->slug . '/' . Text::parse($query, '->encoded_url'))
         ));
-        Shield::attach('index');
+        Shield::attach('index-search');
     } else {
         Config::set(array(
             'page_title' => $title . $config->title_separator . $config->title,
@@ -308,8 +308,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
  */
 
 Route::accept($config->search->slug, function() use($config) {
-    if(Request::post('q') !== false) {
-        Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse(Request::post('q'), '->encoded_url')));
+    if($q = Request::post('q')) {
+        Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse($q, '->encoded_url')));
     }
     Guardian::kick();
 }, 61);
