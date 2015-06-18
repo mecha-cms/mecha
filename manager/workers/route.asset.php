@@ -10,6 +10,9 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $offset = (int) $offset;
     $p = Request::get('path');
     $d = ASSET . File::path($p ? DS . $p : "");
+    if( ! file_exists($d)) {
+        Shield::abort(); // Folder not found!
+    }
     // Disallow `htaccess` and `php` file extension(s)
     $ee = File::$config['file_extension_allow'];
     foreach(array('htaccess', 'php') as $e) {
@@ -156,7 +159,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                     File::open($file)->write($request['content'])->save();
                 }
                 File::open($file)->moveTo(ASSET . DS . $new);
-                Notify::success(Config::speak('notify_file_updated', '<code>' . basename($old) . '</code>'));
+                Notify::success(Config::speak('notify_' . (is_dir(ASSET . DS . $old) ? 'folder' : 'file') . '_updated', '<code>' . basename($old) . '</code>'));
                 $new = explode(DS, $new);
                 Session::set('recent_file_update', $new[0]);
                 Weapon::fire('on_asset_update', array($P, $P));
@@ -201,13 +204,14 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $info_path = array();
+        $is_folder_or_file = count($deletes) === 1 && is_dir(ASSET . DS . $deletes[0]) ? 'folder' : 'file';
         foreach($deletes as $file_to_delete) {
             $_path = ASSET . DS . $file_to_delete;
             $info_path[] = $_path;
             File::open($_path)->delete();
         }
         $P = array('data' => array('files' => $info_path));
-        Notify::success(Config::speak('notify_file_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
+        Notify::success(Config::speak('notify_' . $is_folder_or_file . '_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/asset' . $p);

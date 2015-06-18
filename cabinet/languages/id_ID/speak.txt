@@ -204,6 +204,9 @@ ago: Yang Lalu
 version: Versi
 versions: Versi
 
+extend: Perluasan
+extends: Perluasan
+
 year: Tahun
 month: Bulan
 week: Minggu

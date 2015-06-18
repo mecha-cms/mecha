@@ -5,7 +5,7 @@ $is_text = explode(',', SCRIPT_EXT);
 $is_text = is_null($the_name) || in_array($e, $is_text);
 
 ?>
-<?php if($is_text): ?>
+<?php if($is_text && $the_content): ?>
 <p>
 <?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
     'class' => array(

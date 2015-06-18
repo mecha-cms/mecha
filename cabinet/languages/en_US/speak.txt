@@ -204,6 +204,9 @@ ago: Ago
 version: Version
 versions: Versions
 
+extend: Extend
+extends: Extends
+
 year: Year
 month: Month
 week: Week

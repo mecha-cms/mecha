@@ -11,15 +11,15 @@
         <?php
 
         $origins = array(
-            Jot::icon('database', 'fw') . ' ' . $speak->site => 'ROOT',
-            Jot::icon('file-text', 'fw') . ' ' . $speak->article => basename(ARTICLE),
-            Jot::icon('file', 'fw') . ' ' . $speak->page => basename(PAGE),
-            Jot::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js => basename(CUSTOM),
-            Jot::icon('comments', 'fw') . ' ' . $speak->comment => basename(RESPONSE),
-            Jot::icon('cogs', 'fw') . ' ' . $speak->config => basename(STATE),
-            Jot::icon('briefcase', 'fw') . ' ' . $speak->asset => basename(ASSET),
-            Jot::icon('shield', 'fw') . ' ' . $speak->shield => basename(SHIELD),
-            Jot::icon('plug', 'fw') . ' ' . $speak->plugin => basename(PLUGIN)
+            Jot::icon('database', 'fw') . ' ' . $speak->site => '.',
+            Jot::icon('file-text', 'fw') . ' ' . $speak->article => str_replace(CARGO . DS, "", ARTICLE),
+            Jot::icon('file', 'fw') . ' ' . $speak->page => str_replace(CARGO . DS, "", PAGE),
+            Jot::icon('magnet', 'fw') . ' ' . $speak->extend => str_replace(CARGO . DS, "", EXTEND),
+            Jot::icon('comments', 'fw') . ' ' . $speak->comment => str_replace(CARGO . DS, "", RESPONSE),
+            Jot::icon('cogs', 'fw') . ' ' . $speak->config => str_replace(CARGO . DS, "", STATE),
+            Jot::icon('briefcase', 'fw') . ' ' . $speak->asset => str_replace(CARGO . DS, "", ASSET),
+            Jot::icon('shield', 'fw') . ' ' . $speak->shield => str_replace(CARGO . DS, "", SHIELD),
+            Jot::icon('plug', 'fw') . ' ' . $speak->plugin => str_replace(CARGO . DS, "", PLUGIN)
         );
 
         ?>
@@ -27,7 +27,7 @@
         <tr>
           <td><?php echo $title; ?></td>
           <td class="td-icon">
-          <?php echo Cell::a($config->url_current . '/origin:' . $origin, Jot::icon('download'), null, array(
+          <?php echo Cell::a($config->url_current . '/origin:' . File::url($origin), Jot::icon('download'), null, array(
               'title' => $speak->download
           )); ?>
           </td>
@@ -44,7 +44,7 @@
     $destinations = array(
         Jot::icon('file-text') . ' ' . $speak->article => ARTICLE,
         Jot::icon('file') . ' ' . $speak->page => PAGE,
-        Jot::icon('leaf') . ' ' . $speak->manager->title_custom_css_and_js => CUSTOM,
+        Jot::icon('magnet') . ' ' . $speak->extend => EXTEND,
         Jot::icon('comments') . ' ' . $speak->comment => RESPONSE,
         Jot::icon('cogs') . ' ' . $speak->config => STATE,
         Jot::icon('briefcase') . ' ' . $speak->asset => ASSET,

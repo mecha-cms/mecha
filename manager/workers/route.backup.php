@@ -80,17 +80,17 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
  * ----------------
  */
 
-Route::accept($config->manager->slug . '/backup/origin:(:any)', function($origin = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $time = date('Y-m-d-H-i-s');
     $site = Text::parse($config->title, '->slug');
-    if($origin === 'ROOT') {
+    if(trim($origin, '.') === "") {
         $name = $site . '_' . $time . '.zip';
         Package::take(ROOT)->pack(ROOT . DS . $name);
     } else {
-        $name = $site . '.cabinet.' . $origin . '_' . $time . '.zip';
+        $name = $site . '.cabinet.' . str_replace('/', '.', $origin) . '_' . $time . '.zip';
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
         if($origin === 'shields') {
             Package::take(ROOT . DS . $name)->deleteFiles(array(
