@@ -1,6 +1,6 @@
 <?php
 
-$fields = Get::state_field(array());
+$fields = Get::state_field();
 
 
 /**

@@ -166,16 +166,8 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 Filter::add('shortcode', function($content) use($config, $speak) {
     if(strpos($content, '{{') === false) return $content;
-    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
-    $shortcodes = file_exists($d) ? include $d : array();
-    if($file = Get::state_shortcode()) {
-        foreach($file as $key => $value) {
-            unset($shortcodes[$key]);
-        }
-        $shortcodes = array_merge($shortcodes, $file);
-    }
     $regex = array();
-    foreach($shortcodes as $key => $value) {
+    foreach(Get::state_shortcode() as $key => $value) {
         $regex['#(?<!`)' . str_replace(
             array(
                 '%s'

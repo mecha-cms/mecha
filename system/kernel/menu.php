@@ -107,10 +107,7 @@ class Menu extends Base {
         // Use menu file from the cabinet if `$array` is not defined
         if(is_null($array)) {
             $FP = 'navigation:';
-            $speak = Config::speak();
-            $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
-            $menu = file_exists($d) ? include $d : "";
-            $array = Text::toArray(Get::state_menu($menu), S, '    ');
+            $array = Text::toArray(Get::state_menu(), S, '    ');
         }
         return O_BEGIN . rtrim(self::create($array, $type, $depth, $FP, 0), NL) . O_END;
     }

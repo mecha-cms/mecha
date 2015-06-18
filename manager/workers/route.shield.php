@@ -250,11 +250,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
  */
 
 Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
-    $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
-    $new_config = file_exists($d) ? include $d : array();
-    if($file = Get::state_config()) {
-        Mecha::extend($new_config, $file);
-    }
+    $new_config = Get::state_config();
     $new_config['shield'] = $path === 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
     $G = array('data' => array('id' => $slug, 'action' => $path));

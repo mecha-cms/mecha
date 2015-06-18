@@ -10,14 +10,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
-    $shortcodes = file_exists($d) ? include $d : array();
-    if($file = Get::state_shortcode()) {
-        foreach($file as $key => $value) {
-            unset($shortcodes[$key]);
-        }
-        $shortcodes = array_merge($shortcodes, $file);
-    }
+    $shortcodes = Get::state_shortcode();
     $G = array('data' => $shortcodes);
     Config::set(array(
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,

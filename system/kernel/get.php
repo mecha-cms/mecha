@@ -173,28 +173,54 @@ class Get extends Base {
     }
 
     // Get stored configuration data (internal only)
-    public static function state_config($fallback = false) {
-        return File::open(STATE . DS . 'config.txt')->unserialize($fallback);
+    public static function state_config($fallback = array()) {
+        $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
+        $config = file_exists($d) ? include $d : $fallback;
+        if($file = File::exist(STATE . DS . 'config.txt')) {
+            Mecha::extend($config, File::open($file)->unserialize());
+        }
+        return $config;
     }
 
     // Get stored custom field data (internal only)
-    public static function state_field($fallback = false) {
-        return File::open(STATE . DS . 'field.txt')->unserialize($fallback);
+    public static function state_field($fallback = array()) {
+        $d = DECK . DS . 'workers' . DS . 'repair.state.field.php';
+        $field = file_exists($d) ? include $d : $fallback;
+        if($file = File::exist(STATE . DS . 'field.txt')) {
+            Mecha::extend($field, File::open($file)->unserialize());
+        }
+        return $field;
     }
 
     // Get stored menu data (internal only)
     public static function state_menu($fallback = false) {
-        return File::open(STATE . DS . 'menu.txt')->read($fallback);
+        $speak = Config::speak();
+        $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
+        $menu = file_exists($d) ? include $d : $fallback;
+        return File::open(STATE . DS . 'menu.txt')->read($menu);
     }
 
     // Get stored shortcode data (internal only)
-    public static function state_shortcode($fallback = false) {
-        return File::open(STATE . DS . 'shortcode.txt')->unserialize($fallback);
+    public static function state_shortcode($fallback = array()) {
+        $config = Config::get();
+        $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
+        $shortcode = file_exists($d) ? include $d : $fallback;
+        if($file = File::exist(STATE . DS . 'shortcode.txt')) {
+            $file = File::open($file)->unserialize();
+            foreach($file as $k => $v) {
+                unset($shortcode[$k]);
+            }
+            $shortcode = array_merge($shortcode, $file);
+        }
+        return $shortcode;
     }
 
     // Get stored tag data (internal only)
-    public static function state_tag($fallback = false) {
-        return File::open(STATE . DS . 'tag.txt')->unserialize($fallback);
+    public static function state_tag($fallback = array()) {
+        $speak = Config::speak();
+        $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
+        $tag = file_exists($d) ? include $d : $fallback;
+        return File::open(STATE . DS . 'tag.txt')->unserialize($tag);
     }
 
     /**
@@ -215,13 +241,7 @@ class Get extends Base {
      */
 
     public static function rawTags($order = 'ASC', $sorter = 'name') {
-        $config = Config::get();
-        $speak = Config::speak();
-        $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
-        $tags = file_exists($d) ? include $d : array();
-        if($file = self::state_tag()) {
-            Mecha::extend($tags, $file);
-        }
+        $tags = self::state_tag();
         foreach($tags as $k => $v) {
             $tags[$k] = array(
                 'id' => self::AMF($v['id'], 'tag:', 'id'),
@@ -825,7 +845,7 @@ class Get extends Base {
              * that is not available in the old post(s).
              */
 
-            $fields = self::state_field(array());
+            $fields = self::state_field();
 
             $init = array();
 
@@ -940,7 +960,7 @@ class Get extends Base {
             $results['url'] = self::AMF('#', $FP, 'url');
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(array());
+            $fields = self::state_field();
             $init = array();
             foreach($fields as $key => $value) {
                 if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
@@ -991,7 +1011,7 @@ class Get extends Base {
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(array());
+            $fields = self::state_field();
             $init = array();
             foreach($fields as $key => $value) {
                 if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {

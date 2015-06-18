@@ -17,11 +17,7 @@
 Config::plug('load', function() {
 
     // Extract the configuration file
-    $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
-    $config = file_exists($d) ? include $d : array();
-    if($file = Get::state_config()) {
-        Mecha::extend($config, $file);
-    }
+    $config = Get::state_config();
 
     // Define some default variable(s)
     $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';

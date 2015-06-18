@@ -10,7 +10,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field(array());
+    $fields = Get::state_field();
     ksort($fields);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
@@ -30,7 +30,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field(array());
+    $fields = Get::state_field();
     if($key === false) {
         $data = array(
             'title' => "",
@@ -107,7 +107,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field(array());
+    $fields = Get::state_field();
     if( ! isset($fields[$key])) {
         Shield::abort();
     } else {
