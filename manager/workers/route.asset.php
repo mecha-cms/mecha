@@ -70,7 +70,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
                 Weapon::fire('on_asset_construct', array($P, $P));
             }
             if( ! Notify::errors()) {
-                // do nothing ...
+                Guardian::kick($config->manager->slug . '/asset/' . $offset . ($p ? '?path=' . urlencode($p) : ""));
             } else {
                 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                     echo '<script>
