@@ -132,7 +132,7 @@ class Widget {
                     $html .= str_repeat(TAB, 3) . '<ul class="' . ($expand ? 'expanded' : 'collapsed') . '">' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
-                            $html .= str_repeat(TAB, 4) . '<li' . ((int) $query === (int) $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                            $html .= str_repeat(TAB, 4) . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $months_array[(int) $month - 1] : $months_array[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                         }
                     }
                     $html .= str_repeat(TAB, 3) . '</ul>' . NL;
