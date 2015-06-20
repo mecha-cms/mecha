@@ -714,8 +714,9 @@ class Get extends Base {
             $results['description'] = self::AMF($summary, $FP, 'description');
         }
 
-        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage($content, 'content', $FP) : $results;
+        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
         $content_test = $content_test['content'];
+        $content_test = is_array($content_test) ? implode("", $content_test) : $content_test;
 
         // Redirect 301 with `<!-- kick: "http://example.com" -->`
         if(strpos($content_test, '<!-- kick:') !== false && $config->page_type === rtrim($FP, ':')) {

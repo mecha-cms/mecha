@@ -452,28 +452,28 @@ class Converter extends Base {
      */
 
     public static function attr($input, $element = array(), $attr = array(), $str_eval = true) {
-        $element_d = array('<', '>', ' ', '/', '[a-zA-Z0-9\-._:]+');
-        $attr_d = array('"', '"', '=', '[a-zA-Z0-9\-._:]+');
-        $element = Mecha::extend($element_d, $element);
-        $attr = Mecha::extend($attr_d, $attr);
-        $e0 = preg_quote($element[0], '#');
-        $e1 = preg_quote($element[1], '#');
-        $e2 = preg_quote($element[2], '#');
-        $e3 = preg_quote($element[3], '#');
-        $a0 = preg_quote($attr[0], '#');
-        $a1 = preg_quote($attr[1], '#');
-        $a2 = preg_quote($attr[2], '#');
-        if( ! preg_match('#^\s*(' . $e0 . ')(' . $element[4] . ')((' . $e2 . ')+(.*?))?((' . $e1 . ')([\s\S]*?)((' . $e0 . ')' . $e3 . '\2(' . $e1 . '))|(' . $e2 . ')*' . $e3 . '?(' . $e1 . '))\s*$#', $input, $matches)) return false;
-        $matches[5] = preg_replace('#(^|(' . $e2 . ')+)(' . $attr[3] . ')(' . $a2 . ')(' . $a0 . ')(' . $a1 . ')#', '$1$2$3$4$5<attr:value>$6', $matches[5]);
+        $ED = array('<', '>', ' ', '/', '[a-zA-Z0-9\-._:]+');
+        $AD = array('"', '"', '=', '[a-zA-Z0-9\-._:]+');
+        $E = Mecha::extend($ED, $element);
+        $A = Mecha::extend($AD, $attr);
+        $E0 = preg_quote($E[0], '#');
+        $E1 = preg_quote($E[1], '#');
+        $E2 = preg_quote($E[2], '#');
+        $E3 = preg_quote($E[3], '#');
+        $A0 = preg_quote($A[0], '#');
+        $A1 = preg_quote($A[1], '#');
+        $A2 = preg_quote($A[2], '#');
+        if( ! preg_match('#^\s*(' . $E0 . ')(' . $E[4] . ')((' . $E2 . ')+(.*?))?((' . $E1 . ')([\s\S]*?)((' . $E0 . ')' . $E3 . '\2(' . $E1 . '))|(' . $E2 . ')*' . $E3 . '?(' . $E1 . '))\s*$#', $input, $M)) return false;
+        $M[5] = preg_replace('#(^|(' . $E2 . ')+)(' . $A[3] . ')(' . $A2 . ')(' . $A0 . ')(' . $A1 . ')#', '$1$2$3$4$5<attr:value>$6', $M[5]);
         $results = array(
-            'element' => $matches[2],
+            'element' => $M[2],
             'attributes' => null,
-            'content' => isset($matches[8]) && $matches[9] === $element[0] . $element[3] . $matches[2] . $element[1] ? $matches[8] : null
+            'content' => isset($M[8]) && $M[9] === $E[0] . $E[3] . $M[2] . $E[1] ? $M[8] : null
         );
-        if(preg_match_all('#(' . $attr[3] . ')((' . $a2 . ')(' . $a0 . ')(.*?)(' . $a1 . '))?(?:(' . $e2 . ')|$)#', $matches[5], $attrs)) {
+        if(preg_match_all('#(' . $A[3] . ')((' . $A2 . ')(' . $A0 . ')(.*?)(' . $A1 . '))?(?:(' . $E2 . ')|$)#', $M[5], $A)) {
             $results['attributes'] = array();
-            foreach($attrs[1] as $i => $attr) {
-                $results['attributes'][$attr] = isset($attrs[5][$i]) && ! empty($attrs[5][$i]) ? (strpos($attrs[5][$i], '<attr:value>') === false ? $attrs[5][$i] : str_replace('<attr:value>', "", $attrs[5][$i])) : $attr;
+            foreach($A[1] as $k => $v) {
+                $results['attributes'][$v] = isset($A[5][$k]) && ! empty($A[5][$k]) ? (strpos($A[5][$k], '<attr:value>') === false ? $A[5][$k] : str_replace('<attr:value>', "", $A[5][$k])) : $v;
             }
         }
         return $str_eval ? self::strEval($results) : $results;
@@ -507,8 +507,8 @@ class Converter extends Base {
         }, $input);
         // Minify inline CSS declaration(s)
         if(strpos($input, ' style=') !== false) {
-            $input = preg_replace_callback('#\s+style=([\'"])(.*?)\1(?=[\/\s>])#s', function($matches) {
-                return ' style=' . $matches[1] . Converter::detractShell($matches[2]) . $matches[1];
+            $input = preg_replace_callback('#<([^<]+?)\s+style=([\'"])(.*?)\2(?=[\/\s>])#s', function($matches) {
+                return '<' . $matches[1] . ' style=' . $matches[2] . Converter::detractShell($matches[3]) . $matches[2];
             }, $input);
         }
         return preg_replace(

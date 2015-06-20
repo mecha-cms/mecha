@@ -30,7 +30,7 @@
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *  Parameter | Type   | Description
  *  --------- | ------ | ----------------------------------------------
- *  $array    | array  | Array of menu
+ *  $array    | array  | Array of menu item
  *  $type     | string | The list type ... `<ul>` or `<ol>` ?
  *  $depth    | string | Depth extra before each list group/list item
  *  $FP       | string | Filter prefix for the generated HTML output
@@ -57,20 +57,20 @@ class Menu extends Base {
         $html = $depth . str_repeat(TAB, $i) . '<' . $type . ($i > 0 ? ($c_class['children'] !== false ? ' class="' . sprintf($c_class['children'], $i / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
         foreach($array as $key => $value) {
             if( ! is_array($value)) {
-				// List item separator: `array('|')`
-				if($key === '|' || is_int($key) && $value === '|') {
-					$html .= Filter::apply($FP . 'list.item.separator', Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li class="' . $c_class['separator'] . '"></li>' . NL, $i + 1), $i + 1);
-				// List item without link: `array('foo')`
-				} else if(is_int($key)) {
-					$html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $value . '</li>' . NL, $i + 1);
-				// List item without link: `array('foo' => null)`
-				} else if(is_null($value)) {
-					$html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $key . '</li>' . NL, $i + 1);
-				// List item with link: `array('foo' => '/')`
-				} else {
-					$value = Converter::url($value);
-					$html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value === $c_url_current || ($value !== $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
-				}
+                // List item separator: `array('|')`
+                if($key === '|' || is_int($key) && $value === '|') {
+                    $html .= Filter::apply($FP . 'list.item.separator', Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li class="' . $c_class['separator'] . '"></li>' . NL, $i + 1), $i + 1);
+                // List item without link: `array('foo')`
+                } else if(is_int($key)) {
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $value . '</li>' . NL, $i + 1);
+                // List item without link: `array('foo' => null)`
+                } else if(is_null($value)) {
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $key . '</li>' . NL, $i + 1);
+                // List item with link: `array('foo' => '/')`
+                } else {
+                    $value = Converter::url($value);
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value === $c_url_current || ($value !== $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['selected'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
+                }
             } else {
                 if(preg_match('#(.*?)\s*\((.*?)\)\s*$#', $key, $matches)) {
                     $_key = $matches[1];
