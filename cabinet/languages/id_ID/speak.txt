@@ -577,9 +577,9 @@ manager:
   title_html_minifier: Kompres Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 
-  title_widget_time: Format Waktu Widget sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
+  title_widget_time: Format Waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
-  title_widget_include_js: JavaScript Widget Bawaan ke Tameng
+  title_widget_include_js: Sertakan JavaScript Widget Bawaan ke Tameng
 
   title_defaults__title: Judul %s Standar
   title_defaults__content: Konten %s Standar

@@ -16,7 +16,10 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     $takes = Get::files(CACHE, '*', 'DESC', 'update', $filter);
     if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
         $files = array();
-        foreach($_files as $_file) $files[] = $_file;
+        foreach($_files as $_file) {
+            $files[] = $_file;
+        }
+        unset($_files);
     } else {
         $files = false;
     }
@@ -58,7 +61,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         $name = File::path($request['name']);
         if($name !== $path) {
             File::open($file)->moveTo(CACHE . DS . $name);
-            Guardian::kick($config->manager->slug . '/cache');
+            Guardian::kick($config->manager->slug . '/cache/1');
         }
         Weapon::fire('on_cache_update', array($G, $P));
         Weapon::fire('on_cache_repair', array($G, $P));
@@ -107,7 +110,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         Notify::success(Config::speak('notify_file_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire('on_cache_update', array($P, $P));
         Weapon::fire('on_cache_destruct', array($P, $P));
-        Guardian::kick($config->manager->slug . '/cache');
+        Guardian::kick($config->manager->slug . '/cache/1');
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . $path . '</code>') : $speak->notify_confirm_delete);
     }
@@ -125,7 +128,7 @@ Route::accept($config->manager->slug . '/cache/kill', function() use($config, $s
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);
-            Guardian::kick($config->manager->slug . '/cache');
+            Guardian::kick($config->manager->slug . '/cache/1');
         }
         $files = array();
         foreach($request['selected'] as $file) {

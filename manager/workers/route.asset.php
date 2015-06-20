@@ -164,7 +164,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                 Session::set('recent_file_update', $new[0]);
                 Weapon::fire('on_asset_update', array($P, $P));
                 Weapon::fire('on_asset_repair', array($P, $P));
-                Guardian::kick($config->manager->slug . '/asset/' . $p);
+                Guardian::kick($config->manager->slug . '/asset/1' . $p);
             }
         }
     }
@@ -214,7 +214,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         Notify::success(Config::speak('notify_' . $is_folder_or_file . '_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire('on_asset_update', array($P, $P));
         Weapon::fire('on_asset_destruct', array($P, $P));
-        Guardian::kick($config->manager->slug . '/asset' . $p);
+        Guardian::kick($config->manager->slug . '/asset/1' . $p);
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
@@ -232,7 +232,7 @@ Route::accept($config->manager->slug . '/asset/kill', function($path = "") use($
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);
-            Guardian::kick($config->manager->slug . '/asset');
+            Guardian::kick($config->manager->slug . '/asset/1');
         }
         $files = array();
         foreach($request['selected'] as $file) {

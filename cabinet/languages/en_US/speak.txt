@@ -577,7 +577,7 @@ manager:
   title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
   title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 
-  title_widget_time: Widget Time Format as <code>YYYY-MM-DD</code> (year before month)
+  title_widget_time: Time Format as <code>YYYY-MM-DD</code> (year before month)
   title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
   title_widget_include_js: Include Default Widget&rsquo;s JavaScript to the Shield
 
