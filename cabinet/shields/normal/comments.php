@@ -47,6 +47,7 @@
       <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
       <span class="grid span-5"><textarea name="message" class="textarea-block"><?php echo Guardian::wayback('message'); ?></textarea></span>
     </label>
+    <?php Weapon::fire('comment_form_input', array($article)); ?>
     <label class="grid-group">
       <span class="grid span-1 form-label"><?php echo Guardian::math(); ?> =</span>
       <span class="grid span-5"><input name="math" type="text" value="" autocomplete="off"></span>
