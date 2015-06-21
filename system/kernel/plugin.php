@@ -14,11 +14,12 @@ class Plugin extends Base {
             $plugins[] = false;
         }
         for($j = 0; $j < $plugins_payload; ++$j) {
-            if($overtake = File::exist(dirname($plugins_list[$j]) . DS . '__overtake.txt')) {
+            $plugins_list[$j] = str_replace(PLUGIN . DS, "", dirname($plugins_list[$j]));
+            if($overtake = File::exist(PLUGIN . DS . $plugins_list[$j] . DS . '__overtake.txt')) {
                 $to_index = Mecha::edge((int) file_get_contents($overtake) - 1, 0, $plugins_payload - 1);
-                array_splice($plugins, $to_index, 0, array(dirname($plugins_list[$j])));
+                array_splice($plugins, $to_index, 0, array($plugins_list[$j]));
             } else {
-                $plugins[$j] = dirname($plugins_list[$j]);
+                $plugins[$j] = $plugins_list[$j];
             }
         }
         File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);

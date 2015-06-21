@@ -117,6 +117,7 @@ $plugins = Plugin::load();
 
 for($i = 0, $count = count($plugins); $i < $count; ++$i) {
     if($plugins[$i]) {
+        $plugins[$i] = PLUGIN . DS . $plugins[$i];
         if( ! $language = File::exist($plugins[$i] . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
             $language = $plugins[$i] . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
         }
