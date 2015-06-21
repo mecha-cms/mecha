@@ -255,8 +255,8 @@ table[border="1"] td {border:1px solid}
   font-family:Helmet,FreeSans,Sans-Serif;
 }
 
-.widget-archive-hierarchy .archive-date .collapsed {display:none}
-.widget-archive-hierarchy .archive-date ul {margin-left:1.2em}
+.widget-archive-hierarchy li ul {margin-left:1.2em}
+.widget-archive-hierarchy li ul.collapsed {display:none}
 
 .widget .selected > a {
   color:inherit;

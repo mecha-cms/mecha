@@ -21,12 +21,12 @@ var Widget = function() {
                         if (children[0].className === 'zippy close') {
                             children[0].className = 'zippy open';
                             children[0].innerHTML = arrow[0];
-                            parent.className = 'archive-date expanded' + s;
+                            parent.className = 'expanded' + s;
                             parent.getElementsByTagName('ul')[0].className = 'expanded';
                         } else {
                             children[0].className = 'zippy close';
                             children[0].innerHTML = arrow[1];
-                            parent.className = 'archive-date collapsed' + s;
+                            parent.className = 'collapsed' + s;
                             parent.getElementsByTagName('ul')[0].className = 'collapsed';
                         }
                         return false;
