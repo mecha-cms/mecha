@@ -247,7 +247,7 @@ class Widget {
             $_html = array();
             foreach($tags as $tag) {
                 $size = ceil(($tag['count'] / $highest_count) * $max_level);
-                $_html[] = '<span class="tag-size tag-size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
+                $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
             }
             $html .= implode(' ', $_html) . NL . '</div>' . O_END;
             $html  = Filter::apply('widget', $html);

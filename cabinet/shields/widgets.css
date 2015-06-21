@@ -265,19 +265,19 @@ table[border="1"] td {border:1px solid}
 
 .widget-tag-cloud {overflow:hidden}
 
-.widget-tag-cloud .tag-size {
+.widget-tag-cloud .size {
   vertical-align:middle;
   white-space:nowrap;
 }
 
-.widget-tag-cloud .tag-size-0 {font-size:80%}
-.widget-tag-cloud .tag-size-1 {font-size:90%}
-.widget-tag-cloud .tag-size-2 {font-size:100%}
-.widget-tag-cloud .tag-size-3 {font-size:110%}
-.widget-tag-cloud .tag-size-4 {font-size:120%}
-.widget-tag-cloud .tag-size-5 {font-size:130%}
-.widget-tag-cloud .tag-size-6 {font-size:140%}
-.widget-tag-cloud .tag-size-7 {font-size:150%}
+.widget-tag-cloud .size-0 {font-size:80%}
+.widget-tag-cloud .size-1 {font-size:90%}
+.widget-tag-cloud .size-2 {font-size:100%}
+.widget-tag-cloud .size-3 {font-size:110%}
+.widget-tag-cloud .size-4 {font-size:120%}
+.widget-tag-cloud .size-5 {font-size:130%}
+.widget-tag-cloud .size-6 {font-size:140%}
+.widget-tag-cloud .size-7 {font-size:150%}
 
 .widget-tag-list .selected a {
   color:inherit;
