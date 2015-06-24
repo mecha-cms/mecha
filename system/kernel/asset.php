@@ -123,11 +123,15 @@ class Asset extends Base {
         $is_valid = true;
         if(file_exists($the_file_log)) {
             $the_file_time = explode("\n", file_get_contents($the_file_log));
-            foreach($the_file_time as $i => $time) {
-                $path = self::path($files[$i]);
-                if( ! file_exists($path) || (int) filemtime($path) !== (int) $time) {
-                    $is_valid = false;
-                    break;
+            if(count($the_file_time) !== count($files)) {
+                $is_valid = false;
+            } else {
+                foreach($the_file_time as $i => $time) {
+                    $path = self::path($files[$i]);
+                    if( ! file_exists($path) || (int) filemtime($path) !== (int) $time) {
+                        $is_valid = false;
+                        break;
+                    }
                 }
             }
         } else {
