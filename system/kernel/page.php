@@ -38,7 +38,7 @@ class Page extends Base {
     protected static function create() {
         $output = "";
         foreach(self::$bucket as $key => $value) {
-            $output .= $key . ': ' . $value . "\n";
+            $output .= $key . S . ' ' . $value . "\n";
         }
         return trim($output) !== "" ? trim($output) . (trim(self::$bucket_alt) !== "" ? "\n\n" . SEPARATOR . "\n\n" . self::$bucket_alt : "") : self::$bucket_alt;
     }
