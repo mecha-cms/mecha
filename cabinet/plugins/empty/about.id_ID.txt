@@ -1,4 +1,4 @@
-﻿Title: Plugin Kosong
+Title: Plugin Kosong
 Author: Taufik Nurrohman
 URL: #
 Version: 0.0.0

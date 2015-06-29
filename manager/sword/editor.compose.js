@@ -47,8 +47,8 @@
             var editor = editor.grip,
                 m = /<!-- cut(\+( .*?)?)? -->/.exec(editor.area.value),
                 s = editor.selection(),
-                clean_B = s.before.replace(/\s+$/, "").replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n'),
-                clean_A = s.after.replace(/^\s+/, "").replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n');
+                clean_B = s.before.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/\s+$/, ""),
+                clean_A = s.after.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/^\s+/, "");
             if (clean_B.length === 0) {
                 editor.select(0);
                 return;

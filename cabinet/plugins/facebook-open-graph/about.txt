@@ -1,4 +1,4 @@
-﻿Title: Facebook Open Graph
+Title: Facebook Open Graph
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
 Version: 1.1.1
