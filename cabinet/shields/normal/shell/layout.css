@@ -171,7 +171,7 @@ body {
 
 /* POSTS */
 
-.blog-sidebar + .blog-posts {
+.blog-sidebar + .blog-main {
   float:left;
   width:70%;
   padding:0 0 0 5%;
@@ -401,8 +401,8 @@ body {
     margin:0;
   }
   .blog-sidebar,
-  .blog-posts,
-  .blog-sidebar + .blog-posts {
+  .blog-main,
+  .blog-sidebar + .blog-main {
     float:none;
     display:block;
     clear:both;

@@ -1,0 +1,2 @@
+plugin_markdown_title_abbr: Predefined Abbreviation
+plugin_markdown_title_url: Predefined <abbr title="Uniform Resource Locator">URL</abbr>

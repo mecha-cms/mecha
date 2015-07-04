@@ -8,7 +8,7 @@
  */
 
 define('DS', DIRECTORY_SEPARATOR);
-define('MECHA_VERSION', '1.1.3');
+define('MECHA_VERSION', '1.1.4');
 define('ROOT', rtrim(__DIR__, '\\/'));
 define('CARGO', ROOT . DS . 'cabinet');
 define('DECK', ROOT . DS . 'manager');

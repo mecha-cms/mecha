@@ -1,6 +1,6 @@
 <?php include 'header.php'; ?>
 <?php include 'sidebar.php'; ?>
-<div class="blog-posts">
+<div class="blog-main">
   <?php if($config->total_articles > 0): ?>
   <?php foreach($articles as $article): ?>
   <article class="post post-index" id="post-<?php echo $article->id; ?>">
@@ -22,7 +22,7 @@
   <?php endforeach; ?>
   <?php else: ?>
   <article class="post post-index">
-    <div class="post-body"><?php echo Config::speak('notify_empty', array(strtolower($speak->posts))); ?></div>
+    <div class="post-body"><?php echo Config::speak('notify_empty', strtolower($speak->posts)); ?></div>
   </article>
   <?php endif; ?>
   <nav class="blog-pager">

@@ -1,6 +1,6 @@
 <?php include 'header.php'; ?>
 <?php include 'sidebar.php'; ?>
-<div class="blog-posts">
+<div class="blog-main">
   <article class="post" id="post-<?php echo $page->id; ?>">
     <?php if($page->link): ?>
     <h2 class="post-title"><a href="<?php echo $page->link; ?>"><?php echo $page->title; ?></a></h2>

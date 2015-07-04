@@ -1,0 +1,2 @@
+plugin_markdown_title_abbr: Singkatan Terdefinisi
+plugin_markdown_title_url: <abbr title="Uniform Resource Locator">URL</abbr> Terdefinisi

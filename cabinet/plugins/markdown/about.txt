@@ -1,8 +1,14 @@
-Title: Markdown
-Author: Michel Fortin
-URL: http://michelf.ca/projects/php-markdown
-Version: 1.5.0
+Title: Markdown Parser
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.1.4
 
 ====
 
 **Markdown Extra** – A text-to-HTML convertion tool for web writers.
+
+ - Original Author: Michel Fortin
+ - Original URL: <http://michelf.ca/projects/php-markdown>
+
+*[HTML]: Hyper Text Markup Language
+*[URL]: Uniform Resource Locator
