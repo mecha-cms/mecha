@@ -128,7 +128,7 @@ class Shield extends Base {
      */
 
     public static function apart($data) {
-        if( ! is_array($data)) $data = array($data);
+        $data = (array) $data;
         foreach($data as $d) {
             unset(self::$lot[$d]);
         }

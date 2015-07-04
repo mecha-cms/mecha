@@ -358,9 +358,7 @@ class Package extends Base {
 
     public static function deleteFiles($files = array()) {
         $zip = new ZipArchive();
-        if( ! is_array($files)) {
-            $files = array($files);
-        }
+        $files = (array) $files;
         if(File::exist(self::$open) && $zip->open(self::$open)) {
             foreach($files as $file) {
                 if($zip->locateName($file) !== false) {

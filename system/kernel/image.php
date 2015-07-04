@@ -700,9 +700,7 @@ class Image extends Base {
         $max_width = array();
         $max_height = array();
         $orientation = strtolower($orientation);
-        if( ! is_array(self::$open)) {
-            self::$open = array(self::$open);
-        }
+        self::$open = (array) self::$open;
         foreach(self::getInfo() as $info) {
             $bucket[] = array(
                 'width' => $info['width'],

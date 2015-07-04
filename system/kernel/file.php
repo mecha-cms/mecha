@@ -246,9 +246,7 @@ class File extends Base {
     // Copy a file
     public static function copyTo($destination = ROOT) {
         if(file_exists(self::$open)) {
-            if( ! is_array($destination)) {
-                $destination = array($destination);
-            }
+            $destination = (array) $destination;
             foreach($destination as $dest) {
                 $dest = self::path($dest);
                 if(is_dir($dest)) {
@@ -275,9 +273,7 @@ class File extends Base {
 
     // Create new directory
     public static function pocket($paths, $permission = 0777) {
-        if( ! is_array($paths)) {
-            $paths = array($paths);
-        }
+        $paths = (array) $paths;
         foreach($paths as $i => $path) {
             if( ! file_exists($path)) {
                 mkdir(self::path($path), (is_array($permission) ? $permission[$i] : $permission), true);
