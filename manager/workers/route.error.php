@@ -29,5 +29,5 @@ Route::accept($config->manager->slug . '/error/kill', function() use($config, $s
     File::open($errors)->delete();
     Weapon::fire('on_error_destruct', array($G, $G));
     Notify::success(Config::speak('notify_success_deleted', $speak->file));
-    Guardian::kick(dirname($config->url_current));
+    Guardian::kick(File::D($config->url_current));
 });

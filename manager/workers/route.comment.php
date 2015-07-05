@@ -16,7 +16,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         $comments = array();
         $comments_id = array();
         foreach($files as $file) {
-            $parts = explode('_', basename($file));
+            $parts = explode('_', File::B($file));
             $comments_id[] = $parts[1];
         }
         rsort($comments_id);
@@ -104,7 +104,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
                 'IP' => $request['ip'] !== 'N/A' ? $request['ip'] : false,
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
             ))->content($message)->save();
-            File::open($comment->path)->renameTo(basename($comment->path, '.' . pathinfo($comment->path, PATHINFO_EXTENSION)) . $extension);
+            File::open($comment->path)->renameTo(File::N($comment->path) . $extension);
             Notify::success(Config::speak('notify_success_updated', $speak->comment));
             Weapon::fire('on_comment_update', array($G, $P));
             Weapon::fire('on_comment_repair', array($G, $P));

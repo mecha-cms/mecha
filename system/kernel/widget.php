@@ -115,7 +115,7 @@ class Widget {
         if($type === 'HIERARCHY') {
             $i = 0;
             foreach($files as $file) {
-                list($year, $month) = explode('-', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)));
+                list($year, $month) = explode('-', File::N($file));
                 $archives[$year][$month][] = $file;
             }
             $html  = O_BEGIN . '<div class="widget widget-archive widget-archive-hierarchy" id="widget-archive-hierarchy-' . self::$id['archive_hierarchy'] . '">' . NL;
@@ -147,7 +147,7 @@ class Widget {
         }
         if($type === 'LIST' || $type === 'DROPDOWN') {
             foreach($files as $name) {
-                $archives[] = substr(basename($name, '.' . pathinfo($name, PATHINFO_EXTENSION)), 0, 7);
+                $archives[] = substr(File::N($name), 0, 7);
             }
             $counter = array_count_values($archives);
             $archives = array_unique($archives);
@@ -202,7 +202,7 @@ class Widget {
             return O_BEGIN . '<div class="widget widget-tag">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
         }
         foreach($files as $file) {
-            list($_time, $_kind, $_name) = explode('_', basename($file), 3);
+            list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
             foreach(explode(',', $_kind) as $kind) {
                 $counters[] = (int) $kind;
             }
@@ -395,7 +395,7 @@ class Widget {
         if($comments = Get::comments()) {
             $comments_id = array();
             foreach($comments as $comment) {
-                $parts = explode('_', basename($comment));
+                $parts = explode('_', File::B($comment));
                 $comments_id[] = $parts[1];
             }
             rsort($comments_id);

@@ -26,7 +26,7 @@
 
       $language = array();
       foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
-          $language[basename($folder)] = basename($folder);
+          $language[File::B($folder)] = File::B($folder);
       }
       echo Form::select('language', $language, Guardian::wayback('language', $config->language), array(
           'class' => 'select-block'
@@ -53,7 +53,7 @@
 
       $info = array();
       foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
-          $s = basename($folder);
+          $s = File::B($folder);
           if(strpos($s, '__') !== 0) {
               $info[$s] = Shield::info($s)->title;
           }

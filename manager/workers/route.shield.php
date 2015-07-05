@@ -29,8 +29,8 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];
-        $extension = pathinfo($name, PATHINFO_EXTENSION);
-        $path = basename($name, '.' . $extension);
+        $extension = File::E($name);
+        $path = File::N($name);
         if( ! empty($name)) {
             if(File::exist(SHIELD . DS . $path)) {
                 Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
@@ -106,7 +106,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
-            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $extension = File::E($path);
             if($extension !== "") {
                 if( ! in_array($extension, $accepted_extensions)) {
                     Notify::error(Config::speak('notify_error_file_extension', $extension));
@@ -119,8 +119,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::write($request['content'])->saveTo(SHIELD . DS . $folder . DS . $path);
-            Notify::success(Config::speak('notify_file_created', '<code>' . basename($path) . '</code>'));
-            Session::set('recent_file_update', basename($path));
+            Notify::success(Config::speak('notify_file_created', '<code>' . File::B($path) . '</code>'));
+            Session::set('recent_file_update', File::B($path));
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
             Guardian::kick($config->manager->slug . '/shield/' . $folder);
@@ -153,7 +153,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     $content = File::open($file)->read();
     $G = array('data' => array('path' => $file, 'name' => $path, 'content' => $content));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . File::B($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
     ));
     if($request = Request::post()) {
@@ -166,7 +166,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             }
             $accepted_extensions = explode(',', SCRIPT_EXT);
-            $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+            $extension = File::E($name);
             if($extension !== "") {
                 if( ! in_array($extension, $accepted_extensions)) {
                     Notify::error(Config::speak('notify_error_file_extension', $extension));
@@ -182,7 +182,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path !== $name) {
                 File::open($file)->moveTo(SHIELD . DS . $folder . DS . $name);
             }
-            Notify::success(Config::speak('notify_file_updated', '<code>' . basename($path) . '</code>'));
+            Notify::success(Config::speak('notify_file_updated', '<code>' . File::B($path) . '</code>'));
             Weapon::fire('on_shield_update', array($G, $P));
             Weapon::fire('on_shield_repair', array($G, $P));
             Guardian::kick($config->manager->slug . '/shield/' . $folder . '/repair/file:' . File::url($name));
@@ -217,7 +217,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . ($path ? basename($file) : $info->title) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info->title) . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
     ));
@@ -226,7 +226,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         $P = array('data' => array('path' => $file));
         File::open($file)->delete();
         if($path) {
-            Notify::success(Config::speak('notify_file_deleted', '<code>' . basename($path) . '</code>'));
+            Notify::success(Config::speak('notify_file_deleted', '<code>' . File::B($path) . '</code>'));
         } else {
             Notify::success(Config::speak('notify_success_deleted', $speak->shield));
         }

@@ -38,7 +38,7 @@
   <?php if(count($the_shield_folders) > 1): ?>
   <div class="tab-content hidden" id="tab-content-3">
     <h3><?php echo Config::speak('manager.title_your_', $speak->shields); ?></h3>
-    <?php foreach($the_shield_folders as $folder): $folder = basename($folder); ?>
+    <?php foreach($the_shield_folders as $folder): $folder = File::B($folder); ?>
     <?php $c = File::exist(SHIELD . DS . $folder . DS . 'capture.png'); if($config->shield !== $folder && strpos($folder, '__') !== 0): $info = Shield::info($folder); ?>
     <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $folder; ?>">
       <?php if($c): ?>

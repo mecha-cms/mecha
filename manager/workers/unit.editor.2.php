@@ -1,6 +1,6 @@
 <?php
 
-$e = strtolower(pathinfo( ! is_null($the_name) ? $the_name : "", PATHINFO_EXTENSION));
+$e = File::E( ! is_null($the_name) ? $the_name : "");
 $is_text = explode(',', SCRIPT_EXT);
 $is_text = is_null($the_name) || in_array($e, $is_text);
 

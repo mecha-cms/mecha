@@ -133,7 +133,7 @@ Weapon::add('article_footer', function($article) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type === 'manager') {
-        $status = Mecha::alter(pathinfo($article->path, PATHINFO_EXTENSION), array(
+        $status = Mecha::alter(File::E($article->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
         ), "");
@@ -145,7 +145,7 @@ Weapon::add('page_footer', function($page) {
     $config = Config::get();
     $speak = Config::speak();
     if($config->page_type === 'manager') {
-        $status = Mecha::alter(pathinfo($page->path, PATHINFO_EXTENSION), array(
+        $status = Mecha::alter(File::E($page->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
         ), "");

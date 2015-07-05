@@ -69,8 +69,7 @@ class Shield extends Base {
      */
 
     public static function path($name) {
-        $extension = strtolower(pathinfo($name, PATHINFO_EXTENSION));
-        $name = File::path($name) . '.' . ($extension === "" ? 'php' : $extension);
+        $name = File::path($name) . '.' . File::E($name, 'php');
         if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
             return $path;
         } else if($path = File::exist(ROOT . DS . ltrim($name, DS))) {

@@ -64,13 +64,13 @@ class File extends Base {
     // Inspect file path
     public static function inspect($path) {
         $path = self::path($path);
-        $extension = pathinfo($path, PATHINFO_EXTENSION);
+        $extension = self::E($path);
         $update = file_exists($path) ? filemtime($path) : null;
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         return array(
             'path' => $path,
-            'name' => basename($path, '.' . $extension),
-            'url' => File::url($path),
+            'name' => self::N($path),
+            'url' => self::url($path),
             'extension' => strtolower($extension),
             'update_raw' => $update,
             'update' => $update_date,
@@ -85,7 +85,7 @@ class File extends Base {
         $folder = rtrim(self::path($folder), DS);
         $files = array_merge(glob($folder . DS . '*', GLOB_NOSORT), glob($folder . DS . '.*', GLOB_NOSORT));
         foreach($files as $file) {
-            if(basename($file) !== '.' && basename($file) !== '..') {
+            if(self::B($file) !== '.' && self::B($file) !== '..') {
                 if(is_dir($file)) {
                     if( ! $flat) {
                         $results[$file] = $recursive ? self::explore($file, $recursive, $flat, array()) : 0;
@@ -203,8 +203,8 @@ class File extends Base {
     // Save the written data to ...
     public static function saveTo($path, $permission = null) {
         $path = self::path($path);
-        if( ! file_exists(dirname($path))) {
-            mkdir(dirname($path), 0777, true);
+        if( ! file_exists(File::D($path))) {
+            mkdir(File::D($path), 0777, true);
         }
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
         fwrite($handle, self::$cache);
@@ -218,8 +218,8 @@ class File extends Base {
 
     // Rename a file
     public static function renameTo($new_name) {
-        $root = rtrim(dirname(self::$open), DS) . DS; 
-        $old_name = ltrim(basename(self::$open), DS);
+        $root = rtrim(File::D(self::$open), DS) . DS; 
+        $old_name = ltrim(self::B(self::$open), DS);
         if($new_name !== $old_name) {
             rename($root . $old_name, $root . $new_name);
         }
@@ -232,10 +232,10 @@ class File extends Base {
         $destination = rtrim(File::path($destination), DS);
         if(file_exists(self::$open)) {
             if(is_dir($destination)) {
-                $destination .= DS . basename(self::$open);
+                $destination .= DS . self::B(self::$open);
             }
-            if( ! file_exists(dirname($destination))) {
-                mkdir(dirname($destination), 0777, true);
+            if( ! file_exists(File::D($destination))) {
+                mkdir(File::D($destination), 0777, true);
             }
             rename(self::$open, $destination);
         }
@@ -253,10 +253,10 @@ class File extends Base {
                     if( ! file_exists($dest)) {
                         mkdir($dest, 0777, true);
                     }
-                    $dest = rtrim(File::path($dest), DS) . DS . basename(self::$open);
+                    $dest = rtrim(self::path($dest), DS) . DS . self::B(self::$open);
                 } else {
-                    if( ! file_exists(dirname($dest))) {
-                        mkdir(dirname($dest), 0777, true);
+                    if( ! file_exists(File::D($dest))) {
+                        mkdir(File::D($dest), 0777, true);
                     }
                 }
                 if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
@@ -281,6 +281,36 @@ class File extends Base {
         }
     }
 
+    // Get file base name
+    public static function B($path, $s = false) {
+        if($s !== DS && $s !== '/') {
+            $p = explode($s, $path);
+            return array_pop($p);
+        }
+        return basename($path);
+    }
+
+    // Get file directory name
+    public static function D($path, $s = false) {
+        if($s !== DS && $s !== '/') {
+            $p = explode($s, $path);
+            array_pop($p);
+            return implode($s, $p);
+        }
+        return dirname($path);
+    }
+
+    // Get file name without extension
+    public static function N($path, $extension = false) {
+        return $extension ? basename($path) : basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+    }
+
+    // Get file name extension
+    public static function E($path, $fallback = "") {
+        $etension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return $extension ? $extension : $fallback;
+    }
+
     // Set file permission
     public static function setPermission($permission) {
         chmod(self::$open, $permission);
@@ -295,7 +325,7 @@ class File extends Base {
         $errors = Mecha::A($speak->notify_file);
         // Create a safe file name
         $file['name'] = Text::parse($file['name'], '->safe_file_name');
-        $extension = pathinfo($file['name'], PATHINFO_EXTENSION);
+        $extension = self::E($file['name']);
         // Something goes wrong
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);

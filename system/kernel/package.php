@@ -169,19 +169,19 @@ class Package extends Base {
         $zip = new ZipArchive();
         if(is_dir(self::$open)) {
             $root = rtrim(self::$open, DS);
-            $package = basename(self::$open);
+            $package = File::B(self::$open);
         } else {
-            $root = dirname(self::$open);
-            $package = basename(self::$open, '.' . pathinfo(self::$open, PATHINFO_EXTENSION));
+            $root = File::D(self::$open);
+            $package = File::N(self::$open);
         }
         // Handling for `Package::take('foo/bar')->pack()`
         if(is_null($destination)) {
-            $destination = dirname($root) . DS . $package . '.zip';
+            $destination = File::D($root) . DS . $package . '.zip';
         } else {
             $destination = File::path($destination);
             // Handling for `Package::take('foo/bar')->pack('package.zip')`
             if(strpos($destination, DS) === false) {
-                $root = ! is_array(self::$map) ? dirname($root) : $root;
+                $root = ! is_array(self::$map) ? File::D($root) : $root;
                 $destination = $root . DS . $destination;
             }
             // Handling for `Package::take('foo/bar')->pack('bar/baz')`
@@ -221,7 +221,7 @@ class Package extends Base {
                     }
                 }
             } else if(is_file(self::$open)) {
-                $zip->addFromString($dir . basename(self::$open), file_get_contents(self::$open));
+                $zip->addFromString($dir . File::B(self::$open), file_get_contents(self::$open));
             }
             $zip->close();
         }
@@ -247,13 +247,13 @@ class Package extends Base {
     public static function extractTo($destination = null, $bucket = false) {
         $zip = new ZipArchive();
         if(is_null($destination)) {
-            $destination = dirname(self::$open);
+            $destination = File::D(self::$open);
         } else {
             $destination = rtrim(File::path($destination), '\\/');
         }
         // Handling for `Package::take('file.zip')->extractTo('foo/bar', true)`
         if($bucket === true) {
-            $bucket = basename(self::$open, '.' . pathinfo(self::$open, PATHINFO_EXTENSION));
+            $bucket = File::N(self::$open);
         }
         if($bucket !== false && ! File::exist($destination . DS . $bucket)) {
             $bucket = File::path($bucket);
@@ -295,11 +295,11 @@ class Package extends Base {
             if( ! is_array($files)) {
                 // Handling for `Package::take('file.zip')->addFile('test.txt')`
                 if(strpos($files, DS) === false) {
-                    $files = dirname(self::$open) . DS . $files;
+                    $files = File::D(self::$open) . DS . $files;
                 }
                 if(File::exist($files)) {
                     if(is_null($destination)) {
-                        $destination = basename($files);
+                        $destination = File::B($files);
                     }
                     $zip->addFile($files, $destination);
                 }
@@ -309,10 +309,10 @@ class Package extends Base {
             foreach($files as $key => $value) {
                 // Handling for `Package::take('file.zip')->addFiles(array('test-1.txt' => 'test-1.txt'))`
                 if(strpos($key, DS) === false) {
-                    $key = dirname(self::$open) . DS . $key;
+                    $key = File::D(self::$open) . DS . $key;
                 }
                 if(is_null($value)) {
-                    $value = basename($key);
+                    $value = File::B($key);
                 }
                 if(File::exist($key)) {
                     $zip->addFile($key, $value);
@@ -409,13 +409,13 @@ class Package extends Base {
                 foreach($old as $k => $v) {
                     $k = File::path($k);
                     $v = File::path($v);
-                    $root = trim(dirname($k), DS . '.') !== "" ? dirname($k) . DS : "";
-                    $zip->renameName($k, $root . basename($v));
+                    $root = trim(File::D($k), DS . '.') !== "" ? File::D($k) . DS : "";
+                    $zip->renameName($k, $root . File::B($v));
                 }
             } else {
                 $old = File::path($old);
-                $root = trim(dirname($old), DS . '.') !== "" ? dirname($old) . DS : "";
-                $zip->renameName($old, $root . basename($new));
+                $root = trim(File::D($old), DS . '.') !== "" ? File::D($old) . DS : "";
+                $zip->renameName($old, $root . File::B($new));
             }
             $zip->close();
         }
@@ -486,7 +486,6 @@ class Package extends Base {
         $results = array();
         $zip = new ZipArchive();
         if(File::exist(self::$open) && $zip->open(self::$open)) {
-            $extension = pathinfo($zip->filename, PATHINFO_EXTENSION);
             $results = array_merge(File::inspect(self::$open), array(
                 'status' => $zip->status,
                 'total' => $zip->numFiles

@@ -2,7 +2,7 @@
   <?php echo Form::hidden('token', $token); ?>
   <?php
 
-  $state = PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS;
+  $state = PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS;
   $url = File::open($state . 'url.txt')->read();
   $abbr = File::open($state . 'abbr.txt')->read();
 

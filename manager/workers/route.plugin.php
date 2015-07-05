@@ -39,8 +39,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];
-        $extension = pathinfo($name, PATHINFO_EXTENSION);
-        $path = basename($name, '.' . $extension);
+        $extension = File::E($name);
+        $path = File::N($name);
         if( ! empty($name)) {
             if(File::exist(PLUGIN . DS . $path)) {
                 Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
@@ -92,9 +92,9 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
                 $file = $files[$i] . DS . 'about.txt';
             }
-            $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse(basename($files[$i]), '->text')))), 'content', 'plugin:');
+            $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse(File::B($files[$i]), '->text')))), 'content', 'plugin:');
             $plugins[$i]['about'] = $about;
-            $plugins[$i]['slug'] = basename($files[$i]);
+            $plugins[$i]['slug'] = File::B($files[$i]);
         }
         unset($files);
     }

@@ -60,7 +60,7 @@ $url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/plugin-
 ~~~
 
 ~~~ .php
-$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . basename(__DIR__) . '/update';
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . File::B(__DIR__) . '/update';
 ~~~
 
 ~~~ .php
@@ -71,7 +71,7 @@ $url = Config::get('url_current') . '/update';
 $url = $config->url_current . '/update';
 ~~~
 
-**Tip:** Use `basename(__DIR__)` as a replacement of the plugin’s folder name. This will allows users to change your plugin’s folder name with another name for their specific purposes. As for example, to prevent duplicate of folder name.
+**Tip:** Use `File::B(__DIR__)` as a replacement of the plugin’s folder name. This will allows users to change your plugin’s folder name with another name for their specific purposes. As for example, to prevent duplicate of folder name.
 
 ### `lauch.php`
 
@@ -80,15 +80,15 @@ This file contains the executable code of the plugin. When the plugin is install
 Create a new route to ` {{url.manager}}plugin/plugin-folder/update ` relative to the homepage URL to execute a `POST` request:
 
 ~~~ .php
-Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
     }
     if($request = Request::post()) {
         Guardian::checkToken($request['token']); // [2]
-        File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
+        File::write('test!')->saveTo(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
         Notify::success('Plugin updated.'); // [3]
-        Guardian::kick(dirname($config->url_current)); // [4]
+        Guardian::kick(File::D($config->url_current)); // [4]
     }
 });
 ~~~

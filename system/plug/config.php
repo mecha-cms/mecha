@@ -22,7 +22,7 @@ Config::plug('load', function() {
     // Define some default variable(s)
     $config['protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
     $config['host'] = $_SERVER['HTTP_HOST'];
-    $config['base'] = trim(File::url(dirname($_SERVER['SCRIPT_NAME'])), '/');
+    $config['base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
     $config['url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
     $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim('?' . $_SERVER['QUERY_STRING'], '/?') ? "" : preg_replace('#[?&].*$#', "", trim('?' . $_SERVER['QUERY_STRING'], '/?'));
     $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');

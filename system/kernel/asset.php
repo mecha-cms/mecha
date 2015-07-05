@@ -139,7 +139,7 @@ class Asset extends Base {
         }
         $merged_time = "";
         $merged_content = "";
-        $e = strtolower(pathinfo($name, PATHINFO_EXTENSION));
+        $e = File::E($name);
         if( ! file_exists($the_file) || ! $is_valid) {
             if($e === 'gif' || $e === 'jpeg' || $e === 'jpg' || $e === 'png') {
                 foreach($files as $file) {
@@ -159,10 +159,10 @@ class Asset extends Base {
                         if(file_exists($path)) {
                             $merged_time .= filemtime($path) . "\n";
                             $c = file_get_contents($path);
-                            if(strpos(basename($path), '.min.') === false) {
-                                if(strpos(basename($the_file), '.min.css') !== false) {
+                            if(strpos(File::B($path), '.min.') === false) {
+                                if(strpos(File::B($the_file), '.min.css') !== false) {
                                     $merged_content .= Converter::detractShell($c) . "\n";
-                                } else if(strpos(basename($the_file), '.min.js') !== false) {
+                                } else if(strpos(File::B($the_file), '.min.js') !== false) {
                                     $merged_content .= Converter::detractSword($c) . "\n";
                                 } else {
                                     $merged_content .= $c . "\n\n";

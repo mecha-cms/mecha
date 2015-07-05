@@ -87,7 +87,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $takes = glob($d . DS . '*', GLOB_NOSORT);
     if($filter) {
         foreach($takes as $k => $v) {
-            if(strpos(basename($v, '.' . pathinfo($v, PATHINFO_EXTENSION)), $filter) === false) {
+            if(strpos(File::N($v), $filter) === false) {
                 unset($takes[$k]);
             }
         }
@@ -129,7 +129,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Shield::abort(); // File not found!
     }
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . basename($old) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . File::B($old) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
     ));
     if($request = Request::post()) {
@@ -151,7 +151,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             }
             // File name already exist
             if($old !== $new && File::exist(ASSET . DS . $new)) {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . basename($new) . '</code>'));
+                Notify::error(Config::speak('notify_file_exist', '<code>' . File::B($new) . '</code>'));
             }
             $P = array('data' => $request);
             if( ! Notify::errors()) {
@@ -159,7 +159,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                     File::open($file)->write($request['content'])->save();
                 }
                 File::open($file)->moveTo(ASSET . DS . $new);
-                Notify::success(Config::speak('notify_' . (is_dir(ASSET . DS . $old) ? 'folder' : 'file') . '_updated', '<code>' . basename($old) . '</code>'));
+                Notify::success(Config::speak('notify_' . (is_dir(ASSET . DS . $old) ? 'folder' : 'file') . '_updated', '<code>' . File::B($old) . '</code>'));
                 $new = explode(DS, $new);
                 Session::set('recent_file_update', $new[0]);
                 Weapon::fire('on_asset_update', array($P, $P));
@@ -170,7 +170,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
     }
     Shield::lot(array(
         'the_name' => $old,
-        'the_content' => is_file(ASSET . DS . $old) && in_array(strtolower(pathinfo($old, PATHINFO_EXTENSION)), explode(',', SCRIPT_EXT)) ? File::open(ASSET . DS . $old)->read() : false
+        'the_content' => is_file(ASSET . DS . $old) && in_array(File::E($old), explode(',', SCRIPT_EXT)) ? File::open(ASSET . DS . $old)->read() : false
     ))->attach('manager', false);
 });
 
@@ -197,7 +197,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($name) : $speak->assets) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($name) : $speak->assets) . $config->title_separator . $config->manager->title,
         'files' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
     ));

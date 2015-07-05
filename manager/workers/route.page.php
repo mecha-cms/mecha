@@ -155,7 +155,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // Check for duplicate slug
             if($files = Get::pages('DESC', "", 'txt,draft,archive')) {
                 foreach($files as $file) {
-                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
                         Notify::error(Config::speak('notify_error_slug_exist', $slug));
                         Guardian::memorize($request);
                         break;
@@ -180,7 +180,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // do not type the slug of another post.
             if($files = Get::pages('DESC', "", 'txt,draft,archive') && $slug !== $page->slug) {
                 foreach($files as $file) {
-                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
                         Notify::error(Config::speak('notify_error_slug_exist', $slug));
                         Guardian::memorize($request);
                         break;
@@ -206,7 +206,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                         Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
                     }
                 }
-                if($page->slug !== $slug && $php_file = File::exist(dirname($page->path) . DS . $page->slug . '.php')) {
+                if($page->slug !== $slug && $php_file = File::exist(File::D($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
                 Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
@@ -248,7 +248,7 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();
         // Deleting custom PHP file of page ...
-        File::open(dirname($page->path) . DS . $page->slug . '.php')->delete();
+        File::open(File::D($page->path) . DS . $page->slug . '.php')->delete();
         Notify::success(Config::speak('notify_success_deleted', $page->title));
         Weapon::fire('on_page_update', array($G, $G));
         Weapon::fire('on_page_destruct', array($G, $G));

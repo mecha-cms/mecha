@@ -49,7 +49,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
     }
     $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . basename($path) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->editing . ': ' . File::B($path) . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.cache.php'
     ));
     if($request = Request::post()) {
@@ -57,7 +57,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
         Notify::success(Config::speak('notify_file_updated', '<code>' . $path . '</code>'));
-        Session::set('recent_file_update', basename($path));
+        Session::set('recent_file_update', File::B($path));
         $name = File::path($request['name']);
         if($name !== $path) {
             File::open($file)->moveTo(CACHE . DS . $name);
@@ -94,7 +94,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? basename($path) : $speak->caches) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($path) : $speak->caches) . $config->title_separator . $config->manager->title,
         'files' => $deletes,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.cache.php'
     ));

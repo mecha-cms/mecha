@@ -37,7 +37,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         $slugs = array();
         if($files = Get::pages()) {
             foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', basename($file, '.' . pathinfo($file, PATHINFO_EXTENSION)), 3);
+                list($_time, $_kind, $_slug) = explode('_', File::N($file), 3);
                 $slugs[$_slug] = 1;
             }
             unset($files);

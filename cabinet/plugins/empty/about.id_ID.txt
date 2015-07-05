@@ -60,7 +60,7 @@ $url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/folder-
 ~~~
 
 ~~~ .php
-$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . basename(__DIR__) . '/update';
+$url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/' . File::B(__DIR__) . '/update';
 ~~~
 
 ~~~ .php
@@ -71,7 +71,7 @@ $url = Config::get('url_current') . '/update';
 $url = $config->url_current . '/update';
 ~~~
 
-**Tip:** Gunakan `basename(__DIR__)` sebagai pengganti nama folder plugin. Ini akan mengizinkan pengguna untuk mengubah nama folder plugin Anda dengan nama yang lain untuk tujuan tertentu. Misalnya untuk mencegah duplikat nama folder.
+**Tip:** Gunakan `File::B(__DIR__)` sebagai pengganti nama folder plugin. Ini akan mengizinkan pengguna untuk mengubah nama folder plugin Anda dengan nama yang lain untuk tujuan tertentu. Misalnya untuk mencegah duplikat nama folder.
 
 ### `lauch.php`
 
@@ -80,15 +80,15 @@ Berkas ini berisi kode eksekusi plugin. Ketika plugin terpasang, maka berkas ini
 Buat sebuah rute baru menuju ` {{url.manager}}plugin/folder-plugin/update ` relatif ke URL halaman muka untuk mengeksekusi permintaan `POST`:
 
 ~~~ .php
-Route::accept($config->manager->slug . '/plugin/' . basename(__DIR__) . '/update', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
     if( ! Guardian::happy()) {
         Shield::abort(); // [1]
     }
     if($request = Request::post()) {
         Guardian::checkToken($request['token']); // [2]
-        File::write('test!')->saveTo(PLUGIN . DS . basename(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
+        File::write('test!')->saveTo(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'test.txt', 0600);
         Notify::success('Plugin updated.'); // [3]
-        Guardian::kick(dirname($config->url_current)); // [4]
+        Guardian::kick(File::D($config->url_current)); // [4]
     }
 });
 ~~~

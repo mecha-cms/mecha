@@ -10,7 +10,7 @@ class Image extends Base {
 
     protected static function gen($file = null) {
         if(is_null($file)) $file = self::$placeholder;
-        switch(strtolower(pathinfo($file, PATHINFO_EXTENSION))) {
+        switch(File::E($file)) {
             case 'gif': self::$GD = imagecreatefromgif($file); break;
             case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
             case 'jpeg': self::$GD = imagecreatefromjpeg($file); break;
@@ -21,8 +21,8 @@ class Image extends Base {
     protected static function twin($resource = null, $extension = null) {
         $file = self::$placeholder;
         if(is_null($resource)) $resource = self::$GD;
-        $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
-        $new_extension = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $old_extension = File::E(self::$original);
+        $new_extension = File::E($file);
         if( ! is_null($extension)) {
             $file = preg_replace('#\.([a-z]+)$#i', '.' . $extension, $file);
             File::open(self::$placeholder)->delete();
@@ -50,7 +50,7 @@ class Image extends Base {
             self::$open = File::path($files);
         }
         $file = is_array(self::$open) ? self::$open[0] : self::$open;
-        self::$placeholder = dirname($file) . DS . '__' . basename($file);
+        self::$placeholder = File::D($file) . DS . '__' . File::B($file);
         self::$original = $file;
         File::open($file)->copyTo(self::$placeholder);
         self::gen($file);
@@ -82,10 +82,10 @@ class Image extends Base {
 
     public static function saveTo($destination) {
         if(is_dir($destination)) {
-            $destination .= DS . basename(self::$original);
+            $destination .= DS . File::B(self::$original);
         }
-        $old_extension = strtolower(pathinfo(self::$original, PATHINFO_EXTENSION));
-        $new_extension = strtolower(pathinfo($destination, PATHINFO_EXTENSION));
+        $old_extension = File::E(self::$original);
+        $new_extension = File::E($destination);
         if($old_extension !== $new_extension) {
             self::gen();
             self::twin(null, $new_extension);
@@ -109,7 +109,7 @@ class Image extends Base {
      */
 
     public static function saveAs($name = 'image-%d.png') {
-        return self::saveTo(dirname(self::$placeholder) . DS . sprintf($name, time()));
+        return self::saveTo(File::D(self::$placeholder) . DS . sprintf($name, time()));
     }
 
     /**

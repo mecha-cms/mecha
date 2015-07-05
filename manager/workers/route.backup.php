@@ -33,7 +33,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         );
         $name = $_FILES['file']['name'];
         $type = $_FILES['file']['type'];
-        $extension = pathinfo($name, PATHINFO_EXTENSION);
+        $extension = File::E($name);
         if( ! empty($name)) {
             if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
                 Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));

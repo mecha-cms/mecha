@@ -240,7 +240,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 $articles[] = $file;
                 $anchor = Get::articleAnchor($file);
                 $kw = str_replace('-', ' ', $keywords);
-                if(strpos(strtolower($anchor->title), $kw) !== false || strpos(basename($anchor->path), $kw) !== false) {
+                if(strpos(strtolower($anchor->title), $kw) !== false || strpos(File::B($anchor->path), $kw) !== false) {
                     $articles[] = $file;
                 }
             }
@@ -254,7 +254,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 foreach($files as $file) {
                     $articles[] = $file;
                     $anchor = Get::articleAnchor($file);
-                    if(strpos(strtolower($anchor->title), $keyword) !== false || strpos(basename($anchor->path), $keyword) !== false) {
+                    if(strpos(strtolower($anchor->title), $keyword) !== false || strpos(File::B($anchor->path), $keyword) !== false) {
                         $articles[] = $file;
                     }
                 }
@@ -340,7 +340,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     Config::set(array(
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
-        'pagination' => Navigator::extract(Get::articles('DESC', "", pathinfo($article->path, PATHINFO_EXTENSION)), $article->path, 1, $config->index->slug)
+        'pagination' => Navigator::extract(Get::articles('DESC', "", File::E($article->path), $article->path, 1, $config->index->slug)
     ));
 
     Weapon::add('shell_after', function() use($article) {

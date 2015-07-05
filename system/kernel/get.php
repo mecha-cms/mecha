@@ -59,7 +59,7 @@ class Get extends Base {
             if( ! $filter) {
                 $results_inclusive[] = File::inspect($file);
             } else {
-                if(strpos(basename($file), $filter) !== false) {
+                if(strpos(File::B($file), $filter) !== false) {
                     $results_inclusive[] = File::inspect($file);
                 }
             }
@@ -76,7 +76,7 @@ class Get extends Base {
                 if( ! $filter) {
                     $results[] = File::inspect($file);
                 } else {
-                    if(strpos(basename($file), $filter) !== false) {
+                    if(strpos(File::B($file), $filter) !== false) {
                         $results[] = File::inspect($file);
                     }
                 }
@@ -124,7 +124,7 @@ class Get extends Base {
                 if( ! $filter) {
                     $results_inclusive[] = File::inspect($file);
                 } else {
-                    if(strpos(basename($file), $filter) !== false) {
+                    if(strpos(File::B($file), $filter) !== false) {
                         $results_inclusive[] = File::inspect($file);
                     }
                 }
@@ -136,7 +136,7 @@ class Get extends Base {
                     if( ! $filter) {
                         $results[] = File::inspect($file);
                     } else {
-                        if(strpos(basename($file), $filter) !== false) {
+                        if(strpos(File::B($file), $filter) !== false) {
                             $results[] = File::inspect($file);
                         }
                     }
@@ -361,7 +361,7 @@ class Get extends Base {
             list($key, $value) = explode(':', $filter, 2);
             if($key === 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
+                    list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
                     if(strpos($time, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -370,7 +370,7 @@ class Get extends Base {
             } else if($key === 'kind') {
                 $kinds = explode(',', $value);
                 for($i = 0; $i < $total_pages; ++$i) {
-                    $name = basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION));
+                    $name = File::N($pages[$i]);
                     foreach($kinds as $kind) {
                         if(
                             strpos($name, ',' . $kind . ',') !== false ||
@@ -385,7 +385,7 @@ class Get extends Base {
                 return ! empty($results) ? array_unique($results) : false;
             } else if($key === 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), 3);
+                    list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
                     if(strpos($slug, $value) !== false) {
                         $results[] = $pages[$i];
                     }
@@ -393,7 +393,7 @@ class Get extends Base {
                 return ! empty($results) ? $results : false;
             } else { // if($key === 'keyword') {
                 for($i = 0; $i < $total_pages; ++$i) {
-                    if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $value) !== false) {
+                    if(strpos(File::N($pages[$i]), $value) !== false) {
                         $results[] = $pages[$i];
                     }
                 }
@@ -401,7 +401,7 @@ class Get extends Base {
             }
         } else {
             for($i = 0; $i < $total_pages; ++$i) {
-                if(strpos(basename($pages[$i], '.' . pathinfo($pages[$i], PATHINFO_EXTENSION)), $filter) !== false) {
+                if(strpos(File::N($pages[$i]), $filter) !== false) {
                     $results[] = $pages[$i];
                 }
             }
@@ -575,8 +575,8 @@ class Get extends Base {
 
     public static function pageExtract($input, $FP = 'page:') {
         if( ! $input) return false;
-        $extension = pathinfo($input, PATHINFO_EXTENSION);
-        list($time, $kind, $slug) = explode('_', basename($input, '.' . $extension), 3);
+        $extension = File::E($input);
+        list($time, $kind, $slug) = explode('_', File::N($input), 3);
         $kind = explode(',', $kind);
         return array(
             'path' => self::AMF($input, $FP, 'path'),
@@ -623,8 +623,8 @@ class Get extends Base {
     public static function commentExtract($input) {
         $FP = 'comment:';
         if( ! $input) return false;
-        $extension = pathinfo($input, PATHINFO_EXTENSION);
-        list($post, $id, $parent) = explode('_', basename($input, '.' . $extension), 3);
+        $extension = File::E($input);
+        list($post, $id, $parent) = explode('_', File::N($input), 3);
         return array(
             'path' => self::AMF($input, $FP, 'path'),
             'time' => self::AMF(Date::format($id), $FP, 'time'),
@@ -694,9 +694,9 @@ class Get extends Base {
 
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
-        $extension = pathinfo($results['path'], PATHINFO_EXTENSION);
+        $extension = File::E($results['path']);
 
-        if($php_file = File::exist(dirname($results['path']) . DS . $results['slug'] . '.php')) {
+        if($php_file = File::exist(File::D($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
             include $php_file;
             $results['content'] = ob_get_clean();
@@ -932,10 +932,10 @@ class Get extends Base {
             $path = $reference;
         } else {
             foreach(self::comments(null, 'DESC', 'txt,hold') as $comment) {
-                $base = basename($comment);
+                $base = File::B($comment);
                 list($_post, $_time, $_parent) = explode('_', $base);
                 if(
-                    ! is_numeric($reference) && (string) basename($reference) === (string) $base || // By comment name
+                    ! is_numeric($reference) && (string) File::B($reference) === (string) $base || // By comment name
                     (int) Date::format($reference, 'U') === (int) Date::format($_time, 'U') // By comment time/ID
                 ) {
                     $path = $comment;
@@ -951,7 +951,7 @@ class Get extends Base {
         $results['permalink'] = '#';
         $posts = glob($response_to . DS . '*.txt', GLOB_NOSORT);
         for($i = 0, $count = count($posts); $i < $count; ++$i) {
-            list($time, $kind, $slug) = explode('_', basename($posts[$i], '.' . pathinfo($posts[$i], PATHINFO_EXTENSION)), 3);
+            list($time, $kind, $slug) = explode('_', File::N($posts[$i]), 3);
             if((int) Date::format($time, 'U') === $results['post']) {
                 $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $FP, 'permalink');
                 break;
@@ -1121,7 +1121,7 @@ class Get extends Base {
 
     public static function pagePath($detector, $folder = PAGE) {
         foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
-            list($time, $kind, $slug) = explode('_', basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION)), 3);
+            list($time, $kind, $slug) = explode('_', File::N($path), 3);
             if($slug === $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
                 return $path;
             }

@@ -125,7 +125,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
             Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
         }
         if($launch = File::exist($plugins[$i] . DS . 'launch.php')) {
-            if(strpos(basename($plugins[$i]), '__') === 0) {
+            if(strpos(File::B($plugins[$i]), '__') === 0) {
                 if(Guardian::happy() && $config->page_type === 'manager') {
                     include $launch; // backend
                 }

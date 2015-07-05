@@ -1,7 +1,7 @@
 <?php
 
 $q_path = Request::get('path', "");
-$q_path_dir = rtrim(dirname($q_path), '.');
+$q_path_dir = rtrim(File::D($q_path), '.');
 $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
 
 ?>
@@ -22,12 +22,12 @@ $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
     <?php if($files): ?>
     <?php foreach($files as $file): ?>
     <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
-    <tr<?php echo Session::get('recent_file_update') === basename($file->path) ? ' class="active"' : ""; ?>>
+    <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
       <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
       <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
       <?php
 
-      $n = Jot::icon(is_file($file->path) ? 'file-' . Mecha::alter(strtolower(pathinfo($file->path, PATHINFO_EXTENSION)), array(
+      $n = Jot::icon(is_file($file->path) ? 'file-' . Mecha::alter(File::E($file->path), array(
           'xls' => 'excel-o',
           'xlsx' => 'excel-o',
           'doc' => 'word-o',
@@ -66,12 +66,12 @@ $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
           'html' => 'code-o',
           'php' => 'code-o',
           'xml' => 'code-o'
-      ), 'o') : 'folder') . ' ' . basename($url);
+      ), 'o') : 'folder') . ' ' . File::B($url);
 
       ?>
       <td>
         <?php if(is_dir($file->path)): ?>
-        <a href="<?php echo $config->url_current . '?path=' . Text::parse(ltrim($q_path . '/' . basename($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
+        <a href="<?php echo $config->url_current . '?path=' . Text::parse(ltrim($q_path . '/' . File::B($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
         <?php else: ?>
         <a href="<?php echo $file->url; ?>" title="<?php echo File::size($file->path); ?>" target="_blank"><?php echo $n; ?></a>
         <?php endif; ?>
@@ -99,7 +99,7 @@ $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
     <?php endif; ?>
     <?php if(isset($_GET['path'])): ?>
     <tr>
-      <td colspan="3"><?php echo basename($q_path); ?></td>
+      <td colspan="3"><?php echo File::B($q_path); ?></td>
       <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . ($q_path_dir ? '?path=' . Text::parse($q_path_dir, '->encoded_url') : ""), Jot::icon('folder-open'), array(
           'title' => $speak->exit . '&hellip;'
       )); ?></td>

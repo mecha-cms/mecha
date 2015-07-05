@@ -151,7 +151,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // Check for duplicate slug
             if($files = Get::articles('DESC', "", 'txt,draft,archive')) {
                 foreach($files as $file) {
-                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
                         Notify::error(Config::speak('notify_error_slug_exist', $slug));
                         Guardian::memorize($request);
                         break;
@@ -176,7 +176,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // do not type the slug of another post.
             if($files = Get::articles('DESC', "", 'txt,draft,archive') && $slug !== $article->slug) {
                 foreach($files as $file) {
-                    if(strpos(basename($file), '_' . $slug . '.') !== false) {
+                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
                         Notify::error(Config::speak('notify_error_slug_exist', $slug));
                         Guardian::memorize($request);
                         break;
@@ -202,7 +202,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                         Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension_o);
                     }
                 }
-                if($article->slug !== $slug && $php_file = File::exist(dirname($article->path) . DS . $article->slug . '.php')) {
+                if($article->slug !== $slug && $php_file = File::exist(File::D($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
                 Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
@@ -211,7 +211,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 // Rename all comment file(s) related to article if article date has been changed
                 if(((string) $date !== (string) $article->date->W3C) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
                     foreach($comments as $comment) {
-                        $parts = explode('_', basename($comment));
+                        $parts = explode('_', File::B($comment));
                         $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
                         File::open($comment)->renameTo(implode('_', $parts));
                     }
@@ -258,7 +258,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();
         // Deleting custom PHP file of article ...
-        File::open(dirname($article->path) . DS . $article->slug . '.php')->delete();
+        File::open(File::D($article->path) . DS . $article->slug . '.php')->delete();
         Notify::success(Config::speak('notify_success_deleted', $article->title));
         Weapon::fire('on_article_update', array($G, $G));
         Weapon::fire('on_article_destruct', array($G, $G));

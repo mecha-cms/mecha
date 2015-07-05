@@ -3,8 +3,8 @@
     <?php if($files): ?>
     <?php foreach($files as $file): ?>
     <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
-    <tr<?php echo Session::get('recent_file_update') === basename($file->path) ? ' class="active"' : ""; ?>>
-      <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', dirname($url) . '/') . basename($url) : $url; ?></td>
+    <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
+      <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></td>
       <td class="td-icon">
       <?php echo isset($c_url_repair) && $c_url_repair !== false ? Jot::a('construct', $c_url_repair . $url, Jot::icon('pencil'), array(
           'title' => $speak->edit
