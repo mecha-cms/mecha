@@ -34,6 +34,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if($key === false) {
         $data = array(
             'title' => "",
+            'description' => "",
             'type' => 't',
             'value' => "",
             'scope' => 'article'
@@ -44,6 +45,9 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             Shield::abort();
         }
         $data = $fields[$key];
+        if( ! isset($data['description'])) {
+            $data['description'] = "";
+        }
         Config::set('page_title', $speak->editing . ': ' . $data['title'] . $config->title_separator . $config->manager->title);
     }
     $G = array('data' => $data);
@@ -75,6 +79,9 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             'type' => $request['type'],
             'value' => $request['value']
         );
+        if(trim($request['description']) !== "") {
+            $fields[$request_key]['description'] = $request['description'];
+        }
         if($request['scope'] !== "") {
             $fields[$request_key]['scope'] = $request['scope'];
         }

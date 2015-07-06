@@ -128,6 +128,9 @@ html {
 .tab-content-area .messages {margin-top:1.3846153846153846em}
 .tab-content-area .main-action-group + .messages {margin-top:0}
 
+.grid-group-boolean + .grid-group-boolean,
+.grid-group-boolean + input[type="hidden"] + .grid-group-boolean {margin-top:0}
+
 @media (max-width:36.25em) {
   .media {padding-left:0}
   .media-capture {display:none}

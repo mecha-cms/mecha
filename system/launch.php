@@ -340,7 +340,7 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     Config::set(array(
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
-        'pagination' => Navigator::extract(Get::articles('DESC', "", File::E($article->path), $article->path, 1, $config->index->slug)
+        'pagination' => Navigator::extract(Get::articles('DESC', "", File::E($article->path)), $article->path, 1, $config->index->slug)
     ));
 
     Weapon::add('shell_after', function() use($article) {

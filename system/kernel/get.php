@@ -173,21 +173,39 @@ class Get extends Base {
     }
 
     // Get stored configuration data (internal only)
-    public static function state_config($fallback = array()) {
+    public static function state_config($output = null, $fallback = array()) {
         $d = DECK . DS . 'workers' . DS . 'repair.state.config.php';
         $config = file_exists($d) ? include $d : $fallback;
         if($file = File::exist(STATE . DS . 'config.txt')) {
             Mecha::extend($config, File::open($file)->unserialize());
         }
+        if( ! is_null($output)) {
+            return isset($config[$output]) ? $config[$output] : $fallback;
+        }
         return $config;
     }
 
     // Get stored custom field data (internal only)
-    public static function state_field($fallback = array()) {
+    public static function state_field($scope = null, $key = null, $fallback = array()) {
         $d = DECK . DS . 'workers' . DS . 'repair.state.field.php';
         $field = file_exists($d) ? include $d : $fallback;
         if($file = File::exist(STATE . DS . 'field.txt')) {
             Mecha::extend($field, File::open($file)->unserialize());
+        }
+        if( ! is_null($scope)) {
+            $field_alt = array();
+            foreach($field as $k => $v) {
+                foreach(explode(',', $scope) as $s) {
+                    if( ! isset($v['scope']) || $v['scope'] === '*' || $v['scope'] === "" || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
+                        $field_alt[$k] = $v;
+                    }
+                }
+            }
+            $field = $field_alt;
+            unset($field_alt);
+        }
+        if( ! is_null($key)) {
+            return isset($field[$key]) ? $field[$key] : $fallback;
         }
         return $field;
     }
@@ -201,7 +219,7 @@ class Get extends Base {
     }
 
     // Get stored shortcode data (internal only)
-    public static function state_shortcode($fallback = array()) {
+    public static function state_shortcode($key = null, $fallback = array()) {
         $config = Config::get();
         $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
         $shortcode = file_exists($d) ? include $d : $fallback;
@@ -212,15 +230,26 @@ class Get extends Base {
             }
             $shortcode = array_merge($shortcode, $file);
         }
+        if( ! is_null($key)) {
+            return isset($shortcode[$key]) ? $shortcode[$key] : $fallback;
+        }
         return $shortcode;
     }
 
     // Get stored tag data (internal only)
-    public static function state_tag($fallback = array()) {
+    public static function state_tag($id = null, $fallback = array()) {
         $speak = Config::speak();
         $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
         $tag = file_exists($d) ? include $d : $fallback;
-        return File::open(STATE . DS . 'tag.txt')->unserialize($tag);
+        $tag = File::open(STATE . DS . 'tag.txt')->unserialize($tag);
+        if( ! is_null($id)) {
+            foreach($tag as $k => $v) {
+                if($v['id'] === $id) {
+                    return $tag[$k];
+                }
+            }
+        }
+        return $tag;
     }
 
     /**
@@ -370,14 +399,9 @@ class Get extends Base {
             } else if($key === 'kind') {
                 $kinds = explode(',', $value);
                 for($i = 0; $i < $total_pages; ++$i) {
-                    $name = File::N($pages[$i]);
+                    $name = str_replace('_', ',', File::N($pages[$i]));
                     foreach($kinds as $kind) {
-                        if(
-                            strpos($name, ',' . $kind . ',') !== false ||
-                            strpos($name, '_' . $kind . ',') !== false ||
-                            strpos($name, ',' . $kind . '_') !== false ||
-                            strpos($name, '_' . $kind . '_') !== false
-                        ) {
+                        if(strpos($name, ',' . $kind . ',') !== false) {
                             $results[] = $pages[$i];
                         }
                     }
@@ -846,14 +870,12 @@ class Get extends Base {
              * that is not available in the old post(s).
              */
 
-            $fields = self::state_field();
+            $fields = self::state_field(rtrim($FP, ':'));
 
             $init = array();
 
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
-                    $init[$key] = $value['value'];
-                }
+                $init[$key] = $value['value'];
             }
 
             /**
@@ -961,12 +983,10 @@ class Get extends Base {
             $results['url'] = self::AMF('#', $FP, 'url');
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field();
+            $fields = self::state_field(rtrim($FP, ':'));
             $init = array();
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
-                    $init[$key] = $value['value'];
-                }
+                $init[$key] = $value['value'];
             }
             foreach($results['fields'] as $key => $value) {
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
@@ -1012,12 +1032,10 @@ class Get extends Base {
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field();
+            $fields = self::state_field(rtrim($FP, ':'));
             $init = array();
             foreach($fields as $key => $value) {
-                if( ! isset($value['scope']) || $value['scope'] === rtrim($FP, ':')) {
-                    $init[$key] = $value['value'];
-                }
+                $init[$key] = $value['value'];
             }
             foreach($results['fields'] as $key => $value) {
                 $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);

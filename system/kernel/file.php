@@ -282,7 +282,7 @@ class File extends Base {
     }
 
     // Get file base name
-    public static function B($path, $s = false) {
+    public static function B($path, $s = '/') {
         if($s !== DS && $s !== '/') {
             $p = explode($s, $path);
             return array_pop($p);
@@ -291,7 +291,7 @@ class File extends Base {
     }
 
     // Get file directory name
-    public static function D($path, $s = false) {
+    public static function D($path, $s = '/') {
         if($s !== DS && $s !== '/') {
             $p = explode($s, $path);
             array_pop($p);
@@ -307,7 +307,7 @@ class File extends Base {
 
     // Get file name extension
     public static function E($path, $fallback = "") {
-        $etension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         return $extension ? $extension : $fallback;
     }
 

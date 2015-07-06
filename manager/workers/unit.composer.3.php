@@ -1,6 +1,6 @@
 <?php
 
-$fields = Get::state_field();
+$fields = Get::state_field($segment);
 
 
 /**
@@ -55,19 +55,19 @@ if( ! empty($fields)) {
         if( ! isset($value['value'])) {
             $value['value'] = "";
         }
-        // "" means `article` or `page`
-        if( ! isset($value['scope']) || $value['scope'] === "") {
-            $value['scope'] = $segment !== 'comment' ? $segment : "";
+        if( ! isset($value['scope']) || $value['scope'] === '*' || $value['scope'] === "") {
+            $value['scope'] = $segment;
         }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
         $type = $value['type'][0];
-        if($value['scope'] === $segment) {
+        if(strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
+            $title = $value['title'] . (isset($value['description']) && trim($value['description']) !== "" ? ' <span class="text-info help" title="' . Text::parse($value['description'], '->encoded_html') . '">' . Jot::icon('question-circle') . '</span>' : "");
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
             if($type === 't') {
-                $html .= '<label class="grid-group">';
-                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<label class="grid-group grid-group-text">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::text('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
                     'class' => 'input-block'
@@ -75,15 +75,15 @@ if( ! empty($fields)) {
                 $html .= '</span>';
                 $html .= '</label>';
             } else if($type === 'b') {
-                $html .= '<div class="grid-group">';
+                $html .= '<div class="grid-group grid-group-boolean">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $value['title']);
+                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $title);
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type === 'o') {
-                $html .= '<label class="grid-group">';
-                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<label class="grid-group grid-group-option">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
                 $options = array();
                 $selected = isset($field[$key]) ? isset($field[$key]) : "";
@@ -102,8 +102,8 @@ if( ! empty($fields)) {
                 $html .= '</span>';
                 $html .= '</label>';
             } else { // if($value['type'][0] === 's') {
-                $html .= '<label class="grid-group">';
-                $html .= '<span class="grid span-2 form-label">' . $value['title'] . '</span>';
+                $html .= '<label class="grid-group grid-group-summary">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::textarea('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
                     'class' => 'input-block'

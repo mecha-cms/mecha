@@ -45,7 +45,7 @@
     echo Form::select('scope', array(
         'article' => $speak->article,
         'page' => $speak->page,
-        "" => $speak->article . '/' . $speak->page,
+        'article,page' => $speak->article . '/' . $speak->page,
         'comment' => $speak->comment
     ), $cache);
 
@@ -56,6 +56,14 @@
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
     <span class="grid span-5">
     <?php echo Form::textarea('value', Guardian::wayback('value', $file->value), null, array(
+        'class' => 'input-block'
+    )); ?>
+    </span>
+  </label>
+  <label class="grid-group">
+    <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
+    <span class="grid span-5">
+    <?php echo Form::text('description', Guardian::wayback('description', $file->description), Config::speak('manager.placeholder_description', strtolower($speak->field)), array(
         'class' => 'input-block'
     )); ?>
     </span>

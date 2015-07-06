@@ -169,14 +169,12 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     if(strpos($content, '{{') === false) return $content;
     $regex = array();
     foreach(Get::state_shortcode() as $key => $value) {
-        $regex['#(?<!`)' . str_replace(
-            array(
-                '%s'
-            ),
-            array(
-                '(.*?)'
-            ),
-        preg_quote($key, '#')) . '(?!`)#'] = $value;
+        $key = preg_quote($key, '#');
+        $key = str_replace(
+            array('%s', '%d'),
+            array('(.*?)', '(\d*?)'),
+        $key);
+        $regex['#(?<!`)' . $key . '(?!`)#'] = $value;
     }
     $content = preg_replace(array_keys($regex), array_values($regex), $content);
     if(strpos($content, '{{php}}') !== false) {
