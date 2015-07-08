@@ -6,7 +6,7 @@
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
-  <form class="form-repair form-comment" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
+  <form class="form-repair form-comment" id="form-repair" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
     <?php echo Form::hidden('token', $token); ?>
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($segment)); ?>

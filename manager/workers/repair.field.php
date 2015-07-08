@@ -28,7 +28,8 @@
         't' => $speak->text,
         's' => $speak->summary,
         'b' => $speak->boolean,
-        'o' => $speak->option
+        'o' => $speak->option,
+        'f' => $speak->file
     ), $cache[0]);
 
     ?>
@@ -63,7 +64,7 @@
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
     <span class="grid span-5">
-    <?php echo Form::text('description', Guardian::wayback('description', $file->description), Config::speak('manager.placeholder_description', strtolower($speak->field)), array(
+    <?php echo Form::text('description', Guardian::wayback('description', $file->description), Config::speak('manager.placeholder_description_', strtolower($speak->field)), array(
         'class' => 'input-block'
     )); ?>
     </span>

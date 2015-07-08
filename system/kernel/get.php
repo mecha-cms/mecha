@@ -187,16 +187,65 @@ class Get extends Base {
 
     // Get stored custom field data (internal only)
     public static function state_field($scope = null, $key = null, $fallback = array()) {
+
+        $config = Config::get();
+        $speak = Config::speak();
         $d = DECK . DS . 'workers' . DS . 'repair.state.field.php';
         $field = file_exists($d) ? include $d : $fallback;
         if($file = File::exist(STATE . DS . 'field.txt')) {
             Mecha::extend($field, File::open($file)->unserialize());
         }
+
+        /**
+         * Allow shield to add custom field(s) dynamically by creating
+         * a file called `fields.php` stored in a folder named as `workers`.
+         * This file contains array of field(s) data.
+         *
+         * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
+         *
+         *    return array(
+         *        'break_title_text' => array(
+         *            'title' => 'Break Title Text?',
+         *            'type' => 'b',
+         *            'value' => "",
+         *            'scope' => 'article'
+         *        )
+         *    );
+         *
+         * --------------------------------------------------------------------
+         *
+         */
+
+        if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
+            $field_e = include $e;
+            Mecha::extend($field, $field_e);
+        }
+
+        /**
+         * Allow plugin to add custom field(s) dynamically by creating
+         * a file called `fields.php` stored inside a folder named as `workers`.
+         * This file contains array of field(s) data.
+         */
+
+        foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
+            if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
+                $field_e = include $e;
+                Mecha::extend($field, $field_e);
+            }
+        }
+
+        // Fix missing field data
+        foreach($field as $k => $v) {
+            if( ! isset($v['value'])) $field[$k]['value'] = "";
+            if( ! isset($v['scope'])) $field[$k]['scope'] = "";
+        }
+
+        // Filter output(s)
         if( ! is_null($scope)) {
             $field_alt = array();
             foreach($field as $k => $v) {
                 foreach(explode(',', $scope) as $s) {
-                    if( ! isset($v['scope']) || $v['scope'] === '*' || $v['scope'] === "" || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
+                    if($v['scope'] === '*' || $v['scope'] === "" || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
                         $field_alt[$k] = $v;
                     }
                 }
@@ -204,10 +253,15 @@ class Get extends Base {
             $field = $field_alt;
             unset($field_alt);
         }
+
+        // --ibid
         if( ! is_null($key)) {
             return isset($field[$key]) ? $field[$key] : $fallback;
         }
+
+        // No filter
         return $field;
+
     }
 
     // Get stored menu data (internal only)

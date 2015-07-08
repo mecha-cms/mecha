@@ -100,7 +100,10 @@ Jot::add('a', function($kind = 'default', $href = null, $text = "", $attr = arra
 Jot::add('uploader', function($action, $accept = null, $fields = array()) {
     $speak = Config::speak();
     $html = Cell::begin('form', array(
-        'class' => 'form-ignite form-upload',
+        'class' => array(
+            'form-ignite',
+            'form-upload'
+        ),
         'action' => Converter::url($action),
         'method' => 'post',
         'enctype' => 'multipart/form-data'

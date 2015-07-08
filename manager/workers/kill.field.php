@@ -18,7 +18,8 @@
         $s = Mecha::alter($file->type[0], array(
             't' => 'Text',
             'b' => 'Boolean',
-            'o' => 'Option'
+            'o' => 'Option',
+            'f' => 'File'
         ), 'Summary');
 
         ?>

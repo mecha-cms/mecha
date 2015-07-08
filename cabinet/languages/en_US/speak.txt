@@ -526,7 +526,8 @@ manager:
 
   placeholder_title: Your Awesome Title
   placeholder_content: Content goes here&hellip;
-  placeholder_description: Some description about this %s (optional).
+  placeholder_description: Description goes here&hellip;
+  placeholder_description_: Some description about this %s (optional)
   placeholder_css: Custom CSS goes here&hellip;
   placeholder_js: Custom JavaScript goes here&hellip;
   placeholder_file: Select a file&hellip;
@@ -682,6 +683,8 @@ notify_confirm_maybe_you_mean: Maybe you mean %s
 
 notify_warning_intruder_detected: Intruder detected.
 notify_warning_forbidden_input: You are not allowed to use %s in the %s field.
+
+notify_info_comment_moderation: Your comment will be visible once approved by the author.
 
 
 # ---------------------

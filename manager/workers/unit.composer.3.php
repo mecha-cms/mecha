@@ -2,46 +2,6 @@
 
 $fields = Get::state_field($segment);
 
-
-/**
- * Allow shield to add custom field(s) dynamically by creating a file
- * called `fields.php` saved inside a folder named as `workers`.
- * This file contains array of field(s) data.
- *
- * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
- *
- *    return array(
- *        'break_title_text' => array(
- *            'title' => 'Break Title Text?',
- *            'type' => 'b',
- *            'value' => "",
- *            'scope' => 'article'
- *        )
- *    );
- *
- * --------------------------------------------------------------------
- *
- */
-
-if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
-    $extra_fields = include $e;
-    $fields = $fields + $extra_fields;
-}
-
-
-/**
- * Allow plugin to add custom field(s) dynamically by creating a file
- * called `fields.php` saved inside a folder named as `workers`.
- * This file contains array of field(s) data.
- */
-
-foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
-    if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
-        $extra_fields = include $e;
-        $fields = $fields + $extra_fields;
-    }
-}
-
 Weapon::fire('unit_composer_3_before', array($segment, $fields));
 
 if( ! isset($default->fields)) {
@@ -52,12 +12,6 @@ if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($default->fields));
     foreach($fields as $key => $value) {
-        if( ! isset($value['value'])) {
-            $value['value'] = "";
-        }
-        if( ! isset($value['scope']) || $value['scope'] === '*' || $value['scope'] === "") {
-            $value['scope'] = $segment;
-        }
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
@@ -101,6 +55,22 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
+            } else if($type === 'f') {
+                $v = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : false;
+                $has_asset = $v !== false && file_exists(SUBSTANCE . DS . $v) && is_file(SUBSTANCE . DS . $v);
+                $html .= '<div class="grid-group grid-group-file' . ($has_asset ? ' grid-group-boolean' : "") . '">';
+                $html .= ! $has_asset ? '<span class="grid span-2 form-label">' . $title . '</span>' : '<span class="grid span-2"></span>';
+                $html .= '<span class="grid span-4">';
+                if( ! $has_asset) {
+                    $html .= Form::file($key);
+                    $e = strtolower(str_replace(' ', "", $v));
+                    $html .= $v !== false ? Form::hidden('fields[' . $key . '][accept]', $e) . '<br><small class="text-info"><strong>' . $speak->accept . ':</strong> <code>' . str_replace(',', '</code>, <code>', $e) . '</code></small>' : "";
+                } else {
+                    $html .= Form::hidden('fields[' . $key . '][value]', $v);
+                    $html .= '<span title="' . strip_tags($value['title']) . '">' . Form::checkbox('fields[' . $key . '][remove]', $v, false, $speak->delete . ' <code>' . $v . '</code>') . '</span>';
+                }
+                $html .= '</span>';
+                $html .= '</div>';
             } else { // if($value['type'][0] === 's') {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';

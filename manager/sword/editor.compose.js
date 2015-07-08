@@ -26,17 +26,16 @@
         position: -3,
         click: function(e, editor) {
             var editor = editor.grip,
-                s = editor.selection(),
-                clean_B = s.before.replace(/\s+$/, ""),
-                clean_A = s.after.replace(/^\s+/, ""),
-                s_B = clean_B.length > 0 ? '\n\n' : "",
                 p = base.is_html_parser_enabled,
-                table = speak.others['table_text_' + (p ? 'raw' : 'html')],
-            table = s_B + table.replace(/\t/g, TAB) + '\n\n';
-            editor.area.value = clean_B + table + clean_A;
-            editor.select(clean_B.length + s_B.length + (p ? 0 : 25 + (TAB.length * 6)), clean_B.length + table.indexOf(p ? ' |' : '</th>'), function() {
-                editor.updateHistory();
-            });
+                table = speak.others['table_text_' + (p ? 'raw' : 'html')];
+            editor.tidy('\n\n', function(s) {
+                table = table.replace(/\t/g, TAB);
+                editor.insert(table, function() {
+                    editor.select(s.before.length + (p ? 0 : 25 + (TAB.length * 6)), s.before.length + table.indexOf(p ? ' |' : '</th>'), function() {
+                        editor.updateHistory();
+                    });
+                });
+            }, '\n\n', true);
         }
     });
 
@@ -50,7 +49,7 @@
                 clean_B = s.before.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/\s+$/, ""),
                 clean_A = s.after.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/^\s+/, "");
             if (clean_B.length === 0) {
-                editor.select(0);
+                editor.select();
                 return;
             }
             var more_text = m && m[1] ? m[1] : "";
@@ -70,9 +69,9 @@
         });
     }
 
-    if ($('.btn-destruct').length === 0) {
+    if (!$('.btn-destruct').length) {
         $.slug($title, $slug, '-');
-        $title.trigger("keyup");
+        if ($slug.val() === "") $title.trigger("keyup");
     }
 
     var timer = null;

@@ -110,17 +110,6 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $css = trim(Request::post('css', ""));
         $js = trim(Request::post('js', ""));
         $field = Request::post('fields', array());
-        // Remove empty field value
-        foreach($field as $k => $v) {
-            if(
-                $v['type'][0] === 't' && $v['value'] === "" ||
-                $v['type'][0] === 's' && $v['value'] === "" ||
-                $v['type'][0] === 'b' && ! isset($v['value']) ||
-                $v['type'][0] === 'o' && ( ! isset($v['value']) || $v['value'] === "")
-            ) {
-                unset($field[$k]);
-            }
-        }
         // Check for duplicate slug
         if(
             $slug === $config->index->slug ||
@@ -132,6 +121,19 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             Notify::error(Config::speak('notify_error_slug_exist', $slug));
             Guardian::memorize($request);
         }
+        // Check for duplicate slug, except for the current old slug.
+        // Allow user(s) to change their post slug, but make sure they
+        // do not type the slug of another post.
+        if($files = Get::pages('DESC', "", 'txt,draft,archive') && trim($slug) !== "" && $slug !== $page->slug) {
+            foreach($files as $file) {
+                if(strpos(File::B($file), '_' . $slug . '.') !== false) {
+                    Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                    Guardian::memorize($request);
+                    break;
+                }
+            }
+            unset($files);
+        }
         // Slug must contains at least one letter or one `-`
         if( ! preg_match('#[a-z\-]#i', $slug)) {
             Notify::error($speak->notify_error_slug_missing_letter);
@@ -142,28 +144,46 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             Notify::error($speak->notify_error_post_content_empty);
             Guardian::memorize($request);
         }
-        $header = array(
-            'Title' => $title,
-            'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
-            'Author' => $author,
-            'Content Type' => Request::post('content_type', 'HTML'),
-            'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
-        );
         $P = array('data' => $request, 'action' => $request['action']);
-        // New
-        if( ! $id) {
-            // Check for duplicate slug
-            if($files = Get::pages('DESC', "", 'txt,draft,archive')) {
-                foreach($files as $file) {
-                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
-                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
-                        Guardian::memorize($request);
-                        break;
+        if( ! Notify::errors()) {
+            // New asset data
+            if(isset($_FILES) && ! empty($_FILES)) {
+                $accept = File::$config['file_extension_allow'];
+                foreach($_FILES as $k => $v) {
+                    if(isset($field[$k]['accept'])) {
+                        File::$config['file_extension_allow'] = explode(',', $field[$k]['accept']);
+                    }
+                    if($v['size'] > 0 && $v['error'] === 0) {
+                        File::upload($v, SUBSTANCE);
+                        if( ! Notify::errors()) {
+                            $field[$k]['value'] = Text::parse($v['name'], '->safe_file_name');
+                        }
                     }
                 }
-                unset($files);
+                File::$config['file_extension_allow'] = $accept;
+                unset($accept);
             }
-            if( ! Notify::errors()) {
+            // Remove empty field value
+            foreach($field as $k => $v) {
+                if(isset($v['remove']) && $v['type'][0] === 'f') {
+                    // Remove asset field and data
+                    File::open(SUBSTANCE . DS . $v['remove'])->delete();
+                    Notify::success(Config::speak('notify_file_deleted', '<code>' . $v['remove'] . '</code>'));
+                    unset($field[$k]);
+                }
+                if(( ! isset($v['value']) || $v['value'] === "") || ( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f')) {
+                    unset($field[$k]);
+                }
+            }
+            $header = array(
+                'Title' => $title,
+                'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
+                'Author' => $author,
+                'Content Type' => Request::post('content_type', 'HTML'),
+                'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
+            );
+            // Ignite
+            if( ! $id) {
                 Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 if(( ! empty($css) && $css !== $config->defaults->page_custom_css) || ( ! empty($js) && $js !== $config->defaults->page_custom_js)) {
                     Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
@@ -172,24 +192,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_construct', array($G, $P));
                 Guardian::kick($config->manager->slug . '/page/repair/id:' . Date::format($date, 'U'));
-            }
-        // Repair
-        } else {
-            // Check for duplicate slug, except for the current old slug.
-            // Allow user(s) to change their post slug, but make sure they
-            // do not type the slug of another post.
-            if($files = Get::pages('DESC', "", 'txt,draft,archive') && $slug !== $page->slug) {
-                foreach($files as $file) {
-                    if(strpos(File::B($file), '_' . $slug . '.') !== false) {
-                        Notify::error(Config::speak('notify_error_slug_exist', $slug));
-                        Guardian::memorize($request);
-                        break;
-                    }
-                }
-                unset($files);
-            }
-            // Start rewriting ...
-            if( ! Notify::errors()) {
+            // Repair
+            } else {
                 Page::open($page->path)->header($header)->content($content)->save();
                 File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 $custom_ = CUSTOM . DS . Date::format($page->date->W3C, 'Y-m-d-H-i-s');
@@ -244,6 +248,15 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         File::open($page->path)->delete();
+        // Deleting substance(s)
+        if(isset($page->fields) && is_object($page->fields)) {
+            foreach($page->fields as $field) {
+                $file = SUBSTANCE . DS . $field;
+                if(file_exists($file) && is_file($file)) {
+                    File::open($file)->delete();
+                }
+            }
+        }
         // Deleting custom CSS and JavaScript file of page ...
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
         File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();

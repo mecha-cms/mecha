@@ -526,7 +526,8 @@ manager:
 
   placeholder_title: Judul Mengagumkan Anda
   placeholder_content: Konten di sini&hellip;
-  placeholder_description: Deskripsi tentang %s ini (opsional).
+  placeholder_description: Deskripsi di sini&hellip;
+  placeholder_description_: Deskripsi tentang %s ini (opsional)
   placeholder_css: CSS kustom di sini&hellip;
   placeholder_js: JavaScript di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
@@ -682,6 +683,8 @@ notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s
 
 notify_warning_intruder_detected: Penyusup terdeteksi.
 notify_warning_forbidden_input: Anda tidak diperbolehkan untuk menggunakan %s pada bidang %s.
+
+notify_info_comment_moderation: Komentar Anda akan tampil setelah disetujui oleh penulis.
 
 
 # ---------------------

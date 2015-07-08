@@ -53,6 +53,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         chmod(ROOT . DS . 'cabinet' . DS . 'responses', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'extends', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom', 0766);
+        chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'scraps', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'states', 0766);
         chmod(ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt', 0600);
@@ -60,6 +61,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         unlink(ROOT . DS . 'cabinet' . DS . 'pages' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'responses' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom' . DS . '.empty');
+        unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'scraps' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'states' . DS . '.empty');
         unlink(ROOT . DS . 'system' . DS . 'log' . DS . 'sessions' . DS . '.empty');

@@ -10,7 +10,7 @@
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
-  <form class="form-<?php echo $default->id ? 'repair' : 'ignite'; ?> form-page" id="form-<?php echo $default->id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
+  <form class="form-<?php echo $default->id ? 'repair' : 'ignite'; ?> form-page" id="form-<?php echo $default->id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
     <?php echo Form::hidden('token', $token); ?>
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($segment)); ?>
@@ -34,7 +34,7 @@
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
         <span class="grid span-5">
-        <?php echo Form::textarea('description', Guardian::wayback('description', $default->description), Config::speak('manager.placeholder_description', strtolower($speak->page)), array(
+        <?php echo Form::textarea('description', Guardian::wayback('description', $default->description), Config::speak('manager.placeholder_description_', strtolower($speak->page)), array(
             'class' => 'textarea-block'
         )); ?>
         </span>

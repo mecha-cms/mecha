@@ -20,6 +20,7 @@ define('PAGE', CARGO . DS . 'pages');
 define('RESPONSE', CARGO . DS . 'responses');
 define('EXTEND', CARGO . DS . 'extends');
 define('CUSTOM', EXTEND . DS . 'custom');
+define('SUBSTANCE', EXTEND . DS . 'substance');
 define('STATE', CARGO . DS . 'states');
 define('PLUGIN', CARGO . DS . 'plugins');
 define('SHIELD', CARGO . DS . 'shields');

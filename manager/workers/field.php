@@ -2,6 +2,7 @@
   <?php echo Jot::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->field), $config->manager->slug . '/field/ignite'); ?>
 </div>
 <?php echo $messages; ?>
+<?php $fields_o = File::open(STATE . DS . 'field.txt')->unserialize(array()); ?>
 <?php if($files): ?>
 <table class="table-bordered table-full-width">
   <thead>
@@ -14,6 +15,7 @@
   </thead>
   <tbody>
     <?php foreach($files as $key => $value): ?>
+    <?php if(isset($fields_o[$key])): ?>
     <tr>
       <td><?php echo $value->title; ?></td>
       <td><?php echo $key; ?></td>
@@ -22,7 +24,8 @@
       $s = Mecha::alter($value->type[0], array(
           't' => 'Text',
           'b' => 'Boolean',
-          'o' => 'Option'
+          'o' => 'Option',
+          'f' => 'File'
       ), 'Summary');
 
       ?>
@@ -38,6 +41,7 @@
       )); ?>
       </td>
     </tr>
+    <?php endif; ?>
     <?php endforeach; ?>
   </tbody>
 </table>
