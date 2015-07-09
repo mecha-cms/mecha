@@ -186,7 +186,7 @@ class Get extends Base {
     }
 
     // Get stored custom field data (internal only)
-    public static function state_field($scope = null, $key = null, $fallback = array()) {
+    public static function state_field($scope = null, $key = null, $fallback = array(), $all = true) {
 
         $config = Config::get();
         $speak = Config::speak();
@@ -196,51 +196,57 @@ class Get extends Base {
             Mecha::extend($field, File::open($file)->unserialize());
         }
 
-        /**
-         * Allow shield to add custom field(s) dynamically by creating
-         * a file called `fields.php` stored in a folder named as `workers`.
-         * This file contains array of field(s) data.
-         *
-         * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
-         *
-         *    return array(
-         *        'break_title_text' => array(
-         *            'title' => 'Break Title Text?',
-         *            'type' => 'b',
-         *            'value' => "",
-         *            'scope' => 'article'
-         *        )
-         *    );
-         *
-         * --------------------------------------------------------------------
-         *
-         */
+        if($all) {
 
-        if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
-            $field_e = include $e;
-            Mecha::extend($field, $field_e);
-        }
+            /**
+             * Allow shield to add custom field(s) dynamically by creating
+             * a file called `fields.php` stored in a folder named as `workers`.
+             * This file contains array of field(s) data.
+             *
+             * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
+             *
+             *    return array(
+             *        'break_title_text' => array(
+             *            'title' => 'Break Title Text?',
+             *            'type' => 'b',
+             *            'value' => "",
+             *            'scope' => 'article'
+             *        )
+             *    );
+             *
+             * --------------------------------------------------------------------
+             *
+             */
 
-        /**
-         * Allow plugin to add custom field(s) dynamically by creating
-         * a file called `fields.php` stored inside a folder named as `workers`.
-         * This file contains array of field(s) data.
-         */
-
-        foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
-            if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
+            if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
                 $field_e = include $e;
                 Mecha::extend($field, $field_e);
             }
+
+            /**
+             * Allow plugin to add custom field(s) dynamically by creating
+             * a file called `fields.php` stored inside a folder named as `workers`.
+             * This file contains array of field(s) data.
+             */
+
+            foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
+                if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
+                    $field_e = include $e;
+                    Mecha::extend($field, $field_e);
+                }
+            }
+
         }
 
-        // Fix missing field data
         foreach($field as $k => $v) {
             if( ! isset($v['value'])) $field[$k]['value'] = "";
+            // Backward compatibility ...
+            // "" is equal to `article,page`
+            // '*' is equal to all scopes
             if( ! isset($v['scope'])) $field[$k]['scope'] = "";
         }
 
-        // Filter output(s)
+        // Filter output(s) by `scope`
         if( ! is_null($scope)) {
             $field_alt = array();
             foreach($field as $k => $v) {
@@ -254,7 +260,7 @@ class Get extends Base {
             unset($field_alt);
         }
 
-        // --ibid
+        // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($field[$key]) ? $field[$key] : $fallback;
         }
@@ -654,14 +660,16 @@ class Get extends Base {
     public static function pageExtract($input, $FP = 'page:') {
         if( ! $input) return false;
         $extension = File::E($input);
+        $update = File::T($input);
+        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         list($time, $kind, $slug) = explode('_', File::N($input), 3);
         $kind = explode(',', $kind);
         return array(
             'path' => self::AMF($input, $FP, 'path'),
             'id' => self::AMF((int) Date::format($time, 'U'), $FP, 'id'),
             'time' => self::AMF(Date::format($time), $FP, 'time'),
-            'update_raw' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'update_raw'),
-            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
+            'update_raw' => self::AMF($update, $FP, 'update_raw'),
+            'update' => self::AMF($update_date, $FP, 'update'),
             'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
             'slug' => self::AMF($slug, $FP, 'slug'),
             'state' => self::AMF($extension !== 'draft' ? 'published' : 'draft', $FP, 'state')
@@ -702,12 +710,14 @@ class Get extends Base {
         $FP = 'comment:';
         if( ! $input) return false;
         $extension = File::E($input);
+        $update = File::T($input);
+        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         list($post, $id, $parent) = explode('_', File::N($input), 3);
         return array(
             'path' => self::AMF($input, $FP, 'path'),
             'time' => self::AMF(Date::format($id), $FP, 'time'),
-            'update_raw' => self::AMF(file_exists($input) ? filemtime($input) : null, $FP, 'update_raw'),
-            'update' => self::AMF(file_exists($input) ? date('Y-m-d H:i:s', filemtime($input)) : null, $FP, 'update'),
+            'update_raw' => self::AMF($update, $FP, 'update_raw'),
+            'update' => self::AMF($update, $FP, 'update'),
             'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
             'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
             'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),
@@ -924,7 +934,7 @@ class Get extends Base {
              * that is not available in the old post(s).
              */
 
-            $fields = self::state_field(rtrim($FP, ':'));
+            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
 
             $init = array();
 
@@ -1037,7 +1047,7 @@ class Get extends Base {
             $results['url'] = self::AMF('#', $FP, 'url');
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(rtrim($FP, ':'));
+            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
             $init = array();
             foreach($fields as $key => $value) {
                 $init[$key] = $value['value'];
@@ -1086,7 +1096,7 @@ class Get extends Base {
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(rtrim($FP, ':'));
+            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
             $init = array();
             foreach($fields as $key => $value) {
                 $init[$key] = $value['value'];

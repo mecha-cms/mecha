@@ -131,6 +131,16 @@ html {
 .grid-group-boolean + .grid-group-boolean,
 .grid-group-boolean + input[type="hidden"] + .grid-group-boolean {margin-top:0}
 
+.grid-group-file input[type="file"] {
+  display:inline-block;
+  font-size:86%;
+  line-height:normal;
+  max-width:none;
+  max-height:none;
+  width:auto;
+  height:auto;
+}
+
 @media (max-width:36.25em) {
   .media {padding-left:0}
   .media-capture {display:none}

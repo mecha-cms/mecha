@@ -103,7 +103,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         'offset' => $offset,
         'files' => ! empty($plugins) ? $plugins : false,
         'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
-        'cargo' => DECK . DS . 'workers' . DS . 'plugin.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.plugin.php'
     ));
     Shield::attach('manager', false);
 });

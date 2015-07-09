@@ -69,7 +69,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     }
     Config::set(array(
         'page_title' => $speak->backup . '/' . $speak->restore . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'backup.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.backup.php'
     ));
     Shield::attach('manager', false);
 });

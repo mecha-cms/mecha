@@ -12,6 +12,11 @@ if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($default->fields));
     foreach($fields as $key => $value) {
+        // Backward compatibility ...
+        // "" is equal to `article,page`
+        // '*' is equal to all scopes
+        if($value['scope'] === "") $value['scope'] = 'article,page';
+        if($value['scope'] === '*') $value['scope'] = $segment;
         if(Notify::errors()) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
@@ -56,22 +61,23 @@ if( ! empty($fields)) {
                 $html .= '</span>';
                 $html .= '</label>';
             } else if($type === 'f') {
-                $v = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : false;
-                $has_asset = $v !== false && file_exists(SUBSTANCE . DS . $v) && is_file(SUBSTANCE . DS . $v);
-                $html .= '<div class="grid-group grid-group-file' . ($has_asset ? ' grid-group-boolean' : "") . '">';
-                $html .= ! $has_asset ? '<span class="grid span-2 form-label">' . $title . '</span>' : '<span class="grid span-2"></span>';
+                $v = isset($value['value']) && $value['value'] !== "" ? $value['value'] : false;
+                $vv = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : false;
+                $has_file = $vv !== false && file_exists(SUBSTANCE . DS . $vv) && is_file(SUBSTANCE . DS . $vv);
+                $html .= '<div class="grid-group grid-group-file' . ($has_file ? ' grid-group-boolean' : "") . '">';
+                $html .= ! $has_file ? '<span class="grid span-2 form-label">' . $title . '</span>' : '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                if( ! $has_asset) {
+                if( ! $has_file) {
                     $html .= Form::file($key);
                     $e = strtolower(str_replace(' ', "", $v));
-                    $html .= $v !== false ? Form::hidden('fields[' . $key . '][accept]', $e) . '<br><small class="text-info"><strong>' . $speak->accept . ':</strong> <code>' . str_replace(',', '</code>, <code>', $e) . '</code></small>' : "";
+                    $html .= $v !== false ? Form::hidden('fields[' . $key . '][accept]', $e) . '<br><small><strong>' . $speak->accepted . ':</strong> <code>*.' . str_replace(',', '</code>, <code>*.', $e) . '</code></small>' : "";
                 } else {
-                    $html .= Form::hidden('fields[' . $key . '][value]', $v);
-                    $html .= '<span title="' . strip_tags($value['title']) . '">' . Form::checkbox('fields[' . $key . '][remove]', $v, false, $speak->delete . ' <code>' . $v . '</code>') . '</span>';
+                    $html .= Form::hidden('fields[' . $key . '][value]', $vv);
+                    $html .= '<span title="' . strip_tags($value['title']) . '">' . Form::checkbox('fields[' . $key . '][remove]', $vv, false, $speak->delete . ' <code>' . $vv . '</code>') . '</span>';
                 }
                 $html .= '</span>';
                 $html .= '</div>';
-            } else { // if($value['type'][0] === 's') {
+            } else { // if($type === 's') {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';

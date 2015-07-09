@@ -212,7 +212,7 @@ class Shield extends Base {
         $G['data']['path'] = $shield;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache_path = is_string($cache) ? $cache : CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
-        if($G['data']['cache'] && File::exist($cache_path)) {
+        if($G['data']['cache'] && file_exists($cache_path)) {
             if(is_null($expire) || is_int($expire) && time() - $expire < filemtime($cache_path)) {
                 // Begin shield cache
                 Weapon::fire('shield_cache_before', array($G, $G));

@@ -183,7 +183,7 @@ Text::parser('to_safe_file_name', function($input) {
     return implode('.', $parts_output);
 });
 
-// < 1.1.3
+// DEPRECATED. < 1.1.3
 Text::parser('to_slug_moderate', function($input) {
     return Text::parse($input, '->safe_file_name');
 });

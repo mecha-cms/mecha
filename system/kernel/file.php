@@ -65,7 +65,7 @@ class File extends Base {
     public static function inspect($path) {
         $path = self::path($path);
         $extension = self::E($path);
-        $update = file_exists($path) ? filemtime($path) : null;
+        $update = File::T($path);
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         return array(
             'path' => $path,
@@ -203,8 +203,8 @@ class File extends Base {
     // Save the written data to ...
     public static function saveTo($path, $permission = null) {
         $path = self::path($path);
-        if( ! file_exists(File::D($path))) {
-            mkdir(File::D($path), 0777, true);
+        if( ! file_exists(self::D($path))) {
+            mkdir(self::D($path), 0777, true);
         }
         $handle = fopen($path, 'w') or die('Cannot open file: ' . $path);
         fwrite($handle, self::$cache);
@@ -218,7 +218,7 @@ class File extends Base {
 
     // Rename a file
     public static function renameTo($new_name) {
-        $root = rtrim(File::D(self::$open), DS) . DS; 
+        $root = rtrim(self::D(self::$open), DS) . DS; 
         $old_name = ltrim(self::B(self::$open), DS);
         if($new_name !== $old_name) {
             rename($root . $old_name, $root . $new_name);
@@ -229,13 +229,13 @@ class File extends Base {
 
     // Move file or folder to ...
     public static function moveTo($destination = ROOT) {
-        $destination = rtrim(File::path($destination), DS);
+        $destination = rtrim(self::path($destination), DS);
         if(file_exists(self::$open)) {
             if(is_dir($destination)) {
                 $destination .= DS . self::B(self::$open);
             }
-            if( ! file_exists(File::D($destination))) {
-                mkdir(File::D($destination), 0777, true);
+            if( ! file_exists(self::D($destination))) {
+                mkdir(self::D($destination), 0777, true);
             }
             rename(self::$open, $destination);
         }
@@ -255,8 +255,8 @@ class File extends Base {
                     }
                     $dest = rtrim(self::path($dest), DS) . DS . self::B(self::$open);
                 } else {
-                    if( ! file_exists(File::D($dest))) {
-                        mkdir(File::D($dest), 0777, true);
+                    if( ! file_exists(self::D($dest))) {
+                        mkdir(self::D($dest), 0777, true);
                     }
                 }
                 if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
@@ -309,6 +309,11 @@ class File extends Base {
     public static function E($path, $fallback = "") {
         $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         return $extension ? $extension : $fallback;
+    }
+
+    // Get file modification time
+    public static function T($path, $fallback = null) {
+        return file_exists($path) ? filemtime($path) : $fallback;
     }
 
     // Set file permission

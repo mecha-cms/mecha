@@ -224,6 +224,12 @@ minute_p: Menit
 second_p: Detik
 millisecond_p: Milidetik
 
+default: Standar
+defaults: Standar
+
+general: Umum
+generals: Umum
+
 timezone: Zona Waktu
 timezones: Zona Waktu
 
@@ -287,6 +293,8 @@ last_: Terakhir %s
 
 size: Ukuran
 sizes: Ukuran
+
+total: Total
 
 type: Tipe
 types: Tipe
@@ -549,10 +557,7 @@ manager:
 
   title_title_separator: Pemisah Judul
 
-  title_general: Umum
-  title_header: Kop/Kepala
   title_authorization: Kepemilikan
-  title_page: Halaman
   title_page_index: Halaman Indeks
   title_page_tag: Halaman Label
   title_page_archive: Halaman Arsip
@@ -581,11 +586,6 @@ manager:
   title_widget_time: Format Waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
   title_widget_include_js: Sertakan JavaScript Widget Bawaan ke Tameng
-
-  title_defaults__title: Judul %s Standar
-  title_defaults__content: Konten %s Standar
-  title_defaults__custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> %s Standar
-  title_defaults__custom_js: JavaScript %s Standar
 
   title__upload: Unggah Sebuah %s
   title__upload_alt: Unggah Sebuah %s
@@ -645,8 +645,8 @@ notify_error_no_file_selected: Mohon pilih sebuah berkas.
 notify_error_no_files_selected: Mohon pilih setidaknya satu berkas.
 notify_error_file_extension: Ekstensi <code>%s</code> tidak diperbolehkan.
 notify_error_file_extension_missing: Mohon sertakan ekstensi berkas. Misal: <code>berkas.jpg</code>
-notify_error_file_size_max: Ukuran berkas harus kurang dari <code>%s</code>.
-notify_error_file_size_min: Ukuran berkas harus lebih dari <code>%s</code>.
+notify_error_file_size_max: Ukuran berkas harus lebih kecil dari <code>%s</code>.
+notify_error_file_size_min: Ukuran berkas harus lebih besar dari <code>%s</code>.
 notify_error_file_type_unknown: Tipe berkas tidak diketahui.
 notify_error_username_or_password: Nama pengguna atau kata kunci Anda tidak valid.
 notify_error_empty_fields: Mohon isi semua bidang yang wajib.
@@ -675,8 +675,8 @@ notify_invalid_duplicate: Duplikat %s.
 
 notify_confirm: Anda yakin?
 notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?
-notify_confirm_delete: Anda yakin ingin menghapus?
 notify_confirm_page_leave_: Anda yakin ingin meninggalkan halaman %s?
+notify_confirm_delete: Anda yakin ingin menghapus?
 notify_confirm_delete_: Anda yakin ingin menghapus %s?
 notify_confirm_delete_page: Ini juga akan menghapus semua komentar yang terkait dengan %1$s ini berikut berkas kustom <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript %1$s.
 notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s

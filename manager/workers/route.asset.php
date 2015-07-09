@@ -107,7 +107,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
-        'cargo' => DECK . DS . 'workers' . DS . 'asset.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.asset.php'
     ));
     Shield::attach('manager', false);
 });

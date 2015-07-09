@@ -5,13 +5,13 @@ Untuk menyingkirkan _kode pintasan_, cukup biarkan bidang kode yang ingin dihapu
 Sebagai tautan HTML:
 
 ~~~ .html
-<a href="`{{url}}`article/lorem-ipsum">teks tautan di sini</a>
+<a href="`{{url.article}}`lorem-ipsum">teks tautan</a>
 ~~~
 
 Sebagai tautan Markdown:
 
 ~~~
-[teks tautan di sini](`{{url}}`article/lorem-ipsum)
+[teks tautan](`{{url.article}}`lorem-ipsum)
 ~~~
 
 ### Meng-Escape Kode Pintasan
@@ -19,7 +19,7 @@ Sebagai tautan Markdown:
 Apit _kode pintasan_ dengan simbol _backtick_ untuk mencegah parse kode:
 
 ~~~
-Parse pola {{ini}}, tapi bukan ``{{ini}}``
+Parse pola `{{ini}}`, tapi bukan ``{{ini}}``
 ~~~
 
 ### Tingkat Lanjut

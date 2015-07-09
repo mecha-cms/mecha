@@ -1,45 +1,62 @@
 <?php
 
-// Submitting a comment ...
+
+/**
+ * Create New Comment
+ * ------------------
+ */
+
 Weapon::add('shield_before', function() use($config, $speak) {
+    $comment_id = 'comment-%d'; // Your comment ID
+    $comment_form_id = 'comment-form'; // Your comment form ID
     $article = isset(Config::get('article')->path) ? Get::article(Config::get('article')->path) : false;
     if($article && $config->page_type === 'article' && Request::method('post')) {
         $request = Request::post();
-        Guardian::checkToken($request['token'], $config->url_current . '#comment-form');
+        // Check token
+        Guardian::checkToken($request['token'], $config->url_current . '#' . $comment_form_id);
         $extension = $config->comment_moderation && ! Guardian::happy() ? '.hold' : '.txt';
+        // Check name
         if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', $speak->comment_name));
         }
+        // Check email
         if(trim($request['email']) !== "") {
             if( ! Guardian::check($request['email'], '->email')) {
                 Notify::error($speak->notify_invalid_email);
             } else {
                 // Disallow passenger(s) from entering your email address in the comment email field
                 if( ! Guardian::happy() && $request['email'] === $config->author_email) {
-                    Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
+                    Notify::warning(Config::speak('notify_warning_forbidden_input', '<em>' . $request['email'] . '</em>', strtolower($speak->email)));
                 }
             }
         } else {
             Notify::error(Config::speak('notify_error_empty_field', $speak->email));
         }
-        if(trim($request['url']) !== "" && ! Guardian::check($request['url'], '->URL')) {
+        // Check URL
+        if(trim($request['url']) !== "" && ! Guardian::check($request['url'], '->url')) {
             Notify::error($speak->notify_invalid_url);
         }
+        // Check message
         if(trim($request['message']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', $speak->comment_message));
         }
+        // Check challenge
         if( ! Guardian::checkMath($request['math'])) {
             Notify::error($speak->notify_invalid_math_answer);
         }
+        // Check name length
         if(Guardian::check($request['name'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', $speak->comment_name));
         }
+        // Check email length
         if(Guardian::check($request['email'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', $speak->comment_email));
         }
+        // Check URL length
         if(Guardian::check($request['url'], '->too_long', 100)) {
             Notify::error(Config::speak('notify_error_too_long', $speak->comment_url));
         }
+        // Check message length
         if(Guardian::check($request['message'], '->too_long', 1700)) {
             Notify::error(Config::speak('notify_error_too_long', $speak->comment_message));
         }
@@ -69,12 +86,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
             $message = $request['message'];
             $field = Request::post('fields', array());
-            // Remove empty field value
-            foreach($field as $k => $v) {
-                if(( ! isset($v['value']) || $v['value'] === "") || ( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'a')) {
-                    unset($field[$k]);
-                }
-            }
+            include DECK . DS . 'workers' . DS . 'task.field.1.php';
             // Temporarily disallow image(s) in comment to prevent XSS
             $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
             $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
@@ -94,7 +106,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
             Weapon::fire('on_comment_update', array($P, $P));
             Weapon::fire('on_comment_construct', array($P, $P));
             if($config->comment_notification_email) {
-                $mail  = '<p>' . Config::speak('comment_notification', $article->url . '#comment-' . Date::format($id, 'U')) . '</p>';
+                $mail  = '<p>' . Config::speak('comment_notification', $article->url . '#' . sprintf($comment_id, Date::format($id, 'U'))) . '</p>';
                 $mail .= '<p><strong>' . $name . ':</strong></p>';
                 $mail .= $parser !== 'HTML' ? Text::parse($message, '->html') : $message;
                 $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
@@ -105,9 +117,9 @@ Weapon::add('shield_before', function() use($config, $speak) {
                     }
                 }
             }
-            Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comment_moderation ? '#comment-form' : '#comment-' . Date::format($id, 'U')));
+            Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comment_moderation ? '#' . $comment_form_id : '#' . sprintf($comment_id, Date::format($id, 'U'))));
         } else {
-            Guardian::kick($config->url_current . '#comment-form');
+            Guardian::kick($config->url_current . '#' . $comment_form_id);
         }
     }
 });

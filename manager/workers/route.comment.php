@@ -32,7 +32,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         'offset' => $offset,
         'responses' => $comments,
         'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
-        'cargo' => DECK . DS . 'workers' . DS . 'comment.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.comment.php'
     ));
     Shield::attach('manager', false);
 });
@@ -82,35 +82,8 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $url = Request::post('url', false);
             $message = $request['message'];
             $field = Request::post('fields', array());
-            // New asset data
-            if(isset($_FILES) && ! empty($_FILES)) {
-                $accept = File::$config['file_extension_allow'];
-                foreach($_FILES as $k => $v) {
-                    if(isset($field[$k]['accept'])) {
-                        File::$config['file_extension_allow'] = explode(',', $field[$k]['accept']);
-                    }
-                    if($v['size'] > 0 && $v['error'] === 0) {
-                        File::upload($v, SUBSTANCE);
-                        if( ! Notify::errors()) {
-                            $field[$k]['value'] = Text::parse($v['name'], '->safe_file_name');
-                        }
-                    }
-                }
-                File::$config['file_extension_allow'] = $accept;
-                unset($accept);
-            }
-            // Remove empty field value
-            foreach($field as $k => $v) {
-                if(isset($v['remove']) && $v['type'][0] === 'f') {
-                    // Remove asset field and data
-                    File::open(SUBSTANCE . DS . $v['remove'])->delete();
-                    Notify::success(Config::speak('notify_file_deleted', '<code>' . $v['remove'] . '</code>'));
-                    unset($field[$k]);
-                }
-                if(( ! isset($v['value']) || $v['value'] === "") || ( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f')) {
-                    unset($field[$k]);
-                }
-            }
+            include DECK . DS . 'workers' . DS . 'task.field.2.php';
+            include DECK . DS . 'workers' . DS . 'task.field.1.php';
             // Update data
             Page::open($comment->path)->header(array(
                 'Name' => $name,
@@ -154,15 +127,8 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         $P = array('data' => Mecha::A($comment));
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
-        // Deleting substance(s)
-        if(isset($comment->fields) && is_object($comment->fields)) {
-            foreach($comment->fields as $field) {
-                $file = SUBSTANCE . DS . $field;
-                if(file_exists($file) && is_file($file)) {
-                    File::open($file)->delete();
-                }
-            }
-        }
+        $task_connect = $comment;
+        include DECK . DS . 'workers' . DS . 'task.field.3.php';
         File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->comment));
         Weapon::fire('on_comment_update', array($P, $P));

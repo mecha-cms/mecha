@@ -42,6 +42,7 @@ class Navigator extends Base {
         // Set default next, previous and step data
         self::$bucket = array('prev' => false, 'next' => false, 'step' => false);
 
+        $pages = (array) $pages;
         $config = Config::get();
         $speak = Config::speak();
         $base = $config->url;
@@ -58,7 +59,7 @@ class Navigator extends Base {
             }
         }
 
-        if(is_numeric($current)) {
+        if(is_int($current)) {
 
             $current = (int) $current;
 
@@ -110,8 +111,8 @@ class Navigator extends Base {
 
                 if($pages[$i] === $current) {
 
-                    $prev = isset($pages[$i - 1]) ? self::slug($pages[$i - 1]) : false;
-                    $next = isset($pages[$i + 1]) ? self::slug($pages[$i + 1]) : false;
+                    $prev = isset($pages[$i - 1]) ? $pages[$i - 1] : false;
+                    $next = isset($pages[$i + 1]) ? $pages[$i + 1] : false;
 
                     // Generate next/previous URL for single page
                     self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector);
@@ -135,11 +136,6 @@ class Navigator extends Base {
 
         return Mecha::O(self::$bucket);
 
-    }
-
-    private static function slug($input) {
-        $parts = explode('_', File::N($input), 3);
-        return isset($parts[2]) ? $parts[2] : File::B($input);
     }
 
     // Configure ...

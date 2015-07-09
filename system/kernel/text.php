@@ -20,6 +20,8 @@ class Text extends Base {
      */
 
     public static function parser($name, $action) {
+        $name = strtolower($name);
+        if(strpos($name, 'to_') !== 0) $name = 'to_' . $name;
         self::$parsers[get_called_class() . '::' . $name] = $action;
     }
 
@@ -40,6 +42,8 @@ class Text extends Base {
 
     public static function parserExist($name = null, $fallback = false) {
         if(is_null($name)) return self::$parsers;
+        $name = strtolower($name);
+        if(strpos($name, 'to_') !== 0) $name = 'to_' . $name;
         $name = get_called_class() . '::' . $name;
         return isset(self::$parsers[$name]) ? self::$parsers[$name] : $fallback;
     }
@@ -66,15 +70,15 @@ class Text extends Base {
      */
 
     public static function parse() {
-        $results = array();
         $arguments = func_get_args();
         // Alternate function for faster parsing process => `Text::parse('foo', '->html')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
-            $parser = get_called_class() . '::to_' . str_replace('->', "", $arguments[1]);
+            $parser = get_called_class() . '::to_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
             return isset(self::$parsers[$parser]) ? call_user_func_array(self::$parsers[$parser], $arguments) : false;
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
+        $results = array();
         foreach(self::$parsers as $name => $action) {
             $name = str_replace(get_called_class() . '::', "", $name);
             $results[$name] = call_user_func_array($action, $arguments);

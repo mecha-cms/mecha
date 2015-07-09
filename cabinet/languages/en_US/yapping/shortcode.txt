@@ -5,13 +5,13 @@ To remove a _shortcode_, simply leave the field to be empty.
 As HTML link:
 
 ~~~ .html
-<a href="`{{url}}`article/lorem-ipsum">your link text goes here</a>
+<a href="`{{url.article}}`lorem-ipsum">link text</a>
 ~~~
 
 As Markdown link:
 
 ~~~ .markdown
-[your link text goes here](`{{url}}`article/lorem-ipsum)
+[link text](`{{url.article}}`lorem-ipsum)
 ~~~
 
 ### Escaping a Shortcode
@@ -19,7 +19,7 @@ As Markdown link:
 Wrap your _shortcode_ with backtick characters to prevent code parsing:
 
 ~~~ .markdown
-Parse {{this}} pattern, but not ``{{this}}``
+Parse `{{this}}` pattern, but not ``{{this}}``
 ~~~
 
 ### Advanced

@@ -28,7 +28,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cache.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.cache.php'
     ));
     Shield::attach('manager', false);
 });

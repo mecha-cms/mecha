@@ -35,24 +35,28 @@
     ?>
     </span>
   </label>
-  <label class="grid-group">
+  <div class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->scope; ?></span>
     <span class="grid span-5">
     <?php
 
     $file = (object) Converter::str($file);
     $cache = Guardian::wayback('scope', isset($file->scope) ? $file->scope : "");
+    $scopes = array('article' => $speak->article, 'page' => $speak->page, 'comment' => $speak->comment);
+    // Backward compatibility ...
+    // "" is equal to `article,page`
+    // '*' is equal to all scopes
+    if($cache === "") $cache = array('article', 'page');
+    if($cache === '*') $cache = array_keys($scopes);
+    $cache = is_array($cache) ? $cache : explode(',', $cache);
 
-    echo Form::select('scope', array(
-        'article' => $speak->article,
-        'page' => $speak->page,
-        'article,page' => $speak->article . '/' . $speak->page,
-        'comment' => $speak->comment
-    ), $cache);
+    foreach($scopes as $k => $v) {
+        echo '<div>' . Form::checkbox('scope[]', $k, in_array($k, $cache), $v) . '</div>';
+    }
 
     ?>
     </span>
-  </label>
+  </div>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
     <span class="grid span-5">

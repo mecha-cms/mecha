@@ -7,12 +7,12 @@
  */
 
 // Check for IP address
-Guardian::checker('this_is_IP', function($input) {
+Guardian::checker('this_is_ip', function($input) {
     return filter_var($input, FILTER_VALIDATE_IP);
 });
 
 // Check for URL address
-Guardian::checker('this_is_URL', function($input) {
+Guardian::checker('this_is_url', function($input) {
     return filter_var($input, FILTER_VALIDATE_URL);
 });
 
@@ -49,15 +49,4 @@ Guardian::checker('this_is_too_short', function($input, $min = 0) {
 // Check whether the answer is incorrect
 Guardian::checker('this_is_correct', function($a = true, $b = false) {
     return $a === $b;
-});
-
-
-// DEPRECATED. Please use `Guardian::token()`
-Guardian::plug('makeToken', function() {
-    return Guardian::token();
-});
-
-// DEPRECATED. Please use `HTTP::status()`
-Guardian::plug('setResponseStatus', function($status = 200) {
-    HTTP::status($status);
 });

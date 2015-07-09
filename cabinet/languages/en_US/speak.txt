@@ -224,6 +224,12 @@ minute_p: Minutes
 second_p: Seconds
 millisecond_p: Milliseconds
 
+default: Default
+defaults: Defaults
+
+general: General
+generals: Generals
+
 timezone: Time Zone
 timezones: Time Zones
 
@@ -287,6 +293,8 @@ last_: Last %s
 
 size: Size
 sizes: Sizes
+
+total: Total
 
 type: Type
 types: Types
@@ -549,10 +557,7 @@ manager:
 
   title_title_separator: Title Separator
 
-  title_general: General
-  title_header: Header
   title_authorization: Authorization
-  title_page: Page
   title_page_index: Index Page
   title_page_tag: Tag Page
   title_page_archive: Archive Page
@@ -582,11 +587,6 @@ manager:
   title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
   title_widget_include_js: Include Default Widget&rsquo;s JavaScript to the Shield
 
-  title_defaults__title: Default %s Title
-  title_defaults__content: Default %s Content
-  title_defaults__custom_css: Default %s <abbr title="Cascading Style Sheet">CSS</abbr>
-  title_defaults__custom_js: Default %s JavaScript
-
   title__upload: Upload a %s
   title__upload_alt: Upload an %s
   title__upload_package: Upload a %s Package
@@ -603,7 +603,7 @@ manager:
 # -------------
 
 notify_empty: No %s yet.
-notify_exist: %s already exist.
+notify_exist: %s already exists.
 notify_not_exist: %s does not exist.
 notify_available: %s is available.
 notify_not_available: %s is not available.
@@ -619,10 +619,10 @@ notify_file:
   7: Failed to write file to disk.
   8: A <abbr>PHP</abbr> extension stopped the file upload.
 
-notify_file_exist: File %s already exist.
+notify_file_exist: File %s already exists.
 notify_file_not_exist: File %s does not exist.
 
-notify_folder_exist: Folder %s already exist.
+notify_folder_exist: Folder %s already exists.
 notify_folder_not_exist: Folder %s does not exist.
 
 notify_file_created: File %s successfully created.
@@ -645,13 +645,13 @@ notify_error_no_file_selected: Please select a file.
 notify_error_no_files_selected: Please select at least one file.
 notify_error_file_extension: Extension <code>%s</code> is not allowed.
 notify_error_file_extension_missing: Please include the file extension. Example: <code>file.jpg</code>
-notify_error_file_size_max: File size must be under <code>%s</code>.
-notify_error_file_size_min: File size must be above <code>%s</code>.
+notify_error_file_size_max: File size must be less than <code>%s</code>.
+notify_error_file_size_min: File size must be greater than <code>%s</code>.
 notify_error_file_type_unknown: Unknown file type.
 notify_error_username_or_password: Invalid username or password.
 notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
-notify_error_slug_exist: Slug <code>%s</code> already exist.
+notify_error_slug_exist: Slug <code>%s</code> already exists.
 notify_error_slug_missing_letter: Slug URI should contains at least one letter, from <code>A</code> to <code>Z</code>.
 notify_error__content_empty: %s content should not be emptied.
 notify_error_post_content_empty: Post content should not be emptied.
@@ -675,8 +675,8 @@ notify_invalid_duplicate: Duplicate %s.
 
 notify_confirm: Are your sure?
 notify_confirm_page_leave: Are you sure you want to leave this page?
-notify_confirm_delete: Are you sure you want to delete?
 notify_confirm_page_leave_: Are you sure you want to leave %s page?
+notify_confirm_delete: Are you sure you want to delete?
 notify_confirm_delete_: Are you sure you want to delete %s?
 notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of the %1$s.
 notify_confirm_maybe_you_mean: Maybe you mean %s

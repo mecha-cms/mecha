@@ -10,12 +10,12 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field();
+    $fields = Get::state_field(null, null, array(), false);
     ksort($fields);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
         'files' => ! empty($fields) ? $fields : false,
-        'cargo' => DECK . DS . 'workers' . DS . 'field.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.field.php'
     ));
     Shield::attach('manager', false);
 });
@@ -30,7 +30,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field();
+    $fields = Get::state_field(null, null, array(), false);
     if($key === false) {
         $data = array(
             'title' => "",
@@ -82,8 +82,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         if(trim($request['description']) !== "") {
             $fields[$request_key]['description'] = $request['description'];
         }
-        if($request['scope'] !== "") {
-            $fields[$request_key]['scope'] = $request['scope'];
+        if(isset($request['scope']) && is_array($request['scope'])) {
+            $fields[$request_key]['scope'] = implode(',', $request['scope']);
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
@@ -114,7 +114,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $fields = Get::state_field();
+    $fields = Get::state_field(null, null, array(), false);
     if( ! isset($fields[$key])) {
         Shield::abort();
     } else {

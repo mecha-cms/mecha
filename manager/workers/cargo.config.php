@@ -2,7 +2,7 @@
 <form class="form-repair form-config" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <fieldset>
-    <legend><?php echo $speak->manager->title_general; ?></legend>
+    <legend><?php echo $speak->general; ?></legend>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->timezone; ?></span>
       <span class="grid span-4">
@@ -111,7 +111,7 @@
     </div>
   </fieldset>
   <fieldset>
-    <legend><?php echo $speak->manager->title_header; ?></legend>
+    <legend><?php echo $speak->site; ?></legend>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
       <span class="grid span-4">
@@ -152,6 +152,14 @@
       )); ?>
       </span>
     </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
+      <span class="grid span-4">
+      <?php echo Form::textarea('spam_keywords', Guardian::wayback('spam_keywords', $config->spam_keywords), $speak->manager->placeholder_keyword_spam, array(
+          'class' => 'textarea-block'
+      )); ?>
+      </span>
+    </label>
   </fieldset>
   <fieldset>
     <legend><?php echo $speak->manager->title_authorization; ?></legend>
@@ -181,221 +189,84 @@
     </label>
   </fieldset>
   <fieldset>
-    <legend><?php echo $speak->manager->title_page; ?></legend>
+    <legend><?php echo $speak->page; ?></legend>
+    <?php foreach(array('index', 'tag', 'archive', 'search', 'manager') as $page): ?>
     <fieldset>
-      <legend><?php echo $speak->manager->title_page_index; ?></legend>
+      <legend><?php echo Config::speak('manager.title_page_' . $page); ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
         <span class="grid span-4">
-        <?php echo Form::text('index[title]', Guardian::wayback('index.title', $config->index->title)); ?>
+        <?php echo Form::text($page . '[title]', Guardian::wayback($page . '.title', Config::get($page . '.title'))); ?>
         </span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
         <span class="grid span-4">
-        <?php echo Form::text('index[slug]', Guardian::wayback('index.slug', $config->index->slug)); ?>
+        <?php echo Form::text($page . '[slug]', Guardian::wayback($page . '.slug', Config::get($page . '.slug'))); ?>
         </span>
       </label>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?></span>
         <span class="grid span-4">
-        <?php echo Form::number('index[per_page]', Guardian::wayback('index.per_page', $config->index->per_page), null, array(
+        <?php echo Form::number($page . '[per_page]', Guardian::wayback($page . '.per_page', Config::get($page . '.per_page')), null, array(
             'min' => 1
         )); ?>
         </span>
       </label>
     </fieldset>
-    <fieldset>
-      <legend><?php echo $speak->manager->title_page_tag; ?></legend>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('tag[title]', Guardian::wayback('tag.title', $config->tag->title)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('tag[slug]', Guardian::wayback('tag.slug', $config->tag->slug)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::number('tag[per_page]', Guardian::wayback('tag.per_page', $config->tag->per_page), array(
-            'min' => 1
-        )); ?>
-        </span>
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend><?php echo $speak->manager->title_page_archive; ?></legend>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('archive[title]', Guardian::wayback('archive.title', $config->archive->title)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('archive[slug]', Guardian::wayback('archive.slug', $config->archive->slug)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::number('archive[per_page]', Guardian::wayback('archive.per_page', $config->archive->per_page), array(
-            'min' => 1
-        )); ?>
-        </span>
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend><?php echo $speak->manager->title_page_search; ?></legend>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('search[title]', Guardian::wayback('search.title', $config->search->title)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('search[slug]', Guardian::wayback('search.slug', $config->search->slug)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::number('search[per_page]', Guardian::wayback('search.per_page', $config->search->per_page), array(
-            'min' => 1
-        )); ?>
-        </span>
-      </label>
-    </fieldset>
-    <fieldset>
-      <legend><?php echo $speak->manager->title_page_manager; ?></legend>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('manager[title]', Guardian::wayback('manager.title', $config->manager->title)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::text('manager[slug]', Guardian::wayback('manager.slug', $config->manager->slug)); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?></span>
-        <span class="grid span-4">
-        <?php echo Form::number('manager[per_page]', Guardian::wayback('manager.per_page', $config->manager->per_page), array(
-            'min' => 1
-        )); ?>
-        </span>
-      </label>
-    </fieldset>
+    <?php endforeach; ?>
   </fieldset>
   <fieldset>
-    <legend><?php echo $speak->manager->title_other; ?></legend>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('spam_keywords', Guardian::wayback('spam_keywords', $config->spam_keywords), $speak->manager->placeholder_keyword_spam, array(
-          'class' => 'textarea-block'
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->article); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::text('defaults[article_title]', Guardian::wayback('defaults.article_title', $config->defaults->article_title), null, array(
-          'class' => 'input-block'
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__content', $speak->article); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[article_content]', Guardian::wayback('defaults.article_content', $config->defaults->article_content), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_css', $speak->article); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[article_custom_css]', Guardian::wayback('defaults.article_custom_css', $config->defaults->article_custom_css), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_js', $speak->article); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[article_custom_js]', Guardian::wayback('defaults.article_custom_js', $config->defaults->article_custom_js), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->page); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::text('defaults[page_title]', Guardian::wayback('defaults.page_title', $config->defaults->page_title), null, array(
-          'class' => 'input-block'
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__title', $speak->page); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[page_content]', Guardian::wayback('defaults.page_content', $config->defaults->page_content), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_css', $speak->page); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[page_custom_css]', Guardian::wayback('defaults.page_custom_css', $config->defaults->page_custom_css), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
-    <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo Config::speak('manager.title_defaults__custom_js', $speak->page); ?></span>
-      <span class="grid span-4">
-      <?php echo Form::textarea('defaults[page_custom_js]', Guardian::wayback('defaults.page_custom_js', $config->defaults->page_custom_js), null, array(
-          'class' => array(
-              'textarea-block',
-              'code',
-              'MTE'
-          )
-      )); ?>
-      </span>
-    </label>
+    <legend><?php echo $speak->default; ?></legend>
+    <?php foreach(array('article', 'page') as $page): ?>
+    <fieldset>
+      <legend><?php $title = Config::speak($page); echo $title; ?></legend>
+      <label class="grid-group">
+        <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
+        <span class="grid span-4">
+        <?php echo Form::text('defaults[' . $page . '_title]', Guardian::wayback('defaults.' . $page . '_title', Config::get('defaults.' . $page . '_title')), null, array(
+            'class' => 'input-block'
+        )); ?>
+        </span>
+      </label>
+      <label class="grid-group">
+        <span class="grid span-2 form-label"><?php echo $speak->content; ?></span>
+        <span class="grid span-4">
+        <?php echo Form::textarea('defaults[' . $page . '_content]', Guardian::wayback('defaults.' . $page . '_content', Config::get('defaults.' . $page . '_content')), null, array(
+            'class' => array(
+                'textarea-block',
+                'code',
+                'MTE'
+            )
+        )); ?>
+        </span>
+      </label>
+      <label class="grid-group">
+        <span class="grid span-2 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
+        <span class="grid span-4">
+        <?php echo Form::textarea('defaults[' . $page . '_custom_css]', Guardian::wayback('defaults.' . $page . '_custom_css', Config::get('defaults.' . $page . '_custom_css')), null, array(
+            'class' => array(
+                'textarea-block',
+                'code',
+                'MTE'
+            )
+        )); ?>
+        </span>
+      </label>
+      <label class="grid-group">
+        <span class="grid span-2 form-label"><?php echo $speak->manager->title_custom_js; ?></span>
+        <span class="grid span-4">
+        <?php echo Form::textarea('defaults[' . $page . '_custom_js]', Guardian::wayback('defaults.' . $page . '_custom_js', Config::get('defaults.' . $page . '_custom_js')), null, array(
+            'class' => array(
+                'textarea-block',
+                'code',
+                'MTE'
+            )
+        )); ?>
+        </span>
+      </label>
+    </fieldset>
+    <?php endforeach; ?>
   </fieldset>
   <p><?php echo Jot::button('action', $speak->update); ?></p>
 </form>

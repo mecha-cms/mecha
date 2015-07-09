@@ -15,7 +15,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     Config::set(array(
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,
         'files' => $shortcodes,
-        'cargo' => DECK . DS . 'workers' . DS . 'shortcode.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.shortcode.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

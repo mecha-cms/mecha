@@ -6,8 +6,8 @@
  * ---------------
  */
 
-if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
-    include $deck;
+if(Guardian::happy() && $cargo = File::exist(DECK . DS . 'launch.php')) {
+    include $cargo;
 }
 
 
@@ -16,8 +16,8 @@ if(Guardian::happy() && $deck = File::exist(DECK . DS . 'launch.php')) {
  * -------------------
  */
 
-if($launch = File::exist(SYSTEM . DS . '__launch.php')) {
-    include $launch;
+if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) {
+    include $cargo;
 }
 
 
@@ -41,11 +41,11 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
 
     Config::set(array(
         'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'login.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.login.php'
     ));
 
-    if(Request::post()) {
-        Guardian::authorize()->kick($config->manager->slug . '/article');
+    if($request = Request::post()) {
+        Guardian::authorize()->kick($config->manager->slug . '/' . (isset($request['kick']) ? Text::parse($request['kick'], '->decoded_url') : 'article'));
     }
 
     Shield::attach('manager-login');
@@ -250,7 +250,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 $articles[] = $file;
                 $anchor = Get::articleAnchor($file);
                 $kw = str_replace('-', ' ', $keywords);
-                if(strpos(strtolower($anchor->title), $kw) !== false || strpos(File::B($anchor->path), $kw) !== false) {
+                if(strpos(strtolower($anchor->title), $kw) !== false || strpos(File::N($anchor->path), $kw) !== false) {
                     $articles[] = $file;
                 }
             }
@@ -264,7 +264,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 foreach($files as $file) {
                     $articles[] = $file;
                     $anchor = Get::articleAnchor($file);
-                    if(strpos(strtolower($anchor->title), $keyword) !== false || strpos(File::B($anchor->path), $keyword) !== false) {
+                    if(strpos(strtolower($anchor->title), $keyword) !== false || strpos(File::N($anchor->path), $keyword) !== false) {
                         $articles[] = $file;
                     }
                 }
@@ -317,7 +317,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
  * -----------------
  */
 
-Route::accept($config->search->slug, function() use($config) {
+Route::accept($config->search->slug, function() use($config, $speak) {
     if($q = Request::post('q')) {
         Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse($q, '->encoded_url')));
     }
@@ -347,10 +347,19 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         Shield::abort('404-article');
     }
 
+    // Collecting article slug ...
+    if($articles = Get::articles('DESC', "", File::E($article->path))) {
+        foreach($articles as &$v) {
+            $parts = explode('_', File::N($v), 3);
+            $v = $parts[2];
+        }
+        unset($parts, $v);
+    }
+
     Config::set(array(
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
-        'pagination' => Navigator::extract(Get::articles('DESC', "", File::E($article->path)), $article->path, 1, $config->index->slug)
+        'pagination' => Navigator::extract($articles, $slug, 1, $config->index->slug)
     ));
 
     Weapon::add('shell_after', function() use($article) {

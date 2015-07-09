@@ -256,7 +256,7 @@ table[border="1"] td {border:1px solid}
 }
 
 .widget-archive-hierarchy li ul {margin-left:1.2em}
-.widget-archive-hierarchy li ul.collapsed {display:none}
+.widget-archive-hierarchy li.collapsed ul {display:none}
 
 .widget .selected > a {
   color:inherit;

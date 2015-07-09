@@ -23,7 +23,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
         'offset' => $offset,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/article'),
-        'cargo' => DECK . DS . 'workers' . DS . 'article.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.article.php'
     ));
     Shield::attach('manager', false);
 });
@@ -53,7 +53,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         }
         // Remove automatic article description data from article composer
         $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($article->path)), 2);
-        if(strpos($test[0], "\n" . 'Description: ') === false) {
+        if(strpos($test[0], "\n" . 'Description' . S . ' ') === false) {
             $article->description = "";
         }
         unset($test);
@@ -90,29 +90,10 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
     Config::set('html_parser', $article->content_type);
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        // Check for invalid time pattern
-        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
-            Notify::error($speak->notify_invalid_time_pattern);
-            Guardian::memorize($request);
-        }
-        $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
-        $request['kind'] = isset($request['kind']) ? $request['kind'] : array(0);
-        $request['path'] = $article->path;
-        $request['state'] = $request['action'] === 'publish' ? 'published' : 'draft';
+        $task_connect = $article;
+        include DECK . DS . 'workers' . DS . 'task.field.5.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
-        // Set post date by submitted time, or by input value if available
-        $date = date('c', $request['id']);
-        // General field(s)
-        $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
-        $slug = Text::parse(Request::post('slug', $title), '->slug');
-        $slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
-        $content = Request::post('content', "");
-        $description = $request['description'];
-        $author = strip_tags($request['author']);
-        $kind = $request['kind'];
-        $css = trim(Request::post('css', ""));
-        $js = trim(Request::post('js', ""));
-        $field = Request::post('fields', array());
+        $kind = isset($request['kind']) ? $request['kind'] : array(0);
         sort($kind);
         // Check for duplicate slug, except for the current old slug.
         // Allow user(s) to change their post slug, but make sure they
@@ -137,53 +118,21 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         }
         // Check for empty post content
         if(trim($content) === "") {
-            Notify::error($speak->notify_error_post_content_empty);
+            Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->article : strtolower($speak->article)));
             Guardian::memorize($request);
         }
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
-            // New asset data
-            if(isset($_FILES) && ! empty($_FILES)) {
-                $accept = File::$config['file_extension_allow'];
-                foreach($_FILES as $k => $v) {
-                    if(isset($field[$k]['accept'])) {
-                        File::$config['file_extension_allow'] = explode(',', $field[$k]['accept']);
-                    }
-                    if($v['size'] > 0 && $v['error'] === 0) {
-                        File::upload($v, SUBSTANCE);
-                        if( ! Notify::errors()) {
-                            $field[$k]['value'] = Text::parse($v['name'], '->safe_file_name');
-                        }
-                    }
-                }
-                File::$config['file_extension_allow'] = $accept;
-                unset($accept);
-            }
-            // Remove empty field value
-            foreach($field as $k => $v) {
-                if(isset($v['remove']) && $v['type'][0] === 'f') {
-                    // Remove asset field and data
-                    File::open(SUBSTANCE . DS . $v['remove'])->delete();
-                    Notify::success(Config::speak('notify_file_deleted', '<code>' . $v['remove'] . '</code>'));
-                    unset($field[$k]);
-                }
-                if(( ! isset($v['value']) || $v['value'] === "") || ( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f')) {
-                    unset($field[$k]);
-                }
-            }
-            $header = array(
-                'Title' => $title,
-                'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
-                'Author' => $author,
-                'Content Type' => Request::post('content_type', 'HTML'),
-                'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
-            );
+            include DECK . DS . 'workers' . DS . 'task.field.2.php';
+            include DECK . DS . 'workers' . DS . 'task.field.1.php';
+            include DECK . DS . 'workers' . DS . 'task.field.4.php';
+            $task_connect_page = $article;
+            $task_connect_page_css = $config->defaults->article_custom_css;
+            $task_connect_page_js = $config->defaults->article_custom_js;
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
-                if(( ! empty($css) && $css !== $config->defaults->article_custom_css) || ( ! empty($js) && $js !== $config->defaults->article_custom_js)) {
-                    Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension);
-                }
+                include DECK . DS . 'workers' . DS . 'task.custom.2.php';
                 Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_construct', array($G, $P));
@@ -192,20 +141,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             } else {
                 Page::open($article->path)->header($header)->content($content)->save();
                 File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
-                $custom_ = CUSTOM . DS . Date::format($article->date->W3C, 'Y-m-d-H-i-s');
-                if(File::exist($custom_ . $extension_o)) {
-                    if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->article_custom_css && $js === $config->defaults->article_custom_js)) {
-                        // Always delete empty custom CSS and JavaScript file(s) ...
-                        File::open($custom_ . $extension_o)->delete();
-                    } else {
-                        Page::content($css)->content($js)->saveTo($custom_ . $extension_o);
-                        File::open($custom_ . $extension_o)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . $extension);
-                    }
-                } else {
-                    if(( ! empty($css) && $css !== $config->defaults->article_custom_css) || ( ! empty($js) && $js !== $config->defaults->article_custom_js)) {
-                        Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::format($date, 'Y-m-d-H-i-s') . $extension_o);
-                    }
-                }
+                include DECK . DS . 'workers' . DS . 'task.custom.1.php';
                 if($article->slug !== $slug && $php_file = File::exist(File::D($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
@@ -258,20 +194,9 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
                 File::open($comment)->delete();
             }
         }
-        // Deleting substance(s)
-        if(isset($article->fields) && is_object($article->fields)) {
-            foreach($article->fields as $field) {
-                $file = SUBSTANCE . DS . $field;
-                if(file_exists($file) && is_file($file)) {
-                    File::open($file)->delete();
-                }
-            }
-        }
-        // Deleting custom CSS and JavaScript file of article ...
-        File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.txt')->delete();
-        File::open(CUSTOM . DS . Date::format($id, 'Y-m-d-H-i-s') . '.draft')->delete();
-        // Deleting custom PHP file of article ...
-        File::open(File::D($article->path) . DS . $article->slug . '.php')->delete();
+        $task_connect = $article;
+        include DECK . DS . 'workers' . DS . 'task.field.3.php';
+        include DECK . DS . 'workers' . DS . 'task.custom.3.php';
         Notify::success(Config::speak('notify_success_deleted', $article->title));
         Weapon::fire('on_article_update', array($G, $G));
         Weapon::fire('on_article_destruct', array($G, $G));

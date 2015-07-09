@@ -14,37 +14,53 @@
         $css = $($form[0].css),
         $js = $($form[0].js),
         $check_css = $($form[0].css_live_check),
-        $check_js = $($form[0].js_live_check);
+        $check_js = $($form[0].js_live_check),
+        editor = base.composer.grip;
 
     var $preview_css = $('<div></div>').appendTo($base),
         $preview_js = $('<div></div>').appendTo($base);
 
     var speak = base.languages.MTE;
 
-    base.composer.button('table', {
+    base.composer.button('table default-table-button', {
         title: speak.others.table,
         position: -3,
-        click: function(e, editor) {
-            var editor = editor.grip,
+        click: function(e) {
+            var s = editor.selection(),
                 p = base.is_html_parser_enabled,
                 table = speak.others['table_text_' + (p ? 'raw' : 'html')];
-            editor.tidy('\n\n', function(s) {
-                table = table.replace(/\t/g, TAB);
-                editor.insert(table, function() {
-                    editor.select(s.before.length + (p ? 0 : 25 + (TAB.length * 6)), s.before.length + table.indexOf(p ? ' |' : '</th>'), function() {
-                        editor.updateHistory();
+            table = table.replace(/\t/g, TAB);
+            var clean_B = s.before.replace(/\s*$/, ""),
+                B = clean_B.length,
+                S = p ? 0 : 25 + (TAB.length * 6),
+                E = table.indexOf(p ? ' |' : '</th>'),
+                X = B ? 2 : 0,
+                start = B + S + X,
+                end = B + E + X;
+            if (s.value.length && s.value === table.substring(S, E)) {
+                editor.select();
+            } else {
+                editor.tidy('\n\n', function() {
+                    editor.insert(table, function() {
+                        editor.select(start, end, function() {
+                            editor.updateHistory();
+                        });
                     });
-                });
-            }, '\n\n', true);
+                }, '\n\n', true);
+            }
         }
     });
 
-    base.composer.button('scissors', {
+    // `Ctrl + T` for "table"
+    base.composer.shortcut('CTRL+84', function() {
+        return editor.config.buttons['table default-table-button'].click(), false;
+    });
+
+    base.composer.button('scissors default-more-tag-button', {
         title: speak.others.excerpt,
         position: -3,
-        click: function(e, editor) {
-            var editor = editor.grip,
-                m = /<!-- cut(\+( .*?)?)? -->/.exec(editor.area.value),
+        click: function(e) {
+            var m = /<!-- cut(\+( .*?)?)? -->/.exec(editor.area.value),
                 s = editor.selection(),
                 clean_B = s.before.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/\s+$/, ""),
                 clean_A = s.after.replace(/\s*<!-- cut(\+( .*?)?)? -->\s*/g, '\n\n').replace(/^\s+/, "");
@@ -60,8 +76,13 @@
         }
     });
 
+    // `Ctrl + /` for "more tag"
+    base.composer.shortcut('CTRL+191', function() {
+        return editor.config.buttons['scissors default-more-tag-button'].click(), false;
+    });
+
     if (base.is_html_parser_enabled) {
-        base.composer.button('question-circle', {
+        base.composer.button('question-circle default-help-button', {
             title: speak.others.help,
             click: function() {
                 window.open('http://mecha-cms.com/article/markdown-syntax');

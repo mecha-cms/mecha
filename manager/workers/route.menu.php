@@ -13,7 +13,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     $menus = Get::state_menu();
     Config::set(array(
         'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'menu.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.menu.php'
     ));
     $G = array('data' => array('content' => $menus));
     if($request = Request::post()) {

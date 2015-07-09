@@ -71,7 +71,7 @@ $q = $q_path ? '?path=' . Text::parse($q_path, '->encoded_url') : "";
       ?>
       <td>
         <?php if(is_dir($file->path)): ?>
-        <a href="<?php echo $config->url_current . '?path=' . Text::parse(ltrim($q_path . '/' . File::B($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
+        <a href="<?php echo $config->url . '/' . $c_url . '/1?path=' . Text::parse(ltrim($q_path . '/' . File::B($url), '/'), '->encoded_url'); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
         <?php else: ?>
         <a href="<?php echo $file->url; ?>" title="<?php echo File::size($file->path); ?>" target="_blank"><?php echo $n; ?></a>
         <?php endif; ?>

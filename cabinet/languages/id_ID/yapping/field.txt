@@ -1,3 +1,9 @@
+Untuk bidang bertipe _Berkas_, Anda bisa membatasi ekstensi berkas yang diperbolehkan pada bidang **Nilai**:
+
+~~~ .no-highlight
+gif,bmp,jpeg,jpg,png
+~~~
+
 Untuk bidang bertipe _Pilihan_, tulis beberapa baris teks pada bidang **Nilai** sebagai representasi dari setiap pilihan:
 
 ~~~ .no-highlight

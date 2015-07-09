@@ -26,7 +26,7 @@ Get::plug('IP', function() {
     } else {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
-    return Guardian::check($ip, '->IP') ? $ip : 'N/A';
+    return Guardian::check($ip, '->ip') ? $ip : 'N/A';
 });
 
 

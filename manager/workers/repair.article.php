@@ -93,21 +93,6 @@
       <div id="form-<?php echo $default->id ? 'repair' : 'ignite'; ?>-preview"></div>
       <?php Weapon::fire('unit_composer_4_after', array($segment)); ?>
     </div>
-    <hr>
-    <p>
-      <?php if(strpos($config->url_path, '/id:') === false): ?>
-      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
-      <?php else: ?>
-      <?php if(Guardian::wayback('state', $default->state) === 'published'): ?>
-      <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo Jot::button('action:history', $speak->unpublish, 'action:save'); ?>
-      <?php else: ?>
-      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
-      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
-      <?php endif; ?>
-      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/article/kill/id:' . Guardian::wayback('id', $default->id)); ?>
-      <?php endif; ?>
-    </p>
+    <?php include 'unit.composer.4.php'; ?>
   </form>
 </div>

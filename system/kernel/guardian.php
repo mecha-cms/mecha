@@ -194,6 +194,8 @@ class Guardian extends Base {
      */
 
     public static function checker($name, $action) {
+        $name = strtolower($name);
+        if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
         self::$validators[get_called_class() . '::' . $name] = $action;
     }
 
@@ -216,6 +218,8 @@ class Guardian extends Base {
 
     public static function checkerExist($name = null, $fallback = false) {
         if(is_null($name)) return self::$validators;
+        $name = strtolower($name);
+        if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
         $name = get_called_class() . '::' . $name;
         return isset(self::$validators[$name]) ? self::$validators[$name] : $fallback;
     }
@@ -242,15 +246,15 @@ class Guardian extends Base {
      */
 
     public static function check() {
-        $results = array();
         $arguments = func_get_args();
-        // Alternate function for faster checking process => `Guardian::check('foo, '->URL')`
+        // Alternate function for faster checking process => `Guardian::check('foo, '->url')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
-            $validator = get_called_class() . '::this_is_' . str_replace('->', "", $arguments[1]);
+            $validator = get_called_class() . '::this_is_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
             return isset(self::$validators[$validator]) ? call_user_func_array(self::$validators[$validator], $arguments) : false;
         }
-        // Default function for complete checking process => `Guardian::check('foo')->this_is_URL`
+        // Default function for complete checking process => `Guardian::check('foo')->this_is_url`
+        $results = array();
         foreach(self::$validators as $name => $action) {
             $name = str_replace(get_called_class() . '::', "", $name);
             $results[$name] = call_user_func_array($action, $arguments);
@@ -470,15 +474,19 @@ class Guardian extends Base {
      *
      */
 
-    public static function math($min = 1, $max = 10) {
+    public static function math($min = 1, $max = 10, $text = array()) {
         $x = mt_rand($min, $max);
         $y = mt_rand($min, $max);
+        $x_text = isset($text[$x]) ? $text[$x] : $x;
+        $y_text = isset($text[$y]) ? $text[$y] : $y;
         if($x - $y > 0) {
             Session::set(self::$math, $x - $y);
-            return $x . ' &minus; ' . $y;
+            $o = isset($text['-']) ? $text['-'] : ' &minus; ';
+            return $x_text . $o . $y_text;
         } else {
             Session::set(self::$math, $x + $y);
-            return $x . ' &plus; ' . $y;
+            $o = isset($text['+']) ? $text['+'] : ' &plus; ';
+            return $x_text . $o . $y_text;
         }
     }
 
