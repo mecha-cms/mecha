@@ -65,7 +65,7 @@ class File extends Base {
     public static function inspect($path) {
         $path = self::path($path);
         $extension = self::E($path);
-        $update = File::T($path);
+        $update = self::T($path);
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         return array(
             'path' => $path,

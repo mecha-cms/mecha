@@ -717,7 +717,7 @@ class Get extends Base {
             'path' => self::AMF($input, $FP, 'path'),
             'time' => self::AMF(Date::format($id), $FP, 'time'),
             'update_raw' => self::AMF($update, $FP, 'update_raw'),
-            'update' => self::AMF($update, $FP, 'update'),
+            'update' => self::AMF($update_date, $FP, 'update'),
             'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
             'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
             'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),

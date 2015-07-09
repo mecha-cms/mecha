@@ -279,6 +279,7 @@ class Guardian extends Base {
         $path = Converter::url(File::url($path));
         $path = Filter::apply('guardian:kick', $path);
         $G = array('data' => array('url' => $path));
+        Guardian::memorize(array('url_origin' => Config::get('url_current')));
         Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
         exit;
@@ -474,20 +475,19 @@ class Guardian extends Base {
      *
      */
 
-    public static function math($min = 1, $max = 10, $text = array()) {
+    public static function math($min = 1, $max = 10, $text = array(), $format = '%1$s %3$s %2$s') {
         $x = mt_rand($min, $max);
         $y = mt_rand($min, $max);
         $x_text = isset($text[$x]) ? $text[$x] : $x;
         $y_text = isset($text[$y]) ? $text[$y] : $y;
         if($x - $y > 0) {
             Session::set(self::$math, $x - $y);
-            $o = isset($text['-']) ? $text['-'] : ' &minus; ';
-            return $x_text . $o . $y_text;
+            $o = isset($text['-']) ? $text['-'] : '&minus;';
         } else {
             Session::set(self::$math, $x + $y);
-            $o = isset($text['+']) ? $text['+'] : ' &plus; ';
-            return $x_text . $o . $y_text;
+            $o = isset($text['+']) ? $text['+'] : '&plus;';
         }
+        return sprintf($format, $x_text, $y_text, $o);
     }
 
     /**

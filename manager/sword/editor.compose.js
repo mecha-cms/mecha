@@ -30,7 +30,7 @@
                 p = base.is_html_parser_enabled,
                 table = speak.others['table_text_' + (p ? 'raw' : 'html')];
             table = table.replace(/\t/g, TAB);
-            var clean_B = s.before.replace(/\s*$/, ""),
+            var clean_B = s.before.replace(/\s+$/, ""),
                 B = clean_B.length,
                 S = p ? 0 : 25 + (TAB.length * 6),
                 E = table.indexOf(p ? ' |' : '</th>'),

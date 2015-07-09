@@ -45,7 +45,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
     ));
 
     if($request = Request::post()) {
-        Guardian::authorize()->kick($config->manager->slug . '/' . (isset($request['kick']) ? Text::parse($request['kick'], '->decoded_url') : 'article'));
+        Guardian::authorize()->kick(isset($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');
     }
 
     Shield::attach('manager-login');
@@ -317,7 +317,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
  * -----------------
  */
 
-Route::accept($config->search->slug, function() use($config, $speak) {
+Route::accept($config->search->slug, function() use($config) {
     if($q = Request::post('q')) {
         Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse($q, '->encoded_url')));
     }
