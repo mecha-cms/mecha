@@ -443,9 +443,9 @@ Route::accept('captcha.png', function() {
     $str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $bg = Request::get('bg', '333333', false);
     $color = Request::get('color', 'FFFFAA', false);
-    $width = Request::get('width', 100);
-    $height = Request::get('height', 30);
-    $padding = Request::get('padding', 7);
+    $padding = Request::get('padding', 0);
+    $width = Request::get('width', 100) + ($padding * 2);
+    $height = Request::get('height', 30) + ($padding * 2);
     $size = Request::get('size', 16);
     $length = Request::get('length', 7);
     $font = Request::get('font', 'special-elite-regular.ttf', false);
@@ -465,6 +465,7 @@ Route::accept('captcha.png', function() {
     }
 
     $image = imagecreatetruecolor($width, $height);
+    $font = ASSET . DS . '__captcha' . DS . $font;
 
     imagefill($image, 0, 0, 0x7fff0000);
     imagealphablending($image, true);
@@ -474,7 +475,17 @@ Route::accept('captcha.png', function() {
     $color = imagecolorallocatealpha($image, $color[0], $color[1], $color[2], 127 - ($color[3] * 127));
 
     imagefilledrectangle($image, 0, 0, $width, $height, $bg);
-    imagettftext($image, $size, 0, $padding, $size + $padding, $color, ASSET . DS . '__captcha' . DS . $font, $text);
+
+    // center the image text ...
+    $xi = imagesx($image);
+    $yi = imagesy($image);
+    $box = imagettfbbox($size, 0, $font, $text);
+    $xr = abs(max($box[2], $box[4]));
+    $yr = abs(max($box[5], $box[7]));
+    $x = intval(($xi - $xr) / 2);
+    $y = intval(($yi + $yr) / 2);
+
+    imagettftext($image, $size, 0, $x, $y, $color, $font, $text);
     imagepng($image);
     imagedestroy($image);
 

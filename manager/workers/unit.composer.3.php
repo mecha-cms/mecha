@@ -49,8 +49,8 @@ if( ! empty($fields)) {
                 $selected = isset($field[$key]) ? isset($field[$key]) : "";
                 foreach(explode("\n", $value['value']) as $v) {
                     $v = trim($v);
-                    if(strpos($v, ':') !== false) {
-                        $v = explode(':', $v, 2);
+                    if(strpos($v, S) !== false) {
+                        $v = explode(S, $v, 2);
                         $options[trim($v[0])] = trim($v[1]);
                     } else {
                         $options[$v] = $v;

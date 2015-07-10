@@ -505,19 +505,19 @@ class Guardian extends Base {
 
     public static function captcha($bg = null, $color = null, $width = null, $height = null, $padding = null, $size = null, $length = null, $font = null) {
         $param = array();
-        if(is_null($bg)) $bg = '333333';
-        if(is_null($color)) $color = 'FFFFAA';
-        if(is_null($width)) $width = 100;
-        if(is_null($height)) $height = 30;
-        if(is_null($padding)) $padding = 7;
-        if(is_null($size)) $size = 16;
-        if(is_null($length)) $length = 7;
-        if(is_null($font)) $font = 'special-elite-regular.ttf';
+        if($bg === null) $bg = '333333';
+        if($color === null) $color = 'FFFFAA';
+        if($padding === null) $padding = 0;
+        if($width === null) $width = 100 + ($padding * 2);
+        if($height === null) $height = 30 + ($padding * 2);
+        if($size === null) $size = 16;
+        if($length === null) $length = 7;
+        if($font === null) $font = 'special-elite-regular.ttf';
         if($bg !== '333333') $param[] = $bg === false ? 'bg=false' : 'bg=' . strtoupper((string) $bg);
         if($color !== 'FFFFAA') $param[] = 'color=' . strtoupper((string) $color);
         if($width !== 100) $param[] = 'width=' . (string) $width;
         if($height !== 30) $param[] = 'height=' . (string) $height;
-        if($padding !== 7) $param[] = 'padding=' . (string) $padding;
+        if($padding !== 0) $param[] = 'padding=' . (string) $padding;
         if($size !== 16) $param[] = 'size=' . (string) $size;
         if($length !== 7) $param[] = 'length=' . (string) $length;
         if($font !== 'special-elite-regular.ttf') $param[] = 'font=' . (string) $font;
