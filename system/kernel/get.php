@@ -200,7 +200,7 @@ class Get extends Base {
 
             /**
              * Allow shield to add custom field(s) dynamically by creating
-             * a file called `fields.php` stored in a folder named as `workers`.
+             * a file named as `fields.php` stored in a folder named as `workers`.
              * This file contains array of field(s) data.
              *
              * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
@@ -225,11 +225,11 @@ class Get extends Base {
 
             /**
              * Allow plugin to add custom field(s) dynamically by creating
-             * a file called `fields.php` stored inside a folder named as `workers`.
+             * a file named as `fields.php` stored in a folder named as `workers`.
              * This file contains array of field(s) data.
              */
 
-            foreach(glob(PLUGIN . DS . '*' . DS . 'launch.php', GLOB_NOSORT) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_BRACE | GLOB_NOSORT) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
                     $field_e = include $e;
                     Mecha::extend($field, $field_e);
@@ -279,7 +279,8 @@ class Get extends Base {
     }
 
     // Get stored shortcode data (internal only)
-    public static function state_shortcode($key = null, $fallback = array()) {
+    public static function state_shortcode($key = null, $fallback = array(), $all = true) {
+
         $config = Config::get();
         $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
         $shortcode = file_exists($d) ? include $d : $fallback;
@@ -290,10 +291,52 @@ class Get extends Base {
             }
             $shortcode = array_merge($shortcode, $file);
         }
+
+        if($all) {
+
+            /**
+             * Allow shield to add custom built-in shortcode(s) dynamically
+             * by creating a file named as `shortcodes.php` stored in a folder
+             * named as `workers`. This file contains array of shortcode(s) data.
+             *
+             * -- EXAMPLE CONTENT OF `shortcodes.php`: --------------------------------
+             *
+             *    return array(
+             *        '{{shortcode:%s}}' => '<span>\1</span>'
+             *    );
+             *
+             * --------------------------------------------------------------------
+             *
+             */
+
+            if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'shortcodes.php')) {
+                $shortcode_e = include $e;
+                Mecha::extend($shortcode, $shortcode_e);
+            }
+
+            /**
+             * Allow plugin to add custom built-in shortcode(s) dynamically
+             * by creating a file named as `shortcodes.php` stored in a folder
+             * named as `workers`. This file contains array of shortcode(s) data.
+             */
+
+            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_BRACE | GLOB_NOSORT) as $active) {
+                if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'shortcodes.php')) {
+                    $shortcode_e = include $e;
+                    Mecha::extend($shortcode, $shortcode_e);
+                }
+            }
+
+        }
+
+        // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($shortcode[$key]) ? $shortcode[$key] : $fallback;
         }
+
+        // No filter
         return $shortcode;
+
     }
 
     // Get stored tag data (internal only)
