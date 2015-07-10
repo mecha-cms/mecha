@@ -83,8 +83,8 @@ File::configure('file_extension_allow', array_unique($e));
 
 
 /**
- * Set Default Time Zone Before Launch
- * -----------------------------------
+ * Set Default Time Zone
+ * ---------------------
  */
 
 date_default_timezone_set($config->timezone);
@@ -167,23 +167,41 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 Filter::add('shortcode', function($content) use($config, $speak) {
     if(strpos($content, '{{') === false) return $content;
-    $regex = array();
     foreach(Get::state_shortcode() as $key => $value) {
         $key = preg_quote($key, '#');
+        // %[a,b,c]: options ... accept `a`, `b`, or `c`
+        if(strpos($key, '%\\[') !== false) {
+            $key = preg_replace_callback('#%\\\\\[(.*?)\\\\\]#', function($matches) {
+                return '(' . str_replace(',', '|', $matches[1]) . ')';
+            }, $key);
+        }
+        // %s: accept any values without line breaks
+        // %S: accept any values with/without line breaks
+        // %i: accept integer numbers
+        // %f: accept float numbers
+        // %b: accept boolean values
         $key = str_replace(
-            array('%s', '%d'),
-            array('(.*?)', '(\d*?)'),
+            array('%s', '%S', '%i', '%f', '%b'),
+            array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|ON|OFF|true|false|yes|no|on|off|1|0)\b'),
         $key);
-        $regex['#(?<!`)' . $key . '(?!`)#'] = $value;
+        $content = preg_replace('#(?<!`)' . $key . '(?!`)#', $value, $content);
     }
-    $content = preg_replace(array_keys($regex), array_values($regex), $content);
     if(strpos($content, '{{php}}') !== false) {
         $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]*?)(?<!`)\{\{\/php\}\}(?!`)#', function($matches) {
             return Converter::phpEval($matches[1]);
         }, $content);
     }
-    return preg_replace('#`\{\{(.*?)\}\}`#', '{{$1}}', $content);
+    return $content;
 }, 20);
+
+// YOU ARE HERE! -- You can specify your own shortcode priority to be greater
+// than the default shortcode file priority, but lesser than the shortcode
+// deactivation priority by determining the shortcode priority between 20 - 30
+
+Filter::add('shortcode', function($content) {
+    if(strpos($content, '`{{') === false) return $content;
+    return str_replace(array('`{{', '}}`'), array('{{', '}}'), $content);
+}, 30);
 
 
 /**
