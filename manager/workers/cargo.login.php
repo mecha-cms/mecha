@@ -1,7 +1,6 @@
 <?php $form_id = time(); echo $messages; ?>
 <form class="form-login" id="form-login:<?php echo $form_id; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
-  <?php echo Form::hidden('kick', Guardian::wayback('url_origin', $config->manager->slug . '/article')); ?>
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->username; ?></span>
     <span class="grid span-4">
@@ -18,6 +17,7 @@
     )); ?>
     </span>
   </label>
+  <?php echo Form::hidden('kick', Request::get('kick', Guardian::wayback('url_origin', $config->manager->slug . '/article'))); ?>
   <div class="grid-group">
     <span class="grid span-2"></span>
     <span class="grid span-4">
