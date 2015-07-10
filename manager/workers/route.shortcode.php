@@ -10,7 +10,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $shortcodes = Get::state_shortcode();
+    $shortcodes = Get::state_shortcode(null, array(), false);
     $G = array('data' => $shortcodes);
     Config::set(array(
         'page_title' => $speak->shortcodes . $config->title_separator . $config->manager->title,

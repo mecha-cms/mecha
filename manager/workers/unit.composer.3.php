@@ -22,7 +22,8 @@ if( ! empty($fields)) {
         }
         $type = $value['type'][0];
         if(strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
-            $title = $value['title'] . (isset($value['description']) && trim($value['description']) !== "" ? ' <span class="text-info help" title="' . Text::parse($value['description'], '->encoded_html') . '">' . Jot::icon('question-circle') . '</span>' : "");
+            $description = isset($value['description']) && trim($value['description']) !== "" ? ' <span class="text-info help" title="' . Text::parse($value['description'], '->encoded_html') . '">' . Jot::icon('question-circle') . '</span>' : "";
+            $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
             if($type === 't') {
                 $html .= '<label class="grid-group grid-group-text">';
@@ -37,7 +38,7 @@ if( ! empty($fields)) {
                 $html .= '<div class="grid-group grid-group-boolean">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $title);
+                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $value['title']) . $description;
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type === 'o') {
