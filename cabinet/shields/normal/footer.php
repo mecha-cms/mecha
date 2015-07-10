@@ -12,7 +12,7 @@
     </div> <!-- .blog-wrapper -->
     <?php Weapon::fire('cargo_after'); ?>
     <?php Weapon::fire('sword_before'); ?>
-    <?php echo Asset::javascript('sword/main.js'); ?>
+    <?php echo Asset::javascript('assets/sword/main.js'); ?>
     <?php Weapon::fire('sword_after'); ?>
     <?php Weapon::fire('SHIPMENT_REGION_BOTTOM'); ?>
   </body>

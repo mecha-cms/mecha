@@ -37,17 +37,18 @@ Weapon::add('meta', function() use($config) {
 
 Weapon::add('shell_after', function() use($config) {
     echo Asset::stylesheet(array(
-        'manager/shell/editor.css',
-        'manager/shell/row.css',
-        'manager/shell/check.css',
-        'manager/shell/upload.css',
-        'manager/shell/tab.css',
-        'manager/shell/modal.css',
-        'manager/shell/tooltip.css',
-        'manager/shell/sortable.css',
-        'manager/shell/accordion.css',
-        'manager/shell/layout.css',
-        'shell/manager.css' // => taken from the current shield folder (if available)
+        'manager/assets/shell/editor.css',
+        'manager/assets/shell/row.css',
+        'manager/assets/shell/check.css',
+        'manager/assets/shell/upload.css',
+        'manager/assets/shell/tab.css',
+        'manager/assets/shell/modal.css',
+        'manager/assets/shell/tooltip.css',
+        'manager/assets/shell/sortable.css',
+        'manager/assets/shell/accordion.css',
+        'manager/assets/shell/layout.css',
+        'assets/shell/manager.css', // => taken from the current shield folder (if available)
+        'shell/manager.css' // => --ibid (tries to find the `shell` folder that is placed outside the `assets` folder)
     ), "", 'manager.min.css');
     if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
         echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
@@ -64,7 +65,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
     foreach($constants['user'] as $constant => $value) {
         $constants_js .= $constant . '=' . json_encode($value) . ',';
     }
-    echo Asset::javascript('manager/sword/dashboard.js', "", 'dashboard.min.js');
+    echo Asset::javascript('manager/assets/sword/dashboard.js', "", 'dashboard.min.js');
     $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
     //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
@@ -75,20 +76,20 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
     Session::kill('recent_file_update');
     echo Asset::javascript(array(
-        'manager/sword/editor/editor.min.js',
-        'manager/sword/editor/mte.min.js',
-        'manager/sword/editor/hte.min.js',
-        'manager/sword/editor/run.js',
-        'manager/sword/ajax.js',
-        'manager/sword/row.js',
-        'manager/sword/slug.js',
-        'manager/sword/check.js',
-        'manager/sword/upload.js',
-        'manager/sword/tab.js',
-        'manager/sword/modal.js',
-        'manager/sword/tooltip.js',
-        'manager/sword/sortable.js',
-        'manager/sword/accordion.js'
+        'manager/assets/sword/editor/editor.min.js',
+        'manager/assets/sword/editor/mte.min.js',
+        'manager/assets/sword/editor/hte.min.js',
+        'manager/assets/sword/editor/run.js',
+        'manager/assets/sword/ajax.js',
+        'manager/assets/sword/row.js',
+        'manager/assets/sword/slug.js',
+        'manager/assets/sword/check.js',
+        'manager/assets/sword/upload.js',
+        'manager/assets/sword/tab.js',
+        'manager/assets/sword/modal.js',
+        'manager/assets/sword/tooltip.js',
+        'manager/assets/sword/sortable.js',
+        'manager/assets/sword/accordion.js'
     ), "", 'manager.min.js');
 }, 10);
 
