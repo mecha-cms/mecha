@@ -45,15 +45,19 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-option">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $options = array();
-                $selected = isset($field[$key]) ? isset($field[$key]) : "";
-                foreach(explode("\n", $value['value']) as $v) {
-                    $v = trim($v);
-                    if(strpos($v, S) !== false) {
-                        $v = explode(S, $v, 2);
-                        $options[trim($v[0])] = trim($v[1]);
-                    } else {
-                        $options[$v] = $v;
+                $selected = isset($field[$key]) ? $field[$key] : "";
+                if(is_array($value['value'])) {
+                    $options = $value['value'];
+                } else {
+                    $options = array();
+                    foreach(explode("\n", $value['value']) as $v) {
+                        $v = trim($v);
+                        if(strpos($v, S) !== false) {
+                            $v = explode(S, $v, 2);
+                            $options[trim($v[0])] = trim($v[1]);
+                        } else {
+                            $options[$v] = $v;
+                        }
                     }
                 }
                 $html .= Form::select('fields[' . $key . '][value]', $options, $selected, array(

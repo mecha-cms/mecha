@@ -1,12 +1,11 @@
 <?php
 
-// New asset data
+// New file data
 if(isset($_FILES) && ! empty($_FILES)) {
     $accept = File::$config['file_extension_allow'];
     foreach($_FILES as $k => $v) {
         if(isset($field[$k]['accept'])) {
             File::$config['file_extension_allow'] = explode(',', $field[$k]['accept']);
-            unset($field[$k]['accept']);
         }
         if($v['size'] > 0 && $v['error'] === 0) {
             $name = Text::parse($v['name'], '->safe_file_name');

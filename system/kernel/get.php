@@ -991,7 +991,11 @@ class Get extends Base {
 
             if(isset($results['fields']) && is_array($results['fields'])) {
                 foreach($results['fields'] as $key => $value) {
-                    $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+                    // 1.1.3+
+                    if(is_array($value)) {
+                        $value = isset($value['value']) ? $value['value'] : false;
+                    }
+                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
                 }
             }
 
@@ -1145,7 +1149,11 @@ class Get extends Base {
                 $init[$key] = $value['value'];
             }
             foreach($results['fields'] as $key => $value) {
-                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+                // 1.1.3+
+                if(is_array($value)) {
+                    $value = isset($value['value']) ? $value['value'] : false;
+                }
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
         }
