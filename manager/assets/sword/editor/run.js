@@ -23,17 +23,6 @@ if (typeof DASHBOARD !== "undefined") {
 
 (function(w, d, base) {
     if (typeof MTE === "undefined") return;
-    function extend(a, b) {
-        a = a || {};
-        for (var c in b) {
-            if (typeof b[c] === "object") {
-                a[c] = extend(a[c], b[c]);
-            } else {
-                a[c] = b[c];
-            }
-        }
-        return a;
-    }
     base.add('on_ajax_success', function(data) {
         base.fire('on_preview_complete', data);
     });
@@ -63,7 +52,7 @@ if (typeof DASHBOARD !== "undefined") {
                 'name': name
             }
         });
-        base[prefix + '_' + hook] = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className) ? new MTE(area[i], extend({
+        base[prefix + '_' + hook] = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className) ? new MTE(area[i], base.task.extend({
             tabSize: TAB || '    ',
             toolbar: false,
             shortcut: false,

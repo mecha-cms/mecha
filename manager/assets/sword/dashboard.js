@@ -4,53 +4,50 @@
  */
 
 window.DASHBOARD = {
-    hooks: [],
+    hook: [],
+    task: {}, // stuff ...
     add: function(name, fn, stack) {
-        if (typeof DASHBOARD.hooks[name] === "undefined") {
-            DASHBOARD.hooks[name] = [];
+        stack = stack || 10;
+        if (typeof DASHBOARD.hook[name] === "undefined") {
+            DASHBOARD.hook[name] = [];
         }
-        if (typeof stack === "undefined") {
-            stack = 10;
-        }
-        DASHBOARD.hooks[name].push({
+        DASHBOARD.hook[name].push({
             'fn': fn,
             'stack': stack
         });
     },
     fire: function(name, arguments) {
-        if (typeof DASHBOARD.hooks[name] === "object") {
-            DASHBOARD.hooks[name].sort(function(a, b) {
+        if (typeof DASHBOARD.hook[name] === "object") {
+            DASHBOARD.hook[name].sort(function(a, b) {
                 return a.stack - b.stack;
             });
-            for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
-                DASHBOARD.hooks[name][i].fn(arguments);
+            for (var i = 0, len = DASHBOARD.hook[name].length; i < len; ++i) {
+                DASHBOARD.hook[name][i].fn(arguments);
             }
         } else {
-            DASHBOARD.hooks[name] = [];
+            DASHBOARD.hook[name] = [];
         }
     },
     eject: function(name, stack) {
-        if (typeof DASHBOARD.hooks[name] !== "undefined") {
+        if (typeof DASHBOARD.hook[name] !== "undefined") {
             if (typeof stack !== "undefined") {
-                for (var i = 0, len = DASHBOARD.hooks[name].length; i < len; ++i) {
-                    if (DASHBOARD.hooks[name][i].stack === stack) {
-                        delete DASHBOARD.hooks[name][i];
+                for (var i = 0, len = DASHBOARD.hook[name].length; i < len; ++i) {
+                    if (DASHBOARD.hook[name][i].stack === stack) {
+                        delete DASHBOARD.hook[name][i];
                     }
                 }
             } else {
-                delete DASHBOARD.hooks[name];
+                delete DASHBOARD.hook[name];
             }
         } else {
-            DASHBOARD.hooks = [];
+            DASHBOARD.hook = [];
         }
     },
     exist: function(name, fallback) {
-        if (typeof fallback === "undefined") {
-            fallback = false;
-        }
+        fallback = fallback || false;
         if (typeof name === "undefined") {
-            return Object.keys(DASHBOARD.hooks).length > 0 ? DASHBOARD.hooks : fallback;
+            return Object.keys(DASHBOARD.hook).length > 0 ? DASHBOARD.hook : fallback;
         }
-        return typeof DASHBOARD.hooks[name] !== "undefined" ? DASHBOARD.hooks[name] : fallback;
+        return typeof DASHBOARD.hook[name] !== "undefined" ? DASHBOARD.hook[name] : fallback;
     }
 };

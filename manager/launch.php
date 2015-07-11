@@ -49,7 +49,7 @@ Weapon::add('shell_after', function() use($config) {
         'manager/assets/shell/layout.css',
         'assets/shell/manager.css', // => taken from the current shield folder (if available)
         'shell/manager.css' // => --ibid (tries to find the `shell` folder that is placed outside the `assets` folder)
-    ), "", 'manager.min.css');
+    ), "", 'shell/manager.min.css');
     if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
         echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
     }
@@ -60,13 +60,17 @@ Weapon::add('cargo_before', function() use($config, $speak) {
 }, 10);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
-    $constants = get_defined_constants(true);
-    $constants_js = "";
-    foreach($constants['user'] as $constant => $value) {
-        $constants_js .= $constant . '=' . json_encode($value) . ',';
+    echo Asset::javascript(array(
+        'manager/assets/sword/dashboard.js',
+        'manager/assets/sword/dashboard.task.js'
+    ), "", 'sword/dashboard.min.js');
+    $constant = get_defined_constants(true);
+    $constant_js = "";
+    foreach($constant['user'] as $k => $v) {
+        $constant_js .= $k . '=' . json_encode($v) . ',';
     }
-    echo Asset::javascript('manager/assets/sword/dashboard.js', "", 'dashboard.min.js');
-    $output = O_BEGIN . '<script>var ' . rtrim($constants_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
+    unset($constant);
+    $output = O_BEGIN . '<script>var ' . rtrim($constant_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
     // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
     //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
     $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";DASHBOARD.file_extension_allow="' . implode(',', File::$config['file_extension_allow']) . '";';
@@ -74,11 +78,14 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
 }, 1);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+    $MTE = Mecha::alter(Config::get('html_parser'), array(
+        HTML_PARSER => 'mte',
+        'HTML' => 'hte'
+    ), 'hte'); // default is `hte`
     Session::kill('recent_file_update');
+    echo Asset::javascript('manager/assets/sword/editor/editor.min.js');
+    echo Asset::javascript('manager/assets/sword/editor/' . $MTE . '.min.js');
     echo Asset::javascript(array(
-        'manager/assets/sword/editor/editor.min.js',
-        'manager/assets/sword/editor/mte.min.js',
-        'manager/assets/sword/editor/hte.min.js',
         'manager/assets/sword/editor/run.js',
         'manager/assets/sword/ajax.js',
         'manager/assets/sword/row.js',
@@ -90,7 +97,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         'manager/assets/sword/tooltip.js',
         'manager/assets/sword/sortable.js',
         'manager/assets/sword/accordion.js'
-    ), "", 'manager.min.js');
+    ), "", 'sword/manager.min.js');
 }, 10);
 
 
