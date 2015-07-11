@@ -52,12 +52,8 @@ class Asset extends Base {
 
     // Return the HTML stylesheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
-        if($merge) {
-            return self::merge($path, $merge, $addon, 'stylesheet');
-        }
-        if( ! is_array($path)) {
-            $path = strpos($path, '.css;') !== false ? explode(';', $path) : array($path);
-        }
+        if($merge) return self::merge($path, $merge, $addon, 'stylesheet');
+        $path = is_string($path) && strpos($path, '.css;') !== false ? explode(';', $path) : (array) $path;
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
@@ -73,12 +69,8 @@ class Asset extends Base {
 
     // Return the HTML javascript of asset
     public static function javascript($path, $addon = "", $merge = false) {
-        if($merge) {
-            return self::merge($path, $merge, $addon, 'javascript');
-        }
-        if( ! is_array($path)) {
-            $path = strpos($path, '.js;') !== false ? explode(';', $path) : array($path);
-        }
+        if($merge) return self::merge($path, $merge, $addon, 'javascript');
+        $path = is_string($path) && strpos($path, '.js;') !== false ? explode(';', $path) : (array) $path;
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
@@ -94,12 +86,8 @@ class Asset extends Base {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
-        if($merge) {
-            return self::merge($path, $merge, $addon, 'image');
-        }
-        if( ! is_array($path)) {
-            $path = strpos($path, ';') !== false ? explode(';', $path) : array($path);
-        }
+        if($merge) return self::merge($path, $merge, $addon, 'image');
+        $path = is_string($path) && strpos($path, ';') !== false ? explode(';', $path) : (array) $path;
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
@@ -114,67 +102,65 @@ class Asset extends Base {
     }
 
     // Merge multiple asset file(s) into a single file
-    public static function merge($files, $name = null, $addon = "", $call = null) {
-        if( ! is_array($files)) {
-            $files = strpos($files, ';') !== false ? explode(';', $files) : array($files);
-        }
-        $the_file = ASSET . DS . File::path($name);
-        $the_file_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_file) . '.log';
+    public static function merge($path, $name = null, $addon = "", $call = null) {
+        $path = is_string($path) && strpos($path, ';') !== false ? explode(';', $path) : (array) $path;
+        $the_path = ASSET . DS . File::path($name);
+        $the_path_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
         $is_valid = true;
-        if(file_exists($the_file_log)) {
-            $the_file_time = explode("\n", file_get_contents($the_file_log));
-            if(count($the_file_time) !== count($files)) {
+        if( ! file_exists($the_path_log)) {
+            $is_valid = false;
+        } else {
+            $the_path_time = explode("\n", file_get_contents($the_path_log));
+            if(count($the_path_time) !== count($path)) {
                 $is_valid = false;
             } else {
-                foreach($the_file_time as $i => $time) {
-                    $path = self::path($files[$i]);
-                    if( ! file_exists($path) || (int) filemtime($path) !== (int) $time) {
+                foreach($the_path_time as $i => $time) {
+                    $p = self::path($path[$i]);
+                    if( ! file_exists($p) || (int) filemtime($p) !== (int) $time) {
                         $is_valid = false;
                         break;
                     }
                 }
             }
-        } else {
-            $is_valid = false;
         }
-        $merged_time = "";
-        $merged_content = "";
+        $time = "";
+        $content = "";
         $e = File::E($name);
-        if( ! file_exists($the_file) || ! $is_valid) {
-            if($e === 'gif' || $e === 'jpeg' || $e === 'jpg' || $e === 'png') {
-                foreach($files as $file) {
-                    if( ! self::ignored($file)) {
-                        $path = self::path($file);
-                        if(file_exists($path)) {
-                            $merged_time .=  filemtime($path) . "\n";
+        if( ! file_exists($the_path) || ! $is_valid) {
+            if(strpos(',gif,jpeg,jpg,png,', ',' . $e . ',') !== false) {
+                foreach($path as $p) {
+                    if( ! self::ignored($p)) {
+                        $p = self::path($p);
+                        if(file_exists($p)) {
+                            $time .=  filemtime($p) . "\n";
                         }
                     }
                 }
-                File::write(trim($merged_time))->saveTo($the_file_log);
-                Image::take($files)->merge()->saveTo($the_file);
+                File::write(trim($time))->saveTo($the_path_log);
+                Image::take($path)->merge()->saveTo($the_path);
             } else {
-                foreach($files as $file) {
-                    if( ! self::ignored($file)) {
-                        $path = self::path($file);
-                        if(file_exists($path)) {
-                            $merged_time .= filemtime($path) . "\n";
-                            $c = file_get_contents($path);
-                            if(strpos(File::B($path), '.min.') === false) {
-                                if(strpos(File::B($the_file), '.min.css') !== false) {
-                                    $merged_content .= Converter::detractShell($c) . "\n";
-                                } else if(strpos(File::B($the_file), '.min.js') !== false) {
-                                    $merged_content .= Converter::detractSword($c) . "\n";
+                foreach($path as $p) {
+                    if( ! self::ignored($p)) {
+                        $p = self::path($p);
+                        if(file_exists($p)) {
+                            $time .= filemtime($p) . "\n";
+                            $c = file_get_contents($p);
+                            if(strpos(File::B($p), '.min.') === false) {
+                                if(strpos(File::B($the_path), '.min.css') !== false) {
+                                    $content .= Converter::detractShell($c) . "\n";
+                                } else if(strpos(File::B($the_path), '.min.js') !== false) {
+                                    $content .= Converter::detractSword($c) . "\n";
                                 } else {
-                                    $merged_content .= $c . "\n\n";
+                                    $content .= $c . "\n\n";
                                 }
                             } else {
-                                $merged_content .= $c . "\n\n";
+                                $content .= $c . "\n\n";
                             }
                         }
                     }
                 }
-                File::write(trim($merged_time))->saveTo($the_file_log);
-                File::write(trim($merged_content))->saveTo($the_file);
+                File::write(trim($time))->saveTo($the_path_log);
+                File::write(trim($content))->saveTo($the_path);
             }
         }
         if(is_null($call)) {
@@ -187,7 +173,7 @@ class Asset extends Base {
                 'png' => 'image'
             ));
         }
-        return call_user_func_array('self::' . $call, array($the_file, $addon));
+        return call_user_func_array('self::' . $call, array($the_path, $addon));
     }
 
     // Check for loaded asset(s)
