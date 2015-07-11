@@ -7,13 +7,41 @@
  */
 
 // Convert text to ASCII character
-Text::parser('to_ascii', function($input) {
+// `$mode` can be `decimal` or `hex`
+Text::parser('to_ascii', function($input, $mode = 'decimal') {
     if( ! is_string($input)) return $input;
     $results = "";
-    for($i = 0, $length = strlen($input); $i < $length; ++$i) {
-        $results .= '&#' . ord($input[$i]) . ';';
+    if(strtolower($mode[0]) === 'd') {
+        for($i = 0, $count = strlen($input); $i < $count; ++$i) {
+            $results .= '&#' . ord($input[$i]) . ';';
+        }
+    } else {
+        for($i = 0, $count = strlen($input); $i < $count; ++$i) {
+            $results .= '&#x' . dechex(ord($input[$i])) . ';';
+        }
     }
     return $results;
+});
+
+// Obfuscate text (taken from the source code of Markdown plugin)
+Text::parser('to_broken_entity', function($input) {
+    if( ! is_string($input) || $input === "") return $input;
+    $chars = preg_split('#(?<!^)(?!$)#', $input);
+    $s = (int) abs(crc32($input) / strlen($input));
+    foreach($chars as $k => $v) {
+        $ord = ord($v);
+        if($ord < 128) {
+            $r = ($s * (1 + $k)) % 100;
+            if($r > 90 && strpos('@"&>', $v) === false) {
+                /* do nothing */
+            } else if($r < 45) {
+                $chars[$k] = '&#x' . dechex($ord) . ';';
+            } else {
+                $chars[$k] = '&#' . $ord . ';';
+            }
+        }
+    }
+    return implode("", $chars);
 });
 
 // Convert decoded URL to encoded URL
@@ -46,128 +74,32 @@ Text::parser('to_decoded_json', function($input, $a = false) {
     return is_string($input) && ! is_null(json_decode($input, $a)) ? json_decode($input, $a) : $input;
 });
 
-function do_slug($text, $connector = '-', $lower = true, $strip_underscores = true) {
-    $text_accents = array(
-        // Numeric character(s)
-        '¹' => 1, '²' => 2, '³' => 3, '°' => 0,
-        // Latin
-        'æ' => 'ae', 'ǽ' => 'ae', 'À' => 'A',  'Á' => 'A',  'Â' => 'A',  'Ã' => 'A',
-        'Å' => 'A',  'Ǻ' => 'A',  'Ă' => 'A',  'Ǎ' => 'A',  'Æ' => 'AE', 'Ǽ' => 'AE',
-        'à' => 'a',  'á' => 'a',  'â' => 'a',  'ã' => 'a',  'å' => 'a',  'ǻ' => 'a',
-        'ă' => 'a',  'ǎ' => 'a',  'ª' => 'a',  '@' => 'at', 'Ĉ' => 'C',  'Ċ' => 'C',
-        'ĉ' => 'c',  'ċ' => 'c',  '©' => 'c',  'Ð' => 'Dj', 'Đ' => 'D',  'ð' => 'dj',
-        'đ' => 'd',  'È' => 'E',  'É' => 'E',  'Ê' => 'E',  'Ë' => 'E',  'Ĕ' => 'E',
-        'Ė' => 'E',  'è' => 'e',  'é' => 'e',  'ê' => 'e',  'ë' => 'e',  'ĕ' => 'e',
-        'ė' => 'e',  'ƒ' => 'f',  'Ĝ' => 'G',  'Ġ' => 'G',  'ĝ' => 'g',  'ġ' => 'g',
-        'Ĥ' => 'H',  'Ħ' => 'H',  'ĥ' => 'h',  'ħ' => 'h',  'Ì' => 'I',  'Í' => 'I',
-        'Î' => 'I',  'Ï' => 'I',  'Ĩ' => 'I',  'Ĭ' => 'I',  'Ǐ' => 'I',  'Į' => 'I',
-        'Ĳ' => 'IJ', 'ì' => 'i',  'í' => 'i',  'î' => 'i',  'ï' => 'i',  'ĩ' => 'i',
-        'ĭ' => 'i',  'ǐ' => 'i',  'į' => 'i',  'ĳ' => 'ij', 'Ĵ' => 'J',  'ĵ' => 'j',
-        'Ĺ' => 'L',  'Ľ' => 'L',  'Ŀ' => 'L',  'ĺ' => 'l',  'ľ' => 'l',  'ŀ' => 'l',
-        'Ñ' => 'N',  'ñ' => 'n',  'ŉ' => 'n',  'Ò' => 'O',  'Ô' => 'O',  'Õ' => 'O',
-        'Ō' => 'O',  'Ŏ' => 'O',  'Ǒ' => 'O',  'Ő' => 'O',  'Ơ' => 'O',  'Ø' => 'O',
-        'Ǿ' => 'O',  'Œ' => 'OE', 'ò' => 'o',  'ô' => 'o',  'õ' => 'o',  'ō' => 'o',
-        'ŏ' => 'o',  'ǒ' => 'o',  'ő' => 'o',  'ơ' => 'o',  'ø' => 'o',  'ǿ' => 'o',
-        'º' => 'o',  'œ' => 'oe', 'Ŕ' => 'R',  'Ŗ' => 'R',  'ŕ' => 'r',  'ŗ' => 'r',
-        'Ŝ' => 'S',  'Ș' => 'S',  'ŝ' => 's',  'ș' => 's',  'ſ' => 's',  'Ţ' => 'T',
-        'Ț' => 'T',  'Ŧ' => 'T',  'Þ' => 'TH', 'ţ' => 't',  'ț' => 't',  'ŧ' => 't',
-        'þ' => 'th', 'Ù' => 'U',  'Ú' => 'U',  'Û' => 'U',  'Ũ' => 'U',  'Ŭ' => 'U',
-        'Ű' => 'U',  'Ų' => 'U',  'Ư' => 'U',  'Ǔ' => 'U',  'Ǖ' => 'U',  'Ǘ' => 'U',
-        'Ǚ' => 'U',  'Ǜ' => 'U',  'ù' => 'u',  'ú' => 'u',  'û' => 'u',  'ũ' => 'u',
-        'ŭ' => 'u',  'ű' => 'u',  'ų' => 'u',  'ư' => 'u',  'ǔ' => 'u',  'ǖ' => 'u',
-        'ǘ' => 'u',  'ǚ' => 'u',  'ǜ' => 'u',  'Ŵ' => 'W',  'ŵ' => 'w',  'Ý' => 'Y',
-        'Ÿ' => 'Y',  'Ŷ' => 'Y',  'ý' => 'y',  'ÿ' => 'y',  'ŷ' => 'y',
-        // Russian
-        'Ъ' => "",   'Ь' => "",   'А' => 'A',  'Б' => 'B',  'Ц' => 'C',  'Ч' => 'Ch',
-        'Д' => 'D',  'Е' => 'E',  'Ё' => 'E',  'Э' => 'E',  'Ф' => 'F',  'Г' => 'G',
-        'Х' => 'H',  'И' => 'I',  'Й' => 'J',  'Я' => 'Ja', 'Ю' => 'Ju', 'К' => 'K',
-        'Л' => 'L',  'М' => 'M',  'Н' => 'N',  'О' => 'O',  'П' => 'P',  'Р' => 'R',
-        'С' => 'S',  'Ш' => 'Sh', 'Щ' => 'Shch',
-        'Т' => 'T',  'У' => 'U',  'В' => 'V',  'Ы' => 'Y',  'З' => 'Z',  'Ж' => 'Zh',
-        'ъ' => "",   'ь' => "",   'а' => 'a',  'б' => 'b',  'ц' => 'c',  'ч' => 'ch',
-        'д' => 'd',  'е' => 'e',  'ё' => 'e',  'э' => 'e',  'ф' => 'f',  'г' => 'g',
-        'х' => 'h',  'и' => 'i',  'й' => 'j',  'я' => 'ja', 'ю' => 'ju', 'к' => 'k',
-        'л' => 'l',  'м' => 'm',  'н' => 'n',  'о' => 'o',  'п' => 'p',  'р' => 'r',
-        'с' => 's',  'ш' => 'sh', 'щ' => 'shch',
-        'т' => 't',  'у' => 'u',  'в' => 'v',  'ы' => 'y',  'з' => 'z',  'ж' => 'zh',
-        // German character(s)
-        'Ä' => 'AE', 'Ö' => 'OE', 'Ü' => 'UE', 'ß' => 'ss', 'ä' => 'ae', 'ö' => 'oe',
-        'ü' => 'ue',
-        // Turkish character(s)
-        'Ç' => 'C',  'Ğ' => 'G',  'İ' => 'I',  'Ş' => 'S',  'ç' => 'c',  'ğ' => 'g',
-        'ı' => 'i',  'ş' => 's',
-        // Latvian
-        'Ā' => 'A',  'Ē' => 'E',  'Ģ' => 'G',  'Ī' => 'I',  'Ķ' => 'K',  'Ļ' => 'L',
-        'Ņ' => 'N',  'Ū' => 'U',  'ā' => 'a',  'ē' => 'e',  'ģ' => 'g',  'ī' => 'i',
-        'ķ' => 'k',  'ļ' => 'l',  'ņ' => 'n',  'ū' => 'u',
-        // Ukrainian
-        'Ґ' => 'G',  'І' => 'I',  'Ї' => 'Ji', 'Є' => 'Ye', 'ґ' => 'g',  'і' => 'i',
-        'ї' => 'ji', 'є' => 'ye',
-        // Czech
-        'Č' => 'C',  'Ď' => 'D',  'Ě' => 'E',  'Ň' => 'N',  'Ř' => 'R',  'Š' => 'S',
-        'Ť' => 'T',  'Ů' => 'U',  'Ž' => 'Z',  'č' => 'c',  'ď' => 'd',  'ě' => 'e',
-        'ň' => 'n',  'ř' => 'r',  'š' => 's',  'ť' => 't',  'ů' => 'u',  'ž' => 'z',
-        // Polish
-        'Ą' => 'A',  'Ć' => 'C',  'Ę' => 'E',  'Ł' => 'L',  'Ń' => 'N',  'Ó' => 'O',
-        'Ś' => 'S',  'Ź' => 'Z',  'Ż' => 'Z',  'ą' => 'a',  'ć' => 'c',  'ę' => 'e',
-        'ł' => 'l',  'ń' => 'n',  'ó' => 'o',  'ś' => 's',  'ź' => 'z',  'ż' => 'z',
-        // Greek
-        'Α' => 'A',  'Β' => 'B',  'Γ' => 'G',  'Δ' => 'D',  'Ε' => 'E',  'Ζ' => 'Z',
-        'Η' => 'E',  'Θ' => 'Th', 'Ι' => 'I',  'Κ' => 'K',  'Λ' => 'L',  'Μ' => 'M',
-        'Ν' => 'N',  'Ξ' => 'X',  'Ο' => 'O',  'Π' => 'P',  'Ρ' => 'R',  'Σ' => 'S',
-        'Τ' => 'T',  'Υ' => 'Y',  'Φ' => 'Ph', 'Χ' => 'Ch', 'Ψ' => 'Ps', 'Ω' => 'O',
-        'Ϊ' => 'I',  'Ϋ' => 'Y',  'ά' => 'a',  'έ' => 'e',  'ή' => 'e',  'ί' => 'i',
-        'ΰ' => 'Y',  'α' => 'a',  'β' => 'b',  'γ' => 'g',  'δ' => 'd',  'ε' => 'e',
-        'ζ' => 'z',  'η' => 'e',  'θ' => 'th', 'ι' => 'i',  'κ' => 'k',  'λ' => 'l',
-        'μ' => 'm',  'ν' => 'n',  'ξ' => 'x',  'ο' => 'o',  'π' => 'p',  'ρ' => 'r',
-        'ς' => 's',  'σ' => 's',  'τ' => 't',  'υ' => 'y',  'φ' => 'ph', 'χ' => 'ch',
-        'ψ' => 'ps', 'ω' => 'o',  'ϊ' => 'i',  'ϋ' => 'y',  'ό' => 'o',  'ύ' => 'y',
-        'ώ' => 'o',  'ϐ' => 'b',  'ϑ' => 'th', 'ϒ' => 'Y',
-        // Arabic
-        'أ' => 'a',  'ب' => 'b',  'ت' => 't',  'ث' => 'th',  'ج' => 'g',  'ح' => 'h',
-        'خ' => 'kh', 'د' => 'd',  'ذ' => 'th', 'ر' => 'r',  'ز' => 'z',  'س' => 's',
-        'ش' => 'sh', 'ص' => 's',  'ض' => 'd',  'ط' => 't',  'ظ' => 'th', 'ع' => 'aa',
-        'غ' => 'gh', 'ف' => 'f',  'ق' => 'k',  'ك' => 'k',  'ل' => 'l',  'م' => 'm',
-        'ن' => 'n',  'ه' => 'h',  'و' => 'o',  'ي' => 'y',
-        // Vietnamese
-        'ạ' => 'a',  'ả' => 'a',  'ầ' => 'a',  'ấ' => 'a',  'ậ' => 'a',  'ẩ' => 'a',
-        'ẫ' => 'a',  'ằ' => 'a',  'ắ' => 'a',  'ặ' => 'a',  'ẳ' => 'a',  'ẵ' => 'a',
-        'ẹ' => 'e',  'ẻ' => 'e',  'ẽ' => 'e',  'ề' => 'e',  'ế' => 'e',  'ệ' => 'e',
-        'ể' => 'e',  'ễ' => 'e',  'ị' => 'i',  'ỉ' => 'i',  'ọ' => 'o',  'ỏ' => 'o',
-        'ồ' => 'o',  'ố' => 'o',  'ộ' => 'o',  'ổ' => 'o',  'ỗ' => 'o',  'ờ' => 'o',
-        'ớ' => 'o',  'ợ' => 'o',  'ở' => 'o',  'ỡ' => 'o',  'ụ' => 'u',  'ủ' => 'u',
-        'ừ' => 'u',  'ứ' => 'u',  'ự' => 'u',  'ử' => 'u',  'ữ' => 'u',  'ỳ' => 'y',
-        'ỵ' => 'y',  'ỷ' => 'y',  'ỹ' => 'y',  'Ạ' => 'A',  'Ả' => 'A',  'Ầ' => 'A',
-        'Ấ' => 'A',  'Ậ' => 'A',  'Ẩ' => 'A',  'Ẫ' => 'A',  'Ằ' => 'A',  'Ắ' => 'A',
-        'Ặ' => 'A',  'Ẳ' => 'A',  'Ẵ' => 'A',  'Ẹ' => 'E',  'Ẻ' => 'E',  'Ẽ' => 'E',
-        'Ề' => 'E',  'Ế' => 'E',  'Ệ' => 'E',  'Ể' => 'E',  'Ễ' => 'E',  'Ị' => 'I',
-        'Ỉ' => 'I',  'Ọ' => 'O',  'Ỏ' => 'O',  'Ồ' => 'O',  'Ố' => 'O',  'Ộ' => 'O',
-        'Ổ' => 'O',  'Ỗ' => 'O',  'Ờ' => 'O',  'Ớ' => 'O',  'Ợ' => 'O',  'Ở' => 'O',
-        'Ỡ' => 'O',  'Ụ' => 'U',  'Ủ' => 'U',  'Ừ' => 'U',  'Ứ' => 'U',  'Ự' => 'U',
-        'Ử' => 'U',  'Ữ' => 'U',  'Ỳ' => 'Y',  'Ỵ' => 'Y',  'Ỷ' => 'Y',  'Ỹ' => 'Y'
-    );
-    $slug = str_replace(array_keys($text_accents), array_values($text_accents), strip_tags($text));
+function do_slug($text, $join = '-', $exclude = 'a-zA-Z0-9') {
+    $join_e = preg_quote($join, '#');
+    $exclude .= $join_e;
+    $from = explode(',', '¹,²,³,°,æ,ǽ,À,Á,Â,Ã,Å,Ǻ,Ă,Ǎ,Æ,Ǽ,à,á,â,ã,å,ǻ,ă,ǎ,ª,@,Ĉ,Ċ,ĉ,ċ,©,Ð,Đ,ð,đ,È,É,Ê,Ë,Ĕ,Ė,è,é,ê,ë,ĕ,ė,ƒ,Ĝ,Ġ,ĝ,ġ,Ĥ,Ħ,ĥ,ħ,Ì,Í,Î,Ï,Ĩ,Ĭ,Ǐ,Į,Ĳ,ì,í,î,ï,ĩ,ĭ,ǐ,į,ĳ,Ĵ,ĵ,Ĺ,Ľ,Ŀ,ĺ,ľ,ŀ,Ñ,ñ,ŉ,Ò,Ô,Õ,Ō,Ŏ,Ǒ,Ő,Ơ,Ø,Ǿ,Œ,ò,ô,õ,ō,ŏ,ǒ,ő,ơ,ø,ǿ,º,œ,Ŕ,Ŗ,ŕ,ŗ,Ŝ,Ș,ŝ,ș,ſ,Ţ,Ț,Ŧ,Þ,ţ,ț,ŧ,þ,Ù,Ú,Û,Ũ,Ŭ,Ű,Ų,Ư,Ǔ,Ǖ,Ǘ,Ǚ,Ǜ,ù,ú,û,ũ,ŭ,ű,ų,ư,ǔ,ǖ,ǘ,ǚ,ǜ,Ŵ,ŵ,Ý,Ÿ,Ŷ,ý,ÿ,ŷ,Ъ,Ь,А,Б,Ц,Ч,Д,Е,Ё,Э,Ф,Г,Х,И,Й,Я,Ю,К,Л,М,Н,О,П,Р,С,Ш,Щ,Т,У,В,Ы,З,Ж,ъ,ь,а,б,ц,ч,д,е,ё,э,ф,г,х,и,й,я,ю,к,л,м,н,о,п,р,с,ш,щ,т,у,в,ы,з,ж,Ä,Ö,Ü,ß,ä,ö,ü,Ç,Ğ,İ,Ş,ç,ğ,ı,ş,Ā,Ē,Ģ,Ī,Ķ,Ļ,Ņ,Ū,ā,ē,ģ,ī,ķ,ļ,ņ,ū,Ґ,І,Ї,Є,ґ,і,ї,є,Č,Ď,Ě,Ň,Ř,Š,Ť,Ů,Ž,č,ď,ě,ň,ř,š,ť,ů,ž,Ą,Ć,Ę,Ł,Ń,Ó,Ś,Ź,Ż,ą,ć,ę,ł,ń,ó,ś,ź,ż,Α,Β,Γ,Δ,Ε,Ζ,Η,Θ,Ι,Κ,Λ,Μ,Ν,Ξ,Ο,Π,Ρ,Σ,Τ,Υ,Φ,Χ,Ψ,Ω,Ϊ,Ϋ,ά,έ,ή,ί,ΰ,α,β,γ,δ,ε,ζ,η,θ,ι,κ,λ,μ,ν,ξ,ο,π,ρ,ς,σ,τ,υ,φ,χ,ψ,ω,ϊ,ϋ,ό,ύ,ώ,ϐ,ϑ,ϒ,أ,ب,ت,ث,ج,ح,خ,د,ذ,ر,ز,س,ش,ص,ض,ط,ظ,ع,غ,ف,ق,ك,ل,م,ن,ه,و,ي,ạ,ả,ầ,ấ,ậ,ẩ,ẫ,ằ,ắ,ặ,ẳ,ẵ,ẹ,ẻ,ẽ,ề,ế,ệ,ể,ễ,ị,ỉ,ọ,ỏ,ồ,ố,ộ,ổ,ỗ,ờ,ớ,ợ,ở,ỡ,ụ,ủ,ừ,ứ,ự,ử,ữ,ỳ,ỵ,ỷ,ỹ,Ạ,Ả,Ầ,Ấ,Ậ,Ẩ,Ẫ,Ằ,Ắ,Ặ,Ẳ,Ẵ,Ẹ,Ẻ,Ẽ,Ề,Ế,Ệ,Ể,Ễ,Ị,Ỉ,Ọ,Ỏ,Ồ,Ố,Ộ,Ổ,Ỗ,Ờ,Ớ,Ợ,Ở,Ỡ,Ụ,Ủ,Ừ,Ứ,Ự,Ử,Ữ,Ỳ,Ỵ,Ỷ,Ỹ');
+    $to = explode(',', '1,2,3,0,ae,ae,A,A,A,A,A,A,A,A,AE,AE,a,a,a,a,a,a,a,a,a,at,C,C,c,c,c,Dj,D,dj,d,E,E,E,E,E,E,e,e,e,e,e,e,f,G,G,g,g,H,H,h,h,I,I,I,I,I,I,I,I,IJ,i,i,i,i,i,i,i,i,ij,J,j,L,L,L,l,l,l,N,n,n,O,O,O,O,O,O,O,O,O,O,OE,o,o,o,o,o,o,o,o,o,o,o,oe,R,R,r,r,S,S,s,s,s,T,T,T,TH,t,t,t,th,U,U,U,U,U,U,U,U,U,U,U,U,U,u,u,u,u,u,u,u,u,u,u,u,u,u,W,w,Y,Y,Y,y,y,y,,,A,B,C,Ch,D,E,E,E,F,G,H,I,J,Ja,Ju,K,L,M,N,O,P,R,S,Sh,Shch,T,U,V,Y,Z,Zh,,,a,b,c,ch,d,e,e,e,f,g,h,i,j,ja,ju,k,l,m,n,o,p,r,s,sh,shch,t,u,v,y,z,zh,AE,OE,UE,ss,ae,oe,ue,C,G,I,S,c,g,i,s,A,E,G,I,K,L,N,U,a,e,g,i,k,l,n,u,G,I,Ji,Ye,g,i,ji,ye,C,D,E,N,R,S,T,U,Z,c,d,e,n,r,s,t,u,z,A,C,E,L,N,O,S,Z,Z,a,c,e,l,n,o,s,z,z,A,B,G,D,E,Z,E,Th,I,K,L,M,N,X,O,P,R,S,T,Y,Ph,Ch,Ps,O,I,Y,a,e,e,i,Y,a,b,g,d,e,z,e,th,i,k,l,m,n,x,o,p,r,s,s,t,y,ph,ch,ps,o,i,y,o,y,o,b,th,Y,a,b,t,th,g,h,kh,d,th,r,z,s,sh,s,d,t,th,aa,gh,f,k,k,l,m,n,h,o,y,a,a,a,a,a,a,a,a,a,a,a,a,e,e,e,e,e,e,e,e,i,i,o,o,o,o,o,o,o,o,o,o,o,o,u,u,u,u,u,u,u,y,y,y,y,A,A,A,A,A,A,A,A,A,A,A,A,E,E,E,E,E,E,E,E,I,I,O,O,O,O,O,O,O,O,O,O,O,O,U,U,U,U,U,U,U,Y,Y,Y,Y');
+    $slug = str_replace($from, $to, $text);
     $slug = preg_replace(
         array(
-            '#&(?:[a-z0-9]+|\#[0-9]+|\#x[a-f0-9]+);#i',
-            '#[^a-z0-9' . preg_quote($connector, '#') . ( ! $strip_underscores ? '_' : "") . ']#i',
-            '#' . preg_quote($connector, '#') . '+#',
-            '#^' . preg_quote($connector, '#') . '|' . preg_quote($connector, '#') . '$#'
+            '#<.*?>|&(?:[a-z0-9]+|\#[0-9]+|\#x[a-f0-9]+);#i',
+            '#[^' . $exclude . ']#',
+            '#' . $join_e . '+#',
+            '#^' . $join_e . '|' . $join_e . '$#'
         ),
         array(
-            ' ',
-            $connector,
-            $connector,
+            $join,
+            $join,
+            $join,
             ""
         ),
     $slug);
-    if($lower) $slug = strtolower($slug);
-    return ! empty($slug) ? $slug : str_repeat($connector, 2);
+    return ! empty($slug) ? $slug : str_repeat($join, 2);
 }
 
 // Convert text to slug pattern
-Text::parser('to_slug', function($input, $connector = '-') {
-    return is_string($input) ? do_slug($input, $connector, true, true) : $input;
+Text::parser('to_slug', function($input, $join = '-') {
+    return is_string($input) ? strtolower(do_slug($input, $join)) : $input;
 });
 
 // Convert text to safe file name pattern
@@ -176,16 +108,11 @@ Text::parser('to_safe_file_name', function($input) {
     $parts = explode('.', $input);
     $parts_output = array();
     foreach($parts as $part) {
-        $part = do_slug($part, '-', true, false);
+        $part = do_slug($part, '-', 'a-zA-Z0-9_');
         $part = trim($part, '-');
         $parts_output[] = $part !== "" ? $part : time();
     }
-    return implode('.', $parts_output);
-});
-
-// DEPRECATED. < 1.1.3
-Text::parser('to_slug_moderate', function($input) {
-    return Text::parse($input, '->safe_file_name');
+    return strtolower(implode('.', $parts_output));
 });
 
 // Convert slug pattern to text
@@ -214,34 +141,32 @@ Text::parser('to_text', function($input) {
 
 // Convert text to array key pattern
 Text::parser('to_array_key', function($input, $lower = false) {
-    return is_string($input) ? do_slug($input, '_', $lower, true) : $input;
+    return is_string($input) ? do_slug($lower ? strtolower($input) : $input, '_') : $input;
 });
 
 // Convert plain text to HTML
+// Suppose that there aren't any HTML parser engine ...
 Text::parser('to_html', function($input) {
-    // Suppose that there is no HTML parser engine ...
     return $input;
 });
 
 // Convert `foo_bar_baz` to `fooBarBaz`
-Text::parser('to_camel_case', function($input, $connector = '[_\s]') {
-    if( ! is_string($input)) return $input;
-    return preg_replace_callback('#(' . $connector . ')([a-z])#i', function($matches) {
+Text::parser('to_camel_case', function($input, $join = '_\s') {
+    return is_string($input) ? preg_replace_callback('#([' . $join . '])([a-z])#i', function($matches) {
         return strtoupper($matches[2]);
-    }, strtolower($input));
+    }, strtolower($input)) : $input;
 });
 
 // Convert `foo_bar_baz` to `FooBarBaz`
-Text::parser('to_pascal_case', function($input, $connector = '[_\s]') {
-    if( ! is_string($input)) return $input;
-    return ucfirst(Text::parse($input, '->camel_case', $connector));
+Text::parser('to_pascal_case', function($input, $join = '_\s') {
+    return is_string($input) ? ucfirst(Text::parse($input, '->camel_case', $join)) : $input;
 });
 
 // Convert `FooBarBaz` to `foo_bar_baz`
-Text::parser('to_snake_case', function($input, $connector = '_', $lower = true) {
+Text::parser('to_snake_case', function($input, $join = '_', $lower = true) {
     if( ! is_string($input)) return $input;
-    $output = preg_replace('#([a-z0-9])([A-Z])#', '$1' . $connector . '$2', $input);
-    return $lower ? strtolower($output) : $output;
+    $input = preg_replace('#([a-z0-9])([A-Z])#', '$1' . $join . '$2', $input);
+    return $lower ? strtolower($input) : $input;
 });
 
 

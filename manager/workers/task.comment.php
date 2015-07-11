@@ -81,7 +81,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
             $parent = Request::post('parent');
             $P = array('data' => $request);
             $name = strip_tags($request['name']);
-            $email = Text::parse($request['email'], '->ascii');
+            $email = Text::parse($request['email'], '->broken_entity');
             $url = Request::post('url', false);
             $parser = strip_tags(Request::post('content_type', $config->html_parser));
             $message = $request['message'];

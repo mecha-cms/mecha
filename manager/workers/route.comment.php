@@ -78,7 +78,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
             $name = $request['name'];
-            $email = Text::parse($request['email'], '->ascii');
+            $email = Text::parse($request['email'], '->broken_entity');
             $url = Request::post('url', false);
             $message = $request['message'];
             $field = Request::post('fields', array());
