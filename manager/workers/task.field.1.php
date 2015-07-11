@@ -8,11 +8,15 @@ foreach($field as $k => $v) {
         unset($field[$k]);
     }
     // Remove empty field value
-    if( ! isset($v['value']) || $v['value'] === "" || ( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f')) {
+    if( ! isset($v['value']) || $v['value'] === "") {
         unset($field[$k]);
     } else {
-        // 1.1.3  => {"field_key":{"type":"s","value":"field value..."}}
-        // 1.1.3+ => {"field_key":"field value..."}
-        $field[$k] = $v['value'];
+        if( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f') {
+            unset($field[$k]);
+        } else {
+            // 1.1.3  => {"field_key":{"type":"s","value":"field value..."}}
+            // 1.1.3+ => {"field_key":"field value..."}
+            $field[$k] = $v['value'];
+        }
     }
 }

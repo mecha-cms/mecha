@@ -208,7 +208,7 @@ class Get extends Base {
              *    return array(
              *        'break_title_text' => array(
              *            'title' => 'Break Title Text?',
-             *            'type' => 'b',
+             *            'type' => 'text',
              *            'value' => "",
              *            'scope' => 'article'
              *        )
@@ -881,7 +881,7 @@ class Get extends Base {
             foreach($results['kind'] as $id) {
                 $tags[] = self::rawTag($id);
             }
-            $results['tags'] = self::AMF($tags, $FP, 'tags');
+            $results['tags'] = self::AMF(Mecha::eat($tags)->order('ASC', 'name')->vomit(), $FP, 'tags');
         }
 
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
@@ -950,16 +950,18 @@ class Get extends Base {
         $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $FP, 'images');
         $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
 
-        $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
-        $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
-        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
-
-        if($comments && ! isset($excludes['comments'])) {
-            $results['comments'] = array();
-            foreach($comments as $comment) {
-                $results['comments'][] = self::comment($comment);
+        if( ! isset($excludes['comments'])) {
+            $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
+            $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
+            $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+            if($comments) {
+                $results['comments'] = array();
+                foreach($comments as $comment) {
+                    $results['comments'][] = self::comment($comment);
+                }
+                $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
             }
-            $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
+            unset($comments);
         }
 
 
@@ -1092,14 +1094,17 @@ class Get extends Base {
         if( ! isset($results['url'])) {
             $results['url'] = self::AMF('#', $FP, 'url');
         }
+        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $init = array();
+        foreach($fields as $key => $value) {
+            $init[$key] = $value['value'];
+        }
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
-            $init = array();
-            foreach($fields as $key => $value) {
-                $init[$key] = $value['value'];
-            }
             foreach($results['fields'] as $key => $value) {
-                $init[$key] = self::AMF(isset($value['value']) ? $value['value'] : false, $FP, 'fields.' . $key);
+                if(is_array($value) && isset($value['type'])) { // <= 1.1.3
+                    $value = isset($value['value']) ? $value['value'] : false;
+                }
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
             }
             $results['fields'] = $init;
             unset($fields, $init);
@@ -1141,12 +1146,12 @@ class Get extends Base {
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
+        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $init = array();
+        foreach($fields as $key => $value) {
+            $init[$key] = $value['value'];
+        }
         if(isset($results['fields']) && is_array($results['fields'])) {
-            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
-            $init = array();
-            foreach($fields as $key => $value) {
-                $init[$key] = $value['value'];
-            }
             foreach($results['fields'] as $key => $value) {
                 if(is_array($value) && isset($value['type'])) { // <= 1.1.3
                     $value = isset($value['value']) ? $value['value'] : false;
@@ -1253,7 +1258,7 @@ class Get extends Base {
     public static function pagePath($detector, $folder = PAGE) {
         foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', File::N($path), 3);
-            if($slug === $detector || (is_numeric($detector) && date('Y-m-d-H-i-s', $detector) === (string) $time)) {
+            if($slug === $detector || ((string) $time === Date::format($detector, 'Y-m-d-H-i-s'))) {
                 return $path;
             }
         }
