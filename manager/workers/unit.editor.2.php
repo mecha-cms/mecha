@@ -1,8 +1,7 @@
 <?php
 
 $e = File::E( ! is_null($the_name) ? $the_name : "");
-$is_text = explode(',', SCRIPT_EXT);
-$is_text = is_null($the_name) || in_array($e, $is_text);
+$is_text = is_null($the_name) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') !== false;
 
 ?>
 <?php if($is_text && $the_content !== false): ?>

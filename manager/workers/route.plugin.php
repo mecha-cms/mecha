@@ -26,32 +26,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     $offset = (int) $offset;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        $accepted_mimes = array(
-            'application/download',
-            'application/octet-stream',
-            'application/x-compressed',
-            'application/x-zip-compressed',
-            'application/zip',
-            'multipart/x-zip',
-        );
-        $accepted_extensions = array(
-            'zip'
-        );
-        $name = $_FILES['file']['name'];
-        $type = $_FILES['file']['type'];
-        $extension = File::E($name);
-        $path = File::N($name);
-        if( ! empty($name)) {
-            if(File::exist(PLUGIN . DS . $path)) {
-                Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
-            } else {
-                if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                    Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
-                }
-            }
-        } else {
-            Notify::error($speak->notify_error_no_file_selected);
-        }
+        $task_connect_path = PLUGIN;
+        include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], PLUGIN, function() use($speak) {
                 Notify::clear();

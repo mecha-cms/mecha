@@ -17,7 +17,7 @@ if( ! empty($fields)) {
         // '*' is equal to all scopes
         if($value['scope'] === "") $value['scope'] = 'article,page';
         if($value['scope'] === '*') $value['scope'] = $segment;
-        if(Notify::errors()) {
+        if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
         $type = $value['type'][0];

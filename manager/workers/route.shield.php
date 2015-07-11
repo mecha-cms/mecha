@@ -16,32 +16,8 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        $accepted_mimes = array(
-            'application/download',
-            'application/octet-stream',
-            'application/x-compressed',
-            'application/x-zip-compressed',
-            'application/zip',
-            'multipart/x-zip',
-        );
-        $accepted_extensions = array(
-            'zip'
-        );
-        $name = $_FILES['file']['name'];
-        $type = $_FILES['file']['type'];
-        $extension = File::E($name);
-        $path = File::N($name);
-        if( ! empty($name)) {
-            if(File::exist(SHIELD . DS . $path)) {
-                Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
-            } else {
-                if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                    Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
-                }
-            }
-        } else {
-            Notify::error($speak->notify_error_no_file_selected);
-        }
+        $task_connect_path = SHIELD;
+        include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], SHIELD, function() use($speak) {
                 Notify::clear();
@@ -50,11 +26,8 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             $P = array('data' => $_FILES);
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
-            if($uploaded = File::exist(SHIELD . DS . $name)) {
-                Package::take($uploaded)->extract(); // Extract the ZIP file
-                File::open($uploaded)->delete(); // Delete the ZIP file
-                Guardian::kick($config->manager->slug . '/shield');
-            }
+            $task_connect_kick = 'shield';
+            include DECK . DS . 'workers' . DS . 'task.package.2.php';
         } else {
             Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>
@@ -105,10 +78,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
             if(File::exist(SHIELD . DS . $folder . DS . $path)) {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $path . '</code>'));
             }
-            $accepted_extensions = explode(',', SCRIPT_EXT);
-            $extension = File::E($path);
-            if($extension !== "") {
-                if( ! in_array($extension, $accepted_extensions)) {
+            if(($extension = File::E($path)) !== "") {
+                if(strpos(',' . SCRIPT_EXT . ',', ',' . $extension . ',') === false) {
                     Notify::error(Config::speak('notify_error_file_extension', $extension));
                 }
             } else {
@@ -165,10 +136,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
             if($path !== $name && File::exist(SHIELD . DS . $folder . DS . $name)) {
                 Notify::error(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             }
-            $accepted_extensions = explode(',', SCRIPT_EXT);
-            $extension = File::E($name);
-            if($extension !== "") {
-                if( ! in_array($extension, $accepted_extensions)) {
+            if(($extension = File::E($name)) !== "") {
+                if(strpos(',' . SCRIPT_EXT . ',', ',' . $extension . ',') === false) {
                     Notify::error(Config::speak('notify_error_file_extension', $extension));
                 }
             } else {

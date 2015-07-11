@@ -52,11 +52,11 @@
       <?php
 
       $tags = array();
-      $tags_wayback = Guardian::wayback('kind', Mecha::A($default->kind));
+      $tags_wayback = ',' . implode(',', Guardian::wayback('kind', Mecha::A($default->kind))) . ',';
 
       foreach(Get::tags() as $tag) {
           if($tag && $tag->id !== 0) {
-              $tags[] = '<div>' . Form::checkbox('kind[]', $tag->id, in_array((int) $tag->id, $tags_wayback), $tag->name) . '</div>';
+              $tags[] = '<div>' . Form::checkbox('kind[]', $tag->id, strpos($tags_wayback, ',' . $tag->id . ',') !== false, $tag->name) . '</div>';
           }
       }
 

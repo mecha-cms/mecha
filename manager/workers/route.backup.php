@@ -20,30 +20,8 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
-        $accepted_mimes = array(
-            'application/download',
-            'application/octet-stream',
-            'application/x-compressed',
-            'application/x-zip-compressed',
-            'application/zip',
-            'multipart/x-zip',
-        );
-        $accepted_extensions = array(
-            'zip'
-        );
-        $name = $_FILES['file']['name'];
-        $type = $_FILES['file']['type'];
-        $extension = File::E($name);
-        if( ! empty($name)) {
-            if( ! in_array($type, $accepted_mimes) || ! in_array($extension, $accepted_extensions)) {
-                Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
-            }
-        } else {
-            Notify::error($speak->notify_error_no_file_selected);
-        }
-        if( ! file_exists($destination)) {
-            Notify::error(Config::speak('notify_folder_not_exist', '<code>' . $destination . '</code>'));
-        }
+        $task_connect_path = $destination;
+        include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
                 Notify::clear();
@@ -51,12 +29,8 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
             });
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));
-            if($uploaded = File::exist($destination . DS . $name)) {
-                Package::take($uploaded)->extract(); // Extract the ZIP file
-                File::open($uploaded)->delete(); // Delete the ZIP file
-                Config::load(); // Refresh the configuration data ...
-                Guardian::kick(Config::get('manager')->slug . '/backup');
-            }
+            $task_connect_kick = 'backup';
+            include DECK . DS . 'workers' . DS . 'task.package.2.php';
         } else {
             Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>

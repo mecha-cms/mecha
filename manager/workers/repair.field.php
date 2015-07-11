@@ -46,12 +46,12 @@
     // Backward compatibility ...
     // "" is equal to `article,page`
     // '*' is equal to all scopes
-    if($cache === "") $cache = array('article', 'page');
-    if($cache === '*') $cache = array_keys($scopes);
-    $cache = is_array($cache) ? $cache : explode(',', $cache);
+    if($cache === "") $cache = 'article,page';
+    if($cache === '*') $cache = implode(',', array_keys($scopes));
+    $cache = ',' . (is_array($cache) ? implode(',', $cache) : $cache) . ',';
 
     foreach($scopes as $k => $v) {
-        echo '<div>' . Form::checkbox('scope[]', $k, in_array($k, $cache), $v) . '</div>';
+        echo '<div>' . Form::checkbox('scope[]', $k, strpos($cache, ',' . $k . ',') !== false, $v) . '</div>';
     }
 
     ?>
