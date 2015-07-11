@@ -133,7 +133,6 @@ html {
 
 .grid-group-file input[type="file"] {
   display:inline-block;
-  font-size:86%;
   line-height:normal;
   max-width:none;
   max-height:none;

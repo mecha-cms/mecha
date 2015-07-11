@@ -97,13 +97,13 @@ date_default_timezone_set($config->timezone);
 
 if($config->widget_include_css) {
     Weapon::add('shell_before', function() {
-        echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'widgets.min.css');
+        echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'shell/widgets.min.css');
     });
 }
 
 if($config->widget_include_js) {
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('cabinet/shields/widgets.js', "", 'widgets.min.js');
+        echo Asset::javascript('cabinet/shields/widgets.js', "", 'sword/widgets.min.js');
     });
 }
 
