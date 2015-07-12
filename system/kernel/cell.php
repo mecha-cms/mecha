@@ -19,6 +19,7 @@ class Cell {
         'enctype' => null,
         'value' => null,
         'placeholder' => null,
+        'label' => null,
         'selected' => null,
         'checked' => null,
         'disabled' => null,

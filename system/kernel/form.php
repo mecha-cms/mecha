@@ -36,16 +36,41 @@ class Form extends Cell {
         }
         $attr['name'] = $name;
         foreach($option as $key => $value) {
-            $attr_o = array();
-            if(strpos($key, '.') === 0) {
-                $attr_o['disabled'] = true;
-                $key = ltrim($key, '.');
+            // option list group
+            if(is_array($value)) {
+                $attr_o = array();
+                if(strpos($key, '.') === 0) {
+                    $attr_o['disabled'] = true;
+                    $key = ltrim($key, '.');
+                }
+                $attr_o['label'] = $key;
+                $o .= NL . self::begin('optgroup', $attr_o, $indent + 1);
+                foreach($value as $k => $v) {
+                    $attr_o = array();
+                    if(strpos($k, '.') === 0) {
+                        $attr_o['disabled'] = true;
+                        $k = ltrim($k, '.');
+                    }
+                    if(ltrim($select, '.') === $k) {
+                        $attr_o['selected'] = true;
+                    }
+                    $attr_o['value'] = $k;
+                    $o .= NL . self::unit('option', $v, $attr_o, $indent + 2);
+                }
+                $o .= NL . self::end();
+            // option list
+            } else {
+                $attr_o = array();
+                if(strpos($key, '.') === 0) {
+                    $attr_o['disabled'] = true;
+                    $key = ltrim($key, '.');
+                }
+                if(ltrim($select, '.') === $key) {
+                    $attr_o['selected'] = true;
+                }
+                $attr_o['value'] = $key;
+                $o .= NL . self::unit('option', $value, $attr_o, $indent + 1);
             }
-            if(ltrim($select, '.') === $key) {
-                $attr_o['selected'] = true;
-            }
-            $attr_o['value'] = $key;
-            $o .= NL . self::unit('option', $value, $attr_o, $indent + 1);
         }
         return self::unit('select', $o . NL . ($indent ? str_repeat(TAB, $indent) : ""), $attr, $indent);
     }

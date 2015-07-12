@@ -1,10 +1,10 @@
-Untuk bidang bertipe _Berkas_, Anda bisa membatasi ekstensi berkas yang diperbolehkan pada bidang **Nilai**:
+Untuk bidang bertipe _file_, batasi ekstensi berkas yang diperbolehkan pada bidang **Nilai**:
 
 ~~~ .no-highlight
 gif,bmp,jpeg,jpg,png
 ~~~
 
-Untuk bidang bertipe _Pilihan_, tulis beberapa baris teks pada bidang **Nilai** sebagai representasi dari setiap pilihan:
+Untuk bidang bertipe _option_, tulis beberapa baris teks pada bidang **Nilai** sebagai representasi dari setiap pilihan:
 
 ~~~ .no-highlight
 Opsi 1
@@ -37,6 +37,36 @@ Hasil:
   <option value="nilai_1">Label 1</option>
   <option value="nilai_2">Label 2</option>
   <option value="nilai_3">Label 3</option>
+</select>
+~~~
+
+Contoh dengan grup pilihan:
+
+~~~ .no-highlight
+Grup 1:
+  nilai_1_1: Label 1.1
+  nilai_1_2: Label 1.2
+  nilai_1_3: Label 1.3
+Grup 2:
+  nilai_2_1: Label 2.1
+  nilai_2_2: Label 2.2
+  nilai_2_3: Label 2.3
+~~~
+
+Result:
+
+~~~ .html
+<select>
+  <optgroup label="Grup 1">
+    <option value="nilai_1_1">Label 1</option>
+    <option value="nilai_1_2">Label 2</option>
+    <option value="nilai_1_3">Label 3</option>
+  </optgroup>
+  <optgroup label="Grup 2">
+    <option value="nilai_2_1">Label 1</option>
+    <option value="nilai_2_2">Label 2</option>
+    <option value="nilai_2_3">Label 3</option>
+  </optgroup>
 </select>
 ~~~
 

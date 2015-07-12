@@ -962,8 +962,9 @@ class Get extends Base {
                 }
                 $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
             }
-            unset($comments);
         }
+
+        unset($comments);
 
 
         /**

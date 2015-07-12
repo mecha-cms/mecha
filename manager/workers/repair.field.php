@@ -96,27 +96,28 @@
 <script>
 (function(w, d) {
     var form = d.getElementById('form-<?php echo $the_key ? 'repair' : 'ignite'; ?>'),
-        change = form.type,
+        type = form.type,
         value = form.value,
         placeholder = form.placeholder,
         holder = "";
     function onchange(v) {
-        placeholder.parentNode.parentNode.style.display = v.match(/^[ts]$/) ? "" : 'none';
-        if (v === 'o') {
+        // `input[type="text"] < .grid < .grid-group`
+        placeholder.parentNode.parentNode.style.display = v[0].match(/^[ts]$/) ? "" : 'none';
+        if (v[0] === 'o') {
             holder = '<?php echo strtolower($speak->key) . S . ' ' . $speak->value; ?>';
-        } else if (v === 'f') {
+        } else if (v[0] === 'f') {
             holder = '<?php echo IMAGE_EXT; ?>';
-        } else if (v === 'b') {
-            holder = 'true';
+        } else if (v[0] === 'b') {
+            holder = '1';
         } else {
             holder = "";
         }
         value.placeholder = holder;
     }
-    change.onchange = function() {
+    onchange(type.value);
+    type.onchange = function() {
         onchange(this.value);
     };
-    onchange('<?php echo $file->type[0]; ?>');
 })(window, document);
 </script>
 <hr>

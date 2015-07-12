@@ -49,16 +49,17 @@ if( ! empty($fields)) {
                 if(is_array($value['value'])) {
                     $options = $value['value'];
                 } else {
-                    $options = array();
+                    $options = "";
                     foreach(explode("\n", $value['value']) as $v) {
-                        $v = trim($v);
-                        if(strpos($v, S) !== false) {
-                            $v = explode(S, $v, 2);
-                            $options[trim($v[0])] = trim($v[1]);
+                        $v = rtrim($v);
+                        // no `:` ... fix it!
+                        if(strpos($v, S) === false) {
+                            $options .= $v . S . ' ' . ltrim($v) . "\n";
                         } else {
-                            $options[$v] = $v;
+                            $options .= $v . "\n";
                         }
                     }
+                    $options = Text::toArray($options, S, '  ');
                 }
                 $html .= Form::select('fields[' . $key . '][value]', $options, $selected, array(
                     'class' => 'select-block'
