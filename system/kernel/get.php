@@ -950,10 +950,11 @@ class Get extends Base {
         $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $FP, 'images');
         $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
 
+        $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
+        $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
+        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+
         if( ! isset($excludes['comments'])) {
-            $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
-            $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
-            $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
             if($comments) {
                 $results['comments'] = array();
                 foreach($comments as $comment) {
