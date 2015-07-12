@@ -2,6 +2,7 @@
 
 class Text extends Base {
 
+    protected static $text = "";
     protected static $parsers = array();
 
     /**
@@ -285,6 +286,98 @@ class Text extends Base {
             }
         }
         return $results;
+    }
+
+    /**
+     * =====================================================================
+     *  INITIALIZE THE TEXT CHECKER
+     * =====================================================================
+     *
+     * -- CODE: ------------------------------------------------------------
+     *
+     *    Text::check($text)-> ...
+     *
+     * ---------------------------------------------------------------------
+     *
+     */
+
+    public static function check($text) {
+        self::$text = func_num_args() > 1 ? func_get_args() : (string) $text;
+        return new static;
+    }
+
+    /**
+     * =====================================================================
+     *  CHECK IF TEXT CONTAIN(S) `A` AND `B`
+     * =====================================================================
+     *
+     * -- CODE: ------------------------------------------------------------
+     *
+     *    if(Text::check($text)->has('A', 'B')) { ... }
+     *
+     * ---------------------------------------------------------------------
+     *
+     */
+
+    public static function has($text) {
+        if(func_num_args() === 1) {
+            $text = (string) $text;
+            return strpos(self::$text, $text) !== false;
+        } else {
+            $text = func_get_args();
+            $text_valid = 0;
+            foreach($text as $v) {
+                if(strpos(self::$text, $v) !== false) {
+                    $text_valid++;
+                }
+            }
+            return $text_valid === count($text);
+        }
+    }
+
+    /**
+     * =====================================================================
+     *  CHECK IF TEXT CONTAIN(S) `A` OR `B`
+     * =====================================================================
+     *
+     * -- CODE: ------------------------------------------------------------
+     *
+     *    if(Text::check('A', 'B')->in($text)) { ... }
+     *
+     * ---------------------------------------------------------------------
+     *
+     */
+
+    public static function in($text) {
+        foreach((array) self::$text as $v) {
+            if(strpos($text, $v) !== false) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * =====================================================================
+     *  CHECK OFFSET OF A STRING INSIDE A TEXT
+     * =====================================================================
+     *
+     * -- CODE: ------------------------------------------------------------
+     *
+     *    if(Text::check($text)->offset('A')->start === 0) { ... }
+     *
+     * ---------------------------------------------------------------------
+     *
+     */
+
+    public static function offset($text) {
+        $output = array('start' => -1, 'end' => -1);
+        if( ! is_string(self::$text)) return (object) $output;
+        if(($offset = strpos(self::$text, $text)) !== false) {
+            $output['start'] = $offset;
+            $output['end'] = $offset + strlen($text) - 1;
+        }
+        return (object) $output;
     }
 
     // Encode the bogus `SEPARATOR`s (internal only)
