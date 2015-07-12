@@ -344,8 +344,8 @@ class File extends Base {
                 Notify::error($speak->notify_error_file_type_unknown);
             }
             // Bad file extension
-            $extension_allow = array_flip(self::$config['file_extension_allow']);
-            if( ! isset($extension_allow[$extension])) {
+            $extension_allow = ',' . implode(',', self::$config['file_extension_allow']) . ',';
+            if(strpos($extension_allow, ',' . $extension . ',') === false) {
                 Notify::error(Config::speak('notify_error_file_extension', $extension));
             }
             // Too small

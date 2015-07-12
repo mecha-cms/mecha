@@ -305,6 +305,9 @@ errors: Kesalahan
 key: Kunci
 keys: Kunci
 
+placeholder: Contoh Nilai
+placeholders: Contoh Nilai
+
 value: Nilai
 values: Nilai
 

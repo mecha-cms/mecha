@@ -73,6 +73,14 @@
     )); ?>
     </span>
   </label>
+  <label class="grid-group">
+    <span class="grid span-1 form-label"><?php echo $speak->placeholder; ?></span>
+    <span class="grid span-5">
+    <?php echo Form::text('placeholder', Guardian::wayback('placeholder', $file->placeholder), null, array(
+        'class' => 'input-block'
+    )); ?>
+    </span>
+  </label>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
@@ -85,5 +93,31 @@
     </span>
   </div>
 </form>
+<script>
+(function(w, d) {
+    var form = d.getElementById('form-<?php echo $the_key ? 'repair' : 'ignite'; ?>'),
+        change = form.type,
+        value = form.value,
+        placeholder = form.placeholder,
+        holder = "";
+    function onchange(v) {
+        placeholder.parentNode.parentNode.style.display = v.match(/^[ts]$/) ? "" : 'none';
+        if (v === 'o') {
+            holder = '<?php echo strtolower($speak->key) . S . ' ' . $speak->value; ?>';
+        } else if (v === 'f') {
+            holder = '<?php echo IMAGE_EXT; ?>';
+        } else if (v === 'b') {
+            holder = 'true';
+        } else {
+            holder = "";
+        }
+        value.placeholder = holder;
+    }
+    change.onchange = function() {
+        onchange(this.value);
+    };
+    onchange('<?php echo $file->type[0]; ?>');
+})(window, document);
+</script>
 <hr>
 <?php echo Config::speak('file:field'); ?>

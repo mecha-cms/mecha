@@ -29,7 +29,7 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-text">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::text('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
+                $html .= Form::text('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], isset($value['placeholder']) ? $value['placeholder'] : $value['value'], array(
                     'class' => 'input-block'
                 ));
                 $html .= '</span>';
@@ -86,7 +86,7 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::textarea('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], $value['value'], array(
+                $html .= Form::textarea('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], isset($value['placeholder']) ? $value['placeholder'] : $value['value'], array(
                     'class' => 'input-block'
                 ));
                 $html .= '</span>';

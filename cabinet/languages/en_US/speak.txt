@@ -305,6 +305,9 @@ errors: Errors
 key: Key
 keys: Keys
 
+placeholder: Placeholder
+placeholders: Placeholders
+
 value: Value
 values: Values
 
