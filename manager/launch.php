@@ -62,7 +62,11 @@ Weapon::add('cargo_before', function() use($config, $speak) {
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
     echo Asset::javascript(array(
         'manager/assets/sword/dashboard.js',
-        'manager/assets/sword/dashboard.task.js'
+        'manager/assets/sword/dashboard.task.extend.js',
+        'manager/assets/sword/dashboard.task.file.js',
+        'manager/assets/sword/dashboard.task.query.js',
+        'manager/assets/sword/dashboard.task.session.js',
+        'manager/assets/sword/dashboard.task.slug.js'
     ), "", 'sword/dashboard.min.js');
     $constant = get_defined_constants(true);
     $constant_js = "";
@@ -70,10 +74,30 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
         $constant_js .= $k . '=' . json_encode($v) . ',';
     }
     unset($constant);
-    $output = O_BEGIN . '<script>var ' . rtrim($constant_js, ',') . ';DASHBOARD.segment="' . $uri_end . '";DASHBOARD.languages=' . json_encode(Config::get('DASHBOARD.languages', array())) . ';DASHBOARD.is_html_parser_enabled=' . (Config::get('html_parser') === HTML_PARSER ? 'true' : 'false') . ';';
-    // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
-    //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
-    $output .= 'DASHBOARD.tab_size="' . TAB . '";DASHBOARD.element_suffix="' . ES . '";DASHBOARD.file_extension_allow="' . implode(',', File::$config['file_extension_allow']) . '";';
+    $cargo = array(
+        'segment' => $uri_end,
+        'languages' => Config::get('DASHBOARD.languages', array()),
+        'is_html_parser_enabled' => Config::get('html_parser') === HTML_PARSER,
+        // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
+        //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
+        'tab_size' => TAB,
+        'element_suffix' => ES,
+        'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
+        'url' => array(
+            'protocol' => $config->protocol,
+            'base' => $config->base,
+            'host' => $config->host,
+            'url' => $config->url,
+            'path' => $config->url_path,
+            'current' => $config->url_current,
+            'query' => $config->url_query
+        )
+    );
+    $output = O_BEGIN . '<script>var ' . rtrim($constant_js, ',') . ';';
+    foreach($cargo as $k => $v) {
+        $output .= 'DASHBOARD.' . $k . '=' . json_encode($v) . ';';
+    }
+    $output .= 'DASHBOARD.url.hash=window.location.hash;';
     echo $output . '</script>' . O_END;
 }, 1);
 
