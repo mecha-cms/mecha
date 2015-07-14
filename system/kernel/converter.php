@@ -282,15 +282,16 @@ class Converter extends Base {
      * --------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type  | Description
-     *  --------- | ----- | -----------------------------------------------
-     *  $input    | mixed | The string or array of string to be converted
-     *  --------- | ----- | -----------------------------------------------
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ---------------------------------------------
+     *  $input    | mixed   | String or array of string to be converted
+     *  $NRT      | boolean | Translate `\n`, `\r` and `\t` ?
+     *  --------- | ------- | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function strEval($input) {
+    public static function strEval($input, $NRT = true) {
         $results = $input;
         if(is_string($input) && preg_match('#^(TRUE|FALSE|NULL|true|false|null|yes|no|on|off|ok|okay)$#', $input, $matches)) {
             $results = Mecha::alter($matches[1], array(
@@ -307,16 +308,18 @@ class Converter extends Base {
                 'ok' => true,
                 'okay' => true
             ));
-        } else if(is_string($input) && ! is_null(json_decode($input, true))) {
-            $results = self::strEval(json_decode($input, true));
-        } else if(is_string($input) && strpos($input, '"') !== 0) {
-            $results = str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
+        } else if(is_string($input)) {
+            if( ! is_null(json_decode($input, true))) {
+                $results = self::strEval(json_decode($input, true), $NRT);
+            } else {
+                $results = $NRT ? self::NRT_decode($input) : $input;
+            }
         } else if(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
         } else if(is_array($input) || is_object($input)) {
             $results = array();
             foreach($input as $key => $value) {
-                $results[$key] = self::strEval($value);
+                $results[$key] = self::strEval($value, $NRT);
             }
         }
         return $results;
@@ -374,14 +377,14 @@ class Converter extends Base {
      *
      */
 
-    public static function toText($array, $s = S, $indent = '    ', $depth = 0) {
+    public static function toText($array, $s = S, $indent = '    ', $depth = 0, $NRT = true) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
-            return self::str($array);
+            return self::str($NRT ? self::NRT_encode($array) : $array);
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
-                $value = str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), self::str($value));
+                $value = self::str($NRT ? self::NRT_encode($value) : $value);
                 if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
@@ -390,7 +393,7 @@ class Converter extends Base {
                     $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . self::str($value) . "\n";
                 }
             } else {
-                $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1) . "\n";
+                $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1, $NRT) . "\n";
             }
         }
         return rtrim($results);
@@ -700,6 +703,16 @@ class Converter extends Base {
                 '$1.$3'
             ),
         trim($input));
+    }
+
+    // internal only (encode)
+    protected static function NRT_encode($input) {
+        return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $input);
+    }
+
+    // internal only (decode)
+    protected static function NRT_decode($input) {
+        return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
     }
 
 }

@@ -297,7 +297,8 @@ class Text extends Base {
      */
 
     public static function check($text) {
-        self::$text = func_num_args() > 1 ? func_get_args() : (string) $text;
+        $arguments = is_array($text) ? $text : func_get_args();
+        self::$text = func_num_args() > 1 ? $arguments : (string) $text;
         return new static;
     }
 
@@ -315,11 +316,11 @@ class Text extends Base {
      */
 
     public static function has($text) {
-        if(func_num_args() === 1) {
+        if( ! is_array($text) && func_num_args() === 1) {
             $text = (string) $text;
             return strpos(self::$text, $text) !== false;
         } else {
-            $text = func_get_args();
+            $text = is_array($text) ? $text : func_get_args();
             $text_valid = 0;
             foreach($text as $v) {
                 if(strpos(self::$text, $v) !== false) {
@@ -344,6 +345,9 @@ class Text extends Base {
      */
 
     public static function in($text) {
+        if(is_string(self::$text)) {
+            return strpos($text, self::$text) !== false;
+        }
         foreach((array) self::$text as $v) {
             if(strpos($text, $v) !== false) {
                 return true;
