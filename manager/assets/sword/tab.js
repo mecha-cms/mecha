@@ -22,28 +22,37 @@
     if (!$tab.length) return;
 
     $tab.on("click", function(e) {
+        var data = {
+            'event': e,
+            'target': this
+        };
+        base.fire('before_tab_change', data);
         if (!this.href || this.href.match(/\#.*$/)) {
-            var hash = (this.hash || "").replace('#', "");
+            var hash = (this.hash || "").replace('#', ""),
+                active = $(this).is('.active'),
+                toggle = $(this).hasClass('toggle');
             $panel = hash !== "" ? $('#' + hash) : [];
             if (!$panel.length) {
                 $panel = $tab.parent().parent().find('.tab-content').eq($(this).index());
             }
+            // NOTE: Force `addClass` for `.toggle` ...
             $(this).addClass('active').siblings().removeClass('active');
-            $panel.removeClass('hidden').siblings('.tab-content').addClass('hidden');
-            base.fire('on_tab_change', {
-                'event': e,
-                'target': this
-            });
+            $panel[toggle ? 'toggleClass' : 'removeClass']('hidden').siblings('.tab-content').addClass('hidden');
+            base.fire('on_tab_change', data);
+            if (toggle) base.fire('on_tab_toggle', data);
+            base.fire('on_tab_' + (active ? 'hide' : 'show'), data);
         } else {
-            if ($(this).attr('data-confirm-text')) {
-                if (window.confirm($(this).data('confirmText'))) {
+            if (this.href) {
+                if ($(this).attr('data-confirm-text')) {
+                    if (window.confirm($(this).data('confirmText'))) {
+                        window.location.href = this.href;
+                    }
+                } else {
                     window.location.href = this.href;
                 }
-            } else {
-                window.location.href = this.href;
             }
         }
         return false;
-    });
+    }).on("mousedown", false);
 
 })(window.Zepto || window.jQuery, DASHBOARD);

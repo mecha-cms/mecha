@@ -21,14 +21,15 @@
 
     $accordion.find('.accordion-header').on("click", function(e) {
         var active = $(this).is('.active'),
+            toggle = $(this).hasClass('toggle'),
             data = {
                 'event': e,
                 'target': this
             };
-        $(this).toggleClass('active').siblings('.accordion-header').removeClass('active');
-        $(this).next().toggleClass('hidden').siblings('.accordion-content').addClass('hidden');
+        $(this)[toggle ? 'toggleClass' : 'addClass']('active').siblings('.accordion-header').removeClass('active');
+        $(this).next()[toggle ? 'toggleClass' : 'removeClass']('hidden').siblings('.accordion-content').addClass('hidden');
         base.fire('on_accordion_change', data);
-        base.fire('on_accordion_toggle', data);
+        if (toggle) base.fire('on_accordion_toggle', data);
         base.fire('on_accordion_' + (active ? 'collapse' : 'expand'), data);
         return false;
     }).on("mousedown", false);
