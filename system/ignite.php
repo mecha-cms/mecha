@@ -258,7 +258,7 @@ Weapon::add('meta', function() {
 Weapon::add('meta', function() {
     $config = Config::get();
     $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
-    $html .= str_repeat(TAB, 2) . '<!--[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]-->' . NL;
+    $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }, 20);
 

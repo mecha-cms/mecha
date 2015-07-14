@@ -86,6 +86,19 @@ class Cell {
         return $indent . '<' . $tag . self::bond($attr) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>';
     }
 
+    // HTML comment
+    public static function _($content = "", $indent = 0, $block = ' ') {
+        $indent = $indent ? str_repeat(TAB, $indent) : "";
+        if($block === true) {
+            $block_start = str_repeat(NL, 2);
+            $block_end = $block_start . $indent;
+        } else {
+            $block_start = $block;
+            $block_end = $block;
+        }
+        return $indent . '<!--' . $block_start . $content . $block_end . '-->';
+    }
+
     // Base HTML tag open
     public static function begin($tag = 'html', $attr = array(), $indent = 0) {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
