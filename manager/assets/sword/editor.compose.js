@@ -56,7 +56,7 @@
         return editor.config.buttons['table default-table-button'].click(), false;
     });
 
-    base.composer.button('scissors default-more-tag-button', {
+    base.composer.button('scissors default-jump-link-button', {
         title: speak.others.excerpt,
         position: -3,
         click: function(e) {
@@ -78,7 +78,7 @@
 
     // `Ctrl + /` for "more tag"
     base.composer.shortcut('CTRL+191', function() {
-        return editor.config.buttons['scissors default-more-tag-button'].click(), false;
+        return editor.config.buttons['scissors default-jump-link-button'].click(), false;
     });
 
     if (base.is_html_parser_enabled) {

@@ -33,8 +33,12 @@ if (typeof DASHBOARD !== "undefined") {
         speak = base.languages.MTE;
     if (!area || !area.length) return;
     var c_na = "", c_nu = 0;
+    base.composers = [];
+    base.editors = [];
     for (var i = 0, len = area.length; i < len; ++i) {
-        var name = area[i].name, hook, config, prefix;
+        var name = area[i].name,
+            editor = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className),
+            hook, config, prefix;
         if (c_na !== name) {
             c_na = name;
             c_nu = 0;
@@ -45,14 +49,15 @@ if (typeof DASHBOARD !== "undefined") {
         config = area[i].getAttribute('data-MTE-config') || '{}';
         config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
         prefix = config.toolbar ? 'composer' : 'editor';
-        base.fire('on_control_begin', {
+        if (editor) base[prefix + 's'].push(name);
+        base.fire('on_' + prefix + '_begin', {
             'index': i,
             'info': {
                 'segment': base.segment,
                 'name': name
             }
         });
-        base[prefix + '_' + hook] = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className) ? new MTE(area[i], base.task.extend({
+        base[prefix + '_' + hook] = editor ? new MTE(area[i], base.task.extend({
             tabSize: TAB || '    ',
             toolbar: false,
             shortcut: false,
@@ -72,7 +77,7 @@ if (typeof DASHBOARD !== "undefined") {
             prompts: speak.prompts,
             placeholders: speak.placeholders,
             update: function(e, editor, id) {
-                base.fire('on_control_event_update', {
+                base.fire('on_' + prefix + '_event_update', {
                     'event': e,
                     'editor': editor,
                     'id': id || null,
@@ -84,7 +89,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             click: function(e, editor, id) {
-                base.fire('on_control_event_click', {
+                base.fire('on_' + prefix + '_event_click', {
                     'event': e,
                     'editor': editor,
                     'id': id,
@@ -96,7 +101,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             keydown: function(e, editor) {
-                base.fire('on_control_event_keydown', {
+                base.fire('on_' + prefix + '_event_keydown', {
                     'event': e,
                     'editor': editor,
                     'index': i,
@@ -107,7 +112,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             ready: function(editor) {
-                base.fire('on_control_event_ready', {
+                base.fire('on_' + prefix + '_event_ready', {
                     'editor': editor,
                     'index': i,
                     'info': {
@@ -117,7 +122,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             copy: function(s) {
-                base.fire('on_control_event_copy', {
+                base.fire('on_' + prefix + '_event_copy', {
                     'selection': s,
                     'index': i,
                     'info': {
@@ -127,7 +132,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             cut: function(s) {
-                base.fire('on_control_event_cut', {
+                base.fire('on_' + prefix + '_event_cut', {
                     'selection': s,
                     'index': i,
                     'info': {
@@ -137,7 +142,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             },
             paste: function(s) {
-                base.fire('on_control_event_paste', {
+                base.fire('on_' + prefix + '_event_paste', {
                     'selection': s,
                     'index': i,
                     'info': {
@@ -147,10 +152,10 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             }
         }, config)) : {};
-        if (i === 0 || /(^|\s)MTE-main(\s|$)/.test(area[i].className)) {
+        if (typeof base[prefix] === "undefined" && typeof base[prefix + '_' + hook].grip !== "undefined" || /(^|\s)MTE-main(\s|$)/.test(area[i].className)) {
             base[prefix] = base[prefix + '_' + hook];
         }
-        base.fire('on_control_end', {
+        base.fire('on_' + prefix + '_end', {
             'index': i,
             'info': {
                 'segment': base.segment,
