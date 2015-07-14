@@ -79,7 +79,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
         if( ! Notify::errors()) {
             $name = $request['name'];
             $email = Text::parse($request['email'], '->broken_entity');
-            $url = Request::post('url', false);
+            $url = isset($request['url']) ? $request['url'] : false;
             $message = $request['message'];
             $field = Request::post('fields', array());
             include DECK . DS . 'workers' . DS . 'task.field.2.php';

@@ -40,10 +40,9 @@
     <span class="grid span-5">
     <?php
 
-    $file = (object) Converter::str($file);
     $cache = Guardian::wayback('scope', isset($file->scope) ? $file->scope : "");
     $scopes = array('article' => $speak->article, 'page' => $speak->page, 'comment' => $speak->comment);
-    // Backward compatibility ...
+    // <= 1.1.3
     // "" is equal to `article,page`
     // '*' is equal to all scopes
     if($cache === "") $cache = 'article,page';
@@ -60,7 +59,7 @@
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->place_holder; ?></span>
     <span class="grid span-5">
-    <?php echo Form::text('placeholder', Guardian::wayback('placeholder', $file->placeholder), null, array(
+    <?php echo Form::text('placeholder', Converter::toText(Guardian::wayback('placeholder', $file->placeholder)), null, array(
         'class' => 'input-block'
     )); ?>
     </span>
@@ -68,7 +67,7 @@
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
     <span class="grid span-5">
-    <?php echo Form::textarea('value', Guardian::wayback('value', $file->value), null, array(
+    <?php echo Form::textarea('value', Converter::str(Guardian::wayback('value', $file->value)), null, array(
         'class' => array(
             'textarea-block',
             'MTE'
@@ -79,7 +78,7 @@
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
     <span class="grid span-5">
-    <?php echo Form::text('description', Guardian::wayback('description', $file->description), Config::speak('manager.placeholder_description_', strtolower($speak->field)), array(
+    <?php echo Form::text('description', Converter::toText(Guardian::wayback('description', $file->description)), Config::speak('manager.placeholder_description_', strtolower($speak->field)), array(
         'class' => 'input-block'
     )); ?>
     </span>

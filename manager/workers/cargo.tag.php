@@ -30,7 +30,7 @@
         )); ?>
         </td>
         <td>
-        <?php echo Form::text('description[]', $tag->description, null, array(
+        <?php echo Form::text('description[]', Converter::toText($tag->description), null, array(
             'class' => 'input-block',
             'readonly' => Guardian::get('status') !== 'pilot' ? true : null
         )); ?>

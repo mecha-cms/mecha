@@ -11,12 +11,12 @@ $request['state'] = $request['action'] === 'publish' ? 'published' : 'draft';
 // Set post date by submitted time, or by input value if available
 $date = date('c', $request['id']);
 // General field(s)
-$title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s')), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
-$slug = Text::parse(Request::post('slug', $title), '->slug');
+$title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
+$slug = Text::parse(Request::post('slug', $title, false), '->slug');
 $slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
-$content = Request::post('content', "");
+$content = $request['content'];
 $description = $request['description'];
 $author = strip_tags($request['author']);
-$css = trim(Request::post('css', ""));
-$js = trim(Request::post('js', ""));
+$css = trim(Request::post('css', "", false));
+$js = trim(Request::post('js', "", false));
 $field = Request::post('fields', array());

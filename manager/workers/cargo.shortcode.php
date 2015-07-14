@@ -20,7 +20,7 @@
         )); ?>
         </td>
         <td class="align-middle">
-        <?php echo Form::text('value[]', $value, null, array(
+        <?php echo Form::text('value[]', Converter::toText($value), null, array(
             'class' => 'input-block'
         )); ?>
         </td>
