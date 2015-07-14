@@ -58,10 +58,21 @@
     </span>
   </div>
   <label class="grid-group">
+    <span class="grid span-1 form-label"><?php echo $speak->place_holder; ?></span>
+    <span class="grid span-5">
+    <?php echo Form::text('placeholder', Guardian::wayback('placeholder', $file->placeholder), null, array(
+        'class' => 'input-block'
+    )); ?>
+    </span>
+  </label>
+  <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
     <span class="grid span-5">
     <?php echo Form::textarea('value', Guardian::wayback('value', $file->value), null, array(
-        'class' => 'input-block'
+        'class' => array(
+            'textarea-block',
+            'MTE'
+        )
     )); ?>
     </span>
   </label>
@@ -69,14 +80,6 @@
     <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
     <span class="grid span-5">
     <?php echo Form::text('description', Guardian::wayback('description', $file->description), Config::speak('manager.placeholder_description_', strtolower($speak->field)), array(
-        'class' => 'input-block'
-    )); ?>
-    </span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->placeholder; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::text('placeholder', Guardian::wayback('placeholder', $file->placeholder), null, array(
         'class' => 'input-block'
     )); ?>
     </span>
@@ -121,4 +124,4 @@
 })(window, document);
 </script>
 <hr>
-<?php echo Config::speak('file:field'); ?>
+<?php echo Config::speak('file:' . $segment); ?>

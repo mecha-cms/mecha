@@ -40,7 +40,7 @@ Hasil:
 </select>
 ~~~
 
-Contoh dengan grup pilihan:
+Contoh sebagai grup pilihan:
 
 ~~~ .no-highlight
 Grup 1:

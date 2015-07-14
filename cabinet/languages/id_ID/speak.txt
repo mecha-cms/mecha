@@ -9,15 +9,18 @@ about: Tentang
 author: Penulis
 authors: Penulis
 
+user: Pengguna
+users: Pengguna
+
 profile: Profil
 profiles: Profil
 
 name: Nama
-names: Nama-Nama
+names: Nama
 
 anon: Anonim
 
-unknown: Tidak diketahui
+unknown: Tidak Diketahui
 
 admin: Pengurus
 admins: Pengurus
@@ -43,8 +46,20 @@ shields: Tameng
 username: Nama Pengguna
 usernames: Nama Pengguna
 
+user_name: Nama Pengguna
+user_names: Nama Pengguna
+
 password: Kata Kunci
 passwords: Kata Kunci
+
+pass_word: Kata Kunci
+pass_words: Kata Kunci
+
+passnumber: Nomor Kunci
+passnumbers: Nomor Kunci
+
+pass_number: Nomor Kunci
+pass_numbers: Nomor Kunci
 
 status: Status
 statuses: Status
@@ -103,6 +118,7 @@ created_by: Dibuat oleh
 updated_by: Diperbaharui oleh
 deleted_by: Dihapus oleh
 removed_by: Disingkirkan oleh
+approved_by: Disetujui oleh
 
 and: Dan
 or: Atau
@@ -117,10 +133,13 @@ of: Dari
 in: Dalam
 
 link: Tautan
-links: Tautan-Tautan
+links: Tautan
 
-permalink: Permalink
-permalinks: Permalink
+permalink: Tautan Permanen
+permalinks: Tautan Permanen
+
+perma_link: Tautan Permanen
+perma_links: Tautan Permanen
 
 field: Bidang
 fields: Bidang
@@ -153,6 +172,9 @@ actions: Aksi
 
 keyword: Kata Kunci
 keywords: Kata Kunci
+
+key_word: Kata Kunci
+key_words: Kata Kunci
 
 captcha: Captcha
 captchas: Captcha
@@ -224,8 +246,8 @@ minute_p: Menit
 second_p: Detik
 millisecond_p: Milidetik
 
-default: Standar
-defaults: Standar
+default: Bawaan
+defaults: Bawaan
 
 general: Umum
 generals: Umum
@@ -233,8 +255,14 @@ generals: Umum
 timezone: Zona Waktu
 timezones: Zona Waktu
 
+time_zone: Zona Waktu
+time_zones: Zona Waktu
+
 charset: Charset
 charsets: Charset
+
+char_set: Set Karakter
+char_sets: Set Karakter
 
 language: Bahasa
 languages: Bahasa
@@ -275,12 +303,22 @@ feed: Umpan
 feeds: Umpan
 
 sitemap: Peta Situs
+sitemaps: Peta Situs
+
+site_map: Peta Situs
+site_maps: Peta Situs
 
 shortcode: Kode Pintasan
 shortcodes: Kode Pintasan
 
+short_code: Kode Pintasan
+short_codes: Kode Pintasan
+
 plugin: Plugin
 plugins: Plugin
+
+plug_in: Plugin
+plugs_in: Plugin
 
 file: Berkas
 files: Berkas
@@ -307,6 +345,9 @@ keys: Kunci
 
 placeholder: Contoh Nilai
 placeholders: Contoh Nilai
+
+place_holder: Contoh Nilai
+place_holders: Contoh Nilai
 
 value: Nilai
 values: Nilai
@@ -522,6 +563,10 @@ backup: Cadangkan
 backuping: Menyadangkan
 backuped: Dicadangkan
 
+back_up: Cadangkan
+backing_up: Menyadangkan
+backed_up: Dicadangkan
+
 restore: Pulihkan
 restoring: Memulihkan
 restored: Dipulihkan
@@ -553,7 +598,7 @@ manager:
   title_custom_css_and_js: <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript Kustom
 
   title_live_preview_css: Pratinjau <abbr title="Cascading Style Sheet">CSS</abbr> Langsung
-  title_live_preview_js: Pratinjau JavaScript Langsung
+  title_live_preview_js: Pratinjau <abbr title="JavaScript">JS</abbr> Langsung
 
   title_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Kustom
   title_custom_js: <abbr title="JavaScript">JS</abbr> Kustom

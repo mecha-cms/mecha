@@ -257,7 +257,10 @@ class Text extends Base {
         $text);
         foreach(explode("\n", $text) as $line) {
             $depth = 0;
-            $is_assoc = strpos($line, $s) > 0;
+            // No `:` ... fix it!
+            if(strpos($line, $s) === false) {
+                $line .= $s . $line;
+            }
             while(substr($line, 0, $indent_length) === $indent) {
                 $depth += 1;
                 $line = rtrim(substr($line, $indent_length));
@@ -265,21 +268,13 @@ class Text extends Base {
             while($depth < count($data)) {
                 array_pop($data);
             }
-            if($is_assoc) {
-                $parts = explode($s, $line, 2);
-                $data[$depth] = rtrim($parts[0]);
-            } else {
-                $data[$depth] = $line;
-            }
+            $parts = explode($s, $line, 2);
+            $data[$depth] = rtrim($parts[0]);
             $parent =& $results;
             foreach($data as $depth => $key) {
                 if( ! isset($parent[$key])) {
-                    if($is_assoc) {
-                        $value = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
-                        $parent[rtrim($parts[0])] = Converter::strEval($value);
-                    } else {
-                        $parent[$key] = array();
-                    }
+                    $value = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
+                    $parent[rtrim($parts[0])] = Converter::strEval($value);
                     break;
                 }
                 $parent =& $parent[$key];

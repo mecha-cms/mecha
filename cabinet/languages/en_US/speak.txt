@@ -9,6 +9,9 @@ about: About
 author: Author
 authors: Authors
 
+user: User
+users: Users
+
 profile: Profile
 profiles: Profiles
 
@@ -43,8 +46,20 @@ shields: Shields
 username: Username
 usernames: Usernames
 
+user_name: User Name
+user_names: User Names
+
 password: Password
 passwords: Passwords
+
+pass_word: Pass Word
+pass_words: Pass Words
+
+passnumber: Passnumber
+passnumbers: Passnumbers
+
+pass_number: Pass Number
+pass_numbers: Pass Numbers
 
 status: Status
 statuses: Statuses
@@ -103,6 +118,7 @@ created_by: Created by
 updated_by: Updated by
 deleted_by: Deleted by
 removed_by: Removed by
+approved_by: Approved by
 
 and: And
 or: Or
@@ -121,6 +137,9 @@ links: Links
 
 permalink: Permalink
 permalinks: Permalinks
+
+perma_link: Permanent Link
+perma_links: Permanent Links
 
 field: Field
 fields: Fields
@@ -153,6 +172,9 @@ actions: Actions
 
 keyword: Keyword
 keywords: Keywords
+
+key_word: Key Word
+key_words: Key Words
 
 captcha: Captcha
 captchas: Captchas
@@ -230,11 +252,17 @@ defaults: Defaults
 general: General
 generals: Generals
 
-timezone: Time Zone
-timezones: Time Zones
+timezone: Timezone
+timezones: Timezones
+
+time_zone: Time Zone
+time_zones: Time Zones
 
 charset: Charset
 charsets: Charsets
+
+char_set: Character Set
+char_sets: Character Sets
 
 language: Language
 languages: Languages
@@ -275,12 +303,22 @@ feed: Feed
 feeds: Feeds
 
 sitemap: Sitemap
+sitemaps: Sitemaps
+
+site_map: Site Map
+site_maps: Site Maps
 
 shortcode: Shortcode
 shortcodes: Shortcodes
 
+short_code: Short Code
+short_codes: Short Codes
+
 plugin: Plugin
 plugins: Plugins
+
+plug_in: Plug In
+plugs_in: Plugs In
 
 file: File
 files: Files
@@ -307,6 +345,9 @@ keys: Keys
 
 placeholder: Placeholder
 placeholders: Placeholders
+
+place_holder: Place Holder
+place_holders: Place Holders
 
 value: Value
 values: Values
@@ -522,6 +563,10 @@ backup: Backup
 backuping: Backing Up
 backuped: Backed Up
 
+back_up: Back Up
+backing_up: Backing Up
+backed_up: Backed Up
+
 restore: Restore
 restoring: Restoring
 restored: Restored
@@ -553,7 +598,7 @@ manager:
   title_custom_css_and_js: Custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript
 
   title_live_preview_css: Live Preview <abbr title="Cascading Style Sheet">CSS</abbr>
-  title_live_preview_js: Live Preview JavaScript
+  title_live_preview_js: Live Preview <abbr title="JavaScript">JS</abbr>
 
   title_custom_css: Custom <abbr title="Cascading Style Sheet">CSS</abbr>
   title_custom_js: Custom <abbr title="JavaScript">JS</abbr>

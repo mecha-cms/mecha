@@ -45,23 +45,9 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-option">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $selected = isset($field[$key]) ? $field[$key] : "";
-                if(is_array($value['value'])) {
-                    $options = $value['value'];
-                } else {
-                    $options = "";
-                    foreach(explode("\n", $value['value']) as $v) {
-                        $v = rtrim($v);
-                        // no `:` ... fix it!
-                        if(strpos($v, S) === false) {
-                            $options .= $v . S . ' ' . ltrim($v) . "\n";
-                        } else {
-                            $options .= $v . "\n";
-                        }
-                    }
-                    $options = Text::toArray($options, S, '  ');
-                }
-                $html .= Form::select('fields[' . $key . '][value]', $options, $selected, array(
+                $select = isset($field[$key]) ? $field[$key] : "";
+                $options = is_array($value['value']) ? $value['value'] : Text::toArray($value['value'], S, '  ');
+                $html .= Form::select('fields[' . $key . '][value]', $options, $select, array(
                     'class' => 'select-block'
                 ));
                 $html .= '</span>';

@@ -17,7 +17,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
         'files' => ! empty($fields) ? $fields : false,
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.field.php'
     ));
-    Shield::attach('manager', false);
+    Shield::lot('segment', 'field')->attach('manager', false);
 });
 
 
@@ -35,8 +35,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $data = array(
             'title' => "",
             'type' => 't',
-            'value' => "",
             'placeholder' => "",
+            'value' => "",
             'description' => "",
             'scope' => 'article'
         );
@@ -104,7 +104,10 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
 })(window.Zepto || window.jQuery);
 </script>';
     }, 11);
-    Shield::lot('the_key', $key)->attach('manager', false);
+    Shield::lot(array(
+        'segment' => 'field',
+        'the_key' => $key
+    ))->attach('manager', false);
 });
 
 
@@ -142,5 +145,8 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $data['title'] . '</strong>'));
     }
-    Shield::lot('the_key', $key)->attach('manager', false);
+    Shield::lot(array(
+        'segment' => 'field',
+        'the_key' => $key
+    ))->attach('manager', false);
 });

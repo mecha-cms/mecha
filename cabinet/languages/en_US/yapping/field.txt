@@ -40,7 +40,7 @@ Result:
 </select>
 ~~~
 
-Example with option group:
+Example as option group:
 
 ~~~ .no-highlight
 Group 1:

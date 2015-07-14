@@ -95,7 +95,15 @@ html {
   float:right;
 }
 
-.plugin-author {
+.about-title {
+  padding:.5em .8em;
+  margin:2px 0;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.about-author {
   height:2.4615384615384617em;
   line-height:2.4615384615384617em;
   padding:0 2.5em 0 1em;
@@ -106,7 +114,7 @@ html {
   margin-bottom:0;
 }
 
-.plugin-author a {
+.about-url {
   display:block;
   position:absolute;
   top:0;
@@ -115,15 +123,17 @@ html {
   line-height:inherit;
 }
 
-.plugin-title {
-  padding:.5em .8em;
-  margin:2px 0;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
+.about-version {
+  background:none;
+  border:none;
+  margin:0;
+  padding:0;
+  font:inherit;
+  color:inherit;
+  text-shadow:none;
 }
 
-.plugin-description {padding:1.3846153846153846em}
+.about-content {padding:1.3846153846153846em}
 
 .tab-content-area .messages {margin-top:1.3846153846153846em}
 .tab-content-area .main-action-group + .messages {margin-top:0}
