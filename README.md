@@ -7,12 +7,12 @@ Mecha CMS
 
 ### Features
 
- 1. It is easy to write articles using [Markdown](http://mecha-cms.com/article/markdown-syntax "Markdown Formatting Guide").
- 2. Don&rsquo;t forget the ability to turn the Markdown ON and OFF.
+ 1. It is easy to write an article using [Markdown](http://mecha-cms.com/article/markdown-syntax "Markdown Formatting Guide").
+ 2. Don’t forget the ability to turn the Markdown ON and OFF.
  3. Live preview Markdown to HTML.
  4. Lots of Widgets.
  5. Lots of Plugins.
- 6. The potential to make it multi-language &mdash;depends on the existence of the translation contributors.
+ 6. The potential to make it multi-language —depends on the existence of the translation contributors.
  7. Page speed optimization. Automatically combine and compress CSS and JavaScript assets.
  8. Built-in commenting system.
  9. Shortcodes.
@@ -31,7 +31,7 @@ Mecha CMS
 
  1. Make sure that you already have the required system.
  2. Download **Mecha** by cloning [this](https://github.com/mecha-cms/mecha-cms) **GitHub** repo.
- 3. Upload **Mecha** through your FTP/SFTP to the public folder/directory in your site &mdash; Usually named as `public_html`, `www` or `htdocs`
+ 3. Upload **Mecha** through your FTP/SFTP to the public folder/directory in your site — Usually named as `public_html`, `www` or `htdocs`
  4. Type `http://example.org/install.php` in the address bar of your web browser. Or, if for some reason you have to upload this CMS in a sub-folder, then just type `http://example.org/your-sub-folder-name/install.php` &mdash; Seriously, if you really typed domain **http://example.org**, then you really are in a big trouble!
  5. Put your name, your email, your username and your password in the form provided then click **Install**.
  6. There will appear a message that you are able to log in now. Log in!
@@ -58,4 +58,8 @@ If you want to do a _pull request_, make sure that you are using the **latest de
 
 ### PS
 
-I use [Zepto](https://github.com/madrobby/zepto "Zepto") and [Font Awesome](http://fortawesome.github.io/Font-Awesome "Font Awesome") resources through the public CDN from [here](http://cdnjs.com/libraries/zepto "CDNJS") and [here](http://www.bootstrapcdn.com/#fontawesome_tab "Bootstrap CDN"). I just don&rsquo;t like to create a commit that only contains version updates of external resources. That&rsquo;s a waste.
+I use [Zepto](https://github.com/madrobby/zepto "Zepto") and [Font Awesome](http://fortawesome.github.io/Font-Awesome "Font Awesome") resources through the public CDN from [here](http://cdnjs.com/libraries/zepto "CDNJS") and [here](http://www.bootstrapcdn.com/#fontawesome_tab "Bootstrap CDN"). I just don’t like to create a commit that only contains version updates of external resources. That’s a waste.
+
+### What?
+
+ - [Interested with the text editor used by **Mecha**?](https://github.com/tovic/markdown-text-editor)

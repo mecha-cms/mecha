@@ -11,7 +11,7 @@
     var $window = $(window),
         $document = $(document),
         $body = $(document.body),
-        $target = $('.help[title], .has-tooltip[title]'),
+        $target = $('.help[title], .has-tooltip[title],[data-tooltip]'),
         $tooltip = $('<div class="tooltip t hidden"></div>').appendTo($body),
         timer = null;
 
@@ -21,13 +21,17 @@
 
         var _this = this, $this = $(_this);
 
-        if (!$this.data('title')) return;
+        if (!$this.data('tooltip')) return;
 
         timer = window.setTimeout(function() {
 
             $tooltip.removeAttr('style')
-                .html($this.data('title') + '<span class="tooltip-arrow"></span>')
-                    .removeClass('t r b l hidden');
+                .html($this.data('tooltip') + '<span class="tooltip-arrow"></span>')
+                    .removeClass('tooltip-long t r b l hidden');
+
+            if ($this.data('tooltip').replace(/<.*?>|&lt;.*?&gt;/g, "").length > 50) {
+                $tooltip.addClass('tooltip-long');
+            }
 
             var distance = {
                 vertical: parseInt($tooltip.css('padding-top'), 10),
@@ -47,7 +51,7 @@
                 $tooltip.removeClass('b').addClass('t');
             }
 
-            if (left + width > $window.width()) {
+            if (left + width > $body.parent().width()) {
                 left = pos.left - width + $this.width() + distance.horizontal;
                 $tooltip.removeClass('r').addClass('l');
             } else if (left <= 0) {
@@ -77,8 +81,8 @@
                 'target': _this
             });
         }, 400);
-    }).attr('data-title', function() {
-        return this.title ? this.title : false;
+    }).attr('data-tooltip', function() {
+        return this.title || this.getAttribute('data-tooltip') || "";
     }).removeAttr('title');
 
     $tooltip.on("mouseenter", function(e) {

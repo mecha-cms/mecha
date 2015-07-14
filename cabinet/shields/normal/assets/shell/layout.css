@@ -324,14 +324,14 @@ body {
 
 .widget-title + .widget-content {margin-top:.6153846153846154em}
 
-.widget-search {
+.blog-sidebar .widget-search {
   background-color:#333;
   overflow:hidden;
   position:relative;
 }
 
-.widget-search input,
-.widget-search button {
+.blog-sidebar .widget-search input,
+.blog-sidebar .widget-search button {
   display:block;
   width:100%;
   float:left;
@@ -341,7 +341,7 @@ body {
   background:none;
 }
 
-.widget-search button {
+.blog-sidebar .widget-search button {
   padding-right:0;
   padding-left:0;
   width:2.923076923076923em;

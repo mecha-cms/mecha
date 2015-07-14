@@ -3,14 +3,11 @@
  * ----------------
  */
 
-.author-banner {
-  position:absolute;
-  top:0;
-  right:0;
-  z-index:9999;
-  height:3.076923076923077em;
-  line-height:3.076923076923077em;
-  padding:0 1.0769230769230769em;
+.widget-manager-bar {padding:0 1.0769230769230769em}
+.widget-manager-bar .item {
+  display:block;
+  float:left;
+  margin:0 0 0 .5384615384615384em;
 }
 
 .widget-manager-menu ul li,
@@ -124,21 +121,19 @@ label:hover .radio {color:#3A64A4}
 
 .editor-toolbar-button:active {background-color:#2F2F2F}
 
-.page-time,
-.article-time,
-.response-time {color:#AAA}
+.page-time {color:#AAA}
 
-.plugin-author {
+.about-title {
+  background-color:#365D98;
+  color:white;
+}
+
+.about-author {
   background-color:#333;
   color:white;
 }
 
-.plugin-author a {color:#FFA}
-
-.plugin-title {
-  background-color:#365D98;
-  color:white;
-}
+.about-url {color:#FFA}
 
 @media (max-width:36.25em) {
   .tab.active {

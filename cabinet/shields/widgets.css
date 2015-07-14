@@ -220,6 +220,18 @@ table[border="1"] td {border:1px solid}
 .widget .counter:before {content: "("}
 .widget .counter:after {content:")"}
 
+.widget-manager-bar {
+  position:absolute;
+  top:0;
+  right:0;
+  z-index:9999;
+  height:3.076923076923077em;
+  line-height:3.076923076923077em;
+}
+
+.widget-manager-bar .item {cursor:pointer}
+.widget-manager-bar .label {display:none}
+
 .widget-archive-dropdown select,
 .widget-tag-dropdown select {
   -webkit-box-sizing:border-box;

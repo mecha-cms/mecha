@@ -19,12 +19,12 @@ define('ARTICLE', CARGO . DS . 'articles');
 define('PAGE', CARGO . DS . 'pages');
 define('RESPONSE', CARGO . DS . 'responses');
 define('EXTEND', CARGO . DS . 'extends');
-define('CUSTOM', EXTEND . DS . 'custom');
-define('SUBSTANCE', EXTEND . DS . 'substance');
 define('STATE', CARGO . DS . 'states');
 define('PLUGIN', CARGO . DS . 'plugins');
 define('SHIELD', CARGO . DS . 'shields');
 define('CACHE', CARGO . DS . 'scraps');
+define('CUSTOM', EXTEND . DS . 'custom');
+define('SUBSTANCE', EXTEND . DS . 'substance');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
 define('S', ':'); // Separator between the page header's field key and page header's field value

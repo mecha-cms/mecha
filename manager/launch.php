@@ -15,9 +15,7 @@ $speak->MTE->buttons->superscript = false;
 $speak->MTE->buttons->subscript = false;
 
 // Merge language data to the `DASHBOARD`
-Config::merge('DASHBOARD.languages', array(
-    'MTE' => Mecha::A($speak->MTE)
-));
+Config::merge('DASHBOARD.languages.MTE', Mecha::A($speak->MTE));
 
 
 /**
@@ -56,7 +54,7 @@ Weapon::add('shell_after', function() use($config) {
 }, 10);
 
 Weapon::add('cargo_before', function() use($config, $speak) {
-    echo O_BEGIN . Filter::apply('author:banner', '<div class="author-banner">' . $speak->welcome . ' <strong>' . Guardian::get('author') . '</strong>! &middot; <a href="' . $config->url . '/' . $config->manager->slug . '/logout">' . $speak->log_out . '</a></div>') . O_END;
+    echo O_BEGIN . Widget::manager('BAR') . O_END;
 }, 10);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
@@ -213,25 +211,84 @@ Weapon::add('shield_before', function() {
         File::write($total)->saveTo($destination, 0600);
     }
 
+    // Side Menu
     $menus = array(
-        $speak->config => array('icon' => 'cogs', 'url' => $config->manager->slug . '/config', 'stack' => 9),
-        $speak->article => array('icon' => 'file-text', 'url' => $config->manager->slug . '/article', 'stack' => 9.01),
-        $speak->page => array('icon' => 'file', 'url' => $config->manager->slug . '/page', 'stack' => 9.02),
+        $speak->config => array(
+            'icon' => 'cogs',
+            'url' => $config->manager->slug . '/config',
+            'stack' => 9
+        ),
+        $speak->article => array(
+            'icon' => 'file-text',
+            'url' => $config->manager->slug . '/article',
+            'stack' => 9.01
+        ),
+        $speak->page => array(
+            'icon' => 'file',
+            'url' => $config->manager->slug . '/page',
+            'stack' => 9.02
+        ),
         $speak->comment => array(
             'icon' => 'comments',
             'url' => $config->manager->slug . '/comment',
             'count' => $total,
             'stack' => 9.03
         ),
-        $speak->tag => array('icon' => 'tags', 'url' => $config->manager->slug . '/tag', 'stack' => 9.04),
-        $speak->menu => array('icon' => 'bars', 'url' => $config->manager->slug . '/menu', 'stack' => 9.05),
-        $speak->asset => array('icon' => 'briefcase', 'url' => $config->manager->slug . '/asset', 'stack' => 9.06),
-        $speak->field => array('icon' => 'th-list', 'url' => $config->manager->slug . '/field', 'stack' => 9.07),
-        $speak->shortcode => array('icon' => 'coffee', 'url' => $config->manager->slug . '/shortcode', 'stack' => 9.08),
-        $speak->shield => array('icon' => 'shield', 'url' => $config->manager->slug . '/shield', 'stack' => 9.09),
-        $speak->plugin => array('icon' => 'plug', 'url' => $config->manager->slug . '/plugin', 'stack' => 9.1),
-        $speak->cache => array('icon' => 'clock-o', 'url' => $config->manager->slug . '/cache', 'stack' => 9.11),
-        $speak->backup => array('icon' => 'life-ring', 'url' => $config->manager->slug . '/backup', 'stack' => 9.12)
+        $speak->tag => array(
+            'icon' => 'tags',
+            'url' => $config->manager->slug . '/tag',
+            'stack' => 9.04
+        ),
+        $speak->menu => array(
+            'icon' => 'bars',
+            'url' => $config->manager->slug . '/menu',
+            'stack' => 9.05
+        ),
+        $speak->asset => array(
+            'icon' => 'briefcase',
+            'url' => $config->manager->slug . '/asset',
+            'stack' => 9.06
+        ),
+        $speak->field => array(
+            'icon' => 'th-list',
+            'url' => $config->manager->slug . '/field',
+            'stack' => 9.07
+        ),
+        $speak->shortcode => array(
+            'icon' => 'coffee',
+            'url' => $config->manager->slug . '/shortcode',
+            'stack' => 9.08
+        ),
+        $speak->shield => array(
+            'icon' => 'shield',
+            'url' => $config->manager->slug . '/shield',
+            'stack' => 9.09
+        ),
+        $speak->plugin => array(
+            'icon' => 'plug',
+            'url' => $config->manager->slug . '/plugin',
+            'stack' => 9.1
+        ),
+        $speak->cache => array(
+            'icon' => 'clock-o',
+            'url' => $config->manager->slug . '/cache',
+            'stack' => 9.11
+        ),
+        $speak->backup => array(
+            'icon' => 'life-ring',
+            'url' => $config->manager->slug . '/backup',
+            'stack' => 9.12
+        )
+    );
+
+    // Top Menu
+    $bars = array(
+        $speak->user => array(
+            'icon' => 'user-times',
+            'url' => $config->manager->slug . '/logout',
+            'description' => $speak->log_out . ' ' . Guardian::get('author'),
+            'stack' => 9
+        )
     );
 
     if($errors = File::exist(SYSTEM . DS . 'log' . DS . 'errors.log')) {
@@ -255,19 +312,30 @@ Weapon::add('shield_before', function() {
         $type = $config->page_type;
         $id = $type === 'article' ? $config->article->id : $config->page->id;
         $text = Config::speak($type);
-        $menus[Config::speak('manager._this_', array($speak->edit, $text))] = array(
+        $text_repair = Config::speak('manager._this_', array($speak->edit, $text));
+        $text_kill = Config::speak('manager._this_', array($speak->delete, $text));
+        $bars[$text] = array(
+            'icon' => 'plus',
+            'url' => $config->manager->slug . '/' . $type . '/ignite',
+            'description' => Config::speak('manager.title_new_', $text),
+            'stack' => 9.01
+        );
+        $bars[$speak->edit] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
-            'stack' => 9.14
+            'description' => $text_repair,
+            'stack' => 9.02
         );
-        $menus[Config::speak('manager._this_', array($speak->delete, $text))] = array(
+        $bars[$speak->delete] = array(
             'icon' => 'trash',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
-            'stack' => 9.15
+            'description' => $text_kill,
+            'stack' => 9.03
         );
     }
 
     Config::merge('manager_menu', $menus);
+    Config::merge('manager_bar', $bars);
 
 });
 
