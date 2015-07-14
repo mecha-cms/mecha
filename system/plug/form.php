@@ -29,9 +29,9 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
     return implode(NL, $output);
 });
 
-// `<input type="date|color|email|number|search|tel|text|password|range|url">`
-foreach(array('date', 'color', 'email', 'number', 'search', 'tel', 'text', 'password', 'range', 'url') as $type) {
-    Form::add($type, function($name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) use($type) {
-        return Form::input($type, $name, $value, $placeholder, $attr, $indent);
+// `<input type="(color|date|email|number|password|range|search|tel|text|url)">`
+foreach(array('color', 'date', 'email', 'number', 'password', 'range', 'search', 'tel', 'text', 'url') as $unit) {
+    Form::add($unit, function($name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) use($unit) {
+        return Form::input($unit, $name, $value, $placeholder, $attr, $indent);
     });
 }

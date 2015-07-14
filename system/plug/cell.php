@@ -37,20 +37,19 @@ Cell::add('img', function($src = null, $alt = null, $attr = array(), $indent = 0
     return Cell::unit('img', false, $attr, $indent);
 });
 
-// `<ol>`
-Cell::add('ol', function($list = array(), $attr = array(), $indent = 0) {
-    $html = Cell::begin('ol', $attr, $indent) . NL;
-    foreach($list as $li) {
-        $html .= Cell::unit('li', $li, array(), $indent + 1) . NL;
-    }
-    return $html . Cell::end('ol', $indent);
-});
-
-// `<ul>`
-Cell::add('ul', function($list = array(), $attr = array(), $indent = 0) {
-    $html = Cell::begin('ul', $attr, $indent) . NL;
-    foreach($list as $li) {
-        $html .= Cell::unit('li', $li, array(), $indent + 1) . NL;
-    }
-    return $html . Cell::end('ul', $indent);
-});
+// `<(ol|ul)>`
+foreach(array('ol', 'ul') as $unit) {
+    Cell::add($unit, function($list = array(), $attr = array(), $indent = 0) use($unit) {
+        $html = Cell::begin($unit, $attr, $indent) . NL;
+        foreach($list as $k => $v) {
+            if(is_array($v)) {
+                $html .= Cell::begin('li', array(), $indent + 1) . $k . NL;
+                $html .= call_user_func('Cell::' . $unit, $v, $attr, $indent + 2) . NL;
+                $html .= Cell::end('li', $indent + 1) . NL;
+            } else {
+                $html .= Cell::unit('li', $v, array(), $indent + 1) . NL;
+            }
+        }
+        return $html . Cell::end($unit, $indent);
+    });
+}
