@@ -35,32 +35,22 @@ class Widget {
         $T1 = TAB;
         if($type === 'MENU') {
             $menus = array();
-            if($_menus = Config::get('manager_menu')) {
+            if($_menus = Mecha::A(Config::get('manager_menu'))) {
+                $_menus = Mecha::eat($_menus)->order('ASC', 'stack', true, true)->vomit();
                 foreach($_menus as $k => $v) {
                     // < 1.1.3
                     if(is_string($v)) {
-                        $menus[] = array(
-                            'html' => $k,
-                            'link' => $v,
-                            'stack' => 10
-                        );
+                        $menus[$k] = $v;
                     } else {
-                        $stack = isset($v->stack) ? $v->stack : 10;
-                        $menus[] = array(
-                            'html' => (strpos($v->icon, '<') === false ? '<i class="fa fa-fw fa-' . $v->icon . '"></i>' : $v->icon) . ' <span class="label">' . $k . '</span>' . (isset($v->count) && ($v->count === '&infin;' || (float) $v->count > 0) ? ' <span class="counter">' . $v->count . '</span>' : ""),
-                            'link' => $v->url,
-                            'stack' => $stack
-                        );
+                        $stack = isset($v['stack']) ? $v['stack'] : 10;
+                        $_k = (strpos($v['icon'], '<') === false ? '<i class="fa fa-fw fa-' . $v['icon'] . '"></i>' : $v['icon']) . ' <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : "");
+                        $menus[$_k] = isset($v['url']) ? $v['url'] : null;
                     }
                 }
             }
             $html  = O_BEGIN . '<div class="widget widget-manager widget-manager-menu" id="widget-manager-menu-' . self::$id['manager_menu'] . '">' . NL;
             self::$id['manager_menu']++;
-            $_menus = array();
-            foreach(Mecha::eat($menus)->order('ASC', 'stack')->vomit() as $menu) {
-                $_menus[$menu['html']] = $menu['link'];
-            }
-            $html .= Menu::get($_menus, 'ul', $T1, 'manager:');
+            $html .= Menu::get($menus, 'ul', $T1, 'manager:');
             $html .= '</div>' . O_END;
             $html  = Filter::apply('widget', $html);
             return Filter::apply('widget:manager.menu', Filter::apply('widget:manager', $html));
@@ -68,27 +58,23 @@ class Widget {
         if($type === 'BAR') {
             $html = O_BEGIN . '<div class="widget widget-manager widget-manager-bar" id="widget-manager-bar-' . self::$id['manager_bar'] . '">' . NL;
             self::$id['manager_bar']++;
-            $items = array();
-            if($_bars = Config::get('manager_bar')) {
-                foreach($_bars as &$_bar) {
-                    if( ! isset($_bar->stack)) $_bar->stack = 10;
-                }
-                unset($_bar);
-                $_bars = Mecha::A($_bars);
-                foreach(Mecha::eat($_bars)->order('ASC', 'stack')->vomit() as $k => $v) {
+            $bars = array();
+            if($_bars = Mecha::A(Config::get('manager_bar'))) {
+                $_bars = Mecha::eat($_bars)->order('ASC', 'stack', true, true)->vomit();
+                foreach($_bars as $k => $v) {
                     if(is_string($v)) {
-                        $item  = $v;
+                        $bar  = $v;
                     } else {
                         $t = ' data-tooltip="' . Text::parse(isset($v['description']) ? $v['description'] : $k, '->encoded_html') . '"';
-                        $item  = isset($v['url']) ? '<a class="item" href="' . Converter::url($v['url']) . '"' . $t . '>' : '<span class="item"' . $t . '>';
-                        $item .= isset($v['icon']) ? (strpos($v['icon'], '<') === false ? Jot::icon($v['icon']) : $v['icon']) : $k;
-                        $item .= ' <span class="label">' . $k . '</span>';
-                        $item .= isset($v['url']) ? '</a>' : '</span>';
+                        $bar  = isset($v['url']) ? '<a class="item" href="' . Converter::url($v['url']) . '"' . $t . '>' : '<span class="item a"' . $t . '>';
+                        $bar .= isset($v['icon']) ? (strpos($v['icon'], '<') === false ? Jot::icon($v['icon']) : $v['icon']) : $k;
+                        $bar .= ' <span class="label">' . $k . '</span>';
+                        $bar .= isset($v['url']) ? '</a>' : '</span>';
                     }
-                    $items[] = Filter::apply('manager:bar.item', $item);
+                    $bars[] = Filter::apply('manager:bar.item', $bar);
                 }
             }
-            $html .= $T1 . Filter::apply('manager:bar', implode(' ', $items)) . NL;
+            $html .= $T1 . Filter::apply('manager:bar', implode(' ', $bars)) . NL;
             $html .= '</div>';
             return Filter::apply('widget:manager.bar', Filter::apply('widget:manager', $html));
         }

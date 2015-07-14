@@ -284,10 +284,20 @@ Weapon::add('shield_before', function() {
     // Top Menu
     $bars = array(
         $speak->user => array(
-            'icon' => 'user-times',
-            'url' => $config->manager->slug . '/logout',
-            'description' => $speak->log_out . ' ' . Guardian::get('author'),
+            'icon' => 'user',
+            'description' => Guardian::get('author'),
             'stack' => 9
+        ),
+        $speak->config => array(
+            'icon' => 'cog',
+            'url' => $config->manager->slug . '/config',
+            'stack' => 9.01
+        ),
+        $speak->log_out => array(
+            'icon' => 'sign-out',
+            'url' => $config->manager->slug . '/logout',
+            'description' => $speak->log_out,
+            'stack' => 9.02
         )
     );
 
@@ -318,19 +328,19 @@ Weapon::add('shield_before', function() {
             'icon' => 'plus',
             'url' => $config->manager->slug . '/' . $type . '/ignite',
             'description' => Config::speak('manager.title_new_', $text),
-            'stack' => 9.01
+            'stack' => 9.03
         );
         $bars[$speak->edit] = array(
             'icon' => 'pencil',
             'url' => $config->manager->slug . '/' . $type . '/repair/id:' . $id,
             'description' => $text_repair,
-            'stack' => 9.02
+            'stack' => 9.04
         );
         $bars[$speak->delete] = array(
-            'icon' => 'trash',
+            'icon' => 'times',
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
             'description' => $text_kill,
-            'stack' => 9.03
+            'stack' => 9.05
         );
     }
 

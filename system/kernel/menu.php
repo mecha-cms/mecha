@@ -62,10 +62,10 @@ class Menu extends Base {
                     $html .= Filter::apply($FP . 'list.item.separator', Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li class="' . $c_class['separator'] . '"></li>' . NL, $i + 1), $i + 1);
                 // List item without link: `array('foo')`
                 } else if(is_int($key)) {
-                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $value . '</li>' . NL, $i + 1);
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li><span class="a">' . $value . '</span></li>' . NL, $i + 1);
                 // List item without link: `array('foo' => null)`
                 } else if(is_null($value)) {
-                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li>' . $key . '</li>' . NL, $i + 1);
+                    $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li><span class="a">' . $key . '</span></li>' . NL, $i + 1);
                 // List item with link: `array('foo' => '/')`
                 } else {
                     $value = Converter::url($value);
