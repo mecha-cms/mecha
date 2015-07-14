@@ -27,9 +27,10 @@ Config::merge('DASHBOARD.languages.MTE', Mecha::A($speak->MTE));
  */
 
 Weapon::add('meta', function() use($config) {
-    echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
+    $T2 = str_repeat(TAB, 2);
+    echo O_BEGIN . $T2 . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
     if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
-        echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
+        echo $T2 . Asset::javascript($config->protocol . JS_LIBRARY_PATH);
     }
 }, 20);
 
@@ -297,7 +298,7 @@ Weapon::add('shield_before', function() {
             'icon' => 'sign-out',
             'url' => $config->manager->slug . '/logout',
             'description' => $speak->log_out,
-            'stack' => 9.02
+            'stack' => 30
         )
     );
 
@@ -341,6 +342,16 @@ Weapon::add('shield_before', function() {
             'url' => $config->manager->slug . '/' . $type . '/kill/id:' . $id,
             'description' => $text_kill,
             'stack' => 9.05
+        );
+    } else {
+        $link  = Jot::a('default', $config->manager->slug . '/article/ignite', Config::speak('manager.title_new_', $speak->article));
+        $link .= ' &middot; ';
+        $link .= Jot::a('default', $config->manager->slug . '/page/ignite', Config::speak('manager.title_new_', $speak->page));
+        $bars[$speak->add] = array(
+            'icon' => 'plus',
+            'url' => $config->manager->slug . '/article/ignite',
+            'description' => $link,
+            'stack' => 9.03
         );
     }
 

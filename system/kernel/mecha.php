@@ -95,7 +95,7 @@ class Mecha extends Base {
     }
 
     // Sort array based on its value's key
-    public static function order($order = 'ASC', $key = null, $preserve_key = false, $include_missing_key = false) {
+    public static function order($order = 'ASC', $key = null, $jot_key = false, $default = null) {
         if( ! is_null($key)) {
             $before = array();
             $after = array();
@@ -103,8 +103,9 @@ class Mecha extends Base {
                 foreach(self::$stomach as $k => $v) {
                     if(is_array($v) && array_key_exists($key, $v)) {
                         $before[$k] = $v[$key];
-                    } else if($include_missing_key) {
-                        $before[$k] = null;
+                    } else if( ! is_null($default)) {
+                        $before[$k] = $default;
+                        self::$stomach[$k][$key] = $default;
                     }
                 }
                 if($order === 'ASC') {
@@ -113,7 +114,7 @@ class Mecha extends Base {
                     arsort($before);
                 }
                 foreach($before as $k => $v) {
-                    if($preserve_key) {
+                    if($jot_key) {
                         $after[$k] = self::$stomach[$k];
                     } else {
                         $after[] = self::$stomach[$k];

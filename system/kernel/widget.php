@@ -36,7 +36,7 @@ class Widget {
         if($type === 'MENU') {
             $menus = array();
             if($_menus = Mecha::A(Config::get('manager_menu'))) {
-                $_menus = Mecha::eat($_menus)->order('ASC', 'stack', true, true)->vomit();
+                $_menus = Mecha::eat($_menus)->order('ASC', 'stack', true, 10)->vomit();
                 foreach($_menus as $k => $v) {
                     // < 1.1.3
                     if(is_string($v)) {
@@ -60,7 +60,7 @@ class Widget {
             self::$id['manager_bar']++;
             $bars = array();
             if($_bars = Mecha::A(Config::get('manager_bar'))) {
-                $_bars = Mecha::eat($_bars)->order('ASC', 'stack', true, true)->vomit();
+                $_bars = Mecha::eat($_bars)->order('ASC', 'stack', true, 10)->vomit();
                 foreach($_bars as $k => $v) {
                     if(is_string($v)) {
                         $bar  = $v;
