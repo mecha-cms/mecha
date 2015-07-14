@@ -12,15 +12,18 @@
   <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <p class="plugin-author">
+    <p class="about-author">
     <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($file->author, '->encoded_html'); ?><?php if(isset($file->url) && $file->url !== '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), '_blank', array(
-        'class' => 'help',
+        'class' => array(
+            'about-url',
+            'help'
+        ),
         'title' => $speak->link,
         'rel' => 'nofollow'
     )); ?>
     <?php endif; ?>
     </p>
-    <h3 class="plugin-title"><?php echo $file->title; if(isset($file->version)) echo ' ' . $file->version; ?></h3>
-    <div class="plugin-description"><?php echo $file->content; ?></div>
+    <h3 class="about-title"><?php echo $file->title; ?><?php if(isset($file->version)): ?> <code class="about-version"><?php echo $file->version; ?></code><?php endif; ?></h3>
+    <div class="about-content"><?php echo $file->content; ?></div>
   </div>
 </div>

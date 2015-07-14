@@ -30,7 +30,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.cache.php'
     ));
-    Shield::attach('manager', false);
+    Shield::lot('segment', 'cache')->attach('manager', false);
 });
 
 
@@ -68,6 +68,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         Guardian::kick($config->manager->slug . '/cache/repair/file:' . File::url($request['name']));
     }
     Shield::lot(array(
+        'segment' => 'cache',
         'the_name' => $path,
         'the_content' => File::open($file)->read()
     ))->attach('manager', false);
@@ -114,7 +115,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . $path . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::attach('manager', false);
+    Shield::lot('segment', 'cache')->attach('manager', false);
 });
 
 

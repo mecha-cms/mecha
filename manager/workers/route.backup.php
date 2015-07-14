@@ -6,7 +6,7 @@
  * ----------------------
  */
 
-Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/(backup|restore)', function($segment = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
@@ -43,9 +43,9 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
     }
     Config::set(array(
         'page_title' => $speak->backup . '/' . $speak->restore . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.backup.php'
+        'cargo' => DECK . DS . 'workers' . DS . 'cargo.' . $segment . '.php'
     ));
-    Shield::attach('manager', false);
+    Shield::lot('segment', $segment)->attach('manager', false);
 });
 
 
@@ -54,7 +54,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
  * ----------------
  */
 
-Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/backup/origin:(:all)', function($path = "", $origin = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }

@@ -46,6 +46,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     $the_shields = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
     sort($the_shields);
     Shield::lot(array(
+        'segment' => 'shield',
         'the_shield_info' => Shield::info($folder),
         'the_shield_folder' => $folder,
         'the_shield_folders' => $the_shields
@@ -98,6 +99,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         }
     }
     Shield::lot(array(
+        'segment' => 'shield',
         'the_shield' => $folder,
         'the_name' => null,
         'the_content' => null
@@ -158,6 +160,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         }
     }
     Shield::lot(array(
+        'segment' => 'shield',
         'the_shield' => $folder,
         'the_name' => $path,
         'the_content' => $content
@@ -206,6 +209,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>'));
     }
     Shield::lot(array(
+        'segment' => 'shield',
         'the_shield' => $folder,
         'the_name' => $path,
         'the_info' => $info

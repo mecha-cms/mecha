@@ -10,4 +10,4 @@
   ?>
 </form>
 <hr>
-<?php echo Config::speak('file:menu'); ?>
+<?php echo Config::speak('file:' . $segment); ?>

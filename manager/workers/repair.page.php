@@ -1,4 +1,3 @@
-<?php $segment = 'page'; ?>
 <div class="tab-area">
   <?php if(strpos($config->url_path, '/id:') !== false): ?>
   <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/page/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><?php echo Jot::icon('plus-square', 'fw') . ' ' . $speak->new; ?></a>

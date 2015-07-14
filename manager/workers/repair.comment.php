@@ -1,4 +1,3 @@
-<?php $segment = 'comment'; ?>
 <div class="tab-area">
   <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('pencil', 'fw') . ' ' . $speak->edit; ?></a>
   <a class="tab" href="#tab-content-3"><?php echo Jot::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>

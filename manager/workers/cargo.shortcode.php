@@ -48,4 +48,4 @@
   <p><?php echo Jot::button('action', $speak->update); ?></p>
 </form>
 <hr>
-<?php echo Config::speak('file:shortcode'); ?>
+<?php echo Config::speak('file:' . $segment); ?>

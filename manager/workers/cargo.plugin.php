@@ -1,5 +1,5 @@
 <div class="tab-area">
-  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('plug', 'fw') . ' ' . $speak->plugins; ?></a>
+  <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('plug', 'fw') . ' ' . $speak->plugin; ?></a>
   <a class="tab" href="#tab-content-2"><?php echo Jot::icon('file-archive-o', 'fw') . ' ' . $speak->upload; ?></a>
 </div>
 <div class="tab-content-area">
@@ -41,6 +41,6 @@
     <h3><?php echo Config::speak('manager.title__upload_package', $speak->plugin); ?></h3>
     <?php echo Jot::uploader($config->manager->slug . '/plugin', 'zip'); ?>
     <hr>
-    <?php echo Config::speak('file:plugin'); ?>
+    <?php echo Config::speak('file:' . $segment); ?>
   </div>
 </div>

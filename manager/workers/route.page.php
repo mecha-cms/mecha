@@ -25,7 +25,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
         'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.page.php'
     ));
-    Shield::attach('manager', false);
+    Shield::lot('segment', 'page')->attach('manager', false);
 });
 
 
@@ -150,7 +150,10 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/assets/sword/editor.compose.js', "", 'sword/editor.compose.min.js');
     }, 11);
-    Shield::lot('default', $page)->attach('manager', false);
+    Shield::lot(array(
+        'segment' => 'page',
+        'default' => $page
+    ))->attach('manager', false);
 });
 
 
@@ -186,5 +189,5 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $page->title . '</strong>'));
         Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->page)));
     }
-    Shield::attach('manager', false);
+    Shield::lot('segment', 'page')->attach('manager', false);
 });

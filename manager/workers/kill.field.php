@@ -24,7 +24,7 @@
 
         ?>
         <td><?php echo Jot::em('info', $s); ?></td>
-        <td><?php echo isset($file->scope) ? $file->scope : strtolower($speak->article . '/' . $speak->page); ?></td>
+        <td><?php echo isset($file->scope) ? str_replace(',', '/', $file->scope) : strtolower($speak->article . '/' . $speak->page); ?></td>
       </tr>
     </tbody>
   </table>

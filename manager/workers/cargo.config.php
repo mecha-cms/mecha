@@ -4,7 +4,7 @@
   <fieldset>
     <legend><?php echo $speak->general; ?></legend>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->timezone; ?></span>
+      <span class="grid span-2 form-label"><?php echo $speak->time_zone; ?></span>
       <span class="grid span-4">
       <?php echo Form::select('timezone', Get::timezone(), Guardian::wayback('timezone', $config->timezone), array(
           'class' => 'select-block'

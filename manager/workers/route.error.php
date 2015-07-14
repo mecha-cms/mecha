@@ -11,7 +11,10 @@ Route::accept($config->manager->slug . '/error', function() use($config, $speak)
         'page_title' => $speak->errors . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.error.php'
     ));
-    Shield::lot('the_content', File::open(SYSTEM . DS . 'log' . DS . 'errors.log')->read(false))->attach('manager', false);
+    Shield::lot(array(
+        'segment' => 'error',
+        'the_content' => File::open(SYSTEM . DS . 'log' . DS . 'errors.log')->read(false)
+    ))->attach('manager', false);
 });
 
 
