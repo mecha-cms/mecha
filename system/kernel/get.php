@@ -238,13 +238,17 @@ class Get extends Base {
 
         }
 
-        foreach($field as $k => $v) {
-            if( ! isset($v['value'])) $field[$k]['value'] = "";
-            // Backward compatibility ...
+        $field = Converter::strEval($field);
+
+        foreach($field as &$v) {
+            if( ! isset($v['value'])) $v['value'] = "";
+            // <= 1.1.3
             // "" is equal to `article,page`
             // '*' is equal to all scopes
-            if( ! isset($v['scope'])) $field[$k]['scope'] = "";
+            if( ! isset($v['scope'])) $v['scope'] = "";
         }
+
+        unset($v);
 
         // Filter output(s) by `scope`
         if( ! is_null($scope)) {
@@ -329,6 +333,8 @@ class Get extends Base {
 
         }
 
+        $shortcode = Converter::strEval($shortcode);
+
         // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($shortcode[$key]) ? $shortcode[$key] : $fallback;
@@ -345,6 +351,7 @@ class Get extends Base {
         $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
         $tag = file_exists($d) ? include $d : $fallback;
         $tag = File::open(STATE . DS . 'tag.txt')->unserialize($tag);
+        $tag = Converter::strEval($tag);
         if( ! is_null($id)) {
             foreach($tag as $k => $v) {
                 if($v['id'] === $id) {

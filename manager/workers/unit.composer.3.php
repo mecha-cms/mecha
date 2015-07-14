@@ -12,7 +12,7 @@ if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($default->fields));
     foreach($fields as $key => $value) {
-        // Backward compatibility ...
+        // <= 1.1.3
         // "" is equal to `article,page`
         // '*' is equal to all scopes
         if($value['scope'] === "") $value['scope'] = 'article,page';
@@ -29,7 +29,7 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-text">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::text('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], isset($value['placeholder']) ? $value['placeholder'] : $value['value'], array(
+                $html .= Form::text('fields[' . $key . '][value]', Converter::toText(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
                     'class' => 'input-block'
                 ));
                 $html .= '</span>';
@@ -73,7 +73,7 @@ if( ! empty($fields)) {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::textarea('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value'], isset($value['placeholder']) ? $value['placeholder'] : $value['value'], array(
+                $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
                     'class' => 'input-block'
                 ));
                 $html .= '</span>';
