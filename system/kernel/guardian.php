@@ -28,7 +28,7 @@ class Guardian extends Base {
      */
 
     public static function get($key = null, $fallback = "") {
-        $log = Session::get('cookie:' . self::$user);
+        $log = Session::get('cookie:' . self::$user, $fallback);
         if( ! is_null($key)) {
             return isset($log[$key]) ? $log[$key] : $fallback;
         }
