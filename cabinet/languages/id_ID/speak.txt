@@ -117,6 +117,7 @@ posted_by: Diposting oleh
 created_by: Dibuat oleh
 updated_by: Diperbaharui oleh
 deleted_by: Dihapus oleh
+added_by: Ditambahkan oleh
 removed_by: Disingkirkan oleh
 approved_by: Disetujui oleh
 
@@ -456,6 +457,10 @@ confirmed: Dikonfirmasi
 delete: Hapus
 deleting: Menghapus
 deleted: Dihapus
+
+add: Tambahkan
+adding: Menambahkan
+added: Ditambahkan
 
 remove: Singkirkan
 removing: Menyingkirkan

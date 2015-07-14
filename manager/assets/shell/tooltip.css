@@ -52,3 +52,7 @@ a.help {cursor:pointer}
   left:auto;
   margin:0;
 }
+
+.tooltip a {color:inherit}
+.tooltip a:focus,
+.tooltip a:hover {text-decoration:underline}

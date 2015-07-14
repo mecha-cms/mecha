@@ -26,13 +26,9 @@ Jot::add('button', function($kind = 'default', $text = "", $name = null, $type =
     }
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
-    } else {
-        if( ! is_array($attr['class'])) {
-            $attr['class'] = array($attr['class']);
-        }
     }
     $s = is_string($name) ? explode(':', $name, 2) : array(null, null);
-    $attr['class'] = array_merge(array('btn btn-' . str_replace('.', ' btn-', $kind[0])), $attr['class']);
+    $attr['class'] = array_merge(array('btn btn-' . str_replace('.', ' btn-', $kind[0])), (array) $attr['class']);
     $attr['disabled'] = strpos($kind[0], '.disabled') !== false ? true : null;
     return Form::button($text, $s[0], isset($s[1]) ? $s[1] : null, $type, $attr, $indent);
 });
@@ -56,14 +52,10 @@ Jot::add('btn', function($kind = 'default', $text = "", $href = null, $attr = ar
     }
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
-    } else {
-        if( ! is_array($attr['class'])) {
-            $attr['class'] = array($attr['class']);
-        }
     }
     $active = strpos($kind[0], '.disabled') === false;
     $attr['href'] = $active ? Converter::url($href) : null;
-    $attr['class'] = array_merge(array('btn btn-' . str_replace('.', ' btn-', $kind[0])), $attr['class']);
+    $attr['class'] = array_merge(array('btn btn-' . str_replace('.', ' btn-', $kind[0])), (array) $attr['class']);
     return Cell::unit($active ? 'a' : 'span', $text, $attr, $indent);
 });
 
@@ -72,12 +64,8 @@ foreach(array('b', 'em', 'i', 'span', 'strong') as $tag) {
     Jot::add($tag, function($kind = 'default', $text = "", $attr = array(), $indent = 0) use($tag) {
         if( ! isset($attr['class'])) {
             $attr['class'] = array();
-        } else {
-            if( ! is_array($attr['class'])) {
-                $attr['class'] = array($attr['class']);
-            }
         }
-        $attr['class'] = array_merge(array('text-' . $kind), $attr['class']);
+        $attr['class'] = array_merge(array('text-' . $kind), (array) $attr['class']);
         return Cell::unit($tag, $text, $attr, $indent);
     });
 }
@@ -87,12 +75,8 @@ Jot::add('a', function($kind = 'default', $href = null, $text = "", $attr = arra
     $attr['href'] = Converter::url($href);
     if( ! isset($attr['class'])) {
         $attr['class'] = array();
-    } else {
-        if( ! is_array($attr['class'])) {
-            $attr['class'] = array($attr['class']);
-        }
     }
-    $attr['class'] = array_merge(array('text-' . $kind), $attr['class']);
+    $attr['class'] = array_merge(array('text-' . $kind), (array) $attr['class']);
     return Cell::unit('a', $text, $attr, $indent);
 });
 

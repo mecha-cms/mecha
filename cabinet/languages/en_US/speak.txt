@@ -117,6 +117,7 @@ posted_by: Posted by
 created_by: Created by
 updated_by: Updated by
 deleted_by: Deleted by
+added_by: Added by
 removed_by: Removed by
 approved_by: Approved by
 
@@ -456,6 +457,10 @@ confirmed: Confirmed
 delete: Delete
 deleting: Deleting
 deleted: Deleted
+
+add: Add
+adding: Adding
+added: Added
 
 remove: Remove
 removing: Removing
