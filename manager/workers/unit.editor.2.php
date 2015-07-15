@@ -6,7 +6,7 @@ $is_text = is_null($the_name) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') 
 ?>
 <?php if($is_text && $the_content !== false): ?>
 <p>
-<?php echo Form::textarea('content', Guardian::wayback('content', $the_content), null, array(
+<?php echo Form::textarea('content', Guardian::wayback('content', $the_content), $speak->manager->placeholder_content, array(
     'class' => array(
         'textarea-block',
         'textarea-expand',
