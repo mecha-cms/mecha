@@ -8,11 +8,11 @@ DASHBOARD.task.file = {
     },
     N: function(path, extension) {
         path = path.split(new RegExp('[\\\\\\/]')).pop();
-        return !extension ? path.replace(/\.(.+)$/, "") : path;
+        return !extension ? path.replace(/\.(\w+)$/, "") : path;
     },
     E: function(path, fallback) {
         fallback = fallback || "";
-        path = path.replace(/.*?(?:\.(.+))?$/, '$1').toLowerCase();
+        path = path.replace(/.*?(?:\.(\w+))?$/, '$1').toLowerCase();
         return path !== "" ? path : fallback;
     }
 };

@@ -170,7 +170,7 @@ if($config->page_type === 'manager') {
         echo $status . Cell::a($config->manager->slug . '/article/repair/id:' . $article->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/article/kill/id:' . $article->id, $speak->delete);
     }, 20);
     // Add default page footer link(s)
-    Weapon::add('page_footer', function($page) {
+    Weapon::add('page_footer', function($page) use($config, $speak) {
         $status = Mecha::alter(File::E($page->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
@@ -178,7 +178,7 @@ if($config->page_type === 'manager') {
         echo $status . Cell::a($config->manager->slug . '/page/repair/id:' . $page->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/page/kill/id:' . $page->id, $speak->delete);
     }, 20);
     // Add default comment footer link(s)
-    Weapon::add('comment_footer', function($comment, $article) {
+    Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {
         $status = Mecha::alter($comment->state, array(
             'pending' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; '
         ), "");

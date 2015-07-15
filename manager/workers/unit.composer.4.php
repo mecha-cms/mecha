@@ -12,6 +12,6 @@
   <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
   <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
   <?php endif; ?>
-  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/page/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/' . $segment . '/kill/id:' . Guardian::wayback('id', $default->id)); ?>
   <?php endif; ?>
 </p>
