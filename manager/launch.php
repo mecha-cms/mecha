@@ -54,9 +54,11 @@ Weapon::add('shell_after', function() use($config) {
     }
 }, 10);
 
-Weapon::add('cargo_before', function() use($config, $speak) {
-    echo O_BEGIN . Widget::manager('BAR') . O_END;
-}, 10);
+Weapon::add('cargo_after', function() use($config, $speak) {
+    if(Widget::$id['manager_bar'] <= 1) {
+        echo O_BEGIN . Widget::manager('BAR') . O_END; // include once ...
+    }
+}, 20);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
     echo Asset::javascript(array(
@@ -79,6 +81,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
         'is_html_parser_enabled' => Config::get('html_parser') === HTML_PARSER,
         // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
         //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
+        'html_parser' => HTML_PARSER,
         'tab_size' => TAB,
         'element_suffix' => ES,
         'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
@@ -155,42 +158,33 @@ Weapon::add('on_plugin_update', function() {
 /**
  * Footer Link(s)
  * --------------
- *
- * Add default article, page and comment footer link(s).
- *
  */
 
-Weapon::add('article_footer', function($article) {
-    $config = Config::get();
-    $speak = Config::speak();
-    if($config->page_type === 'manager') {
+if($config->page_type === 'manager') {
+    // Add default article footer link(s)
+    Weapon::add('article_footer', function($article) use($config, $speak) {
         $status = Mecha::alter(File::E($article->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
+            'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
         ), "");
-        echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/article/repair/id:' . $article->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/article/kill/id:' . $article->id . '">' . $speak->delete . '</a>';
-    }
-}, 20);
-
-Weapon::add('page_footer', function($page) {
-    $config = Config::get();
-    $speak = Config::speak();
-    if($config->page_type === 'manager') {
+        echo $status . Cell::a($config->manager->slug . '/article/repair/id:' . $article->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/article/kill/id:' . $article->id, $speak->delete);
+    }, 20);
+    // Add default page footer link(s)
+    Weapon::add('page_footer', function($page) {
         $status = Mecha::alter(File::E($page->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => Jot::span('info', Jot::icon('archive') . ' ' . $speak->archive) . ' &middot; '
+            'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
         ), "");
-        echo $status . '<a href="' . $config->url . '/' . $config->manager->slug . '/page/repair/id:' . $page->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/page/kill/id:' . $page->id . '">' . $speak->delete . '</a>';
-    }
-}, 20);
-
-Weapon::add('comment_footer', function($comment, $article) {
-    $config = Config::get();
-    $speak = Config::speak();
-    if(Guardian::happy()) {
-        echo ($comment->state === 'pending' ? Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; ' : "") . '<a href="' . $config->url . '/' . $config->manager->slug . '/comment/repair/id:' . $comment->id . '">' . $speak->edit . '</a> / <a href="' . $config->url . '/' . $config->manager->slug . '/comment/kill/id:' . $comment->id . '">' . $speak->delete . '</a>';
-    }
-}, 20);
+        echo $status . Cell::a($config->manager->slug . '/page/repair/id:' . $page->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/page/kill/id:' . $page->id, $speak->delete);
+    }, 20);
+    // Add default comment footer link(s)
+    Weapon::add('comment_footer', function($comment, $article) {
+        $status = Mecha::alter($comment->state, array(
+            'pending' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; '
+        ), "");
+        echo $status . Cell::a($config->manager->slug . '/comment/repair/id:' . $comment->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/comment/kill/id:' . $comment->id, $speak->delete);
+    }, 20);
+}
 
 
 /**
@@ -344,9 +338,9 @@ Weapon::add('shield_before', function() {
             'stack' => 9.05
         );
     } else {
-        $link  = Jot::a('default', $config->manager->slug . '/article/ignite', Config::speak('manager.title_new_', $speak->article));
+        $link  = Cell::a($config->manager->slug . '/article/ignite', Config::speak('manager.title_new_', $speak->article));
         $link .= ' &middot; ';
-        $link .= Jot::a('default', $config->manager->slug . '/page/ignite', Config::speak('manager.title_new_', $speak->page));
+        $link .= Cell::a($config->manager->slug . '/page/ignite', Config::speak('manager.title_new_', $speak->page));
         $bars[$speak->add] = array(
             'icon' => 'plus',
             'url' => $config->manager->slug . '/article/ignite',
