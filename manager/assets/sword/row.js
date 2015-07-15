@@ -33,6 +33,7 @@
             if (length < max + 1) {
                 $(this).closest('tr').before(clone);
                 base.fire('on_row_increase', data);
+                base.fire('on_row_more', data);
                 base.fire('on_row_update', data);
             }
             return false;
@@ -42,6 +43,7 @@
             if (length > min + 1) {
                 $(this).closest('tr').prev().remove();
                 base.fire('on_row_decrease', data);
+                base.fire('on_row_less', data);
                 base.fire('on_row_update', data);
             }
             return false;

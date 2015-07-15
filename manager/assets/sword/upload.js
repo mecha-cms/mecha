@@ -20,8 +20,7 @@
     if (!$uploader.length) return;
 
     $uploader.on("change", function(e) {
-        var segments = this.value.split('.'),
-            extension = segments[segments.length - 1].toLowerCase(),
+        var extension = base.task.file.E(this.value),
             ok = $.inArray(extension, accepted) !== -1,
             status = ok ? 'btn-accept' : 'btn-reject',
             statusIcon = ok ? 'iconReady' : 'iconError',

@@ -59,7 +59,7 @@
                 'target': this
             });
         }).insertAfter($this);
-        if (!$(this).find('.modal-close-x').length) {
+        if (!$this.find('.modal-close-x').length) {
             $('<a class="modal-close-x" href="#modal:close"><i class="fa fa-times"></i></a>').on("click", function(e) {
                 $overlay.trigger("click");
                 base.fire('on_modal_hide', {

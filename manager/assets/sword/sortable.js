@@ -80,8 +80,17 @@
     }).on("drop", 'tr[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
-            var center = $(this).offset().top + ($(this).height() / 2);
+            var center = $(this).offset().top + ($(this).height() / 2),
+                d = e.pageY >= center ? 'down' : 'up',
+                data = {
+                    'event': e,
+                    'target': this
+                };
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
+            base.fire('on_row_move_' + d, data);
+            base.fire('on_row_sort_' + d, data);
+            base.fire('on_row_move', data);
+            base.fire('on_row_sort', data);
         }
     }).on("dragend", 'tr[draggable]', function() {
         $(this).removeClass('origin target target-top target-bottom').addClass('active').siblings().removeClass('active origin target target-top target-bottom');
@@ -162,8 +171,17 @@
     }).on("drop", '.sortable[draggable]', function(e) {
         e.preventDefault();
         if (selected !== this) {
-            var center = $(this).offset().top + ($(this).height() / 2);
+            var center = $(this).offset().top + ($(this).height() / 2),
+                d = e.pageY >= center ? 'down' : 'up',
+                data = {
+                    'event': e,
+                    'target': this
+                };
             $(selected)[e.pageY >= center ? 'insertAfter' : 'insertBefore']($(this));
+            base.fire('on_item_move_' + d, data);
+            base.fire('on_item_sort_' + d, data);
+            base.fire('on_item_move', data);
+            base.fire('on_item_sort', data);
         }
     }).on("dragend", '.sortable[draggable]', function() {
         $(this).removeClass('origin target target-top target-bottom').addClass('active').siblings().removeClass('active origin target target-top target-bottom');
