@@ -29,7 +29,7 @@ class Shield extends Base {
      * ----------------------------
      */
 
-    protected static function cargo() {
+    public static function cargo() {
         $config = Config::get();
         $token = Guardian::token();
         $message = Notify::read();

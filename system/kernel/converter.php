@@ -347,6 +347,7 @@ class Converter extends Base {
 
     public static function phpEval($input) {
         ob_start();
+        extract(Shield::cargo()); // include default variables ...
         eval($input);
         return ob_get_clean();
     }
@@ -524,8 +525,8 @@ class Converter extends Base {
                 // input tag that is followed by a tag open
                 '#(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?=\<[^\/])#s',
 
-                // Remove two or more white-space(s) between tag(s)
-                '#(<\!--.*?-->)|(>)\s{2,}|\s{2,}(<)|(>)\s{2,}(<)#s',
+                // Remove a line break or two or more white-space(s) between tag(s)
+                '#(<\!--.*?-->)|(>)(?:[\n\r]|\s{2,})|(?:[\n\r]|\s{2,})(<)|(>)(?:[\n\r]|\s{2,})(<)#s',
 
                 // PROOFING ...
                 // o: tag open, c: tag close, t: text
