@@ -29,7 +29,7 @@
 
       ?>
       </div>
-      <div class="tab-content" id="tab-content-1-2">
+      <div class="tab-content hidden" id="tab-content-1-2">
         <p class="about-author">
         <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($the_shield_info->author, '->encoded_html'); ?><?php if(isset($the_shield_info->url) && $the_shield_info->url !== '#'): ?> <?php echo Cell::a($the_shield_info->url, Jot::icon('external-link-square'), '_blank', array(
             'class' => array(

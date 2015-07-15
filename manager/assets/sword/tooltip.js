@@ -26,11 +26,11 @@
         timer = window.setTimeout(function() {
 
             $tooltip.removeAttr('style')
-                .html($this.data('tooltip') + '<span class="tooltip-arrow"></span>')
-                    .removeClass('tooltip-long t r b l hidden');
+                .html($this.data('tooltip') + '<span class="arrow"></span>')
+                    .removeClass('long t r b l hidden');
 
             if ($this.data('tooltip').replace(/<.*?>|&lt;.*?&gt;/g, "").length > 50) {
-                $tooltip.addClass('tooltip-long');
+                $tooltip.addClass('long');
             }
 
             var distance = {

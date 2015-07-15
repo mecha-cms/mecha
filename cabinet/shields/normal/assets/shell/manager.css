@@ -4,11 +4,6 @@
  */
 
 .widget-manager-bar {padding:0 1.0769230769230769em}
-.widget-manager-bar .item {
-  display:block;
-  float:left;
-  margin:0 0 0 .5384615384615384em;
-}
 
 .widget-manager-menu ul li,
 .widget-manager-menu ul li:first-child {

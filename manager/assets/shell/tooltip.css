@@ -15,13 +15,13 @@ a.help {cursor:pointer}
   box-shadow:0 5px 15px rgba(0,0,0,.5);
 }
 
-.tooltip-long {
+.tooltip.long {
   max-width:22.361359570661897em;
   white-space:normal;
   word-wrap:break-word;
 }
 
-.tooltip-arrow {
+.tooltip .arrow {
   display:block;
   width:0;
   height:0;
@@ -33,22 +33,22 @@ a.help {cursor:pointer}
   margin-left:-.5366726296958855em;
 }
 
-.tooltip.t .tooltip-arrow {border-bottom:none}
+.tooltip.t .arrow {border-bottom:none}
 
-.tooltip.b .tooltip-arrow {
+.tooltip.b .arrow {
   border-bottom-color:inherit;
   border-top:none;
   top:auto;
   bottom:100%;
 }
 
-.tooltip.r .tooltip-arrow {
-  left:.7155635062611807em;
+.tooltip.r .arrow {
+  left:.8944543828264758em;
   margin:0;
 }
 
-.tooltip.l .tooltip-arrow {
-  right:.7155635062611807em;
+.tooltip.l .arrow {
+  right:.8944543828264758em;
   left:auto;
   margin:0;
 }

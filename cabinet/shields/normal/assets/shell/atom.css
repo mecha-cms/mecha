@@ -424,13 +424,6 @@ optgroup option {
   font-weight:normal;
 }
 
-label {
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
-}
-
 label input:checked + span {opacity:.8}
 
 .form-label,
