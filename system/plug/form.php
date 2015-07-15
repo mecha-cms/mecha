@@ -26,7 +26,7 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
         $attr['checked'] = ltrim($select, '.') === ltrim($key, '.') ? true : null;
         $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? ' <span>' . $value . '</span>' : "") . '</label>';
     }
-    return implode(NL, $output);
+    return implode(' ', $output);
 });
 
 // `<input type="(color|date|email|number|password|range|search|tel|text|url)">`
