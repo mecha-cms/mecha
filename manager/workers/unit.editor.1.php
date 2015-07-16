@@ -3,8 +3,7 @@
     'class' => array(
         'textarea-block',
         'textarea-expand',
-        'code',
-        'MTE'
+        'code'
     ),
     'data-MTE-config' => '{"tabSize":"' . (isset($editor_tab_size) ? $editor_tab_size : TAB) . '"}'
 )); ?>

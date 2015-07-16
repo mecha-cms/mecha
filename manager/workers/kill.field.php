@@ -19,7 +19,9 @@
             't' => 'Text',
             'b' => 'Boolean',
             'o' => 'Option',
-            'f' => 'File'
+            'f' => 'File',
+            'c' => 'Composer',
+            'e' => 'Editor'
         ), 'Summary');
 
         ?>

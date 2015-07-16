@@ -12,8 +12,7 @@
       'class' => array(
           'textarea-block',
           'textarea-expand',
-          'code',
-          'MTE'
+          'code'
       )
   )); ?>
   </span>
@@ -25,8 +24,7 @@
       'class' => array(
           'textarea-block',
           'textarea-expand',
-          'code',
-          'MTE'
+          'code'
       )
   )); ?>
   </span>

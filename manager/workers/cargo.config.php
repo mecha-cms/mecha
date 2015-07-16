@@ -235,8 +235,7 @@
         <?php echo Form::textarea('defaults[' . $page . '_content]', Guardian::wayback('defaults.' . $page . '_content', Config::get('defaults.' . $page . '_content')), null, array(
             'class' => array(
                 'textarea-block',
-                'code',
-                'MTE'
+                'code'
             )
         )); ?>
         </span>
@@ -247,8 +246,7 @@
         <?php echo Form::textarea('defaults[' . $page . '_custom_css]', Guardian::wayback('defaults.' . $page . '_custom_css', Config::get('defaults.' . $page . '_custom_css')), null, array(
             'class' => array(
                 'textarea-block',
-                'code',
-                'MTE'
+                'code'
             )
         )); ?>
         </span>
@@ -259,8 +257,7 @@
         <?php echo Form::textarea('defaults[' . $page . '_custom_js]', Guardian::wayback('defaults.' . $page . '_custom_js', Config::get('defaults.' . $page . '_custom_js')), null, array(
             'class' => array(
                 'textarea-block',
-                'code',
-                'MTE'
+                'code'
             )
         )); ?>
         </span>

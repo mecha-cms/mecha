@@ -37,7 +37,9 @@ if (typeof DASHBOARD !== "undefined") {
     base.editors = [];
     for (var i = 0, len = area.length; i < len; ++i) {
         var name = area[i].name,
-            editor = /(^|\s)(MTE|code)(\s|$)/.test(area[i].className) && !/(^|\s)MTE-ignore(\s|$)/.test(area[i].className),
+            className = area[i].className,
+            is_target = /(^|\s)(MTE|code)(\s|$)/.test(className) && !/(^|\s)MTE-ignore(\s|$)/.test(className),
+            is_composer = is_target && /(^|\s)MTE(\s|$)/.test(className),
             hook, config, prefix;
         if (c_na !== name) {
             c_na = name;
@@ -48,8 +50,10 @@ if (typeof DASHBOARD !== "undefined") {
         hook = name.replace(/\[\]/g, '_' + c_nu).replace(/\[(.*?)\]/g, '_$1');
         config = area[i].getAttribute('data-MTE-config') || '{}';
         config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
-        prefix = config.toolbar ? 'composer' : 'editor';
-        if (editor) base[prefix + 's'].push(name);
+        prefix = is_composer ? 'composer' : 'editor';
+        if (is_target) {
+            base[is_composer ? 'composers' : 'editors'].push(name);
+        }
         base.fire('on_' + prefix + '_begin', {
             'index': i,
             'info': {
@@ -57,7 +61,7 @@ if (typeof DASHBOARD !== "undefined") {
                 'name': name
             }
         });
-        base[prefix + '_' + hook] = editor ? new MTE(area[i], base.task.extend({
+        base[prefix + '_' + hook] = is_target ? new MTE(area[i], base.task.extend({
             tabSize: TAB || '    ',
             toolbar: false,
             shortcut: false,
@@ -152,7 +156,7 @@ if (typeof DASHBOARD !== "undefined") {
                 });
             }
         }, config)) : {};
-        if (typeof base[prefix] === "undefined" && typeof base[prefix + '_' + hook].grip !== "undefined" || /(^|\s)MTE-main(\s|$)/.test(area[i].className)) {
+        if (typeof base[prefix] === "undefined" && typeof base[prefix + '_' + hook].grip !== "undefined" || /(^|\s)MTE-main(\s|$)/.test(className)) {
             base[prefix] = base[prefix + '_' + hook];
         }
         base.fire('on_' + prefix + '_end', {

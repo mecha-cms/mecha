@@ -10,8 +10,7 @@ $is_text = is_null($the_name) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') 
     'class' => array(
         'textarea-block',
         'textarea-expand',
-        'code',
-        'MTE'
+        'code'
     )
 )); ?>
 </p>

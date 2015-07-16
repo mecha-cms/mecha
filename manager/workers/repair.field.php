@@ -29,7 +29,9 @@
         's' => $speak->summary,
         'b' => $speak->boolean,
         'o' => $speak->option,
-        'f' => $speak->file
+        'f' => $speak->file,
+        'c' => $speak->composer,
+        'e' => $speak->editor
     ), $cache[0]);
 
     ?>
@@ -104,7 +106,7 @@
         holder = "";
     function onchange(v) {
         // `input[type="text"] < .grid < .grid-group`
-        placeholder.parentNode.parentNode.style.display = v[0].match(/^[ost]$/) ? "" : 'none';
+        placeholder.parentNode.parentNode.style.display = v[0].match(/^[ceost]$/) ? "" : 'none';
         if (v[0] === 'o') {
             holder = '<?php echo strtolower($speak->key) . S . ' ' . $speak->value; ?>';
         } else if (v[0] === 'f') {

@@ -72,12 +72,38 @@ if( ! empty($fields)) {
                 }
                 $html .= '</span>';
                 $html .= '</div>';
+            } else if($type === 'c') {
+                $html .= '<label class="grid-group grid-group-composer">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
+                $html .= '<span class="grid span-4">';
+                $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
+                    'class' => array(
+                        'textarea-block',
+                        'MTE',
+                        'code'
+                    ),
+                    'data-MTE-config' => '{"toolbar":true,"shortcut":true}'
+                ));
+                $html .= '</span>';
+                $html .= '</label>';
+            } else if($type === 'e') {
+                $html .= '<label class="grid-group grid-group-editor">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
+                $html .= '<span class="grid span-4">';
+                $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
+                    'class' => array(
+                        'textarea-block',
+                        'code'
+                    )
+                ));
+                $html .= '</span>';
+                $html .= '</label>';
             } else { // if($type === 's') {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
-                    'class' => 'input-block'
+                    'class' => 'textarea-block'
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
