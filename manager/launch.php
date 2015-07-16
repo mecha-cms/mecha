@@ -27,10 +27,9 @@ Config::merge('DASHBOARD.languages.MTE', Mecha::A($speak->MTE));
  */
 
 Weapon::add('meta', function() use($config) {
-    $T2 = str_repeat(TAB, 2);
-    echo O_BEGIN . $T2 . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
+    echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
     if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
-        echo $T2 . Asset::javascript($config->protocol . JS_LIBRARY_PATH);
+        echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
     }
 }, 20);
 
