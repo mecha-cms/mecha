@@ -15,14 +15,16 @@ mark,
 time {display:inline}
 
 .cf,
-.grid-group {
+.grid-group,
+.widget-manager-bar {
   display:block;
   cursor:inherit;
   zoom:1;
 }
 
 .cf:after,
-.grid-group:after {
+.grid-group:after,
+.widget-manager-bar:after {
   content:" ";
   display:table;
   clear:both;

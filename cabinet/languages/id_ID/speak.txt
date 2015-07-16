@@ -125,7 +125,7 @@ and: Dan
 or: Atau
 not: Bukan
 all: Semua
-none: Tak Satupun
+none: Tidak Ada
 both: Keduanya
 
 at: Pada
@@ -145,13 +145,13 @@ perma_links: Tautan Permanen
 field: Bidang
 fields: Bidang
 
-text: Teks
-
 slug: Slug
 slugs: Slug
 
 description: Deskripsi
 descriptions: Deskripsi
+
+text: Teks
 
 summary: Ringkasan
 summaries: Ringkasan
@@ -161,6 +161,12 @@ booleans: Boolean
 
 option: Pilihan
 options: Pilihan
+
+composer: Komposer
+composers: Komposer
+
+editor: Editor
+editors: Editor
 
 slogan: Slogan
 slogans: Slogan
@@ -575,6 +581,41 @@ backed_up: Dicadangkan
 restore: Pulihkan
 restoring: Memulihkan
 restored: Dipulihkan
+
+
+# ---------------------
+# DEFAULT WIDGET TITLES
+# ---------------------
+
+widget:
+
+  widget: Widget
+  widgets: Widget
+
+  manager_menu: Menu Manajer
+  manager_menus: Menu Manajer
+  manager_bar: Bar Manajer
+  manager_bars: Bar Manajer
+
+  archive: Arsip
+  archives: Arsip
+
+  tag: Tag
+  tags: Tag
+
+  recent_post: Pos Terbaru
+  recent_posts: Pos Terbaru
+  recent_comment: Komentar Terbaru
+  recent_comments: Komentar Terbaru
+
+  random_post: Pos Acak
+  random_posts: Pos Acak
+
+  related_post: Pos Terkait
+  related_posts: Pos Terkait
+
+  search_form: Formulir Penelusuran
+  search_forms: Formulir Penelusuran
 
 
 # -------------

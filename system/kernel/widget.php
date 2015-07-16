@@ -275,7 +275,7 @@ class Widget {
      *
      */
 
-    public static function search($placeholder = "", $submit = "") {
+    public static function search($placeholder = null, $submit = null) {
         $T1 = TAB;
         $T2 = str_repeat($T1, 2);
         $config = Config::get();
@@ -283,7 +283,7 @@ class Widget {
         $html  = O_BEGIN . '<div class="widget widget-search widget-search-form" id="widget-search-' . self::$id['search_form'] . '">' . NL;
         self::$id['search_form']++;
         $html .= $T1 . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
-        $html .= $T2 . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! empty($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (empty($submit) ? $speak->search : $submit) . '</button>' . NL;
+        $html .= $T2 . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! is_null($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (is_null($submit) ? $speak->search : $submit) . '</button>' . NL;
         $html .= $T1 . '</form>' . NL;
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);

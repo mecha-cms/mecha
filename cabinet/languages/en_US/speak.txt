@@ -145,13 +145,13 @@ perma_links: Permanent Links
 field: Field
 fields: Fields
 
-text: Text
-
 slug: Slug
 slugs: Slugs
 
 description: Description
 descriptions: Descriptions
+
+text: Text
 
 summary: Summary
 summaries: Summaries
@@ -161,6 +161,12 @@ booleans: Booleans
 
 option: Option
 options: Options
+
+composer: Composer
+composers: Composers
+
+editor: Editor
+editors: Editors
 
 slogan: Slogan
 slogans: Slogans
@@ -575,6 +581,41 @@ backed_up: Backed Up
 restore: Restore
 restoring: Restoring
 restored: Restored
+
+
+# ---------------------
+# DEFAULT WIDGET TITLES
+# ---------------------
+
+widget:
+
+  widget: Widget
+  widgets: Widgets
+
+  manager_menu: Manager Menu
+  manager_menus: Manager Menus
+  manager_bar: Manager Bar
+  manager_bars: Manager Bars
+
+  archive: Archive
+  archives: Archives
+
+  tag: Tag
+  tags: Tags
+
+  recent_post: Recent Post
+  recent_posts: Recent Posts
+  recent_comment: Recent Comment
+  recent_comments: Recent Comments
+
+  random_post: Random Post
+  random_posts: Random Posts
+
+  related_post: Related Post
+  related_posts: Related Posts
+
+  search_form: Seasrch Form
+  search_forms: Search Forms
 
 
 # -------------
