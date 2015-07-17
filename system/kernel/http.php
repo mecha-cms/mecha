@@ -139,4 +139,68 @@ class HTTP extends Base {
         return new static;
     }
 
+    /**
+     * ============================================================
+     *  CREATE POST REQUEST WITHOUT HTML FORM
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    HTTP::post('/path', array('test' => 'OK!'));
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function post($url, $fields = array()) {
+        if ( ! function_exists('curl_init')) {
+            Guardian::abort('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
+        }
+        $curl = curl_init();
+        curl_setopt($curl, CURLOPT_URL, $url);
+        curl_setopt($curl, CURLOPT_HEADER, false);
+        curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($curl, CURLOPT_POST, 1);
+        curl_setopt($curl, CURLOPT_POSTFIELDS, $fields);
+        $output = curl_exec($curl);
+        curl_close($curl);
+        return $output;
+    }
+
+    /**
+     * ============================================================
+     *  GET CONTENT OF AN EXTERNAL PAGE
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    HTTP::get('/path', array('test' => 'OK!'));
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function get($url, $fields = array()) {
+        if(is_string($fields)) {
+            $url = $url . str_replace('?', "", $fields);
+        } else {
+            $data = array();
+            foreach($fields as $k => $v) {
+                $data[$k] = urlencode($v);
+            }
+            $url = $url . '?' . implode('&', $data);
+        }
+        if (function_exists('curl_init')) {
+            $curl = curl_init();
+            curl_setopt($curl, CURLOPT_URL, $url);
+            curl_setopt($curl, CURLOPT_HEADER, false);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            $output = curl_exec($curl);
+            curl_close($curl);
+            return $output;
+        } else {
+            return file_get_contents($url);
+        }
+    }
+
 }
