@@ -465,7 +465,7 @@ Route::accept('captcha.png', function() {
     }
 
     $image = imagecreatetruecolor($width, $height);
-    $font = ASSET . DS . '__captcha' . DS . $font;
+    $font = strpos($font, '/') === false ? ASSET . DS . '__captcha' . DS . $font : ROOT . DS . File::path($font);
 
     imagefill($image, 0, 0, 0x7fff0000);
     imagealphablending($image, true);

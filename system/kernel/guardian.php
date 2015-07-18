@@ -503,25 +503,23 @@ class Guardian extends Base {
      *
      */
 
-    public static function captcha($bg = null, $color = null, $width = null, $height = null, $padding = null, $size = null, $length = null, $font = null) {
+    public static function captcha($bg = '333333', $color = 'FFFFAA', $width = 100, $height = 30, $padding = 0, $size = 16, $length = 7, $font = 'special-elite-regular.ttf') {
+        $c = array(
+            'bg' => $bg !== '333333' ? Converter::str($bg) : false,
+            'color' => $color !== 'FFFFAA' ? (string) $color : false,
+            'width' => $width !== 100 ? (int) $width : false,
+            'height' => $height !== 30 ? (int) $height : false,
+            'padding' => $padding !== 0 ? (int) $padding : false,
+            'size' => $size !== 16 ? (int) $size : false,
+            'length' => $length !== 7 ? (int) $length : false,
+            'font' => $font !== 'special-elite-regular.ttf' ? (string) $font : false
+        );
         $param = array();
-        if($bg === null) $bg = '333333';
-        if($color === null) $color = 'FFFFAA';
-        if($padding === null) $padding = 0;
-        if($width === null) $width = 100 + ($padding * 2);
-        if($height === null) $height = 30 + ($padding * 2);
-        if($size === null) $size = 16;
-        if($length === null) $length = 7;
-        if($font === null) $font = 'special-elite-regular.ttf';
-        if($bg !== '333333') $param[] = $bg === false ? 'bg=false' : 'bg=' . strtoupper((string) $bg);
-        if($color !== 'FFFFAA') $param[] = 'color=' . strtoupper((string) $color);
-        if($width !== 100) $param[] = 'width=' . (string) $width;
-        if($height !== 30) $param[] = 'height=' . (string) $height;
-        if($padding !== 0) $param[] = 'padding=' . (string) $padding;
-        if($size !== 16) $param[] = 'size=' . (string) $size;
-        if($length !== 7) $param[] = 'length=' . (string) $length;
-        if($font !== 'special-elite-regular.ttf') $param[] = 'font=' . (string) $font;
-        return '<img class="captcha" width="' . $width . '" height="' . $height . '" src="' . Config::get('url') . '/captcha.png' . ( ! empty($param) ? '?' . implode('&amp;', $param) : "") . '" alt="captcha"' . ES;
+        foreach($c as $k => $v) {
+            if($v !== false) $param[] = $k . '=' . urlencode($v);
+        }
+        $param = ! empty($param) ? '?' . implode('&amp;', $param) : "";
+        return '<img class="captcha" width="' . ($width + ($padding * 2)) . '" height="' . ($height + ($padding * 2)) . '" src="' . Config::get('url') . '/captcha.png' . $param . '" alt="captcha"' . ES;
     }
 
     /**
