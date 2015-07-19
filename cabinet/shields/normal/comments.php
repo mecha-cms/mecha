@@ -10,7 +10,7 @@
         <img alt="" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">
       </div>
       <div class="comment-header">
-        <?php if( ! empty($comment->url) && $comment->url != '#'): ?>
+        <?php if($comment->url !== '#'): ?>
         <a class="comment-name" href="<?php echo $comment->url; ?>" rel="nofollow" target="_blank"><?php echo $comment->name; ?></a>
         <?php else: ?>
         <span class="comment-name"><?php echo $comment->name; ?></span>
