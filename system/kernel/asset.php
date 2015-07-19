@@ -179,7 +179,7 @@ class Asset extends Base {
     // Check for loaded asset(s)
     public static function loaded($path = null) {
         if(is_null($path)) return self::$loaded;
-        return isset(self::$loaded[$path]);
+        return isset(self::$loaded[$path]) ? $path : false;
     }
 
     // Do not let the `Asset` loads these file(s) ...
@@ -196,7 +196,7 @@ class Asset extends Base {
     // Check for ignored asset(s)
     public static function ignored($path = null) {
         if(is_null($path)) return self::$ignored;
-        return isset(self::$ignored[$path]);
+        return isset(self::$ignored[$path]) ? $path : false;
     }
 
 }
