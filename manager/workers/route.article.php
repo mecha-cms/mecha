@@ -198,6 +198,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
             }
         }
         $task_connect = $article;
+        $P = array('data' => $request);
         include DECK . DS . 'workers' . DS . 'task.field.3.php';
         include DECK . DS . 'workers' . DS . 'task.custom.3.php';
         Notify::success(Config::speak('notify_success_deleted', $article->title));

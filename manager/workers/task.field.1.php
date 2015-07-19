@@ -4,6 +4,8 @@ foreach($field as $k => $v) {
     // Remove asset field value and data
     if(isset($v['remove']) && $v['type'][0] === 'f') {
         File::open(SUBSTANCE . DS . $v['remove'])->delete();
+        Weapon::fire('on_substance_update', array($G, $P));
+        Weapon::fire('on_substance_destruct', array($G, $P));
         Notify::success(Config::speak('notify_file_deleted', '<code>' . $v['remove'] . '</code>'));
         unset($field[$k]);
     }
@@ -14,8 +16,8 @@ foreach($field as $k => $v) {
         if( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f') {
             unset($field[$k]);
         } else {
-            // 1.1.3  => {"field_key":{"type":"s","value":"field value..."}}
-            // 1.1.3+ => {"field_key":"field value..."}
+            // 1.1.3  => {"field_key":{"type":"s","value":"field value"}}
+            // 1.1.3+ => {"field_key":"field value"}
             $field[$k] = $v['value'];
         }
     }

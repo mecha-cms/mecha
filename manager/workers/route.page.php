@@ -179,6 +179,7 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         Guardian::checkToken($request['token']);
         File::open($page->path)->delete();
         $task_connect = $page;
+        $P = array('data' => $request);
         include DECK . DS . 'workers' . DS . 'task.field.3.php';
         include DECK . DS . 'workers' . DS . 'task.custom.3.php';
         Notify::success(Config::speak('notify_success_deleted', $page->title));

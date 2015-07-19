@@ -18,6 +18,8 @@ if(isset($_FILES) && ! empty($_FILES)) {
                 File::upload($v, SUBSTANCE);
                 if( ! Notify::errors()) {
                     $field[$k]['value'] = $name;
+                    Weapon::fire('on_substance_update', array($G, $P));
+                    Weapon::fire('on_substance_construct', array($G, $P));
                 }
             }
         }

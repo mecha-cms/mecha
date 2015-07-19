@@ -6,6 +6,8 @@ if(isset($task_connect->fields) && is_object($task_connect->fields)) {
         $file = SUBSTANCE . DS . $field;
         if(file_exists($file) && is_file($file)) {
             File::open($file)->delete();
+            Weapon::fire('on_substance_update', array($G, $P));
+            Weapon::fire('on_substance_destruct', array($G, $P));
         }
     }
 }
