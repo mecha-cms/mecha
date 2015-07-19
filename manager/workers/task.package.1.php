@@ -3,15 +3,21 @@
 $name = $_FILES['file']['name'];
 $mime = $_FILES['file']['type'];
 $extension = File::E($name);
+$mime_accept = array(
+    'application/download',
+    'application/octet-stream',
+    'application/x-compressed',
+    'application/x-zip-compressed',
+    'application/zip',
+    'multipart/x-zip'
+);
+$extension_accept = array('zip');
 $path = File::N($name);
 if( ! empty($name)) {
     if(File::exist($task_connect_path . DS . $path)) {
         Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));
     } else {
-        if(
-            strpos(',application/download,application/octet-stream,application/x-compressed,application/x-zip-compressed,application/zip,multipart/x-zip,', ',' . $mime . ',') === false ||
-            strpos(',zip,', ',' . $extension . ',') === false
-        ) {
+        if( ! Text::check($mime)->inArray($mime_accept) || ! Text::check($extension)->inArray($extension_accept)) {
             Notify::error(Config::speak('notify_invalid_file_extension', 'ZIP'));
         }
     }

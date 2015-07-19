@@ -127,7 +127,7 @@ class Asset extends Base {
         $content = "";
         $e = File::E($name);
         if( ! file_exists($the_path) || ! $is_valid) {
-            if(strpos(',gif,jpeg,jpg,png,', ',' . $e . ',') !== false) {
+            if(Text::check($e)->inArray(array('gif', 'jpeg', 'jpg', 'png'))) {
                 foreach($path as $p) {
                     if( ! self::ignored($p)) {
                         $p = self::path($p);
