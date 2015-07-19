@@ -51,7 +51,7 @@ class Form extends Cell {
                         $attr_o['disabled'] = true;
                         $k = ltrim($k, '.');
                     }
-                    if(ltrim($select, '.') === $k) {
+                    if(ltrim($select, '.') === (string) $k) {
                         $attr_o['selected'] = true;
                     }
                     $attr_o['value'] = $k;
@@ -65,7 +65,7 @@ class Form extends Cell {
                     $attr_o['disabled'] = true;
                     $key = ltrim($key, '.');
                 }
-                if(ltrim($select, '.') === $key) {
+                if(ltrim($select, '.') === (string) $key) {
                     $attr_o['selected'] = true;
                 }
                 $attr_o['value'] = $key;
