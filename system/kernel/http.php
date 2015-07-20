@@ -153,7 +153,7 @@ class HTTP extends Base {
      */
 
     public static function post($url, $fields = array()) {
-        if ( ! function_exists('curl_init')) {
+        if( ! function_exists('curl_init')) {
             Guardian::abort('<a href="http://php.net/curl" title="PHP &ndash; cURL" rel="nofollow" target="_blank">PHP cURL</a> extension is not installed on your web server.');
         }
         $curl = curl_init();
@@ -190,11 +190,13 @@ class HTTP extends Base {
             }
             $url = $url . '?' . implode('&', $data);
         }
-        if (function_exists('curl_init')) {
+        if(function_exists('curl_init')) {
             $curl = curl_init();
             curl_setopt($curl, CURLOPT_URL, $url);
-            curl_setopt($curl, CURLOPT_HEADER, false);
-            curl_setopt($curl, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($curl, CURLOPT_HEADER, 0);
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curl, CURLOPT_AUTOREFERER, true);
+            curl_setopt($curl, CURLOPT_FOLLOWLOCATION, true);
             $output = curl_exec($curl);
             curl_close($curl);
             return $output;
