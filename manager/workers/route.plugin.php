@@ -2,24 +2,11 @@
 
 
 /**
- * Empty Plugin Page
- * -----------------
- */
-
-$e_plugin_page = 'Title' . S . ' %s' . "\n" .
-    'Author' . S . ' ' . $speak->anon . "\n" .
-    'URL' . S . ' #' . "\n" .
-    'Version' . S . ' 0.0.0' . "\n" .
-    "\n" . SEPARATOR . "\n" .
-    "\n" . Config::speak('notify_not_available', $speak->description);
-
-
-/**
  * Plugin Manager
  * --------------
  */
 
-Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak, $e_plugin_page) {
+Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
@@ -68,9 +55,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
                 $file = $files[$i] . DS . 'about.txt';
             }
-            $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse(File::B($files[$i]), '->text')))), 'content', 'plugin:');
-            $plugins[$i]['about'] = $about;
             $plugins[$i]['slug'] = File::B($files[$i]);
+            $plugins[$i]['about'] = Plugin::info(File::B($files[$i]));
         }
         unset($files);
     }
@@ -90,7 +76,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * -------------------
  */
 
-Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
+Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
@@ -101,14 +87,14 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), 'content', 'plugin:');
-    if( ! isset($about['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about['author'], $matches)) {
-        $about['author'] = $matches[1];
-        $about['url'] = $matches[2] . $matches[3];
+    $about = Plugin::info($slug);
+    if( ! isset($about->url) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about->author, $matches)) {
+        $about->author = $matches[1];
+        $about->url = $matches[2] . $matches[3];
     }
-    $about['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
+    $about->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
-        'page_title' => $speak->managing . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->managing . ': ' . $about->title . $config->title_separator . $config->manager->title,
         'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
@@ -151,7 +137,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  * -------------
  */
 
-Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak, $e_plugin_page) {
+Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
@@ -159,8 +145,8 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
         $file = PLUGIN . DS . $slug . DS . 'about.txt';
     }
-    $about = Text::toPage(File::open($file)->read(sprintf($e_plugin_page, ucwords(Text::parse($slug, '->text')))), 'content', 'plugin:');
-    $about['slug'] = $slug;
+    $about = Plugin::info($slug);
+    $about->slug = $slug;
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
         'file' => $about,
