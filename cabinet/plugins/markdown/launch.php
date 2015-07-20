@@ -2,8 +2,10 @@
 
 use \Michelf\MarkdownExtra;
 
-include PLUGIN . DS . File::B(__DIR__) . DS . 'cargo' . DS . 'Michelf' . DS . 'Markdown.php';
-include PLUGIN . DS . File::B(__DIR__) . DS . 'cargo' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
+$cargo = PLUGIN . DS . File::B(__DIR__) . DS . 'assets' . DS . 'cargo' . DS . 'Michelf' . DS;
+
+include $cargo . 'Markdown.php';
+include $cargo . 'MarkdownExtra.php';
 
 Text::parser('to_html', function($input) {
     if( ! is_string($input)) return $input;

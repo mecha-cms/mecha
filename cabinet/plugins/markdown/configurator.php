@@ -13,8 +13,8 @@
       <span class="grid span-6">
         <?php echo Form::textarea('abbr', $abbr, '*[CMS]: Content Management System', array(
             'class' => array(
-                'textarea-expand',
                 'textarea-block',
+                'textarea-expand',
                 'code'
             )
         )); ?>
@@ -27,8 +27,8 @@
       <span class="grid span-6">
         <?php echo Form::textarea('url', $url, '[' . Text::parse($config->title, '->slug') . ']: &lt;' . $config->url . '&gt; &quot;' . Text::parse($config->title, '->encoded_html') . '&quot;', array(
             'class' => array(
-                'textarea-expand',
                 'textarea-block',
+                'textarea-expand',
                 'code'
             )
         )); ?>
