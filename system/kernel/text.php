@@ -363,14 +363,15 @@ class Text extends Base {
      *
      * -- CODE: ------------------------------------------------------------
      *
-     *    if(Text::check('A')->inArray(array('A', 'B', 'C'))) { ... }
+     *    if(Text::check('A')->is(array('A', 'B', 'C'))) { ... }
      *
      * ---------------------------------------------------------------------
      *
      */
 
-    public static function inArray($array, $x = ';;;') {
+    public static function is($array, $x = ';;;') {
         if( ! is_string(self::$text)) return false;
+        if(is_string($array)) return self::$text === $array;
         return strpos($x . implode($x, $array) . $x, $x . self::$text . $x) !== false;
     }
 
