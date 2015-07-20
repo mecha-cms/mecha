@@ -858,15 +858,15 @@ class Get extends Base {
 
         // Redirect 301 with `<!-- kick: "http://example.com" -->`
         if(strpos($content_test, '<!-- kick:') !== false && $config->page_type === rtrim($FP, ':')) {
-            preg_match('#<!-- kick\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
+            preg_match('#<!-- kick\: *([\'"]?)(.*?)\1 -->#', $content_test, $matches);
             Guardian::kick($matches[2]);
         }
 
         // External link with `<!-- link: "http://example.com" -->`
         if(strpos($content_test, '<!-- link:') !== false) {
-            preg_match('#<!-- link\: +([\'"]?)(.*?)\1 -->#', $content_test, $matches);
+            preg_match('#<!-- link\: *([\'"]?)(.*?)\1 -->#', $content_test, $matches);
             $results['link'] = $matches[2];
-            $results['content'] = preg_replace('#<!-- link\: .*? -->#', "", $results['content']);
+            $results['content'] = preg_replace('#<!-- link\:.*? -->#', "", $results['content']);
         }
 
         // Manual post excerpt with `<!-- cut+ "Read More" -->`

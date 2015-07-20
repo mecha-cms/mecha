@@ -148,7 +148,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     $about = Plugin::info($slug);
     $about->slug = $slug;
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . $about['title'] . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . $about->title . $config->title_separator . $config->manager->title,
         'file' => $about,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
     ));
@@ -163,7 +163,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/plugin');
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $about['title'] . '</strong>'));
+        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $about->title . '</strong>'));
     }
     Shield::lot('segment', 'plugin')->attach('manager', false);
 });
