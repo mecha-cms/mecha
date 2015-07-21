@@ -519,7 +519,7 @@ class Converter extends Base {
             array(
 
                 // Remove HTML comment(s) except IE comment(s)
-                '#\s*(<\!--(?=\[if).*?-->)\s*|\s*<\!--.*?-->\s*#s',
+                '#\s*(<\!--(?=\[if\s).*?-->)\s*|\s*<\!--.*?-->\s*#s',
 
                 // Do not remove white-space after image and
                 // input tag that is followed by a tag open

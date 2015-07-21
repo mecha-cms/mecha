@@ -15,7 +15,7 @@ class Plugin extends Base {
             $plugins[] = false;
         }
         for($j = 0; $j < $plugins_payload; ++$j) {
-            $plugins_list[$j] = str_replace(PLUGIN . DS, "", dirname($plugins_list[$j]));
+            $plugins_list[$j] = str_replace(PLUGIN . DS, "", File::D($plugins_list[$j]));
             if($overtake = File::exist(PLUGIN . DS . $plugins_list[$j] . DS . '__overtake.txt')) {
                 $to_index = Mecha::edge((int) file_get_contents($overtake) - 1, 0, $plugins_payload - 1);
                 array_splice($plugins, $to_index, 0, array($plugins_list[$j]));
@@ -29,20 +29,21 @@ class Plugin extends Base {
     }
 
     // Get plugin info by its folder
-    public static function info($folder = null) {
+    public static function info($folder = null, $array = false) {
         $config = Config::get();
         $speak = Config::speak();
         // Check whether the localized "about" file is available
         if( ! $info = File::exist(PLUGIN . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = PLUGIN . DS . $folder . DS . 'about.txt';
         }
-        $page_default = 'Title' . S . ' ' . ucwords(Text::parse($folder, '->text')) . "\n" .
-            'Author' . S . ' ' . $speak->anon . "\n" .
-            'URL' . S . ' #' . "\n" .
-            'Version' . S . ' 0.0.0' . "\n" .
-            "\n" . SEPARATOR . "\n" .
-            "\n" . Config::speak('notify_not_available', $speak->description);
-        return Mecha::O(Text::toPage(File::open($info)->read($page_default), 'content', 'plugin:'));
+        $default = 'Title' . S . ' ' . ucwords(Text::parse($folder, '->text')) . "\n" .
+                   'Author' . S . ' ' . $speak->anon . "\n" .
+                   'URL' . S . ' #' . "\n" .
+                   'Version' . S . ' 0.0.0' . "\n" .
+                   "\n" . SEPARATOR . "\n" .
+                   "\n" . Config::speak('notify_not_available', $speak->description);
+        $info = Text::toPage(File::open($info)->read($default), 'content', 'plugin:');
+        return $array ? $info : Mecha::O($info);
     }
 
 }

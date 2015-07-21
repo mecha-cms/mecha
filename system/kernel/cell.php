@@ -89,7 +89,7 @@ class Cell {
     // HTML comment
     public static function _($content = "", $indent = 0, $block = ' ') {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
-        if($block === true) {
+        if($block === true || $block === '\n\n') {
             $block_start = str_repeat(NL, 2);
             $block_end = $block_start . $indent;
         } else {

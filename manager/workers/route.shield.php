@@ -47,7 +47,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     sort($the_shields);
     Shield::lot(array(
         'segment' => 'shield',
-        'the_shield_info' => Shield::info($folder),
+        'the_shield_info' => Shield::info($folder, true),
         'the_shield_folder' => $folder,
         'the_shield_folders' => $the_shields
     ))->attach('manager', false);
@@ -177,7 +177,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     if(Guardian::get('status') !== 'pilot' || $folder === "") {
         Shield::abort();
     }
-    $info = Shield::info($folder);
+    $info = Shield::info($folder, true);
     if($path) {
         $path = File::path($path);
         if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
@@ -189,7 +189,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info->title) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info['title']) . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
     ));
@@ -206,7 +206,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         Weapon::fire('on_shield_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>'));
+        Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info['title'] . '</strong>'));
     }
     Shield::lot(array(
         'segment' => 'shield',

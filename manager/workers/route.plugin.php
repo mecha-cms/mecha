@@ -33,7 +33,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                     Weapon::fire('on_plugin_' . md5($path) . '_mount', array($P, $P));
                     Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                 } else {
-                    Guardian::kick($config->manager->slug . '/plugin?q_id=' . $path);
+                    Guardian::kick($config->manager->slug . '/plugin?id=' . $path);
                 }
             }
         } else {
@@ -47,16 +47,12 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         }
     }
     $plugins = array();
-    $folders = glob(PLUGIN . DS . Request::get('q_id', '*'), GLOB_NOSORT | GLOB_ONLYDIR);
+    $folders = glob(PLUGIN . DS . Request::get('id', '*'), GLOB_NOSORT | GLOB_ONLYDIR);
     sort($folders);
     if($files = Mecha::eat($folders)->chunk($offset, $config->manager->per_page)->vomit()) {
         for($i = 0, $count = count($files); $i < $count; ++$i) {
-            // Check whether the localized "about" file is available
-            if( ! $file = File::exist($files[$i] . DS . 'about.' . $config->language . '.txt')) {
-                $file = $files[$i] . DS . 'about.txt';
-            }
             $plugins[$i]['slug'] = File::B($files[$i]);
-            $plugins[$i]['about'] = Plugin::info(File::B($files[$i]));
+            $plugins[$i]['about'] = Plugin::info(File::B($files[$i]), true);
         }
         unset($files);
     }
@@ -83,19 +79,15 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
     }
-    // Check whether the localized "about" file is available
-    if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
-        $file = PLUGIN . DS . $slug . DS . 'about.txt';
+    $info = Plugin::info($slug, true);
+    if( ! isset($info['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $info['author'], $matches)) {
+        $info['author'] = $matches[1];
+        $info['url'] = $matches[2] . $matches[3];
     }
-    $about = Plugin::info($slug);
-    if( ! isset($about->url) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $about->author, $matches)) {
-        $about->author = $matches[1];
-        $about->url = $matches[2] . $matches[3];
-    }
-    $about->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
+    $info['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
-        'page_title' => $speak->managing . ': ' . $about->title . $config->title_separator . $config->manager->title,
-        'file' => $about,
+        'page_title' => $speak->managing . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
+        'file' => $info,
         'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
     ));
     Shield::lot(array(
@@ -141,15 +133,11 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    // Check whether the localized "about" file is available
-    if( ! $file = File::exist(PLUGIN . DS . $slug . DS . 'about.' . $config->language . '.txt')) {
-        $file = PLUGIN . DS . $slug . DS . 'about.txt';
-    }
-    $about = Plugin::info($slug);
-    $about->slug = $slug;
+    $info = Plugin::info($slug, true);
+    $info['slug'] = $slug;
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . $about->title . $config->title_separator . $config->manager->title,
-        'file' => $about,
+        'page_title' => $speak->deleting . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
+        'file' => $info,
         'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
     ));
     if($request = Request::post()) {
@@ -163,7 +151,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         Weapon::fire('on_plugin_' . md5($slug) . '_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/plugin');
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $about->title . '</strong>'));
+        Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $info['title'] . '</strong>'));
     }
     Shield::lot('segment', 'plugin')->attach('manager', false);
 });

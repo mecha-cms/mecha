@@ -147,7 +147,7 @@ class Shield extends Base {
      *
      */
 
-    public static function info($folder = null) {
+    public static function info($folder = null, $array = false) {
         $config = Config::get();
         $speak = Config::speak();
         if(is_null($folder)) {
@@ -157,13 +157,14 @@ class Shield extends Base {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $page_default = 'Title' . S . ' ' . ucwords(Text::parse($folder, '->text')) . "\n" .
-            'Author' . S . ' ' . $speak->anon . "\n" .
-            'URL' . S . ' #' . "\n" .
-            'Version' . S . ' 0.0.0' . "\n" .
-            "\n" . SEPARATOR . "\n" .
-            "\n" . Config::speak('notify_not_available', $speak->description);
-        return Mecha::O(Text::toPage(File::open($info)->read($page_default), 'content', 'shield:'));
+        $default = 'Title' . S . ' ' . ucwords(Text::parse($folder, '->text')) . "\n" .
+                   'Author' . S . ' ' . $speak->anon . "\n" .
+                   'URL' . S . ' #' . "\n" .
+                   'Version' . S . ' 0.0.0' . "\n" .
+                   "\n" . SEPARATOR . "\n" .
+                   "\n" . Config::speak('notify_not_available', $speak->description);
+        $info = Text::toPage(File::open($info)->read($default), 'content', 'shield:');
+        return $array ? $info : Mecha::O($info);
     }
 
     /**
