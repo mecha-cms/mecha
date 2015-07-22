@@ -74,7 +74,7 @@ class Session extends Base {
                 $value = $old;
             }
             setcookie($name, base64_encode(json_encode($value, true)), $expire, $path, $domain, $secure, $http_only);
-            setcookie('__' . $name, base64_encode(json_encode(array($expire, $path, $domain, $secure, $http_only)), true), $expire, '/', "", false, false);
+            setcookie('__' . $name, base64_encode(json_encode(array($expire, $path, $domain, $secure, $http_only), true)), $expire, '/', "", false, false);
         } else {
             Mecha::SVR($_SESSION, $session, $value);
         }
