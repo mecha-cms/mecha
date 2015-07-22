@@ -31,7 +31,7 @@
       </div>
       <div class="tab-content hidden" id="tab-content-1-2">
         <p class="about-author">
-        <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($the_shield_info->author, '->encoded_html'); ?><?php if(isset($the_shield_info->url) && $the_shield_info->url !== '#'): ?> <?php echo Cell::a($the_shield_info->url, Jot::icon('external-link-square'), '_blank', array(
+        <?php echo Cell::strong($speak->author . ':') . ' ' . Text::parse($the_shield_info['author'], '->encoded_html'); ?><?php if(isset($the_shield_info['url']) && $the_shield_info['url'] !== '#'): ?> <?php echo Cell::a($the_shield_info['url'], Jot::icon('external-link-square'), '_blank', array(
             'class' => array(
                 'about-url',
                 'help'
@@ -41,8 +41,8 @@
         )); ?>
         <?php endif; ?>
         </p>
-        <h3 class="about-title"><?php echo $the_shield_info->title; ?><?php if(isset($the_shield_info->version)): ?> <code class="about-version"><?php echo $the_shield_info->version; ?></code><?php endif; ?></h3>
-        <div class="about-content"><?php echo $the_shield_info->content; ?></div>
+        <h3 class="about-title"><?php echo $the_shield_info['title']; ?><?php if(isset($the_shield_info['version'])): ?> <code class="about-version"><?php echo $the_shield_info['version']; ?></code><?php endif; ?></h3>
+        <div class="about-content"><?php echo $the_shield_info['content']; ?></div>
       </div>
     </div>
   </div>
