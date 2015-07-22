@@ -73,8 +73,8 @@ class Session extends Base {
                 Mecha::SVR($old, implode('.', $parts), $value);
                 $value = $old;
             }
-            setcookie($name, json_encode($value, true), $expire, $path, $domain, $secure, $http_only);
-            setcookie('__' . $name, json_encode(array($expire, $path, $domain, $secure, $http_only), true), $expire, '/', "", false, false);
+            setcookie($name, base64_encode(json_encode($value, true)), $expire, $path, $domain, $secure, $http_only);
+            setcookie('__' . $name, base64_encode(json_encode(array($expire, $path, $domain, $secure, $http_only)), true), $expire, '/', "", false, false);
         } else {
             Mecha::SVR($_SESSION, $session, $value);
         }
@@ -89,7 +89,7 @@ class Session extends Base {
             $name = substr($session, 7);
             $cookie = isset($_COOKIE) ? Converter::strEval($_COOKIE) : $fallback;
             $value = Mecha::GVR($cookie, $name, $fallback);
-            return ! is_array($value) && ! is_null(json_decode($value, true)) ? json_decode($value, true) : $value;
+            return ! is_array($value) && ! is_null(json_decode(base64_decode($value), true)) ? json_decode(base64_decode($value), true) : $value;
         }
         return Mecha::GVR($_SESSION, $session, $fallback);
     }
@@ -116,10 +116,10 @@ class Session extends Base {
                     $old = Converter::strEval($_COOKIE[$name_a[0]]);
                     Mecha::UVR($old, $name);
                     foreach($old as $key => $value) {
-                        $_COOKIE[$name_a[0]][$key] = is_array($value) ? json_encode($value, true) : $value;
+                        $_COOKIE[$name_a[0]][$key] = is_array($value) ? base64_encode(json_encode($value, true)) : $value;
                     }
                     $c = Converter::strEval($_COOKIE['__' . $name_a[0]]);
-                    setcookie($name_a[0], json_encode($old, true), $c[0], $c[1], $c[2], $c[3], $c[4]);
+                    setcookie($name_a[0], base64_encode(json_encode($old, true)), $c[0], $c[1], $c[2], $c[3], $c[4]);
                 }
             } else {
                 unset($_COOKIE[$name]);
