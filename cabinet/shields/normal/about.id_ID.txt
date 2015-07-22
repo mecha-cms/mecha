@@ -5,6 +5,8 @@ Version: 1.1.4
 
 ====
 
-Tameng normal untuk CMS Mecha.
+> Tameng normal untuk CMS Mecha.
+
+Ini adalah tameng bawaan yang digunakan oleh **Mecha**. Jika Anda ingin membuat tameng baru untuk **Mecha**, akan lebih baik apabila Anda menggunakan tameng ini sebagai kerangka utama.
 
 *[CMS]: Content Management System

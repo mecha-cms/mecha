@@ -5,6 +5,8 @@ Version: 1.1.4
 
 ====
 
-Normal shield for Mecha CMS.
+> Normal shield for Mecha CMS.
+
+This is the default shield used by **Mecha**. If you want to create a new shield for **Mecha**, it would be better if you use this shield as the base framework.
 
 *[CMS]: Content Management System
