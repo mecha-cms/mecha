@@ -68,7 +68,7 @@ time,mark,audio,video {
 ::-webkit-input-placeholder {
   color:#AAA;
   opacity:1;
-  overflow:visible; /* WebKit only :( */
+  overflow:visible; /* webkit only :( */
   line-height:inherit;
 }
 
@@ -189,6 +189,7 @@ a img {border:none}
 
 h1,h2,h3,h4,h5,h6,
 .h1,.h2,.h3,.h4,.h5,.h6 {
+  display:block;
   line-height:1;
   margin:18px 0 0;
   margin-top:1.3846153846153846rem;
