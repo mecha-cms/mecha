@@ -244,20 +244,20 @@ Weapon::add('meta', function() {
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
     if(isset($config->article->description)) {
-        $description = strip_tags($config->article->description);
+        $description = $config->article->description;
     } else if(isset($config->page->description)) {
-        $description = strip_tags($config->page->description);
+        $description = $config->page->description;
     } else {
-        $description = strip_tags($config->description);
+        $description = $config->description;
     }
-    $html .= Cell::meta('description', $description, array(), 2) . NL;
-    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
+    $html .= Cell::meta('description', trim(strip_tags($description)), array(), 2) . NL;
+    $html .= Cell::meta('author', trim(strip_tags($config->author)), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
+    $html  = Cell::title(trim(strip_tags($config->page_title)), array(), 2) . NL;
     $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }, 20);

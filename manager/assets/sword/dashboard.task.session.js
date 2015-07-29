@@ -1,7 +1,7 @@
 // cookie & storage
 DASHBOARD.task.session = {
     set: function(session, value, expire) {
-        if (session.substring(0, 7) === 'cookie:') {
+        if (session.indexOf('cookie:') === 0) {
             session = session.replace(/[\s=;]/g, '_');
             value = encodeURIComponent(value);
             expire = expire || 1;
@@ -9,7 +9,7 @@ DASHBOARD.task.session = {
             if (expire) {
                 var date = new Date();
                 date.setTime(date.getTime() + (expire * 24 * 60 * 60 * 1000));
-                str = '; expires=' + date.toGMTString();
+                str += '; expires=' + date.toGMTString();
             }
             document.cookie = session + '=' + value + str + '; path=/';
         } else {
@@ -17,7 +17,7 @@ DASHBOARD.task.session = {
         }
     },
     get: function(session, fallback) {
-        if (session === 'cookies' || session.substring(0, 7) === 'cookie:') {
+        if (session === 'cookies' || session.indexOf('cookie:') === 0) {
             fallback = fallback || false;
             var output = {},
                 cookies = document.cookie.split(/;\s*/);
@@ -34,7 +34,7 @@ DASHBOARD.task.session = {
         }
     },
     kill: function(session) {
-        if (session.substring(0, 7) === 'cookie:') {
+        if (session.indexOf('cookie:') === 0) {
             DASHBOARD.task.session.set(session, "", -1);
         } else {
             localStorage.removeItem(session);

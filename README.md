@@ -29,12 +29,12 @@ Mecha CMS
 
 ### Steps to Install
 
- 1. Make sure that you already have the required system.
+ 1. Make sure that you already have the required component.
  2. Download **Mecha** by cloning [this](https://github.com/mecha-cms/mecha-cms) **GitHub** repo.
  3. Upload **Mecha** through your FTP/SFTP to the public folder/directory in your site — Usually named as `public_html`, `www` or `htdocs`
  4. Type `http://example.org/install.php` in the address bar of your web browser. Or, if for some reason you have to upload this CMS in a sub-folder, then just type `http://example.org/your-sub-folder-name/install.php` &mdash; Seriously, if you really typed domain **http://example.org**, then you really are in a big trouble!
- 5. Put your name, your email, your username and your password in the form provided then click **Install**.
- 6. There will appear a message that you are able to log in now. Log in!
+ 5. Put your name, your email, your _username_ and your _password_ in the form provided then click **Install**.
+ 6. There will appear a message describes that you are able to log in now. Log in!
  7. Once logged in, you can start configuring the blog by visiting the configuration page.
  8. Post something!
 
@@ -60,6 +60,6 @@ If you want to do a _pull request_, make sure that you are using the **latest de
 
 I use [Zepto](https://github.com/madrobby/zepto "Zepto") and [Font Awesome](http://fortawesome.github.io/Font-Awesome "Font Awesome") resources through the public CDN from [here](http://cdnjs.com/libraries/zepto "CDNJS") and [here](http://www.bootstrapcdn.com/#fontawesome_tab "Bootstrap CDN"). I just don’t like to create a commit that only contains version updates of external resources. That’s a waste.
 
-### What?
+### Others
 
  - [Interested with the text editor used by **Mecha**?](https://github.com/tovic/markdown-text-editor)
