@@ -37,7 +37,7 @@ define('O_END', PHP_EOL); // End HTML output
 define('HTML_PARSER', 'Markdown Extra'); // Depends on the type of HTML parser in the `plugins` folder
 
 define('CSS_LIBRARY_PATH', "");
-define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css');
+define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
 define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js');
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
