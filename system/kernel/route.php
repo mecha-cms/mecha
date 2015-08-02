@@ -220,7 +220,7 @@ class Route extends Base {
             foreach($routes as $route) {
                 if($route['pattern'] === $pattern) {
                     if( ! is_null($stack)) {
-                        if((float) $route['stack'] === (float) $stack) {
+                        if($route['stack'] === (float) $stack) {
                             call_user_func_array($route['fn'], $arguments);
                         }
                     } else {

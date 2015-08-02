@@ -265,7 +265,6 @@ input[type="reset"],
 input[type="submit"],
 .btn {
   width:auto;
-  text-align:center;
   cursor:pointer;
   background-color:#333;
   text-align:center;
