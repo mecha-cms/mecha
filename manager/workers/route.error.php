@@ -13,7 +13,7 @@ Route::accept($config->manager->slug . '/error', function() use($config, $speak)
     ));
     Shield::lot(array(
         'segment' => 'error',
-        'the_content' => File::open(SYSTEM . DS . 'log' . DS . 'errors.log')->read(false)
+        'the_content' => File::open(LOG . DS . 'errors.log')->read(false)
     ))->attach('manager', false);
 });
 
@@ -27,7 +27,7 @@ Route::accept($config->manager->slug . '/error/kill', function() use($config, $s
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $errors = SYSTEM . DS . 'log' . DS . 'errors.log';
+    $errors = LOG . DS . 'errors.log';
     $G = array('data' => array('content' => File::open($errors)->read()));
     File::open($errors)->delete();
     Weapon::fire('on_error_destruct', array($G, $G));

@@ -10,7 +10,7 @@ if(DEBUG) {
     error_reporting(E_ALL | E_STRICT);
     ini_set('display_errors', TRUE);
     ini_set('display_startup_errors', TRUE);
-    ini_set('error_log', SYSTEM . DS . 'log' . DS . 'errors.log');
+    ini_set('error_log', LOG . DS . 'errors.log');
 } else {
     error_reporting(0);
     ini_set('display_errors', FALSE);
@@ -59,7 +59,7 @@ foreach(glob(SYSTEM . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
  * --------------------
  */
 
-Session::start(SYSTEM . DS . 'log' . DS . 'sessions');
+Session::start();
 
 
 /**
@@ -244,20 +244,20 @@ Weapon::add('meta', function() {
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
     if(isset($config->article->description)) {
-        $description = $config->article->description;
+        $description = strip_tags($config->article->description);
     } else if(isset($config->page->description)) {
-        $description = $config->page->description;
+        $description = strip_tags($config->page->description);
     } else {
-        $description = $config->description;
+        $description = strip_tags($config->description);
     }
-    $html .= Cell::meta('description', trim(strip_tags($description)), array(), 2) . NL;
-    $html .= Cell::meta('author', trim(strip_tags($config->author)), array(), 2) . NL;
+    $html .= Cell::meta('description', $description, array(), 2) . NL;
+    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = Cell::title(trim(strip_tags($config->page_title)), array(), 2) . NL;
+    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
     $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }, 20);

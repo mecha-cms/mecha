@@ -233,7 +233,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     Weapon::fire('on_shield_' . $mode, array($G, $G));
     Weapon::fire('on_shield_' . md5($slug) . '_update', array($G, $G));
     Weapon::fire('on_shield_' . md5($slug) . '_' . $mode, array($G, $G));
-    foreach(glob(SYSTEM . DS . 'log' . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
+    foreach(glob(LOG . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
         File::open($asset_cache)->delete();
     }
     Guardian::kick($config->manager->slug . '/shield/' . $slug);

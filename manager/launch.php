@@ -197,7 +197,7 @@ Weapon::add('shield_before', function() {
     $speak = Config::speak();
 
     $total = $config->total_comments_backend;
-    $destination = SYSTEM . DS . 'log' . DS . 'comments.total.log';
+    $destination = LOG . DS . 'comments.total.log';
     if($file = File::exist($destination)) {
         $old = (int) File::open($file)->read();
         $total = ($total > $old) ? ($total - $old) : 0;
@@ -295,7 +295,7 @@ Weapon::add('shield_before', function() {
         )
     );
 
-    if($errors = File::exist(SYSTEM . DS . 'log' . DS . 'errors.log')) {
+    if($errors = File::exist(LOG . DS . 'errors.log')) {
         $total = 0;
         if(filesize($errors) > MAX_ERROR_FILE_SIZE) {
             File::open($errors)->delete();

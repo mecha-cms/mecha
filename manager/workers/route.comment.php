@@ -11,7 +11,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         Shield::abort();
     }
     $offset = (int) $offset;
-    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+    File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
     if($files = Get::comments(null, 'DESC', 'txt,hold')) {
         $comments = array();
         $comments_id = array();
@@ -50,7 +50,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if( ! isset($comment->content_type)) {
         $comment->content_type = $config->html_parser;
     }
-    File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+    File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => Mecha::A($comment),
@@ -132,13 +132,13 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         File::open($comment->path)->delete();
         $task_connect = $comment;
         include DECK . DS . 'workers' . DS . 'task.field.3.php';
-        File::write($config->total_comments_backend - 1)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+        File::write($config->total_comments_backend - 1)->saveTo(LOG . DS . 'comments.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->comment));
         Weapon::fire('on_comment_update', array($P, $P));
         Weapon::fire('on_comment_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/comment');
     } else {
-        File::write($config->total_comments_backend)->saveTo(SYSTEM . DS . 'log' . DS . 'comments.total.log', 0600);
+        File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
         Notify::warning($speak->notify_confirm_delete);
     }
     Shield::lot('segment', 'comment')->attach('manager', false);

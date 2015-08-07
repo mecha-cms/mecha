@@ -11,7 +11,7 @@
     var $window = $(window),
         $document = $(document),
         $body = $(document.body),
-        $target = $('.help[title], .has-tooltip[title], [data-tooltip]'),
+        $target = $('.help[title], .has-tooltip[title],[data-tooltip]'),
         $tooltip = $('<div class="tooltip t hidden"></div>').appendTo($body),
         timer = null;
 

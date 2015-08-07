@@ -3,7 +3,6 @@
 define('ROOT', rtrim(__DIR__, '\\/'));
 define('DS', DIRECTORY_SEPARATOR);
 
-session_save_path(ROOT . DS . 'system' . DS . 'log' . DS . 'sessions');
 session_start();
 
 $errors = array();
