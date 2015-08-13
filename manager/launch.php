@@ -176,6 +176,9 @@ if($config->page_type === 'manager') {
         ), "");
         echo $status . Cell::a($config->manager->slug . '/page/repair/id:' . $page->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/page/kill/id:' . $page->id, $speak->delete);
     }, 20);
+}
+
+if($config->page_type === 'manager' || $config->page_type === 'article') {
     // Add default comment footer link(s)
     Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {
         $status = Mecha::alter($comment->state, array(
