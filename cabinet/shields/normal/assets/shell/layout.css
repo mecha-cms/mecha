@@ -120,11 +120,6 @@ body {
 .blog-navigation .selected > a:active {background-color:#32568C}
 
 .blog-navigation li ul {
-  -webkit-transition:visibility 0s linear .4s;
-  -moz-transition:visibility 0s linear .4s;
-  -ms-transition:visibility 0s linear .4s;
-  -o-transition:visibility 0s linear .4s;
-  transition:visibility 0s linear .4s;
   line-height:2.6153846153846154em;
   position:absolute;
   top:100%;

@@ -3,7 +3,7 @@
 class Weapon extends Base {
 
     protected static $armaments = array();
-    protected static $armaments_e = array();
+    protected static $armaments_x = array();
 
     /**
      * ==============================================================
@@ -79,7 +79,7 @@ class Weapon extends Base {
             }
             $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                if( ! isset(self::$armaments_e[$name . '->' . $cargo['stack']])) {
+                if( ! isset(self::$armaments_x[$name . '->' . $cargo['stack']])) {
                     call_user_func_array($cargo['fn'], $arguments);
                 }
             }
@@ -112,7 +112,7 @@ class Weapon extends Base {
     public static function eject($name = null, $stack = null) {
         $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
         if($name) {
-            self::$armaments_e[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            self::$armaments_x[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$armaments[$name])) return;
             if( ! is_null($stack)) {
                 for($i = 0, $count = count(self::$armaments[$name]); $i < $count; ++$i) {

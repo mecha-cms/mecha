@@ -108,10 +108,10 @@ class Mecha extends Base {
                         self::$stomach[$k][$key] = $default;
                     }
                 }
-                if($order === 'ASC') {
-                    asort($before);
-                } else {
+                if($order === 'DESC') {
                     arsort($before);
+                } else {
+                    asort($before);
                 }
                 foreach($before as $k => $v) {
                     if($jot_key) {

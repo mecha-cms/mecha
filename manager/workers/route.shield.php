@@ -40,7 +40,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
-        'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'name'),
+        'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'),
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.shield.php'
     ));
     $the_shields = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);

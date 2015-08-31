@@ -3,7 +3,7 @@
 class Route extends Base {
 
     public static $routes = array();
-    public static $routes_e = array();
+    public static $routes_x = array();
     public static $routes_over = array();
 
     protected static function fix($string) {
@@ -135,7 +135,7 @@ class Route extends Base {
 
     public static function reject($pattern, $stack = null) {
         $pattern = self::path($pattern);
-        self::$routes_e[$pattern . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+        self::$routes_x[$pattern . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
         for($i = 0, $count = count(self::$routes); $i < $count; ++$i) {
             if(self::$routes[$i]['pattern'] === $pattern) {
                 if( ! is_null($stack)) {
@@ -233,7 +233,7 @@ class Route extends Base {
             foreach($routes as $route) {
                 $pattern = $route['pattern'];
                 // If not rejected
-                if( ! isset(self::$routes_e[$pattern . '->' . $route['stack']])) {
+                if( ! isset(self::$routes_x[$pattern . '->' . $route['stack']])) {
                     // If matched with URL path
                     if(preg_match('#^' . self::fix($pattern) . '$#', $url, $arguments)) {
                         array_shift($arguments);

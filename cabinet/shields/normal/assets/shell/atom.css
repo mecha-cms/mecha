@@ -208,7 +208,11 @@ hr {
   color:inherit;
 }
 
-abbr,dfn {cursor:help}
+abbr,dfn {
+  text-decoration:none;
+  cursor:help;
+}
+
 abbr[title],dfn[title] {border-bottom:1px solid transparent}
 abbr[title]:hover,dfn[title]:hover {border-bottom:1px solid}
 

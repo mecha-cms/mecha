@@ -490,10 +490,10 @@ class Get extends Base {
         $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
         $total_pages = count($pages);
         if( ! is_array($pages) || $total_pages === 0) return false;
-        if($order === 'ASC') {
-            sort($pages);
-        } else {
+        if($order === 'DESC') {
             rsort($pages);
+        } else {
+            sort($pages);
         }
         if( ! $filter) return $pages;
         if(strpos($filter, ':') !== false) {
@@ -596,10 +596,10 @@ class Get extends Base {
             $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension, GLOB_NOSORT);
         }
         if( ! is_array($results) || count($results) === 0) return false;
-        if($order === 'ASC') {
-            sort($results);
-        } else {
+        if($order === 'DESC') {
             rsort($results);
+        } else {
+            sort($results);
         }
         return $results;
     }

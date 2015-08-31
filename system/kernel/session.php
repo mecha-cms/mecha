@@ -135,7 +135,6 @@ class Session extends Base {
             $path = defined('SESSION') ? SESSION : false;
         }
         if($path !== false) {
-            File::pocket($path);
             session_save_path($path);
         }
         session_start();

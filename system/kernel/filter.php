@@ -3,7 +3,7 @@
 class Filter extends Base {
 
     protected static $filters = array();
-    protected static $filters_e = array();
+    protected static $filters_x = array();
 
     /**
      * ===================================================================
@@ -70,7 +70,7 @@ class Filter extends Base {
         $params = array_slice(func_get_args(), 2);
         $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
-            if( ! isset(self::$filters_e[$name . '->' . $cargo['stack']])) {
+            if( ! isset(self::$filters_x[$name . '->' . $cargo['stack']])) {
                 $arguments = array_merge(array($value), $params);
                 $value = call_user_func_array($cargo['fn'], $arguments);
             }
@@ -102,7 +102,7 @@ class Filter extends Base {
     public static function remove($name = null, $stack = null) {
         $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
         if($name) {
-            self::$filters_e[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            self::$filters_x[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
             if( ! isset(self::$filters[$name])) return;
             if( ! is_null($stack)) {
                 for($i = 0, $count = count(self::$filters[$name]); $i < $count; ++$i) {
