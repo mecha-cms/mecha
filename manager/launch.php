@@ -103,7 +103,8 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
 }, 1);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-    $MTE = Mecha::alter(Config::get('html_parser'), array(
+    $parser = Config::get('html_parser', 'HTML');
+    $MTE = Mecha::alter($parser !== false ? $parser : 'HTML', array(
         HTML_PARSER => 'mte',
         'HTML' => 'hte'
     ), 'hte'); // default is `hte`

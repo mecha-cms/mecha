@@ -453,11 +453,10 @@ class Widget {
      */
 
     public static function add($kin, $action) {
-        $_kin = get_called_class() . '::' . $kin;
-        if(isset(self::$o[$_kin])) {
-            Guardian::abort('<code>Widget::' . $kin . '()</code> already exist.');
+        if(isset(self::$o[get_called_class()][$kin])) {
+            Guardian::abort('<code>' . get_called_class() . '::' . $kin . '()</code> already exist.');
         }
-        self::$o[$_kin] = $action;
+        self::$o[get_called_class()][$kin] = $action;
     }
 
 
@@ -470,12 +469,11 @@ class Widget {
      */
 
     public static function call($kin) {
-        $_kin = get_called_class() . '::' . $kin;
-        if( ! isset(self::$o[$_kin])) {
-            Guardian::abort('<code>Widget::call(\'' . $kin . '\')</code> does not exist.');
+        if( ! isset(self::$o[get_called_class()][$kin])) {
+            Guardian::abort('<code>' . get_called_class() . '::call(\'' . $kin . '\')</code> does not exist.');
         }
         $arguments = array_slice(func_get_args(), 1);
-        $html = call_user_func_array(self::$o[$_kin], $arguments);
+        $html = call_user_func_array(self::$o[get_called_class()][$kin], $arguments);
         $html = Filter::apply('widget', $html);
         return Filter::apply('widget:custom.' . Text::parse($kin, '->snake_case'), Filter::apply('widget:custom.' . $kin, Filter::apply('widget:custom', $html)));
     }
@@ -490,11 +488,10 @@ class Widget {
      */
 
     public static function __callStatic($kin, $arguments = array()) {
-        $_kin = get_called_class() . '::' . $kin;
-        if( ! isset(self::$o[$_kin])) {
-            Guardian::abort('<code>Widget::' . $kin . '()</code> does not exist.');
+        if( ! isset(self::$o[get_called_class()][$kin])) {
+            Guardian::abort('<code>' . get_called_class() . '::' . $kin . '()</code> does not exist.');
         }
-        $html = call_user_func_array(self::$o[$_kin], $arguments);
+        $html = call_user_func_array(self::$o[get_called_class()][$kin], $arguments);
         $html = Filter::apply('widget', $html);
         return Filter::apply('widget:custom.' . Text::parse($kin, '->snake_case'), Filter::apply('widget:custom.' . $kin, Filter::apply('widget:custom', $html)));
     }

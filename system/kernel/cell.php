@@ -122,26 +122,24 @@ class Cell {
 
     // Show the added method(s)
     public static function kin($kin = null, $fallback = false) {
-        $kin = ! is_null($kin) ? get_called_class() . '::' . $kin : false;
-        if( ! $kin) {
-            return ! empty(self::$o) ? self::$o : $fallback;
+        if( ! is_null($kin)) {
+            return isset(self::$o[get_called_class()][$kin]) ? self::$o[get_called_class()][$kin] : $fallback;
         }
-        return isset(self::$o[$kin]) ? self::$o[$kin] : $fallback;
+        return ! empty(self::$o[get_called_class()]) ? self::$o[get_called_class()] : $fallback;
     }
 
     // Add new method with `Cell::add('foo')`
     public static function add($kin, $action) {
-        self::$o[get_called_class() . '::' . $kin] = $action;
+        self::$o[get_called_class()][$kin] = $action;
     }
 
     // Call the added method with `Cell::foo()`
     public static function __callStatic($kin, $arguments = array()) {
-        $_kin = get_called_class() . '::' . $kin;
-        if( ! isset(self::$o[$_kin])) {
+        if( ! isset(self::$o[get_called_class()][$kin])) {
             $arguments = array_merge(array($kin), $arguments);
             return call_user_func_array('self::unit', $arguments);
         }
-        return call_user_func_array(self::$o[$_kin], $arguments);
+        return call_user_func_array(self::$o[get_called_class()][$kin], $arguments);
     }
 
 }
