@@ -6,22 +6,214 @@
 
 /* GENERAL */
 
+html {font-family:Helmet,FreeSans,Sans-Serif}
+blockquote {font-family:Georgia,"URW Bookman L",Serif}
+code,pre,.code {font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,Monospace}
+
 body {
+  background-color:white;
+  color:#333;
   border-top:5px solid;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
   box-sizing:border-box;
 }
 
-.form-login {padding:10% 0}
+a {color:#365D98}
 
-.footnotes {margin-top:1.3846153846153846em}
+a:focus,
+a:hover {color:#666}
+
+.form-login {padding:10% 0}
 .footnotes ol {font-size:84%}
 
 .footnotes hr {
   border-style:solid;
+  border-color:#AAA;
   width:7em;
 }
+
+
+/* MISCELLANEOUS */
+
+::-webkit-input-placeholder {
+  color:#AAA;
+  opacity:1;
+  overflow:visible; /* webkit only :( */
+  line-height:inherit;
+}
+
+::-moz-placeholder {
+  color:#AAA;
+  opacity:1;
+  line-height:inherit;
+}
+
+:-moz-placeholder {
+  color:#AAA;
+  opacity:1;
+  line-height:inherit;
+}
+
+:-ms-input-placeholder {
+  color:#AAA;
+  opacity:1;
+  line-height:inherit;
+}
+
+:placeholder {
+  color:#AAA;
+  opacity:1;
+  line-height:inherit;
+}
+
+:focus::-webkit-input-placeholder {color:#888 !important}
+:focus::-moz-placeholder {color:#888 !important}
+:focus:-moz-placeholder {color:#888 !important}
+:focus:-ms-input-placeholder {color:#888 !important}
+:focus:placeholder {color:#888 !important}
+
+::-moz-selection {
+  background-color:#F9DC62;
+  color:#1A1A1A;
+  text-shadow:none;
+}
+
+::selection {
+  background-color:#F9DC62;
+  color:#1A1A1A;
+  text-shadow:none;
+}
+
+mark {
+  background-color:#FF0;
+  color:#333;
+}
+
+button,
+input,
+select,
+textarea,
+.btn {
+  background-color:#333;
+  color:white;
+}
+
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"],
+.btn {
+  background-color:#333;
+  color:#FFA;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+
+button:focus,
+input[type="button"]:focus,
+input[type="reset"]:focus,
+input[type="submit"]:focus,
+.btn:focus,
+button:hover,
+input[type="button"]:hover,
+input[type="reset"]:hover,
+input[type="submit"]:hover,
+.btn:hover {
+  background-color:#373737;
+  color:#FFA;
+  text-decoration:none;
+}
+
+button:active,
+input[type="button"]:active,
+input[type="reset"]:active,
+input[type="submit"]:active,
+.btn:active {
+  background-color:#2F2F2F;
+  text-decoration:none;
+  -webkit-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+  -moz-box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+  box-shadow:inset 0 2px 1px rgba(0,0,0,.1);
+}
+
+.btn-action {background-color:#365D98}
+.btn-action:focus,
+.btn-action:hover {background-color:#3A64A4}
+.btn-action:active {background-color:#32568C}
+.btn-accept,
+.btn-begin,
+.btn-construct {background-color:#4B9343}
+.btn-accept:focus,
+.btn-accept:hover,
+.btn-begin:focus,
+.btn-begin:hover,
+.btn-construct:focus,
+.btn-construct:hover {background-color:#519F48}
+.btn-accept:active,
+.btn-begin:active,
+.btn-construct:active {background-color:#45873E}
+.btn-danger,
+.btn-destruct,
+.btn-error,
+.btn-reject {background-color:#933}
+.btn-danger:focus,
+.btn-danger:hover,
+.btn-destruct:focus,
+.btn-destruct:hover,
+.btn-error:focus,
+.btn-error:hover,
+.btn-reject:focus,
+.btn-reject:hover {background-color:#A53737}
+.btn-danger:active,
+.btn-destruct:active,
+.btn-error:active,
+.btn-reject:active {background-color:#8D2F2F}
+
+pre {
+  background-color:#333;
+  color:white;
+  -webkit-border-radius:3px;
+  -moz-border-radius:3px;
+  border-radius:3px;
+}
+
+.text-fade {color:#AAA}
+.text-accept,
+.text-begin,
+.text-construct {color:#4B9343}
+.text-info {color:#00A2D1}
+.text-warning {color:#DB582C}
+.text-danger,
+.text-destruct,
+.text-error,
+.text-reject {color:#933}
+
+.message {
+  background-color:#333;
+  color:white;
+}
+
+.message code {
+  color:inherit;
+  opacity:.7;
+}
+
+.message pre code {opacity:1}
+.message-success {background-color:#8EAB1A}
+.message-info {background-color:#6AAAC2}
+
+.message-warning {
+  background-color:#FFDE76;
+  color:#333;
+}
+
+.message-error {background-color:#CF3030}
+
+.message-success a,
+.message-info a,
+.message-error a {color:#FFA}
 
 
 /* WRAPPER */

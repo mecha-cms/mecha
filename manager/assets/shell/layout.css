@@ -63,10 +63,11 @@ html {
 }
 
 .media-content {margin:1.0769230769230769em 0 0}
+.media-content p:last-child {margin-bottom:0}
 
 .page-list {
   list-style:none;
-  margin:1.3846153846153846em 0 0;
+  margin:0 0 1.3846153846153846em;
   padding:0;
   position:relative;
 }
@@ -140,9 +141,6 @@ html {
 }
 
 .about-content {padding:1.3846153846153846em}
-
-.tab-content-area .messages {margin-top:1.3846153846153846em}
-.tab-content-area .main-action-group + .messages {margin-top:0}
 
 .grid-group-boolean + .grid-group-boolean,
 .grid-group-boolean + input[type="hidden"] + .grid-group-boolean {margin-top:0}

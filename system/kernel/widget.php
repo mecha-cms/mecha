@@ -426,7 +426,7 @@ class Widget {
                     $html .= $T4 . '<a class="recent-comment-name" href="' . $comment->url . '" rel="nofollow">' . $comment->name . '</a>' . NL;
                 }
                 $html .= $T3 . '</div>' . NL;
-                $html .= $T3 . '<div class="recent-comment-body"><p>' . Converter::curt($comment->message, $summary, '&hellip;') . '</p></div>' . NL;
+                $html .= $T3 . '<div class="recent-comment-body">' . Converter::curt($comment->message, $summary, '&hellip;') . '</div>' . NL;
                 $html .= $T3 . '<div class="recent-comment-footer">' . NL;
                 $html .= $T4 . '<span class="recent-comment-time">' . NL;
                 $html .= $T5 . '<time datetime="' . $comment->date->W3C . '">' . $comment->date->FORMAT_3 . '</time> <a title="' . ($article ? strip_tags($article->title) : $speak->notify_error_not_found) . '" href="' . $comment->permalink . '" rel="nofollow">#</a>' . NL;

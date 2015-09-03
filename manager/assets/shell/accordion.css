@@ -1,5 +1,4 @@
-.accordion-area {margin-top:1.3846153846153846em}
-.accordion-area:first-child {margin-top:0}
+.accordion-area {margin-bottom:1.3846153846153846em}
 .accordion-header {
   display:block;
   cursor:pointer;
