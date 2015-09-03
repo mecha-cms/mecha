@@ -1321,6 +1321,9 @@ class Get extends Base {
 
     public static function imagesURL($source, $fallback = array()) {
 
+        $config = Config::get();
+        $results = array();
+
         /**
          * Matched with ...
          * ----------------
@@ -1332,9 +1335,9 @@ class Get extends Base {
          *
          */
 
-        // if(preg_match_all('#\!\[.*?\]\(([^\s]+?)( +([\'"]).*?\3)?\)#', $source, $matches)) {
-        //     return $matches[1];
-        // }
+        if(preg_match_all('#\!\[.*?\]\(([^\s]+?)( +([\'"]).*?\3)?\)#', $source, $matches)) {
+            $results = array_merge($matches[1], $results);
+        }
 
         /**
          * Matched with ...
@@ -1355,7 +1358,7 @@ class Get extends Base {
          */
 
         if(preg_match_all('#<img .*?src=([\'"])([^\'"]+?)\1.*? *\/?>#i', $source, $matches)) {
-            return $matches[2];
+            $results = array_merge($matches[2], $results);
         }
 
         /**
@@ -1373,10 +1376,19 @@ class Get extends Base {
          */
 
         if(preg_match_all('#(background-image|background|content)\: *.*?url\(([\'"]?)([^\'"]+?)\2\)#i', $source, $matches)) {
-            return $matches[3];
+            $results = array_merge($matches[3], $results);
         }
 
-        return $fallback; // No image(s)!
+        foreach(array_unique($results) as $k => $url) {
+            $url = strpos($url, '/') === 0 ? $config->protocol . $config->host . $url : $url;
+            if(strpos($url, Config::get('url')) === 0 && file_exists(File::path($url))) {
+                $results[$k] = $url;
+            } else if(strpos($url, '://') !== false) {
+                $results[$k] = $url;
+            }
+        }
+
+        return ! empty($results) ? $results : $fallback;
 
     }
 
