@@ -636,6 +636,9 @@ class Converter extends Base {
                 // Minify HEX color code
                 '#(?<=[\s:,\-]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
 
+                // Replace `(border|outline):none` with `(border|outline):0`
+                '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
+
                 // Remove empty selector(s)
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
 
@@ -650,6 +653,7 @@ class Converter extends Base {
                 '$1$3',
                 '$1$2$4$5',
                 '$1$2$3',
+                '$1:0',
                 '$1$2'
             ),
         trim($input));
