@@ -12,8 +12,25 @@ $request['state'] = $request['action'] === 'publish' ? 'published' : 'draft';
 $date = date('c', $request['id']);
 // General field(s)
 $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
-$slug = Text::parse(Request::post('slug', $title, false), '->slug');
-$slug = $slug === '--' ? Text::parse($title, '->slug') : $slug;
+$link = false;
+if(isset($request['link']) && trim($request['link']) !== "") {
+    if( ! Guardian::check($request['link'], '->url')) {
+        Notify::error($speak->notify_invalid_url);
+    } else {
+        $link = $request['link'];
+    }
+}
+if(strpos($request['slug'], '://') !== false) {
+    $slug = Text::parse($title, '->slug');
+    if( ! Guardian::check($request['slug'], '->url')) {
+        Notify::error($speak->notify_invalid_url);
+    } else {
+        $link = $request['slug'];
+    }
+} else {
+    $slug = Text::parse(Request::post('slug', $title, false), '->slug');
+}
+$slug = $slug === '--' ? 'post-' . time() : $slug;
 $content = $request['content'];
 $description = $request['description'];
 $author = strip_tags($request['author']);

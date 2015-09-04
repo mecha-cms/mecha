@@ -23,22 +23,6 @@
         </span>
       </label>
       <?php endif; ?>
-      <label class="grid-group">
-        <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-        <span class="grid span-5">
-        <?php echo Form::text('title', Guardian::wayback('title', $default->title), $speak->manager->placeholder_title, array(
-            'class' => 'input-block'
-        )); ?>
-        </span>
-      </label>
-      <label class="grid-group">
-        <span class="grid span-1 form-label"><?php echo $speak->slug; ?></span>
-        <span class="grid span-5">
-        <?php echo Form::text('slug', Guardian::wayback('slug', $default->slug), Text::parse($speak->manager->placeholder_title, '->slug'), array(
-            'class' => 'input-block'
-        )); ?>
-        </span>
-      </label>
       <?php include 'unit.composer.1.php'; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>

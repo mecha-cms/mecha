@@ -2,6 +2,7 @@
 
 $header = array(
     'Title' => $title,
+    'Link' => $link,
     'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
     'Author' => $author,
     'Content Type' => Request::post('content_type', 'HTML'),

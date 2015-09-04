@@ -842,9 +842,9 @@ class Get extends Base {
 
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-        $results['link'] = "";
         $results['excerpt'] = "";
 
+        if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
 
         if( ! isset($results['description'])) {
@@ -855,19 +855,6 @@ class Get extends Base {
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
         $content_test = $content_test['content'];
         $content_test = is_array($content_test) ? implode("", $content_test) : $content_test;
-
-        // Redirect 301 with `<!-- kick: "http://example.com" -->`
-        if(strpos($content_test, '<!-- kick:') !== false && $config->page_type === rtrim($FP, ':')) {
-            preg_match('#<!-- kick\: *([\'"]?)(.*?)\1 -->#', $content_test, $matches);
-            Guardian::kick($matches[2]);
-        }
-
-        // External link with `<!-- link: "http://example.com" -->`
-        if(strpos($content_test, '<!-- link:') !== false) {
-            preg_match('#<!-- link\: *([\'"]?)(.*?)\1 -->#', $content_test, $matches);
-            $results['link'] = $matches[2];
-            $results['content'] = preg_replace('#<!-- link\:.*? -->#', "", $results['content']);
-        }
 
         // Manual post excerpt with `<!-- cut+ "Read More" -->`
         if(strpos($content_test, '<!-- cut+ ') !== false) {
@@ -1153,6 +1140,7 @@ class Get extends Base {
         $results = self::pageExtract($path) + Text::toPage($path, false, $FP);
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
         if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);

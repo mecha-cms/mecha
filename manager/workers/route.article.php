@@ -41,12 +41,9 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $article->author) {
             Shield::abort();
         }
-        if( ! isset($article->fields)) {
-            $article->fields = array();
-        }
-        if( ! isset($article->content_type)) {
-            $article->content_type = $config->html_parser;
-        }
+        if( ! isset($article->link)) $article->link = "";
+        if( ! isset($article->fields)) $article->fields = array();
+        if( ! isset($article->content_type)) $article->content_type = $config->html_parser;
         if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $article->date->unix) . $extension_o)) {
             $article->css_raw = $config->defaults->article_custom_css;
             $article->js_raw = $config->defaults->article_custom_js;
@@ -71,6 +68,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             'state' => 'draft',
             'date' => array('W3C' => ""),
             'title' => $config->defaults->article_title,
+            'link' => "",
             'slug' => "",
             'content_raw' => $config->defaults->article_content,
             'content_type' => $config->html_parser,
