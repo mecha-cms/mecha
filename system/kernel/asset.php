@@ -105,7 +105,7 @@ class Asset extends Base {
     public static function merge($path, $name = null, $addon = "", $call = null) {
         $path = is_string($path) && strpos($path, ';') !== false ? explode(';', $path) : (array) $path;
         $the_path = ASSET . DS . File::path($name);
-        $the_path_log = SYSTEM . DS . 'log' . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
+        $the_path_log = LOG . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
         $is_valid = true;
         if( ! file_exists($the_path_log)) {
             $is_valid = false;

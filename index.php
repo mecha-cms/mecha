@@ -14,7 +14,7 @@ define('CARGO', ROOT . DS . 'cabinet');
 define('DECK', ROOT . DS . 'manager');
 define('SYSTEM', ROOT . DS . 'system');
 define('LOG', SYSTEM . DS . 'log');
-define('SESSION', false); // Replace this value with valid directory path to define custom `session_save_path`
+define('SESSION', null); // Replace this value with valid directory path to define custom `session_save_path`
 define('LANGUAGE', CARGO . DS . 'languages');
 define('ASSET', CARGO . DS . 'assets');
 define('ARTICLE', CARGO . DS . 'articles');

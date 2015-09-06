@@ -53,16 +53,17 @@ class Guardian extends Base {
      */
 
     public static function ally($user = null, $fallback = false) {
-        if($file = File::exist(SYSTEM . DS . 'log' . DS . 'users.txt')) {
+        if($file = File::exist(LOG . DS . 'users.txt')) {
             $ally = array();
             foreach(explode("\n", file_get_contents($file)) as $a) {
-                // Pattern 1: `username: password (Author Name: status) email@domain.com`
-                // Pattern 2: `username: password (Author Name @status) email@domain.com`
+                // Pattern 1: `user: pass (Author Name: status) email@domain.com`
+                // Pattern 2: `user: pass (Author Name @status) email@domain.com`
                 preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', trim($a), $matches);
                 $ally[$matches[1]] = array(
-                    'password' => $matches[2],
+                    'pass' => self::get('status') === 'pilot' ? $matches[2] : null,
                     'author' => $matches[3],
                     'status' => $matches[4],
+                    'password' => self::get('status') === 'pilot' ? $matches[2] : null, // alias for `pass`
                     'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false
                 );
             }
@@ -89,7 +90,7 @@ class Guardian extends Base {
      */
 
     public static function token() {
-        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log';
+        $file = LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log';
         $token = File::open($file)->read(sha1(uniqid(mt_rand(), true)));
         Session::set(self::$token, $token);
         return $token;
@@ -174,7 +175,7 @@ class Guardian extends Base {
      */
 
     public static function deleteToken() {
-        File::open(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log')->delete();
+        File::open(LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log')->delete();
         Session::kill(self::$token);
     }
 
@@ -367,7 +368,7 @@ class Guardian extends Base {
      *
      */
 
-    public static function authorize($user = 'username', $pass = 'password', $token = 'token') {
+    public static function authorize($user = 'user', $pass = 'pass', $token = 'token') {
         $config = Config::get();
         $speak = Config::speak();
         $user = isset($_POST[$user]) ? $_POST[$user] : "";
@@ -376,18 +377,20 @@ class Guardian extends Base {
         self::checkToken($token);
         if(trim($user) !== "" && trim($pass) !== "") {
             $author = self::ally($user);
-            if($author && $pass === $author['password']) {
+            if($author && $pass === $author['pass']) {
                 $token = self::token();
                 Session::set('cookie:' . self::$user, array(
                     'token' => $token,
-                    'username' => $user,
-                    // 'password' => $author['password'],
+                    'user' => $user,
+                    'username' => $user, // alias for `user`
+                    // 'pass' => $author['pass'],
+                    // 'password' => $author['pass'], // alias for `pass`
                     'author' => $author['author'],
                     'status' => $author['status'],
                     'email' => $author['email'] ? $author['email'] : $config->author_email
                 ), 30, '/', "", false, true);
-                File::write($token)->saveTo(SYSTEM . DS . 'log' . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
-                File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->setPermission(0600);
+                File::write($token)->saveTo(LOG . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
+                File::open(LOG . DS . 'users.txt')->setPermission(0600);
             } else {
                 Notify::error($speak->notify_error_username_or_password);
                 self::kick($config->manager->slug . '/login');
@@ -436,7 +439,7 @@ class Guardian extends Base {
      */
 
     public static function happy() {
-        $file = SYSTEM . DS . 'log' . DS . 'token.' . Text::parse(self::get('username'), '->safe_file_name') . '.log';
+        $file = LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log';
         $auth = Session::get('cookie:' . self::$user);
         return isset($auth['token']) && file_exists($file) && $auth['token'] === file_get_contents($file);
     }

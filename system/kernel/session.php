@@ -130,11 +130,11 @@ class Session extends Base {
         }
     }
 
-    public static function start($path = false) {
-        if($path === false) {
-            $path = defined('SESSION') ? SESSION : false;
+    public static function start($path = null) {
+        if(is_null($path)) {
+            $path = defined('SESSION') ? SESSION : null;
         }
-        if($path !== false) {
+        if( ! is_null($path)) {
             session_save_path($path);
         }
         session_start();

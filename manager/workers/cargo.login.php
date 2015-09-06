@@ -4,7 +4,7 @@
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->username; ?></span>
     <span class="grid span-4">
-    <?php echo Form::text('username', Guardian::wayback('username'), null, array(
+    <?php echo Form::text('user', Guardian::wayback('user'), null, array(
         'autocomplete' => 'off'
     )); ?>
     </span>
@@ -12,7 +12,7 @@
   <label class="grid-group">
     <span class="grid span-2 form-label"><?php echo $speak->password; ?></span>
     <span class="grid span-4">
-    <?php echo Form::password('password', null, null, array(
+    <?php echo Form::password('pass', null, null, array(
         'autocomplete' => 'off'
     )); ?>
     </span>
