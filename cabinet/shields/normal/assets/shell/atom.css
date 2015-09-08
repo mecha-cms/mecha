@@ -282,7 +282,7 @@ label input:checked + span {opacity:.8}
 .form-label {text-align:right}
 
 fieldset {
-  padding:0 1em 1em;
+  padding:1.3846153846153846em 1.3846153846153846em 0;
   border:1px solid;
 }
 

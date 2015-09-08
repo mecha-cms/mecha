@@ -78,9 +78,6 @@ html {
   overflow:hidden;
 }
 
-.page-list:first-child {margin-top:0}
-.page-list .page:first-child {padding-top:0}
-.page-list .page:last-child {padding-bottom:0}
 .page-list .page + .page {margin-top:2px}
 
 .page-header,
