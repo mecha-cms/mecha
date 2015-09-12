@@ -12,8 +12,8 @@ class Image extends Base {
         if(is_null($file)) $file = self::$placeholder;
         switch(File::E($file)) {
             case 'gif': self::$GD = imagecreatefromgif($file); break;
-            case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
             case 'jpeg': self::$GD = imagecreatefromjpeg($file); break;
+            case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
             case 'png': self::$GD = imagecreatefrompng($file); break;
         }
     }

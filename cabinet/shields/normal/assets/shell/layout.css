@@ -322,14 +322,14 @@ pre {
   text-overflow:ellipsis;
 }
 
-.blog-navigation .selected > a {
+.blog-navigation .current > a {
   background-color:#365D98;
   color:white;
 }
 
-.blog-navigation .selected > a:focus,
-.blog-navigation .selected > a:hover {background-color:#3A64A4}
-.blog-navigation .selected > a:active {background-color:#32568C}
+.blog-navigation .current > a:focus,
+.blog-navigation .current > a:hover {background-color:#3A64A4}
+.blog-navigation .current > a:active {background-color:#32568C}
 
 .blog-navigation li ul {
   line-height:2.6153846153846154em;

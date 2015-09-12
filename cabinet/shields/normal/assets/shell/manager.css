@@ -43,7 +43,7 @@
   color:#FFA;
 }
 
-.widget-manager-menu .selected > a {
+.widget-manager-menu .current > a {
   background-color:#365D98;
   color:white;
   cursor:default;

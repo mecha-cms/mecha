@@ -182,13 +182,13 @@ class HTTP extends Base {
 
     public static function get($url, $fields = array()) {
         if(is_string($fields)) {
-            $url = $url . str_replace('?', "", $fields);
+            $url .= '?' . str_replace('?', "", $fields);
         } else {
             $data = array();
             foreach($fields as $k => $v) {
                 $data[$k] = urlencode($v);
             }
-            $url = $url . '?' . implode('&', $data);
+            $url .= '?' . implode('&', $data);
         }
         if(function_exists('curl_init')) {
             $curl = curl_init();
