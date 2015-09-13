@@ -477,7 +477,7 @@ pre {
   color:#AAA;
 }
 
-.comment-form {margin:5% 12% 0 0}
+.comment-form {margin:5% 0 0 0}
 .comment-form input[name="math"] {width:4em}
 
 
@@ -642,5 +642,4 @@ pre {
   }
   .grid:empty {display:none}
   .form-login {padding:0}
-  .comment-form {margin-right:0}
 }
