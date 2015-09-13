@@ -17,7 +17,10 @@
     )); ?>
     </span>
   </label>
-  <?php echo Form::hidden('kick', Request::get('kick', Guardian::wayback('url_origin', $config->manager->slug . '/article'))); ?>
+  <?php $url_origin = Guardian::wayback('url_origin', $config->manager->slug . '/article'); ?>
+  <?php if($url_origin !== $config->url . '/' . $config->manager->slug . '/logout'): ?>
+  <?php echo Form::hidden('kick', Request::get('kick', $url_origin)); ?>
+  <?php endif; ?>
   <div class="grid-group">
     <span class="grid span-2"></span>
     <span class="grid span-4">
@@ -35,4 +38,4 @@
     </span>
   </div>
 </form>
-<script>document.getElementById('form-login:<?php echo $form_id; ?>').username.focus();</script>
+<script>document.getElementById('form-login:<?php echo $form_id; ?>').user.focus();</script>

@@ -63,6 +63,7 @@ html {
 }
 
 .media-content {margin:1.0769230769230769em 0 0}
+.media-content form:last-child,
 .media-content p:last-child {margin-bottom:0}
 
 .page-list {

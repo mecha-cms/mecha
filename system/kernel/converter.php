@@ -254,12 +254,9 @@ class Converter extends Base {
     public static function str($input) {
         $results = $input;
         if( ! is_array($input) && ! is_object($input)) {
-            if($input === TRUE) $results = 'TRUE';
-            if($input === FALSE) $results = 'FALSE';
-            if($input === NULL) $results = 'NULL';
-            if($input === true) $results = 'true';
-            if($input === false) $results = 'false';
-            if($input === null) $results = 'null';
+            if($input === TRUE || $input === true) $results = 'true';
+            if($input === FALSE || $input === false) $results = 'false';
+            if($input === NULL || $input === null) $results = 'null';
             return (string) $results;
         } else {
             $results = array();
@@ -295,9 +292,9 @@ class Converter extends Base {
         $results = $input;
         if(is_string($input) && preg_match('#^(TRUE|FALSE|NULL|true|false|null|yes|no|on|off|ok|okay)$#', $input, $matches)) {
             $results = Mecha::alter($matches[1], array(
-                'TRUE' => TRUE,
-                'FALSE' => FALSE,
-                'NULL' => NULL,
+                'TRUE' => true,
+                'FALSE' => false,
+                'NULL' => null,
                 'true' => true,
                 'false' => false,
                 'null' => null,
@@ -385,13 +382,13 @@ class Converter extends Base {
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
-                $value = self::str($NRT ? self::NRT_encode($value) : $value);
+                $value = $NRT ? self::NRT_encode(self::str($value)) : self::str($value);
                 if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($value) . "\n";
                 } else {
-                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . self::str($value) . "\n";
+                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . $value . "\n";
                 }
             } else {
                 $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1, $NRT) . "\n";
@@ -685,7 +682,7 @@ class Converter extends Base {
             array(
 
                 // Remove comment(s)
-                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*[\n\r]*#',
+                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*(?=[\n\r]|$)#',
 
                 // Remove unused white-space character(s) outside the string and regex
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/)|\/(?!\/)[^\n\r]*?\/(?=[\s.,;]|[gimuy]|$))|\s*([!%&*\(\)\-=+\[\]\{\}|;:,.<>?\/])\s*#s',

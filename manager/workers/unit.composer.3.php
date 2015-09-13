@@ -12,11 +12,6 @@ if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($default->fields));
     foreach($fields as $key => $value) {
-        // <= 1.1.3
-        // "" is equal to `article,page`
-        // '*' is equal to all scopes
-        if($value['scope'] === "") $value['scope'] = 'article,page';
-        if($value['scope'] === '*') $value['scope'] = $segment;
         if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }

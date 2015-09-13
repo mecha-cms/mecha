@@ -60,10 +60,10 @@ class Guardian extends Base {
                 // Pattern 2: `user: pass (Author Name @status) email@domain.com`
                 preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', trim($a), $matches);
                 $ally[$matches[1]] = array(
-                    'pass' => self::get('status') === 'pilot' ? $matches[2] : null,
+                    'pass' => self::get('status') === 'pilot' || ! self::happy() ? $matches[2] : null,
                     'author' => $matches[3],
                     'status' => $matches[4],
-                    'password' => self::get('status') === 'pilot' ? $matches[2] : null, // alias for `pass`
+                    'password' => self::get('status') === 'pilot' || ! self::happy() ? $matches[2] : null, // alias for `pass`
                     'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false
                 );
             }
@@ -197,7 +197,7 @@ class Guardian extends Base {
     public static function checker($name, $action) {
         $name = strtolower($name);
         if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
-        self::$validators[get_called_class() . '::' . $name] = $action;
+        self::$validators[get_called_class()][$name] = $action;
     }
 
     /**
@@ -218,11 +218,12 @@ class Guardian extends Base {
      */
 
     public static function checkerExist($name = null, $fallback = false) {
-        if(is_null($name)) return self::$validators;
+        if(is_null($name)) {
+            return isset(self::$validators[get_called_class()]) ? self::$validators[get_called_class()] : array();
+        }
         $name = strtolower($name);
         if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
-        $name = get_called_class() . '::' . $name;
-        return isset(self::$validators[$name]) ? self::$validators[$name] : $fallback;
+        return isset(self::$validators[get_called_class()][$name]) ? self::$validators[get_called_class()][$name] : $fallback;
     }
 
     /**
@@ -250,14 +251,16 @@ class Guardian extends Base {
         $arguments = func_get_args();
         // Alternate function for faster checking process => `Guardian::check('foo, '->url')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
-            $validator = get_called_class() . '::this_is_' . str_replace('->', "", strtolower($arguments[1]));
+            $validator = 'this_is_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$validators[$validator]) ? call_user_func_array(self::$validators[$validator], $arguments) : false;
+            return isset(self::$validators[get_called_class()][$validator]) ? call_user_func_array(self::$validators[get_called_class()][$validator], $arguments) : false;
         }
         // Default function for complete checking process => `Guardian::check('foo')->this_is_url`
         $results = array();
-        foreach(self::$validators as $name => $action) {
-            $name = str_replace(get_called_class() . '::', "", $name);
+        if( ! isset(self::$validators[get_called_class()])) {
+            self::$validators[get_called_class()] = array();
+        }
+        foreach(self::$validators[get_called_class()] as $name => $action) {
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;
@@ -280,7 +283,8 @@ class Guardian extends Base {
         $path = Converter::url(File::url($path));
         $path = Filter::apply('guardian:kick', $path);
         $G = array('data' => array('url' => $path));
-        Guardian::memorize(array('url_origin' => Config::get('url_current')));
+        $old = Session::get(self::$form, array());
+        Guardian::memorize(array_merge(array('url_origin' => Config::get('url_current')), $old));
         Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
         exit;

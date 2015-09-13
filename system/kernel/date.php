@@ -103,7 +103,7 @@ class Date extends Base {
             'second_number' => (int) $second,
             'AM_PM' => $AP,
             'FORMAT_1' => $day_name . ', ' . $day . ' ' . $month_name . ' ' . $year,
-            'FORMAT_2' => $month_name . ' ' . $day . ', ' . $year,
+            'FORMAT_2' => $day_name . ', ' . $month_name . ' ' . $day . ', ' . $year,
             'FORMAT_3' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
             'FORMAT_4' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AP,
             'FORMAT_5' => $hour_24 . ':' . $minute,

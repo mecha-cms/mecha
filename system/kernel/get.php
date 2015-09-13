@@ -242,9 +242,6 @@ class Get extends Base {
 
         foreach($field as &$v) {
             if( ! isset($v['value'])) $v['value'] = "";
-            // <= 1.1.3
-            // "" is equal to `article,page`
-            // '*' is equal to all scopes
             if( ! isset($v['scope'])) $v['scope'] = "";
         }
 
@@ -255,7 +252,7 @@ class Get extends Base {
             $field_alt = array();
             foreach($field as $k => $v) {
                 foreach(explode(',', $scope) as $s) {
-                    if($v['scope'] === '*' || $v['scope'] === "" || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
+                    if(strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
                         $field_alt[$k] = $v;
                     }
                 }
@@ -989,7 +986,9 @@ class Get extends Base {
 
             if(isset($results['fields']) && is_array($results['fields'])) {
                 foreach($results['fields'] as $key => $value) {
-                    if(is_array($value) && isset($value['type'])) { // <= 1.1.3
+                    // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                    // [2]. `Fields: {"my_field":"foo"}`
+                    if(is_array($value) && isset($value['type'])) {
                         $value = isset($value['value']) ? $value['value'] : false;
                     }
                     $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
@@ -1097,7 +1096,9 @@ class Get extends Base {
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
             foreach($results['fields'] as $key => $value) {
-                if(is_array($value) && isset($value['type'])) { // <= 1.1.3
+                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                // [2]. `Fields: {"my_field":"foo"}`
+                if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
                 $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
@@ -1150,7 +1151,9 @@ class Get extends Base {
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
             foreach($results['fields'] as $key => $value) {
-                if(is_array($value) && isset($value['type'])) { // <= 1.1.3
+                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                // [2]. `Fields: {"my_field":"foo"}`
+                if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
                 $init[$key] = self::AMF($value, $FP, 'fields.' . $key);

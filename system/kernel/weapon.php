@@ -36,11 +36,10 @@ class Weapon extends Base {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        $name = get_called_class() . '::' . $name;
-        if( ! isset(self::$armaments[$name])) {
-            self::$armaments[$name] = array();
+        if( ! isset(self::$armaments[get_called_class()][$name])) {
+            self::$armaments[get_called_class()][$name] = array();
         }
-        self::$armaments[$name][] = array(
+        self::$armaments[get_called_class()][$name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -72,14 +71,13 @@ class Weapon extends Base {
      */
 
     public static function fire($name, $arguments = array()) {
-        $name = get_called_class() . '::' . $name;
-        if(isset(self::$armaments[$name])) {
+        if(isset(self::$armaments[get_called_class()][$name])) {
             if(func_num_args() > 2) {
                 $arguments = array_slice(func_get_args(), 1);
             }
-            $weapons = Mecha::eat(self::$armaments[$name])->order('ASC', 'stack')->vomit();
+            $weapons = Mecha::eat(self::$armaments[get_called_class()][$name])->order('ASC', 'stack')->vomit();
             foreach($weapons as $weapon => $cargo) {
-                if( ! isset(self::$armaments_x[$name . '->' . $cargo['stack']])) {
+                if( ! isset(self::$armaments_x[get_called_class()][$name . '->' . $cargo['stack']])) {
                     call_user_func_array($cargo['fn'], $arguments);
                 }
             }
@@ -110,21 +108,20 @@ class Weapon extends Base {
      */
 
     public static function eject($name = null, $stack = null) {
-        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
-        if($name) {
-            self::$armaments_x[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
-            if( ! isset(self::$armaments[$name])) return;
+        if( ! is_null($name)) {
+            self::$armaments_x[get_called_class()][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            if( ! isset(self::$armaments[get_called_class()][$name])) return;
             if( ! is_null($stack)) {
-                for($i = 0, $count = count(self::$armaments[$name]); $i < $count; ++$i) {
-                    if(self::$armaments[$name][$i]['stack'] === (float) $stack) {
-                        unset(self::$armaments[$name][$i]);
+                for($i = 0, $count = count(self::$armaments[get_called_class()][$name]); $i < $count; ++$i) {
+                    if(self::$armaments[get_called_class()][$name][$i]['stack'] === (float) $stack) {
+                        unset(self::$armaments[get_called_class()][$name][$i]);
                     }
                 }
             } else {
-                unset(self::$armaments[$name]);
+                unset(self::$armaments[get_called_class()][$name]);
             }
         } else {
-            self::$armaments = array();
+            self::$armaments[get_called_class()] = array();
         }
     }
 
@@ -156,11 +153,10 @@ class Weapon extends Base {
      */
 
     public static function exist($name = null, $fallback = false) {
-        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
-        if( ! $name) {
-            return ! empty(self::$armaments) ? self::$armaments : $fallback;
+        if(is_null($name)) {
+            return ! empty(self::$armaments[get_called_class()]) ? self::$armaments[get_called_class()] : $fallback;
         }
-        return isset(self::$armaments[$name]) ? self::$armaments[$name] : $fallback;
+        return isset(self::$armaments[get_called_class()][$name]) ? self::$armaments[get_called_class()][$name] : $fallback;
     }
 
 }

@@ -44,11 +44,6 @@
 
     $cache = Guardian::wayback('scope', isset($file->scope) ? $file->scope : "");
     $scopes = array('article' => $speak->article, 'page' => $speak->page, 'comment' => $speak->comment);
-    // <= 1.1.3
-    // "" is equal to `article,page`
-    // '*' is equal to all scopes
-    if($cache === "") $cache = 'article,page';
-    if($cache === '*') $cache = implode(',', array_keys($scopes));
     $cache = ',' . (is_array($cache) ? implode(',', $cache) : $cache) . ',';
 
     foreach($scopes as $k => $v) {

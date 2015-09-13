@@ -30,11 +30,10 @@ class Filter extends Base {
      */
 
     public static function add($name, $fn, $stack = 10) {
-        $name = get_called_class() . '::' . $name;
-        if( ! isset(self::$filters[$name])) {
-            self::$filters[$name] = array();
+        if( ! isset(self::$filters[get_called_class()][$name])) {
+            self::$filters[get_called_class()][$name] = array();
         }
-        self::$filters[$name][] = array(
+        self::$filters[get_called_class()][$name][] = array(
             'fn' => $fn,
             'stack' => (float) ( ! is_null($stack) ? $stack : 10)
         );
@@ -62,15 +61,14 @@ class Filter extends Base {
      */
 
     public static function apply($name, $value) {
-        $name = get_called_class() . '::' . $name;
-        if( ! isset(self::$filters[$name])) {
-            self::$filters[$name] = array();
+        if( ! isset(self::$filters[get_called_class()][$name])) {
+            self::$filters[get_called_class()][$name] = array();
             return $value;
         }
         $params = array_slice(func_get_args(), 2);
-        $filters = Mecha::eat(self::$filters[$name])->order('ASC', 'stack')->vomit();
+        $filters = Mecha::eat(self::$filters[get_called_class()][$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
-            if( ! isset(self::$filters_x[$name . '->' . $cargo['stack']])) {
+            if( ! isset(self::$filters_x[get_called_class()][$name . '->' . $cargo['stack']])) {
                 $arguments = array_merge(array($value), $params);
                 $value = call_user_func_array($cargo['fn'], $arguments);
             }
@@ -100,21 +98,20 @@ class Filter extends Base {
      */
 
     public static function remove($name = null, $stack = null) {
-        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
-        if($name) {
-            self::$filters_x[$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
-            if( ! isset(self::$filters[$name])) return;
+        if( ! is_null($name)) {
+            self::$filters_x[get_called_class()][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+            if( ! isset(self::$filters[get_called_class()][$name])) return;
             if( ! is_null($stack)) {
-                for($i = 0, $count = count(self::$filters[$name]); $i < $count; ++$i) {
-                    if(self::$filters[$name][$i]['stack'] === (float) $stack) {
-                        unset(self::$filters[$name][$i]);
+                for($i = 0, $count = count(self::$filters[get_called_class()][$name]); $i < $count; ++$i) {
+                    if(self::$filters[get_called_class()][$name][$i]['stack'] === (float) $stack) {
+                        unset(self::$filters[get_called_class()][$name][$i]);
                     }
                 }
             } else {
-                unset(self::$filters[$name]);
+                unset(self::$filters[get_called_class()][$name]);
             }
         } else {
-            self::$filters = array();
+            self::$filters[get_called_class()] = array();
         }
     }
 
@@ -146,11 +143,10 @@ class Filter extends Base {
      */
 
     public static function exist($name = null, $fallback = false) {
-        $name = ! is_null($name) ? get_called_class() . '::' . $name : false;
-        if( ! $name) {
-            return ! empty(self::$filters) ? self::$filters : $fallback;
+        if(is_null($name)) {
+            return ! empty(self::$filters[get_called_class()]) ? self::$filters[get_called_class()] : $fallback;
         }
-        return isset(self::$filters[$name]) ? self::$filters[$name] : $fallback;
+        return isset(self::$filters[get_called_class()][$name]) ? self::$filters[get_called_class()][$name] : $fallback;
     }
 
 }

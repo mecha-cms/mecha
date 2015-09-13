@@ -28,21 +28,21 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Invalid email address.</p>';
         }
     }
-    if(trim($_POST['username']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
-    if(trim($_POST['password']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['username']) === "" ? ' too' : "") . '.</p>';
-    if(trim($_POST['username']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['username'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
-    if(trim($_POST['password']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['password'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(trim($_POST['user']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
+    if(trim($_POST['pass']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['user']) === "" ? ' too' : "") . '.</p>';
+    if(trim($_POST['user']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['user'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(trim($_POST['pass']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['pass'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 
     if(count($errors) === 0) {
         $user_file = ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt';
-        $data  = $_POST['username'] . ': ';
-        $data .= $_POST['password'] . ' (';
+        $data  = $_POST['user'] . ': ';
+        $data .= $_POST['pass'] . ' (';
         $data .= $_POST['name'] . ' @pilot) ';
         $data .= $_POST['email'];
         if( ! file_exists($user_file)) file_put_contents($user_file, $data);
-        $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cf code"><strong>Username:</strong> ' . $_POST['username'] . '<br><strong>Password:</strong> ' . $_POST['password'] . '</p></div>';
+        $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
         unset($_SESSION['meet_mecha']);
         unset($_SESSION['token']);
         chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
@@ -67,7 +67,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         unlink(ROOT . DS . 'system' . DS . 'plug' . DS . '__.php');
         unlink(ROOT . DS . 'install.php');
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
-        header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login');
+        header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login?kick=manager/config');
         exit;
     }
 
@@ -85,7 +85,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>Hi!</title>
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
 * {
   margin:0;
@@ -191,7 +191,7 @@ h3 + div p code {opacity:.7}
     <form method="post">
       <input name="token" type="hidden" value="<?php echo isset($token) ? $token : ""; ?>">
       <h3>First Meet</h3>
-      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'username' => "", 'password' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
+      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
       <label>
         <span>Name</span>
         <span><input name="name" type="text" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
@@ -202,11 +202,11 @@ h3 + div p code {opacity:.7}
       </label>
       <label>
         <span>Username</span>
-        <span><input name="username" type="text" value="<?php echo isset($cache['username']) ? $cache['username'] : ""; ?>"></span>
+        <span><input name="user" type="text" value="<?php echo isset($cache['user']) ? $cache['user'] : ""; ?>"></span>
       </label>
       <label>
         <span>Password</span>
-        <span><input name="password" type="password" value="<?php echo isset($cache['password']) ? $cache['password'] : ""; ?>"></span>
+        <span><input name="pass" type="password" value="<?php echo isset($cache['pass']) ? $cache['pass'] : ""; ?>"></span>
       </label>
       <div>
         <span></span>
