@@ -99,6 +99,8 @@ class Navigator extends Base {
                 $html .= '</span>';
                 $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . sprintf($connector, $next) . $qq . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
                 $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . sprintf($connector, $chunk) . $qq . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
+                self::$bucket['step']['url']['first'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, 1) . $qq : false, 0, $connector), 0, $connector);
+                self::$bucket['step']['url']['last'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $next ? $base . sprintf($connector, $chunk) . $qq : false, $chunk, $connector), $chunk, $connector);
             }
 
             self::$bucket['step']['link'] = $html . '</span>';
