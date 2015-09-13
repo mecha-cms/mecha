@@ -163,11 +163,13 @@ Weapon::add('on_plugin_update', function() {
 if($config->page_type === 'manager') {
     // Add default article footer link(s)
     Weapon::add('article_footer', function($article) use($config, $speak) {
+        $comments = count(glob(RESPONSE . DS . Date::format($article->time, 'Y-m-d-H-i-s') . '_*_*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
+        $comments = File::E($article->path) !== 'draft' ? '<span title="' . $comments . ' ' . ($comments === 1 ? $speak->comment : $speak->comments) . '">' . Jot::icon('comments') . ' ' . $comments . '</span> &middot; ' : "";
         $status = Mecha::alter(File::E($article->path), array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
         ), "");
-        echo $status . Cell::a($config->manager->slug . '/article/repair/id:' . $article->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/article/kill/id:' . $article->id, $speak->delete);
+        echo $comments . $status . Cell::a($config->manager->slug . '/article/repair/id:' . $article->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/article/kill/id:' . $article->id, $speak->delete);
     }, 20);
     // Add default page footer link(s)
     Weapon::add('page_footer', function($page) use($config, $speak) {
