@@ -42,12 +42,13 @@ class Text extends Base {
      */
 
     public static function parserExist($name = null, $fallback = false) {
+        $c = get_called_class();
         if(is_null($name)) {
-            return isset(self::$parsers[get_called_class()]) ? self::$parsers[get_called_class()] : array();
+            return isset(self::$parsers[$c]) && ! empty(self::$parsers[$c]) ? self::$parsers[$c] : $fallback;
         }
         $name = strtolower($name);
         if(strpos($name, 'to_') !== 0) $name = 'to_' . $name;
-        return isset(self::$parsers[get_called_class()][$name]) ? self::$parsers[get_called_class()][$name] : $fallback;
+        return isset(self::$parsers[$c][$name]) ? self::$parsers[$c][$name] : $fallback;
     }
 
     /**
@@ -73,18 +74,19 @@ class Text extends Base {
 
     public static function parse() {
         $arguments = func_get_args();
+        $c = get_called_class();
         // Alternate function for faster parsing process => `Text::parse('foo', '->html')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $parser = 'to_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$parsers[get_called_class()][$parser]) ? call_user_func_array(self::$parsers[get_called_class()][$parser], $arguments) : false;
+            return isset(self::$parsers[$c][$parser]) ? call_user_func_array(self::$parsers[$c][$parser], $arguments) : false;
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
         $results = array();
-        if( ! isset(self::$parsers[get_called_class()])) {
-            self::$parsers[get_called_class()] = array();
+        if( ! isset(self::$parsers[$c])) {
+            self::$parsers[$c] = array();
         }
-        foreach(self::$parsers[get_called_class()] as $name => $action) {
+        foreach(self::$parsers[$c] as $name => $action) {
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;

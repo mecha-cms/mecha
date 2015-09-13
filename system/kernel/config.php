@@ -140,10 +140,11 @@ class Config {
 
     // Show the added method(s)
     public static function kin($kin = null, $fallback = false) {
+        $c = get_called_class();
         if( ! is_null($kin)) {
-            return isset(self::$o[get_called_class()][$kin]) ? self::$o[get_called_class()][$kin] : $fallback;
+            return isset(self::$o[$c][$kin]) ? self::$o[$c][$kin] : $fallback;
         }
-        return ! empty(self::$o[get_called_class()]) ? self::$o[get_called_class()] : $fallback;
+        return ! empty(self::$o[$c]) ? self::$o[$c] : $fallback;
     }
 
     // Add new method with `Config::plug('foo')`
@@ -155,7 +156,8 @@ class Config {
     // Example: You can use `Config::foo()` as a shortcut for `Config::get('foo')` as
     // long as `foo` is not defined yet by `Config::plug()`
     public static function __callStatic($kin, $arguments = array()) {
-        if( ! isset(self::$o[get_called_class()][$kin])) {
+        $c = get_called_class();
+        if( ! isset(self::$o[$c][$kin])) {
             $fallback = false;
             if(count($arguments) > 0) {
                 $kin .= '.' . array_shift($arguments);
@@ -163,7 +165,7 @@ class Config {
             }
             return self::get($kin, $fallback);
         }
-        return call_user_func_array(self::$o[get_called_class()][$kin], $arguments);
+        return call_user_func_array(self::$o[$c][$kin], $arguments);
     }
 
 }
