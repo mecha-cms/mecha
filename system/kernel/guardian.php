@@ -218,12 +218,13 @@ class Guardian extends Base {
      */
 
     public static function checkerExist($name = null, $fallback = false) {
+        $c = get_called_class();
         if(is_null($name)) {
-            return isset(self::$validators[get_called_class()]) ? self::$validators[get_called_class()] : array();
+            return isset(self::$validators[$c]) && ! empty(self::$validators[$c]) ? self::$validators[$c] : $fallback;
         }
         $name = strtolower($name);
         if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
-        return isset(self::$validators[get_called_class()][$name]) ? self::$validators[get_called_class()][$name] : $fallback;
+        return isset(self::$validators[$c][$name]) ? self::$validators[$c][$name] : $fallback;
     }
 
     /**
@@ -249,18 +250,19 @@ class Guardian extends Base {
 
     public static function check() {
         $arguments = func_get_args();
+        $c = get_called_class();
         // Alternate function for faster checking process => `Guardian::check('foo, '->url')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $validator = 'this_is_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$validators[get_called_class()][$validator]) ? call_user_func_array(self::$validators[get_called_class()][$validator], $arguments) : false;
+            return isset(self::$validators[$c][$validator]) ? call_user_func_array(self::$validators[$c][$validator], $arguments) : false;
         }
         // Default function for complete checking process => `Guardian::check('foo')->this_is_url`
         $results = array();
-        if( ! isset(self::$validators[get_called_class()])) {
-            self::$validators[get_called_class()] = array();
+        if( ! isset(self::$validators[$c])) {
+            self::$validators[$c] = array();
         }
-        foreach(self::$validators[get_called_class()] as $name => $action) {
+        foreach(self::$validators[$c] as $name => $action) {
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;
@@ -283,8 +285,7 @@ class Guardian extends Base {
         $path = Converter::url(File::url($path));
         $path = Filter::apply('guardian:kick', $path);
         $G = array('data' => array('url' => $path));
-        $old = Session::get(self::$form, array());
-        Guardian::memorize(array_merge(array('url_origin' => Config::get('url_current')), $old));
+        Guardian::memorize('url_origin', Config::get('url_current'));
         Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
         exit;
@@ -306,14 +307,18 @@ class Guardian extends Base {
      *
      */
 
-    public static function memorize($memo = null) {
+    public static function memorize($memo = null, $value = "") {
         if(is_null($memo)) {
             $memo = $_SERVER['REQUEST_METHOD'] === 'POST' ? $_POST : array();
         }
         if(is_object($memo)) {
             $memo = Mecha::A($memo);
         }
-        Session::set(self::$form, $memo);
+        if( ! is_array($memo)) {
+            $memo = array($memo => $value);
+        }
+        $old = Session::get(self::$form, array());
+        Session::set(self::$form, Mecha::extend($old, $memo));
     }
 
     /**
