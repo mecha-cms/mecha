@@ -140,9 +140,6 @@ html {
 
 .about-content {padding:1.3846153846153846em}
 
-.grid-group-boolean + .grid-group-boolean,
-.grid-group-boolean + input[type="hidden"] + .grid-group-boolean {margin-top:0}
-
 .grid-group-file input[type="file"] {
   display:inline-block;
   line-height:normal;
