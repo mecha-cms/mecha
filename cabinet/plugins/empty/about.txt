@@ -54,7 +54,7 @@ This file contains a form to set up the plugin configuration:
 </form>
 ~~~
 
-URL of the form should be directed to ` {{url.manager}}plugin/plugin-folder/update `. You could easily generate it with some of these methods (depending on where you are at the time):
+URL of the form should be directed to ` {{url.manager}}plugin/plugin-folder/update `. You could easily generate it with these methods (depending on where you are at the time):
 
 ~~~ .php
 $url = Config::get('url') . '/' . Config::get('manager.slug') . '/plugin/plugin-folder/update';
@@ -72,7 +72,7 @@ $url = Config::get('url_current') . '/update';
 $url = $config->url_current . '/update';
 ~~~
 
-**Tip:** Use `File::B(__DIR__)` as a replacement of the plugin’s folder name. This will allows users to change your plugin’s folder name with another name for their specific purposes. As for example, to prevent duplicate of folder name.
+**Tip:** Use `File::B(__DIR__)` to replace the plugin’s folder name. This will allow users to change your plugin’s folder name with another name for their specific purposes. As for example, to prevent duplicate of folder name.
 
 ### `lauch.php`
 

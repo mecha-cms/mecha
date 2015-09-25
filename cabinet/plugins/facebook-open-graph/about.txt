@@ -5,4 +5,4 @@ Version: 1.1.2
 
 ====
 
-Inject [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer – Open Graph Overview") meta tags to your **Mecha**’s head automatically!
+Inject [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer – Open Graph Overview") meta tags to your **Mecha**’s head automatically.

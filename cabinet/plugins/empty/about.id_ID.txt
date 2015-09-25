@@ -72,7 +72,7 @@ $url = Config::get('url_current') . '/update';
 $url = $config->url_current . '/update';
 ~~~
 
-**Tip:** Gunakan `File::B(__DIR__)` sebagai pengganti nama folder plugin. Ini akan mengizinkan pengguna untuk mengubah nama folder plugin Anda dengan nama yang lain untuk tujuan tertentu. Misalnya untuk mencegah duplikat nama folder.
+**Tip:** Gunakan `File::B(__DIR__)` untuk mengganti nama folder plugin. Ini akan mengizinkan pengguna untuk mengubah nama folder plugin Anda dengan nama yang lain untuk tujuan tertentu. Misalnya untuk mencegah duplikat nama folder.
 
 ### `lauch.php`
 
