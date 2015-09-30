@@ -135,6 +135,9 @@ class Session extends Base {
             $path = defined('SESSION') ? SESSION : null;
         }
         if( ! is_null($path)) {
+            if( ! file_exists($path)) {
+                mkdir($path, 0600, true);
+            }
             session_save_path($path);
         }
         session_start();
