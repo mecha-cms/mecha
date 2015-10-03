@@ -96,7 +96,7 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
     foreach($fields as $name => $value) {
         $html .= Form::hidden($name, $value, array(), 1) . NL;
     }
-    $html .= Cell::begin('span', array(
+    $html .= Cell::begin('label', array(
         'class' => array(
             'input-outer',
             'btn',

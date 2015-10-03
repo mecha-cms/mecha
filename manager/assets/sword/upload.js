@@ -34,12 +34,13 @@
                 .parent()
                     .removeClass('btn-accept btn-reject');
         } else {
-            $(this).attr('title', this.value)
+            $(this)
                 .prev()
                     .html('<i class="' + $(this).data(statusIcon) + '"></i> ' + this.value)
                         .parent()
-                            .removeClass('btn-accept btn-reject')
-                                .addClass(status);
+                            .attr('title', this.value)
+                                .removeClass('btn-accept btn-reject')
+                                    .addClass(status);
         }
         base.fire('on_file_change', data);
         base.fire('on_file_' + (ok ? 'accept' : 'reject'), data);
