@@ -216,7 +216,7 @@ Filter::add('shortcode', function($content) {
  *
  */
 
-if($config->html_parser) {
+if($config->html_parser !== false && $config->html_parser !== 'HTML') {
     Filter::add('content', function($content) use($config) {
         return preg_replace(
             array(
