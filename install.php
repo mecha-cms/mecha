@@ -63,7 +63,6 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'scraps' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'states' . DS . '.empty');
-        unlink(ROOT . DS . 'system' . DS . 'log' . DS . 'sessions' . DS . '.empty');
         unlink(ROOT . DS . 'system' . DS . 'plug' . DS . '__.php');
         unlink(ROOT . DS . 'install.php');
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
