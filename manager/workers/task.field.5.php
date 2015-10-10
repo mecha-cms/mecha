@@ -37,3 +37,16 @@ $author = strip_tags($request['author']);
 $css = trim(Request::post('css', "", false));
 $js = trim(Request::post('js', "", false));
 $field = Request::post('fields', array());
+// Slug must contains at least one letter or one `-`. This validation added
+// to prevent user(s) from inputting a page offset instead of article slug.
+// Because the URL pattern of article's index page is `article/1` and the
+// URL pattern of article's single page is `article/article-slug`
+if( ! preg_match('#[a-z\-]#i', $slug)) {
+    Notify::error($speak->notify_error_slug_missing_letter);
+    Guardian::memorize($request);
+}
+// Check for empty post content
+if(trim($content) === "") {
+    Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->{$task_connect_segment} : strtolower($speak->{$task_connect_segment})));
+    Guardian::memorize($request);
+}

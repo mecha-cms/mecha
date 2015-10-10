@@ -88,7 +88,10 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
     Config::set('html_parser', $article->content_type);
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $task_connect = $article;
+        $task_connect = $task_connect_page = $article;
+        $task_connect_segment = 'article';
+        $task_connect_page_css = $config->defaults->article_custom_css;
+        $task_connect_page_js = $config->defaults->article_custom_js;
         include DECK . DS . 'workers' . DS . 'task.field.5.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         $kind = isset($request['kind']) ? $request['kind'] : array(0);
@@ -106,27 +109,11 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
             unset($files);
         }
-        // Slug must contains at least one letter or one `-`. This validation added
-        // to prevent user(s) from inputting a page offset instead of article slug.
-        // Because the URL pattern of article's index page is `article/1` and the
-        // URL pattern of article's single page is `article/article-slug`
-        if( ! preg_match('#[a-z\-]#i', $slug)) {
-            Notify::error($speak->notify_error_slug_missing_letter);
-            Guardian::memorize($request);
-        }
-        // Check for empty post content
-        if(trim($content) === "") {
-            Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->article : strtolower($speak->article)));
-            Guardian::memorize($request);
-        }
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
             include DECK . DS . 'workers' . DS . 'task.field.2.php';
             include DECK . DS . 'workers' . DS . 'task.field.1.php';
             include DECK . DS . 'workers' . DS . 'task.field.4.php';
-            $task_connect_page = $article;
-            $task_connect_page_css = $config->defaults->article_custom_css;
-            $task_connect_page_js = $config->defaults->article_custom_js;
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);

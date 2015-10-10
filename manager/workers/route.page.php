@@ -87,7 +87,10 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Config::set('html_parser', $page->content_type);
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $task_connect = $page;
+        $task_connect = $task_connect_page = $page;
+        $task_connect_segment = 'page';
+        $task_connect_page_css = $config->defaults->page_custom_css;
+        $task_connect_page_js = $config->defaults->page_custom_js;
         include DECK . DS . 'workers' . DS . 'task.field.5.php';
         include DECK . DS . 'workers' . DS . 'task.field.6.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
@@ -104,24 +107,11 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             }
             unset($files);
         }
-        // Slug must contains at least one letter or one `-`
-        if( ! preg_match('#[a-z\-]#i', $slug)) {
-            Notify::error($speak->notify_error_slug_missing_letter);
-            Guardian::memorize($request);
-        }
-        // Check for empty post content
-        if(trim($content) === "") {
-            Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->page : strtolower($speak->page)));
-            Guardian::memorize($request);
-        }
         $P = array('data' => $request, 'action' => $request['action']);
         if( ! Notify::errors()) {
             include DECK . DS . 'workers' . DS . 'task.field.2.php';
             include DECK . DS . 'workers' . DS . 'task.field.1.php';
             include DECK . DS . 'workers' . DS . 'task.field.4.php';
-            $task_connect_page = $page;
-            $task_connect_page_css = $config->defaults->page_custom_css;
-            $task_connect_page_js = $config->defaults->page_custom_js;
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
