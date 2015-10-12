@@ -123,7 +123,7 @@ Text::parser('to_text', function($input) {
     // 3. Replace `---` to `-`
     return preg_replace(
         array(
-            '#^_{2}#',
+            '#^(\.|_{2})#',
             '#-{3}#',
             '#-#',
             '# +#',

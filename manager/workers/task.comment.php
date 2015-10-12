@@ -90,8 +90,8 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 $message = $request['message'];
                 $field = Request::post('fields', array());
                 include DECK . DS . 'workers' . DS . 'task.field.1.php';
-                // Temporarily disallow image(s) in comment to prevent XSS
                 $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
+                // Temporarily disallow image(s) in comment to prevent XSS
                 $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
                 $message = preg_replace('#<img(\s[^<>]*?)>#', '&lt;img$1&gt;', $message);
                 Page::header(array(
