@@ -186,8 +186,8 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
  * Tag Page
  * --------
  *
- * [1]. tagged/tag-slug
- * [2]. tagged/tag-slug/1
+ * [1]. tag/tag-slug
+ * [2]. tag/tag-slug/1
  *
  */
 
