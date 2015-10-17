@@ -6,56 +6,6 @@ $rss_order = strtoupper(Request::get('order', 'DESC'));
 $rss_filter = Request::get('filter', "");
 $rss_limit = Request::get('limit', 25);
 
-$str_replace = array(
-    '&cent;' => '¢',
-    '&pound;' => '£',
-    '&sect;' => '§',
-    '&copy;' => '©',
-    '&laquo;' => '«',
-    '&raquo;' => '»',
-    '&reg;' => '®',
-    '&deg;' => '°',
-    '&plusmn;' => '±',
-    '&minus;' => '−',
-    '&para;' => '¶',
-    '&middot;' => '·',
-    '&sup1;' => '¹',
-    '&sup2;' => '²',
-    '&sup3;' => '³',
-    '&frac14;' => '¼',
-    '&frac12;' => '½',
-    '&frac34;' => '¾',
-    '&ndash;' => '–',
-    '&mdash;' => '—',
-    '&lsquo;' => '‘',
-    '&rsquo;' => '’',
-    '&sbquo;' => '‚',
-    '&ldquo;' => '“',
-    '&rdquo;' => '”',
-    '&bdquo;' => '„',
-    '&dagger;' => '†',
-    '&Dagger;' => '‡',
-    '&bull;' => '•',
-    '&hellip;' => '…',
-    '&prime;' => '′',
-    '&Prime;' => '″',
-    '&euro;' => '€',
-    '&trade;' => '™',
-    '&asymp;' => '≈',
-    '&ne;' => '≠',
-    '&le;' => '≤',
-    '&ge;' => '≥',
-    '&spades;' => '♠',
-    '&clubs;' => '♣',
-    '&hearts;' => '♥',
-    '&diams;' => '♦',
-    '&larr;' => '←',
-    '&uarr;' => '↑',
-    '&rarr;' => '→',
-    '&darr;' => '↓',
-    '&harr;' => '↔'
-);
-
 if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->offset, $rss_limit)->vomit()) {
     foreach($pages as $path) {
         $bucket[] = Get::articleHeader($path);
@@ -78,13 +28,13 @@ Weapon::fire('rss_meta');
 
 if( ! empty($bucket)) {
     foreach($bucket as $i => $item) {
-        $title = Text::parse(str_replace(array_values($str_replace), array_keys($str_replace), strip_tags($item->title)), '->encoded_html');
-        $description = Text::parse(str_replace(array_values($str_replace), array_keys($str_replace), $item->description), '->encoded_html');
+        $title = strip_tags($item->title);
+        $description = $item->description;
         $kind = Mecha::A($item->kind);
         echo '<item>';
-        echo '<title>' . $title . '</title>';
+        echo '<title><![CDATA[' . $title . ']]></title>';
         echo '<link>' . $item->url . '</link>';
-        echo '<description>' . $description . '</description>';
+        echo '<description><![CDATA[' . $description . ']]></description>';
         echo '<pubDate>' . Date::format($item->time, 'r') . '</pubDate>';
         echo '<guid>' . $item->url . '</guid>';
         if( ! empty($kind)) {
@@ -93,7 +43,7 @@ if( ! empty($bucket)) {
                 echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '">' . $tag['name'] . '</category>';
             }
         }
-        echo '<source url="' . $item->url . '">' . $config->title . ': ' . $title . '</source>';
+        echo '<source url="' . $item->url . '"><![CDATA[' . $config->title . ': ' . $title . ']]></source>';
         Weapon::fire('rss_item', array($item, $i));
         echo '</item>';
     }
