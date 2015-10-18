@@ -54,7 +54,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
  * ----------------
  */
 
-Route::accept($config->manager->slug . '/backup/origin:(:all)', function($path = "", $origin = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin = "") use($config, $speak) {
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
