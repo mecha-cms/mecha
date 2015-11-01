@@ -63,22 +63,27 @@ class Route extends Base {
 
     public static function accept($pattern, $fn, $stack = 10) {
         $url = Config::get('url');
+        $stack = ! is_null($stack) ? $stack : 10;
         if(is_array($pattern)) {
             $i = 0;
             foreach($pattern as $p) {
-                self::$routes[] = array(
-                    'pattern' => self::path($p),
-                    'fn' => $fn,
-                    'stack' => (float) (( ! is_null($stack) ? $stack : 10) + $i)
-                );
-                $i += .1;
+                if( ! isset(self::$routes_x[$p . '->' . $stack])) {
+                    self::$routes[] = array(
+                        'pattern' => self::path($p),
+                        'fn' => $fn,
+                        'stack' => (float) ($stack + $i)
+                    );
+                    $i += .1;
+                }
             }
         } else {
-            self::$routes[] = array(
-                'pattern' => self::path($pattern),
-                'fn' => $fn,
-                'stack' => (float) ( ! is_null($stack) ? $stack : 10)
-            );
+            if( ! isset(self::$routes_x[$pattern . '->' . $stack])) {
+                self::$routes[] = array(
+                    'pattern' => self::path($pattern),
+                    'fn' => $fn,
+                    'stack' => (float) $stack
+                );
+            }
         }
     }
 
@@ -232,21 +237,18 @@ class Route extends Base {
             $url = Config::get('url_path');
             foreach($routes as $route) {
                 $pattern = $route['pattern'];
-                // If not rejected
-                if( ! isset(self::$routes_x[$pattern . '->' . $route['stack']])) {
-                    // If matched with URL path
-                    if(preg_match('#^' . self::fix($pattern) . '$#', $url, $arguments)) {
-                        array_shift($arguments);
-                        // Loading cargo(s) ...
-                        if(isset(self::$routes_over[$pattern]) && is_array(self::$routes_over[$pattern])) {
-                            $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
-                            foreach($fn as $v) {
-                                call_user_func_array($v['fn'], array_values($arguments));
-                            }
+                // If matched with URL path
+                if(preg_match('#^' . self::fix($pattern) . '$#', $url, $arguments)) {
+                    array_shift($arguments);
+                    // Loading cargo(s) ...
+                    if(isset(self::$routes_over[$pattern]) && is_array(self::$routes_over[$pattern])) {
+                        $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
+                        foreach($fn as $v) {
+                            call_user_func_array($v['fn'], array_values($arguments));
                         }
-                        // Passed!
-                        return call_user_func_array($route['fn'], array_values($arguments));
                     }
+                    // Passed!
+                    return call_user_func_array($route['fn'], array_values($arguments));
                 }
             }
         }

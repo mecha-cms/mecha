@@ -31,13 +31,16 @@ class Filter extends Base {
 
     public static function add($name, $fn, $stack = 10) {
         $c = get_called_class();
-        if( ! isset(self::$filters[$c][$name])) {
-            self::$filters[$c][$name] = array();
+        $stack = ! is_null($stack) ? $stack : 10;
+        if( ! isset(self::$filters_x[$c][$name . '->' . $stack])) {
+            if( ! isset(self::$filters[$c][$name])) {
+                self::$filters[$c][$name] = array();
+            }
+            self::$filters[$c][$name][] = array(
+                'fn' => $fn,
+                'stack' => (float) $stack
+            );
         }
-        self::$filters[$c][$name][] = array(
-            'fn' => $fn,
-            'stack' => (float) ( ! is_null($stack) ? $stack : 10)
-        );
     }
 
     /**
@@ -70,10 +73,8 @@ class Filter extends Base {
         $params = array_slice(func_get_args(), 2);
         $filters = Mecha::eat(self::$filters[$c][$name])->order('ASC', 'stack')->vomit();
         foreach($filters as $filter => $cargo) {
-            if( ! isset(self::$filters_x[$c][$name . '->' . $cargo['stack']])) {
-                $arguments = array_merge(array($value), $params);
-                $value = call_user_func_array($cargo['fn'], $arguments);
-            }
+            $arguments = array_merge(array($value), $params);
+            $value = call_user_func_array($cargo['fn'], $arguments);
         }
         return $value;
     }
