@@ -91,6 +91,52 @@ date_default_timezone_set($config->timezone);
 
 
 /**
+ * Set Page Metadata
+ * -----------------
+ */
+
+Weapon::add('meta', function() {
+    $config = Config::get();
+    $speak = Config::speak();
+    $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
+    $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
+    if(isset($config->article->description)) {
+        $description = strip_tags($config->article->description);
+    } else if(isset($config->page->description)) {
+        $description = strip_tags($config->page->description);
+    } else {
+        $description = strip_tags($config->description);
+    }
+    $html .= Cell::meta('description', $description, array(), 2) . NL;
+    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
+    echo Filter::apply('meta', $html, 1);
+}, 10);
+
+Weapon::add('meta', function() {
+    $config = Config::get();
+    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
+    $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
+    echo Filter::apply('meta', $html, 2);
+}, 20);
+
+Weapon::add('meta', function() {
+    $config = Config::get();
+    $speak = Config::speak();
+    $html  = Cell::link($config->url . '/favicon.ico', 'shortcut icon', 'image/x-icon', array(), 2) . NL;
+    $html .= Cell::link($config->url_current, 'canonical', null, array(), 2) . NL;
+    $html .= Cell::link($config->url . '/sitemap', 'sitemap', null, array(), 2) . NL;
+    $html .= Cell::link($config->url . '/feed/rss', 'alternate', 'application/rss+xml', array(
+        'title' => $speak->feeds . $config->title_separator . $config->title
+    ), 2) . O_END;
+    echo Filter::apply('meta', $html, 3);
+}, 30);
+
+Weapon::add('SHIPMENT_REGION_TOP', function() {
+    Weapon::fire('meta');
+}, 10);
+
+
+/**
  * Inject Widget's CSS and JavaScript
  * ----------------------------------
  */
@@ -231,49 +277,3 @@ if($config->html_parser !== false && $config->html_parser !== 'HTML') {
         return $content;
     }, 20);
 }
-
-
-/**
- * Set Page Metadata
- * -----------------
- */
-
-Weapon::add('meta', function() {
-    $config = Config::get();
-    $speak = Config::speak();
-    $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
-    $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
-    if(isset($config->article->description)) {
-        $description = strip_tags($config->article->description);
-    } else if(isset($config->page->description)) {
-        $description = strip_tags($config->page->description);
-    } else {
-        $description = strip_tags($config->description);
-    }
-    $html .= Cell::meta('description', $description, array(), 2) . NL;
-    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
-    echo Filter::apply('meta', $html, 1);
-}, 10);
-
-Weapon::add('meta', function() {
-    $config = Config::get();
-    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
-    $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
-    echo Filter::apply('meta', $html, 2);
-}, 20);
-
-Weapon::add('meta', function() {
-    $config = Config::get();
-    $speak = Config::speak();
-    $html  = Cell::link($config->url . '/favicon.ico', 'shortcut icon', 'image/x-icon', array(), 2) . NL;
-    $html .= Cell::link($config->url_current, 'canonical', null, array(), 2) . NL;
-    $html .= Cell::link($config->url . '/sitemap', 'sitemap', null, array(), 2) . NL;
-    $html .= Cell::link($config->url . '/feed/rss', 'alternate', 'application/rss+xml', array(
-        'title' => $speak->feeds . $config->title_separator . $config->title
-    ), 2) . O_END;
-    echo Filter::apply('meta', $html, 3);
-}, 30);
-
-Weapon::add('SHIPMENT_REGION_TOP', function() {
-    Weapon::fire('meta');
-}, 10);
