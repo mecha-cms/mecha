@@ -309,7 +309,7 @@ class Converter extends Base {
             if((strpos($input, '[') === 0 || strpos($input, '{') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
                 $results = self::strEval(json_decode($input, true), $NRT);
             } else {
-                $results = $NRT ? self::NRT_decode($input) : $input;
+                $results = $NRT ? self::WD($input) : $input;
             }
         } else if(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
@@ -378,11 +378,11 @@ class Converter extends Base {
     public static function toText($array, $s = S, $indent = '    ', $depth = 0, $NRT = true) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
-            return self::str($NRT ? self::NRT_encode($array) : $array);
+            return self::str($NRT ? self::WE($array) : $array);
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
-                $value = $NRT ? self::NRT_encode(self::str($value)) : self::str($value);
+                $value = $NRT ? self::WE(self::str($value)) : self::str($value);
                 if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
@@ -709,13 +709,13 @@ class Converter extends Base {
         trim($input));
     }
 
-    // internal only (encode)
-    protected static function NRT_encode($input) {
+    // internal only (white-space encode)
+    protected static function WE($input) {
         return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $input);
     }
 
-    // internal only (decode)
-    protected static function NRT_decode($input) {
+    // internal only (white-space decode)
+    protected static function WD($input) {
         return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
     }
 

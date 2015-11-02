@@ -179,6 +179,7 @@ class Get extends Base {
         if($file = File::exist(STATE . DS . 'config.txt')) {
             Mecha::extend($config, File::open($file)->unserialize());
         }
+        $config = Filter::apply('state:config', $config);
         if( ! is_null($output)) {
             return isset($config[$output]) ? $config[$output] : $fallback;
         }
@@ -242,7 +243,7 @@ class Get extends Base {
 
         foreach($field as &$v) {
             if( ! isset($v['value'])) $v['value'] = "";
-            if( ! isset($v['scope'])) $v['scope'] = "";
+            if( ! isset($v['scope'])) $v['scope'] = 'article,page,comment';
         }
 
         unset($v);
@@ -261,6 +262,8 @@ class Get extends Base {
             unset($field_alt);
         }
 
+        $field = Filter::apply('state:field', $field);
+
         // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($field[$key]) ? $field[$key] : $fallback;
@@ -276,7 +279,7 @@ class Get extends Base {
         $speak = Config::speak();
         $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
         $menu = file_exists($d) ? include $d : $fallback;
-        return File::open(STATE . DS . 'menu.txt')->read($menu);
+        return Filter::apply('state:menu', File::open(STATE . DS . 'menu.txt')->read($menu));
     }
 
     // Get stored shortcode data (internal only)
@@ -330,7 +333,7 @@ class Get extends Base {
 
         }
 
-        $shortcode = Converter::strEval($shortcode);
+        $shortcode = Filter::apply('state:shortcode', Converter::strEval($shortcode));
 
         // Filter output(s) by `key`
         if( ! is_null($key)) {
@@ -348,7 +351,7 @@ class Get extends Base {
         $d = DECK . DS . 'workers' . DS . 'repair.state.tag.php';
         $tag = file_exists($d) ? include $d : $fallback;
         $tag = File::open(STATE . DS . 'tag.txt')->unserialize($tag);
-        $tag = Converter::strEval($tag);
+        $tag = Filter::apply('state:tag', Converter::strEval($tag));
         if( ! is_null($id)) {
             foreach($tag as $k => $v) {
                 if($v['id'] === $id) {
