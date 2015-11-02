@@ -44,7 +44,7 @@ if( ! empty($fields)) {
                 if(isset($value['placeholder']) && ! is_array($value['value'])) {
                     $value['value'] = S . $value['placeholder'] . "\n" . $value['value'];
                 }
-                $options = is_array($value['value']) ? $value['value'] : Text::toArray($value['value'], S, '  ');
+                $options = Converter::toArray($value['value'], S, '  ');
                 $html .= Form::select('fields[' . $key . '][value]', $options, $select, array(
                     'class' => 'select-block'
                 ));
