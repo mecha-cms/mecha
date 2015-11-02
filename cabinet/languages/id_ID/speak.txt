@@ -103,6 +103,14 @@ less: Kurangi
 increase: Tingkatkan
 decrease: Turunkan
 
+top: Atas
+right: Kanan
+bottom: Bawah
+left: Kiri
+
+up: Naik
+down: Turun
+
 read_more: Baca Selengkapnya
 
 welcome: Selamat datang

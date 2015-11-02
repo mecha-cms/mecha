@@ -103,6 +103,14 @@ less: Less
 increase: Increase
 decrease: Decrease
 
+top: Top
+right: Right
+bottom: Bottom
+left: Left
+
+up: Up
+down: Down
+
 read_more: Read More
 
 welcome: Welcome
