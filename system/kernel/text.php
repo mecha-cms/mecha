@@ -240,8 +240,7 @@ class Text extends Base {
      */
 
     public static function toArray($text, $s = S, $indent = '    ') {
-        if(is_array($text)) return $text;
-        if(is_object($text)) return Mecha::A($text);
+        if( ! is_string($text)) return false;
         $results = array();
         $data = array();
         $indent_length = strlen($indent);

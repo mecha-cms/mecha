@@ -306,7 +306,7 @@ class Converter extends Base {
                 'okay' => true
             ));
         } else if(is_string($input)) {
-            if( ! is_null(json_decode($input, true))) {
+            if((strpos($input, '[') === 0 || strpos($input, '{') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
                 $results = self::strEval(json_decode($input, true), $NRT);
             } else {
                 $results = $NRT ? self::NRT_decode($input) : $input;
@@ -422,7 +422,9 @@ class Converter extends Base {
      */
 
     public static function toArray($input, $s = S, $indent = '    ') {
-        return Text::toArray($input, $s, $indent);
+        if(is_array($input)) return $input;
+        if(is_object($input)) return Mecha::A($input);
+        return Text::toArray((string) $input, $s, $indent);
     }
 
     /**
