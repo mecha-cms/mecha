@@ -116,7 +116,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.2.php';
-                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('page:url', Filter::apply('url', $config->url . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_construct', array($G, $P));
                 Guardian::kick($config->manager->slug . '/page/repair/id:' . Date::format($date, 'U'));
@@ -128,7 +128,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
                 if($page->slug !== $slug && $php_file = File::exist(File::D($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
-                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('page:url', Filter::apply('url', $config->url . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_repair', array($G, $P));
                 Guardian::kick($config->manager->slug . '/page/repair/id:' . Date::format($date, 'U'));

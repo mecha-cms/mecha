@@ -801,7 +801,7 @@ notify_error_empty_field: Please fill out the <strong>%s</strong> field.
 notify_error_slug_exist: Slug <code>%s</code> already exists.
 notify_error_slug_missing_letter: Slug URI should contains at least one letter, from <code>A</code> to <code>Z</code>.
 notify_error__content_empty: %s content should not be emptied.
-notify_error_post_content_empty: Post content should not be emptied.
+notify_error_content_empty: Content should not be emptied.
 notify_error_too_short: <strong>%s</strong> too short.
 notify_error_too_long: <strong>%s</strong> too long.
 notify_error_not_found: Not found.

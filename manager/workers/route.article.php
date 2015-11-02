@@ -118,7 +118,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.2.php';
-                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('article:url', Filter::apply('url', $config->url . '/' . $config->index->slug . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_construct', array($G, $P));
                 Guardian::kick($config->manager->slug . '/article/repair/id:' . Date::format($date, 'U'));
@@ -130,7 +130,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 if($article->slug !== $slug && $php_file = File::exist(File::D($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
-                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . $config->url . '/' . $config->index->slug . '/' . $slug . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('article:url', Filter::apply('url', $config->url . '/' . $config->index->slug . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_repair', array($G, $P));
                 // Rename all comment file(s) related to article if article date has been changed
