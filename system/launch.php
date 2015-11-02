@@ -2,6 +2,14 @@
 
 
 /**
+ * Route Hook: before
+ * ------------------
+ */
+
+Weapon::fire('route_before');
+
+
+/**
  * Manager Page(s)
  * ---------------
  */
@@ -21,6 +29,10 @@ if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) {
 }
 
 
+// Exclude these fields ...
+$excludes = array('content', 'content_raw', 'tags', 'css', 'js', 'comments');
+
+
 /**
  * Login Page
  * ----------
@@ -30,26 +42,20 @@ if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) {
  */
 
 Route::accept($config->manager->slug . '/login', function() use($config, $speak) {
-
     if( ! File::exist(DECK . DS . 'launch.php')) {
         Shield::abort('404-manager');
     }
-
     if(Guardian::happy()) {
         Guardian::kick($config->manager->slug . '/article');
     }
-
     Config::set(array(
         'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
         'cargo' => DECK . DS . 'workers' . DS . 'cargo.login.php'
     ));
-
     if($request = Request::post()) {
         Guardian::authorize()->kick(isset($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');
     }
-
     Shield::attach('manager-login');
-
 }, 20);
 
 
@@ -76,14 +82,12 @@ Route::accept($config->manager->slug . '/logout', function() use($config, $speak
  *
  */
 
-Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), function($offset = 1) use($config) {
-
+Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), function($offset = 1) use($config, $excludes) {
     $offset = (int) $offset;
-
     if($files = Mecha::eat(Get::articles())->chunk($offset, $config->index->per_page)->vomit()) {
         $articles = array();
         foreach($files as $file) {
-            $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $articles[] = Get::article($file, $excludes);
         }
         unset($files);
     } else {
@@ -93,16 +97,13 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
             $articles = false;
         }
     }
-
     Config::set(array(
         'page_title' => $config->index->title . $config->title_separator . $config->title,
         'offset' => $offset,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles(), $offset, $config->index->per_page, $config->index->slug)
     ));
-
     Shield::attach('index-article');
-
 }, 30);
 
 
@@ -115,30 +116,25 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
  *
  */
 
-Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config) {
-
+Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
     $articles = array();
     $offset = (int) $offset;
-
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file) {
-            $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $articles[] = Get::article($file, $excludes);
         }
         unset($files);
     } else {
         Shield::abort('404-archive');
     }
-
     Config::set(array(
-        'page_title' => (strpos($config->archive->title, '%s') !== false ? sprintf($config->archive->title, $slug) : $config->archive->title . ' ' . $slug) . $config->title_separator . $config->title,
+        'page_title' => sprintf($config->archive->title, $slug) . $config->title_separator . $config->title,
         'offset' => $offset,
         'archive_query' => $slug,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
-
     Shield::attach('index-archive');
-
 }, 40);
 
 
@@ -151,34 +147,28 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
  *
  */
 
-Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak) {
-
-    $months = explode(',', $speak->months);
+Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak, $excludes) {
+    $months = (array) $speak->month_names;
     $slug = $year . '-' . $month;
     $articles = array();
     $offset = (int) $offset;
-
     if($files = Mecha::eat(Get::articles('DESC', 'time:' . $slug))->chunk($offset, $config->archive->per_page)->vomit()) {
         foreach($files as $file) {
-            $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $articles[] = Get::article($file, $excludes);
         }
         unset($files);
     } else {
         Shield::abort('404-archive');
     }
-
     $time = ($config->widget_year_first ? $year . ', ' . $months[(int) $month - 1] : $months[(int) $month - 1] . ' ' . $year);
-
     Config::set(array(
-        'page_title' => (strpos($config->archive->title, '%s') !== false ? sprintf($config->archive->title, $time) : $config->archive->title . ' ' . $time) . $config->title_separator . $config->title,
+        'page_title' => sprintf($config->archive->title, $time) . $config->title_separator . $config->title,
         'offset' => $offset,
         'archive_query' => $slug,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles('DESC', 'time:' . $slug), $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
     ));
-
     Shield::attach('index-archive');
-
 }, 41);
 
 
@@ -191,34 +181,28 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
  *
  */
 
-Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config) {
-
+Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
     if( ! $tag = Get::tag($slug)) {
         Shield::abort('404-tag');
     }
-
     $articles = array();
     $offset = (int) $offset;
-
     if($files = Mecha::eat(Get::articles('DESC', 'kind:' . $tag->id))->chunk($offset, $config->tag->per_page)->vomit()) {
         foreach($files as $file) {
-            $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $articles[] = Get::article($file, $excludes);
         }
         unset($files);
     } else {
         Shield::abort('404-tag');
     }
-
     Config::set(array(
-        'page_title' => (strpos($config->tag->title, '%s') !== false ? sprintf($config->tag->title, $tag->name) : $config->tag->title . ' ' . $tag->name) . $config->title_separator . $config->title,
+        'page_title' => sprintf($config->tag->title, $tag->name) . $config->title_separator . $config->title,
         'offset' => $offset,
         'tag_query' => $slug,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles('DESC', 'kind:' . $tag->id), $offset, $config->tag->per_page, $config->tag->slug . '/' . $slug)
     ));
-
     Shield::attach('index-tag');
-
 }, 50);
 
 
@@ -231,19 +215,14 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
  *
  */
 
-Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config, $speak) {
-
+Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config, $speak, $excludes) {
     $articles = array();
     $offset = (int) $offset;
     $query = Text::parse($query, '->decoded_url');
     $keywords = Text::parse($query, '->slug');
-
-    if(Session::get('search_query') === $query) {
-
-        $articles = Session::get('search_results');
-
+    if(Session::get('search.query') === $query) {
+        $articles = Session::get('search.results');
     } else {
-
         // Matched with all keyword(s) combined
         if($files = Get::articles('DESC', 'keyword:' . $keywords)) {
             foreach($files as $file) {
@@ -256,7 +235,6 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             }
             unset($files);
         }
-
         // Matched with a keyword
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
@@ -271,20 +249,15 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 unset($files);
             }
         }
-
         $articles = array_unique($articles); // Remove search result(s) duplicate
-
-        Session::set('search_query', $query);
-        Session::set('search_results', $articles);
-
+        Session::set('search.query', $query);
+        Session::set('search.results', $articles);
     }
-
-    $title = (strpos($config->search->title, '%s') !== false ? sprintf($config->search->title, $query) : $config->search->title . ' &ldquo;' . $query . '&rdquo;');
-
+    $title = sprintf($config->search->title, $query);
     if( ! empty($articles) && $files = Mecha::eat($articles)->chunk($offset, $config->search->per_page)->vomit()) {
         $_articles = array();
         foreach($files as $file) {
-            $_articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $_articles[] = Get::article($file, $excludes);
         }
         unset($files);
         Config::set(array(
@@ -304,11 +277,10 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             ),
             'search_query' => $query
         ));
-        Session::kill('search_query');
-        Session::kill('search_results');
+        Session::kill('search.query');
+        Session::kill('search.results');
         Shield::abort('404-search');
     }
-
 }, 60);
 
 
@@ -334,19 +306,15 @@ Route::accept($config->search->slug, function() use($config) {
  */
 
 Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config, $speak) {
-
     if( ! $article = Get::article($slug)) {
         Shield::abort('404-article');
     }
-
     if(isset($_GET['repair']) && Guardian::happy()) {
         Guardian::kick($config->manager->slug . '/article/repair/id:' . $article->id);
     }
-
     if($article->state === 'draft') {
         Shield::abort('404-article');
     }
-
     // Collecting article slug ...
     if($articles = Get::articles('DESC', "", File::E($article->path))) {
         foreach($articles as &$v) {
@@ -355,23 +323,18 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
         unset($parts, $v);
     }
-
     Config::set(array(
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
         'pagination' => Navigator::extract($articles, $slug, 1, $config->index->slug)
     ));
-
     Weapon::add('shell_after', function() use($article) {
         if(isset($article->css) && trim($article->css) !== "") echo O_BEGIN . $article->css . O_END;
     });
-
     Weapon::add('sword_after', function() use($article) {
         if(isset($article->js) && trim($article->js) !== "") echo O_BEGIN . $article->js . O_END;
     });
-
     Shield::attach('article-' . $slug);
-
 }, 70);
 
 
@@ -433,13 +396,11 @@ Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($
  */
 
 Route::accept('captcha.png', function() {
-
     HTTP::mime('image/png')->header(array(
         'Cache-Control' => 'no-store, no-cache, must-revalidate, max-age=0',
         'Cache-Control' => 'post-check=0, pre-check=0',
         'Pragma' => 'no-cache'
     ));
-
     $str = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
     $bg = Request::get('bg', '333333', false);
     $color = Request::get('color', 'FFFFAA', false);
@@ -451,31 +412,24 @@ Route::accept('captcha.png', function() {
     $font = Request::get('font', 'special-elite-regular.ttf', false);
     $text = substr(str_shuffle($str), 0, $length);
     Session::set(Guardian::$captcha, $text);
-
     if($bg !== 'false' && $bg = Converter::HEX2RGB($bg)) {
         $bg = array($bg['r'], $bg['g'], $bg['b'], $bg['a']);
     } else {
         $bg = $bg !== 'false' ? array(51, 51, 51, 1) : array(0, 0, 0, 0);
     }
-
     if($color = Converter::HEX2RGB($color)) {
         $color = array($color['r'], $color['g'], $color['b'], $color['a']);
     } else {
         $color = array(255, 255, 170, 1);
     }
-
     $image = imagecreatetruecolor($width, $height);
     $font = strpos($font, '/') === false ? ASSET . DS . '__captcha' . DS . $font : ROOT . DS . File::path($font);
-
     imagefill($image, 0, 0, 0x7fff0000);
     imagealphablending($image, true);
     imagesavealpha($image, true);
-
     $bg = imagecolorallocatealpha($image, $bg[0], $bg[1], $bg[2], 127 - ($bg[3] * 127));
     $color = imagecolorallocatealpha($image, $color[0], $color[1], $color[2], 127 - ($color[3] * 127));
-
     imagefilledrectangle($image, 0, 0, $width, $height, $bg);
-
     // center the image text ...
     $xi = imagesx($image);
     $yi = imagesy($image);
@@ -484,13 +438,10 @@ Route::accept('captcha.png', function() {
     $yr = abs(max($box[5], $box[7]));
     $x = intval(($xi - $xr) / 2);
     $y = intval(($yi + $yr) / 2);
-
     imagettftext($image, $size, 0, $x, $y, $color, $font, $text);
     imagepng($image);
     imagedestroy($image);
-
     exit;
-
 }, 90);
 
 
@@ -503,34 +454,26 @@ Route::accept('captcha.png', function() {
  */
 
 Route::accept('(:any)', function($slug = "") use($config) {
-
     if( ! $page = Get::page($slug)) {
         Shield::abort('404-page');
     }
-
     if(isset($_GET['repair']) && Guardian::happy()) {
         Guardian::kick($config->manager->slug . '/page/repair/id:' . $page->id);
     }
-
     if($page->state === 'draft') {
         Shield::abort('404-page');
     }
-
     Weapon::add('shell_after', function() use($page) {
         if(isset($page->css) && trim($page->css) !== "") echo O_BEGIN . $page->css . O_END;
     });
-
     Weapon::add('sword_after', function() use($page) {
         if(isset($page->js) && trim($page->js) !== "") echo O_BEGIN . $page->js . O_END;
     });
-
     Config::set(array(
         'page_title' => $page->title . $config->title_separator . $config->title,
         'page' => $page
     ));
-
     Shield::attach('page-' . $slug);
-
 }, 100);
 
 
@@ -542,29 +485,32 @@ Route::accept('(:any)', function($slug = "") use($config) {
  *
  */
 
-Route::accept('/', function() use($config) {
-
-    Session::kill('search_query');
-    Session::kill('search_results');
-
+Route::accept('/', function() use($config, $excludes) {
+    Session::kill('search.query');
+    Session::kill('search.results');
     if($files = Mecha::eat(Get::articles())->chunk(1, $config->index->per_page)->vomit()) {
         $articles = array();
         foreach($files as $file) {
-            $articles[] = Get::article($file, array('content', 'tags', 'css', 'js', 'comments'));
+            $articles[] = Get::article($file, $excludes);
         }
         unset($files);
     } else {
         $articles = false;
     }
-
     Config::set(array(
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles(), 1, $config->index->per_page, $config->index->slug)
     ));
-
     Shield::attach('page-home');
-
 }, 110);
+
+
+/**
+ * Route Hook: after
+ * -----------------
+ */
+
+Weapon::fire('route_after');
 
 
 /**

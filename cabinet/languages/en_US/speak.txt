@@ -244,14 +244,15 @@ hour: Hour
 minute: Minute
 second: Second
 millisecond: Millisecond
-year_p: Years
-month_p: Months
-week_p: Weeks
-day_p: Days
-hour_p: Hours
-minute_p: Minutes
-second_p: Seconds
-millisecond_p: Milliseconds
+
+years: Years
+months: Months
+weeks: Weeks
+days: Days
+hours: Hours
+minutes: Minutes
+seconds: Seconds
+milliseconds: Milliseconds
 
 default: Default
 defaults: Defaults
@@ -369,11 +370,51 @@ pending: Pending
 # MONTHS AND DAY NAMES LOCALIZATION
 # ---------------------------------
 
-months: January,February,March,April,May,June,July,August,September,October,November,December
-days: Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday
+month_names:
+  0: January
+  1: February
+  2: March
+  3: April
+  4: May
+  5: June
+  6: July
+  7: August
+  8: September
+  9: October
+  10: November
+  11: December
 
-months_short: Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sep,Oct,Nov,Dec
-days_short: Sun,Mon,Tue,Wed,Thu,Fri,Sat
+day_names:
+  0: Sunday
+  1: Monday
+  2: Tuesday
+  3: Wednesday
+  4: Thursday
+  5: Friday
+  6: Saturday
+
+month_names_short:
+  0: Jan
+  1: Feb
+  2: Mar
+  3: Apr
+  4: May
+  5: Jun
+  6: Jul
+  7: Aug
+  8: Sep
+  9: Oct
+  10: Nov
+  11: Dec
+
+day_names_short:
+  0: Sun
+  1: Mon
+  2: Tue
+  3: Wed
+  4: Thu
+  5: Fri
+  6: Sat
 
 
 # -------
@@ -524,6 +565,10 @@ unapprove: Unapprove
 unapproving: Unapproving
 unapproved: Unapproved
 
+ignore: Ignore
+ignoring: Ignoring
+ignored: Ignored
+
 install: Install
 installing: Installing
 installed: Installed
@@ -603,8 +648,8 @@ widget:
   tag: Tag
   tags: Tags
 
-  recent_post: Recent Post
-  recent_posts: Recent Posts
+  recent_post: Recent :post:
+  recent_posts: Recent :posts:
   recent_comment: Recent Comment
   recent_comments: Recent Comments
 
@@ -785,4 +830,48 @@ notify_info_comment_moderation: Your comment will be visible once approved by th
 # FOR MECHA TEXT EDITOR
 # ---------------------
 
-MTE: {"buttons":{"ok":"OK","yes":"Yes","no":"No","cancel":"Cancel","open":"Open","close":"Close","bold":"Bold","italic":"Italic","underline":"Underline","strike":"Strike","code": "Code","paragraph":"Paragraph","quote":"Quote","heading":"H1 \u2013 H6","link":"Link","image":"Image","ol":"Ordered List","ul":"Unordered List","rule":"Horizontal Rule","undo":"Undo","redo":"Redo","superscript":"Superscript","subscript":"Subscript"},"prompts":{"link_title":"link title goes here\u2026","link_title_title":"Link Title","link_url":"http:\/\/","link_url_title":"Link URL","image_url": "http:\/\/","image_url_title":"Image URL"},"placeholders":{"text":"text goes here\u2026","heading_text":"Heading","link_text":"link text","list_ul_text":"List item","list_ol_text":"List item","image_alt":"Image"},"others":{"excerpt":"Insert Jump Break","help":"Help","table":"Table","table_text_raw":"Table Header 1 | Table Header 2\n-------------- | --------------\nTable Cell 1.1 | Table Cell 1.2\nTable Cell 2.1 | Table Cell 2.2\nTable Cell 3.1 | Table Cell 3.2","table_text_html":"<table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Table Header 1<\/th>\n\t\t\t<th>Table Header 2<\/th>\n\t\t<\/tr>\n\t<\/thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Table Cell 1.1<\/td>\n\t\t\t<td>Table Cell 1.2<\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 2.1<\/td>\n\t\t\t<td>Table Cell 2.2<\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 3.1<\/td>\n\t\t\t<td>Table Cell 3.2<\/td>\n\t\t<\/tr>\n\t<\/tbody>\n<\/table>"}}
+MTE: 
+  buttons:
+    ok: OK
+    yes: Yes
+    no: No
+    cancel: Cancel
+    open: Open
+    close: Close
+    bold: Bold
+    italic: Italic
+    underline: Underline
+    strike: Strike
+    code: Code
+    paragraph: Paragraph
+    quote: Quote
+    heading: H1 \u2013 H6
+    link: Link
+    image: Image
+    ol: Ordered List
+    ul: Unordered List
+    rule: Horizontal Rule
+    undo: Undo
+    redo: Redo
+    superscript: Superscript
+    subscript: Subscript
+  prompts:
+    link_title: link title goes here\u2026
+    link_title_title: Link Title
+    link_url: http://
+    link_url_title: Link URL
+    image_url: http://
+    image_url_title: Image URL
+  placeholders:
+    text: text goes here\u2026
+    heading_text: Heading
+    link_text: link text:
+    list_ul_text: List item
+    list_ol_text: List item
+    image_alt: Image
+  others:
+    excerpt: Insert Jump Break
+    help: Help
+    table: Table
+    table_text_raw: Table Header 1 | Table Header 2\n-------------- | --------------\nTable Cell 1.1 | Table Cell 1.2\nTable Cell 2.1 | Table Cell 2.2\nTable Cell 3.1 | Table Cell 3.2
+    table_text_html: <table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Table Header 1</th>\n\t\t\t<th>Table Header 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Table Cell 1.1</td>\n\t\t\t<td>Table Cell 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 2.1</td>\n\t\t\t<td>Table Cell 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 3.1</td>\n\t\t\t<td>Table Cell 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>

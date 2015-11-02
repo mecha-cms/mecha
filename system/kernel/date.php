@@ -58,10 +58,10 @@ class Date extends Base {
 
     public static function extract($date, $output = null) {
         $speak = Config::speak();
-        $month_names = explode(',', $speak->months);
-        $day_names = explode(',', $speak->days);
-        $month_names_short = explode(',', $speak->months_short);
-        $day_names_short = explode(',', $speak->days_short);
+        $month_name = (array) $speak->month_names;
+        $day_name = (array) $speak->day_names;
+        $month_name_short = (array) $speak->month_names_short;
+        $day_name_short = (array) $speak->day_names_short;
         list(
             $year,
             $year_short,
@@ -71,12 +71,13 @@ class Date extends Base {
             $hour_12,
             $minute,
             $second,
-            $AP
-        ) = explode('.', self::format($date, 'Y.y.m.d.H.h.i.s.A'));
-        $month_name = $month_names[(int) $month - 1];
-        $day_name = $day_names[(int) self::format($date, 'w')];
-        $month_name_short = $month_names_short[(int) $month - 1];
-        $day_name_short = $day_names_short[(int) self::format($date, 'w')];
+            $AP,
+            $d
+        ) = explode('.', self::format($date, 'Y.y.m.d.H.h.i.s.A.w'));
+        $month_name = $month_name[(int) $month - 1];
+        $day_name = $day_name[(int) $d];
+        $month_name_short = $month_name_short[(int) $month - 1];
+        $day_name_short = $day_name_short[(int) $d];
         $results = array(
             'unix' => (int) self::format($date, 'U'),
             'W3C' => self::format($date, 'c'),
@@ -144,12 +145,12 @@ class Date extends Base {
         $time = explode('.', $time);
         $time = Converter::strEval($time);
         $data = array(
-            $speak->year . '/' . $speak->year_p => $time[0],
-            $speak->month . '/' . $speak->month_p => $time[1],
-            $speak->day . '/' . $speak->day_p => $time[2],
-            $speak->hour . '/' . $speak->hour_p => $time[3],
-            $speak->minute . '/' . $speak->minute_p => $time[4],
-            $speak->second . '/' . $speak->second_p => $time[5]
+            $speak->year . '/' . $speak->years => $time[0],
+            $speak->month . '/' . $speak->months => $time[1],
+            $speak->day . '/' . $speak->days => $time[2],
+            $speak->hour . '/' . $speak->hours => $time[3],
+            $speak->minute . '/' . $speak->minutes => $time[4],
+            $speak->second . '/' . $speak->seconds => $time[5]
         );
         if($compact) {
             foreach($data as $name => $offset) {
