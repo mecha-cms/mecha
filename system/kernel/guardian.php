@@ -396,7 +396,7 @@ class Guardian extends Base {
                     // 'password' => $author['pass'], // alias for `pass`
                     'author' => $author['author'],
                     'status' => $author['status'],
-                    'email' => $author['email'] ? $author['email'] : $config->author_email
+                    'email' => $author['email'] ? $author['email'] : $config->author->email
                 ), 30, '/', "", false, true);
                 File::write($token)->saveTo(LOG . DS . 'token.' . Text::parse($user, '->safe_file_name') . '.log', 0600);
                 File::open(LOG . DS . 'users.txt')->setPermission(0600);
