@@ -45,8 +45,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         if( ! isset($page->fields)) $page->fields = array();
         if( ! isset($page->content_type)) $page->content_type = $config->html_parser;
         if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . $extension_o)) {
-            $page->css_raw = $config->defaults->page_custom_css;
-            $page->js_raw = $config->defaults->page_custom_js;
+            $page->css_raw = $config->defaults->page_css;
+            $page->js_raw = $config->defaults->page_js;
         }
         // Remove automatic page description data from page composer
         $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($page->path)), 2);
@@ -74,8 +74,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             'content_type' => $config->html_parser,
             'description' => "",
             'author' => Guardian::get('author'),
-            'css_raw' => $config->defaults->page_custom_css,
-            'js_raw' => $config->defaults->page_custom_js,
+            'css_raw' => $config->defaults->page_css,
+            'js_raw' => $config->defaults->page_js,
             'fields' => array()
         ));
         Config::set(array(
@@ -89,8 +89,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         Guardian::checkToken($request['token']);
         $task_connect = $task_connect_page = $page;
         $task_connect_segment = 'page';
-        $task_connect_page_css = $config->defaults->page_custom_css;
-        $task_connect_page_js = $config->defaults->page_custom_js;
+        $task_connect_page_css = $config->defaults->page_css;
+        $task_connect_page_js = $config->defaults->page_js;
         include DECK . DS . 'workers' . DS . 'task.field.5.php';
         include DECK . DS . 'workers' . DS . 'task.field.6.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';

@@ -28,7 +28,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                     Notify::error($speak->notify_invalid_email);
                 } else {
                     // Disallow passenger(s) from entering your email address in the comment email field
-                    if( ! Guardian::happy() && $request['email'] === $config->author_email) {
+                    if( ! Guardian::happy() && $request['email'] === $config->author->email) {
                         Notify::warning(Config::speak('notify_warning_forbidden_input', '<em>' . $request['email'] . '</em>', strtolower($speak->email)));
                     }
                 }
@@ -64,7 +64,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 Notify::error(Config::speak('notify_error_too_long', $speak->comment_message));
             }
             // Check for spam keyword(s) in comment
-            $fucking_words = explode(',', $config->spam_keywords);
+            $fucking_words = explode(',', $config->keywords_spam);
             foreach($fucking_words as $spam) {
                 $fuck = trim($spam);
                 if($fuck !== "") {
@@ -115,8 +115,8 @@ Weapon::add('shield_before', function() use($config, $speak) {
                     $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
                     // Sending email notification ...
                     if( ! Guardian::happy()) {
-                        if(Notify::send($request['email'], $config->author_email, $speak->comment_notification_subject, $mail, 'comment:')) {
-                            Weapon::fire('on_comment_notification_construct', array($request, $config->author_email, $speak->comment_notification_subject, $mail));
+                        if(Notify::send($request['email'], $config->author->email, $speak->comment_notification_subject, $mail, 'comment:')) {
+                            Weapon::fire('on_comment_notification_construct', array($request, $config->author->email, $speak->comment_notification_subject, $mail));
                         }
                     }
                 }

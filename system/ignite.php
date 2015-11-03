@@ -108,7 +108,7 @@ Weapon::add('meta', function() {
         $description = strip_tags($config->description);
     }
     $html .= Cell::meta('description', $description, array(), 2) . NL;
-    $html .= Cell::meta('author', strip_tags($config->author), array(), 2) . NL;
+    $html .= Cell::meta('author', strip_tags($config->author->name), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 

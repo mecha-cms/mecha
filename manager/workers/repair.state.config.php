@@ -9,7 +9,6 @@ return array(
     'language_direction' => 'ltr',
     'shield' => 'normal',
     'per_page' => 7,
-    'email_notification' => true, // currently unused
     'comments' => true,
     'comment_moderation' => false,
     'comment_notification_email' => true,
@@ -18,7 +17,6 @@ return array(
     'excerpt_tail' => '&hellip;',
     'html_minifier' => true,
     'html_parser' => HTML_PARSER,
-    'widget_year_first' => true,
     'widget_include_css' => true,
     'widget_include_js' => true,
 
@@ -28,12 +26,14 @@ return array(
     'slogan' => 'Site slogan goes here.',
     'description' => 'Site description goes here.',
     'keywords' => 'blog, diary, notes, personal',
-    'spam_keywords' => "",
+    'keywords_spam' => "",
 
     // Authorization
-    'author' => Guardian::get('author'),
-    'author_profile_url' => "",
-    'author_email' => Guardian::get('email'),
+    'author' => array(
+        'name' => Guardian::get('author'),
+        'email' => Guardian::get('email'),
+        'url' => ""
+    ),
 
     // Index Page
     'index' => array(
@@ -74,12 +74,12 @@ return array(
     'defaults' => array(
         'article_title' => "",
         'article_content' => "",
-        'article_custom_css' => "<style media=\"screen\">\n\n</style>",
-        'article_custom_js' => "<script>\n\n</script>",
+        'article_css' => "<style media=\"screen\">\n\n</style>",
+        'article_js' => "<script>\n\n</script>",
         'page_title' => "",
         'page_content' => "",
-        'page_custom_css' => "<style media=\"screen\">\n\n</style>",
-        'page_custom_js' => "<script>\n\n</script>"
+        'page_css' => "<style media=\"screen\">\n\n</style>",
+        'page_js' => "<script>\n\n</script>"
     )
 
 );

@@ -45,8 +45,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         if( ! isset($article->fields)) $article->fields = array();
         if( ! isset($article->content_type)) $article->content_type = $config->html_parser;
         if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $article->date->unix) . $extension_o)) {
-            $article->css_raw = $config->defaults->article_custom_css;
-            $article->js_raw = $config->defaults->article_custom_js;
+            $article->css_raw = $config->defaults->article_css;
+            $article->js_raw = $config->defaults->article_js;
         }
         // Remove automatic article description data from article composer
         $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($article->path)), 2);
@@ -75,8 +75,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             'description' => "",
             'kind' => array(),
             'author' => Guardian::get('author'),
-            'css_raw' => $config->defaults->article_custom_css,
-            'js_raw' => $config->defaults->article_custom_js,
+            'css_raw' => $config->defaults->article_css,
+            'js_raw' => $config->defaults->article_js,
             'fields' => array()
         ));
         Config::set(array(
@@ -90,8 +90,8 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         Guardian::checkToken($request['token']);
         $task_connect = $task_connect_page = $article;
         $task_connect_segment = 'article';
-        $task_connect_page_css = $config->defaults->article_custom_css;
-        $task_connect_page_js = $config->defaults->article_custom_js;
+        $task_connect_page_css = $config->defaults->article_css;
+        $task_connect_page_js = $config->defaults->article_js;
         include DECK . DS . 'workers' . DS . 'task.field.5.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         $kind = isset($request['kind']) ? $request['kind'] : array(0);

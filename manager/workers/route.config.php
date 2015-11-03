@@ -20,7 +20,6 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             'comments' => false,
             'comment_moderation' => false,
             'comment_notification_email' => false,
-            'widget_year_first' => false,
             'widget_include_css' => false,
             'widget_include_js' => false,
             'html_minifier' => false,
@@ -69,7 +68,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Guardian::memorize($request);
         }
         // Check for invalid email address
-        if(trim($request['author_email']) !== "" && ! Guardian::check($request['author_email'], '->email')) {
+        if(trim($request['author']['email']) !== "" && ! Guardian::check($request['author']['email'], '->email')) {
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }

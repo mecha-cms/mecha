@@ -3,7 +3,7 @@
   <a class="tab" href="<?php echo $config->url . '/' . $config->manager->slug;  ?>/article/ignite" data-confirm-text="<?php echo $speak->notify_confirm_page_leave; ?>"><?php echo Jot::icon('plus-square', 'fw') . ' ' . $speak->new; ?></a>
   <?php endif; ?>
   <a class="tab active" href="#tab-content-1"><?php echo Jot::icon('pencil', 'fw') . ' ' . $speak->compose; ?></a>
-  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('leaf', 'fw') . ' ' . $speak->manager->title_custom_css_and_js; ?></a>
+  <a class="tab" href="#tab-content-2"><?php echo Jot::icon('leaf', 'fw') . ' ' . $speak->manager->title_css_and_js_custom; ?></a>
   <a class="tab" href="#tab-content-3"><?php echo Jot::icon('th-list', 'fw') . ' ' . $speak->fields; ?></a>
   <a class="tab ajax-post" href="#tab-content-4" data-action-url="<?php echo $config->url . '/' . $config->manager->slug . '/ajax/preview:' . $segment; ?>" data-text-progress="<?php echo $speak->previewing; ?>&hellip;" data-text-error="<?php echo $speak->error; ?>." data-scope="#form-<?php echo $default->id ? 'repair' : 'ignite'; ?>" data-target="#form-<?php echo $default->id ? 'repair' : 'ignite'; ?>-preview"><?php echo Jot::icon('eye', 'fw') . ' ' . $speak->preview; ?></a>
 </div>

@@ -845,7 +845,7 @@ class Get extends Base {
         $results['excerpt'] = "";
 
         if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
+        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author->name, $FP, 'author');
 
         if( ! isset($results['description'])) {
             $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
@@ -1145,7 +1145,7 @@ class Get extends Base {
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
         if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author, $FP, 'author');
+        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author->name, $FP, 'author');
         if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();

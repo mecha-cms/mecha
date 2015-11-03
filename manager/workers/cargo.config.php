@@ -26,7 +26,9 @@
 
       $language = array();
       foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
-          $language[File::B($folder)] = File::B($folder);
+          $s = Text::toArray(File::open($folder . DS . 'speak.txt')->get('  title:'), S, '  ');
+          $folder = File::B($folder);
+          $language[$folder] = isset($s['__']['title']) ? $s['__']['title'] : $folder;
       }
       echo Form::select('language', $language, Guardian::wayback('language', $config->language), array(
           'class' => 'select-block'
@@ -96,7 +98,6 @@
     <div class="grid-group">
       <span class="grid span-2"></span>
       <div class="grid span-4">
-        <div><?php echo Form::checkbox('widget_year_first', 'true', Guardian::wayback('widget_year_first', $config->widget_year_first), $speak->manager->title_widget_time); ?></div>
         <div><?php echo Form::checkbox('widget_include_css', 'true', Guardian::wayback('widget_include_css', $config->widget_include_css), $speak->manager->title_widget_include_css); ?></div>
         <div><?php echo Form::checkbox('widget_include_js', 'true', Guardian::wayback('widget_include_js', $config->widget_include_js), $speak->manager->title_widget_include_js); ?></div>
       </div>
@@ -155,7 +156,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_keyword_spam; ?></span>
       <span class="grid span-4">
-      <?php echo Form::textarea('spam_keywords', Guardian::wayback('spam_keywords', $config->spam_keywords), $speak->manager->placeholder_keyword_spam, array(
+      <?php echo Form::textarea('keywords_spam', Guardian::wayback('keywords_spam', $config->keywords_spam), $speak->manager->placeholder_keyword_spam, array(
           'class' => 'textarea-block'
       )); ?>
       </span>
@@ -166,7 +167,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->name; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('author', Guardian::wayback('author', $config->author), null, array(
+      <?php echo Form::text('author[name]', Guardian::wayback('author.name', $config->author->name), null, array(
           'class' => 'input-block'
       )); ?>
       </span>
@@ -174,7 +175,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->url; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('author_profile_url', Guardian::wayback('author_profile_url', $config->author_profile_url), null, array(
+      <?php echo Form::text('author[url]', Guardian::wayback('author.url', $config->author->url), null, array(
           'class' => 'input-block'
       )); ?>
       </span>
@@ -182,7 +183,7 @@
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->email; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('author_email', Guardian::wayback('author_email', $config->author_email), null, array(
+      <?php echo Form::text('author[email]', Guardian::wayback('author.email', $config->author->email), null, array(
           'class' => 'input-block'
       )); ?>
       </span>
@@ -241,9 +242,9 @@
         </span>
       </label>
       <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
+        <span class="grid span-2 form-label"><?php echo $speak->manager->title_css_custom; ?></span>
         <span class="grid span-4">
-        <?php echo Form::textarea('defaults[' . $page . '_custom_css]', Guardian::wayback('defaults.' . $page . '_custom_css', Config::get('defaults.' . $page . '_custom_css')), null, array(
+        <?php echo Form::textarea('defaults[' . $page . '_css]', Guardian::wayback('defaults.' . $page . '_css', Config::get('defaults.' . $page . '_css')), null, array(
             'class' => array(
                 'textarea-block',
                 'code'
@@ -252,9 +253,9 @@
         </span>
       </label>
       <label class="grid-group">
-        <span class="grid span-2 form-label"><?php echo $speak->manager->title_custom_js; ?></span>
+        <span class="grid span-2 form-label"><?php echo $speak->manager->title_js_custom; ?></span>
         <span class="grid span-4">
-        <?php echo Form::textarea('defaults[' . $page . '_custom_js]', Guardian::wayback('defaults.' . $page . '_custom_js', Config::get('defaults.' . $page . '_custom_js')), null, array(
+        <?php echo Form::textarea('defaults[' . $page . '_js]', Guardian::wayback('defaults.' . $page . '_js', Config::get('defaults.' . $page . '_js')), null, array(
             'class' => array(
                 'textarea-block',
                 'code'
