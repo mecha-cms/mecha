@@ -1,10 +1,21 @@
+# --------
+# METADATA
+# --------
+
+__:
+  title: English
+  author: Taufik Nurrohman
+  url: http://mecha-cms.com
+  version: 1.2.0
+
+
 # ----------------------------
 # SOME DEFAULT TEXT FOR SHIELD
 # ----------------------------
 
 home: Home
-
 about: About
+contact: Contact
 
 author: Author
 authors: Authors
@@ -221,12 +232,6 @@ comment_replies: Replies
 comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 comment_notification: A new comment has been added to <a href="%s">this page</a>
 comment_notification_subject: A new comment has been added.
-
-contact_name: Name
-contact_email: Email
-contact_url: URL
-contact_message: Message
-contact_subject: Subject
 
 title: Title
 titles: Titles
@@ -683,8 +688,10 @@ manager:
   placeholder_content: Content goes here&hellip;
   placeholder_description: Description goes here&hellip;
   placeholder_description_: Some description about this %s (optional)
-  placeholder_css: Custom CSS goes here&hellip;
-  placeholder_js: Custom JavaScript goes here&hellip;
+  placeholder_css: CSS goes here&hellip;
+  placeholder_css_custom: Custom CSS goes here&hellip;
+  placeholder_js: JavaScript goes here&hellip;
+  placeholder_js_custom: Custom JavaScript goes here&hellip;
   placeholder_file: Select a file&hellip;
   placeholder_file_name: example-file-name.txt
   placeholder_folder_name: example-folder-name
@@ -694,13 +701,13 @@ manager:
   title_new_: New %s
   title_your_: Your %s
 
-  title_custom_css_and_js: Custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript
+  title_css_and_js_custom: Custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript
 
   title_live_preview_css: Live Preview <abbr title="Cascading Style Sheet">CSS</abbr>
   title_live_preview_js: Live Preview <abbr title="JavaScript">JS</abbr>
 
-  title_custom_css: Custom <abbr title="Cascading Style Sheet">CSS</abbr>
-  title_custom_js: Custom <abbr title="JavaScript">JS</abbr>
+  title_css_custom: Custom <abbr title="Cascading Style Sheet">CSS</abbr>
+  title_js_custom: Custom <abbr title="JavaScript">JS</abbr>
 
   title_title_separator: Title Separator
 
@@ -718,6 +725,8 @@ manager:
 
   title_per_page: Per Page
   title_language_direction: Language Direction
+  title_language_direction_ltr: Left to Right (LTR)
+  title_language_direction_rtl: Right to Left (RTL)
   title_keyword_spam: Spam Keywords
 
   title_comment_allow: Allow Comments
@@ -730,7 +739,6 @@ manager:
   title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
   title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 
-  title_widget_time: Time Format as <code>YYYY-MM-DD</code> (year before month)
   title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
   title_widget_include_js: Include Default Widget&rsquo;s JavaScript to the Shield
 

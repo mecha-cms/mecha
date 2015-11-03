@@ -6,9 +6,9 @@
   </div>
 </div>
 <label class="grid-group">
-  <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_css; ?></span>
+  <span class="grid span-1 form-label"><?php echo $speak->manager->title_css_custom; ?></span>
   <span class="grid span-5">
-  <?php echo Form::textarea('css', Guardian::wayback('css', $default->css_raw), $speak->manager->placeholder_css, array(
+  <?php echo Form::textarea('css', Guardian::wayback('css', $default->css_raw), $speak->manager->placeholder_css_custom, array(
       'class' => array(
           'textarea-block',
           'textarea-expand',
@@ -18,9 +18,9 @@
   </span>
 </label>
 <label class="grid-group">
-  <span class="grid span-1 form-label"><?php echo $speak->manager->title_custom_js; ?></span>
+  <span class="grid span-1 form-label"><?php echo $speak->manager->title_js_custom; ?></span>
   <span class="grid span-5">
-  <?php echo Form::textarea('js', Guardian::wayback('js', $default->js_raw), $speak->manager->placeholder_js, array(
+  <?php echo Form::textarea('js', Guardian::wayback('js', $default->js_raw), $speak->manager->placeholder_js_custom, array(
       'class' => array(
           'textarea-block',
           'textarea-expand',

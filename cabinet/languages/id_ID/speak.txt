@@ -1,10 +1,21 @@
+# --------
+# METADATA
+# --------
+
+__:
+  title: Bahasa Indonesia
+  author: Taufik Nurrohman
+  url: http://mecha-cms.com
+  version: 1.2.0
+
+
 # ----------------------------
 # SOME DEFAULT TEXT FOR SHIELD
 # ----------------------------
 
 home: Beranda
-
 about: Tentang
+contact: Kontak
 
 author: Penulis
 authors: Penulis
@@ -221,12 +232,6 @@ comment_replies: Balasan
 comment_guide: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 comment_notification: Komentar baru telah ditambahkan ke <a href="%s">halaman ini</a>
 comment_notification_subject: Komentar baru telah ditambahkan.
-
-contact_name: Nama
-contact_email: Email
-contact_url: URL
-contact_message: Pesan
-contact_subject: Subjek
 
 title: Judul
 titles: Judul
@@ -683,8 +688,10 @@ manager:
   placeholder_content: Konten di sini&hellip;
   placeholder_description: Deskripsi di sini&hellip;
   placeholder_description_: Deskripsi tentang %s ini (opsional)
-  placeholder_css: CSS kustom di sini&hellip;
+  placeholder_css: CSS di sini&hellip;
+  placeholder_css_custom: CSS kustom di sini&hellip;
   placeholder_js: JavaScript di sini&hellip;
+  placeholder_js_custom: JavaScript di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
   placeholder_file_name: contoh-nama-berkas.txt
   placeholder_folder_name: contoh-nama-folder
@@ -694,13 +701,13 @@ manager:
   title_new_: %s Baru
   title_your_: %s Anda
 
-  title_custom_css_and_js: <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript Kustom
+  title_css_and_js_custom: <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript Kustom
 
   title_live_preview_css: Pratinjau <abbr title="Cascading Style Sheet">CSS</abbr> Langsung
   title_live_preview_js: Pratinjau <abbr title="JavaScript">JS</abbr> Langsung
 
-  title_custom_css: <abbr title="Cascading Style Sheet">CSS</abbr> Kustom
-  title_custom_js: <abbr title="JavaScript">JS</abbr> Kustom
+  title_css_custom: <abbr title="Cascading Style Sheet">CSS</abbr> Kustom
+  title_js_custom: <abbr title="JavaScript">JS</abbr> Kustom
 
   title_title_separator: Pemisah Judul
 
@@ -718,6 +725,8 @@ manager:
 
   title_per_page: Per Halaman
   title_language_direction: Direksi Bahasa
+  title_language_direction_ltr: Left to Right (LTR)
+  title_language_direction_rtl: Right to Left (RTL)
   title_keyword_spam: Kata Kunci Sampah
 
   title_comment_allow: Izinkan Komentar
@@ -730,7 +739,6 @@ manager:
   title_html_minifier: Kompres Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 
-  title_widget_time: Format Waktu sebagai <code>YYYY-MM-DD</code> (tahun sebelum bulan)
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
   title_widget_include_js: Sertakan JavaScript Widget Bawaan ke Tameng
 
