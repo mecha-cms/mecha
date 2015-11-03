@@ -160,9 +160,8 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     } else {
         Shield::abort('404-archive');
     }
-    $time = ($config->widget_year_first ? $year . ', ' . $months[(int) $month - 1] : $months[(int) $month - 1] . ' ' . $year);
     Config::set(array(
-        'page_title' => sprintf($config->archive->title, $time) . $config->title_separator . $config->title,
+        'page_title' => sprintf($config->archive->title, $year . ', ' . $months[(int) $month - 1]) . $config->title_separator . $config->title,
         'offset' => $offset,
         'archive_query' => $slug,
         'articles' => $articles,

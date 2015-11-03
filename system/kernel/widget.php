@@ -3,6 +3,7 @@
 class Widget {
 
     protected static $o = array();
+    protected static $o_x = array();
 
     public static $id = array(
         'manager_menu' => 1,
@@ -100,12 +101,11 @@ class Widget {
         $T4 = str_repeat($T1, 4);
         $config = Config::get();
         $speak = Config::speak();
-        $year_first = $config->widget_year_first;
         $query = $config->archive_query;
         $month_names = (array) $speak->month_names;
         $archives = array();
         if( ! $files = Get::articles($sort)) {
-            return O_BEGIN . '<div class="widget widget-archive">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
+            return O_BEGIN . '<div class="widget widget-archive widget-archive-' . strtolower($type) . '">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
         }
         if($type === 'HIERARCHY') {
             $i = 0;
@@ -127,7 +127,7 @@ class Widget {
                     $html .= $T3 . '<ul>' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
-                            $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . ($year_first ? $year . ' ' . $month_names[(int) $month - 1] : $month_names[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                            $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                         }
                     }
                     $html .= $T3 . '</ul>' . NL;
@@ -153,7 +153,7 @@ class Widget {
                 $html .= $T1 . '<ul>' . NL;
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . ($year_first ? $year . ' ' . $month_names[(int) $month - 1] : $month_names[(int) $month - 1] . ' ' . $year) . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                    $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
                     $i++;
                 }
                 $html .= $T1 . '</ul>' . NL;
@@ -166,7 +166,7 @@ class Widget {
                 $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . ($year_first ? $year . ' ' . $month_names[(int) $month - 1] : $month_names[(int) $month - 1] . ' ' . $year) . ' (' . $counter[$archive] . ')</option>' . NL;
+                    $html .= $T2 . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
                 }
                 $html .= $T1 . '</select>' . NL;
                 $html .= '</div>' . O_END;
@@ -196,7 +196,7 @@ class Widget {
         $counters = array();
         $tags = array();
         if( ! $files = Get::articles()) {
-            return O_BEGIN . '<div class="widget widget-tag">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
+            return O_BEGIN . '<div class="widget widget-tag widget-tag-' . strtolower($type) . '">' . Config::speak('notify_empty', strtolower($speak->posts)) . '</div>' . O_END;
         }
         foreach($files as $file) {
             list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
@@ -218,7 +218,7 @@ class Widget {
             }
         }
         if(empty($tags)) {
-            return O_BEGIN . '<div class="widget widget-tag">' . Config::speak('notify_empty', strtolower($speak->tags)) . '</div>' . O_END;
+            return O_BEGIN . '<div class="widget widget-tag widget-tag-' . strtolower($type) . '">' . Config::speak('notify_empty', strtolower($speak->tags)) . '</div>' . O_END;
         }
         $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
         if($type === 'LIST') {
@@ -283,7 +283,7 @@ class Widget {
         $html  = O_BEGIN . '<div class="widget widget-search widget-search-form" id="widget-search-' . self::$id['search_form'] . '">' . NL;
         self::$id['search_form']++;
         $html .= $T1 . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
-        $html .= $T2 . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! is_null($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ' <button type="submit">' . (is_null($submit) ? $speak->search : $submit) . '</button>' . NL;
+        $html .= $T2 . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! is_null($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ($submit !== false ? ' <button type="submit">' . (is_null($submit) ? $speak->search : $submit) . '</button>' : "") . NL;
         $html .= $T1 . '</form>' . NL;
         $html .= '</div>' . O_END;
         $html  = Filter::apply('widget', $html);
@@ -454,36 +454,47 @@ class Widget {
 
     public static function add($kin, $action) {
         $c = get_called_class();
-        if(isset(self::$o[$c][$kin])) {
-            Guardian::abort('<code>' . $c . '::' . $kin . '()</code> already exist.');
+        if( ! isset(self::$o_x[$c][$kin])) {
+            if(isset(self::$o[$c][$kin])) {
+                Guardian::abort('<code>' . $c . '::' . $kin . '()</code> already exist.');
+            }
+            self::$o[$c][$kin] = $action;
         }
-        self::$o[$c][$kin] = $action;
+    }
+
+
+    /**
+     * Remove a Custom Widget
+     * ----------------------
+     *
+     * [1]. Widget::remove('my_custom_widget');
+     *
+     */
+
+    public static function remove($kin) {
+        $c = get_called_class();
+        self::$o_x[$c][$kin] = 1;
+        unset(self::$o[$c][$kin]);
+    }
+
+
+    /**
+     * Check a Custom Widget
+     * ---------------------
+     *
+     * [1]. if(Widget::exist('my_custom_widget')) { ... }
+     *
+     */
+
+    public static function exist($kin, $fallback = false) {
+        $c = get_called_class();
+        return isset(self::$o[$c][$kin]) ? self::$o[$c][$kin] : $fallback;
     }
 
 
     /**
      * Custom Widget
      * -------------
-     *
-     * [1]. Widget::call('my_custom_widget', $a, $b, $c);
-     *
-     */
-
-    public static function call($kin) {
-        $c = get_called_class();
-        if( ! isset(self::$o[$c][$kin])) {
-            Guardian::abort('<code>' . $c . '::call(\'' . $kin . '\')</code> does not exist.');
-        }
-        $arguments = array_slice(func_get_args(), 1);
-        $html = call_user_func_array(self::$o[$c][$kin], $arguments);
-        $html = Filter::apply('widget', $html);
-        return Filter::apply('widget:custom.' . Text::parse($kin, '->snake_case'), Filter::apply('widget:custom.' . $kin, Filter::apply('widget:custom', $html)));
-    }
-
-
-    /**
-     * Alternate Method for Calling the Custom Widget
-     * ----------------------------------------------
      *
      * [1]. Widget::my_custom_widget($a, $b, $c);
      *
