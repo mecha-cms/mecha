@@ -91,6 +91,31 @@ class HTTP extends Base {
 
     /**
      * ============================================================
+     *  OVERWRITE HTTP URL QUERY
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo HTTP::query('offset', 4);
+     *
+     * ------------------------------------------------------------
+     *
+     */
+
+    public static function query($query = array(), $value = 1) {
+        if(func_num_args() === 2) {
+            $query = array($query => $value);
+        }
+        $query = ! empty($query) ? array_merge($_GET, $query) : $_GET;
+        $results = array();
+        foreach($query as $k => $v) {
+            $results[] = $k . '=' . Text::parse($v, '->encoded_url');
+        }
+        return ! empty($results) ? '?' . implode('&amp;', $results) : "";
+    }
+
+    /**
+     * ============================================================
      *  SET HTTP RESPONSE HEADER
      * ============================================================
      *
