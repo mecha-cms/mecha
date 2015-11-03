@@ -710,12 +710,12 @@ class Converter extends Base {
     }
 
     // internal only (white-space encode)
-    protected static function WE($input) {
+    public static function WE($input) {
         return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $input);
     }
 
     // internal only (white-space decode)
-    protected static function WD($input) {
+    public static function WD($input) {
         return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
     }
 
