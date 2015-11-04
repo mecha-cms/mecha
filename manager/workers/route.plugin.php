@@ -61,7 +61,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         'offset' => $offset,
         'files' => ! empty($plugins) ? $plugins : false,
         'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.plugin.php'
+        'cargo' => 'cargo.plugin.php'
     ));
     Shield::lot('segment', 'plugin')->attach('manager', false);
 });
@@ -88,7 +88,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
         'file' => $info,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.plugin.php'
+        'cargo' => 'repair.plugin.php'
     ));
     Shield::lot(array(
         'segment' => 'plugin',
@@ -138,7 +138,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
         'file' => $info,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.plugin.php'
+        'cargo' => 'kill.plugin.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

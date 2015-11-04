@@ -9,7 +9,7 @@
 Route::accept($config->manager->slug . '/error', function() use($config, $speak) {
     Config::set(array(
         'page_title' => $speak->errors . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.error.php'
+        'cargo' => 'cargo.error.php'
     ));
     Shield::lot(array(
         'segment' => 'error',

@@ -272,7 +272,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             'page_title' => $title . $config->title_separator . $config->title,
             'page' => array(
                 'title' => $title,
-                'content' => '<p>' . $speak->notify_error_not_found . '</p>'
+                'content' => ""
             ),
             'search_query' => $query
         ));

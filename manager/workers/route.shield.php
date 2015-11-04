@@ -41,7 +41,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.shield.php'
+        'cargo' => 'cargo.shield.php'
     ));
     $the_shields = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
     sort($the_shields);
@@ -68,7 +68,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     }
     Config::set(array(
         'page_title' => $speak->creating . ': ' . $speak->shield . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
+        'cargo' => 'repair.shield.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -127,7 +127,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     $G = array('data' => array('path' => $file, 'name' => $path, 'content' => $content));
     Config::set(array(
         'page_title' => $speak->editing . ': ' . File::B($path) . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.shield.php'
+        'cargo' => 'repair.shield.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -191,7 +191,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info['title']) . $config->title_separator . $config->manager->title,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.shield.php'
+        'cargo' => 'kill.shield.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

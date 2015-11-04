@@ -23,7 +23,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
         'offset' => $offset,
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/article'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.article.php'
+        'cargo' => 'cargo.article.php'
     ));
     Shield::lot('segment', 'article')->attach('manager', false);
 });
@@ -35,7 +35,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
  */
 
 Route::accept(array($config->manager->slug . '/article/ignite', $config->manager->slug . '/article/repair/id:(:num)'), function($id = false) use($config, $speak) {
-    Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.article.php');
+    Config::set('cargo', 'repair.article.php');
     if($id && $article = Get::article($id, array('content', 'excerpt', 'tags', 'comments'))) {
         $extension_o = $article->state === 'published' ? '.txt' : '.draft';
         if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $article->author) {
@@ -170,7 +170,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $article->title . $config->title_separator . $config->manager->title,
         'article' => $article,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.article.php'
+        'cargo' => 'kill.article.php'
     ));
     $G = array('data' => Mecha::A($article));
     if($request = Request::post()) {

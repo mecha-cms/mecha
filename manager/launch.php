@@ -54,7 +54,7 @@ Weapon::add('shell_after', function() use($config) {
 }, 10);
 
 Weapon::add('cargo_after', function() use($config, $speak) {
-    if(Widget::$id['manager_bar'] <= 1) {
+    if(Config::get('widget_manager_bar_id', 0) <= 1) {
         echo O_BEGIN . Widget::manager('BAR') . O_END; // include once ...
     }
 }, 20);
@@ -66,7 +66,9 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
         'manager/assets/sword/dashboard.task.file.js',
         'manager/assets/sword/dashboard.task.query.js',
         'manager/assets/sword/dashboard.task.session.js',
-        'manager/assets/sword/dashboard.task.slug.js'
+        'manager/assets/sword/dashboard.task.slug.js',
+        'assets/sword/manager.js', // => taken from the current shield folder (if available)
+        'sword/manager.js' // => --ibid (tries to find the `sword` folder that is placed outside the `assets` folder)
     ), "", 'sword/dashboard.min.js');
     $constant = get_defined_constants(true);
     $constant_js = "";
@@ -307,7 +309,7 @@ Weapon::add('shield_before', function() {
             File::open($errors)->delete();
             $total = '&infin;';
         }
-        foreach(explode("\n", File::open($errors)->read()) as $message) {
+        foreach(explode("\n", File::open($errors)->get()) as $message) {
             if(trim($message) !== "") $total++;
         }
         $menus[$speak->error] = array(
@@ -370,4 +372,21 @@ Weapon::add('shield_before', function() {
 
 if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end . '.php')) {
     require $detour;
+}
+
+if($config->page_type === 'manager') {
+    Weapon::add('shield_before', function() {
+        ob_start();
+        extract(Shield::cargo()); // reload data ...
+        if($cargo = File::exist(DECK . DS . 'workers' . DS . $config->cargo)) {
+            include $cargo;
+        }
+        $cargo_content = ob_get_clean();
+        Shield::lot('page', (object) array(
+            'title' => $config->page_title,
+            'url' => "",
+            'link' => "",
+            'content' => $cargo_content
+        ));
+    });
 }

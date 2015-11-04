@@ -28,7 +28,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.cache.php'
+        'cargo' => 'cargo.cache.php'
     ));
     Shield::lot('segment', 'cache')->attach('manager', false);
 });
@@ -50,7 +50,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
     $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
     Config::set(array(
         'page_title' => $speak->editing . ': ' . File::B($path) . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.cache.php'
+        'cargo' => 'repair.cache.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -97,7 +97,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($path) : $speak->caches) . $config->title_separator . $config->manager->title,
         'files' => $deletes,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.cache.php'
+        'cargo' => 'kill.cache.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

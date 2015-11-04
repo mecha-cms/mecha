@@ -23,7 +23,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
         'offset' => $offset,
         'pages' => $pages,
         'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.page.php'
+        'cargo' => 'cargo.page.php'
     ));
     Shield::lot('segment', 'page')->attach('manager', false);
 });
@@ -35,7 +35,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
  */
 
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
-    Config::set('cargo', DECK . DS . 'workers' . DS . 'repair.page.php');
+    Config::set('cargo', 'repair.page.php');
     if($id && $page = Get::page($id, array('content', 'excerpt', 'tags', 'comments'))) {
         $extension_o = $page->state === 'published' ? '.txt' : '.draft';
         if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
@@ -160,7 +160,7 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $page->title . $config->title_separator . $config->manager->title,
         'page' => $page,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.page.php'
+        'cargo' => 'kill.page.php'
     ));
     $G = array('data' => Mecha::A($page));
     if($request = Request::post()) {

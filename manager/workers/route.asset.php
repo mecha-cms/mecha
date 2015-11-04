@@ -107,7 +107,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'offset' => $offset,
         'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.asset.php'
+        'cargo' => 'cargo.asset.php'
     ));
     Shield::lot('segment', 'asset')->attach('manager', false);
 });
@@ -130,7 +130,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
     }
     Config::set(array(
         'page_title' => $speak->editing . ': ' . File::B($old) . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.asset.php'
+        'cargo' => 'repair.asset.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -200,7 +200,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($name) : $speak->assets) . $config->title_separator . $config->manager->title,
         'files' => $deletes,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.asset.php'
+        'cargo' => 'kill.asset.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

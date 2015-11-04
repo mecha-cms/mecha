@@ -12,7 +12,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
     }
     Config::set(array(
         'page_title' => $speak->configs . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.config.php'
+        'cargo' => 'cargo.config.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

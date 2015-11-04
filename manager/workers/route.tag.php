@@ -11,7 +11,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
         'files' => $tags,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.tag.php'
+        'cargo' => 'cargo.tag.php'
     ));
     $G = array('data' => $tags);
     if($request = Request::post()) {

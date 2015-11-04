@@ -15,7 +15,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
         'files' => ! empty($fields) ? $fields : false,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.field.php'
+        'cargo' => 'cargo.field.php'
     ));
     Shield::lot('segment', 'field')->attach('manager', false);
 });
@@ -54,7 +54,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     $G['data']['key'] = $key;
     Config::set(array(
         'file' => $data,
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.field.php'
+        'cargo' => 'repair.field.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -129,7 +129,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $data['title'] . $config->title_separator . $config->manager->title,
         'file' => $data,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.field.php'
+        'cargo' => 'kill.field.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);

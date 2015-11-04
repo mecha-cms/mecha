@@ -293,7 +293,7 @@ class File extends Base {
             array_pop($p);
             return implode($s, $p);
         }
-        return dirname($path);
+        return dirname($path) === '.' ? "" : dirname($path);
     }
 
     // Get file name without extension

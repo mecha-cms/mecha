@@ -32,7 +32,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         'offset' => $offset,
         'responses' => $comments,
         'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.comment.php'
+        'cargo' => 'cargo.comment.php'
     ));
     Shield::lot('segment', 'comment')->attach('manager', false);
 });
@@ -54,7 +54,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => Mecha::A($comment),
-        'cargo' => DECK . DS . 'workers' . DS . 'repair.comment.php'
+        'cargo' => 'repair.comment.php'
     ));
     $G = array('data' => Mecha::A($comment));
     Config::set('html_parser', $comment->content_type);
@@ -124,7 +124,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
         'response' => $comment,
-        'cargo' => DECK . DS . 'workers' . DS . 'kill.comment.php'
+        'cargo' => 'kill.comment.php'
     ));
     if($request = Request::post()) {
         $P = array('data' => Mecha::A($comment));
