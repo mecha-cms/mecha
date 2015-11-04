@@ -26,10 +26,28 @@ Widget::add('tagLinks', function($connect = ', ') use($speak) {
     return ! empty($links) ? $text . ': ' . implode($connect, $links) : "";
 });
 
-// Add an arrow to the older and newer link text
+// Add an icon to the older and newer link text
 $speak->older = $speak->older . ' <i class="fa fa-angle-right"></i>';
 $speak->newer = '<i class="fa fa-angle-left"></i> ' . $speak->newer;
 Config::set(array(
     'speak.older' => $speak->older,
     'speak.newer' => $speak->newer
 ));
+
+// Add an icon to the comments title
+Filter::add('article:total_comments_text', function($content) {
+    return '<i class="fa fa-comments"></i> ' . $content;
+});
+
+// Add an icon to the article date
+Filter::add('article:date', function($data) {
+    $data['FORMAT_1'] = '<i class="fa fa-calendar"></i> ' . $data['FORMAT_1'];
+    $data['FORMAT_2'] = '<i class="fa fa-calendar"></i> ' . $data['FORMAT_2'];
+    return $data;
+});
+
+// Add an icon to the comment form button
+if($config->page_type === 'article') {
+    $speak->publish = '<i class="fa fa-check-circle"></i> ' . $speak->publish;
+    Config::set('speak.publish', $speak->publish);
+}

@@ -22,7 +22,7 @@
       <?php echo $speak->widget->tags; ?>
     </h4>
     <div class="widget-content">
-      <?php echo Widget::tag('LIST', 'ASC'); ?>
+      <?php echo Widget::tag(); ?>
     </div>
   </div>
   <div class="widget-wrapper">
@@ -38,7 +38,7 @@
       <?php echo $speak->widget->archives; ?>
     </h4>
     <div class="widget-content">
-      <?php echo Widget::archive('HIERARCHY', 'DESC'); ?>
+      <?php echo Widget::archive(); ?>
     </div>
   </div>
 </aside>
