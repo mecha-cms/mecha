@@ -1,0 +1,1 @@
+<a href="<?php echo $config->author->url; ?>" rel="author"><?php echo $article->author; ?></a>

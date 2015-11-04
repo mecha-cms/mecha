@@ -1,0 +1,1 @@
+ <a href="<?php echo $response->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>

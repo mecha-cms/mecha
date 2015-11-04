@@ -1,0 +1,1 @@
+<div><?php Weapon::fire('article_footer', array($article)); ?></div>

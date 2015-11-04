@@ -1,0 +1,1 @@
+<h4 class="comment-header"><?php echo $article->total_comments_text; ?></h4>

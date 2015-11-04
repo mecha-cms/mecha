@@ -1,0 +1,1 @@
+<?php Shield::chunk('page.title'); ?>

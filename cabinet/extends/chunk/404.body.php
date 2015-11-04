@@ -1,0 +1,1 @@
+<div class="post-body"><p><?php echo $speak->notify_error_not_found; ?></p></div>
