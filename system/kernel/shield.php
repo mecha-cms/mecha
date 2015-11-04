@@ -5,33 +5,12 @@ class Shield extends Base {
     protected static $lot = array();
 
     /**
-     * Do Nothing
-     * ----------
-     */
-
-    protected static function s_o_d($buffer) {
-        $buffer = Filter::apply('sanitize:input', $buffer);
-        return Filter::apply('sanitize:output', $buffer);
-    }
-
-    /**
-     * Minify HTML Output
-     * ------------------
-     */
-
-    protected static function s_o($buffer) {
-        $buffer = Filter::apply('sanitize:input', $buffer);
-        return Filter::apply('sanitize:output', Converter::detractSkeleton($buffer));
-    }
-
-    /**
      * Default Shortcut Variable(s)
      * ----------------------------
      */
 
     public static function cargo() {
         $config = Config::get();
-        $message = Notify::read();
         $results = array(
             'config' => $config,
             'speak' => $config->speak,
@@ -44,12 +23,8 @@ class Shield extends Base {
             'files' => $config->files,
             'file' => $config->file,
             'pager' => $config->pagination,
-            'manager' => Guardian::happy(),
-            'token' => Guardian::token(),
-            'message' => $message,
-            'messages' => $message
+            'manager' => Guardian::happy()
         );
-        unset($config, $message);
         self::$lot = array_merge($results, self::$lot);
         return self::$lot;
     }
@@ -222,8 +197,8 @@ class Shield extends Base {
                 Weapon::fire('shield_cache_before', array($G, $G));
                 echo Filter::apply('shield:cache', File::open($cache_path)->read());
                 // Clear session
-                Notify::clear();
                 Guardian::forget();
+                Notify::clear();
                 self::$lot = array();
                 // End shield cache
                 Weapon::fire('shield_cache_after', array($G, $G));
@@ -231,21 +206,31 @@ class Shield extends Base {
             }
         }
         // Begin shield
-        Weapon::fire('shield_before', array($G, $G));
-        ob_start($minify ? 'self::s_o' : 'self::s_o_d');
-        extract(Filter::apply('shield:lot', self::cargo()));
+        $token = Guardian::token();
+        $message = Notify::read();
         Session::set(Guardian::$token, $token);
         Session::set(Notify::$message, $message);
+        extract(Filter::apply('shield:lot', self::lot(array(
+            'token' => $token,
+            'message' => $message,
+            'messages' => $message
+        ))->cargo()));
+        Weapon::fire('shield_before', array($G, $G));
+        $content_detract = "";
+        ob_start(function($content) use($minify, $shield, &$content_detract) {
+            $content = Filter::apply('shield:input', $content, $shield);
+            $content = $minify ? Converter::detractSkeleton($content) : $content;
+            $content_detract = Filter::apply('shield:output', $content, $shield);
+            return $content_detract;
+        });
         require Filter::apply('shield:path', $shield);
         // Clear session
-        Notify::clear();
         Guardian::forget();
+        Notify::clear();
         self::$lot = array();
-        // Get shield content
-        $content = ob_get_contents();
         ob_end_flush();
         // Create shield cache
-        $G['data']['content'] = $minify ? self::s_o($content) : self::s_o_d($content);
+        $G['data']['content'] = $content_detract;
         if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
             File::write($G['data']['content'])->saveTo($cache_path);
@@ -296,10 +281,24 @@ class Shield extends Base {
      *
      */
 
-    public static function chunk($name, $vars = array()) {
+    public static function chunk($name, $vars = array(), $buffer = true) {
+        $G = array('data' => array('name' => $name));
         $name = Filter::apply('chunk:path', self::path($name));
-        extract(Filter::apply('chunk:lot', array_merge(self::cargo(), self::$lot, $vars)));
-        if($name) require $name;
+        if($name) {
+            extract(Filter::apply('chunk:lot', array_merge(self::cargo(), self::$lot, $vars)));
+            Weapon::fire('chunk_before', array($G, $G));
+            if($buffer) {
+                ob_start(function($content) use($name) {
+                    $content = Filter::apply('chunk:input', $content, $name);
+                    return Filter::apply('chunk:output', $content, $name);
+                });
+                require $name;
+                ob_end_flush();
+            } else {
+                require $name;
+            }
+            Weapon::fire('chunk_after', array($G, $G));
+        }
     }
 
 }

@@ -54,10 +54,10 @@ class Widget {
                 $_bars = Mecha::eat($_bars)->order('ASC', 'stack', true, 10)->vomit();
                 foreach($_bars as $k => $v) {
                     if(is_string($v)) {
-                        $bar  = $v;
+                        $bar = $v;
                     } else {
                         $t = ' data-tooltip="' . Text::parse(isset($v['description']) ? $v['description'] : $k, '->encoded_html') . '"';
-                        $bar  = isset($v['url']) ? '<a class="item" href="' . Converter::url($v['url']) . '"' . $t . '>' : '<span class="item a"' . $t . '>';
+                        $bar = isset($v['url']) ? '<a class="item" href="' . Converter::url($v['url']) . '"' . $t . '>' : '<span class="item a"' . $t . '>';
                         $bar .= isset($v['icon']) ? (strpos($v['icon'], '<') === false ? Jot::icon($v['icon']) : $v['icon']) : $k;
                         $bar .= ' <span class="label">' . $k . '</span>';
                         if(isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0)) {
@@ -71,7 +71,7 @@ class Widget {
             $html .= $T1 . Filter::apply('manager:bar', implode(' ', $bars)) . NL;
         }
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_manager_' . $kin . '_id', $id);
         return Filter::apply('widget:manager.' . $kin, Filter::apply('widget:manager', $html));
     }
@@ -116,11 +116,11 @@ class Widget {
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
-                    $html .= $T2 . '<li class="' . ($expand ? 'expanded' : 'collapsed') . ((int) $query === (int) $year ? ' selected' : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</a> <a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                    $html .= $T2 . '<li class="' . ($expand ? 'expanded' : 'collapsed') . ((int) $query === (int) $year ? ' selected' : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</a> <a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year)) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
                     $html .= $T3 . '<ul>' . NL;
                     foreach($months as $month => $days) {
                         if(is_array($days)) {
-                            $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                            $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                         }
                     }
                     $html .= $T3 . '</ul>' . NL;
@@ -141,7 +141,7 @@ class Widget {
                 $html .= $T1 . '<ul>' . NL;
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                    $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
                     $i++;
                 }
                 $html .= $T1 . '</ul>' . NL;
@@ -149,13 +149,13 @@ class Widget {
                 $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                 foreach($archives as $archive) {
                     list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<option value="' . $config->url . '/' . $config->archive->slug . '/' . $archive . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
+                    $html .= $T2 . '<option value="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
                 }
                 $html .= $T1 . '</select>' . NL;
             }
         }
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_archive_' . $kin . '_id', $id);
         return Filter::apply('widget:archive.' . $kin, Filter::apply('widget:archive', $html));
     }
@@ -211,7 +211,7 @@ class Widget {
         if($type === 'LIST') {
             $html .= $T1 . '<ul>' . NL;
             foreach($tags as $tag) {
-                $html .= $T2 . '<li' . ($config->tag_query === $tag['slug'] ? ' class="selected"' : "") . '><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
+                $html .= $T2 . '<li' . ($config->tag_query === $tag['slug'] ? ' class="selected"' : "") . '><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
             }
             $html .= $T1 . '</ul>' . NL;
         }
@@ -224,19 +224,19 @@ class Widget {
             $_html = array();
             foreach($tags as $tag) {
                 $size = ceil(($tag['count'] / $highest_count) * $max_level);
-                $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
+                $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
             }
             $html .= $T1 . implode(' ', $_html) . NL;
         }
         if($type === 'DROPDOWN') {
             $html .= $T1 . '<select>' . NL . ($config->tag_query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
             foreach($tags as $tag) {
-                $html .= $T2 . '<option value="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
+                $html .= $T2 . '<option value="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
             }
             $html .= $T1 . '</select>' . NL;
         }
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_tag_' . $kin . '_id', $id);
         return Filter::apply('widget:tag.' . $kin, Filter::apply('widget:tag', $html));
     }
@@ -259,11 +259,11 @@ class Widget {
         $config = Config::get();
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-search widget-search-form" id="widget-search-form-' . $id . '">' . NL;
-        $html .= $T1 . '<form action="' . $config->url . '/' . $config->search->slug . '" method="post">' . NL;
+        $html .= $T1 . '<form action="' . Filter::apply('search:url', Filter::apply('url', $config->url . '/' . $config->search->slug)) . '" method="post">' . NL;
         $html .= $T2 . '<input type="text" name="q" value="' . $config->search_query . '"' . ( ! is_null($placeholder) ? ' placeholder="' . $placeholder . '"' : "") . ' autocomplete="off"' . ES . ($submit !== false ? ' <button type="submit">' . (is_null($submit) ? $speak->search : $submit) . '</button>' : "") . NL;
         $html .= $T1 . '</form>' . NL;
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_search_form_id', $id);
         return Filter::apply('widget:search.form', Filter::apply('widget:search', $html));
     }
@@ -299,7 +299,7 @@ class Widget {
         }
         $html .= $T1 . '</ul>' . NL;
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_' . $class . '_post_id', $id);
         return Filter::apply('widget:' . $class . '.post', Filter::apply('widget:' . $class, $html));
     }
@@ -362,7 +362,7 @@ class Widget {
             $html .= $T1 . Config::speak('notify_empty', strtolower($speak->comments)) . NL;
         }
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_recent_comment_id', $id);
         return Filter::apply('widget:recent.comment', Filter::apply('widget:recent', $html));
     }
@@ -420,7 +420,7 @@ class Widget {
             $html .= $T1 . '</ul>' . NL;
         }
         $html .= '</div>' . O_END;
-        $html  = Filter::apply('widget', $html);
+        $html = Filter::apply('widget', $html);
         Config::set('widget_related_post_id', $id);
         return Filter::apply('widget:related.post', Filter::apply('widget:related', $html));
     }
@@ -501,7 +501,7 @@ class Widget {
             if(self::$o[$c][$kin]['wrap']) {
                 $html .= '</div>' . O_END;
             }
-            $html .= Filter::apply('widget', $html);
+            $html = Filter::apply('widget', $html);
             Config::set('widget_custom_' . $snake . '_id', $id);
             return Filter::apply('widget:custom.' . $snake, Filter::apply('widget:custom.' . $kin, Filter::apply('widget:custom', $html)));
         }

@@ -15,39 +15,44 @@
 Widget::add('tagLinks', function($connect = ', ') use($speak) {
     $config = Config::get();
     $links = array();
-    $source = $config->article->tags;
-    if( ! isset($source) || ! is_object($source)) return "";
-    foreach($source as $tag) {
+    if( ! isset($config->article->tags) || ! is_object($config->article->tags)) return "";
+    foreach($config->article->tags as $tag) {
         if($tag && $tag->id !== 0) {
-            $links[] = '<a href="' . $config->url . '/' . $config->tag->slug . '/' . $tag->slug . '" rel="tag">' . $tag->name . '</a>';
+            $url = Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag->slug));
+            $links[] = '<a href="' . $url . '" rel="tag">' . $tag->name . '</a>';
         }
     }
     $text = count($links) > 1 ? $speak->tags : $speak->tag;
     return ! empty($links) ? $text . ': ' . implode($connect, $links) : "";
 });
 
-// Add an icon to the older and newer link text
-$speak->older = $speak->older . ' <i class="fa fa-angle-right"></i>';
-$speak->newer = '<i class="fa fa-angle-left"></i> ' . $speak->newer;
-Config::set(array(
-    'speak.older' => $speak->older,
-    'speak.newer' => $speak->newer
-));
-
-// Add an icon to the comments title
-Filter::add('article:total_comments_text', function($content) {
-    return '<i class="fa fa-comments"></i> ' . $content;
+Filter::add('chunk:output', function($content, $path) use($speak) {
+    $name = File::N($path);
+    // Add an icon to the older and newer link text
+    if($name === 'pager') {
+        $content = str_replace('>' . $speak->newer . '<', '><i class="fa fa-angle-left"></i> ' . trim(strip_tags($speak->newer)) . '<', $content);
+        $content = str_replace('>' . $speak->older . '<', '>' . trim(strip_tags($speak->newer)) . ' <i class="fa fa-angle-right"></i><', $content);
+    }
+    // Add an icon to the article date
+    if($name === 'article.time') {
+        $content = str_replace('<time ', '<i class="fa fa-calendar"></i> <time ', $content);
+    }
+    // Add an icon to the comments title
+    if($name === 'comments.header') {
+        $content = str_replace(' class="comment-header">', ' class="comment-header"><i class="fa fa-comments"></i> ', $content);
+    }
+    // Add an icon to the comment form button
+    if($name === 'comment.form') {
+        $content = str_replace('>' . $speak->publish . '<', '><i class="fa fa-check-circle"></i> ' . trim(strip_tags($speak->publish)) . '<', $content);
+    }
+    // Add an icon to the comment form button
+    if($name === 'block.footer.copyright') {
+        $content = str_replace('>' . $speak->log_in . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_in)) . '<', $content);
+        $content = str_replace('>' . $speak->log_out . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_out)) . '<', $content);
+    }
+    // Add an icon to the login form button
+    if($name === 'cargo.login') {
+        $content = str_replace('>' . $speak->login . '<', '<i class="fa fa-key"></i> ' . trim(strip_tags($speak->login)) . '<', $content);
+    }
+    return $content;
 });
-
-// Add an icon to the article date
-Filter::add('article:date', function($data) {
-    $data['FORMAT_1'] = '<i class="fa fa-calendar"></i> ' . $data['FORMAT_1'];
-    $data['FORMAT_2'] = '<i class="fa fa-calendar"></i> ' . $data['FORMAT_2'];
-    return $data;
-});
-
-// Add an icon to the comment form button
-if($config->page_type === 'article') {
-    $speak->publish = '<i class="fa fa-check-circle"></i> ' . $speak->publish;
-    Config::set('speak.publish', $speak->publish);
-}
