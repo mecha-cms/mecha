@@ -23,12 +23,7 @@ $json = array(
         ),
         'description' => $config->description,
         'update' => date('c'),
-        'author' => array(
-            'name' => $config->author,
-            'url' => array(
-                'profile' => $config->author_profile_url
-            )
-        ),
+        'author' => (array) $config->author,
         'offset' => $config->offset,
         'total' => $config->total_articles,
         'tags' => Get::rawTags()

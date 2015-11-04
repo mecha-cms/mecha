@@ -1,0 +1,1 @@
+<p class="blog-slogan"><?php echo $config->slogan; ?></p>

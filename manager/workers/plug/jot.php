@@ -30,7 +30,7 @@ Jot::add('button', function($kind = 'default', $text = "", $name = null, $type =
     $s = is_string($name) ? explode(':', $name, 2) : array(null, null);
     $attr['class'] = array_merge(array('btn btn-' . str_replace('.', ' btn-', $kind[0])), (array) $attr['class']);
     $attr['disabled'] = strpos($kind[0], '.disabled') !== false ? true : null;
-    return Form::button($text, $s[0], isset($s[1]) ? $s[1] : null, $type, $attr, $indent);
+    return Form::button($text, $s[0], $type, isset($s[1]) ? $s[1] : null, $attr, $indent);
 });
 
 // `<a class="btn">`

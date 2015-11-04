@@ -67,8 +67,8 @@ class Navigator extends Base {
             $next = $current < ceil($total / $per_page) ? $current + 1 : false;
 
             // Generate next/previous URL for index page
-            self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector);
-            self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector);
+            self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
+            self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
 
             // Generate next/previous text for index page
             self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
@@ -117,8 +117,8 @@ class Navigator extends Base {
                     $next = isset($pages[$i + 1]) ? $pages[$i + 1] : false;
 
                     // Generate next/previous URL for single page
-                    self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector);
-                    self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector);
+                    self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
+                    self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
 
                     // Generate next/previous text for single page
                     self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;

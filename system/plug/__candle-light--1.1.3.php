@@ -13,7 +13,7 @@ if(
     strpos(File::open(SYSTEM . DS . 'log' . DS . 'users.txt')->read('-'), ' @pilot)') !== false
 ) {
     // Self destruct ...
-    File::open(SYSTEM . DS . 'plug' . DS . '__candle-light--1.1.3.php')->delete();
+    File::open(__FILE__)->delete();
 }
 
 if($pre_113 = File::exist(STATE . DS . 'fields.txt')) {

@@ -16,7 +16,7 @@ class Form extends Cell {
     }
 
     // `<button>`
-    public static function button($text = "", $name = null, $value = null, $type = null, $attr = array(), $indent = 0) {
+    public static function button($text = "", $name = null, $type = null, $value = null, $attr = array(), $indent = 0) {
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
             $name = ltrim($name, '.');

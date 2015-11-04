@@ -68,7 +68,7 @@ class Menu extends Base {
                     $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li><span class="a">' . $key . '</span></li>' . NL, $i + 1);
                 // List item with link: `array('foo' => '/')`
                 } else {
-                    $value = Converter::url($value);
+                    $value = Filter::apply('menu:url', Filter::apply('url', Converter::url($value)));
                     $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($value === $c_url_current || ($value !== $c_url && strpos($c_url_current . '/', $value . '/') === 0) ? ' class="' . $c_class['current'] . '"' : "") . '><a href="' . $value . '">' . $key . '</a></li>' . NL, $i + 1);
                 }
             } else {
@@ -79,6 +79,7 @@ class Menu extends Base {
                     $_key = $key;
                     $_value = '#';
                 }
+                $_value = Filter::apply('menu:url', Filter::apply('url', $_value));
                 $html .= Filter::apply($FP . 'list.item', $depth . str_repeat(TAB, $i + 1) . '<li' . ($_value === $c_url_current || ($_value !== $c_url && strpos($c_url_current . '/', $_value . '/') === 0) ? ' class="' . $c_class['current'] . '"' : "") . '>' . NL . str_repeat(TAB, $i + 2) . '<a href="' . $_value . '">' . $_key . '</a>' . NL . self::create($value, $type, $depth, $FP, $i + 2) . $depth . str_repeat(TAB, $i + 1) . '</li>' . NL, $i + 1);
             }
         }
@@ -86,11 +87,6 @@ class Menu extends Base {
     }
 
     public static function get($array = null, $type = 'ul', $depth = "", $FP = "") {
-        // Use menu file from the cabinet if `$array` is not defined
-        if(is_null($array)) {
-            $FP = 'navigation:';
-            $array = Text::toArray(Get::state_menu(), S, '    ');
-        }
         return O_BEGIN . rtrim(self::create($array, $type, $depth, $FP, 0), NL) . O_END;
     }
 

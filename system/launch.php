@@ -24,53 +24,12 @@ if(Guardian::happy() && $cargo = File::exist(DECK . DS . 'launch.php')) {
  * -------------------
  */
 
-if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) {
-    include $cargo;
-}
+if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) include $cargo;
+if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.login.php')) include $cargo;
 
 
 // Exclude these fields ...
 $excludes = array('content', 'content_raw', 'tags', 'css', 'js', 'comments');
-
-
-/**
- * Login Page
- * ----------
- *
- * [1]. manager/login
- *
- */
-
-Route::accept($config->manager->slug . '/login', function() use($config, $speak) {
-    if( ! File::exist(DECK . DS . 'launch.php')) {
-        Shield::abort('404-manager');
-    }
-    if(Guardian::happy()) {
-        Guardian::kick($config->manager->slug . '/article');
-    }
-    Config::set(array(
-        'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
-        'cargo' => DECK . DS . 'workers' . DS . 'cargo.login.php'
-    ));
-    if($request = Request::post()) {
-        Guardian::authorize()->kick(isset($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');
-    }
-    Shield::attach('manager-login');
-}, 20);
-
-
-/**
- * Logout Page
- * -----------
- *
- * [1]. manager/logout
- *
- */
-
-Route::accept($config->manager->slug . '/logout', function() use($config, $speak) {
-    Notify::success(ucfirst(strtolower($speak->logged_out)) . '.');
-    Guardian::reject()->kick($config->manager->slug . '/login');
-}, 21);
 
 
 /**
@@ -97,6 +56,9 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
             $articles = false;
         }
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('index:url', $url);
+    });
     Config::set(array(
         'page_title' => $config->index->title . $config->title_separator . $config->title,
         'offset' => $offset,
@@ -127,6 +89,9 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
     } else {
         Shield::abort('404-archive');
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('archive:url', $url);
+    });
     Config::set(array(
         'page_title' => sprintf($config->archive->title, $slug) . $config->title_separator . $config->title,
         'offset' => $offset,
@@ -160,6 +125,9 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
     } else {
         Shield::abort('404-archive');
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('archive:url', $url);
+    });
     Config::set(array(
         'page_title' => sprintf($config->archive->title, $year . ', ' . $months[(int) $month - 1]) . $config->title_separator . $config->title,
         'offset' => $offset,
@@ -194,6 +162,9 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     } else {
         Shield::abort('404-tag');
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('tag:url', $url);
+    });
     Config::set(array(
         'page_title' => sprintf($config->tag->title, $tag->name) . $config->title_separator . $config->title,
         'offset' => $offset,
@@ -259,6 +230,9 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
             $_articles[] = Get::article($file, $excludes);
         }
         unset($files);
+        Filter::add('pager:url', function($url) {
+            return Filter::apply('search:url', $url);
+        });
         Config::set(array(
             'page_title' => $title . $config->title_separator . $config->title,
             'offset' => $offset,
@@ -322,6 +296,9 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
         }
         unset($parts, $v);
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('article:url', $url);
+    });
     Config::set(array(
         'page_title' => $article->title . $config->title_separator . $config->title,
         'article' => $article,
@@ -462,16 +439,19 @@ Route::accept('(:any)', function($slug = "") use($config) {
     if($page->state === 'draft') {
         Shield::abort('404-page');
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('page:url', $url);
+    });
+    Config::set(array(
+        'page_title' => $page->title . $config->title_separator . $config->title,
+        'page' => $page
+    ));
     Weapon::add('shell_after', function() use($page) {
         if(isset($page->css) && trim($page->css) !== "") echo O_BEGIN . $page->css . O_END;
     });
     Weapon::add('sword_after', function() use($page) {
         if(isset($page->js) && trim($page->js) !== "") echo O_BEGIN . $page->js . O_END;
     });
-    Config::set(array(
-        'page_title' => $page->title . $config->title_separator . $config->title,
-        'page' => $page
-    ));
     Shield::attach('page-' . $slug);
 }, 100);
 
@@ -496,6 +476,9 @@ Route::accept('/', function() use($config, $excludes) {
     } else {
         $articles = false;
     }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('index:url', $url);
+    });
     Config::set(array(
         'articles' => $articles,
         'pagination' => Navigator::extract(Get::articles(), 1, $config->index->per_page, $config->index->slug)

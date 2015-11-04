@@ -374,19 +374,8 @@ if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end . '.ph
     require $detour;
 }
 
+// loading cargo ...
 if($config->page_type === 'manager') {
-    Weapon::add('shield_before', function() {
-        ob_start();
-        extract(Shield::cargo()); // reload data ...
-        if($cargo = File::exist(DECK . DS . 'workers' . DS . $config->cargo)) {
-            include $cargo;
-        }
-        $cargo_content = ob_get_clean();
-        Shield::lot('page', (object) array(
-            'title' => $config->page_title,
-            'url' => "",
-            'link' => "",
-            'content' => $cargo_content
-        ));
-    });
+    $cargo = 'cargo.' . $uri_end . '.php';
+    include DECK . DS . 'workers' . DS . 'cargo.php';
 }

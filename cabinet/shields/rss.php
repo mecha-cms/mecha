@@ -40,7 +40,7 @@ if( ! empty($bucket)) {
         if( ! empty($kind)) {
             foreach($kind as $k) {
                 $tag = Get::rawTag($k);
-                echo '<category domain="' . $config->url . '/' . $config->tag->slug . '/' . $tag['slug'] . '">' . $tag['name'] . '</category>';
+                echo '<category domain="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '">' . $tag['name'] . '</category>';
             }
         }
         echo '<source url="' . $item->url . '"><![CDATA[' . $config->title . ': ' . $title . ']]></source>';

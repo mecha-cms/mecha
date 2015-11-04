@@ -101,14 +101,14 @@ Weapon::add('meta', function() {
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
     if(isset($config->article->description)) {
-        $description = strip_tags($config->article->description);
+        $description = trim(strip_tags($config->article->description));
     } else if(isset($config->page->description)) {
-        $description = strip_tags($config->page->description);
+        $description = trim(strip_tags($config->page->description));
     } else {
-        $description = strip_tags($config->description);
+        $description = trim(strip_tags($config->description));
     }
     $html .= Cell::meta('description', $description, array(), 2) . NL;
-    $html .= Cell::meta('author', strip_tags($config->author->name), array(), 2) . NL;
+    $html .= Cell::meta('author', trim(strip_tags($config->author->name)), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 
@@ -143,13 +143,13 @@ Weapon::add('SHIPMENT_REGION_TOP', function() {
 
 if($config->widget_include_css) {
     Weapon::add('shell_before', function() {
-        echo Asset::stylesheet('cabinet/shields/widgets.css', "", 'shell/widgets.min.css');
+        echo Asset::stylesheet(SHIELD . DS . 'widgets.css', "", 'shell/widgets.min.css');
     });
 }
 
 if($config->widget_include_js) {
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo Asset::javascript('cabinet/shields/widgets.js', "", 'sword/widgets.min.js');
+        echo Asset::javascript(SHIELD . DS . 'widgets.js', "", 'sword/widgets.min.js');
     });
 }
 

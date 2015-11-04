@@ -17,24 +17,14 @@
     )); ?>
     </span>
   </label>
-  <?php $url_origin = Guardian::wayback('url_origin', $config->manager->slug . '/article'); ?>
-  <?php if($url_origin !== $config->url . '/' . $config->manager->slug . '/logout'): ?>
-  <?php echo Form::hidden('kick', Request::get('kick', $url_origin)); ?>
+  <?php $origin = Guardian::wayback('url_origin', $config->manager->slug . '/article'); ?>
+  <?php if($origin !== Filter::apply('manager:url', Filter::apply('url', $config->url . '/' . $config->manager->slug . '/logout'))): ?>
+  <?php echo Form::hidden('kick', Request::get('kick', $origin)); ?>
   <?php endif; ?>
   <div class="grid-group">
     <span class="grid span-2"></span>
     <span class="grid span-4">
-    <?php echo Form::button(Cell::i("", array(
-        'class' => array(
-            'fa',
-            'fa-key'
-        )
-    )) . ' ' . $speak->login, null, null, null, array(
-        'class' => array(
-            'btn',
-            'btn-action'
-        )
-    )); ?>
+    <?php echo Form::button($speak->login, null, null, null, array('class' => array('btn', 'btn-action'))); ?>
     </span>
   </div>
 </form>
