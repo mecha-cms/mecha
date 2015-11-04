@@ -25,6 +25,7 @@ define('STATE', CARGO . DS . 'states');
 define('PLUGIN', CARGO . DS . 'plugins');
 define('SHIELD', CARGO . DS . 'shields');
 define('CACHE', CARGO . DS . 'scraps');
+define('CHUNK', EXTEND . DS . 'chunk');
 define('CUSTOM', EXTEND . DS . 'custom');
 define('SUBSTANCE', EXTEND . DS . 'substance');
 

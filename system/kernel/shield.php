@@ -31,7 +31,6 @@ class Shield extends Base {
 
     public static function cargo() {
         $config = Config::get();
-        $token = Guardian::token();
         $message = Notify::read();
         $results = array(
             'config' => $config,
@@ -46,13 +45,13 @@ class Shield extends Base {
             'file' => $config->file,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
-            'token' => $token,
+            'token' => Guardian::token(),
+            'message' => $message,
             'messages' => $message
         );
-        Session::set(Guardian::$token, $token);
-        Session::set(Notify::$message, $message);
-        unset($config, $token, $message);
-        return array_merge($results, self::$lot);
+        unset($config, $message);
+        self::$lot = array_merge($results, self::$lot);
+        return self::$lot;
     }
 
     /**
@@ -68,14 +67,18 @@ class Shield extends Base {
      *
      */
 
-    public static function path($name) {
-        $name = File::path($name) . '.' . File::E($name, 'php');
+    public static function path($name, $fallback = false) {
+        $name = File::path($name) . (File::E($name, "") !== 'php' ? '.php' : "");
         if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
+            return $path;
+        } else if($path = File::exist(CHUNK . DS . ltrim($name, DS))) {
             return $path;
         } else if($path = File::exist(ROOT . DS . ltrim($name, DS))) {
             return $path;
+        } else if($path = File::exist($name)) {
+            return $path;
         }
-        return $name;
+        return $fallback;
     }
 
     /**
@@ -231,6 +234,8 @@ class Shield extends Base {
         Weapon::fire('shield_before', array($G, $G));
         ob_start($minify ? 'self::s_o' : 'self::s_o_d');
         extract(Filter::apply('shield:lot', self::cargo()));
+        Session::set(Guardian::$token, $token);
+        Session::set(Notify::$message, $message);
         require Filter::apply('shield:path', $shield);
         // Clear session
         Notify::clear();
@@ -272,6 +277,29 @@ class Shield extends Base {
         HTTP::status(404);
         Config::set('page_type', '404');
         self::attach($name, $minify, $cache, $expire);
+    }
+
+    /**
+     * ==========================================================
+     *  RENDER A SHIELD CHUNK
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    Shield::chunk('header');
+     *
+     * ----------------------------------------------------------
+     *
+     *    Shield::chunk('header', array('title' => 'Test'));
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function chunk($name, $vars = array()) {
+        $name = Filter::apply('chunk:path', self::path($name));
+        extract(Filter::apply('chunk:lot', array_merge(self::cargo(), self::$lot, $vars)));
+        if($name) require $name;
     }
 
 }

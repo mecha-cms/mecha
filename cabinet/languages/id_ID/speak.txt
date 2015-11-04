@@ -249,6 +249,8 @@ versions: Versi
 extend: Perluasan
 extends: Perluasan
 
+today: Hari Ini
+
 year: Tahun
 month: Bulan
 week: Minggu
@@ -661,6 +663,9 @@ widget:
   tag: Tag
   tags: Tag
 
+  search_form: Formulir Penelusuran
+  search_forms: Formulir Penelusuran
+
   recent_post: Pos Terbaru
   recent_posts: Pos Terbaru
   recent_comment: Komentar Terbaru
@@ -671,9 +676,6 @@ widget:
 
   related_post: Pos Terkait
   related_posts: Pos Terkait
-
-  search_form: Formulir Penelusuran
-  search_forms: Formulir Penelusuran
 
 
 # -------------

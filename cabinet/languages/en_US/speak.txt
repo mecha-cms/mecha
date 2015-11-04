@@ -249,6 +249,8 @@ versions: Versions
 extend: Extend
 extends: Extends
 
+today: Today
+
 year: Year
 month: Month
 week: Week
@@ -661,8 +663,11 @@ widget:
   tag: Tag
   tags: Tags
 
-  recent_post: Recent :post:
-  recent_posts: Recent :posts:
+  search_form: Seasrch Form
+  search_forms: Search Forms
+
+  recent_post: Recent Post
+  recent_posts: Recent Posts
   recent_comment: Recent Comment
   recent_comments: Recent Comments
 
@@ -671,9 +676,6 @@ widget:
 
   related_post: Related Post
   related_posts: Related Posts
-
-  search_form: Seasrch Form
-  search_forms: Search Forms
 
 
 # -------------
