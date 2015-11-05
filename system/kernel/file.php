@@ -400,18 +400,4 @@ class File extends Base {
         return str_replace(array(ROOT, '\\', DS, $p), array($base, '/', '/', $base), $path);
     }
 
-    // Configure ...
-    public static function configure($key, $value = null) {
-        if(is_array($key)) {
-            Mecha::extend(self::$config, $key);
-        } else {
-            if(is_array($value)) {
-                Mecha::extend(self::$config[$key], $value);
-            } else {
-                self::$config[$key] = $value;
-            }
-        }
-        return new static;
-    }
-
 }

@@ -15,8 +15,8 @@
  *            'Example 4.1' => '/example/example'
  *        ),
  *        'Example 5 (/parent)' => array(
- *            'Example 5.1' => '/parent/children-1',
- *            'Example 5.2' => '/parent/children-2'
+ *            'Example 5.1' => '/parent/child-1',
+ *            'Example 5.2' => '/parent/child-2'
  *        ),
  *        '|',
  *        'Text 1',
@@ -45,7 +45,7 @@ class Menu extends Base {
         'classes' => array(
             'current' => 'current',
             'parent' => false,
-            'children' => 'children-%d',
+            'child' => 'child-%d',
             'separator' => 'separator'
         )
     );
@@ -54,7 +54,7 @@ class Menu extends Base {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
         $c_class = self::$config['classes'];
-        $html = $depth . str_repeat(TAB, $i) . '<' . $type . ($i > 0 ? ($c_class['children'] !== false ? ' class="' . sprintf($c_class['children'], $i / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
+        $html = $depth . str_repeat(TAB, $i) . '<' . $type . ($i > 0 ? ($c_class['child'] !== false ? ' class="' . sprintf($c_class['child'], $i / 2) . '"' : "") : ($c_class['parent'] !== false ? ' class="' . $c_class['parent'] . '"' : "")) . '>' . NL;
         foreach($array as $key => $value) {
             if( ! is_array($value)) {
                 // List item separator: `array('|')`
@@ -88,20 +88,6 @@ class Menu extends Base {
 
     public static function get($array = null, $type = 'ul', $depth = "", $FP = "") {
         return O_BEGIN . rtrim(self::create($array, $type, $depth, $FP, 0), NL) . O_END;
-    }
-
-    // Configure ...
-    public static function configure($key, $value = null) {
-        if(is_array($key)) {
-            Mecha::extend(self::$config, $key);
-        } else {
-            if(is_array($value)) {
-                Mecha::extend(self::$config[$key], $value);
-            } else {
-                self::$config[$key] = $value;
-            }
-        }
-        return new static;
     }
 
 }

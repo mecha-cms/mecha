@@ -79,7 +79,7 @@ $speak = Config::speak();
  */
 
 $e = explode(',', FONT_EXT . ',' . IMAGE_EXT . ',' . MEDIA_EXT . ',' . PACKAGE_EXT . ',' . SCRIPT_EXT);
-File::configure('file_extension_allow', array_unique($e));
+File::$config['file_extension_allow'] = array_unique($e);
 
 
 /**
