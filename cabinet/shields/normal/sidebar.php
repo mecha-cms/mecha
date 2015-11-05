@@ -1,44 +1,27 @@
 <a href="#toggle" class="blog-sidebar-toggle">
   <i class="fa fa-bars"></i>
 </a>
-<aside class="blog-sidebar">
-  <div class="widget-wrapper">
-    <div class="widget-content">
-      <?php echo Widget::search($speak->search . '&hellip;', '<i class="fa fa-search"></i>'); ?>
-    </div>
-  </div>
+<aside class="blog-sidebar widgets">
+  <?php Shield::chunk('block.widget', array(
+      'title' => false,
+      'content' => Widget::search($speak->search . '&hellip;', '<i class="fa fa-search"></i>')
+  )); ?>
   <?php if($manager): ?>
-  <div class="widget-wrapper">
-    <h4 class="widget-title">
-      <?php echo $speak->widget->manager_menus; ?>
-    </h4>
-    <div class="widget-content">
-      <?php echo Widget::manager(); ?>
-    </div>
-  </div>
+  <?php Shield::chunk('block.widget', array(
+      'title' => $speak->widget->manager_menus,
+      'content' => Widget::manager()
+  )); ?>
   <?php endif; ?>
-  <div class="widget-wrapper">
-    <h4 class="widget-title">
-      <?php echo $speak->widget->tags; ?>
-    </h4>
-    <div class="widget-content">
-      <?php echo Widget::tag(); ?>
-    </div>
-  </div>
-  <div class="widget-wrapper">
-    <h4 class="widget-title">
-      <?php echo $speak->widget->related_posts; ?>
-    </h4>
-    <div class="widget-content">
-      <?php echo Widget::relatedPost(); ?>
-    </div>
-  </div>
-  <div class="widget-wrapper">
-    <h4 class="widget-title">
-      <?php echo $speak->widget->archives; ?>
-    </h4>
-    <div class="widget-content">
-      <?php echo Widget::archive(); ?>
-    </div>
-  </div>
+  <?php Shield::chunk('block.widget', array(
+      'title' => $speak->widget->tags,
+      'content' => Widget::tag()
+  )); ?>
+  <?php Shield::chunk('block.widget', array(
+      'title' => $speak->widget->related_posts,
+      'content' => Widget::relatedPost()
+  )); ?>
+  <?php Shield::chunk('block.widget', array(
+      'title' => $speak->widget->archives,
+      'content' => Widget::archive()
+  )); ?>
 </aside>

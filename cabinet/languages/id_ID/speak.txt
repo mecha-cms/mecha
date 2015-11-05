@@ -226,10 +226,10 @@ comment_url: URL
 comment_status: Status
 comment_message: Pesan
 comment_reply: Balasan
-comment_reply_to: Sebagai balasan %s
+comment_reply_to_: Sebagai balasan %s
 comment_reply_cancel: Batal Membalas
 comment_replies: Balasan
-comment_guide: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+comment_guide: Tag <abbr title="Hyper Text Markup Language">HTML</abbr> dasar diperbolehkan.
 comment_notification: Komentar baru telah ditambahkan ke <a href="%s">halaman ini</a>
 comment_notification_subject: Komentar baru telah ditambahkan.
 
@@ -694,6 +694,14 @@ manager:
   placeholder_css_custom: CSS kustom di sini&hellip;
   placeholder_js: JavaScript di sini&hellip;
   placeholder_js_custom: JavaScript di sini&hellip;
+  placeholder__title: Judul %s Anda
+  placeholder__content: Konten %s di sini&hellip;
+  placeholder__description: Deskripsi %s di sini&hellip;
+  placeholder__description_: Deskripsi %s tentang %s ini (opsional)
+  placeholder__css: CSS %s di sini&hellip;
+  placeholder__css_custom: CSS %s kustom di sini&hellip;
+  placeholder__js: JavaScript %s di sini&hellip;
+  placeholder__js_custom: JavaScript %s di sini&hellip;
   placeholder_file: Pilih berkas&hellip;
   placeholder_file_name: contoh-nama-berkas.txt
   placeholder_folder_name: contoh-nama-folder
@@ -806,15 +814,16 @@ notify_error_file_size_max: Ukuran berkas harus lebih kecil dari <code>%s</code>
 notify_error_file_size_min: Ukuran berkas harus lebih besar dari <code>%s</code>.
 notify_error_file_type_unknown: Tipe berkas tidak diketahui.
 notify_error_username_or_password: Nama pengguna atau kata kunci Anda tidak valid.
-notify_error_empty_fields: Mohon isi semua bidang yang wajib.
 notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.
+notify_error_empty_fields: Mohon isi semua bidang yang wajib.
 notify_error_slug_exist: Slug <code>%s</code> sudah ada.
-notify_error_slug_missing_letter: Slug URL harus berisi setidaknya satu huruf, dari <code>A</code> sampai <code>Z</code>.
-notify_error__content_empty: Konten %s tidak boleh dikosongkan.
+notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> harus berisi setidaknya satu huruf, dari <code>A</code> sampai <code>Z</code>.
 notify_error_content_empty: Konten tidak boleh dikosongkan.
+notify_error__content_empty: Konten %s tidak boleh dikosongkan.
 notify_error_too_short: <strong>%s</strong> terlalu pendek.
 notify_error_too_long: <strong>%s</strong> terlalu panjang.
 notify_error_not_found: Tidak ditemukan.
+notify_error__not_found: %s tidak ditemukan.
 notify_error_duplicate: Duplikat.
 
 notify_invalid_token: Token tidak valid.
@@ -823,7 +832,7 @@ notify_invalid_per_page_number: Jumlah halaman hanya menerima angka positif, non
 notify_invalid_indent_character: Gunakan 4 spasi untuk indentasi.
 
 notify_invalid_email: Alamat email tidak valid.
-notify_invalid_url: URL tidak valid.
+notify_invalid_url: <abbr title="Uniform Resource Locator">URL</abbr> tidak valid.
 notify_invalid_math_answer: Jawaban matematika salah.
 notify_invalid_captcha_answer: Jawaban <em>captcha</em> salah.
 

@@ -1,1 +1,1 @@
-<div class="post-body"><p><?php echo $speak->notify_error_not_found; ?></p></div>
+<p><?php echo Config::speak('notify_error__not_found', strpos($speak->notify_error__not_found, '%s') === 0 ? strtolower($s)); ?></p>

@@ -226,10 +226,10 @@ comment_url: URL
 comment_status: Status
 comment_message: Message
 comment_reply: Reply
-comment_reply_to: Reply to %s
+comment_reply_to_: Reply to %s
 comment_reply_cancel: Cancel Reply
 comment_replies: Replies
-comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+comment_guide: Basic <abbr title="Hyper Text Markup Language">HTML</abbr> tags are allowed.
 comment_notification: A new comment has been added to <a href="%s">this page</a>
 comment_notification_subject: A new comment has been added.
 
@@ -694,6 +694,14 @@ manager:
   placeholder_css_custom: Custom CSS goes here&hellip;
   placeholder_js: JavaScript goes here&hellip;
   placeholder_js_custom: Custom JavaScript goes here&hellip;
+  placeholder__title_: Your %s Title
+  placeholder__content: %s content goes here&hellip;
+  placeholder__description: %s description goes here&hellip;
+  placeholder__description_: Some %s description about this %s (optional)
+  placeholder__css: %s CSS goes here&hellip;
+  placeholder__css_custom: Custom %s CSS goes here&hellip;
+  placeholder__js: %s JavaScript goes here&hellip;
+  placeholder__js_custom: Custom %s JavaScript goes here&hellip;
   placeholder_file: Select a file&hellip;
   placeholder_file_name: example-file-name.txt
   placeholder_folder_name: example-folder-name
@@ -806,15 +814,16 @@ notify_error_file_size_max: File size must be less than <code>%s</code>.
 notify_error_file_size_min: File size must be greater than <code>%s</code>.
 notify_error_file_type_unknown: Unknown file type.
 notify_error_username_or_password: Invalid username or password.
-notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
+notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_slug_exist: Slug <code>%s</code> already exists.
-notify_error_slug_missing_letter: Slug URI should contains at least one letter, from <code>A</code> to <code>Z</code>.
-notify_error__content_empty: %s content should not be emptied.
+notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> should contains at least one letter, from <code>A</code> to <code>Z</code>.
 notify_error_content_empty: Content should not be emptied.
+notify_error__content_empty: %s content should not be emptied.
 notify_error_too_short: <strong>%s</strong> too short.
 notify_error_too_long: <strong>%s</strong> too long.
 notify_error_not_found: Not found.
+notify_error__not_found: %s not found.
 notify_error_duplicate: Duplicate.
 
 notify_invalid_token: Invalid token.
@@ -823,7 +832,7 @@ notify_invalid_per_page_number: Number of pages only accept non-decimal, positiv
 notify_invalid_indent_character: Use 4 spaces for indentation.
 
 notify_invalid_email: Invalid email address.
-notify_invalid_url: Invalid URL.
+notify_invalid_url: Invalid <abbr title="Uniform Resource Locator">URL</abbr>.
 notify_invalid_math_answer: Wrong math answer.
 notify_invalid_captcha_answer: Wrong captcha answer.
 

@@ -1,8 +1,8 @@
 <?php Shield::chunk('header'); ?>
 <?php Shield::chunk('sidebar'); ?>
-<div class="blog-main">
+<div class="blog-main posts">
   <article class="post">
-    <?php Shield::chunk('404.body'); ?>
+    <?php Shield::chunk('page.body.404'); ?>
   </article>
 </div>
 <?php Shield::chunk('footer'); ?>

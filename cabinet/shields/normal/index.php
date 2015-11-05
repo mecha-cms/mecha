@@ -1,6 +1,6 @@
 <?php Shield::chunk('header'); ?>
 <?php Shield::chunk('sidebar'); ?>
-<div class="blog-main">
+<div class="blog-main posts">
   <?php if($config->total_articles > 0): ?>
   <?php foreach($articles as $article): ?>
   <?php Shield::lot('article', $article); ?>
@@ -12,7 +12,7 @@
   <?php endforeach; ?>
   <?php else: ?>
   <article class="post">
-    <?php Shield::chunk('204.body', array('s' => $speak->articles)); ?>
+    <?php Shield::chunk('article.body.204'); ?>
   </article>
   <?php endif; ?>
   <?php Shield::chunk('pager'); ?>
