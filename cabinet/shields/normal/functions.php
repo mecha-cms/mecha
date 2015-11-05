@@ -50,9 +50,12 @@ Filter::add('chunk:output', function($content, $path) use($speak) {
         $content = str_replace('>' . $speak->log_in . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_in)) . '<', $content);
         $content = str_replace('>' . $speak->log_out . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_out)) . '<', $content);
     }
-    // Add an icon to the login form button
-    if($name === 'cargo.login') {
-        $content = str_replace('>' . $speak->login . '<', '<i class="fa fa-key"></i> ' . trim(strip_tags($speak->login)) . '<', $content);
-    }
     return $content;
 });
+
+// Add an icon to the login form button
+if(Route::is($config->manager->slug . '/login')) {
+    Filter::add('shield:output', function($content) use($speak) {
+        return str_replace('>' . $speak->login . '</button>', '><i class="fa fa-key"></i> ' . trim(strip_tags($speak->login)) . '</button>', $content);
+    });
+}

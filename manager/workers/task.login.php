@@ -16,8 +16,10 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
     if(Guardian::happy()) {
         Guardian::kick($config->manager->slug . '/article');
     }
-    $cargo = 'cargo.login.php';
-    Config::set('page_title', $speak->log_in . $config->title_separator . $config->manager->title);
+    Config::set(array(
+        'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
+        'cargo' => 'cargo.login.php'
+    ));
     include DECK . DS . 'workers' . DS . 'cargo.php';
     if($request = Request::post()) {
         Guardian::authorize()->kick(isset($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');

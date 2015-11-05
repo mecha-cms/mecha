@@ -9,15 +9,23 @@ if(isset($_FILES) && ! empty($_FILES)) {
         }
         if($v['size'] > 0 && $v['error'] === 0) {
             $name = Text::parse($v['name'], '->safe_file_name');
+            // Group substance by extension
+            if($x = File::E($name, false)) {
+                $name = $x . DS . $name;
+            }
+            // Group substance by custom folder
+            if(isset($field[$k]['path'])) {
+                $name = File::path($field[$k]['path']) . DS . $name;
+            }
             // File already exists. Don't overwrite and don't show the error message
             if(file_exists(SUBSTANCE . DS . $name)) {
-                $field[$k]['value'] = $name;
+                $field[$k]['value'] = File::url($name);
                 Notify::info(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             // Upload new file
             } else {
-                File::upload($v, SUBSTANCE);
+                File::upload($v, SUBSTANCE . DS . File::D($name));
                 if( ! Notify::errors()) {
-                    $field[$k]['value'] = $name;
+                    $field[$k]['value'] = File::url($name);
                     Weapon::fire('on_substance_update', array($G, $P));
                     Weapon::fire('on_substance_construct', array($G, $P));
                 }

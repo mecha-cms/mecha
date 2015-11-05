@@ -52,15 +52,17 @@ if( ! empty($fields)) {
                 $html .= '</label>';
             } else if($type === 'f') {
                 $v = isset($value['value']) && $value['value'] !== "" ? $value['value'] : false;
-                $vv = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : false;
+                $vv = isset($field[$key]) && $field[$key] !== "" ? File::path($field[$key]) : false;
                 $has_file = $vv !== false && file_exists(SUBSTANCE . DS . $vv) && is_file(SUBSTANCE . DS . $vv);
                 $html .= '<div class="grid-group grid-group-file' . ($has_file ? ' grid-group-boolean' : "") . '">';
                 $html .= ! $has_file ? '<span class="grid span-2 form-label">' . $title . '</span>' : '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
                 if( ! $has_file) {
                     $html .= Form::file($key);
-                    $e = strtolower(str_replace(' ', "", $v));
+                    $s = explode(S, $v, 2);
+                    $e = strtolower(str_replace(' ', "", isset($s[1]) ? $s[1] : $s[0]));
                     $html .= $v !== false ? Form::hidden('fields[' . $key . '][accept]', $e) . '<br><small><strong>' . $speak->accepted . ':</strong> <code>*.' . str_replace(',', '</code>, <code>*.', $e) . '</code></small>' : "";
+                    $html .= count($s) === 2 ? Form::hidden('fields[' . $key . '][path]', File::path($s[0])) : "";
                 } else {
                     $html .= Form::hidden('fields[' . $key . '][value]', $vv);
                     $html .= '<span title="' . strip_tags($value['title']) . '">' . Form::checkbox('fields[' . $key . '][remove]', $vv, false, $speak->delete . ' <code>' . $vv . '</code>') . '</span>';

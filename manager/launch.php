@@ -376,6 +376,6 @@ if($detour = File::exist(DECK . DS . 'workers' . DS . 'route.' . $uri_end . '.ph
 
 // loading cargo ...
 if($config->page_type === 'manager') {
-    $cargo = 'cargo.' . $uri_end . '.php';
+    Config::set('cargo', 'cargo.' . $uri_end . '.php');
     include DECK . DS . 'workers' . DS . 'cargo.php';
 }
