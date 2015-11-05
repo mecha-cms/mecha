@@ -322,8 +322,8 @@ class File extends Base {
     public static function upload($file, $destination = ROOT, $callback = null) {
         $config = Config::get();
         $speak = Config::speak();
-        $destination = self::path($destination);
-        $errors = Mecha::A($speak->notify_file);
+        $destination = rtrim(self::path($destination), DS);
+        $errors = (array) $speak->notify_file;
         // Create a safe file name
         $file['name'] = Text::parse($file['name'], '->safe_file_name');
         $extension = self::E($file['name']);
@@ -331,10 +331,6 @@ class File extends Base {
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);
         } else {
-            // Destination not found
-            if( ! file_exists($destination)) {
-                self::pocket($destination);
-            }
             // Unknown file type
             if( ! isset($file['type']) || empty($file['type'])) {
                 Notify::error($speak->notify_error_file_type_unknown);
@@ -354,6 +350,10 @@ class File extends Base {
             }
         }
         if( ! Notify::errors()) {
+            // Destination not found
+            if( ! file_exists($destination)) {
+                self::pocket($destination);
+            }
             // Move the uploaded file to the destination folder
             if( ! file_exists($destination . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
