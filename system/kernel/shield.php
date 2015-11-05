@@ -199,8 +199,7 @@ class Shield extends Base {
                 // Begin shield cache
                 Weapon::fire('shield_cache_before', array($G, $G));
                 echo Filter::apply('shield:cache', File::open($cache_path)->read());
-                // Clear session
-                Guardian::forget();
+                // Reset shield lot
                 self::$lot = array();
                 // End shield cache
                 Weapon::fire('shield_cache_after', array($G, $G));
@@ -218,8 +217,7 @@ class Shield extends Base {
             return $content_detract;
         });
         require Filter::apply('shield:path', $shield);
-        // Clear session
-        Guardian::forget();
+        // Reset shield lot
         self::$lot = array();
         ob_end_flush();
         // Create shield cache

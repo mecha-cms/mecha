@@ -50,3 +50,13 @@ Guardian::checker('this_is_too_short', function($input, $min = 0) {
 Guardian::checker('this_is_correct', function($a = true, $b = false) {
     return $a === $b;
 });
+
+// Forget all memories on page visit ...
+Weapon::add('shield_after', function() {
+    Guardian::forget();
+});
+
+// --ibid
+Weapon::add('shield_cache_after', function() {
+    Guardian::forget();
+});
