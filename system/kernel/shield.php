@@ -23,7 +23,10 @@ class Shield extends Base {
             'files' => $config->files,
             'file' => $config->file,
             'pager' => $config->pagination,
-            'manager' => Guardian::happy()
+            'manager' => Guardian::happy(),
+            'token' => Guardian::token(false),
+            'messages' => Notify::read(false),
+            'message' => Notify::read(false)
         );
         self::$lot = array_merge($results, self::$lot);
         return self::$lot;
@@ -198,7 +201,6 @@ class Shield extends Base {
                 echo Filter::apply('shield:cache', File::open($cache_path)->read());
                 // Clear session
                 Guardian::forget();
-                Notify::clear();
                 self::$lot = array();
                 // End shield cache
                 Weapon::fire('shield_cache_after', array($G, $G));
@@ -206,15 +208,7 @@ class Shield extends Base {
             }
         }
         // Begin shield
-        $token = Guardian::token();
-        $message = Notify::read();
-        Session::set(Guardian::$token, $token);
-        Session::set(Notify::$message, $message);
-        extract(Filter::apply('shield:lot', self::lot(array(
-            'token' => $token,
-            'message' => $message,
-            'messages' => $message
-        ))->cargo()));
+        extract(Filter::apply('shield:lot', self::cargo()));
         Weapon::fire('shield_before', array($G, $G));
         $content_detract = "";
         ob_start(function($content) use($minify, $shield, &$content_detract) {
@@ -226,7 +220,6 @@ class Shield extends Base {
         require Filter::apply('shield:path', $shield);
         // Clear session
         Guardian::forget();
-        Notify::clear();
         self::$lot = array();
         ob_end_flush();
         // Create shield cache

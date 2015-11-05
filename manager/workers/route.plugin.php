@@ -17,8 +17,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], PLUGIN, function() use($speak) {
-                Notify::clear();
-                Notify::success(Config::speak('notify_success_uploaded', $speak->plugin));
+                Notify::reset()->success(Config::speak('notify_success_uploaded', $speak->plugin));
             });
             $P = array('data' => $_FILES);
             Weapon::fire('on_plugin_update', array($P, $P));

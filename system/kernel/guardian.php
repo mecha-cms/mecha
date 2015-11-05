@@ -89,10 +89,10 @@ class Guardian extends Base {
      *
      */
 
-    public static function token() {
+    public static function token($new = true) {
         $file = LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log';
         $token = File::open($file)->read(sha1(uniqid(mt_rand(), true)));
-        Session::set(self::$token, $token);
+        Session::set(self::$token, $new ? $token : Session::get(self::$token));
         return $token;
     }
 
