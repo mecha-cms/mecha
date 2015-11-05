@@ -1,8 +1,9 @@
 <?php
 
-Weapon::add('shield_before', function() use($cargo) {
+Weapon::add('shield_before', function() {
     ob_start();
-    Shield::chunk(DECK . DS . 'workers' . DS . Config::get('cargo', $cargo), array(), false);
+    // No buffer for backend cargo, so `chunk:input` and `chunk:output` filter(s) won't work here
+    Shield::chunk(DECK . DS . 'workers' . DS . Config::get('cargo'), array(), false);
     $content = ob_get_clean();
     Shield::lot('page', (object) array(
         'title' => Config::get('page_title'),
