@@ -87,7 +87,7 @@ File::$config['file_extension_allow'] = array_unique($e);
  * ---------------------
  */
 
-date_default_timezone_set($config->timezone);
+Date::timezone($config->timezone);
 
 
 /**
