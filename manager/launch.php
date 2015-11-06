@@ -130,34 +130,6 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
 
 
 /**
- * Cache Killer
- * ------------
- *
- * Add global cache killer for article(s) and page(s).
- *
- */
-
-function do_remove_cache() {
-    global $config;
-    File::open(CACHE . DS . 'sitemap.cache')->delete();
-    File::open(CACHE . DS . 'feed.cache')->delete();
-    File::open(CACHE . DS . 'feeds.cache')->delete();
-    foreach(glob(CACHE . DS . '{feed,feeds}.*.cache', GLOB_NOSORT | GLOB_BRACE) as $cache) {
-        File::open($cache)->delete();
-    }
-}
-
-// Article(s) and page(s)
-Weapon::add('on_article_update', 'do_remove_cache', 10);
-Weapon::add('on_page_update', 'do_remove_cache', 10);
-
-// Plugin(s)
-Weapon::add('on_plugin_update', function() {
-    File::open(CACHE . DS . 'plugins.order.cache')->delete();
-});
-
-
-/**
  * Footer Link(s)
  * --------------
  */

@@ -1,0 +1,1 @@
+plugin_cache_content_description: Add <abbr title="Uniform Resource Locator">URL</abbr> path of the page you want to cache in the text area provided <span class="text-info help" title="Separate each &lt;abbr title=&quot;Uniform Resource Locator&quot;&gt;URL&lt;/abbr&gt; path by a new line character."><i class="fa fa-question-circle"></i></span>

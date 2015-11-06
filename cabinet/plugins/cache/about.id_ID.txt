@@ -1,0 +1,10 @@
+Title: Tembolok
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Generator tembolok halaman.
+
+Plugin ini memungkinkan Anda untuk membuat sebuah versi tembolok dari halaman yang telah Anda kunjungi.

@@ -1,0 +1,36 @@
+<?php
+
+$cache_config = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
+
+$route_match = false;
+if(isset($cache_config['path'][$config->url_path])) {
+    $route_match = $config->url_path;
+} else {
+    foreach($cache_config['path'] as $path => $expire) {
+        if(Route::is($path)) {
+            $route_match = $path;
+            break;
+        }
+    }
+}
+
+if($route_match !== false) {
+    Weapon::add('shield_before', function() use($config) {
+        $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
+        $cache = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
+        if(file_exists($cache)) {
+            $content = file_get_contents($cache);
+            $content = Filter::apply('cache:input', $content);
+            $content = Filter::apply('cache:output', $content);
+            echo $content;
+            exit;
+        }
+        Weapon::add('shield_after', function($G) use($cache) {
+            $G['data']['cache'] = $cache;
+            File::write($G['data']['content'])->saveTo($cache);
+            Weapon::fire('on_cache_construct', array($G, $G));
+        });
+    });
+}
+
+// TODO: Utilize the `expire` data!

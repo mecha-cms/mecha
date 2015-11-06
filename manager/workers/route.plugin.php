@@ -72,6 +72,10 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * -------------------
  */
 
+Weapon::add('on_plugin_update', function() {
+    File::open(CACHE . DS . 'plugins.order.cache')->delete();
+});
+
 Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak) {
     if(is_numeric($slug)) {
         // It's an index page
@@ -84,10 +88,6 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
         Shield::abort();
     }
     $info = Plugin::info($slug, true);
-    if( ! isset($info['url']) && preg_match('#(.*?) *\<(https?\:\/\/)(.*?)\>#i', $info['author'], $matches)) {
-        $info['author'] = $matches[1];
-        $info['url'] = $matches[2] . $matches[3];
-    }
     $info['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
