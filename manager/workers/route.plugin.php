@@ -62,7 +62,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
         'cargo' => 'cargo.plugin.php'
     ));
-    Shield::lot('segment', 'plugin')->attach('manager', false);
+    Shield::lot('segment', 'plugin')->attach('manager');
 });
 
 
@@ -72,6 +72,10 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  */
 
 Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak) {
+    if(is_numeric($slug)) {
+        // It's an index page
+        Route::execute($config->manager->slug . '/plugin/(:num)', array($slug));
+    }
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
@@ -92,8 +96,8 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") us
     Shield::lot(array(
         'segment' => 'plugin',
         'the_plugin_path' => $slug
-    ))->attach('manager', false);
-}, 10.2); // => `manager/plugin` is on priority 10, `manager/plugin/(:num)` is on priority 10.1
+    ))->attach('manager');
+});
 
 
 /**
@@ -152,7 +156,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $info['title'] . '</strong>'));
     }
-    Shield::lot('segment', 'plugin')->attach('manager', false);
+    Shield::lot('segment', 'plugin')->attach('manager');
 });
 
 

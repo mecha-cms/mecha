@@ -148,7 +148,7 @@ class Guardian extends Base {
     public static function checkToken($token, $kick = false) {
         if(Session::get(self::$token) === "" || Session::get(self::$token) !== $token) {
             Notify::error(Config::speak('notify_invalid_token'));
-            self::reject()->kick( ! $kick ? Config::get('manager')->slug . '/login' : trim($kick, '/'));
+            self::reject()->kick( ! $kick ? Config::get('manager.slug') . '/login' : trim($kick, '/'));
         }
     }
 

@@ -31,5 +31,5 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
         Weapon::fire('on_shortcode_update', array($G, $P));
         Guardian::kick($config->url_current);
     }
-    Shield::lot('segment', 'shortcode')->attach('manager', false);
+    Shield::lot('segment', 'shortcode')->attach('manager');
 });

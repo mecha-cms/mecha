@@ -86,5 +86,5 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Guardian::kick($request['manager']['slug'] . '/config');
         }
     }
-    Shield::lot('segment', 'config')->attach('manager', false);
+    Shield::lot('segment', 'config')->attach('manager');
 });

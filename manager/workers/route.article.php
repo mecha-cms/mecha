@@ -25,7 +25,7 @@ Route::accept(array($config->manager->slug . '/article', $config->manager->slug 
         'pagination' => Navigator::extract(Get::articles('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/article'),
         'cargo' => 'cargo.article.php'
     ));
-    Shield::lot('segment', 'article')->attach('manager', false);
+    Shield::lot('segment', 'article')->attach('manager');
 });
 
 
@@ -151,7 +151,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
     Shield::lot(array(
         'segment' => 'article',
         'default' => $article
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -194,5 +194,5 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $article->title . '</strong>'));
         Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->article)));
     }
-    Shield::lot('segment', 'article')->attach('manager', false);
+    Shield::lot('segment', 'article')->attach('manager');
 });

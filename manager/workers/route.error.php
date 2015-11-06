@@ -14,7 +14,7 @@ Route::accept($config->manager->slug . '/error', function() use($config, $speak)
     Shield::lot(array(
         'segment' => 'error',
         'the_content' => File::open(LOG . DS . 'errors.log')->read(false)
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 

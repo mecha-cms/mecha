@@ -17,7 +17,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
         'files' => ! empty($fields) ? $fields : false,
         'cargo' => 'cargo.field.php'
     ));
-    Shield::lot('segment', 'field')->attach('manager', false);
+    Shield::lot('segment', 'field')->attach('manager');
 });
 
 
@@ -107,7 +107,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     Shield::lot(array(
         'segment' => 'field',
         'the_key' => $key
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -148,5 +148,5 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     Shield::lot(array(
         'segment' => 'field',
         'the_key' => $key
-    ))->attach('manager', false);
+    ))->attach('manager');
 });

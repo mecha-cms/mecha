@@ -25,7 +25,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
         'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
         'cargo' => 'cargo.page.php'
     ));
-    Shield::lot('segment', 'page')->attach('manager', false);
+    Shield::lot('segment', 'page')->attach('manager');
 });
 
 
@@ -141,7 +141,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Shield::lot(array(
         'segment' => 'page',
         'default' => $page
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -178,5 +178,5 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $page->title . '</strong>'));
         Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->page)));
     }
-    Shield::lot('segment', 'page')->attach('manager', false);
+    Shield::lot('segment', 'page')->attach('manager');
 });

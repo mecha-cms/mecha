@@ -49,7 +49,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         'the_shield_info' => Shield::info($folder, true),
         'the_shield_folder' => $folder,
         'the_shield_folders' => $the_shields
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -102,7 +102,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         'the_shield' => $folder,
         'the_name' => null,
         'the_content' => null
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -163,7 +163,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
         'the_shield' => $folder,
         'the_name' => $path,
         'the_content' => $content
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -212,7 +212,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         'the_shield' => $folder,
         'the_name' => $path,
         'the_info' => $info
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 

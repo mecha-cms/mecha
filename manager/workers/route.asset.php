@@ -109,7 +109,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => 'cargo.asset.php'
     ));
-    Shield::lot('segment', 'asset')->attach('manager', false);
+    Shield::lot('segment', 'asset')->attach('manager');
 });
 
 
@@ -172,7 +172,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         'segment' => 'asset',
         'the_name' => $old,
         'the_content' => is_file(ASSET . DS . $old) && strpos(',' . SCRIPT_EXT . ',', ',' . File::E($old) . ',') !== false ? File::open(ASSET . DS . $old)->read() : false
-    ))->attach('manager', false);
+    ))->attach('manager');
 });
 
 
@@ -219,7 +219,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::lot('segment', 'asset')->attach('manager', false);
+    Shield::lot('segment', 'asset')->attach('manager');
 });
 
 

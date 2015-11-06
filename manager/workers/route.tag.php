@@ -64,5 +64,5 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
 })(window.Zepto || window.jQuery, DASHBOARD);
 </script>';
     }, 11);
-    Shield::lot('segment', 'tag')->attach('manager', false);
+    Shield::lot('segment', 'tag')->attach('manager');
 });
