@@ -8,7 +8,7 @@ class Guardian extends Base {
     public static $math = 'math';
     public static $captcha = 'captcha';
 
-    protected static $validators = array();
+    protected static $validator = array();
 
     /**
      * ============================================================
@@ -231,7 +231,7 @@ class Guardian extends Base {
     public static function checker($name, $action) {
         $name = strtolower($name);
         if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
-        self::$validators[get_called_class()][$name] = $action;
+        self::$validator[get_called_class()][$name] = $action;
     }
 
     /**
@@ -254,11 +254,11 @@ class Guardian extends Base {
     public static function checkerExist($name = null, $fallback = false) {
         $c = get_called_class();
         if(is_null($name)) {
-            return isset(self::$validators[$c]) && ! empty(self::$validators[$c]) ? self::$validators[$c] : $fallback;
+            return isset(self::$validator[$c]) && ! empty(self::$validator[$c]) ? self::$validator[$c] : $fallback;
         }
         $name = strtolower($name);
         if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
-        return isset(self::$validators[$c][$name]) ? self::$validators[$c][$name] : $fallback;
+        return isset(self::$validator[$c][$name]) ? self::$validator[$c][$name] : $fallback;
     }
 
     /**
@@ -289,14 +289,14 @@ class Guardian extends Base {
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $validator = 'this_is_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$validators[$c][$validator]) ? call_user_func_array(self::$validators[$c][$validator], $arguments) : false;
+            return isset(self::$validator[$c][$validator]) ? call_user_func_array(self::$validator[$c][$validator], $arguments) : false;
         }
         // Default function for complete checking process => `Guardian::check('foo')->this_is_url`
         $results = array();
-        if( ! isset(self::$validators[$c])) {
-            self::$validators[$c] = array();
+        if( ! isset(self::$validator[$c])) {
+            self::$validator[$c] = array();
         }
-        foreach(self::$validators[$c] as $name => $action) {
+        foreach(self::$validator[$c] as $name => $action) {
             $results[$name] = call_user_func_array($action, $arguments);
         }
         return (object) $results;

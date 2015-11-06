@@ -26,12 +26,12 @@ Widget::add('tagLinks', function($connect = ', ') use($speak) {
     return ! empty($links) ? $text . ': ' . implode($connect, $links) : "";
 });
 
-Filter::add('chunk:output', function($content, $path) use($speak) {
+Filter::add('chunk:output', function($content, $path) use($config, $speak) {
     $name = File::N($path);
     // Add an icon to the older and newer link text
     if($name === 'pager') {
         $content = str_replace('>' . $speak->newer . '<', '><i class="fa fa-angle-left"></i> ' . trim(strip_tags($speak->newer)) . '<', $content);
-        $content = str_replace('>' . $speak->older . '<', '>' . trim(strip_tags($speak->newer)) . ' <i class="fa fa-angle-right"></i><', $content);
+        $content = str_replace('>' . $speak->older . '<', '>' . trim(strip_tags($speak->older)) . ' <i class="fa fa-angle-right"></i><', $content);
     }
     // Add an icon to the article date
     if($name === 'article.time') {
@@ -50,12 +50,9 @@ Filter::add('chunk:output', function($content, $path) use($speak) {
         $content = str_replace('>' . $speak->log_in . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_in)) . '<', $content);
         $content = str_replace('>' . $speak->log_out . '<', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_out)) . '<', $content);
     }
+    // Add an icon to the login form button
+    if(Route::is($config->manager->slug . '/login') && $name === 'page.body') {
+        return str_replace('>' . $speak->login . '</button>', '><i class="fa fa-key"></i> ' . trim(strip_tags($speak->login)) . '</button>', $content);
+    }
     return $content;
 });
-
-// Add an icon to the login form button
-if(Route::is($config->manager->slug . '/login')) {
-    Filter::add('shield:output', function($content) use($speak) {
-        return str_replace('>' . $speak->login . '</button>', '><i class="fa fa-key"></i> ' . trim(strip_tags($speak->login)) . '</button>', $content);
-    });
-}

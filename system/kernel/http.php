@@ -102,7 +102,10 @@ class HTTP extends Base {
      *
      */
 
-    public static function query($query = array(), $value = 1) {
+    public static function query($query = null, $value = 1) {
+        if(is_null($query)) {
+            return Config::get('url_query');
+        }
         if(func_num_args() === 2) {
             $query = array($query => $value);
         }
