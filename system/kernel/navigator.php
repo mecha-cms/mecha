@@ -2,8 +2,6 @@
 
 class Navigator extends Base {
 
-    protected static $bucket = array();
-
     public static $config = array(
         'step' => 5,
         'classes' => array(
@@ -40,8 +38,7 @@ class Navigator extends Base {
     public static function extract($pages = array(), $current = 1, $per_page = 10, $connector = '/') {
 
         // Set default next, previous and step data
-        self::$bucket = array('prev' => false, 'next' => false, 'step' => false);
-
+        $bucket = array('prev' => false, 'next' => false, 'step' => false);
         $pages = (array) $pages;
         $config = Config::get();
         $speak = Config::speak();
@@ -67,16 +64,16 @@ class Navigator extends Base {
             $next = $current < ceil($total / $per_page) ? $current + 1 : false;
 
             // Generate next/previous URL for index page
-            self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
-            self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
+            $bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
+            $bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
 
             // Generate next/previous text for index page
-            self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
-            self::$bucket['next']['text'] = $next ? $speak->older : $speak->home;
+            $bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
+            $bucket['next']['text'] = $next ? $speak->older : $speak->home;
 
             // Generate next/previous link for index page
-            self::$bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', $prev ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
-            self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', $next ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
+            $bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', $prev ? '<a href="' . $bucket['prev']['url'] . '" rel="prev">' . $bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
+            $bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', $next ? '<a href="' . $bucket['next']['url'] . '" rel="next">' . $bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
 
             // Generate pagination link(s) for index page
             $html = '<span' . ($sn['classes']['pagination'] !== false ? ' class="' . $sn['classes']['pagination'] . '"' : "") . '>';
@@ -92,18 +89,18 @@ class Navigator extends Base {
                     if($chunk > 1) {
                         if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
                             $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $i !== $current ? '<a href="' . $base . sprintf($connector, $i) . $qq . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector), $i, $connector);
-                            self::$bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i !== $current ? $base . sprintf($connector, $i) . $qq : false, $i, $connector), $i, $connector);
+                            $bucket['step']['url'][] = Filter::apply('pager:step.url', Filter::apply('pager:url', $i !== $current ? $base . sprintf($connector, $i) . $qq : false, $i, $connector), $i, $connector);
                         }
                     }
                 }
                 $html .= '</span>';
                 $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . sprintf($connector, $next) . $qq . '">' . $speak->next . '</a>' : '<span>' . $speak->next . '</span>', $next, $connector), $next, $connector);
                 $html .= Filter::apply('pager:step.link', Filter::apply('pager:link', $next ? '<a href="' . $base . sprintf($connector, $chunk) . $qq . '">' . $speak->last . '</a>' : '<span>' . $speak->last . '</span>', $chunk, $connector), $chunk, $connector);
-                self::$bucket['step']['url']['first'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, 1) . $qq : false, 0, $connector), 0, $connector);
-                self::$bucket['step']['url']['last'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $next ? $base . sprintf($connector, $chunk) . $qq : false, $chunk, $connector), $chunk, $connector);
+                $bucket['step']['url']['first'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $prev ? $base . sprintf($connector, 1) . $qq : false, 0, $connector), 0, $connector);
+                $bucket['step']['url']['last'] = Filter::apply('pager:step.url', Filter::apply('pager:url', $next ? $base . sprintf($connector, $chunk) . $qq : false, $chunk, $connector), $chunk, $connector);
             }
 
-            self::$bucket['step']['link'] = $html . '</span>';
+            $bucket['step']['link'] = $html . '</span>';
 
         }
 
@@ -117,16 +114,16 @@ class Navigator extends Base {
                     $next = isset($pages[$i + 1]) ? $pages[$i + 1] : false;
 
                     // Generate next/previous URL for single page
-                    self::$bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
-                    self::$bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
+                    $bucket['prev']['url'] = Filter::apply('pager:prev.url', Filter::apply('pager:url', Filter::apply('url', $prev ? $base . sprintf($connector, $prev) . $qq : $base . $q, $prev, $connector), $prev, $connector), $prev, $connector);
+                    $bucket['next']['url'] = Filter::apply('pager:next.url', Filter::apply('pager:url', Filter::apply('url', $next ? $base . sprintf($connector, $next) . $qq : $base . $q, $next, $connector), $next, $connector), $next, $connector);
 
                     // Generate next/previous text for single page
-                    self::$bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
-                    self::$bucket['next']['text'] = $next ? $speak->older : $speak->home;
+                    $bucket['prev']['text'] = $prev ? $speak->newer : $speak->home;
+                    $bucket['next']['text'] = $next ? $speak->older : $speak->home;
 
                     // Generate next/previous link for single page
-                    self::$bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', (self::$bucket['prev']['url'] !== $base) ? '<a href="' . self::$bucket['prev']['url'] . '" rel="prev">' . self::$bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
-                    self::$bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', (self::$bucket['next']['url'] !== $base) ? '<a href="' . self::$bucket['next']['url'] . '" rel="next">' . self::$bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
+                    $bucket['prev']['link'] = Filter::apply('pager:prev.link', Filter::apply('pager:link', ($bucket['prev']['url'] !== $base) ? '<a href="' . $bucket['prev']['url'] . '" rel="prev">' . $bucket['prev']['text'] . '</a>' : "", $prev, $connector), $prev, $connector);
+                    $bucket['next']['link'] = Filter::apply('pager:next.link', Filter::apply('pager:link', ($bucket['next']['url'] !== $base) ? '<a href="' . $bucket['next']['url'] . '" rel="next">' . $bucket['next']['text'] . '</a>' : "", $next, $connector), $next, $connector);
 
                     break;
 
@@ -136,22 +133,8 @@ class Navigator extends Base {
 
         }
 
-        return Mecha::O(self::$bucket);
+        return Mecha::O($bucket);
 
-    }
-
-    // Configure ...
-    public static function configure($key, $value = null) {
-        if(is_array($key)) {
-            Mecha::extend(self::$config, $key);
-        } else {
-            if(is_array($value)) {
-                Mecha::extend(self::$config[$key], $value);
-            } else {
-                self::$config[$key] = $value;
-            }
-        }
-        return new static;
     }
 
 }
