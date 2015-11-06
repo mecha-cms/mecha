@@ -38,7 +38,6 @@
   </div>
   <div class="tab-content<?php echo $segment === 'backup' ? ' hidden' : ""; ?>" id="tab-content-2">
     <h3><?php echo $speak->restore; ?></h3>
-    <?php echo Config::speak('file:restore'); ?>
     <?php
 
     $destinations = array(

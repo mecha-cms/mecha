@@ -20,7 +20,8 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], SHIELD, function() use($speak) {
-                Notify::reset()->success(Config::speak('notify_success_uploaded', $speak->shield));
+                Notify::clear();
+                Notify::success(Config::speak('notify_success_uploaded', $speak->shield));
             });
             $P = array('data' => $_FILES);
             Weapon::fire('on_shield_update', array($P, $P));

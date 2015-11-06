@@ -49,11 +49,6 @@ class Notify extends Base {
         self::$errors = $clear_errors ? 0 : self::$errors;
     }
 
-	public static function reset() {
-		self::clear(true);
-        return new static;
-	}
-
     public static function errors() {
         return self::$errors > 0 ? self::$errors : false;
     }

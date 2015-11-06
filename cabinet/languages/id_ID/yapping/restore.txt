@@ -1,1 +1,0 @@
-<i class="fa fa-exclamation-triangle text-warning"></i> Tindakan ini akan menimpa berkas-berkas lama Anda! Tindakan ini akan mengubah konten berkas yang lama dengan berkas yang baru jika berkas yang diunggah tersebut adalah berkas yang sama.

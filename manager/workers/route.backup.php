@@ -24,7 +24,8 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
         include DECK . DS . 'workers' . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
-                Notify::reset()->success(Config::speak('notify_success_uploaded', $title));
+                Notify::clear();
+                Notify::success(Config::speak('notify_success_uploaded', $title));
             });
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));

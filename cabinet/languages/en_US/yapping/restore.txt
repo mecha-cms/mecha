@@ -1,1 +1,0 @@
-<i class="fa fa-exclamation-triangle text-warning"></i> This action will overwrite your old files! This action will change the content of the old files with the new files if the uploaded files are the same files.
