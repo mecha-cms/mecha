@@ -324,7 +324,21 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
 
 Route::accept('sitemap', function() use($config) {
     HTTP::mime('text/xml', $config->charset);
-    Shield::attach(SHIELD . DS . 'sitemap', true, true);
+    $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
+    $cache = CACHE . DS . 'sitemap' . $q . '.cache';
+    if(file_exists($cache)) {
+        $content = file_get_contents($cache);
+        $content = Filter::apply('cache:input', $content);
+        $content = Filter::apply('cache:output', $content);
+        echo $content;
+        exit;
+    }
+    Weapon::add('shield_after', function($G) use($cache) {
+        $G['data']['cache'] = $cache;
+        File::write($G['data']['content'])->saveTo($cache);
+        Weapon::fire('on_cache_construct', array($G, $G));
+    });
+    Shield::attach(SHIELD . DS . 'sitemap.php');
 }, 80);
 
 
@@ -341,7 +355,21 @@ Route::accept('sitemap', function() use($config) {
 Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)'), function($path = "", $offset = 1) use($config) {
     Config::set('offset', (int) $offset);
     HTTP::mime('text/xml', $config->charset);
-    Shield::attach(SHIELD . DS . 'rss', true, true);
+    $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
+    $cache = CACHE . DS . str_replace('/', '.', $config->url_path) . $q . '.cache';
+    if(file_exists($cache)) {
+        $content = file_get_contents($cache);
+        $content = Filter::apply('cache:input', $content);
+        $content = Filter::apply('cache:output', $content);
+        echo $content;
+        exit;
+    }
+    Weapon::add('shield_after', function($G) use($cache) {
+        $G['data']['cache'] = $cache;
+        File::write($G['data']['content'])->saveTo($cache);
+        Weapon::fire('on_cache_construct', array($G, $G));
+    });
+    Shield::attach(SHIELD . DS . 'rss.php');
 }, 81);
 
 
@@ -359,7 +387,21 @@ Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)
 Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($path = "", $offset = 1) use($config) {
     Config::set('offset', (int) $offset);
     HTTP::mime('application/json', $config->charset);
-    Shield::attach(SHIELD . DS . 'json', true, true);
+    $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
+    $cache = CACHE . DS . str_replace('/', '.', $config->url_path) . $q . '.cache';
+    if(file_exists($cache)) {
+        $content = file_get_contents($cache);
+        $content = Filter::apply('cache:input', $content);
+        $content = Filter::apply('cache:output', $content);
+        echo $content;
+        exit;
+    }
+    Weapon::add('shield_after', function($G) use($cache) {
+        $G['data']['cache'] = $cache;
+        File::write($G['data']['content'])->saveTo($cache);
+        Weapon::fire('on_cache_construct', array($G, $G));
+    });
+    Shield::attach(SHIELD . DS . 'json.php');
 }, 82);
 
 
