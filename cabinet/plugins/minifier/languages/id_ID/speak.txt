@@ -1,0 +1,5 @@
+plugin_minifier:
+  html_minifier: Perkecil Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
+  url_minifier: Perkecil Keluaran <abbr title="Uniform Resource Locator">URL</abbr>
+  css_minifier: Perkecil Keluaran Blok <abbr title="Cascading Style Sheet">CSS</abbr>
+  js_minifier: Perkecil Keluaran Blok JavaScript

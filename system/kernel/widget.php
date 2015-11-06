@@ -57,7 +57,7 @@ class Widget {
                         $bar = $v;
                     } else {
                         $t = ' data-tooltip="' . Text::parse(isset($v['description']) ? $v['description'] : $k, '->encoded_html') . '"';
-                        $bar = isset($v['url']) ? '<a class="item" href="' . Converter::url($v['url']) . '"' . $t . '>' : '<span class="item a"' . $t . '>';
+                        $bar = isset($v['url']) ? '<a class="item" href="' . Filter::apply('url', Converter::url($v['url'])) . '"' . $t . '>' : '<span class="item a"' . $t . '>';
                         $bar .= isset($v['icon']) ? (strpos($v['icon'], '<') === false ? Jot::icon($v['icon']) : $v['icon']) : $k;
                         $bar .= ' <span class="label">' . $k . '</span>';
                         if(isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0)) {

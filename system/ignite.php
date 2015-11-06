@@ -122,10 +122,10 @@ Weapon::add('meta', function() {
 Weapon::add('meta', function() {
     $config = Config::get();
     $speak = Config::speak();
-    $html  = Cell::link($config->url . '/favicon.ico', 'shortcut icon', 'image/x-icon', array(), 2) . NL;
-    $html .= Cell::link($config->url_current, 'canonical', null, array(), 2) . NL;
-    $html .= Cell::link($config->url . '/sitemap', 'sitemap', null, array(), 2) . NL;
-    $html .= Cell::link($config->url . '/feed/rss', 'alternate', 'application/rss+xml', array(
+    $html  = Cell::link(Filter::apply('url', $config->url . '/favicon.ico'), 'shortcut icon', 'image/x-icon', array(), 2) . NL;
+    $html .= Cell::link(Filter::apply('url', $config->url_current), 'canonical', null, array(), 2) . NL;
+    $html .= Cell::link(Filter::apply('url', $config->url . '/sitemap'), 'sitemap', null, array(), 2) . NL;
+    $html .= Cell::link(Filter::apply('url', $config->url . '/feed/rss'), 'alternate', 'application/rss+xml', array(
         'title' => $speak->feeds . $config->title_separator . $config->title
     ), 2) . O_END;
     echo Filter::apply('meta', $html, 3);
@@ -240,9 +240,9 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     return $content;
 }, 20);
 
-// YOU ARE HERE! -- You can specify your own shortcode priority to be greater
-// than the default shortcode file priority, but lesser than the shortcode
-// deactivation priority by determining the shortcode priority between 20 - 30
+// YOU ARE HERE! -- Specify your own shortcode priority to be greater than the
+// default shortcode file priority, but lesser than the shortcode deactivation
+// priority by determining the shortcode priority between 20 - 30
 
 Filter::add('shortcode', function($content) {
     if(strpos($content, '`{{') === false) return $content;

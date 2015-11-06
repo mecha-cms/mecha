@@ -309,7 +309,7 @@ Weapon::add('shield_before', function() {
             File::open($errors)->delete();
             $total = '&infin;';
         }
-        foreach(explode("\n", File::open($errors)->get()) as $message) {
+        foreach(explode("\n", File::open($errors)->read()) as $message) {
             if(trim($message) !== "") $total++;
         }
         $menus[$speak->error] = array(

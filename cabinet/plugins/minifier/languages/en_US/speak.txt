@@ -1,0 +1,5 @@
+plugin_minifier:
+  html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
+  url_minifier: Minify <abbr title="Uniform Resource Locator">URL</abbr> Output
+  css_minifier: Minify Embedded <abbr title="Cascading Style Sheet">CSS</abbr> Output
+  js_minifier: Minify Embedded JavaScript Output

@@ -1,0 +1,13 @@
+Title: <abbr title="Hyper Text Markup Language">HTML</abbr> Minifier
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Reduce the size of the page by detracting the HTML output.
+
+This plugin helps you to dispose some parts in the HTML markup of the page, which is actually not going to affect anything if we omit them, such as whitespaces and root domain in the URL.
+
+*[HTML]: Hyper Text Markup Language
+*[URL]: Uniform Resource Locator
