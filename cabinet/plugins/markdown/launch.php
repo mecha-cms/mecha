@@ -1,9 +1,7 @@
 <?php
 
 use \Michelf\MarkdownExtra;
-
 $cargo = PLUGIN . DS . File::B(__DIR__) . DS . 'assets' . DS . 'cargo' . DS . 'Michelf' . DS;
-
 include $cargo . 'Markdown.php';
 include $cargo . 'MarkdownExtra.php';
 

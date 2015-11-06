@@ -63,7 +63,16 @@
       <?php endif; ?>
       <h4 class="media-title"><?php echo Jot::icon('shield') . ' ' . $info->title; ?></h4>
       <div class="media-content">
-        <p><?php echo Converter::curt($info->content); ?></p>
+        <?php
+
+        if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $info->content, $matches)) {
+            $curt = trim(strip_tags($matches[2])); // get first blockquote content as description
+        } else {
+            $curt = Converter::curt($info->content);
+        }
+
+        ?>
+        <p><?php echo $curt; ?></p>
         <p>
           <?php echo Jot::btn('construct.small:cog', $speak->manage, $config->manager->slug . '/shield/' . $folder); ?> <?php if(File::exist(SHIELD . DS . $folder . DS . 'manager.php')): ?><?php echo Jot::btn('action.small:shield', $speak->attach, $config->manager->slug . '/shield/attach/id:' . $folder); ?> <?php endif; ?><?php echo Jot::btn('destruct.small:times-circle', $speak->delete, $config->manager->slug . '/shield/kill/id:' . $folder); ?>
         </p>

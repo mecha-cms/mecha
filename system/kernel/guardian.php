@@ -64,7 +64,7 @@ class Guardian extends Base {
                     $str['password'] = $str['pass'];
                     $ally[$str['user']] = $str;
                 // json encoded array
-                } else if(strpos($a, '{"') === 0) {
+                } else if(strpos($str, '{"') === 0) {
                     $str = json_decode($str, true);
                     $str['username'] = $str['user'];
                     $str['password'] = $str['pass'];

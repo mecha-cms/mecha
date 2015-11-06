@@ -1,8 +1,12 @@
 Title: Facebook Open Graph
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.1.2
+Version: 1.1.3
 
 ====
 
-Inject [Facebook Open Graph](https://developers.facebook.com/docs/opengraph/overview/ "Facebook Developer – Open Graph Overview") meta tags to your **Mecha**’s head automatically.
+> Inject [Facebook Open Graph](https://developers.facebook.com/docs/sharing/opengraph "Open Graph Stories") meta tags to your **Mecha**’s head automatically.
+
+Adding **Open Graph** meta tags to the `<head>` of your web page HTML will provide the crawler with structured info like a title, description and thumbnail image for the content.
+
+*[HTML]: Hyper Text Markup Language

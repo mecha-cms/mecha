@@ -14,7 +14,16 @@
       <?php endif; ?>
       <h4 class="media-title"><?php echo Jot::icon(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $plugin->about->title; ?></h4>
       <div class="media-content">
-        <p><?php echo Converter::curt($plugin->about->content); ?></p>
+        <?php
+
+        if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $plugin->about->content, $matches)) {
+            $curt = trim(strip_tags($matches[2])); // get first blockquote content as description
+        } else {
+            $curt = Converter::curt($plugin->about->content);
+        }
+
+        ?>
+        <p><?php echo $curt; ?></p>
         <p>
           <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
           <?php echo Jot::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $plugin->slug); ?> <?php echo Jot::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset); ?>

@@ -1,11 +1,15 @@
 Title: Markdown Parser
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.1.4
+Version: 1.1.5
 
 ====
 
-**Markdown Extra** – Alat konversi teks-ke-HTML untuk para penulis web.
+> **Markdown Extra** – Alat konversi teks-ke-HTML untuk para penulis web.
+
+“Markdown” adalah dua hal: sintaks teks markup polos, dan perangkat lunak yang mengubah markup teks biasa ke HTML untuk penerbitan di web.
+
+Sintaks Markdown memungkinkan Anda untuk menulis teks secara alami dan memformatnya tanpa menggunakan tag HTML. Lebih penting lagi: dalam format Markdown, teks Anda tetap menyenangkan untuk dibaca bagi manusia. Jika Anda menggunakan email berformat teks, Anda sudah tahu beberapa bagian dari sintaks yang ada.
 
  - Penulis Asli: Michel Fortin
  - URL Asli: <http://michelf.ca/projects/php-markdown>
