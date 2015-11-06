@@ -55,21 +55,38 @@ class Guardian extends Base {
     public static function ally($user = null, $fallback = false) {
         if($file = File::exist(LOG . DS . 'users.txt')) {
             $ally = array();
-            foreach(explode("\n", file_get_contents($file)) as $a) {
+            foreach(explode("\n", file_get_contents($file)) as $str) {
+                $str = trim($str);
+                // serialized array
+                if(strpos($str, 'a:') === 0) {
+                    $str = unserialize($str);
+                    $str['username'] = $str['user'];
+                    $str['password'] = $str['pass'];
+                    $ally[$str['user']] = $str;
+                // json encoded array
+                } else if(strpos($a, '{"') === 0) {
+                    $str = json_decode($str, true);
+                    $str['username'] = $str['user'];
+                    $str['password'] = $str['pass'];
+                    $ally[$str['user']] = $str;
                 // Pattern 1: `user: pass (Author Name: status) email@domain.com`
                 // Pattern 2: `user: pass (Author Name @status) email@domain.com`
-                preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', trim($a), $matches);
-                $ally[$matches[1]] = array(
-                    'pass' => self::get('status') === 'pilot' || ! self::happy() ? $matches[2] : null,
-                    'author' => $matches[3],
-                    'status' => $matches[4],
-                    'password' => self::get('status') === 'pilot' || ! self::happy() ? $matches[2] : null, // alias for `pass`
-                    'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false
-                );
+                } else {
+                    preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*@|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $str, $matches);
+                    $user = $matches[1];
+                    $pass = self::get('status') === 'pilot' || ! self::happy() ? $matches[2] : null;
+                    $ally[$matches[1]] = array(
+                        'user' => $user,
+                        'username' => $user, // alias for `user`
+                        'pass' => $pass,
+                        'password' => $pass, // alias for `pass`
+                        'author' => $matches[3],
+                        'status' => $matches[4],
+                        'email' => isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false
+                    );
+                }
             }
-            if(is_null($user)) {
-                return $ally;
-            }
+            if(is_null($user)) return $ally;
             return isset($ally[$user]) ? $ally[$user] : $fallback;
         } else {
             self::abort('Missing <code>users.txt</code> file.');
@@ -95,6 +112,19 @@ class Guardian extends Base {
         Session::set(self::$token, $token);
         return $token;
     }
+
+    /**
+     * ============================================================
+     *  GENERATE A RANDOM HASH
+     * ============================================================
+     *
+     * -- CODE: ---------------------------------------------------
+     *
+     *    echo Form::hidden('token', Guardian::hash());
+     *
+     * ------------------------------------------------------------
+     *
+     */
 
     public static function hash($salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);
