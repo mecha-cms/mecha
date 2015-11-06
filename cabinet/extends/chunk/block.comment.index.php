@@ -1,4 +1,3 @@
-<?php Shield::lot('response', $response); ?>
 <li class="comment comment-<?php echo $response->status; ?>" id="comment-<?php echo $response->id; ?>">
   <?php Shield::chunk('comment.avatar'); ?>
   <?php Shield::chunk('comment.header'); ?>
