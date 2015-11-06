@@ -11,6 +11,7 @@ class Shield extends Base {
 
     public static function cargo() {
         $config = Config::get();
+        $token = Guardian::token();
         $results = array(
             'config' => $config,
             'speak' => $config->speak,
@@ -24,10 +25,12 @@ class Shield extends Base {
             'file' => $config->file,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
-            'token' => Guardian::token(false),
+            'token' => $token,
             'messages' => Notify::read(false),
             'message' => Notify::read(false)
         );
+        Session::set(Guardian::$token, $token);
+        unset($config, $token);
         self::$lot = array_merge($results, self::$lot);
         return self::$lot;
     }
@@ -47,6 +50,10 @@ class Shield extends Base {
 
     public static function path($name, $fallback = false) {
         $name = File::path($name) . (File::E($name, "") !== 'php' ? '.php' : "");
+        // Full path, be quick!
+        if(strpos($name, ROOT) === 0) {
+            return File::exist($name, $fallback);
+        }
         if($path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($name, DS))) {
             return $path;
         } else if($path = File::exist(CHUNK . DS . ltrim($name, DS))) {
@@ -182,16 +189,16 @@ class Shield extends Base {
             'cache' => $cache,
             'expire' => $expire
         ));
-        $shield = false;
-        $shield_base = explode('-', $name, 2);
-        if($_file = File::exist(self::path($name))) {
-            $shield = $_file;
-        } else if($_file = File::exist(self::path($shield_base[0]))) {
-            $shield = $_file;
+        $path = false;
+        $path_base = explode('-', $name, 2);
+        if($_path = File::exist(self::path($name))) {
+            $path = $_path;
+        } else if($_path = File::exist(self::path($path_base[0]))) {
+            $path = $_path;
         } else {
             Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($name) . '</code>'));
         }
-        $G['data']['path'] = $shield;
+        $G['data']['path'] = $path;
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache_path = is_string($cache) ? $cache : CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
         if($G['data']['cache'] && file_exists($cache_path)) {
@@ -207,21 +214,21 @@ class Shield extends Base {
             }
         }
         // Begin shield
+        $out = "";
         extract(Filter::apply('shield:lot', self::cargo()));
         Weapon::fire('shield_before', array($G, $G));
-        $content_detract = "";
-        ob_start(function($content) use($minify, $shield, &$content_detract) {
-            $content = Filter::apply('shield:input', $content, $shield);
+        ob_start(function($content) use($minify, $path, &$out) {
+            $content = Filter::apply('shield:input', $content, $path);
             $content = $minify ? Converter::detractSkeleton($content) : $content;
-            $content_detract = Filter::apply('shield:output', $content, $shield);
-            return $content_detract;
+            $out = Filter::apply('shield:output', $content, $path);
+            return $out;
         });
-        require Filter::apply('shield:path', $shield);
+        require Filter::apply('shield:path', $path);
+        ob_end_flush();
         // Reset shield lot
         self::$lot = array();
-        ob_end_flush();
         // Create shield cache
-        $G['data']['content'] = $content_detract;
+        $G['data']['content'] = $out;
         if($G['data']['cache']) {
             $G['data']['cache'] = $cache_path;
             File::write($G['data']['content'])->saveTo($cache_path);
@@ -266,17 +273,21 @@ class Shield extends Base {
      *
      * ----------------------------------------------------------
      *
-     *    Shield::chunk('header', array('title' => 'Test'));
+     *    Shield::chunk('header', array('title' => 'Yo!'));
      *
      * ----------------------------------------------------------
      *
      */
 
-    public static function chunk($name, $vars = array(), $buffer = true) {
+    public static function chunk($name, $fallback = false, $buffer = true) {
         $G = array('data' => array('name' => $name));
-        $name = Filter::apply('chunk:path', self::path($name));
+        if(is_array($fallback)) {
+            self::$lot = array_merge(self::$lot, $fallback);
+            $fallback = false;
+        }
+        $name = Filter::apply('chunk:path', self::path($name, $fallback));
         if($name) {
-            extract(Filter::apply('chunk:lot', array_merge(self::cargo(), self::$lot, $vars)));
+            extract(Filter::apply('chunk:lot', self::$lot));
             Weapon::fire('chunk_before', array($G, $G));
             if($buffer) {
                 ob_start(function($content) use($name) {

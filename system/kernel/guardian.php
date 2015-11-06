@@ -89,11 +89,15 @@ class Guardian extends Base {
      *
      */
 
-    public static function token($new = true) {
-        $file = LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log';
-        $token = File::open($file)->read(sha1(uniqid(mt_rand(), true)));
-        Session::set(self::$token, $new ? $token : Session::get(self::$token));
+    public static function token() {
+        $log = LOG . DS . 'token.' . Text::parse(self::get('user'), '->safe_file_name') . '.log';
+        $token = File::open($log)->read(Session::get(self::$token, self::hash()));
+        Session::set(self::$token, $token);
         return $token;
+    }
+
+    public static function hash($salt = "") {
+        return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
     /**
@@ -111,10 +115,10 @@ class Guardian extends Base {
      *
      */
 
-    public static function checkToken($token, $redirect = null) {
+    public static function checkToken($token, $kick = false) {
         if(Session::get(self::$token) === "" || Session::get(self::$token) !== $token) {
             Notify::error(Config::speak('notify_invalid_token'));
-            self::reject()->kick(is_null($redirect) ? Config::get('manager')->slug . '/login' : trim($redirect, '/'));
+            self::reject()->kick( ! $kick ? Config::get('manager')->slug . '/login' : trim($kick, '/'));
         }
     }
 

@@ -25,29 +25,39 @@
 
 class Asset extends Base {
 
-    protected static $loaded = array();
-    protected static $ignored = array();
+    protected static $asset = array();
+    protected static $asset_x = array();
 
     // Get full version of private asset path
-    public static function path($path) {
+    public static function path($path, $fallback = false) {
+        // External URL, nothing to check!
+        if(strpos($path, '://') !== false) {
+            return $path;
+        }
         $path = File::path($path);
+        // Full path, be quick!
+        if(strpos($path, ROOT) === 0) {
+            return File::exist($path, $fallback);
+        }
         if($_path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($path, DS))) {
             return $_path;
         } else if($_path = File::exist(ROOT . DS . ltrim($path, DS))) {
             return $_path;
+        } else if($_path = File::exist($path)) {
+            return $_path;
         }
-        return $path;
+        return $fallback;
     }
 
     // Get public asset URL
-    public static function url($path_origin) {
+    public static function url($source, $fallback = false) {
         $config = Config::get();
-        $path = self::path($path_origin);
+        $path = self::path($source, $fallback);
         $url = File::url($path);
         if(strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin), $path_origin) : false;
+            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : $fallback;
         }
-        return file_exists($path) ? Filter::apply('asset:url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $path_origin) : false;
+        return file_exists($path) ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : $fallback;
     }
 
     // Return the HTML stylesheet of asset
@@ -57,7 +67,7 @@ class Asset extends Base {
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
-                self::$loaded[$path[$i]] = 1;
+                self::$asset[$path[$i]] = 1;
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
             } else {
                 // File does not exist
@@ -74,7 +84,7 @@ class Asset extends Base {
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
-                self::$loaded[$path[$i]] = 1;
+                self::$asset[$path[$i]] = 1;
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
             } else {
                 // File does not exist
@@ -91,7 +101,7 @@ class Asset extends Base {
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
             if(self::url($path[$i]) !== false) {
-                self::$loaded[$path[$i]] = 1;
+                self::$asset[$path[$i]] = 1;
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
             } else {
                 // File does not exist
@@ -178,25 +188,25 @@ class Asset extends Base {
 
     // Check for loaded asset(s)
     public static function loaded($path = null) {
-        if(is_null($path)) return self::$loaded;
-        return isset(self::$loaded[$path]) ? $path : false;
+        if(is_null($path)) return self::$asset;
+        return isset(self::$asset[$path]) ? $path : false;
     }
 
     // Do not let the `Asset` loads these file(s) ...
     public static function ignore($path) {
         if(is_array($path)) {
             foreach($path as $p) {
-                self::$ignored[$p] = 1;
+                self::$asset_x[$p] = 1;
             }
         } else {
-            self::$ignored[$path] = 1;
+            self::$asset_x[$path] = 1;
         }
     }
 
     // Check for ignored asset(s)
     public static function ignored($path = null) {
-        if(is_null($path)) return self::$ignored;
-        return isset(self::$ignored[$path]) ? $path : false;
+        if(is_null($path)) return self::$asset_x;
+        return isset(self::$asset_x[$path]) ? $path : false;
     }
 
 }
