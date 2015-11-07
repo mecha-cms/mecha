@@ -7,6 +7,11 @@ Jot::add('icon', function($kind, $modifier = null) {
     ));
 });
 
+// `<span class="text-info help" title="Test!"><i class="fa fa-question-circle"></i></span>`
+Jot::add('info', function($text = "", $icon = 'question-circle') {
+    return '<span class="text-info help" title="' . Text::parse($text, '->encoded_html') . '"><i class="fa fa-' . $icon . '"></i></span>';
+});
+
 // `<button class="btn">`
 Jot::add('button', function($kind = 'default', $text = "", $name = null, $type = 'submit', $attr = array(), $indent = 0) {
     $kind = explode(':', $kind);

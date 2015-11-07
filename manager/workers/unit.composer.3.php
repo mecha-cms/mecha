@@ -17,7 +17,7 @@ if( ! empty($fields)) {
         }
         $type = $value['type'][0];
         if(strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
-            $description = isset($value['description']) && trim($value['description']) !== "" ? ' <span class="text-info help" title="' . Text::parse($value['description'], '->encoded_html') . '">' . Jot::icon('question-circle') . '</span>' : "";
+            $description = isset($value['description']) && trim($value['description']) !== "" ? ' ' . Jot::info($value['description']) : "";
             $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
             if($type === 't') {
