@@ -36,13 +36,13 @@ class Plugin extends Base {
         if( ! $info = File::exist(PLUGIN . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = PLUGIN . DS . $folder . DS . 'about.txt';
         }
-        $default = 'Title' . S . ' ' . ucwords(Text::parse($folder, '->text')) . "\n" .
-                   'Author' . S . ' ' . $speak->anon . "\n" .
-                   'URL' . S . ' #' . "\n" .
-                   'Version' . S . ' 0.0.0' . "\n" .
-                   "\n" . SEPARATOR . "\n" .
-                   "\n" . Config::speak('notify_not_available', $speak->description);
-        $info = Text::toPage(File::open($info)->read($default), 'content', 'plugin:');
+        $d = 'Title' . S . ' ' . Text::parse($folder, '->title') . "\n" .
+             'Author' . S . ' ' . $speak->anon . "\n" .
+             'URL' . S . ' #' . "\n" .
+             'Version' . S . ' 0.0.0' . "\n" .
+             "\n" . SEPARATOR . "\n" .
+             "\n" . Config::speak('notify_not_available', $speak->description);
+        $info = Text::toPage(File::open($info)->read($d), 'content', 'plugin:');
         return $array ? $info : Mecha::O($info);
     }
 
