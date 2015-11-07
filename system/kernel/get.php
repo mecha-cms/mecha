@@ -275,11 +275,19 @@ class Get extends Base {
     }
 
     // Get stored menu data (internal only)
-    public static function state_menu($fallback = false) {
+    public static function state_menu($fallback = array()) {
         $speak = Config::speak();
         $d = DECK . DS . 'workers' . DS . 'repair.state.menu.php';
         $menu = file_exists($d) ? include $d : $fallback;
-        return Filter::apply('state:menu', File::open(STATE . DS . 'menu.txt')->read($menu));
+        if($m = File::exist(STATE . DS . 'menu.txt')) {
+            $m = File::open($m)->read();
+            if(strpos($m, 'a:') === 0 && strpos($m, "\n") === false) {
+                $menu = unserialize($m); // it's serialized
+            } else {
+                $menu = Converter::toArray($m, S, '    '); // YAML-like text format
+            }
+        }
+        return Filter::apply('state:menu', $menu);
     }
 
     // Get stored shortcode data (internal only)

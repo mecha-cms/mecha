@@ -1,3 +1,7 @@
 <?php
 
-return $speak->home . S . " /\n" . $speak->feed . S . " /feed";
+return array(
+    $speak->home => '/',
+    $speak->feed => '/feed',
+    $speak->sitemap => '/sitemap'
+);

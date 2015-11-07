@@ -11,11 +11,12 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         Shield::abort();
     }
     $menus = Get::state_menu();
+    $menus_raw = Converter::toText($menus);
     Config::set(array(
         'page_title' => $speak->menus . $config->title_separator . $config->manager->title,
         'cargo' => 'cargo.menu.php'
     ));
-    $G = array('data' => array('content' => $menus));
+    $G = array('data' => array('content' => $menus_raw));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Check for invalid input
@@ -25,7 +26,7 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            File::write($request['content'])->saveTo(STATE . DS . 'menu.txt', 0600);
+            File::serialize(Converter::toArray($request['content'], S, '    '))->saveTo(STATE . DS . 'menu.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', $speak->menu));
             Weapon::fire('on_menu_update', array($G, $P));
             Guardian::kick($config->url_current);
@@ -33,6 +34,6 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     }
     Shield::lot(array(
         'segment' => 'menu',
-        'the_content' => $menus
+        'the_content' => $menus_raw
     ))->attach('manager');
 });

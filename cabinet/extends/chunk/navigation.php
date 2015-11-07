@@ -1,4 +1,1 @@
-<?php echo Menu::get(Converter::toArray(Get::state_menu(array(
-    $speak->home => '/',
-    $speak->feed => '/feed/rss'
-)), S, '    '), 'ul', "", 'navigation:'); ?>
+<?php echo Menu::get(Get::state_menu(), 'ul', "", 'navigation:'); ?>
