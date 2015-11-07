@@ -36,3 +36,6 @@
   opacity:.8;
   cursor:not-allowed;
 }
+
+.radio {margin-left:.5em}
+label:first-child .radio {margin-left:0}

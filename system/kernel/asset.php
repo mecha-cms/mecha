@@ -41,9 +41,9 @@ class Asset extends Base {
         }
         if($_path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($path, DS))) {
             return $_path;
-        } else if($_path = File::exist(ROOT . DS . ltrim($path, DS))) {
+        } else if($_path = File::exist(ASSET . DS . ltrim($path, DS))) {
             return $_path;
-        } else if($_path = File::exist($path)) {
+        } else if($_path = File::exist(ROOT . DS . ltrim($path, DS))) {
             return $_path;
         }
         return $fallback;

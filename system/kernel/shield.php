@@ -60,8 +60,6 @@ class Shield extends Base {
             return $path;
         } else if($path = File::exist(ROOT . DS . ltrim($name, DS))) {
             return $path;
-        } else if($path = File::exist($name)) {
-            return $path;
         }
         return $fallback;
     }
@@ -171,14 +169,13 @@ class Shield extends Base {
     public static function attach($name, $fallback = false, $buffer = true) {
         $path = File::path($name);
         $s = explode('-', File::N($name), 2);
-        $path_base = $s[0];
-        $G = array('data' => array('name' => $name));
+        $G = array('data' => array('name' => $name, 'name_base' => $s[0]));
         if(strpos($name, ROOT) === 0 && file_exists($name) && is_file($name)) {
             // do nothing ...
         } else {
-            if($_path = File::exist(self::path($path))) {
+            if($_path = File::exist(self::path($path, $fallback))) {
                 $path = $_path;
-            } else if($_path = File::exist(self::path($path_base))) {
+            } else if($_path = File::exist(self::path($s[0], $fallback))) {
                 $path = $_path;
             } else {
                 Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path) . '</code>'));
