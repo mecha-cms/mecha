@@ -19,17 +19,8 @@ if(Guardian::happy() && $cargo = File::exist(DECK . DS . 'launch.php')) {
 }
 
 
-/**
- * Secondary Action(s)
- * -------------------
- */
-
-if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.comment.php')) include $cargo;
-if($cargo = File::exist(DECK . DS . 'workers' . DS . 'task.login.php')) include $cargo;
-
-
 // Exclude these fields ...
-$excludes = array('content', 'content_raw', 'tags', 'css', 'js', 'comments');
+$excludes = array('content', 'content_raw', 'css', 'js', 'comments');
 
 
 /**

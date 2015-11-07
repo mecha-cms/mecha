@@ -25,8 +25,8 @@
 
 class Asset extends Base {
 
-    protected static $asset = array();
-    protected static $asset_x = array();
+    protected static $assets = array();
+    protected static $assets_x = array();
 
     // Get full version of private asset path
     public static function path($path, $fallback = false) {
@@ -50,25 +50,28 @@ class Asset extends Base {
     }
 
     // Get public asset URL
-    public static function url($source, $fallback = false) {
+    public static function url($source) {
         $config = Config::get();
-        $path = self::path($source, $fallback);
+        $path = self::path($source, false);
         $url = File::url($path);
-        if(strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : $fallback;
+        if($path && strpos($path, ROOT) === false) {
+            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;
         }
-        return file_exists($path) ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : $fallback;
+        return $path && file_exists($path) ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;
     }
 
     // Return the HTML stylesheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
-        if($merge) return self::merge($path, $merge, $addon, 'stylesheet');
-        $path = is_string($path) && strpos($path, '.css;') !== false ? explode(';', $path) : (array) $path;
+        $path = (array) $path;
+        if($merge !== false) {
+            return self::merge($path, $merge, $addon, __FUNCTION__);
+        }
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
-            if(self::url($path[$i]) !== false) {
-                self::$asset[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . self::url($path[$i]) . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
+            $url = self::url($path[$i]);
+            if($url !== false) {
+                self::$assets[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . $url . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
@@ -79,13 +82,16 @@ class Asset extends Base {
 
     // Return the HTML javascript of asset
     public static function javascript($path, $addon = "", $merge = false) {
-        if($merge) return self::merge($path, $merge, $addon, 'javascript');
-        $path = is_string($path) && strpos($path, '.js;') !== false ? explode(';', $path) : (array) $path;
+        $path = (array) $path;
+        if($merge !== false) {
+            return self::merge($path, $merge, $addon, __FUNCTION__);
+        }
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
-            if(self::url($path[$i]) !== false) {
-                self::$asset[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i]) : "";
+            $url = self::url($path[$i]);
+            if($url !== false) {
+                self::$assets[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . $url . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
@@ -96,13 +102,16 @@ class Asset extends Base {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
-        if($merge) return self::merge($path, $merge, $addon, 'image');
-        $path = is_string($path) && strpos($path, ';') !== false ? explode(';', $path) : (array) $path;
+        $path = (array) $path;
+        if($merge !== false) {
+            return self::merge($path, $merge, $addon, __FUNCTION__);
+        }
         $html = "";
         for($i = 0, $count = count($path); $i < $count; ++$i) {
-            if(self::url($path[$i]) !== false) {
-                self::$asset[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . self::url($path[$i]) . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i]) : "";
+            $url = self::url($path[$i]);
+            if($url !== false) {
+                self::$assets[$path[$i]] = 1;
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . $url . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= '<!-- ' . $path[$i] . ' -->' . NL;
@@ -113,18 +122,17 @@ class Asset extends Base {
 
     // Merge multiple asset file(s) into a single file
     public static function merge($path, $name = null, $addon = "", $call = null) {
-        $path = is_string($path) && strpos($path, ';') !== false ? explode(';', $path) : (array) $path;
         $the_path = ASSET . DS . File::path($name);
-        $the_path_log = LOG . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
+        $the_log = LOG . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
         $is_valid = true;
-        if( ! file_exists($the_path_log)) {
+        if( ! file_exists($the_log)) {
             $is_valid = false;
         } else {
-            $the_path_time = explode("\n", file_get_contents($the_path_log));
-            if(count($the_path_time) !== count($path)) {
+            $the_time = explode("\n", file_get_contents($the_log));
+            if(count($the_time) !== count($path)) {
                 $is_valid = false;
             } else {
-                foreach($the_path_time as $i => $time) {
+                foreach($the_time as $i => $time) {
                     $p = self::path($path[$i]);
                     if( ! file_exists($p) || (int) filemtime($p) !== (int) $time) {
                         $is_valid = false;
@@ -138,38 +146,32 @@ class Asset extends Base {
         $e = File::E($name);
         if( ! file_exists($the_path) || ! $is_valid) {
             if(Text::check($e)->in(array('gif', 'jpeg', 'jpg', 'png'))) {
-                foreach($path as $p) {
-                    if( ! self::ignored($p)) {
-                        $p = self::path($p);
-                        if(file_exists($p)) {
-                            $time .=  filemtime($p) . "\n";
-                        }
+                foreach($path as &$p) {
+                    if( ! self::ignored($p) && $p = self::path($p, false)) {
+                        $time .= filemtime($p) . "\n";
                     }
                 }
-                File::write(trim($time))->saveTo($the_path_log);
+                File::write(trim($time))->saveTo($the_log);
                 Image::take($path)->merge()->saveTo($the_path);
             } else {
                 foreach($path as $p) {
-                    if( ! self::ignored($p)) {
-                        $p = self::path($p);
-                        if(file_exists($p)) {
-                            $time .= filemtime($p) . "\n";
-                            $c = file_get_contents($p);
-                            if(strpos(File::B($p), '.min.') === false) {
-                                if(strpos(File::B($the_path), '.min.css') !== false) {
-                                    $content .= Converter::detractShell($c) . "\n";
-                                } else if(strpos(File::B($the_path), '.min.js') !== false) {
-                                    $content .= Converter::detractSword($c) . "\n";
-                                } else {
-                                    $content .= $c . "\n\n";
-                                }
+                    if( ! self::ignored($p) && $p = self::path($p, false)) {
+                        $time .= filemtime($p) . "\n";
+                        $c = Filter::apply('asset:input', file_get_contents($p), $p);
+                        if(strpos(File::B($p), '.min.') === false) {
+                            if(strpos(File::B($the_path), '.min.css') !== false) {
+                                $content .= Filter::apply('asset:output', Converter::detractShell($c), $p);
+                            } else if(strpos(File::B($the_path), '.min.js') !== false) {
+                                $content .= Filter::apply('asset:output', Converter::detractSword($c), $p);
                             } else {
                                 $content .= $c . "\n\n";
                             }
+                        } else {
+                            $content .= $c . "\n\n";
                         }
                     }
                 }
-                File::write(trim($time))->saveTo($the_path_log);
+                File::write(trim($time))->saveTo($the_log);
                 File::write(trim($content))->saveTo($the_path);
             }
         }
@@ -188,25 +190,25 @@ class Asset extends Base {
 
     // Check for loaded asset(s)
     public static function loaded($path = null) {
-        if(is_null($path)) return self::$asset;
-        return isset(self::$asset[$path]) ? $path : false;
+        if(is_null($path)) return self::$assets;
+        return isset(self::$assets[$path]) ? $path : false;
     }
 
     // Do not let the `Asset` loads these file(s) ...
     public static function ignore($path) {
         if(is_array($path)) {
             foreach($path as $p) {
-                self::$asset_x[$p] = 1;
+                self::$assets_x[$p] = 1;
             }
         } else {
-            self::$asset_x[$path] = 1;
+            self::$assets_x[$path] = 1;
         }
     }
 
     // Check for ignored asset(s)
     public static function ignored($path = null) {
-        if(is_null($path)) return self::$asset_x;
-        return isset(self::$asset_x[$path]) ? $path : false;
+        if(is_null($path)) return self::$assets_x;
+        return isset(self::$assets_x[$path]) ? $path : false;
     }
 
 }

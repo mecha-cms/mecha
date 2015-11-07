@@ -207,6 +207,16 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
 
 
 /**
+ * Secondary Action(s)
+ * -------------------
+ */
+
+foreach(glob(DECK . DS . 'workers' . DS . '__task.*.php', GLOB_NOSORT) as $task) {
+    include $task;
+}
+
+
+/**
  * Handle Shortcode(s) in Content
  * ------------------------------
  */
@@ -240,39 +250,11 @@ Filter::add('shortcode', function($content) use($config, $speak) {
     return $content;
 }, 20);
 
-// YOU ARE HERE! -- Specify your own shortcode priority to be greater than the
-// default shortcode file priority, but lesser than the shortcode deactivation
-// priority by determining the shortcode priority between 20 - 30
+// YOU ARE HERE! -- Specify your own shortcode priority to be greater
+// than the default shortcode file priority, but lesser than the shortcode
+// deactivation priority by determining the shortcode priority between 20 - 30
 
 Filter::add('shortcode', function($content) {
     if(strpos($content, '`{{') === false) return $content;
     return str_replace(array('`{{', '}}`'), array('{{', '}}'), $content);
 }, 30);
-
-
-/**
- * Other(s)
- * --------
- *
- * I'm trying to not touching the source code of the Markdown plugin at all.
- *
- * [1]. Add bordered class for tables in content.
- * [2]. Add `rel="nofollow"` attribute in external links.
- *
- */
-
-if($config->html_parser !== false && $config->html_parser !== 'HTML') {
-    Filter::add('content', function($content) use($config) {
-        return preg_replace(
-            array(
-                '#<table>#',
-                '#<a href="(?!' . preg_quote($config->url, '/') . '|javascript:|[\.\/\?\#])#'
-            ),
-            array(
-                '<table class="table-bordered table-full-width">',
-                '<a rel="nofollow" href="'
-            ),
-        $content);
-        return $content;
-    }, 20);
-}
