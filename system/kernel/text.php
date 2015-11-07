@@ -79,7 +79,7 @@ class Text extends Base {
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
             $parser = 'to_' . str_replace('->', "", strtolower($arguments[1]));
             unset($arguments[1]);
-            return isset(self::$parsers[$c][$parser]) ? call_user_func_array(self::$parsers[$c][$parser], $arguments) : false;
+            return isset(self::$parsers[$c][$parser]) ? call_user_func_array(self::$parsers[$c][$parser], $arguments) : $arguments[0];
         }
         // Default function for complete parsing process => `Text::parse('foo')->to_html`
         $results = array();

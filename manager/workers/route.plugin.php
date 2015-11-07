@@ -3,7 +3,7 @@
 
 // Refresh plugin(s) order cache on every update event
 Weapon::add('on_plugin_update', function() {
-    Plugin:reload();
+    Plugin::reload();
 });
 
 
@@ -136,7 +136,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  */
 
 Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! File::exist(PLUGIN . DS . $slug) || Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
     $info = Plugin::info($slug, true);
@@ -168,9 +168,12 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
  * -------------
  */
 
-Route::accept($config->manager->slug . '/plugin/backup/id:(:any)', function($folder = "") use($config, $speak) {
-    $name = $folder . '.zip';
-    Package::take(PLUGIN . DS . $folder)->pack(ROOT . DS . $name, true);
+Route::accept($config->manager->slug . '/plugin/backup/id:(:any)', function($slug = "") use($config, $speak) {
+    if( ! File::exist(PLUGIN . DS . $slug)) {
+        Shield::abort();
+    }
+    $name = $slug . '.zip';
+    Package::take(PLUGIN . DS . $slug)->pack(ROOT . DS . $name, true);
     $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
     Weapon::fire('on_backup_construct', array($G, $G));
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);
