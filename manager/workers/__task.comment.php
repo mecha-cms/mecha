@@ -12,7 +12,8 @@ Weapon::add('shield_before', function() use($config, $speak) {
     $article = isset(Config::get('article')->path) ? Get::article(Config::get('article')->path) : false;
     if($article && $config->page_type === 'article' && Request::method('post')) {
         $request = Request::post();
-        if($comment_task = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'task.comment.php')) {
+        $base = SHIELD . DS . $config->shield . DS . 'workers' . DS;
+        if($comment_task = File::exist($base . 'task.comment.php') || $comment_task = File::exist($base . '__task.comment.php')) {
             require $comment_task; // Custom comment constructor
         } else {
             // Check token
@@ -94,6 +95,8 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 // Temporarily disallow image(s) in comment to prevent XSS
                 $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
                 $message = preg_replace('#<img(\s[^<>]*?)>#', '&lt;img$1&gt;', $message);
+                // Disallow `{{php}}` shortcode in comment to prevent PHP script injection
+                $message = str_replace(array('{{php}}', '{{/php}}'), "", $message);
                 Page::header(array(
                     'Name' => $name,
                     'Email' => $email,
