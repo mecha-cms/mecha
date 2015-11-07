@@ -1,6 +1,12 @@
 <?php
 
 
+// Refresh plugin(s) order cache on every update event
+Weapon::add('on_plugin_update', function() {
+    Plugin:reload();
+});
+
+
 /**
  * Plugin Manager
  * --------------
@@ -72,11 +78,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
  * -------------------
  */
 
-Weapon::add('on_plugin_update', function() {
-    File::open(CACHE . DS . 'plugins.order.cache')->delete();
-});
-
-Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use($config, $speak) {
     if(is_numeric($slug)) {
         // It's an index page
         Route::execute($config->manager->slug . '/plugin/(:num)', array($slug));

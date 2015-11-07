@@ -3,8 +3,8 @@
 class Plugin extends Base {
 
     // Loading plugin(s) ...
-    public static function load() {
-        if($plugins_order = File::exist(CACHE . DS . 'plugins.order.cache')) {
+    public static function load($path = 'plugins.order.cache') {
+        if($plugins_order = File::exist(CACHE . DS . $path)) {
             return File::open($plugins_order)->unserialize();
         }
         $plugins = array();
@@ -23,9 +23,15 @@ class Plugin extends Base {
                 $plugins[$j] = $plugins_list[$j];
             }
         }
-        File::serialize($plugins)->saveTo(CACHE . DS . 'plugins.order.cache', 0600);
+        File::serialize($plugins)->saveTo(CACHE . DS . $path, 0600);
         unset($plugins_list, $plugins_order, $plugins_payload);
         return $plugins;
+    }
+
+    // Reload the plugin(s) ...
+    public static function reload($path = 'plugins.order.cache') {
+        File::open(CACHE . DS . $path)->delete();
+        return self::load(CACHE . DS . $path);
     }
 
     // Get plugin info by its folder
