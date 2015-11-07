@@ -1,2 +1,2 @@
-plugin_cache_content_description: Add <abbr title="Uniform Resource Locator">URL</abbr> path and/or route pattern of the page you want to cache in the text area provided
+plugin_cache_content_description: Add <abbr title="Uniform Resource Locator">URL</abbr> path of the page you want to cache in the text area provided
 plugin_cache_content_info: Separate each <abbr title="Uniform Resource Locator">URL</abbr> path by a new line character.

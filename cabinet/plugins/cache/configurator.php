@@ -5,11 +5,13 @@
 
   $cache_config = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
   $content = "";
-  foreach($cache_config['path'] as $path => $expire) {
-      if($expire !== false) {
-          $expire = ' ' . $expire;
+  foreach($cache_config['path'] as $path => $exp) {
+      if($exp !== true) {
+          $exp = ' ' . $exp;
+      } else {
+          $exp = "";
       }
-      $content .= $path . $expire . "\n";
+      $content .= $path . $exp . "\n";
   }
 
   ?>

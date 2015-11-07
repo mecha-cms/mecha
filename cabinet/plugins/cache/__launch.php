@@ -14,7 +14,7 @@ Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update'
         foreach(explode("\n", $request['content']) as $path) {
             $s = explode(' ', $path, 2);
             if(trim($path) !== "" && trim($s[0]) !== "") {
-                $results[trim($s[0])] = isset($s[1]) && trim($s[1]) !== "" ? (float) trim($s[1]) : false;
+                $results[trim($s[0])] = isset($s[1]) && trim($s[1]) !== "" ? (float) trim($s[1]) : true;
             }
         }
         unset($request['content']); // Remove content from request array
