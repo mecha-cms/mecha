@@ -405,14 +405,3 @@ img {
   max-width:100%;
   height:auto;
 }
-
-
-/* MESSAGES */
-
-.messages {margin:0 0 1.3846153846153846em}
-
-.message {
-  margin:0 0 2px;
-  padding:.7692307692307693em .9230769230769231em;
-  overflow:hidden;
-}

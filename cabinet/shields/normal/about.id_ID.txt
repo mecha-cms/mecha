@@ -7,6 +7,6 @@ Version: 1.2.0
 
 > Tameng normal untuk CMS Mecha.
 
-Ini adalah tameng bawaan yang digunakan oleh **Mecha**. Jika Anda ingin membuat tameng baru untuk **Mecha**, akan lebih baik apabila Anda menggunakan tameng ini sebagai kerangka utama.
+Ini adalah tameng bawaan yang digunakan oleh **Mecha**. Saya sarankan Anda untuk menggunakan perisai ini sebagai kerangka dasar jika Anda ingin membuat perisai baru untuk **Mecha**.
 
 *[CMS]: Content Management System

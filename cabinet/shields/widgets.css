@@ -198,8 +198,11 @@ table[border="1"] td {border:1px solid}
   height:100%;
 }
 
+.messages {margin:0 0 1.3846153846153846em}
+
 .message {
-  padding:1em 1.5em;
+  margin:0 0 2px;
+  padding:.7692307692307693em .9230769230769231em;
   overflow:hidden;
 }
 
