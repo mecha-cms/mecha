@@ -68,7 +68,7 @@
         <?php
 
         if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $page->content, $matches)) {
-            $curt = Text::parse(str_replace('-', '---', $matches[2]), '->text', '<abbr><sub><sup>'); // get first blockquote content as description
+            $curt = Text::parse($matches[2], '->text', '<abbr><sub><sup>'); // get first blockquote content as description
         } else {
             $curt = Converter::curt($page->content);
         }

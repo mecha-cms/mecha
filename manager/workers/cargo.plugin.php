@@ -9,7 +9,7 @@
     <?php if($folders): ?>
     <?php foreach($folders as $folder): $folder = File::B($folder); ?>
     <?php $r = PLUGIN . DS . $folder . DS; $c = File::exist($r . 'capture.png'); ?>
-    <?php $page = Shield::info($folder); ?>
+    <?php $page = Plugin::info($folder); ?>
     <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $folder; ?>">
       <?php if($c): ?>
       <div class="media-capture" style="background-image:url('<?php echo File::url($c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
@@ -19,7 +19,7 @@
         <?php
 
         if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $page->content, $matches)) {
-            $curt = Text::parse(str_replace('-', '---', $matches[2]), '->text', '<abbr><sub><sup>'); // get first blockquote content as description
+            $curt = Text::parse($matches[2], '->text', '<abbr><sub><sup>'); // get first blockquote content as description
         } else {
             $curt = Converter::curt($page->content);
         }

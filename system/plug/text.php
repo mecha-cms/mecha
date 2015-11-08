@@ -115,9 +115,13 @@ Text::parser('to_safe_file_name', function($input) {
     return strtolower(implode('.', $parts_output));
 });
 
-// Convert slug pattern to text
-Text::parser('to_text', function($input) {
+// Convert HTML/slug pattern to plain text
+Text::parser('to_text', function($input, $tags = "") {
     if( ! is_string($input)) return $input;
+    // Should be a HTML input
+    if(strpos($input, '<') !== false || strpos($input, ' ') !== false) {
+        return preg_replace('#\s+#', ' ', trim(strip_tags($input, $tags)));
+    }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `
     // 3. Replace `---` to `-`
@@ -126,7 +130,7 @@ Text::parser('to_text', function($input) {
             '#^(\.|_{2})#',
             '#-{3}#',
             '#-#',
-            '# +#',
+            '#\s+#',
             '#``\.``#'
         ),
         array(

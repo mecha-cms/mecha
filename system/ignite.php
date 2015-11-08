@@ -103,21 +103,17 @@ Weapon::add('meta', function() {
     $speak = Config::speak();
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
-    if(isset($config->article->description)) {
-        $description = trim(strip_tags($config->article->description));
-    } else if(isset($config->page->description)) {
-        $description = trim(strip_tags($config->page->description));
-    } else {
-        $description = trim(strip_tags($config->description));
+    if(isset($config->{$config->page_type}->description)) {
+        $config->description = $config->{$config->page_type}->description;
     }
-    $html .= Cell::meta('description', $description, array(), 2) . NL;
-    $html .= Cell::meta('author', trim(strip_tags($config->author->name)), array(), 2) . NL;
+    $html .= Cell::meta('description', Text::parse($config->description, '->text'), array(), 2) . NL;
+    $html .= Cell::meta('author', Text::parse($config->author->name, '->text'), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
 }, 10);
 
 Weapon::add('meta', function() {
     $config = Config::get();
-    $html  = Cell::title(strip_tags($config->page_title), array(), 2) . NL;
+    $html  = Cell::title(Text::parse($config->page_title, '->text'), array(), 2) . NL;
     $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }, 20);
