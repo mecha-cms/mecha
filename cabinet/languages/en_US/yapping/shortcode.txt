@@ -2,16 +2,16 @@ To remove a _shortcode_, simply leave the field to be empty.
 
 ### Usage
 
-As HTML link:
+#### As HTML
 
 ~~~ .html
-<a href="`{{url.article}}`lorem-ipsum">link text</a>
+<a href="`{{url.page:about}}`">link text</a>
 ~~~
 
-As Markdown link:
+#### As Markdown
 
 ~~~ .markdown
-[link text](`{{url.article}}`lorem-ipsum)
+[link text](`{{url.page:about}}`)
 ~~~
 
 ### Escaping a Shortcode
@@ -28,7 +28,7 @@ You can pass some variables inside a _shortcode_ pattern via `%s` symbol. For ex
 
 Key                        | Value
 -------------------------- | ----------------------------
-``{{div class:%s id:%s}}`` | ``<div class="\1" id="\2">``
+``{{div class:%s id:%s}}`` | ``<div class="$1" id="$2">``
 
 So, writing ``{{div class:foo id:bar}}`` in the page composer will produce ``<div class="foo" id="bar">`` in the output.
 

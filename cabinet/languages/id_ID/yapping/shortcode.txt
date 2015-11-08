@@ -2,16 +2,16 @@ Untuk menyingkirkan _kode pintasan_, cukup biarkan bidang kode yang ingin dihapu
 
 ### Penggunaan
 
-Sebagai tautan HTML:
+#### Sebagai HTML
 
 ~~~ .html
-<a href="`{{url.article}}`lorem-ipsum">teks tautan</a>
+<a href="`{{url.page:about}}`">teks tautan</a>
 ~~~
 
-Sebagai tautan Markdown:
+#### Sebagai Markdown
 
 ~~~
-[teks tautan](`{{url.article}}`lorem-ipsum)
+[teks tautan](`{{url.page:about}}`)
 ~~~
 
 ### Meng-Escape Kode Pintasan
@@ -28,7 +28,7 @@ Anda bisa menerapkan variabel di dalam pola _kode pintasan_ melalui simbol `%s`.
 
 Kunci                      | Nilai
 -------------------------- | ----------------------------
-``{{div class:%s id:%s}}`` | ``<div class="\1" id="\2">``
+``{{div class:%s id:%s}}`` | ``<div class="$1" id="$2">``
 
 Sehingga, menuliskan ``{{div class:foo id:bar}}`` di dalam halaman tulis akan menghasilkan ``<div class="foo" id="bar">`` di hasil keluaran.
 
