@@ -181,8 +181,8 @@ class Shield extends Base {
                 Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path) . '</code>'));
             }
         }
-        $path = Filter::apply('shield:path', $path);
-        $G['data']['path'] = $path;
+        $_path = Filter::apply('shield:path', $path);
+        $G['data']['path'] = $_path;
         $out = "";
         // Begin shield
         extract(Filter::apply('shield:lot', self::cargo()));
@@ -193,10 +193,10 @@ class Shield extends Base {
                 $out = Filter::apply('shield:output', $content, $path);
                 return $out;
             });
-            require $path;
+            require $_path;
             ob_end_flush();
         } else {
-            require $path;
+            require $_path;
         }
         $G['data']['content'] = $out;
         // Reset shield lot

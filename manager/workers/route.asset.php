@@ -170,8 +170,8 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
     }
     Shield::lot(array(
         'segment' => 'asset',
-        'the_name' => $old,
-        'the_content' => is_file(ASSET . DS . $old) && strpos(',' . SCRIPT_EXT . ',', ',' . File::E($old) . ',') !== false ? File::open(ASSET . DS . $old)->read() : false
+        'path' => $old,
+        'content' => is_file(ASSET . DS . $old) && strpos(',' . SCRIPT_EXT . ',', ',' . File::E($old) . ',') !== false ? File::open(ASSET . DS . $old)->read() : false
     ))->attach('manager');
 });
 

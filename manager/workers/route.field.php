@@ -106,7 +106,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     }, 11);
     Shield::lot(array(
         'segment' => 'field',
-        'the_key' => $key
+        'id' => $key
     ))->attach('manager');
 });
 
@@ -147,6 +147,6 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     }
     Shield::lot(array(
         'segment' => 'field',
-        'the_key' => $key
+        'id' => $key
     ))->attach('manager');
 });

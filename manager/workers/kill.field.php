@@ -11,7 +11,7 @@
   <tbody>
     <tr>
       <td><?php echo $file->title; ?></td>
-      <td><?php echo $the_key; ?></td>
+      <td><?php echo $id; ?></td>
       <?php
 
       $s = Mecha::alter($file->type[0], array(
@@ -30,6 +30,6 @@
   </tbody>
 </table>
 <form class="form-kill form-field" id="form-kill" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
-<?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $the_key); ?>
+<?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $id); ?>
 <?php echo Form::hidden('token', $token); ?>
 </form>

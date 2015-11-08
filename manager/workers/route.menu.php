@@ -34,6 +34,6 @@ Route::accept($config->manager->slug . '/menu', function() use($config, $speak) 
     }
     Shield::lot(array(
         'segment' => 'menu',
-        'the_content' => $menus_raw
+        'content' => $menus_raw
     ))->attach('manager');
 });

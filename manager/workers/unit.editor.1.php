@@ -1,5 +1,5 @@
 <p>
-<?php echo Form::textarea('content', Guardian::wayback('content', $the_content), $speak->manager->placeholder_content, array(
+<?php echo Form::textarea('content', Guardian::wayback('content', $content), $speak->manager->placeholder_content, array(
     'class' => array(
         'textarea-block',
         'textarea-expand',

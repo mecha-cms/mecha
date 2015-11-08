@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-<?php echo $the_key ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $the_key ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-<?php echo $id ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
@@ -12,7 +12,7 @@
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
     <span class="grid span-5">
-    <?php echo Form::text('key', Guardian::wayback('key', $the_key), null, array(
+    <?php echo Form::text('key', Guardian::wayback('key', $id), null, array(
         'class' => 'input-block'
     )); ?>
     </span>
@@ -54,7 +54,7 @@
     </span>
   </div>
   <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->place_holder; ?></span>
+    <span class="grid span-1 form-label"><?php echo $speak->placeholder; ?></span>
     <span class="grid span-5">
     <?php echo Form::text('placeholder', Converter::toText(Guardian::wayback('placeholder', $file->placeholder)), null, array(
         'class' => 'input-block'
@@ -83,9 +83,9 @@
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
-      <?php if($the_key): ?>
+      <?php if($id): ?>
       <?php echo Jot::button('action', $speak->update); ?>
-      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $the_key); ?>
+      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $id); ?>
       <?php else: ?>
       <?php echo Jot::button('construct', $speak->create); ?>
       <?php endif; ?>
@@ -94,7 +94,7 @@
 </form>
 <script>
 (function(w, d) {
-    var form = d.getElementById('form-<?php echo $the_key ? 'repair' : 'ignite'; ?>'),
+    var form = d.getElementById('form-<?php echo $id ? 'repair' : 'ignite'; ?>'),
         type = form.type,
         value = form.value,
         placeholder = form.placeholder,

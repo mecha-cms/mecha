@@ -3,7 +3,7 @@
 <?php
 
 $path_reject = $config->manager->slug . '/cache';
-$path_destruct = $path_reject . '/kill/file:' . File::url(str_replace(CACHE . DS, "", $the_name));
+$path_destruct = $path_reject . '/kill/file:' . File::url(str_replace(CACHE . DS, "", $path));
 
 include DECK . DS . 'workers' . DS . 'unit.editor.2.php';
 

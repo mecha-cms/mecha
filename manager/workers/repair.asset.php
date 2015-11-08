@@ -3,7 +3,7 @@
 <?php
 
 $path_reject = $config->manager->slug . '/asset' . $config->url_query;
-$path_destruct = $config->manager->slug . '/asset/kill/file:' . File::url(str_replace(ASSET . DS, "", $the_name)) . $config->url_query;
+$path_destruct = $config->manager->slug . '/asset/kill/file:' . File::url(str_replace(ASSET . DS, "", $path)) . $config->url_query;
 
 include DECK . DS . 'workers' . DS . 'unit.editor.2.php';
 

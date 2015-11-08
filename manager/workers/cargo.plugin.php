@@ -6,36 +6,38 @@
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
     <h3><?php echo Config::speak('manager.title_your_', $speak->plugins); ?></h3>
-    <?php if($files): ?>
-    <?php foreach($files as $plugin): $c = File::exist(PLUGIN . DS . $plugin->slug . DS . 'capture.png'); ?>
-    <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $plugin->slug; ?>">
+    <?php if($folders): ?>
+    <?php foreach($folders as $folder): $folder = File::B($folder); ?>
+    <?php $r = PLUGIN . DS . $folder . DS; $c = File::exist($r . 'capture.png'); ?>
+    <?php $page = Shield::info($folder); ?>
+    <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $folder; ?>">
       <?php if($c): ?>
       <div class="media-capture" style="background-image:url('<?php echo File::url($c); ?>?v=<?php echo filemtime($c); ?>');" role="image"></div>
       <?php endif; ?>
-      <h4 class="media-title"><?php echo Jot::icon(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $plugin->about->title; ?></h4>
+      <h4 class="media-title"><?php echo Jot::icon(File::exist($r . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $page->title; ?></h4>
       <div class="media-content">
         <?php
 
-        if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $plugin->about->content, $matches)) {
-            $curt = trim(strip_tags($matches[2])); // get first blockquote content as description
+        if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $page->content, $matches)) {
+            $curt = Text::parse(str_replace('-', '---', $matches[2]), '->text', '<abbr><sub><sup>'); // get first blockquote content as description
         } else {
-            $curt = Converter::curt($plugin->about->content);
+            $curt = Converter::curt($page->content);
         }
 
         ?>
         <p><?php echo $curt; ?></p>
         <p>
-          <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php')): ?>
-          <?php echo Jot::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $plugin->slug); ?> <?php echo Jot::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $plugin->slug . '?o=' . $config->offset); ?>
+          <?php if(File::exist($r . 'launch.php')): ?>
+          <?php echo Jot::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $folder); ?> <?php echo Jot::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $folder . '?o=' . $config->offset); ?>
           <?php else: ?>
-          <?php if(File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
-          <?php echo Jot::btn('action.small:plus-circle', $speak->install, $config->manager->slug . '/plugin/fire/id:' . $plugin->slug . '?o=' . $config->offset); ?>
+          <?php if(File::exist($r . 'pending.php')): ?>
+          <?php echo Jot::btn('action.small:plus-circle', $speak->install, $config->manager->slug . '/plugin/fire/id:' . $folder . '?o=' . $config->offset); ?>
           <?php endif; ?>
           <?php endif; ?>
-          <?php if( ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'configurator.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $plugin->slug . DS . 'pending.php')): ?>
+          <?php if( ! File::exist($r . 'configurator.php') && ! File::exist($r . 'launch.php') && ! File::exist($r . 'pending.php')): ?>
           <?php echo Jot::btn('destruct.small.disabled:times-circle', $speak->remove, null); ?>
           <?php else: ?>
-          <?php echo Jot::btn('destruct.small:times-circle', $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $plugin->slug); ?>
+          <?php echo Jot::btn('destruct.small:times-circle', $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $folder); ?>
           <?php endif; ?>
         </p>
       </div>

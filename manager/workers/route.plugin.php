@@ -52,24 +52,18 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
             }, 11);
         }
     }
-    $plugins = array();
     $folders = glob(PLUGIN . DS . Request::get('id', '*'), GLOB_NOSORT | GLOB_ONLYDIR);
     sort($folders);
-    if($files = Mecha::eat($folders)->chunk($offset, $config->manager->per_page)->vomit()) {
-        for($i = 0, $count = count($files); $i < $count; ++$i) {
-            $plugins[$i]['slug'] = File::B($files[$i]);
-            $plugins[$i]['about'] = Plugin::info(File::B($files[$i]), true);
-        }
-        unset($files);
-    }
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'files' => ! empty($plugins) ? $plugins : false,
         'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
         'cargo' => 'cargo.plugin.php'
     ));
-    Shield::lot('segment', 'plugin')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'plugin',
+        'folders' => $folders
+    ))->attach('manager');
 });
 
 
@@ -93,12 +87,12 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
     $info['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
-        'file' => $info,
+        'page' => $info,
         'cargo' => 'repair.plugin.php'
     ));
     Shield::lot(array(
         'segment' => 'plugin',
-        'the_plugin_path' => $slug
+        'slug' => $slug
     ))->attach('manager');
 });
 

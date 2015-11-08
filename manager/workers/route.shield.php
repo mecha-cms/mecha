@@ -38,18 +38,18 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             }, 11);
         }
     }
+    $folders = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
+    sort($folders);
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
+        'page' => Shield::info($folder, true),
         'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'),
         'cargo' => 'cargo.shield.php'
     ));
-    $the_shields = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
-    sort($the_shields);
     Shield::lot(array(
         'segment' => 'shield',
-        'the_shield_info' => Shield::info($folder, true),
-        'the_shield_folder' => $folder,
-        'the_shield_folders' => $the_shields
+        'folder' => $folder,
+        'folders' => $folders,
     ))->attach('manager');
 });
 
@@ -100,9 +100,9 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     }
     Shield::lot(array(
         'segment' => 'shield',
-        'the_shield' => $folder,
-        'the_name' => null,
-        'the_content' => null
+        'folder' => $folder,
+        'path' => null,
+        'content' => null
     ))->attach('manager');
 });
 
@@ -161,9 +161,9 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
     }
     Shield::lot(array(
         'segment' => 'shield',
-        'the_shield' => $folder,
-        'the_name' => $path,
-        'the_content' => $content
+        'folder' => $folder,
+        'path' => $path,
+        'content' => $content
     ))->attach('manager');
 });
 
@@ -177,7 +177,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     if(Guardian::get('status') !== 'pilot' || $folder === "") {
         Shield::abort();
     }
-    $info = Shield::info($folder, true);
+    $info = Shield::info($folder);
     if($path) {
         $path = File::path($path);
         if( ! $file = File::exist(SHIELD . DS . $folder . DS . $path)) {
@@ -189,7 +189,8 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         }
     }
     Config::set(array(
-        'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info['title']) . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info->title) . $config->title_separator . $config->manager->title,
+        'page' => $info,
         'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => 'kill.shield.php'
     ));
@@ -206,13 +207,12 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         Weapon::fire('on_shield_destruct', array($P, $P));
         Guardian::kick($config->manager->slug . '/shield' . ($path ? '/' . $folder : ""));
     } else {
-        Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info['title'] . '</strong>'));
+        Notify::warning(Config::speak('notify_confirm_delete_', $path ? '<code>' . File::path($path) . '</code>' : '<strong>' . $info->title . '</strong>'));
     }
     Shield::lot(array(
         'segment' => 'shield',
-        'the_shield' => $folder,
-        'the_name' => $path,
-        'the_info' => $info
+        'folder' => $folder,
+        'path' => $path
     ))->attach('manager');
 });
 

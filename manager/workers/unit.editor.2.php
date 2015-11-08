@@ -1,12 +1,12 @@
 <?php
 
-$e = File::E( ! is_null($the_name) ? $the_name : "");
-$is_text = is_null($the_name) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') !== false;
+$e = File::E( ! is_null($path) ? $path : "");
+$is_text = is_null($path) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') !== false;
 
 ?>
-<?php if($is_text && $the_content !== false): ?>
+<?php if($is_text && $content !== false): ?>
 <p>
-<?php echo Form::textarea('content', Guardian::wayback('content', $the_content), $speak->manager->placeholder_content, array(
+<?php echo Form::textarea('content', Guardian::wayback('content', $content), $speak->manager->placeholder_content, array(
     'class' => array(
         'textarea-block',
         'textarea-expand',
@@ -17,9 +17,9 @@ $is_text = is_null($the_name) || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') 
 <?php endif; ?>
 <p>
   <?php if($e === 'cache'): ?>
-  <?php echo Form::hidden('name', File::url($the_name)); ?>
+  <?php echo Form::hidden('name', File::url($path)); ?>
   <?php else: ?>
-  <?php echo Form::text('name', Guardian::wayback('name', File::url($the_name)), $speak->manager->placeholder_file_name); ?>
+  <?php echo Form::text('name', Guardian::wayback('name', File::url($path)), $speak->manager->placeholder_file_name); ?>
   <?php endif; ?>
   <?php if(strpos($config->url_path, '/repair/file:') === false): ?>
   <?php echo Jot::button('construct', $speak->create); ?>
