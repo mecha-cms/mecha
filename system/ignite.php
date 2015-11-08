@@ -11,6 +11,9 @@ if(DEBUG) {
     ini_set('display_errors', TRUE);
     ini_set('display_startup_errors', TRUE);
     ini_set('error_log', LOG . DS . 'errors.log');
+    ini_set('html_errors', 0);
+    ini_set('error_prepend_string', '<pre style="white-space:pre-wrap;"><code>');
+    ini_set('error_append_string', '</code></pre>');
 } else {
     error_reporting(0);
     ini_set('display_errors', FALSE);
@@ -163,15 +166,15 @@ $plugins = Plugin::load();
 
 for($i = 0, $count = count($plugins); $i < $count; ++$i) {
     if(isset($plugins[$i]) && $plugins[$i] !== false) {
-        $plugins[$i] = PLUGIN . DS . $plugins[$i];
-        if( ! $language = File::exist($plugins[$i] . DS . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-            $language = $plugins[$i] . DS . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+        $r = PLUGIN . DS . $plugins[$i] . DS;
+        if( ! $language = File::exist($r . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+            $language = $r . 'languages' . DS . 'en_US' . DS . 'speak.txt';
         }
         if(File::exist($language)) {
-            Config::merge('speak', Text::toArray(File::open($language)->read(), ':', '  '));
+            Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         }
-        if($launch = File::exist($plugins[$i] . DS . 'launch.php')) {
-            if(strpos(File::B($plugins[$i]), '__') === 0) {
+        if($launch = File::exist($r . 'launch.php')) {
+            if(strpos(File::B($r), '__') === 0) {
                 if(Guardian::happy() && $config->page_type === 'manager') {
                     include $launch; // backend
                 }
@@ -179,7 +182,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
                 include $launch; // frontend
             }
         }
-        if($launch = File::exist($plugins[$i] . DS . '__launch.php')) {
+        if($launch = File::exist($r . '__launch.php')) {
             if(Guardian::happy() && $config->page_type === 'manager') {
                 include $launch; // backend
             }

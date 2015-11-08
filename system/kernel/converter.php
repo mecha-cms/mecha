@@ -209,7 +209,7 @@ class Converter extends Base {
     public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = "") {
         $input = preg_replace(
             array(
-                '#<br *\/?>|<\/.*?>#i', // New line to a single white-space
+                '#<br *\/?>|<\/.*?>(?=[\s<])#i', // New line to a single white-space
                 '#<.*?>#', // Remove all HTML tag(s)
                 '#[`~\#*-=+_]{2,}#', // Remove all possible raw Markdown( Extra)? pattern(s)
                 '#\b([`~*_]+)(.*?)\1\b#', // --ibid

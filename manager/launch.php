@@ -275,7 +275,7 @@ Weapon::add('shield_before', function() {
         )
     );
 
-    if($errors = File::exist(LOG . DS . 'errors.log')) {
+    if($errors = File::exist(ini_get('error_log'))) {
         $total = 0;
         if(filesize($errors) > MAX_ERROR_FILE_SIZE) {
             File::open($errors)->delete();
