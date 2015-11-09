@@ -254,8 +254,8 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
  */
 
 Route::accept($config->search->slug, function() use($config) {
-    if($q = Request::post('q')) {
-        Guardian::kick($config->search->slug . '/' . strip_tags(Text::parse($q, '->encoded_url')));
+    if($q = strip_tags(Request::post('q', ""))) {
+        Guardian::kick($config->search->slug . '/' . Text::parse($q, '->encoded_url'));
     }
     Guardian::kick();
 }, 61);
