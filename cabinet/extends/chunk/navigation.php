@@ -1,1 +1,1 @@
-<?php echo Menu::get(Get::state_menu(), 'ul', "", 'navigation:'); ?>
+<?php echo Menu::get(); ?>

@@ -314,13 +314,15 @@ pre {
   position:relative;
 }
 
-.blog-navigation a {
+.blog-navigation a,
+.blog-navigation span {
   display:block;
   padding:0 1.2307692307692308em;
   margin:0 2px 0 0;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
+  cursor:pointer;
 }
 
 .blog-navigation .current > a {
@@ -353,7 +355,8 @@ pre {
   display:block;
 }
 
-.blog-navigation li li a {
+.blog-navigation li li a,
+.blog-navigation li li span {
   padding:0 1.1538461538461537em;
   margin:0;
 }
@@ -587,11 +590,13 @@ pre {
     box-shadow:none;
   }
   .blog-navigation li li ul {margin-left:0}
-  .blog-navigation li ul a {
+  .blog-navigation li ul a,
+  .blog-navigation li ul span {
     font-weight:normal;
     font-size:96%;
     margin:0;
   }
+  .blog-navigation li ul ul {margin-left:1em}
   .blog-sidebar,
   .blog-main,
   .blog-sidebar + .blog-main {

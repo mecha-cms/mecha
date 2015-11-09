@@ -11,9 +11,7 @@ if(DEBUG) {
     ini_set('display_errors', TRUE);
     ini_set('display_startup_errors', TRUE);
     ini_set('error_log', LOG . DS . 'errors.log');
-    ini_set('html_errors', 0);
-    ini_set('error_prepend_string', '<pre style="white-space:pre-wrap;"><code>');
-    ini_set('error_append_string', '</code></pre>');
+    ini_set('html_errors', 1);
 } else {
     error_reporting(0);
     ini_set('display_errors', FALSE);
