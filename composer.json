@@ -1,6 +1,6 @@
 {
     "name": "mecha-cms/mecha-cms",
-    "description": "Mecha is a file-based CMS. It does not require any database. Almost all files are stored as plain text files which grouped into folders, which you can even edit it manually through a plain text editor application. Mecha focused on a principle that, a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn&rsquo;t mean that Mecha is powerless. Mecha has fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.",
+    "description": "Mecha is a file-based CMS that is focused on the principle that a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn&rsquo;t mean that Mecha is powerless. Mecha has a fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.",
     "type": "cms",
     "keywords": ["cms", "mecha", "php"],
     "license": "GPL-3.0",
@@ -16,8 +16,8 @@
         "php": ">=5.3.1",
         "michelf/php-markdown": ">=1.5.0",
         "tovic/simple-text-editor-library": ">=1.0.0",
-        "tovic/markdown-text-editor": ">=1.4.3",
-        "tovic/html-text-editor": ">=1.4.3",
+        "tovic/markdown-text-editor": ">=1.4.4",
+        "tovic/html-text-editor": ">=1.4.4",
         "madrobby/zepto": ">=1.1.6",
         "FortAwesome/Font-Awesome": ">=4.3.0"
     }

@@ -103,7 +103,7 @@ Weapon::add('meta', function() {
     $speak = Config::speak();
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
-    if(isset($config->{$config->page_type}->description)) {
+    if($config->page_type !== '404' && isset($config->{$config->page_type}->description)) {
         $config->description = $config->{$config->page_type}->description;
     }
     $html .= Cell::meta('description', Text::parse($config->description, '->text'), array(), 2) . NL;

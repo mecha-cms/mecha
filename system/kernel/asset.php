@@ -71,7 +71,12 @@ class Asset extends Base {
             $url = self::url($path[$i]);
             if($url !== false) {
                 self::$assets[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . $url . '" rel="stylesheet"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i], $url) : "";
+                if(is_array($addon)) {
+                    $attr = isset($addon[$i]) ? $addon[$i] : end($addon);
+                } else {
+                    $attr = $addon;
+                }
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . $url . '" rel="stylesheet"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
@@ -91,7 +96,12 @@ class Asset extends Base {
             $url = self::url($path[$i]);
             if($url !== false) {
                 self::$assets[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . $url . '"' . (is_array($addon) ? $addon[$i] : $addon) . '></script>' . NL, $path[$i], $url) : "";
+                if(is_array($addon)) {
+                    $attr = isset($addon[$i]) ? $addon[$i] : end($addon);
+                } else {
+                    $attr = $addon;
+                }
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . $url . '"' . $attr . '></script>' . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
@@ -111,7 +121,12 @@ class Asset extends Base {
             $url = self::url($path[$i]);
             if($url !== false) {
                 self::$assets[$path[$i]] = 1;
-                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . $url . '"' . (is_array($addon) ? $addon[$i] : $addon) . ES . NL, $path[$i], $url) : "";
+                if(is_array($addon)) {
+                    $attr = isset($addon[$i]) ? $addon[$i] : end($addon);
+                } else {
+                    $attr = $addon;
+                }
+                $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . $url . '"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
                 $html .= '<!-- ' . $path[$i] . ' -->' . NL;
@@ -132,46 +147,47 @@ class Asset extends Base {
             if(count($the_time) !== count($path)) {
                 $is_valid = false;
             } else {
-                foreach($the_time as $i => $time) {
+                foreach($the_time as $i => $unix) {
                     $p = self::path($path[$i]);
-                    if( ! file_exists($p) || (int) filemtime($p) !== (int) $time) {
+                    if( ! file_exists($p) || (int) filemtime($p) !== (int) $unix) {
                         $is_valid = false;
                         break;
                     }
                 }
             }
         }
-        $time = "";
+        $unix = "";
         $content = "";
         $e = File::E($name);
         if( ! file_exists($the_path) || ! $is_valid) {
             if(Text::check($e)->in(array('gif', 'jpeg', 'jpg', 'png'))) {
                 foreach($path as &$p) {
                     if( ! self::ignored($p) && $p = self::path($p, false)) {
-                        $time .= filemtime($p) . "\n";
+                        $unix .= filemtime($p) . "\n";
                     }
                 }
-                File::write(trim($time))->saveTo($the_log);
+                File::write(trim($unix))->saveTo($the_log);
                 Image::take($path)->merge()->saveTo($the_path);
             } else {
                 foreach($path as $p) {
                     if( ! self::ignored($p) && $p = self::path($p, false)) {
-                        $time .= filemtime($p) . "\n";
-                        $c = Filter::apply('asset:input', file_get_contents($p), $p);
+                        $unix .= filemtime($p) . "\n";
+                        $c = Filter::apply('asset:input', file_get_contents($p) . "\n", $p);
                         if(strpos(File::B($p), '.min.') === false) {
                             if(strpos(File::B($the_path), '.min.css') !== false) {
-                                $content .= Filter::apply('asset:output', Converter::detractShell($c), $p);
+                                $c = Converter::detractShell($c);
                             } else if(strpos(File::B($the_path), '.min.js') !== false) {
-                                $content .= Filter::apply('asset:output', Converter::detractSword($c), $p);
+                                $c = Converter::detractSword($c);
                             } else {
-                                $content .= $c . "\n\n";
+                                $c = $c . "\n";
                             }
+                            $content .= Filter::apply('asset:output', $c, $p);
                         } else {
-                            $content .= $c . "\n\n";
+                            $content .= Filter::apply('asset:output', $c . "\n", $p);
                         }
                     }
                 }
-                File::write(trim($time))->saveTo($the_log);
+                File::write(trim($unix))->saveTo($the_log);
                 File::write(trim($content))->saveTo($the_path);
             }
         }

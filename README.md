@@ -3,7 +3,7 @@ Mecha CMS
 
 ![logo](https://cloud.githubusercontent.com/assets/1669261/2845124/0fa5f700-d093-11e3-9cf8-8c892e536004.png "Mecha")
 
-**Mecha** is a file-based CMS. It does not require any database. Almost all files are stored as plain text files which grouped into folders, which you can even edit it manually through a plain text editor application. **Mecha** focused on a principle that, a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn&rsquo;t mean that **Mecha** is powerless. **Mecha** has fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.
+**Mecha** is a file-based CMS that is focused on the principle that a static website must be personal, portable, light and easy to be exported and backed up. However, this doesn’t mean that **Mecha** is powerless. **Mecha** has a fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own website, according to your personality.
 
 ### Features
 
