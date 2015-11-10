@@ -67,6 +67,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
         $name = $site . '.cabinet.' . str_replace('/', '.', $origin) . '_' . $time . '.zip';
         Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
         if($origin === 'shields') {
+            Package::take(ROOT . DS . $name)->deleteFolder('normal'); // delete `normal` shield
             Package::take(ROOT . DS . $name)->deleteFiles(array(
                 'json.php',
                 'rss.php',
@@ -74,6 +75,9 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
                 'widgets.css',
                 'widgets.js'
             ));
+        }
+        if($origin === 'extends') {
+            Package::take(ROOT . DS . $name)->deleteFolder(File::B(CHUNK));
         }
     }
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);

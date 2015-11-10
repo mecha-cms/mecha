@@ -126,7 +126,7 @@ class Package extends Base {
     protected static $open = null;
     protected static $map = null;
 
-    public static function take($files = null) {
+    public static function take($files) {
         if( ! extension_loaded('zip')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
         }
@@ -165,7 +165,7 @@ class Package extends Base {
      *
      */
 
-    public static function pack($destination = null, $bucket = false) {
+    public static function pack($destination, $bucket = false) {
         $zip = new ZipArchive();
         if(is_dir(self::$open)) {
             $root = rtrim(self::$open, DS);
@@ -244,7 +244,7 @@ class Package extends Base {
      *
      */
 
-    public static function extractTo($destination = null, $bucket = false) {
+    public static function extractTo($destination, $bucket = false) {
         $zip = new ZipArchive();
         if(is_null($destination)) {
             $destination = File::D(self::$open);
@@ -259,7 +259,7 @@ class Package extends Base {
             $bucket = File::path($bucket);
             mkdir($destination . DS . $bucket, 0777, true);
         }
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
+        if($zip->open(self::$open) === true) {
             if($bucket !== false) {
                 $zip->extractTo($destination . DS . $bucket);
             } else {
@@ -277,54 +277,6 @@ class Package extends Base {
 
     /**
      * ====================================================================
-     *  ADD FILE(S) TO A ZIP FILE
-     * ====================================================================
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type  | Description
-     *  --------- | ----- | -----------------------------------------------
-     *  $files    | array | Array of file(s) and its destination(s)
-     *  --------- | ----- | -----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function addFiles($files = array(), $destination = null) {
-        $zip = new ZipArchive();
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
-            if( ! is_array($files)) {
-                // Handling for `Package::take('file.zip')->addFile('test.txt')`
-                if(strpos($files, DS) === false) {
-                    $files = File::D(self::$open) . DS . $files;
-                }
-                if(File::exist($files)) {
-                    if(is_null($destination)) {
-                        $destination = File::B($files);
-                    }
-                    $zip->addFile($files, $destination);
-                }
-                $zip->close();
-                return new static;
-            }
-            foreach($files as $key => $value) {
-                // Handling for `Package::take('file.zip')->addFiles(array('test-1.txt' => 'test-1.txt'))`
-                if(strpos($key, DS) === false) {
-                    $key = File::D(self::$open) . DS . $key;
-                }
-                if(is_null($value)) {
-                    $value = File::B($key);
-                }
-                if(File::exist($key)) {
-                    $zip->addFile($key, $value);
-                }
-            }
-            $zip->close();
-        }
-        return new static;
-    }
-
-    /**
-     * ====================================================================
      *  ADD A FILE TO A ZIP FILE
      * ====================================================================
      *
@@ -338,34 +290,41 @@ class Package extends Base {
      *
      */
 
-    public static function addFile($path = "", $destination = null) {
-        return self::addFiles($path, $destination);
+    public static function addFile($file, $destination = null) {
+        $zip = new ZipArchive();
+        if($zip->open(self::$open) === true) {
+            // Handling for `Package::take('file.zip')->addFile('test.txt')`
+            if(strpos($file, DS) === false) {
+                $file = File::D(self::$open) . DS . $file;
+            }
+            if(File::exist($file)) {
+                if(is_null($destination)) {
+                    $destination = File::B($file);
+                }
+                $zip->addFile($file, $destination);
+            }
+            $zip->close();
+        }
+        return new static;
     }
 
     /**
      * ====================================================================
-     *  REMOVE FILE(S) FROM A ZIP FILE
+     *  ADD FILE(S) TO A ZIP FILE
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type  | Description
      *  --------- | ----- | -----------------------------------------------
-     *  $files    | array | Array of file(s) to be deleted from the ZIP
+     *  $files    | array | Array of file(s) and its destination(s)
      *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function deleteFiles($files = array()) {
-        $zip = new ZipArchive();
-        $files = (array) $files;
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
-            foreach($files as $file) {
-                if($zip->locateName($file) !== false) {
-                    $zip->deleteName($file);
-                }
-            }
-            $zip->close();
+    public static function addFiles($files) {
+        foreach($files as $key => $value) {
+            self::addFile($key, $value);
         }
         return new static;
     }
@@ -385,39 +344,83 @@ class Package extends Base {
      */
 
     public static function deleteFile($file) {
-        return self::deleteFiles($file);
+        $zip = new ZipArchive();
+        if($zip->open(self::$open) === true) {
+            if($zip->locateName($file) !== false) {
+                $zip->deleteName($file);
+            }
+            $zip->close();
+        }
+        return new static;
     }
 
     /**
      * ====================================================================
-     *  RENAME FILE(S) INSIDE A ZIP FILE
+     *  REMOVE FILE(S) FROM A ZIP FILE
      * ====================================================================
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type  | Description
      *  --------- | ----- | -----------------------------------------------
-     *  $old      | array | Array of old file name and new file name
+     *  $files    | array | Array of file(s) to be deleted from the ZIP
      *  --------- | ----- | -----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function renameFiles($old, $new = "") {
+    public static function deleteFiles($files) {
+        foreach($files as $key => $value) {
+            self::deleteFile($key, $value);
+        }
+        return new static;
+    }
+
+    /**
+     * ====================================================================
+     *  REMOVE A FOLDER WITH ITS CONTENT(S) FROM A ZIP FILE
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------
+     *  $folder   | string | Folder to be deleted from the ZIP
+     *  --------- | ------ | ----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function deleteFolder($folder) {
         $zip = new ZipArchive();
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
-            if(is_array($old)) {
-                foreach($old as $k => $v) {
-                    $k = File::path($k);
-                    $v = File::path($v);
-                    $root = trim(File::D($k), DS . '.') !== "" ? File::D($k) . DS : "";
-                    $zip->renameName($k, $root . File::B($v));
+        $folder = rtrim(File::path($folder), DS);
+        if($zip->open(self::$open) === true) {
+            for($i = 0; $i < $zip->numFiles; ++$i) {
+                $info = $zip->statIndex($i);
+                $b = rtrim(substr(File::path($info['name']), 0, strlen($folder)), DS);
+                if($b === $folder) {
+                    $zip->deleteIndex($i);
                 }
-            } else {
-                $old = File::path($old);
-                $root = trim(File::D($old), DS . '.') !== "" ? File::D($old) . DS : "";
-                $zip->renameName($old, $root . File::B($new));
             }
             $zip->close();
+        }
+    }
+
+    /**
+     * ====================================================================
+     *  REMOVE FOLDER(S) WITH ITS CONTENT(S) FROM A ZIP FILE
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -----------------------------------------------
+     *  $folders  | array | Array of folder(s) to be deleted from the ZIP
+     *  --------- | ----- | -----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function deleteFolders($folders) {
+        foreach($folders as $folder) {
+            self::deleteFolder($folder);
         }
         return new static;
     }
@@ -437,8 +440,36 @@ class Package extends Base {
      *
      */
 
-    public static function renameFile($old, $new) {
-        return self::renameFiles($old, $new);
+    public static function renameFile($old, $new = "") {
+        $zip = new ZipArchive();
+        if($zip->open(self::$open) === true) {
+            $old = File::path($old);
+            $root = File::D($old) !== "" ? File::D($old) . DS : "";
+            $zip->renameName($old, $root . File::B($new));
+            $zip->close();
+        }
+        return new static;
+    }
+
+    /**
+     * ====================================================================
+     *  RENAME FILE(S) INSIDE A ZIP FILE
+     * ====================================================================
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -----------------------------------------------
+     *  $names    | array | Array of old file name and new file name
+     *  --------- | ----- | -----------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function renameFiles($names) {
+        foreach($names as $old => $new) {
+            self::renameFile($old, $new);
+        }
+        return new static;
     }
 
     /**
@@ -458,7 +489,7 @@ class Package extends Base {
     public static function getContent($file) {
         $zip = new ZipArchive();
         $results = false;
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
+        if($zip->open(self::$open) === true) {
             if($zip->locateName($file) !== false) {
                 $results = $zip->getFromName($file);
             }
@@ -485,7 +516,7 @@ class Package extends Base {
     public static function getInfo($key = null, $fallback = false) {
         $results = array();
         $zip = new ZipArchive();
-        if(File::exist(self::$open) && $zip->open(self::$open)) {
+        if($zip->open(self::$open) === true) {
             $results = array_merge(File::inspect(self::$open), array(
                 'status' => $zip->status,
                 'total' => $zip->numFiles
