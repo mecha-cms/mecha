@@ -10,7 +10,6 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
     $tags = Get::tags('ASC', 'id');
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
-        'files' => $tags,
         'cargo' => 'cargo.tag.php'
     ));
     $G = array('data' => Mecha::A($tags));
@@ -64,5 +63,8 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
 })(window.Zepto || window.jQuery, DASHBOARD);
 </script>';
     }, 11);
-    Shield::lot('segment', 'tag')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'tag',
+        'files' => Mecha::O($tags)
+    ))->attach('manager');
 });

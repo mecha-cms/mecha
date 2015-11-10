@@ -26,11 +26,13 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     Config::set(array(
         'page_title' => $speak->caches . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
         'cargo' => 'cargo.cache.php'
     ));
-    Shield::lot('segment', 'cache')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'cache',
+        'files' => Mecha::O($files)
+    ))->attach('manager');
 });
 
 
@@ -96,7 +98,6 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($path) : $speak->caches) . $config->title_separator . $config->manager->title,
-        'files' => $deletes,
         'cargo' => 'kill.cache.php'
     ));
     if($request = Request::post()) {
@@ -115,7 +116,10 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . $path . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::lot('segment', 'cache')->attach('manager');
+    Shield::lot(array(
+		'segment' => 'cache',
+        'files' => Mecha::O($deletes)
+	))->attach('manager');
 });
 
 

@@ -21,8 +21,6 @@ class Shield extends Base {
             'page' => $config->page,
             'responses' => $config->responses,
             'response' => $config->response,
-            'files' => $config->files,
-            'file' => $config->file,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
             'token' => $token,

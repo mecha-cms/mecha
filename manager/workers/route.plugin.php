@@ -137,7 +137,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     $info['slug'] = $slug;
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
-        'file' => $info,
+        'page' => $info,
         'cargo' => 'kill.plugin.php'
     ));
     if($request = Request::post()) {

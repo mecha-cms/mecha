@@ -14,10 +14,12 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
     ksort($fields);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
-        'files' => ! empty($fields) ? $fields : false,
         'cargo' => 'cargo.field.php'
     ));
-    Shield::lot('segment', 'field')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'field',
+        'files' => ! empty($fields) ? Mecha::O($fields) : false
+    ))->attach('manager');
 });
 
 
@@ -52,10 +54,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     }
     $G = array('data' => $data);
     $G['data']['key'] = $key;
-    Config::set(array(
-        'file' => $data,
-        'cargo' => 'repair.field.php'
-    ));
+    Config::set('cargo', 'repair.field.php');
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Empty title field
@@ -106,7 +105,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     }, 11);
     Shield::lot(array(
         'segment' => 'field',
-        'id' => $key
+        'id' => $key,
+        'file' => Mecha::O($data)
     ))->attach('manager');
 });
 
@@ -128,7 +128,6 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $data['title'] . $config->title_separator . $config->manager->title,
-        'file' => $data,
         'cargo' => 'kill.field.php'
     ));
     if($request = Request::post()) {
@@ -147,6 +146,7 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     }
     Shield::lot(array(
         'segment' => 'field',
-        'id' => $key
+        'id' => $key,
+        'file' => Mecha::O($data)
     ))->attach('manager');
 });

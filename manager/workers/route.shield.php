@@ -43,13 +43,13 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
         'page' => Shield::info($folder, true),
-        'files' => Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'),
         'cargo' => 'cargo.shield.php'
     ));
     Shield::lot(array(
         'segment' => 'shield',
         'folder' => $folder,
         'folders' => $folders,
+        'files' => Mecha::O(Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'))
     ))->attach('manager');
 });
 
@@ -191,7 +191,6 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . ($path ? File::B($file) : $info->title) . $config->title_separator . $config->manager->title,
         'page' => $info,
-        'files' => Get::files(SHIELD . DS . $folder, '*'),
         'cargo' => 'kill.shield.php'
     ));
     if($request = Request::post()) {
@@ -212,6 +211,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
     Shield::lot(array(
         'segment' => 'shield',
         'folder' => $folder,
+        'files' => Mecha::O(Get::files(SHIELD . DS . $folder, '*')),
         'path' => $path
     ))->attach('manager');
 });

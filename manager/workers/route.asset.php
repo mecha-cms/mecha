@@ -105,11 +105,13 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     Config::set(array(
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'files' => $files,
         'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/asset'),
         'cargo' => 'cargo.asset.php'
     ));
-    Shield::lot('segment', 'asset')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'asset',
+        'files' => Mecha::O($files)
+    ))->attach('manager');
 });
 
 
@@ -199,7 +201,6 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . (count($deletes) === 1 ? File::B($name) : $speak->assets) . $config->title_separator . $config->manager->title,
-        'files' => $deletes,
         'cargo' => 'kill.asset.php'
     ));
     if($request = Request::post()) {
@@ -219,7 +220,10 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }
-    Shield::lot('segment', 'asset')->attach('manager');
+    Shield::lot(array(
+        'segment' => 'asset',
+        'files' => Mecha::O($deletes)
+    ))->attach('manager');
 });
 
 
