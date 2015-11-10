@@ -42,27 +42,25 @@
 class Tree extends Base {
 
     public static $config = array(
-        'element' => array(
+        'elements' => array(
             'trunk' => 'ul',
             'branch' => 'ul',
             'twig' => 'li'
         ),
-        'attributes' => array(
-            'class' => array(
-                'trunk' => 'trunk',
-                'branch' => 'branch branch-%d',
-                'twig' => 'twig',
-                'current' => 'current',
-                'hole' => 'hole'
-            )
-        )
+		'classes' => array(
+			'trunk' => 'trunk',
+			'branch' => 'branch branch-%d',
+			'twig' => 'twig',
+			'current' => 'current',
+			'hole' => 'hole'
+		)
     );
 
     protected static function create($array, $indent = "", $FP = "", $i = 0) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
-        $c_element = self::$config['element'];
-        $c_class = self::$config['attributes']['class'];
+        $c_element = self::$config['elements'];
+        $c_class = self::$config['classes'];
         $html = $indent . str_repeat(TAB, $i) . '<' . $c_element[$i === 0 ? 'trunk' : 'branch'] . ($i === 0 ? ($c_class['trunk'] !== false ? ' class="' . $c_class['trunk'] . '"' : "") : ($c_class['branch'] !== false ? ' class="' . sprintf($c_class['branch'], $i / 2) . '"' : "")) . '>' . NL;
         foreach($array as $key => $value) {
             if( ! is_array($value)) {

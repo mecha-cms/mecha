@@ -45,14 +45,14 @@ class Menu extends Base {
         }
         $c = Tree::$config;
         $cc = self::$config['classes'];
-        Tree::$config['element']['trunk'] = $type;
-        Tree::$config['element']['branch'] = $type;
-        Tree::$config['element']['twig'] = 'li';
-        Tree::$config['attributes']['class']['trunk'] = $cc['parent'];
-        Tree::$config['attributes']['class']['branch'] = $cc['child'];
-        Tree::$config['attributes']['class']['twig'] = false;
-        Tree::$config['attributes']['class']['current'] = $cc['current'];
-        Tree::$config['attributes']['class']['hole'] = $cc['separator'];
+        Tree::$config['elements']['trunk'] = $type;
+        Tree::$config['elements']['branch'] = $type;
+        Tree::$config['elements']['twig'] = 'li';
+        Tree::$config['classes']['trunk'] = $cc['parent'];
+        Tree::$config['classes']['branch'] = $cc['child'];
+        Tree::$config['classes']['twig'] = false;
+        Tree::$config['classes']['current'] = $cc['current'];
+        Tree::$config['classes']['hole'] = $cc['separator'];
         $output = Tree::grow($array, $indent, $FP);
         Tree::$config = $c;
         return $output;
