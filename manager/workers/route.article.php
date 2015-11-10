@@ -44,7 +44,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         if( ! isset($article->link)) $article->link = "";
         if( ! isset($article->fields)) $article->fields = array();
         if( ! isset($article->content_type)) $article->content_type = $config->html_parser;
-        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $article->date->unix) . $extension_o)) {
+        if( ! File::exist(CUSTOM . DS . Date::slug($article->date->unix) . $extension_o)) {
             $article->css_raw = $config->defaults->article_css;
             $article->js_raw = $config->defaults->article_js;
         }
@@ -116,7 +116,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             include DECK . DS . 'workers' . DS . 'task.field.4.php';
             // Ignite
             if( ! $id) {
-                Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
+                Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.2.php';
                 Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('article:url', Filter::apply('url', $config->url . '/' . $config->index->slug . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
@@ -125,7 +125,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             // Repair
             } else {
                 Page::open($article->path)->header($header)->content($content)->save();
-                File::open($article->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '_' . implode(',', $kind) . '_' . $slug . $extension);
+                File::open($article->path)->renameTo(Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.1.php';
                 if($article->slug !== $slug && $php_file = File::exist(File::D($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
@@ -134,10 +134,10 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_repair', array($G, $P));
                 // Rename all comment file(s) related to article if article date has been changed
-                if(((string) $date !== (string) $article->date->W3C) && $comments = Get::comments($id, 'DESC', 'txt,hold')) {
+                if(((string) $date !== (string) $article->date->W3C) && $comments = Get::comments('DESC', 'post:' . Date::slug($id), 'txt,hold')) {
                     foreach($comments as $comment) {
                         $parts = explode('_', File::B($comment));
-                        $parts[0] = Date::format($date, 'Y-m-d-H-i-s');
+                        $parts[0] = Date::slug($date);
                         File::open($comment)->renameTo(implode('_', $parts));
                     }
                 }
@@ -177,7 +177,7 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         Guardian::checkToken($request['token']);
         File::open($article->path)->delete();
         // Deleting comment(s) ...
-        if($comments = Get::comments($id, 'DESC', 'txt,hold')) {
+        if($comments = Get::comments('DESC', 'post:' . Date::slug($id), 'txt,hold')) {
             foreach($comments as $comment) {
                 File::open($comment)->delete();
             }

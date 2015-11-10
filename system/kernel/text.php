@@ -126,6 +126,7 @@ class Text extends Base {
                     }
                     $results[$key] = $value;
                 }
+                unset($results['__']);
             // By file content
             } else {
                 $text = str_replace("\r", "", $text);

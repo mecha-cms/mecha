@@ -35,27 +35,27 @@ class Get extends Base {
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter   | Type    | Desription
-     *  ----------- | ------- | -------------------------------------------------
-     *  $folder     | string  | Path to folder of file(s) you want to be listed
-     *  $extensions | string  | The file extension(s)
-     *  $order      | string  | Ascending or descending? ASC/DESC?
-     *  $sorter     | string  | The key of array item as sorting reference
-     *  $filter     | string  | Filter the resulted array by a keyword
-     *  $inclusive  | boolean | Include hidden file(s) to result(s)?
-     *  ----------- | ------- | -------------------------------------------------
+     *  Parameter  | Type    | Desription
+     *  ---------- | ------- | --------------------------------------------------
+     *  $folder    | string  | Path to folder of file(s) you want to be listed
+     *  $e         | string  | The file extension(s)
+     *  $order     | string  | Ascending or descending? ASC/DESC?
+     *  $sorter    | string  | The key of array item as sorting reference
+     *  $filter    | string  | Filter the resulted array by a keyword
+     *  $inclusive | boolean | Include hidden file(s) to result(s)?
+     *  ---------- | ------- | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function files($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+    public static function files($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
         if( ! file_exists($folder)) return false;
         $results = array();
         $results_inclusive = array();
-        $extension = $extensions === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $extensions);
+        $e = $e === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $e);
         $folder = rtrim(File::path($folder), DS);
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-        foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $extension . ')$#i') as $file => $object) {
+        foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $e . ')$#i') as $file => $object) {
             if( ! $filter) {
                 $results_inclusive[] = File::inspect($file);
             } else {
@@ -109,13 +109,13 @@ class Get extends Base {
      *
      */
 
-    public static function adjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
+    public static function adjacentFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
         if( ! file_exists($folder)) return false;
         $results = array();
         $results_inclusive = array();
-        $extension = str_replace(' ', "", $extensions);
+        $e = str_replace(' ', "", $e);
         $folder = rtrim(File::path($folder), DS);
-        $files = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
+        $files = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
         if($inclusive) {
             $files = array_merge($files, glob($folder . DS . '.*', GLOB_NOSORT));
         }
@@ -158,8 +158,8 @@ class Get extends Base {
      * ==========================================================================
      */
 
-    public static function inclusiveFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::files($folder, $extensions, $order, $sorter, $filter, true);
+    public static function inclusiveFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::files($folder, $e, $order, $sorter, $filter, true);
     }
 
     /**
@@ -168,8 +168,8 @@ class Get extends Base {
      * ==========================================================================
      */
 
-    public static function inclusiveAdjacentFiles($folder = ASSET, $extensions = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::adjacentFiles($folder, $extensions, $order, $sorter, $filter, true);
+    public static function inclusiveAdjacentFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::adjacentFiles($folder, $e, $order, $sorter, $filter, true);
     }
 
     // Get stored configuration data (internal only)
@@ -424,6 +424,68 @@ class Get extends Base {
 
     /**
      * ==========================================================================
+     *  GET PAGE PATH
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::pagePath('lorem-ipsum'));
+     *
+     * --------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type  | Description
+     *  --------- | ----- | -----------------------------------------------------
+     *  $detector | mixed | Slug, ID or time of the page
+     *  --------- | ----- | -----------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function pagePath($detector, $folder = PAGE) {
+        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            list($time, $kind, $slug) = explode('_', File::N($path), 3);
+            if($slug === $detector || $time === Date::slug($detector)) {
+                return $path;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * ==========================================================================
+     *  GET LIST OF PAGE DETAIL(S)
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::pageExtract($input));
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function pageExtract($input, $FP = 'page:') {
+        if( ! $input) return false;
+        $e = File::E($input);
+        $update = File::T($input);
+        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
+        list($time, $kind, $slug) = explode('_', File::N($input), 3);
+        $kind = explode(',', $kind);
+        return array(
+            'path' => self::AMF($input, $FP, 'path'),
+            'id' => self::AMF((int) Date::format($time, 'U'), $FP, 'id'),
+            'time' => self::AMF(Date::format($time), $FP, 'time'),
+            'update_raw' => self::AMF($update, $FP, 'update_raw'),
+            'update' => self::AMF($update_date, $FP, 'update'),
+            'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
+            'slug' => self::AMF($slug, $FP, 'slug'),
+            'state' => self::AMF($e !== 'draft' ? 'published' : 'draft', $FP, 'state')
+        );
+    }
+
+    /**
+     * ==========================================================================
      *  GET LIST OF PAGE(S) PATH
      * ==========================================================================
      *
@@ -451,27 +513,27 @@ class Get extends Base {
      *    Get::pages('DESC', 'lorem-ipsum');
      *
      *    // [5]. The Old Way(s)' Alias
-     *    Get::pages('DESC', 'keyword:lorem');
-     *    Get::pages('DESC', 'keyword:lorem-ipsum');
+     *    Get::pages('DESC', 'word:lorem');
+     *    Get::pages('DESC', 'word:lorem-ipsum');
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
-     *  $order     | string | Ascending or descending? ASC/DESC?
-     *  $filter    | string | Filter the resulted array by a keyword
-     *  $extension | string | The file extension(s)
-     *  $folder    | string | Folder of the page(s)
-     *  ---------- | ------ | ---------------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------------
+     *  $order    | string | Ascending or descending? ASC/DESC?
+     *  $filter   | string | Filter the resulted array by a keyword
+     *  $e        | string | The file extension(s)
+     *  $folder   | string | Folder of the page(s)
+     *  --------- | ------ | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pages($order = 'DESC', $filter = "", $extension = 'txt', $folder = PAGE) {
+    public static function pages($order = 'DESC', $filter = "", $e = 'txt', $folder = PAGE) {
         $results = array();
-        $extension = str_replace(' ', "", $extension);
-        $pages = strpos($extension, ',') !== false ? glob($folder . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $extension, GLOB_NOSORT);
+        $e = str_replace(' ', "", $e);
+        $pages = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
         $total_pages = count($pages);
         if( ! is_array($pages) || $total_pages === 0) return false;
         if($order === 'DESC') {
@@ -485,7 +547,7 @@ class Get extends Base {
             if($key === 'time') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
-                    if(strpos($time, $value) !== false) {
+                    if(strpos($time, $value) === 0) {
                         $results[] = $pages[$i];
                     }
                 }
@@ -506,7 +568,7 @@ class Get extends Base {
                         $results[] = $pages[$i];
                     }
                 }
-            } else { // if($key === 'keyword') {
+            } else { // if($key === 'word') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(File::N($pages[$i]), $value) !== false) {
                         $results[] = $pages[$i];
@@ -522,62 +584,6 @@ class Get extends Base {
         }
         unset($pages);
         return ! empty($results) ? $results : false;
-    }
-
-    /**
-     * ==========================================================================
-     *  GET LIST OF ARTICLE(S) PATH
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    foreach(Get::articles() as $path) {
-     *        echo $path . '<br>';
-     *    }
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function articles($order = 'DESC', $filter = "", $extension = 'txt') {
-        return self::pages($order, $filter, $extension, ARTICLE);
-    }
-
-    /**
-     * ===========================================================================
-     *  GET LIST OF COMMENT(S) PATH
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    foreach(Get::comments() as $path) {
-     *        echo $path . '<br>';
-     *    }
-     *
-     * ---------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type    | Description
-     *  ---------- | ------- | ---------------------------------------------------
-     *  $post      | string  | Post time as result(s) filter
-     *  $order     | string  | Ascending or descending? ASC/DESC?
-     *  $extension | boolean | The file extension(s)
-     *  ---------- | ------- | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function comments($post = null, $order = 'ASC', $extension = 'txt', $folder = RESPONSE) {
-        $extension = str_replace(' ', "", $extension);
-        $post = ! is_null($post) ? Date::format($post, 'Y-m-d-H-i-s') : '*';
-        $results = strpos($extension, ',') !== false ? glob($folder . DS . $post . '_*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . $post . '_*.' . $extension, GLOB_NOSORT);
-        if( ! is_array($results) || count($results) === 0) return false;
-        if($order === 'DESC') {
-            rsort($results);
-        } else {
-            sort($results);
-        }
-        return $results;
     }
 
     /**
@@ -605,8 +611,8 @@ class Get extends Base {
      *
      */
 
-    public static function pagesExtract($order = 'DESC', $sorter = 'time', $filter = "", $extension = 'txt', $FP = 'page:', $folder = PAGE) {
-        if($files = self::pages($order, $filter, $extension, $folder)) {
+    public static function pagesExtract($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'page:', $folder = PAGE) {
+        if($files = self::pages($order, $filter, $e, $folder)) {
             $results = array();
             foreach($files as $file) {
                 $results[] = self::pageExtract($file, $FP);
@@ -619,136 +625,99 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF ARTICLE(S) DETAIL(S)
+     *  GET MINIMUM DATA OF A PAGE
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    foreach(Get::articlesExtract() as $file) {
-     *        echo $file['path'] . '<br>';
-     *    }
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function articlesExtract($order = 'DESC', $sorter = 'time', $filter = "", $extension = 'txt') {
-        return self::pagesExtract($order, $sorter, $filter, $extension, 'article:', ARTICLE);
-    }
-
-    /**
-     * ==========================================================================
-     *  GET LIST OF COMMENT(S) DETAIL(S)
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    foreach(Get::commentsExtract() as $file) {
-     *        echo $file['path'] . '<br>';
-     *    }
+     *    var_dump(Get::pageAnchor('about'));
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------------------
-     *  $sorter   | string | The key of array item as sorting reference
-     *  --------- | ------ | ----------------------------------------------------
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $path      | string | The URL path of the page file, or a page slug
+     *  $folder    | string | Folder of the page(s)
+     *  $connector | string | See `Get::page()`
+     *  $FP        | string | See `Get::page()`
+     *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function commentsExtract($post = null, $order = 'ASC', $sorter = 'path', $extension = 'txt') {
-        if($files = self::comments($post, $order, $extension)) {
-            $results = array();
-            foreach($files as $file) {
-                $results[] = self::commentExtract($file);
-            }
-            unset($files);
-            return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
+    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
+        if(strpos($path, ROOT) === false) {
+            $path = self::pagePath($path, $folder); // By page slug, ID or time
+        }
+        if($path && ($buffer = File::open($path)->get(1)) !== false) {
+            $results = self::pageExtract($path);
+            $parts = explode(S, $buffer, 2);
+            $results['url'] = self::AMF(Config::get('url') . $connector . $results['slug'], $FP, 'url');
+            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title');
+            return Mecha::O($results);
         }
         return false;
     }
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGE DETAIL(S)
+     *  GET PAGE HEADER(S) ONLY
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::pageExtract($input));
+     *    var_dump(Get::pageHeader('lorem-ipsum'));
      *
      * --------------------------------------------------------------------------
      *
-     */
-
-    public static function pageExtract($input, $FP = 'page:') {
-        if( ! $input) return false;
-        $extension = File::E($input);
-        $update = File::T($input);
-        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
-        list($time, $kind, $slug) = explode('_', File::N($input), 3);
-        $kind = explode(',', $kind);
-        return array(
-            'path' => self::AMF($input, $FP, 'path'),
-            'id' => self::AMF((int) Date::format($time, 'U'), $FP, 'id'),
-            'time' => self::AMF(Date::format($time), $FP, 'time'),
-            'update_raw' => self::AMF($update, $FP, 'update_raw'),
-            'update' => self::AMF($update_date, $FP, 'update'),
-            'kind' => self::AMF(Converter::strEval($kind), $FP, 'kind'),
-            'slug' => self::AMF($slug, $FP, 'slug'),
-            'state' => self::AMF($extension !== 'draft' ? 'published' : 'draft', $FP, 'state')
-        );
-    }
-
-    /**
-     * ==========================================================================
-     *  GET LIST OF ARTICLE DETAIL(S)
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::articleExtract($input));
-     *
-     * --------------------------------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $path      | string | The URL path of the page file, or a page slug
+     *  $folder    | string | Folder of the page(s)
+     *  $connector | string | See `Get::page()`
+     *  $FP        | string | See `Get::page()`
+     *  ---------- | ------ | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function articleExtract($input) {
-        return self::pageExtract($input, 'article:');
-    }
-
-    /**
-     * ==========================================================================
-     *  GET LIST OF COMMENT DETAIL(S)
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::commentExtract($input));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function commentExtract($input) {
-        $FP = 'comment:';
-        if( ! $input) return false;
-        $extension = File::E($input);
-        $update = File::T($input);
-        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
-        list($post, $id, $parent) = explode('_', File::N($input), 3);
-        return array(
-            'path' => self::AMF($input, $FP, 'path'),
-            'time' => self::AMF(Date::format($id), $FP, 'time'),
-            'update_raw' => self::AMF($update, $FP, 'update_raw'),
-            'update' => self::AMF($update_date, $FP, 'update'),
-            'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
-            'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
-            'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),
-            'state' => self::AMF($extension === 'txt' ? 'approved' : 'pending', $FP, 'state')
-        );
+    public static function pageHeader($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
+        $config = Config::get();
+        if(strpos($path, ROOT) === false) {
+            $path = self::pagePath($path, $folder); // By page slug, ID or time
+        }
+        if( ! $path) return false;
+        $results = self::pageExtract($path) + Text::toPage($path, false, $FP);
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        if( ! isset($results['link'])) {
+            $results['link'] = self::AMF("", $FP, 'link');
+        }
+        if( ! isset($results['author'])) {
+            $results['author'] = self::AMF($config->author->name, $FP, 'author');
+        }
+        if( ! isset($results['description'])) {
+            $results['description'] = self::AMF("", $FP, 'description');
+        }
+        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $init = array();
+        foreach($fields as $key => $value) {
+            $init[$key] = $value['value'];
+        }
+        if(isset($results['fields']) && is_array($results['fields'])) {
+            foreach($results['fields'] as $key => $value) {
+                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                // [2]. `Fields: {"my_field":"foo"}`
+                if(is_array($value) && isset($value['type'])) {
+                    $value = isset($value['value']) ? $value['value'] : false;
+                }
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+            }
+            $results['fields'] = $init;
+        }
+        return Mecha::O($results);
     }
 
     /**
@@ -776,26 +745,22 @@ class Get extends Base {
      */
 
     public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/', $FP = 'page:') {
-
         $config = Config::get();
         $speak = Config::speak();
-
         $excludes = array_flip($excludes);
         $results = false;
-
-        // From `Get::pageExtract()`
-        if(is_array($reference)) {
-            $results = $reference;
-        } else {
-            // By path => `cabinet\pages\0000-00-00-00-00-00_1,2,3_page-slug.txt`
+        if( ! is_array($reference)) {
+            // By path => `cabinet\pages\2014-06-21-20-05-17_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
                 $results = self::pageExtract($reference, $FP);
             } else {
-                // By slug => `page-slug` or by ID => 12345
+                // By slug => `page-slug` or by ID => `1403355917`
                 $results = self::pageExtract(self::pagePath($reference, $folder), $FP);
             }
+        } else {
+            // From `Get::pageExtract()`
+            $results = $reference;
         }
-
         if( ! $results || ! file_exists($results['path'])) return false;
 
         /**
@@ -805,10 +770,9 @@ class Get extends Base {
          */
 
         $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $FP);
-
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
-        $extension = File::E($results['path']);
+        $e = File::E($results['path']);
 
         if($php_file = File::exist(File::D($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
@@ -818,16 +782,21 @@ class Get extends Base {
 
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-        $results['excerpt'] = "";
 
-        if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author->name, $FP, 'author');
+        if( ! isset($results['link'])) {
+            $results['link'] = self::AMF("", $FP, 'link');
+        }
+
+        if( ! isset($results['author'])) {
+            $results['author'] = self::AMF($config->author->name, $FP, 'author');
+        }
 
         if( ! isset($results['description'])) {
             $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
             $results['description'] = self::AMF($summary, $FP, 'description');
         }
 
+        $results['excerpt'] = "";
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
         $content_test = $content_test['content'];
         $content_test = is_array($content_test) ? implode("", $content_test) : $content_test;
@@ -855,7 +824,7 @@ class Get extends Base {
         }
 
         if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
-            if($file = File::exist(CUSTOM . DS . $time . '.' . $extension)) {
+            if($file = File::exist(CUSTOM . DS . $time . '.' . $e)) {
                 $custom = explode(SEPARATOR, File::open($file)->read());
                 $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
                 $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
@@ -920,22 +889,19 @@ class Get extends Base {
         $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $FP, 'images');
         $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
 
-        $comments = self::comments($results['id'], 'ASC', (Guardian::happy() ? 'txt,hold' : 'txt'));
+        $comments = self::comments('ASC', 'post:' . Date::slug($results['id']), (Guardian::happy() ? 'txt,hold' : 'txt'));
         $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
         $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
 
-        if( ! isset($excludes['comments'])) {
-            if($comments) {
-                $results['comments'] = array();
-                foreach($comments as $comment) {
-                    $results['comments'][] = self::comment($comment);
-                }
-                $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
+        if( ! isset($excludes['comments']) && $comments) {
+            $results['comments'] = array();
+            foreach($comments as $comment) {
+                $results['comments'][] = self::comment($comment);
             }
+            $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
         }
 
         unset($comments);
-
 
         /**
          * Custom Field(s)
@@ -996,232 +962,12 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  EXTRACT ARTICLE FILE INTO LIST OF ARTICLE DATA FROM ITS SLUG/FILE PATH
+     *  GET RESPONSE PATH
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::article('lorem-ipsum'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function article($reference, $excludes = array()) {
-        return self::page($reference, $excludes, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
-    }
-
-    /**
-     * ===========================================================================
-     *  EXTRACT COMMENT FILE INTO LIST OF COMMENT DATA FROM ITS PATH/ID/TIME/NAME
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    var_dump(Get::comment(1399334470));
-     *
-     * ---------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | ----------------------------------------------------
-     *  $reference | string | Comment path, ID, time or name
-     *  ---------- | ------ | ----------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function comment($reference, $response_to = ARTICLE, $connector = null) {
-        $FP = 'comment:';
-        $config = Config::get();
-        $results = array();
-        $path = false;
-        if(strpos(ROOT, $reference) === 0) { // By comment path
-            $path = $reference;
-        } else {
-            foreach(self::comments(null, 'DESC', 'txt,hold') as $comment) {
-                $base = File::B($comment);
-                list($_post, $_time, $_parent) = explode('_', $base);
-                if(
-                    ! is_numeric($reference) && (string) File::B($reference) === (string) $base || // By comment name
-                    (int) Date::format($reference, 'U') === (int) Date::format($_time, 'U') // By comment time/ID
-                ) {
-                    $path = $comment;
-                    $results = self::commentExtract($comment);
-                    break;
-                }
-            }
-        }
-        if( ! $path || ! file_exists($path)) return false;
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
-        $results = $results + Text::toPage(File::open($path)->read(), 'message', 'comment:');
-        $results['email'] = Text::parse($results['email'], '->decoded_html');
-        $results['permalink'] = '#';
-        $posts = glob($response_to . DS . '*.txt', GLOB_NOSORT);
-        for($i = 0, $count = count($posts); $i < $count; ++$i) {
-            list($time, $kind, $slug) = explode('_', File::N($posts[$i]), 3);
-            if((int) Date::format($time, 'U') === $results['post']) {
-                $results['permalink'] = self::AMF($config->url . (is_null($connector) ? '/' . $config->index->slug . '/' : $connector) . $slug . '#comment-' . $results['id'], $FP, 'permalink');
-                break;
-            }
-        }
-        if( ! isset($results['url'])) {
-            $results['url'] = self::AMF('#', $FP, 'url');
-        }
-        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
-        $init = array();
-        foreach($fields as $key => $value) {
-            $init[$key] = $value['value'];
-        }
-        if(isset($results['fields']) && is_array($results['fields'])) {
-            foreach($results['fields'] as $key => $value) {
-                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                // [2]. `Fields: {"my_field":"foo"}`
-                if(is_array($value) && isset($value['type'])) {
-                    $value = isset($value['value']) ? $value['value'] : false;
-                }
-                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
-            }
-            $results['fields'] = $init;
-            unset($fields, $init);
-        }
-        return Mecha::O($results);
-    }
-
-    /**
-     * ==========================================================================
-     *  GET PAGE HEADER(S) ONLY
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::pageHeader('lorem-ipsum'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
-     *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the page(s)
-     *  $connector | string | See `Get::page()`
-     *  $FP        | string | See `Get::page()`
-     *  ---------- | ------ | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function pageHeader($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
-        $config = Config::get();
-        if(strpos($path, ROOT) === false) {
-            $path = self::pagePath($path, $folder); // By page slug, ID or time
-        }
-        if( ! $path) return false;
-        $results = self::pageExtract($path) + Text::toPage($path, false, $FP);
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-        if( ! isset($results['link'])) $results['link'] = self::AMF("", $FP, 'link');
-        if( ! isset($results['author'])) $results['author'] = self::AMF($config->author->name, $FP, 'author');
-        if( ! isset($results['description'])) $results['description'] = self::AMF("", $FP, 'description');
-        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
-        $init = array();
-        foreach($fields as $key => $value) {
-            $init[$key] = $value['value'];
-        }
-        if(isset($results['fields']) && is_array($results['fields'])) {
-            foreach($results['fields'] as $key => $value) {
-                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                // [2]. `Fields: {"my_field":"foo"}`
-                if(is_array($value) && isset($value['type'])) {
-                    $value = isset($value['value']) ? $value['value'] : false;
-                }
-                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
-            }
-            $results['fields'] = $init;
-        }
-        return Mecha::O($results);
-    }
-
-    /**
-     * ==========================================================================
-     *  GET ARTICLE HEADER(S) ONLY
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::articleHeader('lorem-ipsum'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function articleHeader($path) {
-        return self::pageHeader($path, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
-    }
-
-    /**
-     * ==========================================================================
-     *  GET MINIMUM DATA OF A PAGE
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::pageAnchor('about'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter  | Type   | Description
-     *  ---------- | ------ | ---------------------------------------------------
-     *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the page(s)
-     *  $connector | string | See `Get::page()`
-     *  $FP        | string | See `Get::page()`
-     *  ---------- | ------ | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
-        $config = Config::get();
-        if(strpos($path, ROOT) === false) {
-            $path = self::pagePath($path, $folder); // By page slug, ID or time
-        }
-        if($path && ($buffer = File::open($path)->get(1)) !== false) {
-            $results = self::pageExtract($path);
-            $parts = explode(S, $buffer, 2);
-            $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title');
-            return Mecha::O($results);
-        }
-        return false;
-    }
-
-    /**
-     * ==========================================================================
-     *  GET MINIMUM DATA OF AN ARTICLE
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::articleAnchor('lorem-ipsum'));
-     *
-     * --------------------------------------------------------------------------
-     *
-     */
-
-    public static function articleAnchor($path) {
-        return self::pageAnchor($path, ARTICLE, '/' . Config::get('index')->slug . '/', 'article:');
-    }
-
-    /**
-     * ==========================================================================
-     *  GET PAGE PATH
-     * ==========================================================================
-     *
-     * -- CODE: -----------------------------------------------------------------
-     *
-     *    var_dump(Get::pagePath('lorem-ipsum'));
+     *    var_dump(Get::responsePath('lorem-ipsum'));
      *
      * --------------------------------------------------------------------------
      *
@@ -1234,10 +980,10 @@ class Get extends Base {
      *
      */
 
-    public static function pagePath($detector, $folder = PAGE) {
-        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
-            list($time, $kind, $slug) = explode('_', File::N($path), 3);
-            if($slug === $detector || ((string) $time === Date::format($detector, 'Y-m-d-H-i-s'))) {
+    public static function responsePath($detector, $folder = RESPONSE) {
+        foreach(glob($folder . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE) as $path) {
+            list($post, $time, $parent) = explode('_', File::N($path), 3);
+            if($time === $detector || (string) $time === Date::slug($detector)) {
                 return $path;
             }
         }
@@ -1246,26 +992,297 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET ARTICLE PATH
+     *  GET LIST OF RESPONSE DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::articlePath('lorem-ipsum'));
+     *    var_dump(Get::responseExtract($input));
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function responseExtract($input, $FP = 'response:') {
+        if( ! $input) return false;
+        $e = File::E($input);
+        $update = File::T($input);
+        $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
+        list($post, $id, $parent) = explode('_', File::N($input), 3);
+        return array(
+            'path' => self::AMF($input, $FP, 'path'),
+            'time' => self::AMF(Date::format($id), $FP, 'time'),
+            'update_raw' => self::AMF($update, $FP, 'update_raw'),
+            'update' => self::AMF($update_date, $FP, 'update'),
+            'post' => self::AMF((int) Date::format($post, 'U'), $FP, 'post'),
+            'id' => self::AMF((int) Date::format($id, 'U'), $FP, 'id'),
+            'parent' => self::AMF($parent === '0000-00-00-00-00-00' ? null : (int) Date::format($parent, 'U'), $FP, 'parent'),
+            'state' => self::AMF($e === 'txt' ? 'approved' : 'pending', $FP, 'state')
+        );
+    }
+
+    /**
+     * ===========================================================================
+     *  GET LIST OF RESPONSE(S) PATH
+     * ===========================================================================
+     *
+     * -- CODE: ------------------------------------------------------------------
+     *
+     *    foreach(Get::responses() as $path) {
+     *        echo $path . '<br>';
+     *    }
+     *
+     *    // [1]. Filter by Post Time
+     *    Get::responses('DESC', 'post:2014');
+     *    Get::responses('DESC', 'post:2014-04');
+     *    Get::responses('DESC', 'post:2014-04-21');
+     *
+     *    // [2]. Filter by Response Time
+     *    Get::responses('DESC', 'time:2014');
+     *    Get::responses('DESC', 'time:2014-11');
+     *    Get::responses('DESC', 'time:2014-11-10');
+     *
+     *    // [3]. Filter by Response Parent Time
+     *    Get::responses('DESC', 'parent:2014');
+     *    Get::responses('DESC', 'parent:2014-04');
+     *    Get::responses('DESC', 'parent:2014-04-21');
+     *
+     * ---------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter | Type    | Description
+     *  --------- | ------- | ----------------------------------------------------
+     *  $order    | string  | Ascending or descending? ASC/DESC?
+     *  $filter   | string  | The result(s) filter
+     *  $e        | boolean | The file extension(s)
+     *  --------- | ------- | ----------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function responses($order = 'ASC', $filter = "", $e = 'txt', $folder = RESPONSE) {
+        $results = array();
+        $e = str_replace(' ', "", $e);
+        $responses = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
+        $total_comments = count($responses);
+        if( ! is_array($responses) || $total_comments === 0) return false;
+        if($order === 'DESC') {
+            rsort($responses);
+        } else {
+            sort($responses);
+        }
+        if( ! $filter) return $responses;
+        if(strpos($filter, ':') !== false) {
+            list($key, $value) = explode(':', $filter, 2);
+            if($key === 'post') {
+                for($i = 0; $i < $total_comments; ++$i) {
+                    list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
+                    if(strpos($post, $value) === 0) {
+                        $results[] = $responses[$i];
+                    }
+                }
+            } else if($key === 'time') {
+                for($i = 0; $i < $total_comments; ++$i) {
+                    list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
+                    if(strpos($time, $value) === 0) {
+                        $results[] = $responses[$i];
+                    }
+                }
+            } else if($key === 'parent') {
+                for($i = 0; $i < $total_comments; ++$i) {
+                    list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
+                    if(strpos($parent, $value) === 0) {
+                        $results[] = $responses[$i];
+                    }
+                }
+            } else { // if($key === 'word') {
+                for($i = 0; $i < $total_comments; ++$i) {
+                    if(strpos(File::N($responses[$i]), $value) !== false) {
+                        $results[] = $responses[$i];
+                    }
+                }
+            }
+        } else {
+            for($i = 0; $i < $total_comments; ++$i) {
+                if(strpos(File::N($responses[$i]), $filter) !== false) {
+                    $results[] = $responses[$i];
+                }
+            }
+        }
+        unset($responses);
+        return ! empty($results) ? $results : false;
+    }
+
+    /**
+     * ==========================================================================
+     *  GET LIST OF RESPONSE(S) DETAIL(S)
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    foreach(Get::responsesExtract() as $file) {
+     *        echo $file['path'] . '<br>';
+     *    }
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type  | Description
-     *  --------- | ----- | -----------------------------------------------------
-     *  $detector | mixed | Slug, ID or time of the article
-     *  --------- | ----- | -----------------------------------------------------
+     *  Parameter | Type   | Description
+     *  --------- | ------ | ----------------------------------------------------
+     *  $sorter   | string | The key of array item as sorting reference
+     *  --------- | ------ | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function articlePath($detector) {
-        return self::pagePath($detector, ARTICLE);
+    public static function responsesExtract($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'response:', $folder = RESPONSE) {
+        if($files = self::comments($order, $filter, $e, $folder)) {
+            $results = array();
+            foreach($files as $file) {
+                $results[] = self::commentExtract($file, $FP);
+            }
+            unset($files);
+            return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
+        }
+        return false;
+    }
+
+    /**
+     * ==========================================================================
+     *  GET MINIMUM DATA OF A RESPONSE
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::responseAnchor(1399334470));
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function responseAnchor() {}
+
+    /**
+     * ==========================================================================
+     *  GET RESPONSE HEADER(S) ONLY
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::responseHeader(1399334470));
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function responseHeader($path, $folder = RESPONSE, $connector = '/', $FP = 'response:') {
+        $config = Config::get();
+        if(strpos($path, ROOT) === false) {
+            $path = self::responsePath($path, $folder); // By response ID or time
+        }
+        if( ! $path) return false;
+        $results = self::responseExtract($path) + Text::toPage($path, false, $FP);
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $init = array();
+        foreach($fields as $key => $value) {
+            $init[$key] = $value['value'];
+        }
+        if(isset($results['fields']) && is_array($results['fields'])) {
+            foreach($results['fields'] as $key => $value) {
+                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                // [2]. `Fields: {"my_field":"foo"}`
+                if(is_array($value) && isset($value['type'])) {
+                    $value = isset($value['value']) ? $value['value'] : false;
+                }
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+            }
+            $results['fields'] = $init;
+        }
+        return Mecha::O($results);
+    }
+
+    /**
+     * ==========================================================================
+     *  EXTRACT RESPONSE FILE INTO LIST OF RESPONSE DATA FROM ITS PATH/ID/TIME
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    var_dump(Get::response(1399334470));
+     *
+     * --------------------------------------------------------------------------
+     *
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *  Parameter  | Type   | Description
+     *  ---------- | ------ | ---------------------------------------------------
+     *  $reference | string | Response path, ID or time
+     *  $excludes  | array  | Exclude some field(s) from result(s)
+     *  $folder    | string | Folder of response(s) and response(s)' post
+     *  $connector | string | Path connector for permalink URL
+     *  $FP        | string | Filter prefix for `Text::toPage()`
+     *  ---------- | ------ | ---------------------------------------------------
+     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+     *
+     */
+
+    public static function response($reference, $excludes = array(), $folder = array(RESPONSE, PAGE), $connector = '/', $FP = 'response:') {
+        $config = Config::get();
+        $excludes = array_flip($excludes);
+        $results = false;
+        if( ! is_array($reference)) {
+            // By path => `cabinet\responses\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
+            if(strpos($reference, $folder[0]) === 0) {
+                $results = self::responseExtract($reference, $FP);
+            } else {
+                // By time => `2014-06-21-20-05-17` or by ID => `1403355917`
+                $results = self::responseExtract(self::responsePath($reference, $folder[0]), $FP);
+            }
+        } else {
+            // From `Get::responseExtract()`
+            $results = $reference;
+        }
+        if( ! $results || ! file_exists($results['path'])) return false;
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP);
+        $results['email'] = Text::parse($results['email'], '->decoded_html');
+        if( ! isset($excludes['permalink'])) {
+            if($path = self::pagePath($results['post'], $folder[1])) {
+                $link = self::pageAnchor($path, $folder[1], $connector, "")->url . '#comment-' . $results['id'];
+            } else {
+                $link = '#';
+            }
+            $results['permalink'] = self::AMF($link, $FP, 'permalink');
+        }
+        if( ! isset($excludes['url']) && ! isset($results['url'])) {
+            $results['url'] = self::AMF('#', $FP, 'url');
+        }
+        if( ! isset($excludes['fields'])) {
+            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+            $init = array();
+            foreach($fields as $key => $value) {
+                $init[$key] = $value['value'];
+            }
+            if(isset($results['fields']) && is_array($results['fields'])) {
+                foreach($results['fields'] as $key => $value) {
+                    // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
+                    // [2]. `Fields: {"my_field":"foo"}`
+                    if(is_array($value) && isset($value['type'])) {
+                        $value = isset($value['value']) ? $value['value'] : false;
+                    }
+                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+                }
+                $results['fields'] = $init;
+                unset($fields, $init);
+            }
+        }
+        foreach($results as $key => $value) {
+            if(isset($excludes[$key])) {
+                unset($results[$key]);
+            }
+        }
+        return Mecha::O($results);
     }
 
     /**

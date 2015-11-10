@@ -12,7 +12,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     }
     $offset = (int) $offset;
     File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
-    if($files = Get::comments(null, 'DESC', 'txt,hold')) {
+    if($files = Get::comments('DESC', "", 'txt,hold')) {
         $comments = array();
         $comments_id = array();
         foreach($files as $file) {
@@ -31,7 +31,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
         'page_title' => $speak->comments . $config->title_separator . $config->manager->title,
         'offset' => $offset,
         'responses' => $comments,
-        'pagination' => Navigator::extract(Get::comments(null, 'DESC', 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
+        'pagination' => Navigator::extract(Get::comments('DESC', "", 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
         'cargo' => 'cargo.comment.php'
     ));
     Shield::lot('segment', 'comment')->attach('manager');
