@@ -187,11 +187,6 @@ Weapon::add('shield_before', function() {
 
     // Side Menu
     $menus = array(
-        $speak->config => array(
-            'icon' => 'cogs',
-            'url' => $config->manager->slug . '/config',
-            'stack' => 9
-        ),
         $speak->article => array(
             'icon' => 'file-text',
             'url' => $config->manager->slug . '/article',
@@ -202,56 +197,15 @@ Weapon::add('shield_before', function() {
             'url' => $config->manager->slug . '/page',
             'stack' => 9.02
         ),
-        $speak->comment => array(
-            'icon' => 'comments',
-            'url' => $config->manager->slug . '/comment',
-            'count' => $total,
-            'stack' => 9.03
-        ),
         $speak->tag => array(
             'icon' => 'tags',
             'url' => $config->manager->slug . '/tag',
             'stack' => 9.04
         ),
-        $speak->menu => array(
-            'icon' => 'bars',
-            'url' => $config->manager->slug . '/menu',
-            'stack' => 9.05
-        ),
         $speak->asset => array(
             'icon' => 'briefcase',
             'url' => $config->manager->slug . '/asset',
             'stack' => 9.06
-        ),
-        $speak->field => array(
-            'icon' => 'th-list',
-            'url' => $config->manager->slug . '/field',
-            'stack' => 9.07
-        ),
-        $speak->shortcode => array(
-            'icon' => 'coffee',
-            'url' => $config->manager->slug . '/shortcode',
-            'stack' => 9.08
-        ),
-        $speak->shield => array(
-            'icon' => 'shield',
-            'url' => $config->manager->slug . '/shield',
-            'stack' => 9.09
-        ),
-        $speak->plugin => array(
-            'icon' => 'plug',
-            'url' => $config->manager->slug . '/plugin',
-            'stack' => 9.1
-        ),
-        $speak->cache => array(
-            'icon' => 'clock-o',
-            'url' => $config->manager->slug . '/cache',
-            'stack' => 9.11
-        ),
-        $speak->backup => array(
-            'icon' => 'life-ring',
-            'url' => $config->manager->slug . '/backup',
-            'stack' => 9.12
         )
     );
 
@@ -262,11 +216,6 @@ Weapon::add('shield_before', function() {
             'description' => Guardian::get('author'),
             'stack' => 9
         ),
-        $speak->config => array(
-            'icon' => 'cog',
-            'url' => $config->manager->slug . '/config',
-            'stack' => 9.01
-        ),
         $speak->log_out => array(
             'icon' => 'sign-out',
             'url' => $config->manager->slug . '/logout',
@@ -275,21 +224,78 @@ Weapon::add('shield_before', function() {
         )
     );
 
-    if($errors = File::exist(ini_get('error_log'))) {
-        $total = 0;
-        if(filesize($errors) > MAX_ERROR_FILE_SIZE) {
-            File::open($errors)->delete();
-            $total = '&infin;';
-        }
-        foreach(explode("\n", File::open($errors)->read()) as $message) {
-            if(trim($message) !== "") $total++;
-        }
-        $menus[$speak->error] = array(
-            'icon' => 'exclamation-triangle',
-            'url' => $config->manager->slug . '/error',
-            'count' => $total,
-            'stack' => 9.13
+    // only for `pilot`
+    if(Guardian::get('status') === 'pilot') {
+
+        $menus[$speak->config] = array(
+            'icon' => 'cogs',
+            'url' => $config->manager->slug . '/config',
+            'stack' => 9
         );
+        $menus[$speak->comment] = array(
+            'icon' => 'comments',
+            'url' => $config->manager->slug . '/comment',
+            'count' => $total,
+            'stack' => 9.03
+        );
+        $menus[$speak->menu] = array(
+            'icon' => 'bars',
+            'url' => $config->manager->slug . '/menu',
+            'stack' => 9.05
+        );
+        $menus[$speak->field] = array(
+            'icon' => 'th-list',
+            'url' => $config->manager->slug . '/field',
+            'stack' => 9.07
+        );
+        $menus[$speak->shortcode] = array(
+            'icon' => 'coffee',
+            'url' => $config->manager->slug . '/shortcode',
+            'stack' => 9.08
+        );
+        $menus[$speak->shield] = array(
+            'icon' => 'shield',
+            'url' => $config->manager->slug . '/shield',
+            'stack' => 9.09
+        );
+        $menus[$speak->plugin] = array(
+            'icon' => 'plug',
+            'url' => $config->manager->slug . '/plugin',
+            'stack' => 9.1
+        );
+        $menus[$speak->cache] = array(
+            'icon' => 'clock-o',
+            'url' => $config->manager->slug . '/cache',
+            'stack' => 9.11
+        );
+        $menus[$speak->backup] = array(
+            'icon' => 'life-ring',
+            'url' => $config->manager->slug . '/backup',
+            'stack' => 9.12
+        );
+        $bars[$speak->config] = array(
+            'icon' => 'cog',
+            'url' => $config->manager->slug . '/config',
+            'stack' => 9.01
+        );
+
+        if($errors = File::exist(ini_get('error_log'))) {
+            $total = 0;
+            if(filesize($errors) > MAX_ERROR_FILE_SIZE) {
+                File::open($errors)->delete();
+                $total = '&infin;';
+            }
+            foreach(explode("\n", File::open($errors)->read()) as $message) {
+                if(trim($message) !== "") $total++;
+            }
+            $menus[$speak->error] = array(
+                'icon' => 'exclamation-triangle',
+                'url' => $config->manager->slug . '/error',
+                'count' => $total,
+                'stack' => 9.13
+            );
+        }
+
     }
 
     if($config->page_type === 'article' || $config->page_type === 'page') {
