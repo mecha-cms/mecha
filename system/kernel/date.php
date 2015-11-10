@@ -27,11 +27,19 @@ class Date extends Base {
 
     public static function format($date, $format = 'Y-m-d H:i:s') {
         if(is_numeric($date)) return date($format, $date);
-        $m = explode('-', $date);
-        if(strlen($date) >= 19 && count($m) === 6) {
+        if(substr_count($date, '-') === 5) {
+            $m = explode('-', $date);
             $date = $m[0] . '-' . $m[1] . '-' . $m[2] . ' ' . $m[3] . ':' . $m[4] . ':' . $m[5];
         }
         return date($format, strtotime($date));
+    }
+
+    // Convert time to slug
+    public static function slug($date) {
+        if(is_string($date) && substr_count($date, '-') === 5) {
+            return $date;
+        }
+        return self::format($date, 'Y-m-d-H-i-s');
     }
 
     /**

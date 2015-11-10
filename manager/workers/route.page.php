@@ -44,7 +44,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         if( ! isset($page->link)) $page->link = "";
         if( ! isset($page->fields)) $page->fields = array();
         if( ! isset($page->content_type)) $page->content_type = $config->html_parser;
-        if( ! File::exist(CUSTOM . DS . date('Y-m-d-H-i-s', $page->date->unix) . $extension_o)) {
+        if( ! File::exist(CUSTOM . DS . Date::slug($page->date->unix) . $extension_o)) {
             $page->css_raw = $config->defaults->page_css;
             $page->js_raw = $config->defaults->page_js;
         }
@@ -114,7 +114,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             include DECK . DS . 'workers' . DS . 'task.field.4.php';
             // Ignite
             if( ! $id) {
-                Page::header($header)->content($content)->saveTo(PAGE . DS . Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
+                Page::header($header)->content($content)->saveTo(PAGE . DS . Date::slug($date) . '__' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.2.php';
                 Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('page:url', Filter::apply('url', $config->url . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
@@ -123,7 +123,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             // Repair
             } else {
                 Page::open($page->path)->header($header)->content($content)->save();
-                File::open($page->path)->renameTo(Date::format($date, 'Y-m-d-H-i-s') . '__' . $slug . $extension);
+                File::open($page->path)->renameTo(Date::slug($date) . '__' . $slug . $extension);
                 include DECK . DS . 'workers' . DS . 'task.custom.1.php';
                 if($page->slug !== $slug && $php_file = File::exist(File::D($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');

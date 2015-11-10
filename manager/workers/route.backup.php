@@ -58,7 +58,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
     if(Guardian::get('status') !== 'pilot') {
         Shield::abort();
     }
-    $time = date('Y-m-d-H-i-s');
+    $time = Date::slug(time());
     $site = Text::parse($config->title, '->slug');
     if(trim($origin, '.') === "") {
         $name = $site . '_' . $time . '.zip';
