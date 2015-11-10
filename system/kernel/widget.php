@@ -46,7 +46,8 @@ class Widget {
                     }
                 }
             }
-            $html .= Menu::get($menus, 'ul', $T1, 'manager:');
+            Menu::set('manager', $menus);
+            $html .= Menu::render('manager', 'ul', $T1);
         }
         if($type === 'BAR') {
             $bars = array();

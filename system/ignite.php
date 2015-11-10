@@ -194,6 +194,14 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
 
 
 /**
+ * Loading Menu(s)
+ * ---------------
+ */
+
+Menu::set('navigation', Get::state_menu());
+
+
+/**
  * Include User Defined Function(s)
  * --------------------------------
  */

@@ -117,9 +117,9 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . $path . '</code>') : $speak->notify_confirm_delete);
     }
     Shield::lot(array(
-		'segment' => 'cache',
+        'segment' => 'cache',
         'files' => Mecha::O($deletes)
-	))->attach('manager');
+    ))->attach('manager');
 });
 
 

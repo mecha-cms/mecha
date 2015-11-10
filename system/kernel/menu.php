@@ -7,11 +7,15 @@
  *
  * -- CODE: -----------------------------------------------------------
  *
- *    echo Menu::get(array(
+ *    // Set
+ *    Menu::set('my_menu', array(
  *        'Home' => '/',
  *        'About' => '/about',
  *        'Contact' => '/contact'
  *    ));
+ *
+ *    // Get
+ *    echo Menu::get('my_menu');
  *
  * --------------------------------------------------------------------
  *
@@ -29,6 +33,8 @@
 
 class Menu extends Base {
 
+    protected static $menus = array();
+
     public static $config = array(
         'classes' => array(
             'parent' => false,
@@ -38,11 +44,30 @@ class Menu extends Base {
         )
     );
 
-    public static function get($array = null, $type = 'ul', $indent = "", $FP = 'menu:') {
-        if(is_null($array)) {
-            $FP = 'navigation:';
-            $array = Get::state_menu();
+    // Set
+    public static function set($id, $array = array()) {
+        self::$menus[$id] = $array;
+    }
+
+    // Get
+    public static function get($id = null, $fallback = false) {
+        if( ! is_null($id)) {
+            return isset(self::$menus[$id]) ? self::$menus[$id] : $fallback;
         }
+        return ! empty(self::$menus) ? self::$menus : $fallback;
+    }
+
+    // Reset
+    public static function reset($id = null) {
+        if( ! is_null($id)) {
+            unset(self::$menus[$id]);
+        } else {
+            self::$menus = array();
+        }
+    }
+
+    // Render as HTML
+    public static function render($id = 'navigation', $type = 'ul', $indent = "") {
         $c = Tree::$config;
         $cc = self::$config['classes'];
         Tree::$config['elements']['trunk'] = $type;
@@ -53,8 +78,8 @@ class Menu extends Base {
         Tree::$config['classes']['twig'] = false;
         Tree::$config['classes']['current'] = $cc['current'];
         Tree::$config['classes']['hole'] = $cc['separator'];
-        $output = Tree::grow($array, $indent, $FP);
-        Tree::$config = $c;
+        $output = isset(self::$menus[$id]) ? Tree::grow(self::$menus[$id], $indent, $id . ':') : false;
+        Tree::$config = $c; // reset to the previous state
         return $output;
     }
 
