@@ -1,1 +1,1 @@
-<?php echo Menu::get(); ?>
+<?php echo Menu::render('navigation'); ?>
