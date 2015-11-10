@@ -18,18 +18,18 @@ class Image extends Base {
         }
     }
 
-    protected static function twin($resource = null, $extension = null) {
+    protected static function twin($resource = null, $e = null) {
         $file = self::$placeholder;
         if(is_null($resource)) $resource = self::$GD;
-        $old_extension = File::E(self::$original);
-        $new_extension = File::E($file);
-        if( ! is_null($extension)) {
-            $file = preg_replace('#\.([a-z]+)$#i', '.' . $extension, $file);
+        $old_e = File::E(self::$original);
+        $new_e = File::E($file);
+        if( ! is_null($e)) {
+            $file = preg_replace('#\.([a-z]+)$#i', '.' . $e, $file);
             File::open(self::$placeholder)->delete();
             self::$placeholder = $file;
-            $new_extension = $extension;
+            $new_e = $e;
         }
-        switch($new_extension) {
+        switch($new_e) {
             case 'gif': imagegif($resource, $file); break;
             case 'jpeg': imagejpeg($resource, $file, 100); break;
             case 'jpg': imagejpeg($resource, $file, 100); break;
@@ -84,11 +84,11 @@ class Image extends Base {
         if(is_dir($destination)) {
             $destination .= DS . File::B(self::$original);
         }
-        $old_extension = File::E(self::$original);
-        $new_extension = File::E($destination);
-        if($old_extension !== $new_extension) {
+        $old_e = File::E(self::$original);
+        $new_e = File::E($destination);
+        if($old_e !== $new_e) {
             self::gen();
-            self::twin(null, $new_extension);
+            self::twin(null, $new_e);
         }
         File::open(self::$placeholder)->moveTo($destination);
         imagedestroy(self::$GD);

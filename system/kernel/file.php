@@ -64,14 +64,14 @@ class File extends Base {
     // Inspect file path
     public static function inspect($path) {
         $path = self::path($path);
-        $extension = self::E($path);
+        $e = self::E($path);
         $update = self::T($path);
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         return array(
             'path' => $path,
             'name' => self::N($path),
             'url' => self::url($path),
-            'extension' => is_file($path) ? strtolower($extension) : null,
+            'extension' => is_file($path) ? strtolower($e) : null,
             'update_raw' => $update,
             'update' => $update_date,
             'size_raw' => file_exists($path) ? filesize($path) : null,
@@ -303,8 +303,8 @@ class File extends Base {
 
     // Get file name extension
     public static function E($path, $fallback = "") {
-        $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
-        return $extension ? $extension : $fallback;
+        $e = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+        return $e ? $e : $fallback;
     }
 
     // Get file modification time
@@ -326,7 +326,7 @@ class File extends Base {
         $errors = (array) $speak->notify_file;
         // Create a safe file name
         $file['name'] = Text::parse($file['name'], '->safe_file_name');
-        $extension = self::E($file['name']);
+        $e = self::E($file['name']);
         // Something goes wrong
         if($file['error'] > 0 && isset($errors[$file['error']])) {
             Notify::error($errors[$file['error']]);
@@ -336,9 +336,9 @@ class File extends Base {
                 Notify::error($speak->notify_error_file_type_unknown);
             }
             // Bad file extension
-            $extension_allow = ',' . implode(',', self::$config['file_extension_allow']) . ',';
-            if(strpos($extension_allow, ',' . $extension . ',') === false) {
-                Notify::error(Config::speak('notify_error_file_extension', $extension));
+            $e_allow = ',' . implode(',', self::$config['file_extension_allow']) . ',';
+            if(strpos($e_allow, ',' . $e . ',') === false) {
+                Notify::error(Config::speak('notify_error_file_extension', $e));
             }
             // Too small
             if($file['size'] < self::$config['file_size_min_allow']) {
