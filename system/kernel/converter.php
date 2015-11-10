@@ -290,29 +290,31 @@ class Converter extends Base {
 
     public static function strEval($input, $NRT = true) {
         $results = $input;
-        if(is_string($input) && preg_match('#^(TRUE|FALSE|NULL|true|false|null|yes|no|on|off|ok|okay)$#', $input, $matches)) {
-            $results = Mecha::alter($matches[1], array(
-                'TRUE' => true,
-                'FALSE' => false,
-                'NULL' => null,
-                'true' => true,
-                'false' => false,
-                'null' => null,
-                'yes' => true,
-                'no' => false,
-                'on' => true,
-                'off' => false,
-                'ok' => true,
-                'okay' => true
-            ));
-        } else if(is_string($input)) {
-            if((strpos($input, '[') === 0 || strpos($input, '{') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
-                $results = self::strEval(json_decode($input, true), $NRT);
-            } else {
-                $results = $NRT ? self::WD($input) : $input;
-            }
-        } else if(is_numeric($input)) {
+        if(is_numeric($input)) {
             $results = strpos($input, '.') !== false ? (float) $input : (int) $input;
+        } else if(is_string($input)) {
+            if(preg_match('#^(TRUE|FALSE|NULL|true|false|null|yes|no|on|off|ok|okay)$#', $input, $matches)) {
+                $results = Mecha::alter($matches[1], array(
+                    'TRUE' => true,
+                    'FALSE' => false,
+                    'NULL' => null,
+                    'true' => true,
+                    'false' => false,
+                    'null' => null,
+                    'yes' => true,
+                    'no' => false,
+                    'on' => true,
+                    'off' => false,
+                    'ok' => true,
+                    'okay' => true
+                ));
+            } else {
+                if((strpos($input, '[') === 0 || strpos($input, '{') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
+                    $results = self::strEval(json_decode($input, true), $NRT);
+                } else {
+                    $results = $NRT ? self::WD($input) : $input;
+                }
+            }
         } else if(is_array($input) || is_object($input)) {
             $results = array();
             foreach($input as $key => $value) {
