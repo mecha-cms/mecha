@@ -372,78 +372,54 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  EXTRACT ARRAY OF TAG(S) FROM TAG FILE
+     *  EXTRACT OBJECT OF TAG(S) FROM TAG FILE
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    $tags = Get::rawTags();
-     *
-     *    foreach($tags as $tag) {
-     *        echo $tag['name'] . '<br>';
+     *    foreach(Get::tags() as $tag) {
+     *        echo $tag->name . '<br>';
      *    }
      *
      * --------------------------------------------------------------------------
      *
      */
 
-    public static function rawTags($order = 'ASC', $sorter = 'name') {
-        $tags = self::state_tag();
+    public static function tags($order = 'ASC', $sorter = 'name') {
+        $tags = Mecha::eat(self::state_tag())->order($order, $sorter)->vomit();
         foreach($tags as $k => $v) {
-            $tags[$k] = array(
+            $tags[$k] = (object) array(
                 'id' => self::AMF($v['id'], 'tag:', 'id'),
                 'name' => self::AMF($v['name'], 'tag:', 'name'),
                 'slug' => self::AMF($v['slug'], 'tag:', 'slug'),
                 'description' => self::AMF($v['description'], 'tag:', 'description')
             );
         }
-        return Mecha::eat($tags)->order($order, $sorter)->vomit();
+        return $tags;
     }
 
     /**
      * ==========================================================================
      *  RETURN SPECIFIC TAG ITEM FILTERED BY ITS AVAILABLE DATA
-     *
-     *  It can be an ID, name or slug.
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    $tag = Get::rawTag('lorem-ipsum');
-     *    echo $tag['name'] . '<br>';
+     *    $tag = Get::tag('lorem-ipsum');
+     *    echo $tag->name . '<br>';
      *
      * --------------------------------------------------------------------------
      *
      */
 
-    public static function rawTag($filter, $output = null) {
-        $tags = self::rawTags();
+    public static function tag($filter, $output = null, $fallback = false) {
+        $tags = self::tags();
         for($i = 0, $count = count($tags); $i < $count; ++$i) {
-            if((is_numeric($filter) && (int) $filter === (int) $tags[$i]['id']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['name']) || (is_string($filter) && (string) $filter === (string) $tags[$i]['slug'])) {
-                return ! is_null($output) ? $tags[$i][$output] : $tags[$i];
+            if((is_numeric($filter) && (int) $filter === (int) $tags[$i]->id) || (is_string($filter) && (string) $filter === (string) $tags[$i]->name) || (is_string($filter) && (string) $filter === (string) $tags[$i]->slug)) {
+                return is_null($output) ? $tags[$i] : (isset($tags[$i]->{$output}) ? $tags[$i]->{$output} : $fallback);
             }
         }
-        return false;
-    }
-
-    /**
-     * ==========================================================================
-     *  `Get::rawTags()` AS OBJECT
-     * ==========================================================================
-     */
-
-    public static function tags($order = 'ASC', $sorter = 'name') {
-        return Mecha::O(self::rawTags($order, $sorter));
-    }
-
-    /**
-     * ==========================================================================
-     *  `Get::rawTag()` AS OBJECT
-     * ==========================================================================
-     */
-
-    public static function tag($id_or_name_or_slug, $output = null) {
-        return Mecha::O(self::rawTag($id_or_name_or_slug, $output));
+        return $fallback;
     }
 
     /**
@@ -513,7 +489,6 @@ class Get extends Base {
                         $results[] = $pages[$i];
                     }
                 }
-                return ! empty($results) ? $results : false;
             } else if($key === 'kind') {
                 $kinds = explode(',', $value);
                 for($i = 0; $i < $total_pages; ++$i) {
@@ -524,7 +499,6 @@ class Get extends Base {
                         }
                     }
                 }
-                return ! empty($results) ? array_unique($results) : false;
             } else if($key === 'slug') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
@@ -532,14 +506,12 @@ class Get extends Base {
                         $results[] = $pages[$i];
                     }
                 }
-                return ! empty($results) ? $results : false;
             } else { // if($key === 'keyword') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(File::N($pages[$i]), $value) !== false) {
                         $results[] = $pages[$i];
                     }
                 }
-                return ! empty($results) ? $results : false;
             }
         } else {
             for($i = 0; $i < $total_pages; ++$i) {
@@ -547,9 +519,9 @@ class Get extends Base {
                     $results[] = $pages[$i];
                 }
             }
-            return ! empty($results) ? $results : false;
         }
-        return false;
+        unset($pages);
+        return ! empty($results) ? $results : false;
     }
 
     /**
@@ -595,14 +567,10 @@ class Get extends Base {
      *
      */
 
-    public static function comments($post = null, $order = 'ASC', $extension = 'txt') {
+    public static function comments($post = null, $order = 'ASC', $extension = 'txt', $folder = RESPONSE) {
         $extension = str_replace(' ', "", $extension);
-        if( ! is_null($post)) {
-            $post = Date::format($post, 'Y-m-d-H-i-s');
-            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . $post . '_*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . $post . '_*.' . $extension, GLOB_NOSORT);
-        } else {
-            $results = strpos($extension, ',') !== false ? glob(RESPONSE . DS . '*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob(RESPONSE . DS . '*.' . $extension, GLOB_NOSORT);
-        }
+        $post = ! is_null($post) ? Date::format($post, 'Y-m-d-H-i-s') : '*';
+        $results = strpos($extension, ',') !== false ? glob($folder . DS . $post . '_*.{' . $extension . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . $post . '_*.' . $extension, GLOB_NOSORT);
         if( ! is_array($results) || count($results) === 0) return false;
         if($order === 'DESC') {
             rsort($results);
@@ -881,7 +849,7 @@ class Get extends Base {
         if( ! isset($excludes['tags'])) {
             $tags = array();
             foreach($results['kind'] as $id) {
-                $tags[] = self::rawTag($id);
+                $tags[] = self::tag($id);
             }
             $results['tags'] = self::AMF(Mecha::eat($tags)->order('ASC', 'name')->vomit(), $FP, 'tags');
         }

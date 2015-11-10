@@ -47,13 +47,13 @@ class Tree extends Base {
             'branch' => 'ul',
             'twig' => 'li'
         ),
-		'classes' => array(
-			'trunk' => 'trunk',
-			'branch' => 'branch branch-%d',
-			'twig' => 'twig',
-			'current' => 'current',
-			'hole' => 'hole'
-		)
+        'classes' => array(
+            'trunk' => 'trunk',
+            'branch' => 'branch branch-%d',
+            'twig' => 'twig',
+            'current' => 'current',
+            'hole' => 'hole'
+        )
     );
 
     protected static function create($array, $indent = "", $FP = "", $i = 0) {

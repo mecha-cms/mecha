@@ -7,13 +7,13 @@
  */
 
 Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
-    $tags = Get::rawTags('ASC', 'id');
+    $tags = Get::tags('ASC', 'id');
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
         'files' => $tags,
         'cargo' => 'cargo.tag.php'
     ));
-    $G = array('data' => $tags);
+    $G = array('data' => Mecha::A($tags));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Check for duplicate ID

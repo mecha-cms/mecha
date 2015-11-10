@@ -109,17 +109,17 @@ Get::plug('timezone', function($identifier = null, $fallback = false, $format = 
 });
 
 
-// DEPRECATED. Please use `Get::rawTag()`
-Get::plug('rawTagsBy', function($id_or_name_or_slug) {
-    return Get::rawTag($id_or_name_or_slug);
+// DEPRECATED. Please use `Mecha::A(Get::tags())`
+Get::plug('rawTags', function($order = 'ASC', $sorter = 'name') {
+    return Mecha::A(Get::tags($order, $sorter));
 });
 
-// DEPRECATED. Please use `Get::tag()`
-Get::plug('tagsBy', function($id_or_name_or_slug) {
-    return Get::tag($id_or_name_or_slug);
+// DEPRECATED. Please use `Mecha::A(Get::tag())`
+Get::plug('rawTag', function($filter, $output = null, $fallback = false) {
+    return Mecha::A(Get::tag($filter, $output, $fallback));
 });
 
 // DEPRECATED. Please use `Converter::curt()`
-Get::plug('summary', function($input, $chars = 100, $tail = '&hellip;', $charset = 'UTF-8') {
+Get::plug('summary', function($input, $chars = 100, $tail = '&hellip;', $charset = "") {
     return Converter::curt($input, $chars, $tail, $charset);
 });
