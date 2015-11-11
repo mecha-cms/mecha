@@ -100,6 +100,17 @@
  *
  * -------------------------------------------------------------------------
  *
+ *    Package::take('file.zip')->deleteFolder('folder-1');
+ *
+ * -------------------------------------------------------------------------
+ *
+ *    Package::take('file.zip')->deleteFolders(
+ *        'folder-1',
+ *        'folder-2'
+ *    ));
+ *
+ * -------------------------------------------------------------------------
+ *
  *    Package::take('file.zip')->renameFiles(array(
  *        'foo.txt' => 'bar.txt',
  *        'baz.txt' => 'foo.txt'
@@ -124,21 +135,20 @@
 class Package extends Base {
 
     protected static $open = null;
-    protected static $map = null;
+    protected static $opens = null;
 
     public static function take($files) {
         if( ! extension_loaded('zip')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
         }
-        self::$open = null;
-        self::$map = null;
+        self::$open = self::$opens = null;
         if(is_array($files)) {
-            self::$map = array();
+            self::$opens = array();
             $taken = false;
             foreach($files as $key => $value) {
                 $key = File::path($key);
                 $value = File::path($value);
-                self::$map[$key] = $value;
+                self::$opens[$key] = $value;
                 if( ! $taken) {
                     self::$open = $key;
                     $taken = true;
@@ -181,7 +191,7 @@ class Package extends Base {
             $destination = File::path($destination);
             // Handling for `Package::take('foo/bar')->pack('package.zip')`
             if(strpos($destination, DS) === false) {
-                $root = ! is_array(self::$map) ? File::D($root) : $root;
+                $root = ! is_array(self::$opens) ? File::D($root) : $root;
                 $destination = $root . DS . $destination;
             }
             // Handling for `Package::take('foo/bar')->pack('bar/baz')`
@@ -204,8 +214,8 @@ class Package extends Base {
         } else {
             $dir = "";
         }
-        if(is_array(self::$map)) {
-            foreach(self::$map as $key => $value) {
+        if(is_array(self::$opens)) {
+            foreach(self::$opens as $key => $value) {
                 if(File::exist($key)) {
                     $zip->addFile($key, $dir . $value);
                 }
@@ -249,7 +259,7 @@ class Package extends Base {
         if(is_null($destination)) {
             $destination = File::D(self::$open);
         } else {
-            $destination = rtrim(File::path($destination), '\\/');
+            $destination = rtrim(File::path($destination), DS);
         }
         // Handling for `Package::take('file.zip')->extractTo('foo/bar', true)`
         if($bucket === true) {
