@@ -24,4 +24,8 @@
       'title' => $speak->widget->archives,
       'content' => Widget::archive()
   )); ?>
+  <?php Shield::chunk('block.widget', array(
+      'title' => 'Archive Calendar',
+      'content' => Widget::calendar()
+  )); ?>
 </aside>

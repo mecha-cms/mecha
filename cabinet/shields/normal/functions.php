@@ -12,11 +12,11 @@
  */
 
 // Link generator for the current article tag(s)
-Widget::add('tagLinks', function($connect = ', ') use($speak) {
-    $config = Config::get();
+Widget::add('tagLinks', function($connect = ', ') use($config, $speak) {
     $links = array();
-    if( ! isset($config->article->tags) || ! is_object($config->article->tags)) return "";
-    foreach($config->article->tags as $tag) {
+    $article = Shield::lot('article');
+    if( ! $article || ! isset($article->tags)) return "";
+    foreach($article->tags as $tag) {
         if($tag && $tag->id !== 0) {
             $url = Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag->slug));
             $links[] = '<a href="' . $url . '" rel="tag">' . $tag->name . '</a>';
@@ -26,6 +26,7 @@ Widget::add('tagLinks', function($connect = ', ') use($speak) {
     return ! empty($links) ? $text . ': ' . implode($connect, $links) : "";
 });
 
+// HTML output manipulation
 Filter::add('chunk:output', function($content, $path) use($config, $speak) {
     $name = File::N($path);
     // Add an icon to the older and newer link text
@@ -56,3 +57,6 @@ Filter::add('chunk:output', function($content, $path) use($config, $speak) {
     }
     return $content;
 });
+
+// Exclude these fields on index (index, tag, archive, search) page ...
+Config::set('article_fields_exclude', array('content', 'content_raw', 'css', 'js', 'comments'));

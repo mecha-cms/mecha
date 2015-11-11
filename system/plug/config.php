@@ -122,29 +122,31 @@ Config::plug('load', function() {
  *
  */
 
-Config::plug('speak', function($key = null, $vars = array()) {
-    if(is_null($key)) return Config::get('speak');
+Config::plug('speak', function($key = "", $vars = array()) {
+    if( ! $key) return Config::get('speak');
+    if( ! is_array($vars)) {
+        $vars = array_slice(func_get_args(), 1);
+    }
     $speak = Mecha::A(Config::get('speak'));
-    $fallback = $key;
     if(strpos($key, 'file:') === 0) {
         $key = File::path(str_replace('file:', "", $key));
         if($file = File::exist(LANGUAGE . DS . Config::get('language') . DS . 'yapping' . DS . $key . '.txt')) {
             $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-            return $wizard['content'];
+            return vsprintf($wizard['content']);
         } else if($file = File::exist(ROOT . DS . $key . '.txt')) {
             $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-            return $wizard['content'];
+            return vsprintf($wizard['content']);
         }
         return "";
     }
-    if( ! is_array($vars)) {
-        $vars = array_slice(func_get_args(), 1);
-    }
     if(strpos($key, '.') !== false) {
-        $value = Mecha::GVR($speak, $key, $fallback);
+        $value = Mecha::GVR($speak, $key, $key);
         return vsprintf($value, $vars);
     }
-    return isset($speak[$key]) ? vsprintf($speak[$key], $vars) : vsprintf($fallback, $vars);
+    if(isset($speak[$key])) {
+        return ! is_array($speak[$key]) ? vsprintf($speak[$key], $vars) : Mecha::O($speak[$key]);
+    }
+    return $key;
 });
 
 

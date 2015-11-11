@@ -20,7 +20,7 @@ if(Guardian::happy() && $cargo = File::exist(DECK . DS . 'launch.php')) {
 
 
 // Exclude these fields ...
-$excludes = array('content', 'content_raw', 'css', 'css_raw', 'js', 'js_raw', 'comments');
+$excludes = (array) Config::get('article_fields_exclude', array('content', 'css', 'js', 'comments'));
 
 
 /**

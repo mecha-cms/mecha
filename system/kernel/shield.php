@@ -82,10 +82,14 @@ class Shield extends Base {
      *
      */
 
-    public static function lot($key, $value = "") {
+    public static function lot($key = null, $value = "") {
+        if(is_null($key)) return self::$lot;
         if(is_array($key)) {
             self::$lot = array_merge(self::$lot, $key);
         } else {
+            if(func_num_args() === 1) {
+                return isset(self::$lot[$key]) ? self::$lot[$key] : false;
+            }
             self::$lot[$key] = $value;
         }
         return new static;

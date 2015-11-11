@@ -8,3 +8,6 @@
   <?php echo $article->title; ?>
   <?php endif; ?>
 </h4>
+<?php if(Weapon::exist('article_header')): ?>
+<div><?php Weapon::fire('article_header', array($article)); ?></div>
+<?php endif; ?>

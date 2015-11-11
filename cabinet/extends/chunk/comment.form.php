@@ -1,6 +1,7 @@
 <form class="comment-form" id="comment-form" action="<?php echo $article->url; ?>" method="post">
-  <?php echo $messages; ?>
+  <?php $hooks = array($article); echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
+  <?php Weapon::fire('comment_form_input_before', $hooks); ?>
   <?php echo Form::hidden('parent', ""); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_name; ?></span>
@@ -14,11 +15,13 @@
     <span class="grid span-1 form-label"><?php echo $speak->comment_url; ?></span>
     <span class="grid span-5"><?php echo Form::url('url', Guardian::wayback('url'), null, array('class' => 'input-block')); ?></span>
   </label>
+  <?php Weapon::fire('comment_form_input_after', $hooks); ?>
+  <?php Weapon::fire('comment_form_message_before', $hooks); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
     <span class="grid span-5"><?php echo Form::textarea('message', Guardian::wayback('message'), null, array('class' => 'textarea-block')); ?></span>
   </label>
-  <?php Weapon::fire('comment_form_input', array($article)); ?>
+  <?php Weapon::fire('comment_form_message_after', $hooks); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo Guardian::math(); ?> =</span>
     <span class="grid span-5"><?php echo Form::text('math', "", null, array('autocomplete' => 'off')); ?></span>
@@ -26,7 +29,11 @@
   <div class="grid-group">
     <span class="grid span-1"></span>
     <div class="grid span-5">
-      <p><?php echo Form::button($speak->publish, null, 'submit', null, array('class' => array('btn', 'btn-construct'))); ?></p>
+      <p>
+        <?php Weapon::fire('comment_form_button_before', $hooks); ?>
+        <?php echo Form::button($speak->publish, null, 'submit', null, array('class' => array('btn', 'btn-construct'))); ?>
+        <?php Weapon::fire('comment_form_button_after', $hooks); ?>
+      </p>
       <p><?php echo $speak->comment_guide; ?></p>
     </div>
   </div>
