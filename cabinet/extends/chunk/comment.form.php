@@ -16,12 +16,12 @@
     <span class="grid span-5"><?php echo Form::url('url', Guardian::wayback('url'), null, array('class' => 'input-block')); ?></span>
   </label>
   <?php Weapon::fire('comment_form_input_after', $hooks); ?>
-  <?php Weapon::fire('comment_form_message_before', $hooks); ?>
+  <?php Weapon::fire('comment_form_textarea_before', $hooks); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
     <span class="grid span-5"><?php echo Form::textarea('message', Guardian::wayback('message'), null, array('class' => 'textarea-block')); ?></span>
   </label>
-  <?php Weapon::fire('comment_form_message_after', $hooks); ?>
+  <?php Weapon::fire('comment_form_textarea_after', $hooks); ?>
   <label class="grid-group">
     <span class="grid span-1 form-label"><?php echo Guardian::math(); ?> =</span>
     <span class="grid span-5"><?php echo Form::text('math', "", null, array('autocomplete' => 'off')); ?></span>

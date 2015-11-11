@@ -2,12 +2,81 @@
 
 
 /**
+ * Include Comment, Custom CSS + JS to the Article Data
+ * ----------------------------------------------------
+ */
+
+Filter::add('shield:lot', function($data) {
+    $config = Config::get();
+    $speak = Config::speak();
+    if(isset($data[$config->page_type]) && is_object($data[$config->page_type])) {
+        $results = $data[$config->page_type];
+        $FP = $config->page_type . ':';
+        // Include comment(s) data
+        if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'), COMMENT)) {
+            $results->comments = array();
+            $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
+            $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+            foreach($comments as $comment) {
+                $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
+            }
+            $results->comments = Get::AMF($results->comments, $FP, 'comments');
+            unset($comments);
+        }
+        $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments');
+        $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+        // Include custom CSS and JS data
+        $results->css = $results->js = $results->css_raw = $results->js_raw = "";
+        if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
+            $custom = explode(SEPARATOR, File::open($file)->read());
+            $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
+            $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
+            // css_raw
+            // page:css_raw
+            // custom:css_raw
+            // shortcode
+            // page:shortcode
+            // custom:shortcode
+            // css
+            // page:css
+            // custom:css
+            $css = Get::AMF($css, $FP, 'css_raw');
+            $results->css_raw = Filter::apply('custom:css_raw', $css);
+            $css = Get::AMF($css, $FP, 'shortcode');
+            $css = Filter::apply('custom:shortcode', $css);
+            $css = Get::AMF($css, $FP, 'css');
+            $results->css = Filter::apply('custom:css', $css);
+            // js_raw
+            // page:js_raw
+            // custom:js_raw
+            // shortcode
+            // page:shortcode
+            // custom:shortcode
+            // js
+            // page:js
+            // custom:js
+            $js = Get::AMF($js, $FP, 'js_raw');
+            $results->js_raw = Filter::apply('custom:js_raw', $js);
+            $js = Get::AMF($js, $FP, 'shortcode');
+            $js = Filter::apply('custom:shortcode', $js);
+            $js = Get::AMF($js, $FP, 'js');
+            $results->js = Filter::apply('custom:js', $js);
+        }
+        $data[$config->page_type] = $results;
+        unset($results);
+    }
+    return $data;
+}, 1);
+
+
+/**
  * ==========================================================================
- *  GET ARTICLE PATH
+ *  GET PAGE/ARTICLE PATH
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
+ *    var_dump(Get::pagePath('lorem-ipsum'));
  *    var_dump(Get::articlePath('lorem-ipsum'));
  *
  * --------------------------------------------------------------------------
@@ -21,120 +90,150 @@
  *
  */
 
+Get::plug('pagePath', function($detector) {
+    return Get::postPath($detector, PAGE);
+});
+
 Get::plug('articlePath', function($detector) {
-    return Get::pagePath($detector, ARTICLE);
+    return Get::postPath($detector, ARTICLE);
 });
 
 
 /**
  * ==========================================================================
- *  GET LIST OF ARTICLE DETAIL(S)
+ *  GET LIST OF PAGE/ARTICLE DETAIL(S)
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
+ *    var_dump(Get::pageExtract($input));
  *    var_dump(Get::articleExtract($input));
  *
  * --------------------------------------------------------------------------
  *
  */
 
+Get::plug('pageExtract', function($input) {
+    return Get::postExtract($input, 'page:');
+});
+
 Get::plug('articleExtract', function($input) {
-    return Get::pageExtract($input, 'article:');
+    return Get::postExtract($input, 'article:');
 });
 
 
 /**
  * ==========================================================================
- *  GET LIST OF ARTICLE(S) PATH
+ *  GET LIST OF PAGE(S)/ARTICLE(S) PATH
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
- *    foreach(Get::articles() as $path) {
- *        echo $path . '<br>';
- *    }
+ *    foreach(Get::pages() as $path) { ... }
+ *    foreach(Get::articles() as $path) { ... }
  *
  * --------------------------------------------------------------------------
  *
  */
+
+Get::plug('pages', function($order = 'DESC', $filter = "", $e = 'txt') {
+    return Get::posts($order, $filter, $e, PAGE);
+});
 
 Get::plug('articles', function($order = 'DESC', $filter = "", $e = 'txt') {
-    return Get::pages($order, $filter, $e, ARTICLE);
+    return Get::posts($order, $filter, $e, ARTICLE);
 });
 
 
 /**
  * ==========================================================================
- *  GET LIST OF ARTICLE(S) DETAIL(S)
+ *  GET LIST OF PAGES(S)/ARTICLE(S) DETAIL(S)
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
- *    foreach(Get::articlesExtract() as $file) {
- *        echo $file['path'] . '<br>';
- *    }
+ *    foreach(Get::pagesExtract() as $file) { ... }
+ *    foreach(Get::articlesExtract() as $file) { ... }
  *
  * --------------------------------------------------------------------------
  *
  */
 
+Get::plug('pagesExtract', function($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt') {
+    return Get::postsExtract($order, $sorter, $filter, $e, 'page:', PAGE);
+});
+
 Get::plug('articlesExtract', function($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt') {
-    return Get::pagesExtract($order, $sorter, $filter, $e, 'article:', ARTICLE);
+    return Get::postsExtract($order, $sorter, $filter, $e, 'article:', ARTICLE);
 });
 
 
 /**
  * ==========================================================================
- *  GET MINIMUM DATA OF AN ARTICLE
+ *  GET MINIMUM DATA OF A PAGE/ARTICLE
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
+ *    var_dump(Get::pageAnchor('lorem-ipsum'));
  *    var_dump(Get::articleAnchor('lorem-ipsum'));
  *
  * --------------------------------------------------------------------------
  *
  */
 
+Get::plug('pageAnchor', function($path) {
+    return Get::postAnchor($path, PAGE, '/', 'page:');
+});
+
 Get::plug('articleAnchor', function($path) {
-    return Get::pageAnchor($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    return Get::postAnchor($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
 });
 
 
 /**
  * ==========================================================================
- *  GET ARTICLE HEADER(S) ONLY
+ *  GET PAGE/ARTICLE HEADER(S) ONLY
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
+ *    var_dump(Get::pageHeader('lorem-ipsum'));
  *    var_dump(Get::articleHeader('lorem-ipsum'));
  *
  * --------------------------------------------------------------------------
  *
  */
 
+Get::plug('pageHeader', function($path) {
+    return Get::postHeader($path, PAGE, '/', 'page:');
+});
+
 Get::plug('articleHeader', function($path) {
-    return Get::pageHeader($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    return Get::postHeader($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
 });
 
 
 /**
  * ==========================================================================
- *  EXTRACT ARTICLE FILE INTO LIST OF ARTICLE DATA FROM ITS PATH/SLUG/ID
+ *  EXTRACT PAGE/ARTICLE FILE INTO LIST OF PAGE/ARTICLE DATA
  * ==========================================================================
  *
  * -- CODE: -----------------------------------------------------------------
  *
+ *    var_dump(Get::page('lorem-ipsum'));
  *    var_dump(Get::article('lorem-ipsum'));
  *
  * --------------------------------------------------------------------------
  *
  */
 
+Get::plug('page', function($reference, $excludes = array()) {
+    return Get::post($reference, $excludes, PAGE, '/', 'page:');
+});
+
 Get::plug('article', function($reference, $excludes = array()) {
-    return Get::page($reference, $excludes, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    return Get::post($reference, $excludes, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
 });
 
 
@@ -159,7 +258,7 @@ Get::plug('article', function($reference, $excludes = array()) {
  */
 
 Get::plug('commentPath', function($detector) {
-    return Get::responsePath($detector, RESPONSE);
+    return Get::responsePath($detector, COMMENT);
 });
 
 
@@ -206,7 +305,7 @@ Get::plug('commentExtract', function($input) {
  */
 
 Get::plug('comments', function($order = 'ASC', $filter = "", $e = 'txt') {
-    return Get::responses($order, $filter, $e, RESPONSE);
+    return Get::responses($order, $filter, $e, COMMENT);
 });
 
 
@@ -233,7 +332,7 @@ Get::plug('comments', function($order = 'ASC', $filter = "", $e = 'txt') {
  */
 
 Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt') {
-    return Get::responsesExtract($order, $sorter, $filter, $e, 'comment:', RESPONSE);
+    return Get::responsesExtract($order, $sorter, $filter, $e, 'comment:', COMMENT);
 });
 
 
@@ -259,7 +358,7 @@ Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter 
  */
 
 Get::plug('comment', function($reference, $excludes = array()) {
-    return Get::response($reference, $excludes, array(RESPONSE, ARTICLE), '/' . Config::get('index.slug') . '/', 'comment:');
+    return Get::response($reference, $excludes, array(COMMENT, ARTICLE), '/' . Config::get('index.slug') . '/', 'comment:');
 });
 
 

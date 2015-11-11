@@ -106,7 +106,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                     'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false,
                     'UA' => Get::UA(),
                     'IP' => Get::IP()
-                ))->content($message)->saveTo(RESPONSE . DS . $post . '_' . Date::slug($id) . '_' . ($parent ? Date::slug($parent) : '0000-00-00-00-00-00') . $extension);
+                ))->content($message)->saveTo(COMMENT . DS . $post . '_' . Date::slug($id) . '_' . ($parent ? Date::slug($parent) : '0000-00-00-00-00-00') . $extension);
                 Notify::success(Config::speak('notify_success_submitted', $speak->comment));
                 if($extension === '.hold') Notify::info($speak->notify_info_comment_moderation);
                 Weapon::fire('on_comment_update', array($P, $P));

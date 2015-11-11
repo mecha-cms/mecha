@@ -3,7 +3,7 @@
 class Get extends Base {
 
     // Apply the missing filter(s)
-    protected static function AMF($data, $FP = "", $F) {
+    public static function AMF($data, $FP = "", $F) {
         $output = Filter::apply($F, $data);
         if(is_string($FP) && trim($FP) !== "") {
             $output = Filter::apply($FP . $F, $output);
@@ -56,12 +56,8 @@ class Get extends Base {
         $folder = rtrim(File::path($folder), DS);
         $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $e . ')$#i') as $file => $object) {
-            if( ! $filter) {
+            if( ! $filter || strpos(File::B($file), $filter) !== false) {
                 $results_inclusive[] = File::inspect($file);
-            } else {
-                if(strpos(File::B($file), $filter) !== false) {
-                    $results_inclusive[] = File::inspect($file);
-                }
             }
             $_file = str_replace($folder . DS, "", $file);
             if(
@@ -73,12 +69,8 @@ class Get extends Base {
                 // Linux?
                 strpos($_file, '.') !== 0
             ) {
-                if( ! $filter) {
+                if( ! $filter || strpos(File::B($file), $filter) !== false) {
                     $results[] = File::inspect($file);
-                } else {
-                    if(strpos(File::B($file), $filter) !== false) {
-                        $results[] = File::inspect($file);
-                    }
                 }
             }
         }
@@ -121,24 +113,13 @@ class Get extends Base {
         }
         foreach($files as $file) {
             if(is_file($file)) {
-                if( ! $filter) {
+                if( ! $filter || strpos(File::B($file), $filter) !== false) {
                     $results_inclusive[] = File::inspect($file);
-                } else {
-                    if(strpos(File::B($file), $filter) !== false) {
-                        $results_inclusive[] = File::inspect($file);
-                    }
                 }
                 $_file = str_replace($folder . DS, "", $file);
-                if(
-                    strpos($_file, '__') !== 0 &&
-                    strpos($_file, '.') !== 0
-                ) {
-                    if( ! $filter) {
+                if(strpos($_file, '__') !== 0 && strpos($_file, '.') !== 0) {
+                    if( ! $filter || strpos(File::B($file), $filter) !== false) {
                         $results[] = File::inspect($file);
-                    } else {
-                        if(strpos(File::B($file), $filter) !== false) {
-                            $results[] = File::inspect($file);
-                        }
                     }
                 }
             }
@@ -188,7 +169,6 @@ class Get extends Base {
 
     // Get stored custom field data (internal only)
     public static function state_field($scope = null, $key = null, $fallback = array(), $all = true) {
-
         $config = Config::get();
         $speak = Config::speak();
         $d = DECK . DS . 'workers' . DS . 'repair.state.field.php';
@@ -196,58 +176,44 @@ class Get extends Base {
         if($file = File::exist(STATE . DS . 'field.txt')) {
             Mecha::extend($field, File::open($file)->unserialize());
         }
-
         if($all) {
-
-            /**
-             * Allow shield to add custom field(s) dynamically by creating
-             * a file named as `fields.php` stored in a folder named as `workers`.
-             * This file contains array of field(s) data.
-             *
-             * -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
-             *
-             *    return array(
-             *        'break_title_text' => array(
-             *            'title' => 'Break Title Text?',
-             *            'type' => 'text',
-             *            'value' => "",
-             *            'scope' => 'article'
-             *        )
-             *    );
-             *
-             * --------------------------------------------------------------------
-             *
-             */
-
+            // Allow shield to add custom field(s) dynamically by creating
+            // a file named as `fields.php` stored in a folder named as `workers`.
+            // This file contains array of field(s) data.
+            //
+            // -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
+            //
+            //    return array(
+            //        'break_title_text' => array(
+            //            'title' => 'Break Title Text?',
+            //            'type' => 'text',
+            //            'value' => "",
+            //            'scope' => 'article'
+            //        )
+            //    );
+            //
+            // --------------------------------------------------------------------
+            //
             if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
                 $field_e = include $e;
                 Mecha::extend($field, $field_e);
             }
-
-            /**
-             * Allow plugin to add custom field(s) dynamically by creating
-             * a file named as `fields.php` stored in a folder named as `workers`.
-             * This file contains array of field(s) data.
-             */
-
+            // Allow plugin to add custom field(s) dynamically by creating
+            // a file named as `fields.php` stored in a folder named as `workers`.
+            // This file contains array of field(s) data.
             foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_BRACE | GLOB_NOSORT) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
                     $field_e = include $e;
                     Mecha::extend($field, $field_e);
                 }
             }
-
         }
-
         $field = Converter::strEval($field);
-
         foreach($field as &$v) {
             if( ! isset($v['value'])) $v['value'] = "";
             if( ! isset($v['scope'])) $v['scope'] = 'article,page,comment';
         }
-
         unset($v);
-
         // Filter output(s) by `scope`
         if( ! is_null($scope)) {
             $field_alt = array();
@@ -261,17 +227,13 @@ class Get extends Base {
             $field = $field_alt;
             unset($field_alt);
         }
-
         $field = Filter::apply('state:field', $field);
-
         // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($field[$key]) ? $field[$key] : $fallback;
         }
-
         // No filter
         return $field;
-
     }
 
     // Get stored menu data (internal only)
@@ -292,7 +254,6 @@ class Get extends Base {
 
     // Get stored shortcode data (internal only)
     public static function state_shortcode($key = null, $fallback = array(), $all = true) {
-
         $config = Config::get();
         $d = DECK . DS . 'workers' . DS . 'repair.state.shortcode.php';
         $shortcode = file_exists($d) ? include $d : $fallback;
@@ -303,54 +264,40 @@ class Get extends Base {
             }
             $shortcode = array_merge($shortcode, $file);
         }
-
         if($all) {
-
-            /**
-             * Allow shield to add custom built-in shortcode(s) dynamically
-             * by creating a file named as `shortcodes.php` stored in a folder
-             * named as `workers`. This file contains array of shortcode(s) data.
-             *
-             * -- EXAMPLE CONTENT OF `shortcodes.php`: --------------------------------
-             *
-             *    return array(
-             *        '{{shortcode:%s}}' => '<span>\1</span>'
-             *    );
-             *
-             * --------------------------------------------------------------------
-             *
-             */
-
+            // Allow shield to add custom built-in shortcode(s) dynamically
+            // by creating a file named as `shortcodes.php` stored in a folder
+            // named as `workers`. This file contains array of shortcode(s) data.
+            //
+            // -- EXAMPLE CONTENT OF `shortcodes.php`: ----------------------------
+            //
+            //    return array(
+            //        '{{shortcode:%s}}' => '<span>$1</span>'
+            //    );
+            //
+            // --------------------------------------------------------------------
+            //
             if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'shortcodes.php')) {
                 $shortcode_e = include $e;
                 Mecha::extend($shortcode, $shortcode_e);
             }
-
-            /**
-             * Allow plugin to add custom built-in shortcode(s) dynamically
-             * by creating a file named as `shortcodes.php` stored in a folder
-             * named as `workers`. This file contains array of shortcode(s) data.
-             */
-
+            // Allow plugin to add custom built-in shortcode(s) dynamically
+            // by creating a file named as `shortcodes.php` stored in a folder
+            // named as `workers`. This file contains array of shortcode(s) data.
             foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_BRACE | GLOB_NOSORT) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'shortcodes.php')) {
                     $shortcode_e = include $e;
                     Mecha::extend($shortcode, $shortcode_e);
                 }
             }
-
         }
-
         $shortcode = Filter::apply('state:shortcode', Converter::strEval($shortcode));
-
         // Filter output(s) by `key`
         if( ! is_null($key)) {
             return isset($shortcode[$key]) ? $shortcode[$key] : $fallback;
         }
-
         // No filter
         return $shortcode;
-
     }
 
     // Get stored tag data (internal only)
@@ -360,6 +307,7 @@ class Get extends Base {
         $tag = file_exists($d) ? include $d : $fallback;
         $tag = File::open(STATE . DS . 'tag.txt')->unserialize($tag);
         $tag = Filter::apply('state:tag', Converter::strEval($tag));
+        // Filter output(s) by `id`
         if( ! is_null($id)) {
             foreach($tag as $k => $v) {
                 if($v['id'] === $id) {
@@ -367,6 +315,7 @@ class Get extends Base {
                 }
             }
         }
+        // No filter
         return $tag;
     }
 
@@ -424,25 +373,25 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET PAGE PATH
+     *  GET POST PATH
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::pagePath('lorem-ipsum'));
+     *    var_dump(Get::postPath('lorem-ipsum'));
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type  | Description
      *  --------- | ----- | -----------------------------------------------------
-     *  $detector | mixed | Slug, ID or time of the page
+     *  $detector | mixed | Slug, ID or time of the post
      *  --------- | ----- | -----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pagePath($detector, $folder = PAGE) {
+    public static function postPath($detector, $folder) {
         foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
             list($time, $kind, $slug) = explode('_', File::N($path), 3);
             if($slug === $detector || $time === Date::slug($detector)) {
@@ -454,18 +403,18 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGE DETAIL(S)
+     *  GET LIST OF POST DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::pageExtract($input));
+     *    var_dump(Get::postExtract($input));
      *
      * --------------------------------------------------------------------------
      *
      */
 
-    public static function pageExtract($input, $FP = 'page:') {
+    public static function postExtract($input, $FP = 'post:') {
         if( ! $input) return false;
         $e = File::E($input);
         $update = File::T($input);
@@ -486,35 +435,35 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGE(S) PATH
+     *  GET LIST OF POST(S) PATH
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    foreach(Get::pages() as $path) {
+     *    foreach(Get::posts() as $path) {
      *        echo $path . '<br>';
      *    }
      *
      *    // [1]. Filter by Tag(s) ID
-     *    Get::pages('DESC', 'kind:2');
-     *    Get::pages('DESC', 'kind:2,3,4');
+     *    Get::posts('DESC', 'kind:2');
+     *    Get::posts('DESC', 'kind:2,3,4');
      *
      *    // [2]. Filter by Time
-     *    Get::pages('DESC', 'time:2014');
-     *    Get::pages('DESC', 'time:2014-11');
-     *    Get::pages('DESC', 'time:2014-11-10');
+     *    Get::posts('DESC', 'time:2014');
+     *    Get::posts('DESC', 'time:2014-11');
+     *    Get::posts('DESC', 'time:2014-11-10');
      *
      *    // [3]. Filter by Slug
-     *    Get::pages('DESC', 'slug:lorem');
-     *    Get::pages('DESC', 'slug:lorem-ipsum');
+     *    Get::posts('DESC', 'slug:lorem');
+     *    Get::posts('DESC', 'slug:lorem-ipsum');
      *
      *    // [4]. The Old Way(s)
-     *    Get::pages('DESC', 'lorem');
-     *    Get::pages('DESC', 'lorem-ipsum');
+     *    Get::posts('DESC', 'lorem');
+     *    Get::posts('DESC', 'lorem-ipsum');
      *
      *    // [5]. The Old Way(s)' Alias
-     *    Get::pages('DESC', 'word:lorem');
-     *    Get::pages('DESC', 'word:lorem-ipsum');
+     *    Get::posts('DESC', 'word:lorem');
+     *    Get::posts('DESC', 'word:lorem-ipsum');
      *
      * --------------------------------------------------------------------------
      *
@@ -524,13 +473,13 @@ class Get extends Base {
      *  $order    | string | Ascending or descending? ASC/DESC?
      *  $filter   | string | Filter the resulted array by a keyword
      *  $e        | string | The file extension(s)
-     *  $folder   | string | Folder of the page(s)
+     *  $folder   | string | Folder of the post(s)
      *  --------- | ------ | ----------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pages($order = 'DESC', $filter = "", $e = 'txt', $folder = PAGE) {
+    public static function posts($order = 'DESC', $filter = "", $e = 'txt', $folder) {
         $results = array();
         $e = str_replace(' ', "", $e);
         $pages = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
@@ -588,17 +537,17 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET LIST OF PAGE(S) DETAIL(S)
+     *  GET LIST OF post(S) DETAIL(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    foreach(Get::pagesExtract() as $file) {
+     *    foreach(Get::postsExtract() as $file) {
      *        echo $file['path'] . '<br>';
      *    }
      *
-     *    Get::pagesExtract('DESC', 'time', 'kind:2');
-     *    Get::pagesExtract('DESC', 'time', 'kind:2,3,4');
+     *    Get::postsExtract('DESC', 'time', 'kind:2');
+     *    Get::postsExtract('DESC', 'time', 'kind:2,3,4');
      *
      * --------------------------------------------------------------------------
      *
@@ -611,11 +560,11 @@ class Get extends Base {
      *
      */
 
-    public static function pagesExtract($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'page:', $folder = PAGE) {
-        if($files = self::pages($order, $filter, $e, $folder)) {
+    public static function postsExtract($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'page:', $folder) {
+        if($files = self::posts($order, $filter, $e, $folder)) {
             $results = array();
             foreach($files as $file) {
-                $results[] = self::pageExtract($file, $FP);
+                $results[] = self::postExtract($file, $FP);
             }
             unset($files);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
@@ -625,33 +574,33 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET MINIMUM DATA OF A PAGE
+     *  GET MINIMUM DATA OF A POST
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::pageAnchor('about'));
+     *    var_dump(Get::postAnchor('about'));
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
-     *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the page(s)
-     *  $connector | string | See `Get::page()`
-     *  $FP        | string | See `Get::page()`
+     *  $path      | string | The URL path of the post file, or a post slug
+     *  $folder    | string | Folder of the post(s)
+     *  $connector | string | See `Get::post()`
+     *  $FP        | string | See `Get::post()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pageAnchor($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
+    public static function postAnchor($path, $folder, $connector = '/', $FP = 'post:') {
         if(strpos($path, ROOT) === false) {
-            $path = self::pagePath($path, $folder); // By page slug, ID or time
+            $path = self::postPath($path, $folder); // By post slug, ID or time
         }
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
-            $results = self::pageExtract($path);
+            $results = self::postExtract($path);
             $parts = explode(S, $buffer, 2);
             $results['url'] = self::AMF(Config::get('url') . $connector . $results['slug'], $FP, 'url');
             $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title');
@@ -662,34 +611,34 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  GET PAGE HEADER(S) ONLY
+     *  GET POST HEADER(S) ONLY
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::pageHeader('lorem-ipsum'));
+     *    var_dump(Get::postHeader('lorem-ipsum'));
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
-     *  $path      | string | The URL path of the page file, or a page slug
-     *  $folder    | string | Folder of the page(s)
-     *  $connector | string | See `Get::page()`
-     *  $FP        | string | See `Get::page()`
+     *  $path      | string | The URL path of the post file, or a post slug
+     *  $folder    | string | Folder of the post(s)
+     *  $connector | string | See `Get::post()`
+     *  $FP        | string | See `Get::post()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function pageHeader($path, $folder = PAGE, $connector = '/', $FP = 'page:') {
+    public static function postHeader($path, $folder, $connector = '/', $FP = 'post:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::pagePath($path, $folder); // By page slug, ID or time
+            $path = self::postPath($path, $folder); // By page slug, ID or time
         }
         if( ! $path) return false;
-        $results = self::pageExtract($path) + Text::toPage($path, false, $FP);
+        $results = self::postExtract($path) + Text::toPage($path, false, $FP);
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
         if( ! isset($results['link'])) {
@@ -708,8 +657,6 @@ class Get extends Base {
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
             foreach($results['fields'] as $key => $value) {
-                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                // [2]. `Fields: {"my_field":"foo"}`
                 if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
@@ -722,99 +669,88 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  EXTRACT PAGE FILE INTO LIST OF PAGE DATA FROM ITS PATH/SLUG/ID
+     *  EXTRACT POST FILE INTO LIST OF POST DATA FROM ITS PATH/SLUG/ID
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::page('about'));
+     *    var_dump(Get::post('about'));
      *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter  | Type   | Description
      *  ---------- | ------ | ---------------------------------------------------
-     *  $reference | mixed  | Slug, ID, path or array of `Get::pageExtract()`
+     *  $reference | mixed  | Slug, ID, path or array of `Get::postExtract()`
      *  $excludes  | array  | Exclude some field(s) from result(s)
-     *  $folder    | string | Folder of the page(s)
-     *  $connector | string | Path connector for page URL
+     *  $folder    | string | Folder of the post(s)
+     *  $connector | string | Path connector for post URL
      *  $FP        | string | Filter prefix for `Text::toPage()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function page($reference, $excludes = array(), $folder = PAGE, $connector = '/', $FP = 'page:') {
+    public static function post($reference, $excludes = array(), $folder, $connector = '/', $FP = 'post:') {
         $config = Config::get();
         $speak = Config::speak();
         $excludes = array_flip($excludes);
         $results = false;
         if( ! is_array($reference)) {
-            // By path => `cabinet\pages\2014-06-21-20-05-17_1,2,3_page-slug.txt`
+            // By path => `cabinet\$folder\2014-06-21-20-05-17_1,2,3_page-slug.txt`
             if(strpos($reference, $folder) === 0) {
-                $results = self::pageExtract($reference, $FP);
+                $results = self::postExtract($reference, $FP);
             } else {
-                // By slug => `page-slug` or by ID => `1403355917`
-                $results = self::pageExtract(self::pagePath($reference, $folder), $FP);
+                // By slug => `post-slug` or by ID => `1403355917`
+                $results = self::postExtract(self::postPath($reference, $folder), $FP);
             }
         } else {
-            // From `Get::pageExtract()`
+            // From `Get::postExtract()`
             $results = $reference;
         }
         if( ! $results || ! file_exists($results['path'])) return false;
-
-        /**
-         * RULES: Do not do any tags looping, content Markdown-ing
-         * and external file requesting if it has been marked as
-         * the excluded field(s). For better performance.
-         */
-
+        // RULES: Do not do any tags looping, content parsing
+        // and external file requesting if it has been marked as
+        // the excluded field(s). For better performance.
         $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $FP);
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
         $e = File::E($results['path']);
-
+        // Custom post content with PHP file, named as the post slug
         if($php_file = File::exist(File::D($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
             include $php_file;
             $results['content'] = ob_get_clean();
         }
-
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
-
         if( ! isset($results['link'])) {
             $results['link'] = self::AMF("", $FP, 'link');
         }
-
         if( ! isset($results['author'])) {
             $results['author'] = self::AMF($config->author->name, $FP, 'author');
         }
-
         if( ! isset($results['description'])) {
             $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
             $results['description'] = self::AMF($summary, $FP, 'description');
         }
-
         $results['excerpt'] = "";
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
         $content_test = $content_test['content'];
         $content_test = is_array($content_test) ? implode("", $content_test) : $content_test;
-
         // Manual post excerpt with `<!-- cut+ "Read More" -->`
         if(strpos($content_test, '<!-- cut+ ') !== false) {
             preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
             $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
             $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '">' . $more . '</a></p><!-- cut -->', $content_test);
         }
-
         // ... or `<!-- cut -->`
         if(strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
             $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt');
             $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="read-more:' . $results['id'] . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
         }
-
+        // Post Tags
         if( ! isset($excludes['tags'])) {
             $tags = array();
             foreach($results['kind'] as $id) {
@@ -822,113 +758,21 @@ class Get extends Base {
             }
             $results['tags'] = self::AMF(Mecha::eat($tags)->order('ASC', 'name')->vomit(), $FP, 'tags');
         }
-
-        if( ! isset($excludes['css']) || ! isset($excludes['js'])) {
-            if($file = File::exist(CUSTOM . DS . $time . '.' . $e)) {
-                $custom = explode(SEPARATOR, File::open($file)->read());
-                $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
-                $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
-
-                /**
-                 * CSS
-                 * ---
-                 *
-                 * css_raw
-                 * page:css_raw
-                 * custom:css_raw
-                 *
-                 * shortcode
-                 * page:shortcode
-                 * custom:shortcode
-                 *
-                 * css
-                 * page:css
-                 * custom:css
-                 *
-                 */
-
-                $css = self::AMF($css, $FP, 'css_raw');
-                $results['css_raw'] = Filter::apply('custom:css_raw', $css);
-                $css = self::AMF($css, $FP, 'shortcode');
-                $css = Filter::apply('custom:shortcode', $css);
-                $css = self::AMF($css, $FP, 'css');
-                $results['css'] = Filter::apply('custom:css', $css);
-
-                /**
-                 * JS
-                 * --
-                 *
-                 * js_raw
-                 * page:js_raw
-                 * custom:js_raw
-                 *
-                 * shortcode
-                 * page:shortcode
-                 * custom:shortcode
-                 *
-                 * js
-                 * page:js
-                 * custom:js
-                 *
-                 */
-
-                $js = self::AMF($js, $FP, 'js_raw');
-                $results['js_raw'] = Filter::apply('custom:js_raw', $js);
-                $js = self::AMF($js, $FP, 'shortcode');
-                $js = Filter::apply('custom:shortcode', $js);
-                $js = self::AMF($js, $FP, 'js');
-                $results['js'] = Filter::apply('custom:js', $js);
-            } else {
-                $results['css'] = $results['js'] = $results['css_raw'] = $results['js_raw'] = "";
-            }
-            $custom = $results['css'] . $results['js'];
-        } else {
-            $custom = "";
-        }
-
-        $results['images'] = self::AMF(self::imagesURL($results['content'] . $custom), $FP, 'images');
+        // Post Images
+        $results['images'] = self::AMF(self::imagesURL($results['content']), $FP, 'images');
         $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
-
-        $comments = self::comments('ASC', 'post:' . Date::slug($results['id']), (Guardian::happy() ? 'txt,hold' : 'txt'));
-        $results['total_comments'] = self::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
-        $results['total_comments_text'] = self::AMF($results['total_comments'] . ' ' . ($results['total_comments'] === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
-
-        if( ! isset($excludes['comments']) && $comments) {
-            $results['comments'] = array();
-            foreach($comments as $comment) {
-                $results['comments'][] = self::comment($comment);
-            }
-            $results['comments'] = self::AMF($results['comments'], $FP, 'comments');
-        }
-
-        unset($comments);
-
-        /**
-         * Custom Field(s)
-         * ---------------
-         */
-
+        // Custom Field(s)
         if( ! isset($excludes['fields'])) {
-
-            /**
-             * Initialize custom field(s) with the default value(s) so that
-             * user(s) don't have to write `isset()` function multiple time(s)
-             * just to prevent error message(s) because of the object key(s)
-             * that is not available in the old post(s).
-             */
-
+            // Initialize custom field(s) with the default value(s) so that
+            // user(s) don't have to write `isset()` function multiple time(s)
+            // just to prevent error message(s) because of the object key(s)
+            // that is not available in the old post(s).
             $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
-
             $init = array();
-
             foreach($fields as $key => $value) {
                 $init[$key] = $value['value'];
             }
-
-            /**
-             * Start re-writing ...
-             */
-
+            // Start re-writing ...
             if(isset($results['fields']) && is_array($results['fields'])) {
                 foreach($results['fields'] as $key => $value) {
                     // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
@@ -939,25 +783,16 @@ class Get extends Base {
                     $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
                 }
             }
-
             $results['fields'] = $init;
-
             unset($fields, $init);
-
         }
-
-        /**
-         * Exclude some field(s) from result(s)
-         */
-
+        // Exclude some field(s) from result(s)
         foreach($results as $key => $value) {
             if(isset($excludes[$key])) {
                 unset($results[$key]);
             }
         }
-
         return Mecha::O($results);
-
     }
 
     /**
@@ -980,7 +815,7 @@ class Get extends Base {
      *
      */
 
-    public static function responsePath($detector, $folder = RESPONSE) {
+    public static function responsePath($detector, $folder) {
         foreach(glob($folder . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE) as $path) {
             list($post, $time, $parent) = explode('_', File::N($path), 3);
             if($time === $detector || (string) $time === Date::slug($detector)) {
@@ -1060,12 +895,12 @@ class Get extends Base {
      *
      */
 
-    public static function responses($order = 'ASC', $filter = "", $e = 'txt', $folder = RESPONSE) {
+    public static function responses($order = 'ASC', $filter = "", $e = 'txt', $folder) {
         $results = array();
         $e = str_replace(' ', "", $e);
         $responses = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
-        $total_comments = count($responses);
-        if( ! is_array($responses) || $total_comments === 0) return false;
+        $total_responses = count($responses);
+        if( ! is_array($responses) || $total_responses === 0) return false;
         if($order === 'DESC') {
             rsort($responses);
         } else {
@@ -1075,35 +910,35 @@ class Get extends Base {
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
             if($key === 'post') {
-                for($i = 0; $i < $total_comments; ++$i) {
+                for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
                     if(strpos($post, $value) === 0) {
                         $results[] = $responses[$i];
                     }
                 }
             } else if($key === 'time') {
-                for($i = 0; $i < $total_comments; ++$i) {
+                for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
                     if(strpos($time, $value) === 0) {
                         $results[] = $responses[$i];
                     }
                 }
             } else if($key === 'parent') {
-                for($i = 0; $i < $total_comments; ++$i) {
+                for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
                     if(strpos($parent, $value) === 0) {
                         $results[] = $responses[$i];
                     }
                 }
             } else { // if($key === 'word') {
-                for($i = 0; $i < $total_comments; ++$i) {
+                for($i = 0; $i < $total_responses; ++$i) {
                     if(strpos(File::N($responses[$i]), $value) !== false) {
                         $results[] = $responses[$i];
                     }
                 }
             }
         } else {
-            for($i = 0; $i < $total_comments; ++$i) {
+            for($i = 0; $i < $total_responses; ++$i) {
                 if(strpos(File::N($responses[$i]), $filter) !== false) {
                     $results[] = $responses[$i];
                 }
@@ -1135,11 +970,11 @@ class Get extends Base {
      *
      */
 
-    public static function responsesExtract($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'response:', $folder = RESPONSE) {
-        if($files = self::comments($order, $filter, $e, $folder)) {
+    public static function responsesExtract($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'response:', $folder) {
+        if($files = self::responses($order, $filter, $e, $folder)) {
             $results = array();
             foreach($files as $file) {
-                $results[] = self::commentExtract($file, $FP);
+                $results[] = self::responseExtract($file, $FP);
             }
             unset($files);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
@@ -1175,7 +1010,7 @@ class Get extends Base {
      *
      */
 
-    public static function responseHeader($path, $folder = RESPONSE, $connector = '/', $FP = 'response:') {
+    public static function responseHeader($path, $folder, $connector = '/', $FP = 'response:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::responsePath($path, $folder); // By response ID or time
@@ -1191,8 +1026,6 @@ class Get extends Base {
         }
         if(isset($results['fields']) && is_array($results['fields'])) {
             foreach($results['fields'] as $key => $value) {
-                // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                // [2]. `Fields: {"my_field":"foo"}`
                 if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
@@ -1227,7 +1060,7 @@ class Get extends Base {
      *
      */
 
-    public static function response($reference, $excludes = array(), $folder = array(RESPONSE, PAGE), $connector = '/', $FP = 'response:') {
+    public static function response($reference, $excludes = array(), $folder = array(), $connector = '/', $FP = 'response:') {
         $config = Config::get();
         $excludes = array_flip($excludes);
         $results = false;
@@ -1248,8 +1081,8 @@ class Get extends Base {
         $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP);
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         if( ! isset($excludes['permalink'])) {
-            if($path = self::pagePath($results['post'], $folder[1])) {
-                $link = self::pageAnchor($path, $folder[1], $connector, "")->url . '#comment-' . $results['id'];
+            if($path = self::postPath($results['post'], $folder[1])) {
+                $link = self::postAnchor($path, $folder[1], $connector, "")->url . '#' . rtrim($FP, ':') . '-' . $results['id'];
             } else {
                 $link = '#';
             }
@@ -1266,8 +1099,6 @@ class Get extends Base {
             }
             if(isset($results['fields']) && is_array($results['fields'])) {
                 foreach($results['fields'] as $key => $value) {
-                    // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                    // [2]. `Fields: {"my_field":"foo"}`
                     if(is_array($value) && isset($value['type'])) {
                         $value = isset($value['value']) ? $value['value'] : false;
                     }
@@ -1307,76 +1138,55 @@ class Get extends Base {
      */
 
     public static function imagesURL($source, $fallback = array()) {
-
         $config = Config::get();
         $results = array();
-
-        /**
-         * Matched with ...
-         * ----------------
-         *
-         * [1]. `![alt text](IMAGE URL)`
-         * [2]. `![alt text](IMAGE URL "optional title")`
-         *
-         * ... and the single-quoted version of them
-         *
-         */
-
+        // Matched with ...
+        //
+        // [1]. `![alt text](IMAGE URL)`
+        // [2]. `![alt text](IMAGE URL "optional title")`
+        //
+        // ... and the single-quoted version of them
         if(preg_match_all('#\!\[.*?\]\(([^\s]+?)( +([\'"]).*?\3)?\)#', $source, $matches)) {
             $results = array_merge($matches[1], $results);
         }
-
-        /**
-         * Matched with ...
-         * ----------------
-         *
-         * [1]. `<img src="IMAGE URL">`
-         * [2]. `<img foo="bar" src="IMAGE URL">`
-         * [3]. `<img src="IMAGE URL" foo="bar">`
-         * [4]. `<img src="IMAGE URL"/>`
-         * [5]. `<img foo="bar" src="IMAGE URL"/>`
-         * [6]. `<img src="IMAGE URL" foo="bar"/>`
-         * [7]. `<img src="IMAGE URL" />`
-         * [8]. `<img foo="bar" src="IMAGE URL" />`
-         * [9]. `<img src="IMAGE URL" foo="bar" />`
-         *
-         * ... and the uppercased version of them, and the single-quoted version of them
-         *
-         */
-
+        // Matched with ...
+        //
+        // [1]. `<img src="IMAGE URL">`
+        // [2]. `<img foo="bar" src="IMAGE URL">`
+        // [3]. `<img src="IMAGE URL" foo="bar">`
+        // [4]. `<img src="IMAGE URL"/>`
+        // [5]. `<img foo="bar" src="IMAGE URL"/>`
+        // [6]. `<img src="IMAGE URL" foo="bar"/>`
+        // [7]. `<img src="IMAGE URL" />`
+        // [8]. `<img foo="bar" src="IMAGE URL" />`
+        // [9]. `<img src="IMAGE URL" foo="bar" />`
+        //
+        // ... and the uppercased version of them, and the single-quoted version of them
         if(preg_match_all('#<img .*?src=([\'"])([^\'"]+?)\1.*? *\/?>#i', $source, $matches)) {
             $results = array_merge($matches[2], $results);
         }
-
-        /**
-         * Matched with ...
-         * ----------------
-         *
-         * [1]. `background: url("IMAGE URL")`
-         * [2]. `background-image: url("IMAGE URL")`
-         * [3]. `background: foo url("IMAGE URL")`
-         * [4]. `background-image: foo url("IMAGE URL")`
-         * [5]. `content: url("IMAGE URL")`
-         *
-         * ... and the uppercased version of them, and the single-quoted version of them, and the un-quoted version of them
-         *
-         */
-
+        // Matched with ...
+        //
+        // [1]. `background: url("IMAGE URL")`
+        // [2]. `background-image: url("IMAGE URL")`
+        // [3]. `background: foo url("IMAGE URL")`
+        // [4]. `background-image: foo url("IMAGE URL")`
+        // [5]. `content: url("IMAGE URL")`
+        //
+        // ... and the uppercased version of them, and the single-quoted version of them, and the un-quoted version of them
         if(preg_match_all('#(background-image|background|content)\: *.*?url\(([\'"]?)([^\'"]+?)\2\)#i', $source, $matches)) {
             $results = array_merge($matches[3], $results);
         }
-
+        // Validate URL ...
         foreach(array_unique($results) as $k => $url) {
             $url = strpos($url, '/') === 0 ? $config->protocol . $config->host . $url : $url;
-            if(strpos($url, Config::get('url')) === 0 && file_exists(File::path($url))) {
+            if(strpos($url, $config->url) === 0 && file_exists(File::path($url))) {
                 $results[$k] = $url;
             } else if(strpos($url, '://') !== false) {
                 $results[$k] = $url;
             }
         }
-
         return ! empty($results) ? $results : $fallback;
-
     }
 
     /**

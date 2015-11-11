@@ -19,7 +19,7 @@ define('LANGUAGE', CARGO . DS . 'languages');
 define('ASSET', CARGO . DS . 'assets');
 define('ARTICLE', CARGO . DS . 'articles');
 define('PAGE', CARGO . DS . 'pages');
-define('RESPONSE', CARGO . DS . 'responses');
+define('COMMENT', CARGO . DS . 'comments');
 define('EXTEND', CARGO . DS . 'extends');
 define('STATE', CARGO . DS . 'states');
 define('PLUGIN', CARGO . DS . 'plugins');

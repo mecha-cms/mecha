@@ -33,11 +33,11 @@ Config::plug('load', function() {
 
     $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt', GLOB_NOSORT));
     $config['total_pages'] = count(glob(PAGE . DS . '*.txt', GLOB_NOSORT));
-    $config['total_comments'] = count(glob(RESPONSE . DS . '*.txt', GLOB_NOSORT));
+    $config['total_comments'] = count(glob(COMMENT . DS . '*.txt', GLOB_NOSORT));
 
     $config['total_articles_backend'] = count(glob(ARTICLE . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE));
     $config['total_pages_backend'] = count(glob(PAGE . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE));
-    $config['total_comments_backend'] = count(glob(RESPONSE . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
+    $config['total_comments_backend'] = count(glob(COMMENT . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
 
     $page = '404';
     $path = $config['url_path'];
