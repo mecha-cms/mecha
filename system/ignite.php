@@ -198,7 +198,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
  * ---------------
  */
 
-Menu::set('navigation', Get::state_menu());
+Menu::add('navigation', Get::state_menu());
 
 
 /**

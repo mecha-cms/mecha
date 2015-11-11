@@ -42,11 +42,9 @@
 class Tree extends Base {
 
     public static $config = array(
-        'elements' => array(
-            'trunk' => 'ul',
-            'branch' => 'ul',
-            'twig' => 'li'
-        ),
+        'trunk' => 'ul',
+        'branch' => 'ul',
+        'twig' => 'li',
         'classes' => array(
             'trunk' => 'trunk',
             'branch' => 'branch branch-%d',
@@ -59,8 +57,8 @@ class Tree extends Base {
     protected static function create($array, $indent = "", $FP = "", $i = 0) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
-        $c_element = self::$config['elements'];
-        $c_class = self::$config['classes'];
+        $c_element = self::$config;
+        $c_class = $c_element['classes'];
         $html = $indent . str_repeat(TAB, $i) . '<' . $c_element[$i === 0 ? 'trunk' : 'branch'] . ($i === 0 ? ($c_class['trunk'] !== false ? ' class="' . $c_class['trunk'] . '"' : "") : ($c_class['branch'] !== false ? ' class="' . sprintf($c_class['branch'], $i / 2) . '"' : "")) . '>' . NL;
         foreach($array as $key => $value) {
             if( ! is_array($value)) {

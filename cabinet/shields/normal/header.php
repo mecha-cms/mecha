@@ -14,5 +14,5 @@
     <?php Weapon::fire('cargo_before'); ?>
     <div class="blog-wrapper">
       <?php Shield::chunk('block.header'); ?>
-      <?php Shield::chunk('block.navigation'); ?>
+      <?php Shield::chunk('navigation'); ?>
       <div class="blog-content">
