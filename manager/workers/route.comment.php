@@ -29,12 +29,12 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
     }
     Config::set(array(
         'page_title' => $speak->comments . $config->title_separator . $config->manager->title,
+        'pages' => $comments,
         'offset' => $offset,
-        'responses' => $comments,
         'pagination' => Navigator::extract(Get::comments('DESC', "", 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/comment'),
         'cargo' => 'cargo.comment.php'
     ));
-    Shield::lot('segment', 'comment')->attach('manager');
+    Shield::lot(array('segment' => 'comment'))->attach('manager');
 });
 
 
@@ -53,7 +53,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'response' => Mecha::A($comment),
+        'page' => $comment,
         'cargo' => 'repair.comment.php'
     ));
     $G = array('data' => Mecha::A($comment));
@@ -102,10 +102,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Guardian::kick($config->manager->slug . '/comment/repair/id:' . $id);
         }
     }
-    Shield::lot(array(
-        'segment' => 'comment',
-        'default' => $comment
-    ))->attach('manager');
+    Shield::lot(array('segment' => 'comment'))->attach('manager');
 });
 
 
@@ -123,7 +120,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
     }
     Config::set(array(
         'page_title' => $speak->deleting . ': ' . $speak->comment . $config->title_separator . $config->manager->title,
-        'response' => $comment,
+        'page' => $comment,
         'cargo' => 'kill.comment.php'
     ));
     if($request = Request::post()) {
@@ -141,5 +138,5 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
         Notify::warning($speak->notify_confirm_delete);
     }
-    Shield::lot('segment', 'comment')->attach('manager');
+    Shield::lot(array('segment' => 'comment'))->attach('manager');
 });

@@ -22,13 +22,12 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             'comment_notification_email' => false,
             'widget_include_css' => false,
             'widget_include_js' => false,
-            'html_minifier' => false,
             'html_parser' => 'HTML',
             'resource_versioning' => false
         );
         $pages = array(
             'index' => 'article',
-            'tag' => 'tagged',
+            'tag' => 'tag',
             'archive' => 'archive',
             'search' => 'search',
             'manager' => 'manager'
@@ -86,5 +85,5 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             Guardian::kick($request['manager']['slug'] . '/config');
         }
     }
-    Shield::lot('segment', 'config')->attach('manager');
+    Shield::lot(array('segment' => 'config'))->attach('manager');
 });

@@ -9,16 +9,16 @@
     <?php echo Form::hidden('token', $token); ?>
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($segment)); ?>
-      <?php if(isset($default->ip)): ?>
+      <?php if(isset($page->ip)): ?>
       <div class="grid-group">
         <span class="grid span-1 form-label">IP</span>
-        <span class="grid span-5 form-static"><strong><?php echo $default->ip; ?></strong></span>
+        <span class="grid span-5 form-static"><strong><?php echo $page->ip; ?></strong></span>
       </div>
       <?php endif; ?>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_name; ?></span>
         <span class="grid span-5">
-        <?php echo Form::text('name', Guardian::wayback('name', $default->name), null, array(
+        <?php echo Form::text('name', Guardian::wayback('name', $page->name), null, array(
             'class' => 'input-block'
         )); ?>
         </span>
@@ -26,7 +26,7 @@
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_email; ?></span>
         <span class="grid span-5">
-        <?php echo Form::text('email', Guardian::wayback('email', $default->email), null, array(
+        <?php echo Form::text('email', Guardian::wayback('email', $page->email), null, array(
             'class' => 'input-block'
         )); ?>
         </span>
@@ -34,7 +34,7 @@
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_url; ?></span>
         <span class="grid span-5">
-        <?php echo Form::text('url', Guardian::wayback('url', $default->url), null, array(
+        <?php echo Form::text('url', Guardian::wayback('url', $page->url), null, array(
             'class' => 'input-block'
         )); ?>
         </span>
@@ -46,13 +46,13 @@
             'pilot' => $speak->pilot,
             'passenger' => $speak->passenger,
             'intruder' => $speak->intruder
-        ), Guardian::wayback('status', $default->status)); ?>
+        ), Guardian::wayback('status', $page->status)); ?>
         </span>
       </label>
       <label class="grid-group">
         <span class="grid span-1 form-label"><?php echo $speak->comment_message; ?></span>
         <span class="grid span-5">
-        <?php echo Form::textarea('message', Guardian::wayback('message', $default->message_raw), null, array(
+        <?php echo Form::textarea('message', Guardian::wayback('message', $page->message_raw), null, array(
             'class' => array(
                 'textarea-block',
                 'textarea-expand',
@@ -65,7 +65,7 @@
       </label>
       <div class="grid-group">
         <span class="grid span-1 form-label"></span>
-        <span class="grid span-5"><?php echo Form::checkbox('content_type', HTML_PARSER, Guardian::wayback('content_type', $default->content_type) === HTML_PARSER, $speak->manager->title_html_parser); ?></span>
+        <span class="grid span-5"><?php echo Form::checkbox('content_type', HTML_PARSER, Guardian::wayback('content_type', $page->content_type) === HTML_PARSER, $speak->manager->title_html_parser); ?></span>
       </div>
       <?php Weapon::fire('unit_composer_1_after', array($segment)); ?>
     </div>
@@ -79,14 +79,14 @@
     </div>
     <hr>
     <p>
-      <?php if(Guardian::wayback('state', $default->state) === 'pending'): ?>
+      <?php if(Guardian::wayback('state', $page->state) === 'pending'): ?>
       <?php echo Jot::button('accept', $speak->approve, 'action:publish'); ?>
       <?php echo Jot::button('action:clock-o', $speak->update, 'action:save'); ?>
       <?php else: ?>
       <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
       <?php echo Jot::button('action:history', $speak->unapprove, 'action:save'); ?>
       <?php endif; ?>
-      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/comment/kill/id:' . Guardian::wayback('id', $default->id)); ?>
+      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/comment/kill/id:' . Guardian::wayback('id', $page->id)); ?>
     </p>
   </form>
 </div>

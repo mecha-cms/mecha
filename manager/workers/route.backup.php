@@ -45,7 +45,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
         'page_title' => $speak->backup . '/' . $speak->restore . $config->title_separator . $config->manager->title,
         'cargo' => 'cargo.' . $segment . '.php'
     ));
-    Shield::lot('segment', $segment)->attach('manager');
+    Shield::lot(array('segment' => $segment))->attach('manager');
 });
 
 

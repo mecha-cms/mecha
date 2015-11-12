@@ -153,7 +153,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $info['title'] . '</strong>'));
     }
-    Shield::lot('segment', 'plugin')->attach('manager');
+    Shield::lot(array('segment' => 'plugin'))->attach('manager');
 });
 
 

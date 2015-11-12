@@ -105,7 +105,6 @@
     <div class="grid-group">
       <span class="grid span-2"></span>
       <span class="grid span-4">
-        <div><?php echo Form::checkbox('html_minifier', 'true', Guardian::wayback('html_minifier', $config->html_minifier), $speak->manager->title_html_minifier); ?></div>
         <div><?php echo Form::checkbox('resource_versioning', 'true', Guardian::wayback('resource_versioning', $config->resource_versioning), $speak->manager->title_resource_versioning); ?></div>
         <div><?php echo Form::checkbox('html_parser', HTML_PARSER, Guardian::wayback('html_parser', $config->html_parser) === HTML_PARSER, $speak->manager->title_html_parser); ?></div>
       </span>

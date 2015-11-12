@@ -13,5 +13,5 @@ Weapon::add('shield_before', function() {
         'content' => $content
     );
     Config::set('page', array_merge($o, array('cargo' => $cargo))); // < 1.2.0
-    Shield::lot('page', (object) $o);
+    Shield::lot(array('page' => (object) $o));
 });

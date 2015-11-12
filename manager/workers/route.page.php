@@ -20,12 +20,12 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
     }
     Config::set(array(
         'page_title' => $speak->pages . $config->title_separator . $config->manager->title,
-        'offset' => $offset,
         'pages' => $pages,
+        'offset' => $offset,
         'pagination' => Navigator::extract(Get::pages('DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/page'),
         'cargo' => 'cargo.page.php'
     ));
-    Shield::lot('segment', 'page')->attach('manager');
+    Shield::lot(array('segment' => 'page'))->attach('manager');
 });
 
 
@@ -36,7 +36,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
 
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
     Config::set('cargo', 'repair.page.php');
-    if($id && $page = Get::page($id, array('content', 'excerpt', 'tags', 'comments'))) {
+    if($id && $page = Get::page($id, array('content', 'tags'))) {
         $extension_o = $page->state === 'published' ? '.txt' : '.draft';
         if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
             Shield::abort();
@@ -48,16 +48,13 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             $page->css_raw = $config->defaults->page_css;
             $page->js_raw = $config->defaults->page_js;
         }
-        // Remove automatic page description data from page composer
+        // Remove fake page description data from page composer
         $test = explode(SEPARATOR, str_replace("\r", "", file_get_contents($page->path)), 2);
         if(strpos($test[0], "\n" . 'Description' . S . ' ') === false) {
             $page->description = "";
         }
         unset($test);
-        Config::set(array(
-            'page_title' => $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title,
-            'page' => Mecha::A($page)
-        ));
+        $title = $speak->editing . ': ' . $page->title . $config->title_separator . $config->manager->title;
     } else {
         if($id !== false) {
             Shield::abort(); // File not found!
@@ -78,13 +75,14 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             'js_raw' => $config->defaults->page_js,
             'fields' => array()
         ));
-        Config::set(array(
-            'page_title' => Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title,
-            'page' => Mecha::A($page)
-        ));
+        $title = Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title;
     }
     $G = array('data' => Mecha::A($page));
-    Config::set('html_parser', $page->content_type);
+    Config::set(array(
+        'page_title' => Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title,
+        'page' => $page,
+        'html_parser' => $page->content_type
+    ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $task_connect = $task_connect_page = $page;
@@ -138,10 +136,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
         echo Asset::javascript('manager/assets/sword/editor.compose.js', "", 'sword/editor.compose.min.js');
     }, 11);
-    Shield::lot(array(
-        'segment' => 'page',
-        'default' => $page
-    ))->attach('manager');
+    Shield::lot(array('segment' => 'page'))->attach('manager');
 });
 
 
@@ -151,7 +146,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
  */
 
 Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if( ! $page = Get::page($id, array('comments'))) {
+    if( ! $page = Get::page($id, array('content', 'tags'))) {
         Shield::abort();
     }
     if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
@@ -178,5 +173,5 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $page->title . '</strong>'));
         Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->page)));
     }
-    Shield::lot('segment', 'page')->attach('manager');
+    Shield::lot(array('segment' => 'page'))->attach('manager');
 });

@@ -4,13 +4,13 @@ $fields = Get::state_field($segment);
 
 Weapon::fire('unit_composer_3_before', array($segment, $fields));
 
-if( ! isset($default->fields)) {
-    $default->fields = array();
+if( ! isset($page->fields)) {
+    $page->fields = array();
 }
 
 if( ! empty($fields)) {
     $html = "";
-    $field = Guardian::wayback('fields', Mecha::A($default->fields));
+    $field = Guardian::wayback('fields', Mecha::A($page->fields));
     foreach($fields as $key => $value) {
         if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
