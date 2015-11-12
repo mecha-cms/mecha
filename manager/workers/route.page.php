@@ -35,8 +35,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
  */
 
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
-    Config::set('cargo', 'repair.page.php');
-    if($id && $page = Get::page($id, array('content', 'tags'))) {
+    if($id && $page = Get::page($id, array('content', 'excerpt', 'tags'))) {
         $extension_o = $page->state === 'published' ? '.txt' : '.draft';
         if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
             Shield::abort();
@@ -81,7 +80,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     Config::set(array(
         'page_title' => Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title,
         'page' => $page,
-        'html_parser' => $page->content_type
+        'html_parser' => $page->content_type,
+        'cargo' => 'repair.page.php'
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
@@ -146,7 +146,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
  */
 
 Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if( ! $page = Get::page($id, array('content', 'tags'))) {
+    if( ! $page = Get::page($id, array('content', 'excerpt', 'tags'))) {
         Shield::abort();
     }
     if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {

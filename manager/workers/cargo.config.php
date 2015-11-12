@@ -95,6 +95,12 @@
       <?php echo Form::text('excerpt_tail', Guardian::wayback('excerpt_tail', $config->excerpt_tail)); ?>
       </span>
     </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_id; ?></span>
+      <span class="grid span-4">
+      <?php echo Form::text('excerpt_id', Guardian::wayback('excerpt_id', $config->excerpt_id)); ?>
+      </span>
+    </label>
     <div class="grid-group">
       <span class="grid span-2"></span>
       <div class="grid span-4">

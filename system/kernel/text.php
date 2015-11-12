@@ -109,20 +109,20 @@ class Text extends Base {
      *
      */
 
-    public static function toPage($text, $parse_content = 'content', $FP = 'page:') {
+    public static function toPage($text, $content = 'content', $FP = 'page:', $data = null) {
         $results = array();
-        $c = $parse_content !== false ? $parse_content : 'content';
+        $c = $content !== false ? $content : 'content';
         $FP = is_string($FP) && trim($FP) !== "" ? $FP : false;
-        if( ! $parse_content) {
+        if( ! $content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
                 foreach(explode("\n", $buffer) as $header) {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
+                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
                     if($FP) {
-                        $value = Filter::apply($FP . $key, $value);
+                        $value = Filter::apply($FP . $key, $value, $data);
                     }
                     $results[$key] = $value;
                 }
@@ -137,9 +137,9 @@ class Text extends Base {
                         $field = explode(S, $header, 2);
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
-                        $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
+                        $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
                         if($FP) {
-                            $value = Filter::apply($FP . $key, $value);
+                            $value = Filter::apply($FP . $key, $value, $data);
                         }
                         $results[$key] = $value;
                     }
@@ -162,64 +162,59 @@ class Text extends Base {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))));
+                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
                     if($FP) {
-                        $value = Filter::apply($FP . $key, $value);
+                        $value = Filter::apply($FP . $key, $value, $data);
                     }
                     $results[$key] = $value;
                 }
                 $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
             }
         }
-
-        /**
-         * NOTES: The `content_type` field is very specific and the name
-         * cannot be dynamically changed as you might think that I have
-         * to replace that `$results['content_type']` with `$results[$c . '_type']`.
-         * The `content` field is created from the second explosion which is not
-         * came from any field in the page header, but the `content_type` is created
-         * purely by the field in the page header called `Content Type`.
-         */
-
+        // NOTES: The `content_type` field is very specific and the name
+        // cannot be dynamically changed as you might think that I have
+        // to replace that `$results['content_type']` with `$results[$c . '_type']`.
+        // The `content` field is created from the second explosion which is not
+        // came from any field in the page header, but the `content_type` is created
+        // purely by the field in the page header called `Content Type`.
         $parse = ! isset($results['content_type']) || $results['content_type'] === HTML_PARSER;
-
         if(isset($results[$c . '_raw'])) {
             $content_extra = explode(SEPARATOR, $results[$c . '_raw']);
             if(count($content_extra) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_extra as $k => $v) {
                     $v = self::DS(trim($v));
-                    $v = Filter::apply($c . '_raw', $v, $k + 1);
+                    $v = Filter::apply($c . '_raw', $v, $data, $k + 1);
                     if($FP) {
-                        $v = Filter::apply($FP . $c . '_raw', $v, $k + 1);
+                        $v = Filter::apply($FP . $c . '_raw', $v, $data, $k + 1);
                     }
                     $results[$c . '_raw'][$k] = $v;
-                    $v = Filter::apply('shortcode', $v, $k + 1);
+                    $v = Filter::apply('shortcode', $v, $data, $k + 1);
                     if($FP) {
-                        $v = Filter::apply($FP . 'shortcode', $v, $k + 1);
+                        $v = Filter::apply($FP . 'shortcode', $v, $data, $k + 1);
                     }
-                    $vv = $parse && $parse_content ? Text::parse($v, '->html') : $v;
-                    $vv = Filter::apply($c, $vv, $k + 1);
+                    $vv = $parse && $content ? Text::parse($v, '->html') : $v;
+                    $vv = Filter::apply($c, $vv, $data, $k + 1);
                     if($FP) {
-                        $vv = Filter::apply($FP . $c, $vv, $k + 1);
+                        $vv = Filter::apply($FP . $c, $vv, $data, $k + 1);
                     }
                     $results[$c][$k] = $vv;
                 }
             } else {
                 $v = self::DS($results[$c . '_raw']);
-                $v = Filter::apply($c . '_raw', $v, 1);
+                $v = Filter::apply($c . '_raw', $v, $data, 1);
                 if($FP) {
-                    $v = Filter::apply($FP . $c . '_raw', $v, 1);
+                    $v = Filter::apply($FP . $c . '_raw', $v, $data, 1);
                 }
                 $results[$c . '_raw'] = $v;
-                $v = Filter::apply('shortcode', $v, 1);
+                $v = Filter::apply('shortcode', $v, $data, 1);
                 if($FP) {
-                    $v = Filter::apply($FP . 'shortcode', $v, 1);
+                    $v = Filter::apply($FP . 'shortcode', $v, $data, 1);
                 }
-                $v = $parse && $parse_content ? Text::parse($v, '->html') : $v;
-                $v = Filter::apply($c, $v, 1);
+                $v = $parse && $content ? Text::parse($v, '->html') : $v;
+                $v = Filter::apply($c, $v, $data, 1);
                 if($FP) {
-                    $v = Filter::apply($FP . $c, $v, 1);
+                    $v = Filter::apply($FP . $c, $v, $data, 1);
                 }
                 $results[$c] = $v;
             }
@@ -408,12 +403,12 @@ class Text extends Base {
 
     // Encode the bogus `SEPARATOR`s (internal only)
     public static function ES($text) {
-        return str_replace(SEPARATOR, SEPARATOR_ENCODED, $text);
+        return str_replace(SEPARATOR, Text::parse(SEPARATOR, '->ascii'), $text);
     }
 
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
-        return str_replace(SEPARATOR_ENCODED, SEPARATOR, $text);
+        return str_replace(Text::parse(SEPARATOR, '->ascii'), SEPARATOR, $text);
     }
 
 }

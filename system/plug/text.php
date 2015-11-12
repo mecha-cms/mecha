@@ -177,7 +177,3 @@ Text::parser('to_snake_case', function($input, $join = '_', $lower = true) {
 Text::parser('to_title', function($input) {
     return ucwords(Text::parse($input, '->text'));
 });
-
-
-// internal only
-define('SEPARATOR_ENCODED', Text::parse(SEPARATOR, '->ascii'));

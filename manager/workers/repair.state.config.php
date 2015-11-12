@@ -15,7 +15,7 @@ return array(
     'resource_versioning' => true,
     'excerpt_length' => 300,
     'excerpt_tail' => '&hellip;',
-    'html_minifier' => true,
+    'excerpt_id' => 'more:%d',
     'html_parser' => HTML_PARSER,
     'widget_include_css' => true,
     'widget_include_js' => true,

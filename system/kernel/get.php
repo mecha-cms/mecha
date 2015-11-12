@@ -654,7 +654,8 @@ class Get extends Base {
             $path = self::postPath($path, $folder); // By page slug, ID or time
         }
         if( ! $path) return false;
-        $results = self::postExtract($path) + Text::toPage($path, false, $FP);
+        $results = self::postExtract($path);
+        $results = $results + Text::toPage($path, false, $FP, $results);
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url', $results);
         if( ! isset($results['link'])) {
@@ -728,14 +729,14 @@ class Get extends Base {
         // RULES: Do not do any tags looping, content parsing
         // and external file requesting if it has been marked as
         // the excluded field(s). For better performance.
-        $results = $results + Text::toPage(File::open($results['path'])->read(), (isset($excludes['content']) ? false : 'content'), $FP);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), isset($excludes['content']) ? false : 'content', $FP, $results);
         $content = isset($results['content_raw']) ? $results['content_raw'] : "";
         $time = str_replace(array(' ', ':'), '-', $results['time']);
         $e = File::E($results['path']);
         // Custom post content with PHP file, named as the post slug
-        if($php_file = File::exist(File::D($results['path']) . DS . $results['slug'] . '.php')) {
+        if($php = File::exist(File::D($results['path']) . DS . $results['slug'] . '.php')) {
             ob_start();
-            include $php_file;
+            include $php;
             $results['content'] = ob_get_clean();
         }
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
@@ -747,24 +748,26 @@ class Get extends Base {
             $results['author'] = self::AMF($config->author->name, $FP, 'author', $results);
         }
         if( ! isset($results['description'])) {
-            $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
-            $results['description'] = self::AMF($summary, $FP, 'description', $results);
+            $curt = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
+            $results['description'] = self::AMF($curt, $FP, 'description', $results);
         }
         $results['excerpt'] = "";
-        $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
-        $content_test = $content_test['content'];
-        $content_test = is_array($content_test) ? implode("", $content_test) : $content_test;
-        // Manual post excerpt with `<!-- cut+ "Read More" -->`
-        if(strpos($content_test, '<!-- cut+ ') !== false) {
-            preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
-            $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
-            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#more:' . $results['id'] . '">' . $more . '</a></p><!-- cut -->', $content_test);
-        }
-        // ... or `<!-- cut -->`
-        if(strpos($content_test, '<!-- cut -->') !== false) {
-            $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt', $results);
-            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="more:' . $results['id'] . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
+        if($content !== "") {
+            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP, $results) : $results;
+            $exc = $exc['content'];
+            $exc = is_array($exc) ? implode("", $exc) : $exc;
+            // Manual post excerpt with `<!-- cut+ "Read More" -->`
+            if(strpos($exc, '<!-- cut+ ') !== false) {
+                preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $exc, $matches);
+                $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
+                $exc = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#' . sprintf($config->excerpt_id, $results['id']) . '">' . $more . '</a></p><!-- cut -->', $exc);
+            }
+            // ... or `<!-- cut -->`
+            if(strpos($exc, '<!-- cut -->') !== false) {
+                $parts = explode('<!-- cut -->', $exc, 2);
+                $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt', $results);
+                $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="' . sprintf($config->excerpt_id, $results['id']) . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
+            }
         }
         // Post Tags
         if( ! isset($excludes['tags'])) {
@@ -1032,7 +1035,8 @@ class Get extends Base {
             $path = self::responsePath($path, $folder); // By response ID or time
         }
         if( ! $path) return false;
-        $results = self::responseExtract($path) + Text::toPage($path, false, $FP);
+        $results = self::responseExtract($path);
+        $results = $results + Text::toPage($path, false, $FP, $results);
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
         $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url', $results);
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
@@ -1094,7 +1098,7 @@ class Get extends Base {
         }
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
-        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP, $results);
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {

@@ -23,7 +23,7 @@
  *        'Text 2' => null
  *    );
  *
- *    Tree::$config['element']['trunk'] = 'ul';
+ *    Tree::$config['trunk'] = 'ul';
  *    echo Tree::grow($seeds);
  *
  * --------------------------------------------------------------------
