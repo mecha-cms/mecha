@@ -3,7 +3,7 @@
 <div class="blog-main posts">
   <?php if($config->total_articles > 0): ?>
   <?php foreach($articles as $article): ?>
-  <?php Shield::lot('article', $article); ?>
+  <?php Shield::lot(array('article' => $article)); ?>
   <article class="post post-index" id="post-<?php echo $article->id; ?>">
     <?php Shield::chunk('article.header.index'); ?>
     <?php Shield::chunk('article.body.index'); ?>

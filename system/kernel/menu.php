@@ -27,7 +27,7 @@ class Menu extends Base {
 
     public static $config = array(
         'classes' => array(
-            'parent' => false,
+            'parent' => 'parent',
             'child' => 'child child-%d',
             'current' => 'current',
             'separator' => 'separator'

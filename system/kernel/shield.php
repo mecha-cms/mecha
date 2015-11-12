@@ -19,8 +19,6 @@ class Shield extends Base {
             'article' => $config->article,
             'pages' => $config->pages,
             'page' => $config->page,
-            'responses' => $config->responses,
-            'response' => $config->response,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
             'token' => $token,
@@ -47,7 +45,8 @@ class Shield extends Base {
      */
 
     public static function path($name, $fallback = false) {
-        $name = File::path($name) . (File::E($name, "") !== 'php' ? '.php' : "");
+        $e = File::E($name, "") !== 'php' ? '.php' : "";
+        $name = File::path($name) . $e;
         // Full path, be quick!
         if(strpos($name, ROOT) === 0) {
             return File::exist($name, $fallback);
@@ -69,10 +68,6 @@ class Shield extends Base {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    Shield::lot('foo', 'bar')->attach('file');
-     *
-     * ----------------------------------------------------------
-     *
      *    Shield::lot(array(
      *        'foo' => 'bar',
      *        'baz' => 'qux'
@@ -80,18 +75,18 @@ class Shield extends Base {
      *
      * ----------------------------------------------------------
      *
+     *    $foo = Shield::lot('foo');
+     *
+     * ----------------------------------------------------------
+     *
      */
 
-    public static function lot($key = null, $value = "") {
+    public static function lot($key = null, $fallback = false) {
         if(is_null($key)) return self::$lot;
-        if(is_array($key)) {
-            self::$lot = array_merge(self::$lot, $key);
-        } else {
-            if(func_num_args() === 1) {
-                return isset(self::$lot[$key]) ? self::$lot[$key] : false;
-            }
-            self::$lot[$key] = $value;
+        if( ! is_array($key)) {
+            return isset(self::$lot[$key]) ? self::$lot[$key] : $fallback;
         }
+        self::$lot = array_merge(self::$lot, $key);
         return new static;
     }
 

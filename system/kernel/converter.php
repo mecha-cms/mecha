@@ -346,7 +346,7 @@ class Converter extends Base {
 
     public static function phpEval($input) {
         ob_start();
-        extract(Shield::cargo()); // include default variables ...
+        extract(Shield::lot()); // include default variables ...
         eval($input);
         return ob_get_clean();
     }

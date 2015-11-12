@@ -59,4 +59,4 @@ Filter::add('chunk:output', function($content, $path) use($config, $speak) {
 });
 
 // Exclude these fields on index (index, tag, archive, search) page ...
-Config::set('article_fields_exclude', array('content', 'content_raw', 'css', 'js', 'comments'));
+Config::set('article_fields_exclude', array('content', 'content_raw'));

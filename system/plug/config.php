@@ -29,7 +29,7 @@ Config::plug('load', function() {
 
     $config['page_title'] = $config['title'];
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
-    $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['responses'] = $config['response'] = $config['files'] = $config['file'] = $config['pagination'] = $config['cargo'] = false;
+    $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;
 
     $config['total_articles'] = count(glob(ARTICLE . DS . '*.txt', GLOB_NOSORT));
     $config['total_pages'] = count(glob(PAGE . DS . '*.txt', GLOB_NOSORT));
@@ -132,10 +132,10 @@ Config::plug('speak', function($key = "", $vars = array()) {
         $key = File::path(str_replace('file:', "", $key));
         if($file = File::exist(LANGUAGE . DS . Config::get('language') . DS . 'yapping' . DS . $key . '.txt')) {
             $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-            return vsprintf($wizard['content']);
+            return vsprintf($wizard['content'], $vars);
         } else if($file = File::exist(ROOT . DS . $key . '.txt')) {
             $wizard = Text::toPage(File::open($file)->read(), 'content', 'wizard:');
-            return vsprintf($wizard['content']);
+            return vsprintf($wizard['content'], $vars);
         }
         return "";
     }
