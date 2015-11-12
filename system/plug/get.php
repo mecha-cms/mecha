@@ -21,10 +21,10 @@ Filter::add('shield:lot', function($data) {
                 $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
             }
             $results->comments = Get::AMF($results->comments, $FP, 'comments', $results);
-            unset($comments);
         }
         $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments', $results);
         $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
+        unset($comments);
         // Include custom CSS and JS data
         $results->css = $results->js = $results->css_raw = $results->js_raw = "";
         if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {

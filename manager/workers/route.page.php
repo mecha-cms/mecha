@@ -78,7 +78,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
     }
     $G = array('data' => Mecha::A($page));
     Config::set(array(
-        'page_title' => Config::speak('manager.title_new_', $speak->page) . $config->title_separator . $config->manager->title,
+        'page_title' => $title,
         'page' => $page,
         'html_parser' => $page->content_type,
         'cargo' => 'repair.page.php'

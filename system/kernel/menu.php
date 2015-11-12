@@ -24,6 +24,7 @@
 class Menu extends Base {
 
     protected static $menus = array();
+    protected static $menus_x = array();
 
     public static $config = array(
         'classes' => array(
@@ -36,12 +37,16 @@ class Menu extends Base {
 
     // Add
     public static function add($id, $array = array()) {
-        self::$menus[get_called_class()][$id] = $array;
+        $c = get_called_class();
+        if( ! isset(self::$menus_x[$c][$id])) {
+            self::$menus[$c][$id] = $array;
+        }
     }
 
     // Remove
     public static function remove($id = null) {
         $c = get_called_class();
+        self::$menus_x[$c][$id] = 1;
         if( ! is_null($id)) {
             unset(self::$menus[$c][$id]);
         } else {
