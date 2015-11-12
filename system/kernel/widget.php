@@ -194,7 +194,7 @@ class Widget {
         }
         $i = 0;
         foreach(array_count_values($counters) as $id => $count) {
-            $tag = Get::tag($id);
+            $tag = Get::tag('id:' . $id);
             if($tag && $id !== 0) {
                 $tags[$i] = array(
                     'id' => $id,

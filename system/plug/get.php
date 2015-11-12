@@ -15,16 +15,16 @@ Filter::add('shield:lot', function($data) {
         // Include comment(s) data
         if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'), COMMENT)) {
             $results->comments = array();
-            $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments');
-            $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+            $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments', $results);
+            $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
             foreach($comments as $comment) {
                 $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
             }
-            $results->comments = Get::AMF($results->comments, $FP, 'comments');
+            $results->comments = Get::AMF($results->comments, $FP, 'comments', $results);
             unset($comments);
         }
-        $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments');
-        $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text');
+        $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments', $results);
+        $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
         // Include custom CSS and JS data
         $results->css = $results->js = $results->css_raw = $results->js_raw = "";
         if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
@@ -40,12 +40,12 @@ Filter::add('shield:lot', function($data) {
             // css
             // page:css
             // custom:css
-            $css = Get::AMF($css, $FP, 'css_raw');
-            $results->css_raw = Filter::apply('custom:css_raw', $css);
-            $css = Get::AMF($css, $FP, 'shortcode');
-            $css = Filter::apply('custom:shortcode', $css);
-            $css = Get::AMF($css, $FP, 'css');
-            $results->css = Filter::apply('custom:css', $css);
+            $css = Get::AMF($css, $FP, 'css_raw', $results);
+            $results->css_raw = Filter::apply('custom:css_raw', $css, $results);
+            $css = Get::AMF($css, $FP, 'shortcode', $results);
+            $css = Filter::apply('custom:shortcode', $css, $results);
+            $css = Get::AMF($css, $FP, 'css', $results);
+            $results->css = Filter::apply('custom:css', $css, $results);
             // js_raw
             // page:js_raw
             // custom:js_raw
@@ -55,12 +55,12 @@ Filter::add('shield:lot', function($data) {
             // js
             // page:js
             // custom:js
-            $js = Get::AMF($js, $FP, 'js_raw');
-            $results->js_raw = Filter::apply('custom:js_raw', $js);
-            $js = Get::AMF($js, $FP, 'shortcode');
-            $js = Filter::apply('custom:shortcode', $js);
-            $js = Get::AMF($js, $FP, 'js');
-            $results->js = Filter::apply('custom:js', $js);
+            $js = Get::AMF($js, $FP, 'js_raw', $results);
+            $results->js_raw = Filter::apply('custom:js_raw', $js, $results);
+            $js = Get::AMF($js, $FP, 'shortcode', $results);
+            $js = Filter::apply('custom:shortcode', $js, $results);
+            $js = Get::AMF($js, $FP, 'js', $results);
+            $results->js = Filter::apply('custom:js', $js, $results);
         }
         $data[$config->page_type] = $results;
         unset($results);

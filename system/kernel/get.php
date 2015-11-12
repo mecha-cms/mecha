@@ -3,10 +3,10 @@
 class Get extends Base {
 
     // Apply the missing filter(s)
-    public static function AMF($data, $FP = "", $F) {
-        $output = Filter::apply($F, $data);
+    public static function AMF($data, $FP = "", $F, $param = null) {
+        $output = Filter::apply($F, $data, $param);
         if(is_string($FP) && trim($FP) !== "") {
-            $output = Filter::apply($FP . $F, $output);
+            $output = Filter::apply($FP . $F, $output, $param);
         }
         return $output;
     }
@@ -338,10 +338,10 @@ class Get extends Base {
         $tags = Mecha::eat(self::state_tag())->order($order, $sorter)->vomit();
         foreach($tags as $k => $v) {
             $tags[$k] = (object) array(
-                'id' => self::AMF($v['id'], 'tag:', 'id'),
-                'name' => self::AMF($v['name'], 'tag:', 'name'),
-                'slug' => self::AMF($v['slug'], 'tag:', 'slug'),
-                'description' => self::AMF($v['description'], 'tag:', 'description')
+                'id' => self::AMF($v['id'], 'tag:', 'id', $tags),
+                'name' => self::AMF($v['name'], 'tag:', 'name', $tags),
+                'slug' => self::AMF($v['slug'], 'tag:', 'slug', $tags),
+                'description' => self::AMF($v['description'], 'tag:', 'description', $tags)
             );
         }
         return $tags;
@@ -363,9 +363,25 @@ class Get extends Base {
 
     public static function tag($filter, $output = null, $fallback = false) {
         $tags = self::tags();
-        for($i = 0, $count = count($tags); $i < $count; ++$i) {
-            if((is_numeric($filter) && (int) $filter === (int) $tags[$i]->id) || (is_string($filter) && (string) $filter === (string) $tags[$i]->name) || (is_string($filter) && (string) $filter === (string) $tags[$i]->slug)) {
-                return is_null($output) ? $tags[$i] : (isset($tags[$i]->{$output}) ? $tags[$i]->{$output} : $fallback);
+        // alternate 2: `Get::tag('id:2', 'slug', false)`
+        if(strpos($filter, ':') !== false) {
+            list($key, $value) = explode(':', $filter, 2);
+            foreach($tags as $k => $v) {
+                $value = Converter::strEval($value);
+                if(isset($tags[$k]->{$key}) && $tags[$k]->{$key} === $value) {
+                    return is_null($output) ? $tags[$k] : (isset($tags[$k]->{$output}) ? $tags[$k]->{$output} : $fallback);
+                }
+            }
+        // alternate 1: `Get::tag(2, 'slug', false)
+        } else {
+            foreach($tags as $k => $v) {
+                if(
+                    (is_numeric($filter) && (int) $filter === (int) $tags[$k]->id) || // by ID
+                    (is_string($filter) && (string) $filter === (string) $tags[$k]->slug) || // by slug
+                    (is_string($filter) && (string) $filter === (string) $tags[$k]->name) // by name
+                ) {
+                    return is_null($output) ? $tags[$k] : (isset($tags[$k]->{$output}) ? $tags[$k]->{$output} : $fallback);
+                }
             }
         }
         return $fallback;
@@ -602,8 +618,8 @@ class Get extends Base {
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
             $results = self::postExtract($path);
             $parts = explode(S, $buffer, 2);
-            $results['url'] = self::AMF(Config::get('url') . $connector . $results['slug'], $FP, 'url');
-            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title');
+            $results['url'] = self::AMF(Config::get('url') . $connector . $results['slug'], $FP, 'url', $results);
+            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title', $results);
             return Mecha::O($results);
         }
         return false;
@@ -639,16 +655,16 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::postExtract($path) + Text::toPage($path, false, $FP);
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url', $results);
         if( ! isset($results['link'])) {
-            $results['link'] = self::AMF("", $FP, 'link');
+            $results['link'] = self::AMF("", $FP, 'link', $results);
         }
         if( ! isset($results['author'])) {
-            $results['author'] = self::AMF($config->author->name, $FP, 'author');
+            $results['author'] = self::AMF($config->author->name, $FP, 'author', $results);
         }
         if( ! isset($results['description'])) {
-            $results['description'] = self::AMF("", $FP, 'description');
+            $results['description'] = self::AMF("", $FP, 'description', $results);
         }
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();
@@ -660,7 +676,7 @@ class Get extends Base {
                 if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
-                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key, $results);
             }
             $results['fields'] = $init;
         }
@@ -722,17 +738,17 @@ class Get extends Base {
             include $php_file;
             $results['content'] = ob_get_clean();
         }
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url', $results);
         if( ! isset($results['link'])) {
-            $results['link'] = self::AMF("", $FP, 'link');
+            $results['link'] = self::AMF("", $FP, 'link', $results);
         }
         if( ! isset($results['author'])) {
-            $results['author'] = self::AMF($config->author->name, $FP, 'author');
+            $results['author'] = self::AMF($config->author->name, $FP, 'author', $results);
         }
         if( ! isset($results['description'])) {
             $summary = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
-            $results['description'] = self::AMF($summary, $FP, 'description');
+            $results['description'] = self::AMF($summary, $FP, 'description', $results);
         }
         $results['excerpt'] = "";
         $content_test = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP) : $results;
@@ -742,25 +758,25 @@ class Get extends Base {
         if(strpos($content_test, '<!-- cut+ ') !== false) {
             preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $content_test, $matches);
             $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
-            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#read-more:' . $results['id'] . '">' . $more . '</a></p><!-- cut -->', $content_test);
+            $content_test = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#more:' . $results['id'] . '">' . $more . '</a></p><!-- cut -->', $content_test);
         }
         // ... or `<!-- cut -->`
         if(strpos($content_test, '<!-- cut -->') !== false) {
             $parts = explode('<!-- cut -->', $content_test, 2);
-            $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt');
-            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="read-more:' . $results['id'] . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
+            $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt', $results);
+            $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="more:' . $results['id'] . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
         }
         // Post Tags
         if( ! isset($excludes['tags'])) {
             $tags = array();
             foreach($results['kind'] as $id) {
-                $tags[] = self::tag($id);
+                $tags[] = self::tag('id:' . $id);
             }
-            $results['tags'] = self::AMF(Mecha::eat($tags)->order('ASC', 'name')->vomit(), $FP, 'tags');
+            $results['tags'] = self::AMF(Mecha::eat($tags)->order('ASC', 'name')->vomit(), $FP, 'tags', $results);
         }
         // Post Images
-        $results['images'] = self::AMF(self::imagesURL($results['content']), $FP, 'images');
-        $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image');
+        $results['images'] = self::AMF(self::imagesURL($results['content']), $FP, 'images', $results);
+        $results['image'] = self::AMF(isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $FP, 'image', $results);
         // Custom Field(s)
         if( ! isset($excludes['fields'])) {
             // Initialize custom field(s) with the default value(s) so that
@@ -780,7 +796,7 @@ class Get extends Base {
                     if(is_array($value) && isset($value['type'])) {
                         $value = isset($value['value']) ? $value['value'] : false;
                     }
-                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key, $results);
                 }
             }
             $results['fields'] = $init;
@@ -1017,8 +1033,8 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::responseExtract($path) + Text::toPage($path, false, $FP);
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
-        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
+        $results['url'] = self::AMF($config->url . $connector . $results['slug'], $FP, 'url', $results);
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();
         foreach($fields as $key => $value) {
@@ -1029,7 +1045,7 @@ class Get extends Base {
                 if(is_array($value) && isset($value['type'])) {
                     $value = isset($value['value']) ? $value['value'] : false;
                 }
-                $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+                $init[$key] = self::AMF($value, $FP, 'fields.' . $key, $results);
             }
             $results['fields'] = $init;
         }
@@ -1077,7 +1093,7 @@ class Get extends Base {
             $results = $reference;
         }
         if( ! $results || ! file_exists($results['path'])) return false;
-        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date');
+        $results['date'] = self::AMF(Date::extract($results['time']), $FP, 'date', $results);
         $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP);
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         if( ! isset($excludes['permalink'])) {
@@ -1086,10 +1102,10 @@ class Get extends Base {
             } else {
                 $link = '#';
             }
-            $results['permalink'] = self::AMF($link, $FP, 'permalink');
+            $results['permalink'] = self::AMF($link, $FP, 'permalink', $results);
         }
         if( ! isset($excludes['url']) && ! isset($results['url'])) {
-            $results['url'] = self::AMF('#', $FP, 'url');
+            $results['url'] = self::AMF('#', $FP, 'url', $results);
         }
         if( ! isset($excludes['fields'])) {
             $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
@@ -1102,7 +1118,7 @@ class Get extends Base {
                     if(is_array($value) && isset($value['type'])) {
                         $value = isset($value['value']) ? $value['value'] : false;
                     }
-                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key);
+                    $init[$key] = self::AMF($value, $FP, 'fields.' . $key, $results);
                 }
                 $results['fields'] = $init;
                 unset($fields, $init);

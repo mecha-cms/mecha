@@ -140,7 +140,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
  */
 
 Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
-    if( ! $tag = Get::tag($slug)) {
+    if( ! $tag = Get::tag('slug:' . $slug)) {
         Shield::abort('404-tag');
     }
     $articles = array();
@@ -465,7 +465,7 @@ Route::accept('/', function() use($config, $excludes) {
         }
         unset($files);
     } else {
-        $articles = false;
+        $articles = 'null';
     }
     Filter::add('pager:url', function($url) {
         return Filter::apply('index:url', $url);
