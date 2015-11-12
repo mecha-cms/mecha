@@ -66,10 +66,10 @@ class Widget {
                         }
                         $bar .= isset($v['url']) ? '</a>' : '</span>';
                     }
-                    $bars[] = Filter::apply('manager:bar.item', $bar);
+                    $bars[] = $bar;
                 }
             }
-            $html .= $T1 . Filter::apply('manager:bar', implode(' ', $bars)) . NL;
+            $html .= $T1 . implode(' ', $bars) . NL;
         }
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
