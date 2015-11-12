@@ -746,7 +746,6 @@ manager:
   title_resource_versioning: Enable Resource Versioning
 
   title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
-  title_html_minifier: Minify <abbr title="Hyper Text Markup Language">HTML</abbr> Output
   title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 
   title_widget_include_css: Include Default Widget&rsquo;s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
@@ -844,7 +843,7 @@ notify_confirm_page_leave: Are you sure you want to leave this page?
 notify_confirm_page_leave_: Are you sure you want to leave %s page?
 notify_confirm_delete: Are you sure you want to delete?
 notify_confirm_delete_: Are you sure you want to delete %s?
-notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of the %1$s.
+notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of %1$s.
 notify_confirm_maybe_you_mean: Maybe you mean %s
 
 notify_warning_intruder_detected: Intruder detected.

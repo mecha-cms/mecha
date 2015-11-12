@@ -9,7 +9,7 @@ Contact: /contact
 Result:
 
 ~~~ .html
-<ul>
+<ul class="parent">
   <li><a href="{{url.home}}">Home</a></li>
   <li><a href="{{url}}about">About</a></li>
   <li><a href="{{url}}contact">Contact</a></li>
@@ -31,13 +31,15 @@ Menu:
 Result:
 
 ~~~ .html
-<ul>
-  <li><a href="#">Menu</a>
-    <ul class="child-1">
+<ul class="parent">
+  <li class="ul">
+    <a href="#">Menu</a>
+    <ul class="child child-1">
       <li><a href="{{url}}submenu-1">Submenu 1</a></li>
       <li><a href="{{url}}submenu-2">Submenu 2</a></li>
-      <li><a href="#">Submenu 3</a>
-        <ul class="child-2">
+      <li class="ul">
+        <a href="#">Submenu 3</a>
+        <ul class="child child-2">
           <li><a href="{{url}}submenu-3-1">Submenu 3.1</a></li>
         </ul>
       </li>
@@ -57,9 +59,10 @@ Menu (/some-where):
 Result:
 
 ~~~ .html
-<ul>
-  <li><a href="{{url}}some-where">Menu</a>
-    <ul class="child-1">
+<ul class="parent">
+  <li class="ul">
+    <a href="{{url}}some-where">Menu</a>
+    <ul class="child child-1">
       <li><a href="{{url}}submenu-1">Submenu 1</a></li>
       <li><a href="{{url}}submenu-2">Submenu 2</a></li>
     </ul>
@@ -76,7 +79,7 @@ Menu: http://example.org
 Result:
 
 ~~~ .html
-<ul>
+<ul class="parent">
   <li><a href="http://example.org">Menu</a></li>
 </ul>
 ~~~

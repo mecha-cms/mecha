@@ -7,7 +7,7 @@ Version: 1.0.0
 
 > Reduce page size by detracting the HTML output.
 
-This plugin helps you to dispose some parts in the HTML markup of the page, which is actually not going to affect anything if we omit them, such as whitespaces and root domain in the URL.
+This plugin helps you to dispose some parts of the HTML markup in the page, which is actually not going to affect anything if you omit them, such as whitespaces and root domain in the URL.
 
 *[HTML]: Hyper Text Markup Language
 *[URL]: Uniform Resource Locator

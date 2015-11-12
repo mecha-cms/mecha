@@ -746,7 +746,6 @@ manager:
   title_resource_versioning: Aktifkan Versi Sumber Daya
 
   title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
-  title_html_minifier: Kompres Keluaran <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
