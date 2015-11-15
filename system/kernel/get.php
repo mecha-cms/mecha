@@ -478,8 +478,8 @@ class Get extends Base {
      *    Get::posts('DESC', 'lorem-ipsum');
      *
      *    // [5]. The Old Way(s)' Alias
-     *    Get::posts('DESC', 'word:lorem');
-     *    Get::posts('DESC', 'word:lorem-ipsum');
+     *    Get::posts('DESC', 'keyword:lorem');
+     *    Get::posts('DESC', 'keyword:lorem-ipsum');
      *
      * --------------------------------------------------------------------------
      *
@@ -533,7 +533,7 @@ class Get extends Base {
                         $results[] = $pages[$i];
                     }
                 }
-            } else { // if($key === 'word') {
+            } else { // if($key === 'keyword') {
                 for($i = 0; $i < $total_pages; ++$i) {
                     if(strpos(File::N($pages[$i]), $value) !== false) {
                         $results[] = $pages[$i];
@@ -619,7 +619,7 @@ class Get extends Base {
             $results = self::postExtract($path);
             $parts = explode(S, $buffer, 2);
             $results['url'] = self::AMF(Config::get('url') . $connector . $results['slug'], $FP, 'url', $results);
-            $results['title'] = self::AMF((isset($parts[1]) ? Text::DS(trim($parts[1])) : ""), $FP, 'title', $results);
+            $results['title'] = self::AMF((isset($parts[1]) ? Converter::DS(trim($parts[1])) : ""), $FP, 'title', $results);
             return Mecha::O($results);
         }
         return false;
@@ -748,25 +748,25 @@ class Get extends Base {
             $results['author'] = self::AMF($config->author->name, $FP, 'author', $results);
         }
         if( ! isset($results['description'])) {
-            $curt = Converter::curt($content, $config->excerpt_length, $config->excerpt_tail);
+            $curt = Converter::curt($content, $config->excerpt->length, $config->excerpt->tail);
             $results['description'] = self::AMF($curt, $FP, 'description', $results);
         }
         $results['excerpt'] = "";
         if($content !== "") {
-            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Text::ES($content), 'content', $FP, $results) : $results;
+            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, $results) : $results;
             $exc = $exc['content'];
             $exc = is_array($exc) ? implode("", $exc) : $exc;
             // Manual post excerpt with `<!-- cut+ "Read More" -->`
             if(strpos($exc, '<!-- cut+ ') !== false) {
                 preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $exc, $matches);
                 $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
-                $exc = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#' . sprintf($config->excerpt_id, $results['id']) . '">' . $more . '</a></p><!-- cut -->', $exc);
+                $exc = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#' . sprintf($config->excerpt->id, $results['id']) . '">' . $more . '</a></p><!-- cut -->', $exc);
             }
             // ... or `<!-- cut -->`
             if(strpos($exc, '<!-- cut -->') !== false) {
                 $parts = explode('<!-- cut -->', $exc, 2);
                 $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt', $results);
-                $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="' . sprintf($config->excerpt_id, $results['id']) . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
+                $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="' . sprintf($config->excerpt->id, $results['id']) . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
             }
         }
         // Post Tags
@@ -949,7 +949,7 @@ class Get extends Base {
                         $results[] = $responses[$i];
                     }
                 }
-            } else { // if($key === 'word') {
+            } else { // if($key === 'keyword') {
                 for($i = 0; $i < $total_responses; ++$i) {
                     if(strpos(File::N($responses[$i]), $value) !== false) {
                         $results[] = $responses[$i];

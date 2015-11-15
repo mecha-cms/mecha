@@ -41,7 +41,7 @@ class Widget {
                         $menus[$k] = $v;
                     } else {
                         $stack = isset($v['stack']) ? $v['stack'] : 10;
-                        $_k = (strpos($v['icon'], '<') === false ? '<i class="fa fa-fw fa-' . $v['icon'] . '"></i>' : $v['icon']) . ' <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : "");
+                        $_k = (strpos($v['icon'], '<') === false ? Jot::icon($v['icon'], 'fw') : $v['icon']) . ' <span class="label">' . $k . '</span>' . (isset($v['count']) && ($v['count'] === '&infin;' || (float) $v['count'] > 0) ? ' <span class="counter">' . $v['count'] . '</span>' : "");
                         $menus[$_k] = isset($v['url']) ? $v['url'] : null;
                     }
                 }
@@ -113,7 +113,7 @@ class Widget {
             foreach($archives as $year => $months) {
                 if(is_array($months)) {
                     $posts_count_per_year = 0;
-                    $expand = empty($query) ? $i === 0 : (int) substr($query, 0, 4) === (int) $year;
+                    $expand = $query ? (int) substr($query, 0, 4) === (int) $year : $i === 0;
                     foreach($months as $month) {
                         $posts_count_per_year += count($month);
                     }
@@ -403,7 +403,7 @@ class Widget {
         if($config->page_type !== 'article') {
             return self::randomPost($total);
         } else {
-            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', (array) $kind))) {
+            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', $kind))) {
                 return $html . $T1 . Config::speak('notify_empty', strtolower($speak->posts)) . NL . '</div>' . O_END;
             }
             if(count($files) <= 1) {

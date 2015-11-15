@@ -245,7 +245,7 @@ Filter::add('shortcode', function($content) use($config, $speak) {
             array('%s', '%S', '%i', '%f', '%b'),
             array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|ON|OFF|true|false|yes|no|on|off|1|0)\b'),
         $key);
-        $content = preg_replace('#(?<!`)' . $key . '(?!`)#', Converter::WD($value), $content);
+        $content = preg_replace('#(?<!`)' . $key . '(?!`)#', Converter::DW($value), $content);
     }
     if(strpos($content, '{{php}}') !== false) {
         $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]*?)(?<!`)\{\{\/php\}\}(?!`)#', function($matches) {

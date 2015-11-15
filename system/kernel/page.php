@@ -68,7 +68,7 @@ class Page extends Base {
             } else {
                 // Restrict user(s) from inputting the `SEPARATOR` constant
                 // to prevent mistake(s) in parsing the file content
-                $data[self::fix($k)] = Text::ES($v);
+                $data[self::fix($k)] = Converter::ES($v);
             }
         }
         Mecha::extend(self::$bucket, $data);
@@ -82,7 +82,7 @@ class Page extends Base {
         }
         // Restrict user(s) from inputting the `SEPARATOR` constant
         // to prevent mistake(s) in parsing the file content
-        $data = Text::ES($data);
+        $data = Converter::ES($data);
         self::$bucket_alt = trim(self::$bucket_alt) !== "" && is_null(self::$open) ? trim(self::$bucket_alt) . (trim($data) !== "" ? "\n\n" . SEPARATOR . "\n\n" . $data : "") : $data;
         return new static;
     }

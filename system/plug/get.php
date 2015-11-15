@@ -29,8 +29,8 @@ Filter::add('shield:lot', function($data) {
         $results->css = $results->js = $results->css_raw = $results->js_raw = "";
         if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
             $custom = explode(SEPARATOR, File::open($file)->read());
-            $css = isset($custom[0]) ? Text::DS(trim($custom[0])) : "";
-            $js = isset($custom[1]) ? Text::DS(trim($custom[1])) : "";
+            $css = isset($custom[0]) ? Converter::DS(trim($custom[0])) : "";
+            $js = isset($custom[1]) ? Converter::DS(trim($custom[1])) : "";
             // css_raw
             // page:css_raw
             // custom:css_raw

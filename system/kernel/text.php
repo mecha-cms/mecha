@@ -120,7 +120,7 @@ class Text extends Base {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
+                    $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
                     if($FP) {
                         $value = Filter::apply($FP . $key, $value, $data);
                     }
@@ -137,7 +137,7 @@ class Text extends Base {
                         $field = explode(S, $header, 2);
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
-                        $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
+                        $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
                         if($FP) {
                             $value = Filter::apply($FP . $key, $value, $data);
                         }
@@ -154,7 +154,7 @@ class Text extends Base {
             $text = str_replace("\r", "", $text);
             // By file content
             if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
-                $results[$c . '_raw'] = self::DS(trim($text));
+                $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
                 $parts = explode(SEPARATOR, trim($text), 2);
                 $headers = explode("\n", trim($parts[0]));
@@ -162,7 +162,7 @@ class Text extends Base {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(self::DS(trim($field[1]))), $data);
+                    $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
                     if($FP) {
                         $value = Filter::apply($FP . $key, $value, $data);
                     }
@@ -183,7 +183,7 @@ class Text extends Base {
             if(count($content_extra) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_extra as $k => $v) {
-                    $v = self::DS(trim($v));
+                    $v = Converter::DS(trim($v));
                     $v = Filter::apply($c . '_raw', $v, $data, $k + 1);
                     if($FP) {
                         $v = Filter::apply($FP . $c . '_raw', $v, $data, $k + 1);
@@ -201,7 +201,7 @@ class Text extends Base {
                     $results[$c][$k] = $vv;
                 }
             } else {
-                $v = self::DS($results[$c . '_raw']);
+                $v = Converter::DS($results[$c . '_raw']);
                 $v = Filter::apply($c . '_raw', $v, $data, 1);
                 if($FP) {
                     $v = Filter::apply($FP . $c . '_raw', $v, $data, 1);
@@ -399,16 +399,6 @@ class Text extends Base {
             $output['end'] = $offset + strlen($text) - 1;
         }
         return (object) $output;
-    }
-
-    // Encode the bogus `SEPARATOR`s (internal only)
-    public static function ES($text) {
-        return str_replace(SEPARATOR, Text::parse(SEPARATOR, '->ascii'), $text);
-    }
-
-    // Decode the encoded bogus `SEPARATOR`s (internal only)
-    public static function DS($text) {
-        return str_replace(Text::parse(SEPARATOR, '->ascii'), SEPARATOR, $text);
     }
 
 }

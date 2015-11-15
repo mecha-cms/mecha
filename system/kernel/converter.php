@@ -312,7 +312,7 @@ class Converter extends Base {
                 if((strpos($input, '[') === 0 || strpos($input, '{') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
                     $results = self::strEval(json_decode($input, true), $NRT);
                 } else {
-                    $results = $NRT ? self::WD($input) : $input;
+                    $results = $NRT ? self::DW($input) : $input;
                 }
             }
         } else if(is_array($input) || is_object($input)) {
@@ -346,7 +346,7 @@ class Converter extends Base {
 
     public static function phpEval($input) {
         ob_start();
-        extract(Shield::lot()); // include default variables ...
+        extract(Shield::lot()); // include default variable(s) ...
         eval($input);
         return ob_get_clean();
     }
@@ -380,11 +380,11 @@ class Converter extends Base {
     public static function toText($array, $s = S, $indent = '    ', $depth = 0, $NRT = true) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
-            return self::str($NRT ? self::WE($array) : $array);
+            return self::str($NRT ? self::EW($array) : $array);
         }
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
-                $value = $NRT ? self::WE(self::str($value)) : self::str($value);
+                $value = $NRT ? self::EW(self::str($value)) : self::str($value);
                 if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
@@ -711,14 +711,24 @@ class Converter extends Base {
         trim($input));
     }
 
-    // internal only (white-space encode)
-    public static function WE($input) {
-        return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $input);
+    // Encode the bogus `SEPARATOR`s (internal only)
+    public static function ES($text) {
+        return str_replace(SEPARATOR, Text::parse(SEPARATOR, '->ascii'), $text);
     }
 
-    // internal only (white-space decode)
-    public static function WD($input) {
-        return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $input);
+    // Decode the encoded bogus `SEPARATOR`s (internal only)
+    public static function DS($text) {
+        return str_replace(Text::parse(SEPARATOR, '->ascii'), SEPARATOR, $text);
+    }
+
+    // Encode white-space(s) (internal only)
+    public static function EW($text) {
+        return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $text);
+    }
+
+    // Decode the encoded white-space(s) (internal only)
+    public static function DW($text) {
+        return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $text);
     }
 
 }
