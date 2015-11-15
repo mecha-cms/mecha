@@ -6,8 +6,8 @@ if($config->total_pages > 0) {
     foreach(Get::pages() as $page) {
         list($time, $kind, $slug) = explode('_', File::N($page), 3);
         $bucket[] = (object) array(
-            'url' => $config->url . '/' . $slug,
-            'date' => Date::format($time, 'c'),
+            'url' => Filter::apply('page:url', Filter::apply('url', $config->url . '/' . $slug)),
+            'date' => Filter::apply('page:time', Filter::apply('time', Date::format($time, 'c'))),
             'changefreq' => 'weekly',
             'priority' => (string) '0.5'
         );
@@ -18,8 +18,8 @@ if($config->total_articles > 0) {
     foreach(Get::articles() as $article) {
         list($time, $kind, $slug) = explode('_', File::N($article), 3);
         $bucket[] = (object) array(
-            'url' => $config->url . '/' . $config->index->slug . '/' . $slug,
-            'date' => Date::format($time, 'c'),
+            'url' => Filter::apply('article:url', Filter::apply('url', $config->url . '/' . $config->index->slug . '/' . $slug)),
+            'date' => Filter::apply('article:time', Filter::apply('time', Date::format($time, 'c'))),
             'changefreq' => 'weekly',
             'priority' => (string) '1.0'
         );

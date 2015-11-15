@@ -18,8 +18,8 @@ $json = array(
         'title' => $config->title,
         'url' => array(
             'home' => $config->url,
-            'previous' => $config->offset > 1 ? $url_base . '/' . ($config->offset - 1) : null,
-            'next' => $config->offset < ceil($config->total_articles / $json_limit) ? $url_base . '/' . ($config->offset + 1) : null
+            'previous' => $config->offset > 1 ? Filter::apply('url', $url_base . '/' . ($config->offset - 1)) : null,
+            'next' => $config->offset < ceil($config->total_articles / $json_limit) ? Filter::apply('url', $url_base . '/' . ($config->offset + 1)) : null
         ),
         'description' => $config->description,
         'update' => date('c'),
