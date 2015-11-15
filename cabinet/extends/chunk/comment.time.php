@@ -1,3 +1,3 @@
 <span class="comment-time">
-  <time datetime="<?php echo $response->date->W3C; ?>"><?php echo $response->date->FORMAT_3; ?></time><?php Shield::chunk('comment.permalink'); ?>
+  <time datetime="<?php echo $comment->date->W3C; ?>"><?php echo $comment->date->FORMAT_3; ?></time><?php Shield::chunk('comment.permalink'); ?>
 </span>

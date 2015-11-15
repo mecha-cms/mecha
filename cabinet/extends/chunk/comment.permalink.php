@@ -1,1 +1,1 @@
- <a href="<?php echo $response->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>
+ <a href="<?php echo $comment->permalink; ?>" title="<?php echo $speak->permalink; ?>" rel="nofollow">#</a>

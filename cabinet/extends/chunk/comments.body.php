@@ -1,7 +1,7 @@
 <ol class="comment-list">
   <?php if($article->total_comments > 0): ?>
-  <?php foreach($article->comments as $response): ?>
-  <?php Shield::lot(array('response' => $response)); ?>
+  <?php foreach($article->comments as $comment): ?>
+  <?php Shield::lot(array('comment' => $comment)); ?>
   <?php Shield::chunk('block.comment.index'); ?>
   <?php endforeach; ?>
   <?php else: ?>

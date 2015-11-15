@@ -1,1 +1,1 @@
-<img alt="" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($response->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">
+<img alt="" src="<?php echo $config->protocol . 'www.gravatar.com/avatar/' . md5($comment->email) . '?s=60&amp;d=monsterid'; ?>" width="60" height="60">

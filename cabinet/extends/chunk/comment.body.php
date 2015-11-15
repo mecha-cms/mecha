@@ -1,1 +1,1 @@
-<div class="comment-body"><?php echo $response->message; ?></div>
+<div class="comment-body"><?php echo $comment->message; ?></div>
