@@ -59,10 +59,8 @@ if( ! empty($fields)) {
                 $html .= '<span class="grid span-4">';
                 if( ! $has_file) {
                     $html .= Form::file($key);
-                    $s = explode(S, $v, 2);
-                    $e = strtolower(str_replace(' ', "", isset($s[1]) ? $s[1] : $s[0]));
+                    $e = strtolower(str_replace(' ', "", (string) $v));
                     $html .= $v !== false ? Form::hidden('fields[' . $key . '][accept]', $e) . '<br><small><strong>' . $speak->accepted . ':</strong> <code>*.' . str_replace(',', '</code>, <code>*.', $e) . '</code></small>' : "";
-                    $html .= count($s) === 2 ? Form::hidden('fields[' . $key . '][path]', File::path($s[0])) : "";
                 } else {
                     $html .= Form::hidden('fields[' . $key . '][value]', $vv);
                     $html .= '<span title="' . strip_tags($value['title']) . '">' . Form::checkbox('fields[' . $key . '][remove]', $vv, false, $speak->delete . ' <code>' . $vv . '</code>') . '</span>';

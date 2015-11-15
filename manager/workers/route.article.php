@@ -107,7 +107,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             }
             unset($files);
         }
-        $P = array('data' => $request, 'action' => $request['action']);
+        $P = array('data' => $request);
         if( ! Notify::errors()) {
             include DECK . DS . 'workers' . DS . 'task.field.2.php';
             include DECK . DS . 'workers' . DS . 'task.field.1.php';

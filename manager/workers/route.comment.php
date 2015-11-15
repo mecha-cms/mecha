@@ -75,7 +75,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             Notify::error($speak->notify_invalid_email);
             Guardian::memorize($request);
         }
-        $P = array('data' => $request, 'action' => $request['action']);
+        $P = array('data' => $request);
         if( ! Notify::errors()) {
             $name = $request['name'];
             $email = Text::parse($request['email'], '->broken_entity');

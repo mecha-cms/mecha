@@ -17,9 +17,8 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $bools = array(
-            'comments' => false,
-            'comment_moderation' => false,
-            'comment_notification_email' => false,
+            'comments.allow' => false,
+            'comments.moderation' => false,
             'widget_include_css' => false,
             'widget_include_js' => false,
             'html_parser' => 'HTML',
@@ -42,7 +41,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         }
         foreach($bools as $bool => $fallback) {
             // Fix(es) for checkbox input(s)
-            $request[$bool] = Request::post($bool, $fallback);
+            Mecha::SVR($request, $bool, Request::post($bool, $fallback));
         }
         foreach($pages as $page => $default) {
             // Fix(es) for slug pattern input(s)

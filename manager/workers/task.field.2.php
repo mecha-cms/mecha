@@ -13,10 +13,6 @@ if(isset($_FILES) && ! empty($_FILES)) {
             if($x = File::E($name, false)) {
                 $name = $x . DS . $name;
             }
-            // Group substance by custom folder
-            if(isset($field[$k]['path'])) {
-                $name = File::path($field[$k]['path']) . DS . $name;
-            }
             // File already exists. Don't overwrite and don't show the error message
             if(file_exists(SUBSTANCE . DS . $name)) {
                 $field[$k]['value'] = File::url($name);
