@@ -16,7 +16,7 @@
         <time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->FORMAT_3; ?></time>
       </span>
     </div>
-    <div class="page-body"><?php echo $page->description; ?></div>
+    <div class="page-body"><p><?php echo Text::parse($page->description, '->text', '<a><abbr><b><code><del><dfn><em><i><ins><kbd><mark><strong><sub><sup><time><u>'); ?></p></div>
     <div class="page-footer">
       <?php Weapon::fire('article_footer', array($page)); ?>
     </div>
