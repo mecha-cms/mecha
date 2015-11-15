@@ -78,27 +78,26 @@
     <div class="grid-group">
       <span class="grid span-2"></span>
       <div class="grid span-4">
-        <div><?php echo Form::checkbox('comments', 'true', Guardian::wayback('comments', $config->comments), $speak->manager->title_comment_allow); ?></div>
-        <div><?php echo Form::checkbox('comment_moderation', 'true', Guardian::wayback('comment_moderation', $config->comment_moderation), $speak->manager->title_comment_moderation); ?></div>
-        <div><?php echo Form::checkbox('comment_notification_email', 'true', Guardian::wayback('comment_notification_email', $config->comment_notification_email), $speak->manager->title_comment_notification_email); ?></div>
+        <div><?php echo Form::checkbox('comments[allow]', 'true', Guardian::wayback('comments.allow', $config->comments->allow), $speak->manager->title_comment_allow); ?></div>
+        <div><?php echo Form::checkbox('comments[moderation]', 'true', Guardian::wayback('comments.moderation', $config->comments->moderation), $speak->manager->title_comment_moderation); ?></div>
       </div>
     </div>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_length; ?></span>
       <span class="grid span-4">
-      <?php echo Form::number('excerpt_length', Guardian::wayback('excerpt_length', $config->excerpt_length)); ?>
+      <?php echo Form::number('excerpt[length]', Guardian::wayback('excerpt.length', $config->excerpt->length)); ?>
       </span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_tail; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('excerpt_tail', Guardian::wayback('excerpt_tail', $config->excerpt_tail)); ?>
+      <?php echo Form::text('excerpt[tail]', Guardian::wayback('excerpt.tail', $config->excerpt->tail)); ?>
       </span>
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_id; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('excerpt_id', Guardian::wayback('excerpt_id', $config->excerpt_id)); ?>
+      <?php echo Form::text('excerpt[id]', Guardian::wayback('excerpt.id', $config->excerpt->id)); ?>
       </span>
     </label>
     <div class="grid-group">

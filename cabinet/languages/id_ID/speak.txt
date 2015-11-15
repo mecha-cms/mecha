@@ -23,6 +23,9 @@ authors: Penulis
 user: Pengguna
 users: Pengguna
 
+pass: Kunci
+passes: Kunci
+
 profile: Profil
 profiles: Profil
 
@@ -230,12 +233,13 @@ comment_reply_to_: Sebagai balasan %s
 comment_reply_cancel: Batal Membalas
 comment_replies: Balasan
 comment_guide: Tag <abbr title="Hyper Text Markup Language">HTML</abbr> dasar diperbolehkan.
-comment_notification: Komentar baru telah ditambahkan ke <a href="%s">halaman ini</a>
-comment_notification_subject: Komentar baru telah ditambahkan.
 
 title: Judul
 titles: Judul
 untitled: Tanpa Judul
+
+subject: Subjek
+subjects: Subjek
 
 date: Tanggal
 dates: Tanggal
@@ -742,7 +746,6 @@ manager:
 
   title_comment_allow: Izinkan Komentar
   title_comment_moderation: Moderasi Komentar
-  title_comment_notification_email: Notifikasi untuk Komentar Baru
 
   title_resource_versioning: Aktifkan Versi Sumber Daya
 

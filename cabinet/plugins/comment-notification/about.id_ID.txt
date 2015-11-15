@@ -1,0 +1,10 @@
+Title: Notifikasi Komentar
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Pemberitahuan komentar baru melalui email.
+
+Plugin ini akan memberitahu Anda melalui email jika terdapat sebuah komentar baru yang ditambahkan.

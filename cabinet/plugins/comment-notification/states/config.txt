@@ -1,0 +1,1 @@
+a:2:{s:7:"subject";s:29:"A new comment has been added.";s:7:"message";s:55:"A new comment has been added to <a href="%2$s">%1$s</a>";}

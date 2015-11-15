@@ -9,13 +9,16 @@ return array(
     'language_direction' => 'ltr',
     'shield' => 'normal',
     'per_page' => 7,
-    'comments' => true,
-    'comment_moderation' => false,
-    'comment_notification_email' => true,
+    'comments' => array(
+        'allow' => true,
+        'moderation' => false
+    ),
     'resource_versioning' => true,
-    'excerpt_length' => 300,
-    'excerpt_tail' => '&hellip;',
-    'excerpt_id' => 'more:%d',
+    'excerpt' => array(
+        'length' => 300,
+        'tail' => '&hellip;',
+        'id' => 'more:%d'
+    ),
     'html_parser' => HTML_PARSER,
     'widget_include_css' => true,
     'widget_include_js' => true,
@@ -58,7 +61,7 @@ return array(
 
     // Search Page
     'search' => array(
-        'title' => 'Search Results for &ldquo;%s&rdquo;',
+        'title' => 'Search for &ldquo;%s&rdquo;',
         'slug' => 'search',
         'per_page' => 7
     ),

@@ -1,4 +1,4 @@
-<?php if($config->comments): ?>
+<?php if($config->comments->allow): ?>
 <section class="comments">
   <?php Shield::chunk('comments.header'); ?>
   <?php Shield::chunk('comments.body'); ?>

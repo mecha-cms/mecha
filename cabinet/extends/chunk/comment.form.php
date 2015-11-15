@@ -22,10 +22,7 @@
     <span class="grid span-5"><?php echo Form::textarea('message', Guardian::wayback('message'), null, array('class' => 'textarea-block')); ?></span>
   </label>
   <?php Weapon::fire('comment_form_textarea_after', $hooks); ?>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo Guardian::math(); ?> =</span>
-    <span class="grid span-5"><?php echo Form::text('math', "", null, array('autocomplete' => 'off')); ?></span>
-  </label>
+  <?php Shield::chunk('comment.form.human'); ?>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <div class="grid span-5">

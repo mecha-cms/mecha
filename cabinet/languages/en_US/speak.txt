@@ -23,6 +23,9 @@ authors: Authors
 user: User
 users: Users
 
+pass: Pass
+passes: Passes
+
 profile: Profile
 profiles: Profiles
 
@@ -230,12 +233,13 @@ comment_reply_to_: Reply to %s
 comment_reply_cancel: Cancel Reply
 comment_replies: Replies
 comment_guide: Basic <abbr title="Hyper Text Markup Language">HTML</abbr> tags are allowed.
-comment_notification: A new comment has been added to <a href="%s">this page</a>
-comment_notification_subject: A new comment has been added.
 
 title: Title
 titles: Titles
 untitled: Untitled
+
+subject: Subject
+subjects: Subjects
 
 date: Date
 dates: Dates
@@ -742,7 +746,6 @@ manager:
 
   title_comment_allow: Allow Comments
   title_comment_moderation: Comment Moderation
-  title_comment_notification_email: Notification for New Comments
 
   title_resource_versioning: Enable Resource Versioning
 

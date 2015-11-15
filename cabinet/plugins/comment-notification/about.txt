@@ -1,0 +1,10 @@
+Title: Comment Notification
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Notification of new comments via email.
+
+This plugin will notify you by email if there is a new comment added.

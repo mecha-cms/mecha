@@ -9,7 +9,7 @@
 
 define('DS', DIRECTORY_SEPARATOR);
 define('MECHA_VERSION', '1.2.0');
-define('ROOT', rtrim(__DIR__, '\\/'));
+define('ROOT', rtrim(__DIR__, DS));
 define('CARGO', ROOT . DS . 'cabinet');
 define('DECK', ROOT . DS . 'manager');
 define('SYSTEM', ROOT . DS . 'system');

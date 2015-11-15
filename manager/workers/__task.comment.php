@@ -10,6 +10,11 @@ Weapon::add('shield_before', function() use($config, $speak) {
     $comment_id = 'comment-%d'; // Your comment ID
     $comment_form_id = 'comment-form'; // Your comment form ID
     $article = isset(Config::get('article')->path) ? Get::article(Config::get('article')->path) : false;
+    $G = array('data' => array(
+        'article' => Mecha::A($article),
+        'comment_id' => $comment_id,
+        'comment_form_id' => $comment_form_id
+    ));
     if($article && $config->page_type === 'article' && Request::method('post')) {
         $request = Request::post();
         $base = SHIELD . DS . $config->shield . DS . 'workers' . DS;
@@ -18,7 +23,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
         } else {
             // Check token
             Guardian::checkToken($request['token'], $config->url_current . '#' . $comment_form_id);
-            $extension = $config->comment_moderation && ! Guardian::happy() ? '.hold' : '.txt';
+            $extension = $config->comments->moderation && ! Guardian::happy() ? '.hold' : '.txt';
             // Check name
             if(trim($request['name']) === "") {
                 Notify::error(Config::speak('notify_error_empty_field', $speak->comment_name));
@@ -84,6 +89,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 $id = (int) time();
                 $parent = Request::post('parent');
                 $P = array('data' => $request);
+                $P['data']['id'] = $id;
                 $name = strip_tags($request['name']);
                 $email = Text::parse($request['email'], '->broken_entity');
                 $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
@@ -108,22 +114,12 @@ Weapon::add('shield_before', function() use($config, $speak) {
                     'IP' => Get::IP()
                 ))->content($message)->saveTo(COMMENT . DS . $post . '_' . Date::slug($id) . '_' . ($parent ? Date::slug($parent) : '0000-00-00-00-00-00') . $extension);
                 Notify::success(Config::speak('notify_success_submitted', $speak->comment));
-                if($extension === '.hold') Notify::info($speak->notify_info_comment_moderation);
-                Weapon::fire('on_comment_update', array($P, $P));
-                Weapon::fire('on_comment_construct', array($P, $P));
-                if($config->comment_notification_email) {
-                    $mail  = '<p>' . Config::speak('comment_notification', $article->url . '#' . sprintf($comment_id, Date::format($id, 'U'))) . '</p>';
-                    $mail .= '<p><strong>' . $name . ':</strong></p>';
-                    $mail .= $parser !== false && $parser !== 'HTML' ? Text::parse($message, '->html') : $message;
-                    $mail .= '<p>' . Date::format($id, 'Y/m/d H:i:s') . '</p>';
-                    // Sending email notification ...
-                    if( ! Guardian::happy()) {
-                        if(Notify::send($request['email'], $config->author->email, $speak->comment_notification_subject, $mail, 'comment:')) {
-                            Weapon::fire('on_comment_notification_construct', array($request, $config->author->email, $speak->comment_notification_subject, $mail));
-                        }
-                    }
+                if($extension === '.hold') {
+                    Notify::info($speak->notify_info_comment_moderation);
                 }
-                Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comment_moderation ? '#' . $comment_form_id : '#' . sprintf($comment_id, Date::format($id, 'U'))));
+                Weapon::fire('on_comment_update', array($G, $P));
+                Weapon::fire('on_comment_construct', array($G, $P));
+                Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comments->moderation ? '#' . $comment_form_id : '#' . sprintf($comment_id, Date::format($id, 'U'))));
             } else {
                 Guardian::kick($config->url_current . '#' . $comment_form_id);
             }
