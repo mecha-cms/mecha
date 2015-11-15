@@ -3,7 +3,7 @@
   <p><?php echo $speak->plugin_cache_content_description . ' ' . Jot::info($speak->plugin_cache_content_info); ?></p>
   <?php
 
-  $cache_config = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
+  $cache_config = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
   $content = "";
   foreach($cache_config['path'] as $path => $exp) {
       if($exp !== true) {

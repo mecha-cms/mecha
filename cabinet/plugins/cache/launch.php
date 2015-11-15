@@ -1,6 +1,6 @@
 <?php
 
-$cache_config = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
+$cache_config = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
 
 $route_cache = false;
 if(isset($cache_config['path'][$config->url_path])) {

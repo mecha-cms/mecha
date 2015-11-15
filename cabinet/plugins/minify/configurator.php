@@ -5,7 +5,7 @@
     <div class="grid span-5">
     <?php
 
-    $c = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
+    $c = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
     foreach($speak->plugin_minifier as $k => $v) {
         echo '<div>' . Form::checkbox($k, true, isset($c[$k]), $v) . '</div>';
     }

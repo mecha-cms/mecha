@@ -2,7 +2,7 @@
 
 if($config->url_path === $config->manager->slug . '/login' || $config->page_type !== 'manager') {
     Filter::add('shield:input', function($content) use($config) {
-        $c = File::open(PLUGIN . DS . File::B(__DIR__) . DS . 'states' . DS . 'config.txt')->unserialize();
+        $c = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
         // Minify HTML
         if(isset($c['html_minifier'])) {
             $config->html_minifier = true;
