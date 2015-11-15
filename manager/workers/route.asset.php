@@ -25,12 +25,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         // New folder
         if(isset($request['folder'])) {
             if(trim($request['folder']) !== "") {
-                $folder = explode(DS, File::path($request['folder']));
-                foreach($folder as &$f) {
-                    $f = Text::parse($f, '->safe_file_name');
-                }
-                unset($f);
-                $folder = implode(DS, $folder);
+                $folder = Text::parse(File::path($request['folder']), '->safe_path_name');
                 if(File::exist($d . DS . $folder)) {
                     Notify::error(Config::speak('notify_folder_exist', '<code>' . $folder . '</code>'));
                 }
@@ -141,12 +136,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
         } else {
             // Safe file name
-            $new = explode(DS, File::path($request['name']));
-            foreach($new as &$n) {
-                $n = Text::parse($n, '->safe_file_name');
-            }
-            unset($n);
-            $new = implode(DS, $new);
+            $new = Text::parse(File::path($request['name']), '->safe_path_name');
             // Missing file extension
             if(is_file(ASSET . DS . $new) && ! preg_match('#^.*?\.(.+?)$#', $new)) {
                 Notify::error($speak->notify_error_file_extension_missing);
@@ -157,7 +147,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             }
             $P = array('data' => $request);
             if( ! Notify::errors()) {
-                if(Request::post('content')) {
+                if(isset($request['content'])) {
                     File::open($file)->write($request['content'])->save();
                 }
                 File::open($file)->moveTo(ASSET . DS . $new);

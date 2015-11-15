@@ -49,7 +49,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
     if( ! $file = File::exist(CACHE . DS . $path)) {
         Shield::abort(); // File not found!
     }
-    $G = array('data' => array('path' => $file, 'content' => File::open($file)->read()));
+    $G = array('data' => array('path' => $file));
     Config::set(array(
         'page_title' => $speak->editing . ': ' . File::B($path) . $config->title_separator . $config->manager->title,
         'cargo' => 'repair.cache.php'
