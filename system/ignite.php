@@ -166,6 +166,7 @@ for($i = 0, $count = count($plugins); $i < $count; ++$i) {
         }
         if(File::exist($language)) {
             Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
+            $speak = Config::speak(); // refresh ...
         }
         if($launch = File::exist($r . 'launch.php')) {
             if(strpos(File::B($r), '__') === 0) {
