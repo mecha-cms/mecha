@@ -66,20 +66,20 @@ html {
 .media-content form:last-child,
 .media-content p:last-child {margin-bottom:0}
 
-.page-list {
+.pages {
   list-style:none;
   margin:0 0 1.3846153846153846em;
   padding:0;
   position:relative;
 }
 
-.page-list .page {
+.pages .page {
   margin:0;
   padding:1em 0;
   overflow:hidden;
 }
 
-.page-list .page + .page {margin-top:2px}
+.pages .page + .page {margin-top:2px}
 
 .page-header,
 .page-body {
@@ -91,12 +91,17 @@ html {
 
 .page-title {
   display:block;
+  margin:0;
+  padding:0;
   float:left;
+  font:inherit;
   font-weight:bold;
 }
 
 .page-time {
   display:block;
+  margin:0;
+  padding:0;
   float:right;
 }
 

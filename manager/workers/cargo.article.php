@@ -3,23 +3,25 @@
 </div>
 <?php echo $messages; ?>
 <?php if($pages): ?>
-<ol class="page-list">
+<ol class="pages">
   <?php foreach($pages as $page): ?>
   <li class="page" id="page-<?php echo $page->id; ?>">
-    <div class="page-header">
-      <?php if($page->state === 'draft'): ?>
-      <span class="page-title"><?php echo $page->title; ?></span>
-      <?php else: ?>
-      <a class="page-title" href="<?php echo $page->url; ?>" target="_blank"><?php echo $page->title; ?></a>
-      <?php endif; ?>
-      <span class="page-time">
+    <header class="page-header">
+      <h3 class="page-title">
+        <?php if($page->state === 'draft'): ?>
+        <span class="a"><?php echo $page->title; ?></span>
+        <?php else: ?>
+        <a href="<?php echo $page->url; ?>" target="_blank"><?php echo $page->title; ?></a>
+        <?php endif; ?>
+      </h3>
+      <p class="page-time">
         <time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->FORMAT_3; ?></time>
-      </span>
-    </div>
+      </p>
+    </header>
     <div class="page-body"><p><?php echo Text::parse($page->description, '->text', '<a><abbr><b><code><del><dfn><em><i><ins><kbd><mark><strong><sub><sup><time><u>'); ?></p></div>
-    <div class="page-footer">
+    <footer class="page-footer">
       <?php Weapon::fire('article_footer', array($page)); ?>
-    </div>
+    </footer>
   </li>
   <?php endforeach; ?>
 </ol>

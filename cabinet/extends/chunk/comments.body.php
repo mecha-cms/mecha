@@ -1,4 +1,4 @@
-<ol class="comment-list">
+<ol class="comments-body">
   <?php if($article->total_comments > 0): ?>
   <?php foreach($article->comments as $comment): ?>
   <?php Shield::lot(array('comment' => $comment)); ?>

@@ -1,1 +1,3 @@
-<h2 class="post-title"><?php echo $article->title; ?></h2>
+<h2 class="post-title">
+  <span class="a"><?php echo $article->title; ?></span>
+</h2>

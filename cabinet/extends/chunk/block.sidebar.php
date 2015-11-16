@@ -1,4 +1,4 @@
-<aside class="blog-sidebar">
+<aside class="blog-sidebar widgets">
 <?php
 
 if($manager) {

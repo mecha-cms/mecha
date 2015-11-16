@@ -419,7 +419,7 @@ pre {
 
 .comments {margin:5% 0 0}
 
-.comment-list {
+.comments-body {
   list-style:none;
   margin:0;
   padding:0;
@@ -470,12 +470,17 @@ pre {
 
 .comment-name {
   display:block;
+  margin:0;
+  padding:0;
   float:left;
+  font:inherit;
   font-weight:bold;
 }
 
 .comment-time {
   display:block;
+  margin:0;
+  padding:0;
   float:right;
   color:#AAA;
 }

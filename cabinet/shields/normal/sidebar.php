@@ -17,15 +17,11 @@
       'content' => Widget::tag()
   )); ?>
   <?php Shield::chunk('block.widget', array(
-      'title' => $speak->widget->related_posts,
-      'content' => Widget::relatedPost()
+      'title' => $speak->widget->related_articles,
+      'content' => Widget::relatedArticle()
   )); ?>
   <?php Shield::chunk('block.widget', array(
       'title' => $speak->widget->archives,
       'content' => Widget::archive()
-  )); ?>
-  <?php Shield::chunk('block.widget', array(
-      'title' => 'Archive Calendar',
-      'content' => Widget::calendar()
   )); ?>
 </aside>

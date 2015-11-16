@@ -1,2 +1,3 @@
-<?php Shield::chunk('comment.form'); ?>
-<?php Weapon::fire('comments_footer', array($article)); ?>
+<footer class="comments-footer">
+  <?php Shield::chunk('comment.form'); ?>
+</footer>

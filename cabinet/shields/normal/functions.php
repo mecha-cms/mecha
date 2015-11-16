@@ -40,7 +40,7 @@ Filter::add('chunk:output', function($content, $path) use($config, $speak) {
     }
     // Add an icon to the comments title
     if($name === 'comments.header') {
-        $content = str_replace(' class="comment-header">', ' class="comment-header"><i class="fa fa-comments"></i> ', $content);
+        $content = str_replace('<h4>', '<h4><i class="fa fa-comments"></i> ', $content);
     }
     // Add an icon to the comment form button
     if($name === 'comment.form') {
