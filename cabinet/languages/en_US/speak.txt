@@ -630,6 +630,10 @@ manage: Manage
 managing: Managing
 managed: Managed
 
+enable: Enable
+enabling: Enabling
+enabled: Enabled
+
 disable: Disable
 disabling: Disabling
 disabled: Disabled
@@ -672,14 +676,26 @@ widget:
 
   recent_post: Recent Post
   recent_posts: Recent Posts
+  recent_page: Recent Page
+  recent_pages: Recent Pages
+  recent_article: Recent Article
+  recent_articles: Recent Articles
   recent_comment: Recent Comment
   recent_comments: Recent Comments
 
   random_post: Random Post
   random_posts: Random Posts
+  random_page: Random Page
+  random_pages: Random Pages
+  random_article: Random Article
+  random_articles: Random Articles
 
   related_post: Related Post
   related_posts: Related Posts
+  related_page: Related Page
+  related_pages: Related Pages
+  related_article: Related Article
+  related_articles: Related Articles
 
 
 # -------------
@@ -744,8 +760,8 @@ manager:
   title_language_direction_rtl: Right to Left (RTL)
   title_keyword_spam: Spam Keywords
 
-  title_comment_allow: Allow Comments
-  title_comment_moderation: Comment Moderation
+  title_comment_allow: Enable Comments
+  title_comment_moderation: Enable Comment Moderation
 
   title_resource_versioning: Enable Resource Versioning
 

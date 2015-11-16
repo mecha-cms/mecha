@@ -630,6 +630,10 @@ manage: Kelola
 managing: Mengelola
 managed: Dikelola
 
+enable: Aktifkan
+enabling: Mengaktifkan
+enabled: Diaktifkan
+
 disable: Nonaktifkan
 disabling: Menonaktifkan
 disabled: Dinonaktifkan
@@ -672,14 +676,26 @@ widget:
 
   recent_post: Pos Terbaru
   recent_posts: Pos Terbaru
+  recent_page: Halaman Terbaru
+  recent_pages: Halaman Terbaru
+  recent_article: Artikel Terbaru
+  recent_articles: Artikel Terbaru
   recent_comment: Komentar Terbaru
   recent_comments: Komentar Terbaru
 
   random_post: Pos Acak
   random_posts: Pos Acak
+  random_page: Halaman Acak
+  random_pages: Halaman Acak
+  random_article: Artikel Acak
+  random_articles: Artikel Acak
 
   related_post: Pos Terkait
   related_posts: Pos Terkait
+  related_page: Halaman Terkait
+  related_pages: Halaman Terkait
+  related_article: Artikel Terkait
+  related_articles: Artikel Terkait
 
 
 # -------------
@@ -744,8 +760,8 @@ manager:
   title_language_direction_rtl: Right to Left (RTL)
   title_keyword_spam: Kata Kunci Sampah
 
-  title_comment_allow: Izinkan Komentar
-  title_comment_moderation: Moderasi Komentar
+  title_comment_allow: Aktifkan Komentar
+  title_comment_moderation: Aktifkan Moderasi Komentar
 
   title_resource_versioning: Aktifkan Versi Sumber Daya
 

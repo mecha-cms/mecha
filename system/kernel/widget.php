@@ -1,19 +1,19 @@
 <?php
 
-class Widget {
+class Widget extends Base {
 
-    protected static $o = array(
+    protected static $w = array(
         'manager' => 1,
         'archive' => 1,
         'tag' => 1,
         'search' => 1,
-        'recentPost' => 1,
+        'recentArticle' => 1,
         'recentComment' => 1,
-        'randomPost' => 1,
-        'relatedPost' => 1
+        'randomArticle' => 1,
+        'relatedArticle' => 1
     );
 
-    protected static $o_x = array();
+    protected static $w_x = array();
 
 
     /**
@@ -101,7 +101,7 @@ class Widget {
         $archives = array();
         $html = O_BEGIN . '<div class="widget widget-archive widget-archive-' . $kin . '" id="widget-archive-' . $kin . '-' . $id . '">' . NL;
         if( ! $files = Get::articles($sort)) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->posts)) . NL . '</div>' . O_END;
+            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
         }
         if($type === 'HIERARCHY') {
             $i = 0;
@@ -184,7 +184,7 @@ class Widget {
         $tags = array();
         $html = O_BEGIN . '<div class="widget widget-tag widget-tag-' . $kin . '" id="widget-tag-' . $kin . '-' . $id . '">' . NL;
         if( ! $files = Get::articles()) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->posts)) . NL . '</div>' . O_END;
+            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
         }
         foreach($files as $file) {
             list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
@@ -271,23 +271,23 @@ class Widget {
 
 
     /**
-     * Widget Recent Post
-     * ------------------
+     * Widget Recent Article
+     * ---------------------
      *
-     * [1]. Widget::recentPost();
-     * [2]. Widget::recentPost(5);
+     * [1]. Widget::recentArticle();
+     * [2]. Widget::recentArticle(5);
      *
      */
 
-    public static function recentPost($total = 7, $class = 'recent') {
+    public static function recentArticle($total = 7, $class = 'recent') {
         $T1 = TAB;
         $T2 = str_repeat($T1, 2);
-        $id = Config::get('widget_' . $class . '_post_id', 0) + 1;
+        $id = Config::get('widget_' . $class . '_article_id', 0) + 1;
         $config = Config::get();
         $speak = Config::speak();
-        $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . $id . '">' . NL;
+        $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-article" id="widget-' . $class . '-article-' . $id . '">' . NL;
         if( ! $files = Get::articles()) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->posts)) . NL . '</div>' . O_END;
+            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
         }
         if($class === 'random') {
             $files = Mecha::eat($files)->shake()->vomit();
@@ -301,8 +301,8 @@ class Widget {
         $html .= $T1 . '</ul>' . NL;
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
-        Config::set('widget_' . $class . '_post_id', $id);
-        return Filter::apply('widget:' . $class . '.post', Filter::apply('widget:' . $class, $html));
+        Config::set('widget_' . $class . '_article_id', $id);
+        return Filter::apply('widget:' . $class . '.article', Filter::apply('widget:' . $class, $html));
     }
 
 
@@ -370,44 +370,44 @@ class Widget {
 
 
     /**
-     * Widget Random Post
-     * ------------------
+     * Widget Random Article
+     * ---------------------
      *
-     * [1]. Widget::randomPost();
-     * [2]. Widget::randomPost(5);
+     * [1]. Widget::randomArticle();
+     * [2]. Widget::randomArticle(5);
      *
      */
 
-    public static function randomPost($total = 7) {
-        return self::recentPost($total, 'random');
+    public static function randomArticle($total = 7) {
+        return self::recentArticle($total, 'random');
     }
 
 
     /**
-     * Widget Related Post
-     * -------------------
+     * Widget Related Article
+     * ----------------------
      *
-     * [1]. Widget::relatedPost();
-     * [2]. Widget::relatedPost(5);
+     * [1]. Widget::relatedArticle();
+     * [2]. Widget::relatedArticle(5);
      *
      */
 
-    public static function relatedPost($total = 7) {
+    public static function relatedArticle($total = 7) {
         $T1 = TAB;
         $T2 = str_repeat($T1, 2);
-        $id = Config::get('widget_related_post_id', 0) + 1;
+        $id = Config::get('widget_related_article_id', 0) + 1;
         $config = Config::get();
         $speak = Config::speak();
         $kind = isset($config->article->kind) ? (array) $config->article->kind : array();
-        $html = O_BEGIN . '<div class="widget widget-related widget-related-post" id="widget-related-post-' . $id . '">' . NL;
+        $html = O_BEGIN . '<div class="widget widget-related widget-related-article" id="widget-related-article-' . $id . '">' . NL;
         if($config->page_type !== 'article') {
-            return self::randomPost($total);
+            return self::randomArticle($total);
         } else {
             if( ! $files = Get::articles('DESC', 'kind:' . implode(',', $kind))) {
-                return $html . $T1 . Config::speak('notify_empty', strtolower($speak->posts)) . NL . '</div>' . O_END;
+                return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
             }
             if(count($files) <= 1) {
-                return self::randomPost($total);
+                return self::randomArticle($total);
             }
             $files = Mecha::eat($files)->shake()->vomit();
             $html .= $T1 . '<ul>' . NL;
@@ -422,8 +422,8 @@ class Widget {
         }
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
-        Config::set('widget_related_post_id', $id);
-        return Filter::apply('widget:related.post', Filter::apply('widget:related', $html));
+        Config::set('widget_related_article_id', $id);
+        return Filter::apply('widget:related.article', Filter::apply('widget:related', $html));
     }
 
 
@@ -437,13 +437,13 @@ class Widget {
 
     public static function add($kin, $action, $wrapper = false) {
         $c = get_called_class();
-        if( ! isset(self::$o_x[$c][$kin])) {
-            if(isset(self::$o[$c][$kin])) {
+        if( ! isset(self::$w_x[$c][$kin])) {
+            if(isset(self::$w[$c][$kin])) {
                 Guardian::abort(Config::speak('notify_exist', '<code>' . $c . '::' . $kin . '()</code>'));
             }
-            self::$o[$c][$kin] = array(
+            self::$w[$c][$kin] = array(
                 'fn' => $action,
-                'wrap' => $wrapper
+                'wrapper' => $wrapper
             );
         }
     }
@@ -459,8 +459,8 @@ class Widget {
 
     public static function remove($kin) {
         $c = get_called_class();
-        self::$o_x[$c][$kin] = 1;
-        unset(self::$o[$c][$kin]);
+        self::$w_x[$c][$kin] = 1;
+        unset(self::$w[$c][$kin]);
     }
 
 
@@ -474,7 +474,7 @@ class Widget {
 
     public static function exist($kin, $fallback = false) {
         $c = get_called_class();
-        return isset(self::$o[$c][$kin]) ? self::$o[$c][$kin] : $fallback;
+        return isset(self::$w[$c][$kin]) ? self::$w[$c][$kin] : $fallback;
     }
 
 
@@ -488,18 +488,18 @@ class Widget {
 
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();
-        if( ! isset(self::$o[$c][$kin])) {
+        if( ! isset(self::$w[$c][$kin])) {
             Guardian::abort(Config::speak('notify_not_exist', '<code>' . $c . '::' . $kin . '()</code>'), false);
         } else {
             $html = "";
             $snake = Text::parse($kin, '->snake_case');
             $slug = Text::parse($snake, '->slug');
             $id = Config::get('widget_custom_' . $snake . '_id', 0) + 1;
-            if(self::$o[$c][$kin]['wrap']) {
+            if(self::$w[$c][$kin]['wrapper']) {
                 $html .= O_BEGIN . '<div class="widget widget-custom widget-custom-' . $slug . '" id="widget-custom-' . $slug . '-' . $id . '">' . NL;
             }
-            $html .= call_user_func_array(self::$o[$c][$kin]['fn'], $arguments);
-            if(self::$o[$c][$kin]['wrap']) {
+            $html .= call_user_func_array(self::$w[$c][$kin]['fn'], $arguments);
+            if(self::$w[$c][$kin]['wrapper']) {
                 $html .= '</div>' . O_END;
             }
             $html = Filter::apply('widget', $html);
