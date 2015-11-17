@@ -44,7 +44,7 @@ Filter::add('chunk:output', function($content, $path) use($config, $speak) {
     }
     // Add an icon to the comment form button
     if($name === 'comment.form') {
-        $content = str_replace('>' . $speak->publish . '<', '><i class="fa fa-check-circle"></i> ' . trim(strip_tags($speak->publish)) . '<', $content);
+        $content = str_replace('>' . $speak->publish . '</button>', '><i class="fa fa-check-circle"></i> ' . trim(strip_tags($speak->publish)) . '</button>', $content);
     }
     // Add an icon to the comment form button
     if($name === 'block.footer.copyright') {
