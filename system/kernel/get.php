@@ -821,7 +821,7 @@ class Get extends Base {
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    var_dump(Get::responsePath('lorem-ipsum'));
+     *    var_dump(Get::responsePath(1399334470));
      *
      * --------------------------------------------------------------------------
      *
@@ -1014,7 +1014,18 @@ class Get extends Base {
      *
      */
 
-    public static function responseAnchor() {}
+    public static function responseAnchor($path, $folder = array(), $FP = 'response:') {
+        if(strpos($path, ROOT) === false) {
+            $path = self::responsePath($path, $folder[0]); // By post slug, ID or time
+        }
+        if($path && ($buffer = File::open($path)->get(1)) !== false) {
+            $results = self::responseExtract($path);
+            $parts = explode(S, $buffer, 2);
+            $results['name'] = self::AMF((isset($parts[1]) ? Converter::DS(trim($parts[1])) : ""), $FP, 'name', $results);
+            return Mecha::O($results);
+        }
+        return false;
+    }
 
     /**
      * ==========================================================================
@@ -1029,10 +1040,10 @@ class Get extends Base {
      *
      */
 
-    public static function responseHeader($path, $folder, $connector = '/', $FP = 'response:') {
+    public static function responseHeader($path, $folder = array(), $connector = '/', $FP = 'response:') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
-            $path = self::responsePath($path, $folder); // By response ID or time
+            $path = self::responsePath($path, $folder[0]); // By response ID or time
         }
         if( ! $path) return false;
         $results = self::responseExtract($path);

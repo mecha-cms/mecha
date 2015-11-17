@@ -244,7 +244,7 @@ Get::plug('article', function($reference, $excludes = array()) {
  *
  * -- CODE: -----------------------------------------------------------------
  *
- *    var_dump(Get::commentPath('lorem-ipsum'));
+ *    var_dump(Get::commentPath(1399334470));
  *
  * --------------------------------------------------------------------------
  *
@@ -333,6 +333,42 @@ Get::plug('comments', function($order = 'ASC', $filter = "", $e = 'txt') {
 
 Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt') {
     return Get::responsesExtract($order, $sorter, $filter, $e, 'comment:', COMMENT);
+});
+
+
+/**
+ * ==========================================================================
+ *  GET MINIMUM DATA OF A COMMENT
+ * ==========================================================================
+ *
+ * -- CODE: -----------------------------------------------------------------
+ *
+ *    var_dump(Get::commentAnchor(1399334470));
+ *
+ * --------------------------------------------------------------------------
+ *
+ */
+
+Get::plug('commentAnchor', function($path) {
+    return Get::responseAnchor($path, array(COMMENT), 'comment:');
+});
+
+
+/**
+ * ==========================================================================
+ *  GET COMMENT HEADER(S) ONLY
+ * ==========================================================================
+ *
+ * -- CODE: -----------------------------------------------------------------
+ *
+ *    var_dump(Get::commentHeader(1399334470));
+ *
+ * --------------------------------------------------------------------------
+ *
+ */
+
+Get::plug('commentHeader', function($path) {
+    return Get::responseHeader($path, array(COMMENT), '/' . Config::get('index.slug') . '/', 'comment:');
 });
 
 
