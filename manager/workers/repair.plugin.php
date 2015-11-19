@@ -5,15 +5,15 @@
 <div class="tab-content-area">
   <?php echo $messages; ?>
   <div class="tab-content" id="tab-content-1">
-  <?php if($page->configurator): ?>
-  <?php include $page->configurator; ?>
+  <?php if($file->configurator): ?>
+  <?php include $file->configurator; ?>
   <?php else: ?>
   <p><?php echo Config::speak('notify_not_available', $speak->config); ?></p>
   <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
     <p class="about-author">
-    <?php echo Cell::strong($speak->author . ':') . ' ' . $page->author; ?><?php if(isset($page->url) && $page->url !== '#'): ?> <?php echo Cell::a($page->url, Jot::icon('external-link-square'), '_blank', array(
+    <?php echo Cell::strong($speak->author . ':') . ' ' . $file->author; ?><?php if(isset($file->url) && $file->url !== '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), '_blank', array(
         'class' => array(
             'about-url',
             'help'
@@ -23,7 +23,7 @@
     )); ?>
     <?php endif; ?>
     </p>
-    <h3 class="about-title"><?php echo $page->title; ?><?php if(isset($page->version)): ?> <code class="about-version"><?php echo $page->version; ?></code><?php endif; ?></h3>
-    <div class="about-content"><?php echo $page->content; ?></div>
+    <h3 class="about-title"><?php echo $file->title; ?><?php if(isset($file->version)): ?> <code class="about-version"><?php echo $file->version; ?></code><?php endif; ?></h3>
+    <div class="about-content"><?php echo $file->content; ?></div>
   </div>
 </div>

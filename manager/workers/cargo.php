@@ -1,6 +1,6 @@
 <?php
 
-Weapon::add('shield_before', function() {
+Weapon::add('shield_lot_before', function() {
     ob_start();
     $cargo = DECK . DS . 'workers' . DS . Config::get('cargo');
     // No buffer for backend cargo, so `chunk:input` and `chunk:output` filter(s) won't work here
@@ -12,6 +12,8 @@ Weapon::add('shield_before', function() {
         'link' => "",
         'content' => $content
     );
-    Config::set('page', array_merge($o, array('cargo' => $cargo))); // < 1.2.0
-    Shield::lot(array('page' => (object) $o));
+    Config::set(array(
+        'page' => (object) $o,
+        'cargo' => $cargo
+    ));
 });

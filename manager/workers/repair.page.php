@@ -11,6 +11,7 @@
   <?php echo $messages; ?>
   <form class="form-<?php echo $page->id ? 'repair' : 'ignite'; ?> form-page" id="form-<?php echo $page->id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
     <?php echo Form::hidden('token', $token); ?>
+    <?php echo Form::hidden('date', Guardian::wayback('date', $page->date->W3C)); ?>
     <div class="tab-content" id="tab-content-1">
       <?php Weapon::fire('unit_composer_1_before', array($segment)); ?>
       <?php include 'unit.composer.1.php'; ?>

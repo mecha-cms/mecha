@@ -47,7 +47,7 @@ Filter::add('chunk:output', function($content, $path) use($config, $speak) {
         $content = str_replace('>' . $speak->publish . '</button>', '><i class="fa fa-check-circle"></i> ' . trim(strip_tags($speak->publish)) . '</button>', $content);
     }
     // Add an icon to the log in/out link
-    if($name === 'block.footer.copyright') {
+    if($name === 'block.footer.bar') {
         $content = str_replace('>' . $speak->log_in . '</a>', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_in)) . '</a>', $content);
         $content = str_replace('>' . $speak->log_out . '</a>', '><i class="fa fa-sign-in"></i> ' . trim(strip_tags($speak->log_out)) . '</a>', $content);
     }

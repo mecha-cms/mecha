@@ -128,12 +128,12 @@ textarea[name="json[]"],
 textarea[name="jsonp[]"],
 textarea[name="xml[]"] {height:23.076923076923077em}
 
-.no-appearance,
-a.no-appearance,
-button.no-appearance,
-input.no-appearance,
-select.no-appearance,
-textarea.no-appearance {
+.na,
+a.na,
+button.na,
+input.na,
+select.na,
+textarea.na {
   -webkit-appearance:none;
   -moz-appearance:none;
   appearance:none;
@@ -179,9 +179,11 @@ table[border="1"] td {border:1px solid}
   display:block;
   height:0;
   position:relative;
-  padding-bottom:56.25%;
+  padding-bottom:100%;
   overflow:hidden;
 }
+
+.fluid-video {padding-bottom:56.25%}
 
 .fluid-media embed,
 .fluid-media iframe,
@@ -197,8 +199,6 @@ table[border="1"] td {border:1px solid}
   width:100%;
   height:100%;
 }
-
-.messages {margin:0 0 1.3846153846153846em}
 
 .message {
   margin:0 0 2px;

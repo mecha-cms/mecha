@@ -26,13 +26,13 @@
 
 /* GENERAL */
 
-html {font-family:Helmet,FreeSans,Sans-Serif}
-blockquote {font-family:Georgia,"URW Bookman L",Serif}
-code,pre,.code {font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,Monospace}
-
-body {
+html {
   background-color:white;
   color:#333;
+  font-family:Helmet,FreeSans,Sans-Serif;
+}
+
+body {
   border-top:5px solid;
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
@@ -43,6 +43,9 @@ a {color:#365D98}
 
 a:focus,
 a:hover {color:#666}
+
+blockquote {font-family:Georgia,"URW Bookman L",Serif}
+code,pre,.code {font-family:Consolas,"Andale Mono WT","Andale Mono","Lucida Console","Lucida Sans Typewriter","DejaVu Sans Mono","Bitstream Vera Sans Mono","Liberation Mono","Nimbus Mono L",Monaco,"Courier New",Courier,Monospace}
 
 .form-login {padding:10% 0}
 .footnotes p {margin:0}
@@ -381,20 +384,19 @@ pre {
 .post + .post {margin-top:5%}
 
 .post-time {
-  margin:0 0 1.3846153846153846em;
   text-transform:uppercase;
   letter-spacing:.15384615384615385em;
   color:#AAA;
 }
 
 .post-time .fa {
-  font-size:107.6923076923077%;
   position:relative;
-  top:-.07692307692307693em;
+  font-size:107.6923076923077%; /* magic number :( */
+  top:-.07692307692307693em; /* magic number :( */
 }
 
-.post-index .post-time {font-size:80%}
-.post-index .post-time .fa {top:0}
+.post-index .post-time time {font-size:76.92307692307693%} /* magic number :( */
+.post-index .post-time .fa {font-size:84.61538461538461%} /* magic number :( */
 
 .post-footer {margin:5% 0 0}
 
@@ -634,6 +636,13 @@ pre {
     content:"\2013";
     color:#AAA;
     margin:0 1em;
+  }
+  .align-left,
+  .align-right {
+    float:none;
+    display:block;
+    margin:0 auto 1.3846153846153846em;
+    text-align:center;
   }
 }
 

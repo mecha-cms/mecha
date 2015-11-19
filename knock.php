@@ -42,15 +42,16 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         $data .= $_POST['name'] . ' @pilot) ';
         $data .= $_POST['email'];
         if( ! file_exists($user_file)) file_put_contents($user_file, $data);
-        $_SESSION['message'] = '<div class="messages"><p class="message message-success cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
+        $_SESSION['message'] = '<div class="messages p cl cf"><p class="message message-success cl cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cl cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
         unset($_SESSION['meet_mecha']);
         unset($_SESSION['token']);
         chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'plugins', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'articles', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'pages', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'responses', 0766);
+        chmod(ROOT . DS . 'cabinet' . DS . 'comments', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'extends', 0766);
+        chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'chunk', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom', 0766);
         chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance', 0777);
         chmod(ROOT . DS . 'cabinet' . DS . 'scraps', 0766);
@@ -58,7 +59,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         chmod(ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt', 0600);
         unlink(ROOT . DS . 'cabinet' . DS . 'articles' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'pages' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'responses' . DS . '.empty');
+        unlink(ROOT . DS . 'cabinet' . DS . 'comments' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance' . DS . '.empty');
         unlink(ROOT . DS . 'cabinet' . DS . 'scraps' . DS . '.empty');

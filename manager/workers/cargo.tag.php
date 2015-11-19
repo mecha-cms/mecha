@@ -42,7 +42,7 @@
         <?php echo Form::text('id[]', max($id) + 1, null, array(
             'class' => array(
                 'input-block',
-                'no-appearance'
+                'na'
             ),
             'autocomplete' => 'off'
         )); ?>

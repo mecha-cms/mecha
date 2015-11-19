@@ -83,16 +83,16 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
         Shield::abort();
     }
-    $info = Plugin::info($slug, true);
-    $info['configurator'] = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
+    $info = Plugin::info($slug);
+    $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
-        'page_title' => $speak->managing . ': ' . $info['title'] . $config->title_separator . $config->manager->title,
-        'page' => $info,
+        'page_title' => $speak->managing . ': ' . $info->title . $config->title_separator . $config->manager->title,
         'cargo' => 'repair.plugin.php'
     ));
     Shield::lot(array(
         'segment' => 'plugin',
-        'slug' => $slug
+        'file' => $info,
+        'folder' => $slug
     ))->attach('manager');
 });
 

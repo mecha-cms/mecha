@@ -18,7 +18,9 @@ Weapon::add('shield_before', function() use($config, $speak) {
     if($article && $config->page_type === 'article' && Request::method('post')) {
         $request = Request::post();
         $base = SHIELD . DS . $config->shield . DS . 'workers' . DS;
-        if($custom = File::exist($base . 'task.comment.php') || $custom = File::exist($base . '__task.comment.php')) {
+        if($custom = File::exist($base . 'task.comment.php')) {
+            require $custom; // Custom comment constructor
+        } else if($custom = File::exist($base . '__task.comment.php')) {
             require $custom; // Custom comment constructor
         } else {
             // Check token

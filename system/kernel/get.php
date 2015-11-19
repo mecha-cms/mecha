@@ -751,7 +751,7 @@ class Get extends Base {
             $curt = Converter::curt($content, $config->excerpt->length, $config->excerpt->tail);
             $results['description'] = self::AMF($curt, $FP, 'description', $results);
         }
-        $results['excerpt'] = "";
+        $results['excerpt'] = $more = "";
         if($content !== "") {
             $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, $results) : $results;
             $exc = $exc['content'];
@@ -760,13 +760,14 @@ class Get extends Base {
             if(strpos($exc, '<!-- cut+ ') !== false) {
                 preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $exc, $matches);
                 $more = ! empty($matches[3]) ? $matches[3] : $speak->read_more;
-                $exc = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<p><a class="fi-link" href="' . $results['url'] . '#' . sprintf($config->excerpt->id, $results['id']) . '">' . $more . '</a></p><!-- cut -->', $exc);
+                $more = '<p><a class="fi-link" href="' . $results['url'] . '#' . sprintf($config->excerpt->id, $results['id']) . '">' . $more . '</a></p>';
+                $exc = preg_replace('#<!-- cut\+( +(.*?))? -->#', '<!-- cut -->', $exc);
             }
             // ... or `<!-- cut -->`
             if(strpos($exc, '<!-- cut -->') !== false) {
                 $parts = explode('<!-- cut -->', $exc, 2);
-                $results['excerpt'] = self::AMF(trim($parts[0]), $FP, 'excerpt', $results);
-                $results['content'] = preg_replace('#<p><a class="fi-link" href=".*?">.*?<\/a><\/p>#', "", trim($parts[0])) . NL . NL . '<span class="fi" id="' . sprintf($config->excerpt->id, $results['id']) . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
+                $results['excerpt'] = self::AMF(trim($parts[0]) . $more, $FP, 'excerpt', $results);
+                $results['content'] = trim($parts[0]) . NL . NL . '<span class="fi" id="' . sprintf($config->excerpt->id, $results['id']) . '" aria-hidden="true"></span>' . NL . NL . trim($parts[1]);
             }
         }
         // Post Tags

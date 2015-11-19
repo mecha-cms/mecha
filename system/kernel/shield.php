@@ -182,7 +182,9 @@ class Shield extends Base {
         $G['data']['path'] = $_path;
         $out = "";
         // Begin shield
+        Weapon::fire('shield_lot_before', array($G, $G));
         extract(Filter::apply('shield:lot', self::cargo()));
+        Weapon::fire('shield_lot_after', array($G, $G));
         Weapon::fire('shield_before', array($G, $G));
         if($buffer) {
             ob_start(function($content) use($path, &$out) {
@@ -255,7 +257,9 @@ class Shield extends Base {
         $out = "";
         if($name) {
             // Begin chunk
+            Weapon::fire('chunk_lot_before', array($G, $G));
             extract(Filter::apply('chunk:lot', self::$lot));
+            Weapon::fire('chunk_lot_after', array($G, $G));
             Weapon::fire('chunk_before', array($G, $G));
             if($buffer) {
                 ob_start(function($content) use($name, &$out) {

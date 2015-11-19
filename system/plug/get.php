@@ -511,7 +511,7 @@ Get::plug('rawTags', function($order = 'ASC', $sorter = 'name') {
     return Mecha::A(Get::tags($order, $sorter));
 });
 
-// DEPRECATED. Please use `Mecha::A(Get::tag())`
+// DEPRECATED. Please use `Mecha::A(Get::tag(1))`
 Get::plug('rawTag', function($filter, $output = null, $fallback = false) {
     return Mecha::A(Get::tag($filter, $output, $fallback));
 });

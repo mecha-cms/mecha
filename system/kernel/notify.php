@@ -32,7 +32,7 @@ class Notify extends Base {
 
     public static $config = array(
         'message' => '<p class="message message-%1$s cl cf">%2$s</p>',
-        'messages' => '<div class="messages cl cf">%1$s</div>'
+        'messages' => '<div class="messages p cl cf">%1$s</div>'
     );
 
     public static function add($kin, $text = "") {
