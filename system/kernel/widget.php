@@ -1,6 +1,6 @@
 <?php
 
-class Widget extends Base {
+class Widget {
 
     protected static $w = array(
         'manager' => 1,

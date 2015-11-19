@@ -2,74 +2,6 @@
 
 
 /**
- * Include Comment, Custom CSS + JS to the Article Data
- * ----------------------------------------------------
- */
-
-Filter::add('shield:lot', function($data) {
-    $config = Config::get();
-    $speak = Config::speak();
-    if(isset($data[$config->page_type]) && is_object($data[$config->page_type])) {
-        $results = $data[$config->page_type];
-        $FP = $config->page_type . ':';
-        // Include comment(s) data
-        if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'), COMMENT)) {
-            $results->comments = array();
-            $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments', $results);
-            $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
-            foreach($comments as $comment) {
-                $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
-            }
-            $results->comments = Get::AMF($results->comments, $FP, 'comments', $results);
-        }
-        $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments', $results);
-        $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
-        unset($comments);
-        // Include custom CSS and JS data
-        $results->css = $results->js = $results->css_raw = $results->js_raw = "";
-        if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
-            $custom = explode(SEPARATOR, File::open($file)->read());
-            $css = isset($custom[0]) ? Converter::DS(trim($custom[0])) : "";
-            $js = isset($custom[1]) ? Converter::DS(trim($custom[1])) : "";
-            // css_raw
-            // page:css_raw
-            // custom:css_raw
-            // shortcode
-            // page:shortcode
-            // custom:shortcode
-            // css
-            // page:css
-            // custom:css
-            $css = Get::AMF($css, $FP, 'css_raw', $results);
-            $results->css_raw = Filter::apply('custom:css_raw', $css, $results);
-            $css = Get::AMF($css, $FP, 'shortcode', $results);
-            $css = Filter::apply('custom:shortcode', $css, $results);
-            $css = Get::AMF($css, $FP, 'css', $results);
-            $results->css = Filter::apply('custom:css', $css, $results);
-            // js_raw
-            // page:js_raw
-            // custom:js_raw
-            // shortcode
-            // page:shortcode
-            // custom:shortcode
-            // js
-            // page:js
-            // custom:js
-            $js = Get::AMF($js, $FP, 'js_raw', $results);
-            $results->js_raw = Filter::apply('custom:js_raw', $js, $results);
-            $js = Get::AMF($js, $FP, 'shortcode', $results);
-            $js = Filter::apply('custom:shortcode', $js, $results);
-            $js = Get::AMF($js, $FP, 'js', $results);
-            $results->js = Filter::apply('custom:js', $js, $results);
-        }
-        $data[$config->page_type] = $results;
-        unset($results);
-    }
-    return $data;
-}, 1);
-
-
-/**
  * ==========================================================================
  *  GET PAGE/ARTICLE PATH
  * ==========================================================================
@@ -233,7 +165,61 @@ Get::plug('page', function($reference, $excludes = array()) {
 });
 
 Get::plug('article', function($reference, $excludes = array()) {
-    return Get::post($reference, $excludes, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    $config = Config::get();
+    $speak = Config::speak();
+    $FP = 'article:';
+    $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP);
+    // Include comment(s) data
+    if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'), COMMENT)) {
+        $results->comments = array();
+        $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments', $results);
+        $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
+        foreach($comments as $comment) {
+            $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
+        }
+        $results->comments = Get::AMF($results->comments, $FP, 'comments', $results);
+    }
+    $results->total_comments = Get::AMF($comments ? count($comments) : 0, $FP, 'total_comments', $results);
+    $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
+    unset($comments);
+    // Include custom CSS and JS data
+    $results->css = $results->js = $results->css_raw = $results->js_raw = "";
+    if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
+        $custom = explode(SEPARATOR, File::open($file)->read());
+        $css = isset($custom[0]) ? Converter::DS(trim($custom[0])) : "";
+        $js = isset($custom[1]) ? Converter::DS(trim($custom[1])) : "";
+        // css_raw
+        // page:css_raw
+        // custom:css_raw
+        // shortcode
+        // page:shortcode
+        // custom:shortcode
+        // css
+        // page:css
+        // custom:css
+        $css = Get::AMF($css, $FP, 'css_raw', $results);
+        $results->css_raw = Filter::apply('custom:css_raw', $css, $results);
+        $css = Get::AMF($css, $FP, 'shortcode', $results);
+        $css = Filter::apply('custom:shortcode', $css, $results);
+        $css = Get::AMF($css, $FP, 'css', $results);
+        $results->css = Filter::apply('custom:css', $css, $results);
+        // js_raw
+        // page:js_raw
+        // custom:js_raw
+        // shortcode
+        // page:shortcode
+        // custom:shortcode
+        // js
+        // page:js
+        // custom:js
+        $js = Get::AMF($js, $FP, 'js_raw', $results);
+        $results->js_raw = Filter::apply('custom:js_raw', $js, $results);
+        $js = Get::AMF($js, $FP, 'shortcode', $results);
+        $js = Filter::apply('custom:shortcode', $js, $results);
+        $js = Get::AMF($js, $FP, 'js', $results);
+        $results->js = Filter::apply('custom:js', $js, $results);
+    }
+    return $results;
 });
 
 

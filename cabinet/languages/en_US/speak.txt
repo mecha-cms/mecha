@@ -228,10 +228,6 @@ comment_email: Email
 comment_url: URL
 comment_status: Status
 comment_message: Message
-comment_reply: Reply
-comment_reply_to_: Reply to %s
-comment_reply_cancel: Cancel Reply
-comment_replies: Replies
 comment_guide: Basic <abbr title="Hyper Text Markup Language">HTML</abbr> tags are allowed.
 
 title: Title

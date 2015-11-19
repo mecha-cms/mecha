@@ -1,3 +1,3 @@
 <footer class="blog-footer">
-  <?php Shield::chunk('block.footer.copyright'); ?>
+  <?php Shield::chunk('block.footer.bar'); ?>
 </footer>

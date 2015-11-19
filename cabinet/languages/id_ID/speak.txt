@@ -228,10 +228,6 @@ comment_email: Email
 comment_url: URL
 comment_status: Status
 comment_message: Pesan
-comment_reply: Balasan
-comment_reply_to_: Sebagai balasan %s
-comment_reply_cancel: Batal Membalas
-comment_replies: Balasan
 comment_guide: Tag <abbr title="Hyper Text Markup Language">HTML</abbr> dasar diperbolehkan.
 
 title: Judul
