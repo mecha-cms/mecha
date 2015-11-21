@@ -55,7 +55,7 @@ class Asset extends Base {
         $path = self::path($source, false);
         $url = File::url($path);
         if($path && strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;
+            return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 && file_exists($path) ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;
         }
         return $path && file_exists($path) ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;
     }
