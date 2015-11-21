@@ -168,14 +168,14 @@ Get::plug('article', function($reference, $excludes = array()) {
     $config = Config::get();
     $speak = Config::speak();
     $FP = 'article:';
-    $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP);
+    if( ! $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP)) return $results;
     // Include comment(s) data
-    if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'), COMMENT)) {
+    if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'))) {
         $results->comments = array();
         $results->total_comments = Get::AMF($comments !== false ? count($comments) : 0, $FP, 'total_comments', $results);
         $results->total_comments_text = Get::AMF($results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $FP, 'total_comments_text', $results);
         foreach($comments as $comment) {
-            $results->comments[] = Get::comment($comment, array(), array(COMMENT, ARTICLE), '/' . $config->index->slug . '/', 'comment:');
+            $results->comments[] = Get::comment($comment);
         }
         $results->comments = Get::AMF($results->comments, $FP, 'comments', $results);
     }
