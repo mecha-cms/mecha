@@ -509,80 +509,45 @@ class Converter extends Base {
         // Remove extra white-space(s) between HTML attribute(s)
         $input = preg_replace_callback('#<([^\/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
             return '<' . $matches[1] . preg_replace('#([^\s=]+)(\=([\'"]?)(.*?)\3)?(\s+|$)#s', ' $1$2', $matches[2]) . $matches[3] . '>';
-        }, $input);
+        }, str_replace("\r", "", $input));
         // Minify inline CSS declaration(s)
         if(strpos($input, ' style=') !== false) {
             $input = preg_replace_callback('#<([^<]+?)\s+style=([\'"])(.*?)\2(?=[\/\s>])#s', function($matches) {
-                return '<' . $matches[1] . ' style=' . $matches[2] . Converter::detractShell($matches[3]) . $matches[2];
+                return '<' . $matches[1] . ' style=' . $matches[2] . call_user_func(get_called_class() . '::detractShell', $matches[3]) . $matches[2];
             }, $input);
         }
         return preg_replace(
             array(
-
+                // t = text
+                // o = tag open
+                // c = tag close
+                // Keep important white-space(s) after self-closing HTML tag(s)
+                '#<(img|input)(>| .*?>)#s',
+                // Remove a line break and two or more white-space(s) between tag(s)
+                '#(<!--.*?-->)|(>)(?:\n*|\s{2,})(<)|^\s*|\s*$#s',
+                '#(<!--.*?-->)|(?<!\>)\s+(<\/.*?>)|(<[^\/]*?>)\s+(?!\<)#s', // t+c || o+t
+                '#(<!--.*?-->)|(<[^\/]*?>)\s+(<[^\/]*?>)|(<\/.*?>)\s+(<\/.*?>)#s', // o+o || c+c
+                '#(<!--.*?-->)|(<\/.*?>)\s+(\s)(?!\<)|(?<!\>)\s+(\s)(<[^\/]*?\/?>)|(<[^\/]*?\/?>)\s+(\s)(?!\<)#s', // c+t || t+o || o+t -- separated by long white-space(s)
+                '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
+                '#<(img|input)(>| .*?>)<\/\1>#s', // reset previous fix
+                '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
+                '#(?<=\>)(&nbsp;)(?=\<)#', // --ibid
                 // Remove HTML comment(s) except IE comment(s)
-                '#\s*(<\!--(?=\[if\s).*?-->)\s*|\s*<\!--.*?-->\s*#s',
-
-                // Do not remove white-space after image and
-                // input tag that is followed by a tag open
-                '#(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?=\<[^\/])#s',
-
-                // Remove a line break or two or more white-space(s) between tag(s)
-                '#(<\!--.*?-->)|(>)(?:[\n\r]|\s{2,})|(?:[\n\r]|\s{2,})(<)|(>)(?:[\n\r]|\s{2,})(<)#s',
-
-                // PROOFING ...
-                // o: tag open, c: tag close, t: text
-                // If `<tag> </tag>` remove white-space
-                // If `</tag> <tag>` keep white-space
-                // If `<tag> <tag>` remove white-space
-                // If `</tag> </tag>` remove white-space
-                // If `<tag>    ...</tag>` remove white-space(s)
-                // If `</tag>    ...<tag>` remove white-space(s)
-                // If `<tag>    ...<tag>` remove white-space(s)
-                // If `</tag>    ...</tag>` remove white-space(s)
-                // If `abc <tag>` keep white-space
-                // If `<tag> abc` remove white-space
-                // If `abc </tag>` remove white-space
-                // If `</tag> abc` keep white-space
-                // TODO: If `abc    ...<tag>` keep one white-space
-                // If `<tag>    ...abc` remove white-space(s)
-                // If `abc    ...</tag>` remove white-space(s)
-                // TODO: If `</tag>    ...abc` keep one white-space
-                '#(<\!--.*?-->)|(<(?:img|input)(?:\/?>|\s[^<>]*?\/?>))\s+(?!\<\/)#s', // o+t | o+o
-                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?=\<[^\/])#s', // o+o
-                '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?=\<\/)#s', // c+c
-                '#(<\!--.*?-->)|(<([^\/\s<>]+)(?:>|\s[^<>]*?>))\s+(<\/\3>)#s', // o+c
-                '#(<\!--.*?-->)|(<[^\/\s<>]+(?:>|\s[^<>]*?>))\s+(?!\<)#s', // o+t
-                '#(<\!--.*?-->)|(?!\>)\s+(<\/[^\/\s<>]+?>)#s', // t+c
-                '#(<\!--.*?-->)|(?!\>)\s+(?=\<[^\/])#s', // t+o
-                '#(<\!--.*?-->)|(<\/[^\/\s<>]+?>)\s+(?!\<)#s', // c+t
-                '#(<\!--.*?-->)|(\/>)\s+(?!\<)#', // o+t
-
-                // Replace `&nbsp;&nbsp;&nbsp;` with `&nbsp; &nbsp;`
-                '#(?<=&nbsp;)(&nbsp;){2}#',
-
-                // PROOFING ...
-                '#(?<=\>)&nbsp;(?!\s|&nbsp;|\<\/)#',
-                '#(?<=--\>)(?:\s|&nbsp;)+(?=\<)#'
-
+                '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<)#s'
             ),
             array(
-                '$1',
-                '$1&nbsp;',
+                '<$1$2</$1>',
+                '$1$2$3',
+                '$1$2$3',
                 '$1$2$3$4$5',
-                '$1$2&nbsp;', // o+t | o+o
-                '$1$2', // o+o
-                '$1$2', //c+c
-                '$1$2$4', // o+c
-                '$1$2', // o+t
-                '$1$2', // t+c
-                '$1$2 ', // t+o
-                '$1$2 ', // c+t
-                '$1$2 ', // o+t
-                ' $1',
-                ' ',
+                '$1$2$3$4$5$6$7',
+                '$1$2$3',
+                '<$1$2',
+                '$1 ',
+                '$1',
                 ""
             ),
-        trim($input));
+        $input);
     }
 
     /**
@@ -611,38 +576,27 @@ class Converter extends Base {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-
                 // Remove comment(s)
-                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)#s',
-
+                '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\/\*(?!\!)(?>.*?\*\/)|^\s*|\s*$#s',
                 // Remove unused white-space(s)
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/))|\s*+;\s*+(})\s*+|\s*+([*$~^|]?+=|[{};,>~+]|\s*+-(?![0-9\.])|!important\b)\s*+|([[(:])\s++|\s++([])])|\s++(:)\s*+(?!(?>[^{}"\']++|"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')*+{)|^\s++|\s++\z|(\s)\s+#si',
-
                 // Replace `0(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)` with `0`
                 '#(?<=[\s:])(0)(cm|em|ex|in|mm|pc|pt|px|vh|vw|%)#si',
-
                 // Replace `:0 0 0 0` with `:0`
                 '#:(0\s+0|0\s+0\s+0\s+0)(?=[;\}]|\!important)#i',
-
                 // Replace `background-position:0` with `background-position:0 0`
                 '#(background-position):0(?=[;\}])#si',
-
                 // Replace `0.6` with `.6`, but only when preceded by `:`, `,`, `-` or a white-space
                 '#(?<=[\s:,\-])0+\.(\d+)#s',
-
                 // Minify string value
                 '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
-
                 // Minify HEX color code
                 '#(?<=[\s:,\-]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
-
                 // Replace `(border|outline):none` with `(border|outline):0`
                 '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
-
                 // Remove empty selector(s)
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
-
             ),
             array(
                 '$1',
@@ -657,7 +611,7 @@ class Converter extends Base {
                 '$1:0',
                 '$1$2'
             ),
-        trim($input));
+        $input);
     }
 
     /**
@@ -684,22 +638,16 @@ class Converter extends Base {
         if(trim($input) === "") return $input;
         return preg_replace(
             array(
-
                 // Remove comment(s)
-                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*(?=[\n\r]|$)#',
-
-                // Remove unused white-space character(s) outside the string and regex
+                '#\s*("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')\s*|\s*\/\*(?!\!|@cc_on)(?>[\s\S]*?\*\/)\s*|\s*(?<![\:\=])\/\/.*(?=[\n\r]|$)|^\s*|\s*$#',
+                // Remove white-space(s) outside the string and regex
                 '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*(?>.*?\*\/)|\/(?!\/)[^\n\r]*?\/(?=[\s.,;]|[gimuy]|$))|\s*([!%&*\(\)\-=+\[\]\{\}|;:,.<>?\/])\s*#s',
-
                 // Remove the last semicolon
                 '#;+\}#',
-
-                // Minify object attribute except JSON attribute. From `{'foo':'bar'}` to `{foo:'bar'}`
+                // Minify object attribute(s) except JSON attribute(s). From `{'foo':'bar'}` to `{foo:'bar'}`
                 '#([\{,])([\'])(\d+|[a-z_][a-z0-9_]*)\2(?=\:)#i',
-
                 // --ibid. From `foo['bar']` to `foo.bar`
                 '#([a-z0-9_\)\]])\[([\'"])([a-z_][a-z0-9_]*)\2\]#i'
-
             ),
             array(
                 '$1',
@@ -708,7 +656,7 @@ class Converter extends Base {
                 '$1$3',
                 '$1.$3'
             ),
-        trim($input));
+        $input);
     }
 
     // Encode the bogus `SEPARATOR`s (internal only)
