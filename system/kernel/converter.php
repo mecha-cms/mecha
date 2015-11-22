@@ -533,7 +533,7 @@ class Converter extends Base {
                 '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
                 '#(?<=\>)(&nbsp;)(?=\<)#', // --ibid
                 // Remove HTML comment(s) except IE comment(s)
-                '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<)#s'
+                '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
             ),
             array(
                 '<$1$2</$1>',

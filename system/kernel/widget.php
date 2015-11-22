@@ -100,60 +100,61 @@ class Widget {
         $month_names = (array) $speak->month_names;
         $archives = array();
         $html = O_BEGIN . '<div class="widget widget-archive widget-archive-' . $kin . '" id="widget-archive-' . $kin . '-' . $id . '">' . NL;
-        if( ! $files = Get::articles($sort)) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
-        }
-        if($type === 'HIERARCHY') {
-            $i = 0;
-            foreach($files as $file) {
-                list($year, $month) = explode('-', File::N($file));
-                $archives[$year][$month][] = $file;
-            }
-            $html .= $T1 . '<ul>' . NL;
-            foreach($archives as $year => $months) {
-                if(is_array($months)) {
-                    $posts_count_per_year = 0;
-                    $expand = $query ? (int) substr($query, 0, 4) === (int) $year : $i === 0;
-                    foreach($months as $month) {
-                        $posts_count_per_year += count($month);
-                    }
-                    $html .= $T2 . '<li class="' . ($expand ? 'expanded' : 'collapsed') . ((int) $query === (int) $year ? ' selected' : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</a> <a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year)) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
-                    $html .= $T3 . '<ul>' . NL;
-                    foreach($months as $month => $days) {
-                        if(is_array($days)) {
-                            $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
-                        }
-                    }
-                    $html .= $T3 . '</ul>' . NL;
-                    $html .= $T2 . '</li>' . NL;
+        if($files = Get::articles($sort)) {
+            if($type === 'HIERARCHY') {
+                $i = 0;
+                foreach($files as $file) {
+                    list($year, $month) = explode('-', File::N($file));
+                    $archives[$year][$month][] = $file;
                 }
-                $i++;
-            }
-            $html .= $T1 . '</ul>' . NL;
-        }
-        if($type === 'LIST' || $type === 'DROPDOWN') {
-            foreach($files as $name) {
-                $archives[] = substr(File::N($name), 0, 7);
-            }
-            $counter = array_count_values($archives);
-            $archives = array_unique($archives);
-            $i = 0;
-            if($type === 'LIST') {
                 $html .= $T1 . '<ul>' . NL;
-                foreach($archives as $archive) {
-                    list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                foreach($archives as $year => $months) {
+                    if(is_array($months)) {
+                        $posts_count_per_year = 0;
+                        $expand = $query ? (int) substr($query, 0, 4) === (int) $year : $i === 0;
+                        foreach($months as $month) {
+                            $posts_count_per_year += count($month);
+                        }
+                        $html .= $T2 . '<li class="' . ($expand ? 'expanded' : 'collapsed') . ((int) $query === (int) $year ? ' selected' : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</a> <a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year)) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                        $html .= $T3 . '<ul>' . NL;
+                        foreach($months as $month => $days) {
+                            if(is_array($days)) {
+                                $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                            }
+                        }
+                        $html .= $T3 . '</ul>' . NL;
+                        $html .= $T2 . '</li>' . NL;
+                    }
                     $i++;
                 }
                 $html .= $T1 . '</ul>' . NL;
-            } else {
-                $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
-                foreach($archives as $archive) {
-                    list($year, $month) = explode('-', $archive);
-                    $html .= $T2 . '<option value="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
-                }
-                $html .= $T1 . '</select>' . NL;
             }
+            if($type === 'LIST' || $type === 'DROPDOWN') {
+                foreach($files as $name) {
+                    $archives[] = substr(File::N($name), 0, 7);
+                }
+                $counter = array_count_values($archives);
+                $archives = array_unique($archives);
+                $i = 0;
+                if($type === 'LIST') {
+                    $html .= $T1 . '<ul>' . NL;
+                    foreach($archives as $archive) {
+                        list($year, $month) = explode('-', $archive);
+                        $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="selected"' : "") . '><a href="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                        $i++;
+                    }
+                    $html .= $T1 . '</ul>' . NL;
+                } else {
+                    $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
+                    foreach($archives as $archive) {
+                        list($year, $month) = explode('-', $archive);
+                        $html .= $T2 . '<option value="' . Filter::apply('archive:url', Filter::apply('url', $config->url . '/' . $config->archive->slug . '/' . $archive)) . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
+                    }
+                    $html .= $T1 . '</select>' . NL;
+                }
+            }
+        } else {
+            $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
         }
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
@@ -183,58 +184,58 @@ class Widget {
         $counters = array();
         $tags = array();
         $html = O_BEGIN . '<div class="widget widget-tag widget-tag-' . $kin . '" id="widget-tag-' . $kin . '-' . $id . '">' . NL;
-        if( ! $files = Get::articles()) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
-        }
-        foreach($files as $file) {
-            list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
-            foreach(explode(',', $_kind) as $kind) {
-                $counters[] = (int) $kind;
+        if($files = Get::articles()) {
+            foreach($files as $file) {
+                list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
+                foreach(explode(',', $_kind) as $kind) {
+                    $counters[] = (int) $kind;
+                }
             }
-        }
-        $i = 0;
-        foreach(array_count_values($counters) as $id => $count) {
-            $tag = Get::tag('id:' . $id);
-            if($tag && $id !== 0) {
-                $tags[$i] = array(
-                    'id' => $id,
-                    'name' => $tag->name,
-                    'slug' => $tag->slug,
-                    'count' => $count
-                );
-                $i++;
+            foreach(array_count_values($counters) as $id => $count) {
+                $tag = Get::tag('id:' . $id);
+                if($tag && $id !== 0) {
+                    $tags[] = array(
+                        'id' => $id,
+                        'name' => $tag->name,
+                        'slug' => $tag->slug,
+                        'count' => $count
+                    );
+                }
             }
-        }
-        if(empty($tags)) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->tags)) . NL . '</div>' . O_END;
-        }
-        $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
-        if($type === 'LIST') {
-            $html .= $T1 . '<ul>' . NL;
-            foreach($tags as $tag) {
-                $html .= $T2 . '<li' . ($config->tag_query === $tag['slug'] ? ' class="selected"' : "") . '><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
+            if(empty($tags)) {
+                $html .= $T1 . Config::speak('notify_empty', strtolower($speak->tags)) . NL;
+            } else {
+                $tags = Mecha::eat($tags)->order($order, $sorter)->vomit();
+                if($type === 'LIST') {
+                    $html .= $T1 . '<ul>' . NL;
+                    foreach($tags as $tag) {
+                        $html .= $T2 . '<li' . ($config->tag_query === $tag['slug'] ? ' class="selected"' : "") . '><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
+                    }
+                    $html .= $T1 . '</ul>' . NL;
+                }
+                if($type === 'CLOUD') {
+                    $tags_counter = array();
+                    foreach($tags as $tag) {
+                        $tags_counter[] = $tag['count'];
+                    }
+                    $highest_count = max($tags_counter);
+                    $_html = array();
+                    foreach($tags as $tag) {
+                        $size = ceil(($tag['count'] / $highest_count) * $max_level);
+                        $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
+                    }
+                    $html .= $T1 . implode(' ', $_html) . NL;
+                }
+                if($type === 'DROPDOWN') {
+                    $html .= $T1 . '<select>' . NL . ($config->tag_query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
+                    foreach($tags as $tag) {
+                        $html .= $T2 . '<option value="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
+                    }
+                    $html .= $T1 . '</select>' . NL;
+                }
             }
-            $html .= $T1 . '</ul>' . NL;
-        }
-        if($type === 'CLOUD') {
-            $tags_counter = array();
-            foreach($tags as $tag) {
-                $tags_counter[] = $tag['count'];
-            }
-            $highest_count = max($tags_counter);
-            $_html = array();
-            foreach($tags as $tag) {
-                $size = ceil(($tag['count'] / $highest_count) * $max_level);
-                $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '"><a href="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
-            }
-            $html .= $T1 . implode(' ', $_html) . NL;
-        }
-        if($type === 'DROPDOWN') {
-            $html .= $T1 . '<select>' . NL . ($config->tag_query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
-            foreach($tags as $tag) {
-                $html .= $T2 . '<option value="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
-            }
-            $html .= $T1 . '</select>' . NL;
+        } else {
+            $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
         }
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
@@ -286,19 +287,20 @@ class Widget {
         $config = Config::get();
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-article" id="widget-' . $class . '-article-' . $id . '">' . NL;
-        if( ! $files = Get::articles()) {
-            return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
+        if($files = Get::articles()) {
+            if($class === 'random') {
+                $files = Mecha::eat($files)->shake()->vomit();
+            }
+            $html .= $T1 . '<ul>' . NL;
+            for($i = 0, $count = count($files); $i < $total; ++$i) {
+                if($i === $count) break;
+                $article = Get::articleAnchor($files[$i]);
+                $html .= $T2 . '<li' . ($config->url_current === $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
+            }
+            $html .= $T1 . '</ul>' . NL;
+        } else {
+            $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
         }
-        if($class === 'random') {
-            $files = Mecha::eat($files)->shake()->vomit();
-        }
-        $html .= $T1 . '<ul>' . NL;
-        for($i = 0, $count = count($files); $i < $total; ++$i) {
-            if($i === $count) break;
-            $article = Get::articleAnchor($files[$i]);
-            $html .= $T2 . '<li' . ($config->url_current === $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
-        }
-        $html .= $T1 . '</ul>' . NL;
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);
         Config::set('widget_' . $class . '_article_id', $id);
@@ -403,22 +405,23 @@ class Widget {
         if($config->page_type !== 'article') {
             return self::randomArticle($total);
         } else {
-            if( ! $files = Get::articles('DESC', 'kind:' . implode(',', $kind))) {
-                return $html . $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL . '</div>' . O_END;
-            }
-            if(count($files) <= 1) {
-                return self::randomArticle($total);
-            }
-            $files = Mecha::eat($files)->shake()->vomit();
-            $html .= $T1 . '<ul>' . NL;
-            for($i = 0, $count = count($files); $i < $total; ++$i) {
-                if($i === $count) break;
-                if($files[$i] !== $config->article->path) {
-                    $article = Get::articleAnchor($files[$i]);
-                    $html .= $T2 . '<li><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
+            if($files = Get::articles('DESC', 'kind:' . implode(',', $kind))) {
+                if(count($files) <= 1) {
+                    return self::randomArticle($total);
                 }
+                $files = Mecha::eat($files)->shake()->vomit();
+                $html .= $T1 . '<ul>' . NL;
+                for($i = 0, $count = count($files); $i < $total; ++$i) {
+                    if($i === $count) break;
+                    if($files[$i] !== $config->article->path) {
+                        $article = Get::articleAnchor($files[$i]);
+                        $html .= $T2 . '<li><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
+                    }
+                }
+                $html .= $T1 . '</ul>' . NL;
+            } else {
+                $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
             }
-            $html .= $T1 . '</ul>' . NL;
         }
         $html .= '</div>' . O_END;
         $html = Filter::apply('widget', $html);

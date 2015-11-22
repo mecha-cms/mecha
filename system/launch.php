@@ -6,7 +6,7 @@
  * ------------------
  */
 
-Weapon::fire('route_before');
+Weapon::fire('routes_before');
 
 
 /**
@@ -483,7 +483,7 @@ Route::accept('/', function() use($config, $excludes) {
  * -----------------
  */
 
-Weapon::fire('route_after');
+Weapon::fire('routes_after');
 
 
 /**

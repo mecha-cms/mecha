@@ -1,3 +1,3 @@
 <header class="comments-header">
-  <h4><?php echo $article->total_comments_text; ?></h4>
+  <h3><?php echo $article->total_comments_text; ?></h3>
 </header>
