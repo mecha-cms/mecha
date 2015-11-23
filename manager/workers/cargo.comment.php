@@ -24,7 +24,7 @@
   </li>
   <?php endforeach; ?>
 </ol>
-<?php include DECK . DS . 'workers' . DS . 'unit.pager.1.php'; ?>
+<?php include __DIR__ . DS . 'unit.pager.1.php'; ?>
 <?php else: ?>
 <p><?php echo Config::speak('notify_empty', strtolower($speak->comments)); ?></p>
 <?php endif; ?>

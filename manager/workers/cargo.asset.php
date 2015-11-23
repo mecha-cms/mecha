@@ -21,8 +21,8 @@ $c_url_repair = $c_url . '/repair/file:';
       <div class="main-action-group">
         <?php echo Jot::button('destruct', $speak->delete); ?>
       </div>
-      <?php include DECK . DS . 'workers' . DS . 'unit.explorer.3.php'; ?>
-      <?php include DECK . DS . 'workers' . DS . 'unit.pager.1.php'; ?>
+      <?php include __DIR__ . DS . 'unit.explorer.3.php'; ?>
+      <?php include __DIR__ . DS . 'unit.pager.1.php'; ?>
     </form>
     <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
     <hr>

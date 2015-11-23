@@ -13,7 +13,6 @@ Weapon::add('shield_lot_before', function() {
     }
     if(isset($config->spam_keywords)) {
         $config->keywords_spam = $config->spam_keywords;
-        Config::set('keywords_spam', $config->keywords_spam);
     }
     if(isset($config->excerpt_length)) {
         $config->excerpt = (object) array(
@@ -34,11 +33,11 @@ Weapon::add('shield_lot_before', function() {
             'email' => $config->author_email,
             'url' => $config->author_profile_url
         );
-        Config::set('author', $config->author);
         if($config->page_type === 'manager') {
             Notify::info('<strong>1.2.0</strong> &mdash; In your <a href="' . $config->url . '/' . $config->manager->slug . '/shield">shield</a> files, change all <code>$config->author</code> data to <code>$config->author->name</code>, <code>$config->author_email</code> data to <code>$config->author->email</code> and <code>$config->author_profile_url</code> data to <code>$config->author->url</code>. Then go to the <a href="' . $config->url . '/' . $config->manager->slug . '/config">configuration manager page</a> to kill this message by pressing the <strong>Update</strong> button.');
         }
     }
+    Config::set(Mecha::A($config));
 }, 1);
 
 Weapon::add('on_config_update', function() {

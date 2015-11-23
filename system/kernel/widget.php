@@ -7,8 +7,8 @@ class Widget {
         'archive' => 1,
         'tag' => 1,
         'search' => 1,
-        'recentArticle' => 1,
         'recentComment' => 1,
+        'recentArticle' => 1,
         'randomArticle' => 1,
         'relatedArticle' => 1
     );
@@ -272,43 +272,6 @@ class Widget {
 
 
     /**
-     * Widget Recent Article
-     * ---------------------
-     *
-     * [1]. Widget::recentArticle();
-     * [2]. Widget::recentArticle(5);
-     *
-     */
-
-    public static function recentArticle($total = 7, $class = 'recent') {
-        $T1 = TAB;
-        $T2 = str_repeat($T1, 2);
-        $id = Config::get('widget_' . $class . '_article_id', 0) + 1;
-        $config = Config::get();
-        $speak = Config::speak();
-        $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-article" id="widget-' . $class . '-article-' . $id . '">' . NL;
-        if($files = Get::articles()) {
-            if($class === 'random') {
-                $files = Mecha::eat($files)->shake()->vomit();
-            }
-            $html .= $T1 . '<ul>' . NL;
-            for($i = 0, $count = count($files); $i < $total; ++$i) {
-                if($i === $count) break;
-                $article = Get::articleAnchor($files[$i]);
-                $html .= $T2 . '<li' . ($config->url_current === $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
-            }
-            $html .= $T1 . '</ul>' . NL;
-        } else {
-            $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
-        }
-        $html .= '</div>' . O_END;
-        $html = Filter::apply('widget', $html);
-        Config::set('widget_' . $class . '_article_id', $id);
-        return Filter::apply('widget:' . $class . '.article', Filter::apply('widget:' . $class, $html));
-    }
-
-
-    /**
      * Widget Recent Comment
      * ---------------------
      *
@@ -368,6 +331,43 @@ class Widget {
         $html = Filter::apply('widget', $html);
         Config::set('widget_recent_comment_id', $id);
         return Filter::apply('widget:recent.comment', Filter::apply('widget:recent', $html));
+    }
+
+
+    /**
+     * Widget Recent Article
+     * ---------------------
+     *
+     * [1]. Widget::recentArticle();
+     * [2]. Widget::recentArticle(5);
+     *
+     */
+
+    public static function recentArticle($total = 7, $class = 'recent') {
+        $T1 = TAB;
+        $T2 = str_repeat($T1, 2);
+        $id = Config::get('widget_' . $class . '_article_id', 0) + 1;
+        $config = Config::get();
+        $speak = Config::speak();
+        $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-article" id="widget-' . $class . '-article-' . $id . '">' . NL;
+        if($files = Get::articles()) {
+            if($class === 'random') {
+                $files = Mecha::eat($files)->shake()->vomit();
+            }
+            $html .= $T1 . '<ul>' . NL;
+            for($i = 0, $count = count($files); $i < $total; ++$i) {
+                if($i === $count) break;
+                $article = Get::articleAnchor($files[$i]);
+                $html .= $T2 . '<li' . ($config->url_current === $article->url ? ' class="selected"' : "") . '><a href="' . $article->url . '">' . $article->title . '</a></li>' . NL;
+            }
+            $html .= $T1 . '</ul>' . NL;
+        } else {
+            $html .= $T1 . Config::speak('notify_empty', strtolower($speak->articles)) . NL;
+        }
+        $html .= '</div>' . O_END;
+        $html = Filter::apply('widget', $html);
+        Config::set('widget_' . $class . '_article_id', $id);
+        return Filter::apply('widget:' . $class . '.article', Filter::apply('widget:' . $class, $html));
     }
 
 

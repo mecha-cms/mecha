@@ -17,7 +17,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $task_connect_path = SHIELD;
-        include DECK . DS . 'workers' . DS . 'task.package.1.php';
+        include __DIR__ . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], SHIELD, function() use($speak) {
                 Notify::clear();
@@ -27,7 +27,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             Weapon::fire('on_shield_update', array($P, $P));
             Weapon::fire('on_shield_construct', array($P, $P));
             $task_connect_kick = 'shield';
-            include DECK . DS . 'workers' . DS . 'task.package.2.php';
+            include __DIR__ . DS . 'task.package.2.php';
         } else {
             Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>

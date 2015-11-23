@@ -21,7 +21,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
         $task_connect_path = $destination;
-        include DECK . DS . 'workers' . DS . 'task.package.1.php';
+        include __DIR__ . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
                 Notify::clear();
@@ -30,7 +30,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));
             $task_connect_kick = 'backup';
-            include DECK . DS . 'workers' . DS . 'task.package.2.php';
+            include __DIR__ . DS . 'task.package.2.php';
         } else {
             Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
                 echo '<script>

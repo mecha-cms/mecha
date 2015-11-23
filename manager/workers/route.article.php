@@ -90,7 +90,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         $task_connect_segment = 'article';
         $task_connect_page_css = $config->defaults->article_css;
         $task_connect_page_js = $config->defaults->article_js;
-        include DECK . DS . 'workers' . DS . 'task.field.5.php';
+        include __DIR__ . DS . 'task.field.5.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         $kind = isset($request['kind']) ? $request['kind'] : array(0);
         sort($kind);
@@ -109,13 +109,13 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            include DECK . DS . 'workers' . DS . 'task.field.2.php';
-            include DECK . DS . 'workers' . DS . 'task.field.1.php';
-            include DECK . DS . 'workers' . DS . 'task.field.4.php';
+            include __DIR__ . DS . 'task.field.2.php';
+            include __DIR__ . DS . 'task.field.1.php';
+            include __DIR__ . DS . 'task.field.4.php';
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(ARTICLE . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension);
-                include DECK . DS . 'workers' . DS . 'task.custom.2.php';
+                include __DIR__ . DS . 'task.custom.2.php';
                 Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('article:url', Filter::apply('url', $config->url . '/' . $config->index->slug . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_article_update', array($G, $P));
                 Weapon::fire('on_article_construct', array($G, $P));
@@ -124,7 +124,7 @@ Route::accept(array($config->manager->slug . '/article/ignite', $config->manager
             } else {
                 Page::open($article->path)->header($header)->content($content)->save();
                 File::open($article->path)->renameTo(Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension);
-                include DECK . DS . 'workers' . DS . 'task.custom.1.php';
+                include __DIR__ . DS . 'task.custom.1.php';
                 if($article->slug !== $slug && $php_file = File::exist(File::D($article->path) . DS . $article->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
@@ -179,8 +179,8 @@ Route::accept($config->manager->slug . '/article/kill/id:(:num)', function($id =
         }
         $task_connect = $article;
         $P = array('data' => $request);
-        include DECK . DS . 'workers' . DS . 'task.field.3.php';
-        include DECK . DS . 'workers' . DS . 'task.custom.3.php';
+        include __DIR__ . DS . 'task.field.3.php';
+        include __DIR__ . DS . 'task.custom.3.php';
         Notify::success(Config::speak('notify_success_deleted', $article->title));
         Weapon::fire('on_article_update', array($G, $G));
         Weapon::fire('on_article_destruct', array($G, $G));

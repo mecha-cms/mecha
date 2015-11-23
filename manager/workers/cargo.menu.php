@@ -5,7 +5,7 @@
 
   $action_update = true;
   $editor_tab_size = '    ';
-  include DECK . DS . 'workers' . DS . 'unit.editor.1.php';
+  include __DIR__ . DS . 'unit.editor.1.php';
 
   ?>
 </form>

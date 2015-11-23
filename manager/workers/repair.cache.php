@@ -5,7 +5,7 @@
 $path_reject = $config->manager->slug . '/cache';
 $path_destruct = $path_reject . '/kill/file:' . File::url(str_replace(CACHE . DS, "", $path));
 
-include DECK . DS . 'workers' . DS . 'unit.editor.2.php';
+include __DIR__ . DS . 'unit.editor.2.php';
 
 ?>
 <?php echo Form::hidden('token', $token); ?>

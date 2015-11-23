@@ -82,8 +82,8 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
             $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
             $message = $request['message'];
             $field = Request::post('fields', array());
-            include DECK . DS . 'workers' . DS . 'task.field.2.php';
-            include DECK . DS . 'workers' . DS . 'task.field.1.php';
+            include __DIR__ . DS . 'task.field.2.php';
+            include __DIR__ . DS . 'task.field.1.php';
             // Update data
             Page::open($comment->path)->header(array(
                 'Name' => $name,
@@ -128,7 +128,7 @@ Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id =
         Guardian::checkToken($request['token']);
         File::open($comment->path)->delete();
         $task_connect = $comment;
-        include DECK . DS . 'workers' . DS . 'task.field.3.php';
+        include __DIR__ . DS . 'task.field.3.php';
         File::write($config->total_comments_backend - 1)->saveTo(LOG . DS . 'comments.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->comment));
         Weapon::fire('on_comment_update', array($P, $P));

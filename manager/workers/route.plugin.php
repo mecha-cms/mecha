@@ -20,7 +20,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
         $task_connect_path = PLUGIN;
-        include DECK . DS . 'workers' . DS . 'task.package.1.php';
+        include __DIR__ . DS . 'task.package.1.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], PLUGIN, function() use($speak) {
                 Notify::clear();

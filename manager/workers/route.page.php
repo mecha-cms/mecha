@@ -89,8 +89,8 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         $task_connect_segment = 'page';
         $task_connect_page_css = $config->defaults->page_css;
         $task_connect_page_js = $config->defaults->page_js;
-        include DECK . DS . 'workers' . DS . 'task.field.5.php';
-        include DECK . DS . 'workers' . DS . 'task.field.6.php';
+        include __DIR__ . DS . 'task.field.5.php';
+        include __DIR__ . DS . 'task.field.6.php';
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
         // Check for duplicate slug, except for the current old slug.
         // Allow user(s) to change their post slug, but make sure they
@@ -107,13 +107,13 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            include DECK . DS . 'workers' . DS . 'task.field.2.php';
-            include DECK . DS . 'workers' . DS . 'task.field.1.php';
-            include DECK . DS . 'workers' . DS . 'task.field.4.php';
+            include __DIR__ . DS . 'task.field.2.php';
+            include __DIR__ . DS . 'task.field.1.php';
+            include __DIR__ . DS . 'task.field.4.php';
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo(PAGE . DS . Date::slug($date) . '__' . $slug . $extension);
-                include DECK . DS . 'workers' . DS . 'task.custom.2.php';
+                include __DIR__ . DS . 'task.custom.2.php';
                 Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . Filter::apply('page:url', Filter::apply('url', $config->url . '/' . $slug)) . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
                 Weapon::fire('on_page_update', array($G, $P));
                 Weapon::fire('on_page_construct', array($G, $P));
@@ -122,7 +122,7 @@ Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->s
             } else {
                 Page::open($page->path)->header($header)->content($content)->save();
                 File::open($page->path)->renameTo(Date::slug($date) . '__' . $slug . $extension);
-                include DECK . DS . 'workers' . DS . 'task.custom.1.php';
+                include __DIR__ . DS . 'task.custom.1.php';
                 if($page->slug !== $slug && $php_file = File::exist(File::D($page->path) . DS . $page->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
@@ -163,8 +163,8 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
         File::open($page->path)->delete();
         $task_connect = $page;
         $P = array('data' => $request);
-        include DECK . DS . 'workers' . DS . 'task.field.3.php';
-        include DECK . DS . 'workers' . DS . 'task.custom.3.php';
+        include __DIR__ . DS . 'task.field.3.php';
+        include __DIR__ . DS . 'task.custom.3.php';
         Notify::success(Config::speak('notify_success_deleted', $page->title));
         Weapon::fire('on_page_update', array($G, $G));
         Weapon::fire('on_page_destruct', array($G, $G));

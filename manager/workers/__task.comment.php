@@ -37,7 +37,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 } else {
                     // Disallow passenger(s) from entering your email address in the comment email field
                     if( ! Guardian::happy() && $request['email'] === $config->author->email) {
-                        Notify::warning(Config::speak('notify_warning_forbidden_input', '<em>' . $request['email'] . '</em>', strtolower($speak->email)));
+                        Notify::warning(Config::speak('notify_warning_forbidden_input', array('<em>' . $request['email'] . '</em>', strtolower($speak->email))));
                     }
                 }
             } else {
@@ -98,11 +98,11 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 $parser = strip_tags(Request::post('content_type', $config->html_parser));
                 $message = $request['message'];
                 $field = Request::post('fields', array());
-                include DECK . DS . 'workers' . DS . 'task.field.1.php';
-                $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
+                include __DIR__ . DS . 'task.field.1.php';
+                $message = strip_tags($message, '<br><img>' . ($parser === false || $parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
                 // Temporarily disallow image(s) in comment to prevent XSS
                 $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
-                $message = preg_replace('#<img(\s[^<>]*?)>#', '&lt;img$1&gt;', $message);
+                $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);
                 // Disallow `{{php}}` shortcode in comment to prevent PHP script injection
                 $message = str_replace(array('{{php}}', '{{/php}}'), "", $message);
                 Page::header(array(

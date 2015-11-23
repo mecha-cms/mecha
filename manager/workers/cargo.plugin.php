@@ -43,7 +43,7 @@
       </div>
     </div>
     <?php endforeach; ?>
-    <?php include DECK . DS . 'workers' . DS . 'unit.pager.1.php'; ?>
+    <?php include __DIR__ . DS . 'unit.pager.1.php'; ?>
     <?php else: ?>
     <p><?php echo Config::speak('notify_' . (Request::get('id') || $config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->plugins)); ?></p>
     <?php endif; ?>

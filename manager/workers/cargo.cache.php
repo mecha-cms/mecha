@@ -13,7 +13,7 @@
   $c_url_kill = $c_url . '/kill/file:';
   $c_url_repair = $c_url . '/repair/file:';
 
-  include DECK . DS . 'workers' . DS . 'unit.explorer.2.php';
+  include __DIR__ . DS . 'unit.explorer.2.php';
 
   ?>
 </form>
