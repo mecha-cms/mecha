@@ -47,9 +47,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
     if(Guardian::get('status') !== 'pilot' || ! $comment = Get::comment($id)) {
         Shield::abort();
     }
-    if( ! isset($comment->content_type)) {
-        $comment->content_type = $config->html_parser;
-    }
+    if( ! isset($comment->content_type)) $comment->content_type = $config->html_parser;
     File::write($config->total_comments_backend)->saveTo(LOG . DS . 'comments.total.log', 0600);
     Config::set(array(
         'page_title' => $speak->editing . ': ' . $speak->comment . $config->title_separator . $config->manager->title,

@@ -52,7 +52,8 @@ class Asset extends Base {
     // Get public asset URL
     public static function url($source) {
         $config = Config::get();
-        $path = self::path($source, false);
+        $source = Filter::apply('asset:source', $source);
+        $path = Filter::apply('asset:path', self::path($source, false));
         $url = File::url($path);
         if($path && strpos($path, ROOT) === false) {
             return strpos($url, '://') !== false ? Filter::apply('asset:url', Filter::apply('url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 && file_exists($path) ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source), $source) : false;

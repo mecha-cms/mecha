@@ -60,6 +60,7 @@ Weapon::add('cargo_after', function() use($config, $speak) {
 }, 20);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) {
+    $parser = Config::get('html_parser');
     echo Asset::javascript(array(
         'manager/assets/sword/dashboard.js',
         'manager/assets/sword/dashboard.task.extend.js',
@@ -79,12 +80,8 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
     $cargo = array(
         'segment' => $uri_end,
         'languages' => Config::get('DASHBOARD.languages', array()),
-        'is_html_parser_enabled' => Config::get('html_parser') === HTML_PARSER,
-        // `DASHBOARD.tab_size` and `DASHBOARD.element_suffix` are now deprecated.
-        //  Please use the `TAB` and `ES` variable as declared in the PHP constant(s).
-        'html_parser' => HTML_PARSER,
-        'tab_size' => TAB,
-        'element_suffix' => ES,
+        'is_html_parser_enabled' => $parser !== false && $parser !== 'HTML',
+        'html_parser' => $parser,
         'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
         'url' => array(
             'protocol' => $config->protocol,
@@ -106,7 +103,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $uri_end) 
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
     $parser = Config::get('html_parser', 'HTML');
-    $MTE = Mecha::alter($parser !== false ? $parser : 'HTML', array(
+    $MTE = Mecha::alter($parser === false ? 'HTML' : $parser, array(
         HTML_PARSER => 'mte',
         'HTML' => 'hte'
     ), 'hte'); // default is `hte`

@@ -74,8 +74,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
             // Check for spam keyword(s) in comment
             $fucking_words = explode(',', $config->keywords_spam);
             foreach($fucking_words as $spam) {
-                $fuck = trim($spam);
-                if($fuck !== "") {
+                if($fuck = trim($spam)) {
                     if(
                         $request['email'] === $fuck || // Block by email address
                         $fuck !== 'N/A' && Get::IP() === $fuck || // Block by IP address
@@ -99,7 +98,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 $message = $request['message'];
                 $field = Request::post('fields', array());
                 include __DIR__ . DS . 'task.field.1.php';
-                $message = strip_tags($message, '<br><img>' . ($parser === false || $parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><p><pre><span><strong><sub><sup><time><u><var>' : ""));
+                $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' || $parser === false ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><li><ol><p><pre><span><strong><sub><sup><time><u><ul><var>' : ""));
                 // Temporarily disallow image(s) in comment to prevent XSS
                 $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
                 $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);

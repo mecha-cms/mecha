@@ -111,7 +111,8 @@
       <span class="grid span-2"></span>
       <span class="grid span-4">
         <div><?php echo Form::checkbox('resource_versioning', 'true', Guardian::wayback('resource_versioning', $config->resource_versioning), $speak->manager->title_resource_versioning); ?></div>
-        <div><?php echo Form::checkbox('html_parser', HTML_PARSER, Guardian::wayback('html_parser', $config->html_parser) === HTML_PARSER, $speak->manager->title_html_parser); ?></div>
+        <?php $parser = Guardian::wayback('html_parser', $config->html_parser); ?>
+        <div><?php echo Form::checkbox('html_parser', $config->html_parser, $parser !== false && $parser !== 'HTML', $speak->manager->title_html_parser); ?></div>
       </span>
     </div>
   </fieldset>
