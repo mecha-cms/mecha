@@ -1,0 +1,3 @@
+manager:
+  title_preview_css: <abbr title="Cascading Style Sheet">CSS</abbr>
+  title_preview_js: <abbr title="JavaScript">JS</abbr>

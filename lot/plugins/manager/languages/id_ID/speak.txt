@@ -1,0 +1,158 @@
+# -------------
+# MANAGER PAGES
+# -------------
+
+manager:
+
+  powered: Diberdayakan oleh <strong>CMS Mecha</strong>
+
+  placeholder_title: Judul Mengagumkan Anda
+  placeholder_content: Konten di sini…
+  placeholder_description: Deskripsi di sini…
+  placeholder_description_: Deskripsi tentang %s ini (opsional)
+  placeholder_css: CSS di sini…
+  placeholder_css_custom: CSS kustom di sini…
+  placeholder_js: JavaScript di sini…
+  placeholder_js_custom: JavaScript di sini…
+  placeholder__title: Judul %s Anda
+  placeholder__content: Konten %s di sini…
+  placeholder__description: Deskripsi %s di sini…
+  placeholder__description_: Deskripsi %s tentang %s ini (opsional)
+  placeholder__css: CSS %s di sini…
+  placeholder__css_custom: CSS %s kustom di sini…
+  placeholder__js: JavaScript %s di sini…
+  placeholder__js_custom: JavaScript %s di sini…
+  placeholder_file: Pilih berkas…
+  placeholder_file_name: contoh-nama-berkas.txt
+  placeholder_folder_name: contoh-nama-folder
+  placeholder_asset_name: contoh-nama-aset.jpg
+  placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
+
+  title_new_: %s Baru
+  title_your_: %s Anda
+
+  title_css_and_js_custom: <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript Kustom
+
+  title_css_custom: <abbr title="Cascading Style Sheet">CSS</abbr> Kustom
+  title_js_custom: <abbr title="JavaScript">JS</abbr> Kustom
+
+  title_title_separator: Pemisah Judul
+
+  title_authorization: Kepemilikan
+  title_page_index: Halaman Indeks
+  title_page_tag: Halaman Label
+  title_page_archive: Halaman Arsip
+  title_page_search: Halaman Pencarian
+  title_page_manager: Halaman Pengurus
+  title_other: Lainnya
+
+  title_page_excerpt: Ringkasan
+  title_page_excerpt_length: Panjang Ringkasan
+  title_page_excerpt_tail: Ekor Ringkasan
+  title_page_excerpt_id: ID Ringkasan
+
+  title_per_page: Per Halaman
+  title_language_direction: Direksi Bahasa
+  title_language_direction_ltr: Left to Right (LTR)
+  title_language_direction_rtl: Right to Left (RTL)
+  title_keyword_spam: Kata Kunci Sampah
+
+  title_comment_allow: Aktifkan Komentar
+  title_comment_moderation: Aktifkan Moderasi Komentar
+
+  title_resource_versioning: Aktifkan Versi Sumber Daya
+
+  title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
+
+  title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
+  title_widget_include_js: Sertakan JavaScript Widget Bawaan ke Tameng
+
+  title__upload: Unggah Sebuah %s
+  title__upload_alt: Unggah Sebuah %s
+  title__upload_package: Unggah Sebuah Paket %s
+  title__upload_package_alt: Unggah Sebuah Paket %s
+
+  _this_: %s %s Ini
+  _these_: %s %s Ini
+
+  description_redirect_to_: Alihkan ke %s
+
+
+# -------------
+# NOTIFICATIONS
+# -------------
+
+notify_file:
+  0: Tidak ada kesalahan, berkas berhasil diunggah dengan sukses.
+  1: Berkas yang diunggah melampaui direktif <code>upload_max_filesize</code> dalam <code>php.ini</code>.
+  2: Berkas yang diunggah melampaui direktif <code>MAX_FILE_SIZE</code> yang ditentukan dalam formulir <abbr title="Hyper Text Markup Language">HTML</abbr>.
+  3: Berkas yang diunggah hanya terunggah sebagian.
+  4: Tidak ada berkas yang diunggah.
+  5: ?
+  6: Folder sementara tidak ada.
+  7: Gagal menulis berkas ke disk.
+  8: Sebuah ekstensi <abbr>PHP</abbr> menghentikan pengunggahan berkas.
+
+notify_file_exist: Berkas %s sudah ada.
+notify_file_not_exist: Berkas %s sudah tidak ada.
+
+notify_file_created: Berkas %s berhasil dibuat.
+notify_file_submitted: Berkas %s berhasil dikirim.
+notify_file_updated: Berkas %s berhasil diperbaharui.
+notify_file_uploaded: Berkas %s berhasil diunggah.
+notify_file_deleted: Berkas %s berhasil dihapus.
+
+notify_folder_exist: Folder %s sudah ada.
+notify_folder_not_exist: Folder %s sudah tidak ada.
+notify_folder_created: Folder %s berhasil dibuat.
+notify_folder_updated: Folder %s berhasil diperbaharui.
+notify_folder_deleted: Folder %s berhasil dihapus.
+
+notify_success_created: <strong>%s</strong> berhasil dibuat.
+notify_success_submitted: <strong>%s</strong> berhasil dikirim.
+notify_success_updated: <strong>%s</strong> berhasil diperbaharui.
+notify_success_uploaded: <strong>%s</strong> berhasil diunggah.
+notify_success_deleted: <strong>%s</strong> berhasil dihapus.
+
+notify_error_no_file_selected: Mohon pilih sebuah berkas.
+notify_error_no_files_selected: Mohon pilih setidaknya satu berkas.
+notify_error_file_extension: Ekstensi <code>%s</code> tidak diperbolehkan.
+notify_error_file_extension_missing: Mohon sertakan ekstensi berkas. Misal: <code>berkas.jpg</code>
+notify_error_file_size_max: Ukuran berkas harus lebih kecil dari <code>%s</code>.
+notify_error_file_size_min: Ukuran berkas harus lebih besar dari <code>%s</code>.
+notify_error_file_type_unknown: Tipe berkas tidak diketahui.
+notify_error_username_or_password: Nama pengguna atau kata kunci Anda tidak valid.
+notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.
+notify_error_empty_fields: Mohon isi semua bidang yang wajib.
+notify_error_slug_exist: Slug <code>%s</code> sudah ada.
+notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> harus berisi setidaknya satu huruf, dari <code>A</code> sampai <code>Z</code>.
+notify_error_content_empty: Konten tidak boleh dikosongkan.
+notify_error__content_empty: Konten %s tidak boleh dikosongkan.
+notify_error_too_short: <strong>%s</strong> terlalu pendek.
+notify_error_too_long: <strong>%s</strong> terlalu panjang.
+notify_error_duplicate: Duplikat.
+
+notify_invalid_token: Token tidak valid.
+notify_invalid_time_pattern: Pola waktu tidak valid.
+notify_invalid_per_page_number: Jumlah halaman hanya menerima angka positif, non-desimal. Lebih besar dari nol.
+notify_invalid_indent_character: Gunakan 4 spasi untuk indentasi.
+notify_invalid_email: Alamat email tidak valid.
+notify_invalid_url: <abbr title="Uniform Resource Locator">URL</abbr> tidak valid.
+notify_invalid_math_answer: Jawaban matematika salah.
+notify_invalid_captcha_answer: Jawaban <em>captcha</em> salah.
+notify_invalid_file_extension: Berkas yang sedang Anda coba unggah bukan merupakan berkas <code>%s</code> yang valid.
+notify_invalid_duplicate: Duplikat %s.
+
+notify_confirm: Anda yakin?
+notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?
+notify_confirm_page_leave_: Anda yakin ingin meninggalkan halaman %s?
+notify_confirm_delete: Anda yakin ingin menghapus?
+notify_confirm_delete_: Anda yakin ingin menghapus %s?
+notify_confirm_delete_page: Ini juga akan menghapus semua komentar yang terkait dengan %1$s ini berikut berkas kustom <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript %1$s.
+notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s
+
+notify_warning_intruder_detected: Penyusup terdeteksi.
+notify_warning_forbidden_input: Anda tidak diperbolehkan untuk menggunakan %s pada bidang %s.
+
+notify_info_comment_moderation: Komentar Anda akan tampil setelah disetujui oleh penulis.

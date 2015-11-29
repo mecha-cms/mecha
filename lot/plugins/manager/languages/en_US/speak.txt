@@ -1,0 +1,157 @@
+# -------------
+# MANAGER PAGES
+# -------------
+
+manager:
+
+  powered: Powered by <strong>Mecha CMS</strong>
+
+  placeholder_title: Your Awesome Title
+  placeholder_content: Content goes here…
+  placeholder_description: Description goes here…
+  placeholder_description_: Some description about this %s (optional)
+  placeholder_css: CSS goes here…
+  placeholder_css_custom: Custom CSS goes here…
+  placeholder_js: JavaScript goes here…
+  placeholder_js_custom: Custom JavaScript goes here…
+  placeholder__title_: Your %s Title
+  placeholder__content: %s content goes here…
+  placeholder__description: %s description goes here…
+  placeholder__description_: Some %s description about this %s (optional)
+  placeholder__css: %s CSS goes here…
+  placeholder__css_custom: Custom %s CSS goes here…
+  placeholder__js: %s JavaScript goes here…
+  placeholder__js_custom: Custom %s JavaScript goes here…
+  placeholder_file: Select a file…
+  placeholder_file_name: example-file-name.txt
+  placeholder_folder_name: example-folder-name
+  placeholder_asset_name: example-asset-name.jpg
+  placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
+
+  title_new_: New %s
+  title_your_: Your %s
+
+  title_css_and_js_custom: Custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript
+
+  title_css_custom: Custom <abbr title="Cascading Style Sheet">CSS</abbr>
+  title_js_custom: Custom <abbr title="JavaScript">JS</abbr>
+
+  title_title_separator: Title Separator
+
+  title_authorization: Authorization
+  title_page_index: Index Page
+  title_page_tag: Tag Page
+  title_page_archive: Archive Page
+  title_page_search: Search Page
+  title_page_manager: Manager Page
+  title_other: Other
+
+  title_page_excerpt: Excerpt
+  title_page_excerpt_length: Excerpt Length
+  title_page_excerpt_tail: Excerpt Tail
+  title_page_excerpt_id: Excerpt ID
+
+  title_per_page: Per Page
+  title_language_direction: Language Direction
+  title_language_direction_ltr: Left to Right (LTR)
+  title_language_direction_rtl: Right to Left (RTL)
+  title_keyword_spam: Spam Keywords
+
+  title_comment_allow: Enable Comments
+  title_comment_moderation: Enable Comment Moderation
+
+  title_resource_versioning: Enable Resource Versioning
+
+  title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
+  title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
+
+  title_widget_include_css: Include Default Widget’s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
+  title_widget_include_js: Include Default Widget’s JavaScript to the Shield
+
+  title__upload: Upload a %s
+  title__upload_alt: Upload an %s
+  title__upload_package: Upload a %s Package
+  title__upload_package_alt: Upload an %s Package
+
+  _this_: %s This %s
+  _these_: %s These %s
+
+  description_redirect_to_: Redirect to %s
+
+
+# -------------
+# NOTIFICATIONS
+# -------------
+
+notify_file:
+  0: There is no error, the file uploaded with success.
+  1: The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.
+  2: The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.
+  3: The uploaded file was only partially uploaded.
+  4: No file was uploaded.
+  5: ?
+  6: Missing a temporary folder.
+  7: Failed to write file to disk.
+  8: A <abbr>PHP</abbr> extension stopped the file upload.
+
+notify_file_exist: File %s already exists.
+notify_file_not_exist: File %s does not exist.
+notify_file_created: File %s successfully created.
+notify_file_submitted: File %s successfully submitted.
+notify_file_updated: File %s successfully updated.
+notify_file_uploaded: File %s successfully uploaded.
+notify_file_deleted: File %s successfully deleted.
+
+notify_folder_exist: Folder %s already exists.
+notify_folder_not_exist: Folder %s does not exist.
+notify_folder_created: Folder %s successfully created.
+notify_folder_updated: Folder %s successfully updated.
+notify_folder_deleted: Folder %s successfully deleted.
+
+notify_success_created: <strong>%s</strong> successfully created.
+notify_success_submitted: <strong>%s</strong> successfully submitted.
+notify_success_updated: <strong>%s</strong> successfully updated.
+notify_success_uploaded: <strong>%s</strong> successfully uploaded.
+notify_success_deleted: <strong>%s</strong> successfully deleted.
+
+notify_error_no_file_selected: Please select a file.
+notify_error_no_files_selected: Please select at least one file.
+notify_error_file_extension: Extension <code>%s</code> is not allowed.
+notify_error_file_extension_missing: Please include the file extension. Example: <code>file.jpg</code>
+notify_error_file_size_max: File size must be less than <code>%s</code>.
+notify_error_file_size_min: File size must be greater than <code>%s</code>.
+notify_error_file_type_unknown: Unknown file type.
+notify_error_username_or_password: Invalid username or password.
+notify_error_empty_field: Please fill out the <strong>%s</strong> field.
+notify_error_empty_fields: Please fill out all of the required fields.
+notify_error_slug_exist: Slug <code>%s</code> already exists.
+notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> should contains at least one letter, from <code>A</code> to <code>Z</code>.
+notify_error_content_empty: Content should not be emptied.
+notify_error__content_empty: %s content should not be emptied.
+notify_error_too_short: <strong>%s</strong> too short.
+notify_error_too_long: <strong>%s</strong> too long.
+notify_error_duplicate: Duplicate.
+
+notify_invalid_token: Invalid token.
+notify_invalid_time_pattern: Invalid time pattern.
+notify_invalid_per_page_number: Number of pages only accept non-decimal, positive number. Greater than zero.
+notify_invalid_indent_character: Use 4 spaces for indentation.
+notify_invalid_email: Invalid email address.
+notify_invalid_url: Invalid <abbr title="Uniform Resource Locator">URL</abbr>.
+notify_invalid_math_answer: Wrong math answer.
+notify_invalid_captcha_answer: Wrong captcha answer.
+notify_invalid_file_extension: The file you are trying to upload is not a valid <code>%s</code> file.
+notify_invalid_duplicate: Duplicate %s.
+
+notify_confirm: Are your sure?
+notify_confirm_page_leave: Are you sure you want to leave this page?
+notify_confirm_page_leave_: Are you sure you want to leave %s page?
+notify_confirm_delete: Are you sure you want to delete?
+notify_confirm_delete_: Are you sure you want to delete %s?
+notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of %1$s.
+notify_confirm_maybe_you_mean: Maybe you mean %s
+
+notify_warning_intruder_detected: Intruder detected.
+notify_warning_forbidden_input: You are not allowed to use %s in the %s field.
+
+notify_info_comment_moderation: Your comment will be visible once approved by the author.

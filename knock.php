@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = sha1(uniqid(mt_rand(), true));
     $_SESSION['token'] = $token;
 
-    if(trim($_POST['name']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
+    if(trim($_POST['author']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
     if(trim($_POST['email']) === "") {
         $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your email? Mecha need that.</p>';
     } else {
@@ -36,35 +36,28 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $_SESSION['meet_mecha'] = $_POST;
 
     if(count($errors) === 0) {
-        $user_file = ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt';
-        $data  = $_POST['user'] . ': ';
-        $data .= $_POST['pass'] . ' (';
-        $data .= $_POST['name'] . ' @pilot) ';
-        $data .= $_POST['email'];
-        if( ! file_exists($user_file)) file_put_contents($user_file, $data);
-        $_SESSION['message'] = '<div class="messages p cl cf"><p class="message message-success cl cf"><i class="fa fa-thumbs-up"></i> Okay. Now you can login with these details&hellip;</p><p class="message message-info cl cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
+        $user_file = ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt';
+        unset($_POST['token']);
+        $_POST['status'] = 1;
+        if( ! file_exists($user_file)) file_put_contents($user_file, json_encode($_POST));
+        $_SESSION['message'] = '<div class="messages p cl cf"><p class="message message-success cl cf"><i class="fa fa-thumbs-up"></i> You can start login now.</p><p class="message message-info cl cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
         unset($_SESSION['meet_mecha']);
         unset($_SESSION['token']);
-        chmod(ROOT . DS . 'cabinet' . DS . 'assets', 0777);
-        chmod(ROOT . DS . 'cabinet' . DS . 'plugins', 0777);
-        chmod(ROOT . DS . 'cabinet' . DS . 'articles', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'pages', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'comments', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'extends', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'chunk', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance', 0777);
-        chmod(ROOT . DS . 'cabinet' . DS . 'scraps', 0766);
-        chmod(ROOT . DS . 'cabinet' . DS . 'states', 0766);
-        chmod(ROOT . DS . 'system' . DS . 'log' . DS . 'users.txt', 0600);
-        unlink(ROOT . DS . 'cabinet' . DS . 'articles' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'pages' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'comments' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'custom' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'extends' . DS . 'substance' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'scraps' . DS . '.empty');
-        unlink(ROOT . DS . 'cabinet' . DS . 'states' . DS . '.empty');
-        unlink(ROOT . DS . 'system' . DS . 'plug' . DS . '__.php');
+        chmod(ROOT . DS . 'lot' . DS . 'assets', 0777);
+        chmod(ROOT . DS . 'lot' . DS . 'extends', 0766);
+        chmod(ROOT . DS . 'lot' . DS . 'extends' . DS . 'chunk', 0766);
+        mkdir(ROOT . DS . 'lot' . DS . 'extends' . DS . 'custom', 0766, true);
+        mkdir(ROOT . DS . 'lot' . DS . 'extends' . DS . 'substance', 0777, true);
+        chmod(ROOT . DS . 'lot' . DS . 'plugins', 0777);
+        mkdir(ROOT . DS . 'lot' . DS . 'posts' . DS . 'article', 0766, true);
+        mkdir(ROOT . DS . 'lot' . DS . 'posts' . DS . 'page', 0766, true);
+        mkdir(ROOT . DS . 'lot' . DS . 'responses' . DS . 'comment', 0766, true);
+        mkdir(ROOT . DS . 'lot' . DS . 'scraps', 0766, true);
+        chmod(ROOT . DS . 'lot' . DS . 'shields', 0777);
+        mkdir(ROOT . DS . 'lot' . DS . 'states', 0766, true);
+        chmod(ROOT . DS . 'lot' . DS . 'workers', 0766);
+        chmod(ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt', 0600);
+        unlink(ROOT . DS . 'engine' . DS . 'plug' . DS . '__.php');
         unlink(ROOT . DS . 'knock.php');
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
         header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login?kick=manager/config');
@@ -191,10 +184,10 @@ h3 + div p code {opacity:.7}
     <form method="post">
       <input name="token" type="hidden" value="<?php echo isset($token) ? $token : ""; ?>">
       <h3>First Meet</h3>
-      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
+      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('author' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
       <label>
         <span>Name</span>
-        <span><input name="name" type="text" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
+        <span><input name="author" type="text" value="<?php echo isset($cache['author']) ? $cache['author'] : ""; ?>" autofocus></span>
       </label>
       <label>
         <span>Email</span>

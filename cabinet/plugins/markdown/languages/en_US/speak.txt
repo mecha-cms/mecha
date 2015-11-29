@@ -1,5 +1,0 @@
-plugin_markdown_title_abbr: Predefined Abbreviation
-plugin_markdown_title_url: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
-
-# Overwrite `comment_guide` value
-comment_guide: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>

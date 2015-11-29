@@ -1,0 +1,7 @@
+MTE:
+  buttons:
+    excerpt: Sisipkan Tautan Loncat
+    help: Bantuan
+    table: Tabel
+  placeholders:
+    table_text: <table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Judul Tabel 1</th>\n\t\t\t<th>Judul Tabel 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 1.1</td>\n\t\t\t<td>Sel Tabel 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 2.1</td>\n\t\t\t<td>Sel Tabel 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 3.1</td>\n\t\t\t<td>Sel Tabel 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>

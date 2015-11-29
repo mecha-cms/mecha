@@ -1,0 +1,2 @@
+[mecha]: <http://mecha-cms.com> "Mecha CMS"
+[latitudu]: <http://latitudu.com> "Life is Be U to Full"

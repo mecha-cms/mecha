@@ -1,0 +1,7 @@
+MTE:
+  buttons:
+    excerpt: Insert Jump Break
+    help: Help
+    table: Table
+  placeholders:
+    table_text: <table>\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Table Header 1</th>\n\t\t\t<th>Table Header 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Table Cell 1.1</td>\n\t\t\t<td>Table Cell 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 2.1</td>\n\t\t\t<td>Table Cell 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 3.1</td>\n\t\t\t<td>Table Cell 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>

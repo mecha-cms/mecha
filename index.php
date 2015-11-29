@@ -10,21 +10,24 @@
 define('DS', DIRECTORY_SEPARATOR);
 define('MECHA_VERSION', '1.2.0');
 define('ROOT', rtrim(__DIR__, DS));
-define('CARGO', ROOT . DS . 'cabinet');
-define('DECK', ROOT . DS . 'manager');
-define('SYSTEM', ROOT . DS . 'system');
-define('LOG', SYSTEM . DS . 'log');
+define('LOT', ROOT . DS . 'lot');
+define('ENGINE', ROOT . DS . 'engine');
+define('LOG', ENGINE . DS . 'log');
 define('SESSION', null); // Replace this value with valid directory path to define custom `session_save_path`
-define('LANGUAGE', CARGO . DS . 'languages');
-define('ASSET', CARGO . DS . 'assets');
-define('ARTICLE', CARGO . DS . 'articles');
-define('PAGE', CARGO . DS . 'pages');
-define('COMMENT', CARGO . DS . 'comments');
-define('EXTEND', CARGO . DS . 'extends');
-define('STATE', CARGO . DS . 'states');
-define('PLUGIN', CARGO . DS . 'plugins');
-define('SHIELD', CARGO . DS . 'shields');
-define('CACHE', CARGO . DS . 'scraps');
+define('LANGUAGE', LOT . DS . 'languages');
+define('ASSET', LOT . DS . 'assets');
+define('POST', LOT . DS . 'posts');
+define('RESPONSE', LOT . DS . 'responses');
+define('EXTEND', LOT . DS . 'extends');
+define('STATE', LOT . DS . 'states');
+define('PLUGIN', LOT . DS . 'plugins');
+define('SHIELD', LOT . DS . 'shields');
+define('CACHE', LOT . DS . 'scraps');
+define('WORKER', LOT . DS . 'workers');
+
+define('ARTICLE', POST . DS . 'article');
+define('PAGE', POST . DS . 'page');
+define('COMMENT', RESPONSE . DS . 'comment');
 define('CHUNK', EXTEND . DS . 'chunk');
 define('CUSTOM', EXTEND . DS . 'custom');
 define('SUBSTANCE', EXTEND . DS . 'substance');
@@ -37,11 +40,6 @@ define('TAB', '  '); // Standard indentation on the page
 define('NL', PHP_EOL); // New line character of HTML output
 define('O_BEGIN', ""); // Begin HTML output
 define('O_END', PHP_EOL); // End HTML output
-define('HTML_PARSER', 'Markdown Extra'); // Depends on the type of HTML parser in the `plugins` folder
-
-define('CSS_LIBRARY_PATH', "");
-define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
-define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js');
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
@@ -52,5 +50,5 @@ define('SCRIPT_EXT', 'archive,cache,css,draft,htaccess,hold,htm,html,js,json,jso
 define('DEBUG', false); // `true` to enable debug mode
 define('MAX_ERROR_FILE_SIZE', 1048576); // 1 MB
 
-require SYSTEM . DS . 'ignite.php';
-require SYSTEM . DS . 'launch.php';
+require ENGINE . DS . 'ignite.php';
+require ENGINE . DS . 'launch.php';

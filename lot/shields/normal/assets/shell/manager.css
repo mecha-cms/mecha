@@ -1,0 +1,140 @@
+/**
+ * For Manager Page
+ * ----------------
+ */
+
+.widget-manager-bar {padding:0 1.0769230769230769em}
+
+.widget-manager-menu ul li,
+.widget-manager-menu ul li:first-child {
+  margin:0;
+  padding:0;
+  border:none;
+  position:relative;
+}
+
+.widget-manager-menu a,
+.accordion-header {
+  display:block;
+  background-color:#333;
+  color:white;
+  font-style:normal;
+  font-weight:bold;
+  font-size:100%;
+  line-height:2.3076923076923075em;
+  height:2.3076923076923075em;
+  overflow:hidden;
+  margin:0 0 2px;
+  padding:0 .6153846153846154em;
+}
+
+.widget-manager-menu a:focus,
+.widget-manager-menu a:hover,
+.accordion-header:focus,
+.accordion-header:hover {background-color:#373737}
+
+.widget-manager-menu a:active,
+.accordion-header:active {background-color:#2F2F2F}
+
+.widget-manager-menu a .fa,
+.accordion-header:before {
+  font-style:normal;
+  font-weight:normal;
+  color:#FFA;
+}
+
+.widget-manager-menu .current > a {
+  background-color:#365D98;
+  color:white;
+  cursor:default;
+}
+
+.widget-manager-menu a .counter:before,
+.widget-manager-menu a .counter:after {display:none}
+
+.widget-manager-menu a .counter {
+  position:absolute;
+  top:.38461538461538464em;
+  right:.38461538461538464em;
+  line-height:1.5384615384615385em;
+  height:1.5384615384615385em;
+  background-color:#FFA;
+  color:#333;
+  padding:0 .5em;
+  -webkit-border-radius:2px;
+  -moz-border-radius:2px;
+  border-radius:2px;
+}
+
+.widget-manager-menu .separator {display:none}
+
+.tooltip {
+  background-color:#333;
+  border-color:#333;
+  color:white;
+}
+
+.tab-button {
+  background-color:#333;
+  border-color:transparent; 
+  color:white;
+}
+
+.tab-button:focus,
+.tab-button:hover,
+.tab-button:active {color:white}
+
+.tab-button.active {
+  background:none;
+  border-color:inherit;
+  color:inherit;
+}
+
+.checkbox:focus,
+.checkbox:hover,
+label:hover .checkbox {color:#519F48}
+.radio:focus,
+.radio:hover,
+label:hover .radio {color:#3A64A4}
+
+.checkbox.checked {color:#4B9343}
+.radio.checked {color:#365D98}
+
+.sortable.active,
+.table-bordered tr.active {background-color:#FFA}
+
+.editor-toolbar-button {
+  background-color:#333;
+  color:#FFA;
+}
+
+.editor-toolbar-button:focus,
+.editor-toolbar-button:hover {
+  background-color:#373737;
+  color:#FFA;
+}
+
+.editor-toolbar-button:active {background-color:#2F2F2F}
+
+.page-time {color:#AAA}
+
+.about-title {
+  background-color:#365D98;
+  color:white;
+}
+
+.about-author {
+  background-color:#333;
+  color:white;
+}
+
+.about-url,
+.about-url:focus,
+.about-url:hover {color:#FFA}
+
+@media (max-width:36.25em) {
+  .tab-button.active {
+    background-color:#365D98;
+    color:white;
+  }
+}

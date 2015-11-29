@@ -1,5 +1,0 @@
-plugin_markdown_title_abbr: Singkatan Terdefinisi
-plugin_markdown_title_url: <abbr title="Uniform Resource Locator">URL</abbr> Terdefinisi
-
-# Overwrite `comment_guide` value
-comment_guide: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
