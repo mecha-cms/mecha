@@ -1,3 +1,3 @@
 <?php
 
-include __DIR__ . DS . 'cargo.backup.php';
+require __DIR__ . DS . 'cargo.backup.php';

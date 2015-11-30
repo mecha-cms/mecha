@@ -77,7 +77,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 if($fuck = trim($spam)) {
                     if(
                         $request['email'] === $fuck || // Block by email address
-                        $fuck !== 'N/A' && Get::IP() === $fuck || // Block by IP address
+                        Get::IP() === $fuck || // Block by IP address
                         strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
                     ) {
                         Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
