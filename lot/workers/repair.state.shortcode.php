@@ -13,7 +13,6 @@ return array(
     '{{url.archive:%s}}' => $config->url . '/' . $config->archive->slug . '/$1',
     '{{url.search:%s}}' => $config->url . '/' . $config->search->slug . '/$1',
     '{{url.manager:%s}}' => $config->url . '/' . $config->manager->slug . '/$1',
-    '{{url.current}}' => '{{php}}echo $config->url_current;{{/php}}',
     '{{asset}}' => File::url(ASSET) . '/',
     '{{asset:%s}}' => File::url(ASSET) . '/$1'
 );

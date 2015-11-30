@@ -234,11 +234,6 @@ Filter::add('shortcode', function($content) use($config, $speak) {
         $key);
         $content = preg_replace('#(?<!`)' . $key . '(?!`)#', Converter::DW($value), $content);
     }
-    if(strpos($content, '{{php}}') !== false) {
-        $content = preg_replace_callback('#(?<!`)\{\{php\}\}(?!`)([\s\S]*?)(?<!`)\{\{\/php\}\}(?!`)#', function($matches) {
-            return Converter::phpEval($matches[1]);
-        }, $content);
-    }
     return $content;
 }, 20);
 
