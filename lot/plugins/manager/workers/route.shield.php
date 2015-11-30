@@ -7,7 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/shield', $config->manager->slug . '/shield/(:any)'), function($folder = false) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     if( ! $folder) $folder = $config->shield;
@@ -60,7 +60,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
  */
 
 Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot' || $folder === "") {
+    if( ! Guardian::happy(1) || $folder === "") {
         Shield::abort();
     }
     if( ! $file = File::exist(SHIELD . DS . $folder)) {
@@ -112,7 +112,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
  */
 
 Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', function($folder = "", $path = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot' || $folder === "" || $path === "") {
+    if( ! Guardian::happy(1) || $folder === "" || $path === "") {
         Shield::abort();
     }
     $path = File::path($path);
@@ -172,7 +172,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', func
  */
 
 Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->manager->slug . '/shield/(:any)/kill/file:(:all)'), function($folder = "", $path = false) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot' || $folder === "") {
+    if( ! Guardian::happy(1) || $folder === "") {
         Shield::abort();
     }
     $info = Shield::info($folder);

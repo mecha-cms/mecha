@@ -7,7 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/comment', $config->manager->slug . '/comment/(:num)'), function($offset = 1) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $offset = (int) $offset;
@@ -44,7 +44,7 @@ Route::accept(array($config->manager->slug . '/comment', $config->manager->slug 
  */
 
 Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot' || ! $comment = Get::comment($id)) {
+    if( ! Guardian::happy(1) || ! $comment = Get::comment($id)) {
         Shield::abort();
     }
     if( ! isset($comment->content_type)) $comment->content_type = $config->html_parser;
@@ -109,7 +109,7 @@ Route::accept($config->manager->slug . '/comment/repair/id:(:num)', function($id
  */
 
 Route::accept($config->manager->slug . '/comment/kill/id:(:num)', function($id = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     if( ! $comment = Get::comment($id)) {

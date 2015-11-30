@@ -13,7 +13,7 @@ Weapon::add('on_plugin_update', function() {
  */
 
 Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug . '/plugin/(:num)'), function($offset = 1) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $offset = (int) $offset;
@@ -78,7 +78,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
         // It's an index page
         Route::execute($config->manager->slug . '/plugin/(:num)', array($slug));
     }
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
@@ -104,7 +104,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
  */
 
 Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', function($path = "", $slug = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $page_current = Request::get('o', 1);
@@ -137,7 +137,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  */
 
 Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
-    if( ! File::exist(PLUGIN . DS . $slug) || Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1) || ! File::exist(PLUGIN . DS . $slug)) {
         Shield::abort();
     }
     $info = Plugin::info($slug, true);

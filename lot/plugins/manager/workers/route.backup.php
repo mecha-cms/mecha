@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/(backup|restore)', function($segment = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     // Remove backup file(s) that is failed to delete
@@ -55,7 +55,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
  */
 
 Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $time = Date::slug(time());
@@ -64,8 +64,8 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
         $name = $site . '_' . $time . '.zip';
         Package::take(ROOT)->pack(ROOT . DS . $name);
     } else {
-        $name = $site . '.cabinet.' . str_replace('/', '.', $origin) . '_' . $time . '.zip';
-        Package::take(ROOT . DS . 'cabinet' . DS . $origin)->pack(ROOT . DS . $name);
+        $name = $site . '.' . File::B(CARGO) . '.' . str_replace('/', '.', $origin) . '_' . $time . '.zip';
+        Package::take(CARGO . DS . $origin)->pack(ROOT . DS . $name);
         if($origin === 'shields') {
             Package::take(ROOT . DS . $name)->deleteFolder('normal'); // delete `normal` shield
             Package::take(ROOT . DS . $name)->deleteFiles(array(
@@ -90,7 +90,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
  */
 
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     if($backup = File::exist(ROOT . DS . $file)) {

@@ -49,7 +49,7 @@
             1 => $speak->pilot,
             2 => $speak->passenger,
             0 => $speak->intruder
-        ), Guardian::wayback('status', $page->status)); ?>
+        ), Guardian::wayback('status', $page->status_raw)); ?>
         </span>
       </label>
       <label class="grid-group">

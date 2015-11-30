@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/config', function() use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     Config::set(array(

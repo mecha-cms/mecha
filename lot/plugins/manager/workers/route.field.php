@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $fields = Get::state_field(null, null, array(), false);
@@ -29,7 +29,7 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
  */
 
 Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $fields = Get::state_field(null, null, array(), false);
@@ -119,7 +119,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
  */
 
 Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $fields = Get::state_field(null, null, array(), false);

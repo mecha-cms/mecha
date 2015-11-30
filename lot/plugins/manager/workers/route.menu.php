@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/menu', function() use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $menus = Get::state_menu();

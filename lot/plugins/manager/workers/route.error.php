@@ -24,7 +24,7 @@ Route::accept($config->manager->slug . '/error', function() use($config, $speak)
  */
 
 Route::accept($config->manager->slug . '/error/kill', function() use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $errors = LOG . DS . 'errors.log';

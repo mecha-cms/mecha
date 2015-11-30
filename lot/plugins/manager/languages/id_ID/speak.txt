@@ -122,7 +122,6 @@ notify_error_file_extension_missing: Mohon sertakan ekstensi berkas. Misal: <cod
 notify_error_file_size_max: Ukuran berkas harus lebih kecil dari <code>%s</code>.
 notify_error_file_size_min: Ukuran berkas harus lebih besar dari <code>%s</code>.
 notify_error_file_type_unknown: Tipe berkas tidak diketahui.
-notify_error_username_or_password: Nama pengguna atau kata kunci Anda tidak valid.
 notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.
 notify_error_empty_fields: Mohon isi semua bidang yang wajib.
 notify_error_slug_exist: Slug <code>%s</code> sudah ada.
@@ -134,6 +133,7 @@ notify_error_too_long: <strong>%s</strong> terlalu panjang.
 notify_error_duplicate: Duplikat.
 
 notify_invalid_token: Token tidak valid.
+notify_invalid_user_or_pass: Nama pengguna atau kata kunci Anda tidak valid.
 notify_invalid_time_pattern: Pola waktu tidak valid.
 notify_invalid_per_page_number: Jumlah halaman hanya menerima angka positif, non-desimal. Lebih besar dari nol.
 notify_invalid_indent_character: Gunakan 4 spasi untuk indentasi.

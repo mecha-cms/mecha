@@ -121,7 +121,6 @@ notify_error_file_extension_missing: Please include the file extension. Example:
 notify_error_file_size_max: File size must be less than <code>%s</code>.
 notify_error_file_size_min: File size must be greater than <code>%s</code>.
 notify_error_file_type_unknown: Unknown file type.
-notify_error_username_or_password: Invalid username or password.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
 notify_error_empty_fields: Please fill out all of the required fields.
 notify_error_slug_exist: Slug <code>%s</code> already exists.
@@ -133,6 +132,7 @@ notify_error_too_long: <strong>%s</strong> too long.
 notify_error_duplicate: Duplicate.
 
 notify_invalid_token: Invalid token.
+notify_invalid_user_or_pass: Invalid username or password.
 notify_invalid_time_pattern: Invalid time pattern.
 notify_invalid_per_page_number: Number of pages only accept non-decimal, positive number. Greater than zero.
 notify_invalid_indent_character: Use 4 spaces for indentation.

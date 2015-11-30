@@ -7,7 +7,7 @@
  */
 
 Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . '/cache/(:num)'), function($offset = 1) use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $offset = (int) $offset;
@@ -42,7 +42,7 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
  */
 
 Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $path = File::path($path);
@@ -82,7 +82,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
  */
 
 Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $path = File::path($path);

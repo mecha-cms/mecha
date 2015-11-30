@@ -7,7 +7,7 @@
  */
 
 Route::accept($config->manager->slug . '/shortcode', function() use($config, $speak) {
-    if(Guardian::get('status') !== 'pilot') {
+    if( ! Guardian::happy(1)) {
         Shield::abort();
     }
     $shortcodes = Get::state_shortcode(null, array(), false);

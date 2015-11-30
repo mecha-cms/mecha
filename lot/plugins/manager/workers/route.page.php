@@ -37,7 +37,7 @@ Route::accept(array($config->manager->slug . '/page', $config->manager->slug . '
 Route::accept(array($config->manager->slug . '/page/ignite', $config->manager->slug . '/page/repair/id:(:num)'), function($id = false) use($config, $speak) {
     if($id && $page = Get::page($id, array('content', 'excerpt', 'tags'))) {
         $extension_o = $page->state === 'published' ? '.txt' : '.draft';
-        if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
+        if( ! Guardian::happy(1) && Guardian::get('author') !== $page->author) {
             Shield::abort();
         }
         if( ! isset($page->link)) $page->link = "";
@@ -157,7 +157,7 @@ Route::accept($config->manager->slug . '/page/kill/id:(:num)', function($id = ""
     if( ! $page = Get::page($id, array('content', 'excerpt', 'tags'))) {
         Shield::abort();
     }
-    if(Guardian::get('status') !== 'pilot' && Guardian::get('author') !== $page->author) {
+    if( ! Guardian::happy(1) && Guardian::get('author') !== $page->author) {
         Shield::abort();
     }
     Config::set(array(
