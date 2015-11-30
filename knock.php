@@ -20,7 +20,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     $token = sha1(uniqid(mt_rand(), true));
     $_SESSION['token'] = $token;
 
-    if(trim($_POST['author']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
+    if(trim($_POST['name']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your name?</p>';
     if(trim($_POST['email']) === "") {
         $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your email? Mecha need that.</p>';
     } else {
@@ -184,10 +184,10 @@ h3 + div p code {opacity:.7}
     <form method="post">
       <input name="token" type="hidden" value="<?php echo isset($token) ? $token : ""; ?>">
       <h3>First Meet</h3>
-      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('author' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
+      <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
       <label>
         <span>Name</span>
-        <span><input name="author" type="text" value="<?php echo isset($cache['author']) ? $cache['author'] : ""; ?>" autofocus></span>
+        <span><input name="name" type="text" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
       </label>
       <label>
         <span>Email</span>

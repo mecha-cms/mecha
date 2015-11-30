@@ -1,12 +1,6 @@
 <?php
 
 
-// Librar(y|ies)
-define('CSS_LIBRARY_PATH', "");
-define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
-define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js');
-
-
 // URL segment(s)
 $segment = explode('/', $config->url_path);
 $segment = $config->page_type === 'manager' ? $segment[1] : $segment[0];

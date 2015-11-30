@@ -10,20 +10,20 @@
 define('DS', DIRECTORY_SEPARATOR);
 define('MECHA_VERSION', '1.2.0');
 define('ROOT', rtrim(__DIR__, DS));
-define('LOT', ROOT . DS . 'lot');
+define('CARGO', ROOT . DS . 'lot');
 define('ENGINE', ROOT . DS . 'engine');
 define('LOG', ENGINE . DS . 'log');
 define('SESSION', null); // Replace this value with valid directory path to define custom `session_save_path`
-define('LANGUAGE', LOT . DS . 'languages');
-define('ASSET', LOT . DS . 'assets');
-define('POST', LOT . DS . 'posts');
-define('RESPONSE', LOT . DS . 'responses');
-define('EXTEND', LOT . DS . 'extends');
-define('STATE', LOT . DS . 'states');
-define('PLUGIN', LOT . DS . 'plugins');
-define('SHIELD', LOT . DS . 'shields');
-define('CACHE', LOT . DS . 'scraps');
-define('WORKER', LOT . DS . 'workers');
+define('LANGUAGE', CARGO . DS . 'languages');
+define('ASSET', CARGO . DS . 'assets');
+define('POST', CARGO . DS . 'posts');
+define('RESPONSE', CARGO . DS . 'responses');
+define('EXTEND', CARGO . DS . 'extends');
+define('STATE', CARGO . DS . 'states');
+define('PLUGIN', CARGO . DS . 'plugins');
+define('SHIELD', CARGO . DS . 'shields');
+define('CACHE', CARGO . DS . 'scraps');
+define('WORKER', CARGO . DS . 'workers');
 
 define('ARTICLE', POST . DS . 'article');
 define('PAGE', POST . DS . 'page');
@@ -40,6 +40,11 @@ define('TAB', '  '); // Standard indentation on the page
 define('NL', PHP_EOL); // New line character of HTML output
 define('O_BEGIN', ""); // Begin HTML output
 define('O_END', PHP_EOL); // End HTML output
+
+// Librar(y|ies)
+define('CSS_LIBRARY_PATH', "");
+define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css');
+define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js');
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
 define('IMAGE_EXT', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');

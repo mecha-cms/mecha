@@ -50,7 +50,7 @@ class Tree extends Base {
             'branch' => 'branch branch-%d',
             'twig' => 'twig',
             'current' => 'current',
-            'hole' => 'hole'
+            'chink' => 'chink'
         )
     );
 
@@ -63,7 +63,7 @@ class Tree extends Base {
         foreach($array as $key => $value) {
             if( ! is_array($value)) {
                 $url = Converter::url($value);
-                $hole = $value === "" ? ' ' . $c_class['hole'] : "";
+                $hole = $value === "" ? ' ' . $c_class['chink'] : "";
                 $current = $url === $c_url_current || ($url !== $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' ' . $c_class['current'] : "";
                 $c = trim(($c_class['twig'] !== false ? $c_class['twig'] : "") . $hole . $current);
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';

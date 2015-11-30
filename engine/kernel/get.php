@@ -650,18 +650,13 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::postExtract($path, $FP);
-        $results = $results + Text::toPage($path, false, $FP, $results);
+        $results = $results + Text::toPage($path, false, $FP, array(
+            'link' => "",
+            'author' => $config->author->name,
+            'description' => ""
+        ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
-        if( ! isset($results['link'])) {
-            $results['link'] = Filter::colon($FP . 'link', "", $results);
-        }
-        if( ! isset($results['author'])) {
-            $results['author'] = Filter::colon($FP . 'author', $config->author->name, $results);
-        }
-        if( ! isset($results['description'])) {
-            $results['description'] = Filter::colon($FP . 'description', "", $results);
-        }
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();
         foreach($fields as $key => $value) {
@@ -709,13 +704,12 @@ class Get extends Base {
         $excludes = array_flip($excludes);
         $results = false;
         if( ! is_array($reference)) {
-            // By path => `cabinet\$folder\2014-06-21-20-05-17_1,2,3_page-slug.txt`
-            if(strpos($reference, $folder) === 0) {
-                $results = self::postExtract($reference, $FP);
-            } else {
-                // By slug => `post-slug` or by ID => `1403355917`
-                $results = self::postExtract(self::postPath($reference, $folder), $FP);
+            // By slug => `post-slug` or by ID => `1403355917`
+            if(strpos($reference, $folder) !== 0) {
+                $reference = self::postPath($reference, $folder);
             }
+            // By path => `lot\posts\$folder\2014-06-21-20-05-17_1,2,3_page-slug.txt`
+            $results = self::postExtract($reference, $FP);
         } else {
             // From `Get::postExtract()`
             $results = $reference;
@@ -724,8 +718,13 @@ class Get extends Base {
         // RULES: Do not do any tags looping, content parsing
         // and external file requesting if it has been marked as
         // the excluded field(s). For better performance.
-        $results = $results + Text::toPage(File::open($results['path'])->read(), isset($excludes['content']) ? false : 'content', $FP, $results);
-        $content = isset($results['content_raw']) ? $results['content_raw'] : "";
+        $results = $results + Text::toPage(File::open($results['path'])->read(), isset($excludes['content']) ? false : 'content', $FP, array(
+            'link' => "",
+            'author' => $config->author->name,
+            'description' => "",
+            'content' => ""
+        ), $results);
+        $content = $results['content_raw'];
         $time = str_replace(array(' ', ':'), '-', $results['time']);
         $e = File::E($results['path']);
         // Custom post content with PHP file, named as the post slug
@@ -736,19 +735,9 @@ class Get extends Base {
         }
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
-        if( ! isset($results['link'])) {
-            $results['link'] = Filter::colon($FP . 'link', "", $results);
-        }
-        if( ! isset($results['author'])) {
-            $results['author'] = Filter::colon($FP . 'author', $config->author->name, $results);
-        }
-        if( ! isset($results['description'])) {
-            $curt = Converter::curt($content, $config->excerpt->length, $config->excerpt->tail);
-            $results['description'] = Filter::colon($FP . 'description', $curt, $results);
-        }
         $results['excerpt'] = $more = "";
         if($content !== "") {
-            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, $results) : $results;
+            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, array(), $results) : $results;
             $exc = $exc['content'];
             $exc = is_array($exc) ? implode("", $exc) : $exc;
             // Manual post excerpt with `<!-- cut+ "Read More" -->`
@@ -1020,7 +1009,8 @@ class Get extends Base {
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
             $results = self::responseExtract($path, $FP);
             $parts = explode(S, $buffer, 2);
-            $results['name'] = Filter::colon($FP . 'name', isset($parts[1]) ? Converter::DS(trim($parts[1])) : "", $results);
+            $results['name_raw'] = Filter::colon($FP . 'name_raw', isset($parts[1]) ? Converter::DS(trim($parts[1])) : "", $results);
+            $results['name'] = Filter::colon($FP . 'name', $results['name_raw'], $results);
             return Mecha::O($results);
         }
         return false;
@@ -1046,9 +1036,8 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::responseExtract($path, $FP);
-        $results = $results + Text::toPage($path, false, $FP, $results);
+        $results = $results + Text::toPage($path, false, $FP, array(), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();
         foreach($fields as $key => $value) {
@@ -1095,20 +1084,21 @@ class Get extends Base {
         $excludes = array_flip($excludes);
         $results = false;
         if( ! is_array($reference)) {
-            // By path => `cabinet\responses\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
-            if(strpos($reference, $folder[0]) === 0) {
-                $results = self::responseExtract($reference, $FP);
-            } else {
-                // By time => `2014-06-21-20-05-17` or by ID => `1403355917`
-                $results = self::responseExtract(self::responsePath($reference, $folder[0]), $FP);
+            // By time => `2014-06-21-20-05-17` or by ID => `1403355917`
+            if(strpos($reference, $folder[0]) !== 0) {
+                $reference = self::responsePath($reference, $folder[0]);
             }
+            // By path => `lot\responses\$folder[0]\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
+            $results = self::responseExtract($reference, $FP);
         } else {
             // From `Get::responseExtract()`
             $results = $reference;
         }
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP, $results);
+        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP, array(
+            'url' => '#'
+        ), $results);
         $results['email'] = Text::parse($results['email'], '->decoded_html');
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {
@@ -1117,9 +1107,6 @@ class Get extends Base {
                 $link = '#';
             }
             $results['permalink'] = Filter::colon($FP . 'permalink', $link, $results);
-        }
-        if( ! isset($excludes['url']) && ! isset($results['url'])) {
-            $results['url'] = Filter::colon($FP . 'url', '#', $results);
         }
         if( ! isset($excludes['fields'])) {
             $fields = self::state_field(rtrim($FP, ':'), null, array(), false);

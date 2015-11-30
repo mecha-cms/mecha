@@ -110,10 +110,12 @@ class Text extends Base {
      *
      */
 
-    public static function toPage($text, $content = 'content', $FP = 'page:', $data = null) {
-        $results = array();
+    public static function toPage($text, $content = 'content', $FP = 'page:', $results = array(), $data = null) {
         $c = $content !== false ? $content : 'content';
-        $FP = is_string($FP) && trim($FP) !== "" ? $FP : false;
+        foreach($results as $k => &$v) {
+            $v = Filter::colon($FP . $k, $v, $data);
+        }
+        unset($v);
         if( ! $content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
@@ -121,10 +123,9 @@ class Text extends Base {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
-                    if($FP) {
-                        $value = Filter::apply($FP . $key, $value, $data);
-                    }
+                    $value = Filter::colon($FP . $key . '_raw', Converter::strEval(Converter::DS(trim($field[1]))), $data);
+                    $results[$key . '_raw'] = $value;
+                    $value = Filter::colon($FP . $key, $value, $data);
                     $results[$key] = $value;
                 }
                 unset($results['__']);
@@ -138,10 +139,9 @@ class Text extends Base {
                         $field = explode(S, $header, 2);
                         if( ! isset($field[1])) $field[1] = 'false';
                         $key = Text::parse(trim($field[0]), '->array_key', true);
-                        $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
-                        if($FP) {
-                            $value = Filter::apply($FP . $key, $value, $data);
-                        }
+                        $value = Filter::colon($FP . $key . '_raw', Converter::strEval(Converter::DS(trim($field[1]))), $data);
+                        $results[$key . '_raw'] = $value;
+                        $value = Filter::colon($FP . $key, $value, $data);
                         $results[$key] = $value;
                     }
                     $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
@@ -163,10 +163,9 @@ class Text extends Base {
                     $field = explode(S, $header, 2);
                     if( ! isset($field[1])) $field[1] = 'false';
                     $key = Text::parse(trim($field[0]), '->array_key', true);
-                    $value = Filter::apply($key, Converter::strEval(Converter::DS(trim($field[1]))), $data);
-                    if($FP) {
-                        $value = Filter::apply($FP . $key, $value, $data);
-                    }
+                    $value = Filter::colon($FP . $key . '_raw', Converter::strEval(Converter::DS(trim($field[1]))), $data);
+                    $results[$key . '_raw'] = $value;
+                    $value = Filter::colon($FP . $key, $value, $data);
                     $results[$key] = $value;
                 }
                 $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
@@ -178,36 +177,18 @@ class Text extends Base {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_extra as $k => $v) {
                     $v = Converter::DS(trim($v));
-                    $v = Filter::apply($c . '_raw', $v, $data, $k + 1);
-                    if($FP) {
-                        $v = Filter::apply($FP . $c . '_raw', $v, $data, $k + 1);
-                    }
+                    $v = Filter::colon($FP . $c . '_raw', $v, $data, $k + 1);
                     $results[$c . '_raw'][$k] = $v;
-                    $v = Filter::apply('shortcode', $v, $data, $k + 1);
-                    if($FP) {
-                        $v = Filter::apply($FP . 'shortcode', $v, $data, $k + 1);
-                    }
-                    $v = Filter::apply($c, $v, $data, $k + 1);
-                    if($FP) {
-                        $v = Filter::apply($FP . $c, $v, $data, $k + 1);
-                    }
+                    $v = Filter::colon($FP . 'shortcode', $v, $data, $k + 1);
+                    $v = Filter::colon($FP . $c, $v, $data, $k + 1);
                     $results[$c][$k] = $v;
                 }
             } else {
                 $v = Converter::DS($results[$c . '_raw']);
-                $v = Filter::apply($c . '_raw', $v, $data, 1);
-                if($FP) {
-                    $v = Filter::apply($FP . $c . '_raw', $v, $data, 1);
-                }
+                $v = Filter::colon($FP . $c . '_raw', $v, $data, 1);
                 $results[$c . '_raw'] = $v;
-                $v = Filter::apply('shortcode', $v, $data, 1);
-                if($FP) {
-                    $v = Filter::apply($FP . 'shortcode', $v, $data, 1);
-                }
-                $v = Filter::apply($c, $v, $data, 1);
-                if($FP) {
-                    $v = Filter::apply($FP . $c, $v, $data, 1);
-                }
+                $v = Filter::colon($FP . 'shortcode', $v, $data, 1);
+                $v = Filter::colon($FP . $c, $v, $data, 1);
                 $results[$c] = $v;
             }
         }

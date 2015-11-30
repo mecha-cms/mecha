@@ -82,7 +82,7 @@ class Menu extends Base {
         Tree::$config['classes']['branch'] = $dd['child'];
         Tree::$config['classes']['twig'] = false;
         Tree::$config['classes']['current'] = $dd['current'];
-        Tree::$config['classes']['hole'] = $dd['separator'];
+        Tree::$config['classes']['chink'] = $dd['separator'];
         $output = call_user_func_array('Tree::grow', $arguments);
         Tree::$config = $d; // reset to the previous state
         return $output;
