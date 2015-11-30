@@ -6,7 +6,7 @@ if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[
     Guardian::memorize($request);
 }
 $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
-$request['path'] = $task_connect->path;
+$request['path'] = $post->path;
 $request['state'] = $request['action'] === 'publish' ? 'published' : 'drafted';
 // Set post date by submitted time, or by input value if available
 $date = date('c', $request['id']);
@@ -38,15 +38,15 @@ $css = trim(Request::post('css', "", false));
 $js = trim(Request::post('js', "", false));
 $field = Request::post('fields', array());
 // Slug must contains at least one letter or one `-`. This validation added
-// to prevent user(s) from inputting a page offset instead of article slug.
-// Because the URL pattern of article's index page is `article/1` and the
-// URL pattern of article's single page is `article/article-slug`
-if( ! preg_match('#[a-z\-]#i', $slug)) {
+// to prevent user(s) from inputting a page offset instead of post slug.
+// Because the URL pattern of post's index page is `$post/1` and the
+// URL pattern of post's single page is `$post/post-slug`
+if(is_numeric($slug)) {
     Notify::error($speak->notify_error_slug_missing_letter);
     Guardian::memorize($request);
 }
 // Check for empty post content
 if(trim($content) === "") {
-    Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->{$task_connect_segment} : strtolower($speak->{$task_connect_segment})));
+    Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->{$segment} : strtolower($speak->{$segment})));
     Guardian::memorize($request);
 }

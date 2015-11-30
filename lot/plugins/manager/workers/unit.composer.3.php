@@ -4,13 +4,9 @@ $fields = Get::state_field($segment);
 
 Weapon::fire('unit_composer_3_before', array($page, $segment, $fields));
 
-if( ! isset($page->fields)) {
-    $page->fields = array();
-}
-
 if( ! empty($fields)) {
     $html = "";
-    $field = Guardian::wayback('fields', Mecha::A($page->fields));
+    $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
     foreach($fields as $key => $value) {
         if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
@@ -52,7 +48,7 @@ if( ! empty($fields)) {
                 $html .= '</label>';
             } else if($type === 'f') {
                 $v = isset($value['value']) && $value['value'] !== "" ? $value['value'] : false;
-                $vv = isset($field[$key]) && $field[$key] !== "" ? File::path($field[$key]) : false;
+                $vv = isset($field[$key]) && $field[$key] !== "" ? File::E($field[$key]) . DS . File::path($field[$key]) : false;
                 $has_file = $vv !== false && file_exists(SUBSTANCE . DS . $vv) && is_file(SUBSTANCE . DS . $vv);
                 $html .= '<div class="grid-group grid-group-file' . ($has_file ? ' grid-group-boolean' : "") . '">';
                 $html .= ! $has_file ? '<span class="grid span-2 form-label">' . $title . '</span>' : '<span class="grid span-2"></span>';

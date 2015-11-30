@@ -37,8 +37,8 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
 
 
 /**
- * Cache Repair
- * ------------
+ * Cache Repairer
+ * --------------
  */
 
 Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
