@@ -24,8 +24,8 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
 
 
 /**
- * Field Repair/Igniter
- * --------------------
+ * Field Repairer/Igniter
+ * ----------------------
  */
 
 Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak) {

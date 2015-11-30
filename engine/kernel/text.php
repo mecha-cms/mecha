@@ -112,10 +112,10 @@ class Text extends Base {
 
     public static function toPage($text, $content = 'content', $FP = 'page:', $results = array(), $data = null) {
         $c = $content !== false ? $content : 'content';
-        foreach($results as $k => &$v) {
-            $v = Filter::colon($FP . $k, $v, $data);
+        foreach($results as $k => $v) {
+            $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
+            $results[$k] = Filter::colon($FP . $k, $v, $data);
         }
-        unset($v);
         if( ! $content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {

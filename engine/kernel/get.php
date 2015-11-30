@@ -614,7 +614,9 @@ class Get extends Base {
             $results = self::postExtract($path, $FP);
             $parts = explode(S, $buffer, 2);
             $results['url'] = Filter::colon($FP . 'url', Config::get('url') . $connector . $results['slug'], $results);
-            $results['title'] = Filter::colon($FP . 'title', isset($parts[1]) ? Converter::DS(trim($parts[1])) : "", $results);
+            $v = isset($parts[1]) ? Converter::DS(trim($parts[1])) : "";
+            $results['title_raw'] = Filter::colon($FP . 'title_raw', $v, $results);
+            $results['title'] = Filter::colon($FP . 'title', $v, $results);
             return Mecha::O($results);
         }
         return false;
@@ -653,7 +655,9 @@ class Get extends Base {
         $results = $results + Text::toPage($path, false, $FP, array(
             'link' => "",
             'author' => $config->author->name,
-            'description' => ""
+            'description' => "",
+            'content_type' => $config->html_parser,
+            'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
@@ -722,6 +726,8 @@ class Get extends Base {
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
+            'content_type' => $config->html_parser,
+            'fields' => array(),
             'content' => ""
         ), $results);
         $content = $results['content_raw'];
@@ -740,6 +746,10 @@ class Get extends Base {
             $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, array(), $results) : $results;
             $exc = $exc['content'];
             $exc = is_array($exc) ? implode("", $exc) : $exc;
+            // Generate fake description data
+            if($results['description'] === "") {
+                $results['description'] = Converter::curt($exc, $config->excerpt->length, $config->excerpt->tail);
+            }
             // Manual post excerpt with `<!-- cut+ "Read More" -->`
             if(strpos($exc, '<!-- cut+ ') !== false) {
                 preg_match('#<!-- cut\+( +([\'"]?)(.*?)\2)? -->#', $exc, $matches);
@@ -1036,7 +1046,10 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::responseExtract($path, $FP);
-        $results = $results + Text::toPage($path, false, $FP, array(), $results);
+        $results = $results + Text::toPage($path, false, $FP, array(
+            'url' => '#',
+            'content_type' => $config->html_parser
+        ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
         $init = array();
@@ -1097,9 +1110,9 @@ class Get extends Base {
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP, array(
-            'url' => '#'
+            'url' => '#',
+            'content_type' => $config->html_parser
         ), $results);
-        $results['email'] = Text::parse($results['email'], '->decoded_html');
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {
                 $link = self::postAnchor($path, $folder[1], $connector, "")->url . '#' . rtrim($FP, ':') . '-' . $results['id'];

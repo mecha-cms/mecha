@@ -109,8 +109,8 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
 
 
 /**
- * Asset Repair
- * ------------
+ * Asset Repairer
+ * --------------
  */
 
 Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($path = "", $old = "") use($config, $speak) {

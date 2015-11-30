@@ -107,8 +107,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
 
 
 /**
- * Shield Repair
- * -------------
+ * Shield Repairer
+ * ---------------
  */
 
 Route::accept($config->manager->slug . '/shield/(:any)/repair/file:(:all)', function($folder = "", $path = "") use($config, $speak) {

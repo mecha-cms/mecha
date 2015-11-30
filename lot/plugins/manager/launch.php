@@ -13,9 +13,8 @@ foreach(glob(__DIR__ . DS . 'workers' . DS . 'plug' . DS . '*.php', GLOB_NOSORT)
 
 
 // Loading task(s)
-foreach(glob(__DIR__ . DS . 'workers' . DS . '__task.*.php', GLOB_NOSORT) as $task) {
-    require $task;
-}
+require __DIR__ . DS . 'workers' . DS . 'task.user.php';
+require __DIR__ . DS . 'workers' . DS . 'task.comment.php';
 
 
 /**
