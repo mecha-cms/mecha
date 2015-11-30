@@ -207,26 +207,7 @@ class Converter extends Base {
      */
 
     public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = "") {
-        $input = preg_replace(
-            array(
-                '#<br *\/?>|<\/.*?>(?=[\s<])#i', // New line to a single white-space
-                '#<.*?>#', // Remove all HTML tag(s)
-                '#[`~\#*-=+_]{2,}#', // Remove all possible raw Markdown( Extra)? pattern(s)
-                '#\b([`~*_]+)(.*?)\1\b#', // --ibid
-                '#<|>#', // Fix all broken HTML tag(s). Replace `<div></di` to `div/di`
-                '#(\s|&nbsp;)+#', // Multiple white-space(s) to a single white-space
-                '# (?=[!:;,.\/?])#' // Remove leading white-space(s) before `!:;,./?`
-            ),
-            array(
-                ' ',
-                "",
-                "",
-                '$2',
-                "",
-                ' ',
-                ""
-            ),
-        $input);
+        $input = Text::parse($input, '->text');
         $charset = $charset !== "" ? $charset : Config::get('charset');
         return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < (function_exists('mb_strlen') ? mb_strlen($input, $charset) : strlen($input)) ? $tail : "");
     }
