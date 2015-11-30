@@ -27,7 +27,7 @@ if(DEBUG) {
 $gpc = array(&$_GET, &$_POST, &$_REQUEST, &$_COOKIE);
 
 array_walk_recursive($gpc, function(&$value) {
-    $value = str_replace("\r", "", $value);
+    $value = str_replace(array("\r\n", "\r"), "\n", $value);
     if(get_magic_quotes_gpc()) {
         $value = stripslashes($value);
     }
