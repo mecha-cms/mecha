@@ -58,37 +58,37 @@ class Guardian extends Base {
         if($file = File::exist(LOG . DS . 'users.txt')) {
             $ally = array();
             foreach(explode("\n", file_get_contents($file)) as $str) {
-                $str = trim($str);
+                $s = trim($str);
                 // serialized array
-                if(strpos($str, 'a:') === 0) {
-                    $str = unserialize($str);
+                if(strpos($s, 'a:') === 0) {
+                    $s = unserialize($s);
                 // json encoded array
-                } else if(strpos($str, '{"') === 0) {
-                    $str = json_decode($str, true);
+                } else if(strpos($s, '{"') === 0) {
+                    $s = json_decode($s, true);
                 // Pattern 1: `user: pass (Author Name: status) email@domain.com`
                 // Pattern 2: `user: pass (Author Name $status) email@domain.com`
+                } else if(preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*\$|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $s, $matches)) {
+                    $s = array();
+                    $s['user'] = $matches[1];
+                    $s['pass'] = $matches[2];
+                    $s['name'] = $matches[3];
+                    $s['status'] = $matches[4];
+                    $s['email'] = isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false;
                 } else {
-                    preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*\$|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $str, $matches);
-                    $str = array();
-                    $str['user'] = $matches[1];
-                    $str['pass'] = $matches[2];
-                    $str['name'] = $matches[3];
-                    $str['status'] = $matches[4];
-                    $str['email'] = isset($matches[5]) && ! empty($matches[5]) ? $matches[5] : false;
+                    self::abort('Broken <code>' . LOG . DS . 'users.txt</code> format.');
                 }
-                foreach($str as $k => &$v) {
+                foreach($s as $k => $v) {
                     $v = Converter::strEval($v);
-                    $str[$k . '_raw'] = Filter::colon('user:' . $k . '_raw', $v, $str);
-                    $v = Filter::colon('user:' . $k, $v, $str);
+                    $s[$k . '_raw'] = Filter::colon('user:' . $k . '_raw', $v, $s);
+                    $s[$k] = Filter::colon('user:' . $k, $v, $s);
                 }
-                $ally[$str['user']] = Filter::apply('user', $str, $str['user']);
-                unset($v);
+                $ally[$s['user']] = Filter::apply('user', $s, $s['user']);
             }
             $ally = Filter::apply('users', $ally);
             if(is_null($user)) return $ally;
             return isset($ally[$user]) ? $ally[$user] : $fallback;
         } else {
-            self::abort('Missing <code>users.txt</code> file.');
+            self::abort('Missing <code>' . LOG . DS . 'users.txt</code> file.');
         }
     }
 
