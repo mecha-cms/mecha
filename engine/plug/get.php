@@ -397,8 +397,7 @@ Get::plug('comment', function($reference, $excludes = array()) {
  *
  */
 
-Get::plug('IP', function() {
-    $ip = 'N/A';
+Get::plug('IP', function($fallback = false) {
     if(array_key_exists('HTTP_X_FORWARDED_FOR', $_SERVER) && ! empty($_SERVER['HTTP_X_FORWARDED_FOR'])) {
         if(strpos($_SERVER['HTTP_X_FORWARDED_FOR'], ',') > 0) {
             $addresses = explode(',', $_SERVER['HTTP_X_FORWARDED_FOR']);
@@ -409,7 +408,7 @@ Get::plug('IP', function() {
     } else {
         $ip = $_SERVER['REMOTE_ADDR'];
     }
-    return Guardian::check($ip, '->ip') ? $ip : 'N/A';
+    return Guardian::check($ip, '->ip') ? $ip : $fallback;
 });
 
 
