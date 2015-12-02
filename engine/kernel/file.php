@@ -62,36 +62,46 @@ class File extends Base {
     );
 
     // Inspect file path
-    public static function inspect($path) {
+    public static function inspect($path, $output = null, $fallback = false) {
         $path = self::path($path);
+        $n = self::N($path);
         $e = self::E($path);
         $update = self::T($path);
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
-        return array(
+        $results = array(
             'path' => $path,
-            'name' => self::N($path),
+            'name' => $n,
             'url' => self::url($path),
-            'extension' => is_file($path) ? strtolower($e) : null,
+            'extension' => is_file($path) ? $e : null,
             'update_raw' => $update,
             'update' => $update_date,
-            'size_raw' => file_exists($path) ? filesize($path) : null,
-            'size' => self::size($path)
+            'size_raw' => file_exists($path) && is_file($path) ? filesize($path) : null,
+            'size' => is_file($path) ? self::size($path) : null,
+            'is' => array(
+                'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
+                'file' => is_file($path),
+                'folder' => is_dir($path)
+            )
         );
+        return ! is_null($output) ? Mecha::GVR($results, $output, $fallback) : $results;
     }
 
     // List all file(s) from a folder
     public static function explore($folder = ROOT, $recursive = false, $flat = false, $fallback = false) {
         $results = array();
         $folder = rtrim(self::path($folder), DS);
-        $files = array_merge(glob($folder . DS . '*', GLOB_NOSORT), glob($folder . DS . '.*', GLOB_NOSORT));
+        $files = array_merge(
+            glob($folder . DS . '*', GLOB_NOSORT),
+            glob($folder . DS . '.*', GLOB_NOSORT)
+        );
         foreach($files as $file) {
             if(self::B($file) !== '.' && self::B($file) !== '..') {
                 if(is_dir($file)) {
                     if( ! $flat) {
-                        $results[$file] = $recursive ? self::explore($file, $recursive, $flat, array()) : 0;
+                        $results[$file] = $recursive ? self::explore($file, true, false, array()) : 0;
                     } else {
                         $results[$file] = 0;
-                        $results = array_merge($results, self::explore($file, $recursive, $flat, array()));
+                        $results = $recursive ? array_merge($results, self::explore($file, true, true, array())) : $results;
                     }
                 } else {
                     $results[$file] = 1;
@@ -280,19 +290,21 @@ class File extends Base {
     }
 
     // Get file base name
-    public static function B($path, $s = '/') {
-        if($s !== DS && $s !== '/') {
+    public static function B($path, $step = 1, $s = DS) {
+        if(($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
-            return array_pop($p);
+            return implode($s, array_slice($p, $step * -1));
         }
         return basename($path);
     }
 
     // Get file directory name
-    public static function D($path, $s = '/') {
-        if($s !== DS && $s !== '/') {
+    public static function D($path, $step = 1, $s = DS) {
+        if(($s !== DS && $s !== '/') || $step > 1) {
             $p = explode($s, $path);
-            array_pop($p);
+            for($i = 0; $i < $step; ++$i) {
+                array_pop($p);
+            }
             return implode($s, $p);
         }
         return dirname($path) === '.' ? "" : dirname($path);
