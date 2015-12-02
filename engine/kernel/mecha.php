@@ -94,8 +94,13 @@ class Mecha extends Base {
         return self::eat($array);
     }
 
+    // Check if `$array` contain `$key` -- should be faster than `in_array($key, $array)`
+    public static function has($key, $x = ';;;') {
+        return strpos($x . implode($x, self::$stomach) . $x, $x . $key . $x) !== false;
+    }
+
     // Sort array based on its value's key
-    public static function order($order = 'ASC', $key = null, $jot_key = false, $default = '\0') {
+    public static function order($order = 'ASC', $key = null, $preserve_key = false, $default = '\0') {
         if( ! is_null($key)) {
             $before = array();
             $after = array();
@@ -115,21 +120,20 @@ class Mecha extends Base {
                     asort($before);
                 }
                 foreach($before as $k => $v) {
-                    if($jot_key) {
-                        $after[$k] = self::$stomach[$k];
-                    } else {
-                        $after[] = self::$stomach[$k];
-                    }
+                    $after[$k] = self::$stomach[$k];
                 }
             }
             self::$stomach = $after;
             unset($before, $after);
         } else {
-            if($order === 'ASC') {
-                asort(self::$stomach);
-            } else {
+            if($order === 'DESC') {
                 arsort(self::$stomach);
+            } else {
+                asort(self::$stomach);
             }
+        }
+        if( ! $preserve_key) {
+            self::$stomach = array_values(self::$stomach);
         }
         return new static;
     }
