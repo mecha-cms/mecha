@@ -5,7 +5,7 @@
 $path_reject = $config->manager->slug . '/asset' . $config->url_query;
 $path_destruct = $config->manager->slug . '/asset/kill/file:' . File::url(str_replace(ASSET . DS, "", $path)) . $config->url_query;
 
-include __DIR__ . DS . 'unit.editor.2.php';
+include __DIR__ . DS . 'unit' . DS . 'editor' . DS . '2.php';
 
 ?>
 <?php echo Form::hidden('token', $token); ?>

@@ -35,6 +35,31 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
  */
 
 Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config->manager->slug . '/(' . $post . ')/repair/id:(:num)'), function($segment = "", $id = false) use($config, $speak, $response) {
+    $units = array('title', 'slug', 'link', 'content', 'description', 'post' . DS . 'author');
+    foreach($units as $k => $v) {
+        Weapon::add('tab_content_1_before', function($page, $segment) use($config, $speak, $v) {
+            include __DIR__ . DS . 'unit' . DS . 'form' . DS . $v . '.php';
+        }, $k + 1);
+    }
+    $units = array('css', 'js');
+    foreach($units as $k => $v) {
+        Weapon::add('tab_content_2_before', function($page, $segment) use($config, $speak, $v) {
+            include __DIR__ . DS . 'unit' . DS . 'form' . DS . $v . '.php';
+        }, $k + 1);
+    }
+    Weapon::add('tab_content_3_before', function($page, $segment) use($config, $speak) {
+        include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'fields[].php';
+    }, 1);
+    // Ignite
+    if(strpos($config->url_path, '/id:') === false) {
+        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+            echo '<script>
+    (function($) {
+        $.slug(\'title\', \'slug\', \'-\');
+    })(window.Zepto || window.jQuery);
+    </script>';
+        }, 11);
+    }
     if($id && $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
         $extension_o = $post->state === 'published' ? '.txt' : '.draft';
         if( ! Guardian::happy(1) && Guardian::get('author') !== $post->author) {
@@ -76,10 +101,58 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {
-        Guardian::checkToken($request['token']);
-        include __DIR__ . DS . 'task.field.5.php';
+        Guardian::checkToken($request['token']);// Check for invalid time pattern
+        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
+            Notify::error($speak->notify_invalid_time_pattern);
+            Guardian::memorize($request);
+        }
+        $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
+        $request['path'] = $post->path;
+        $request['state'] = $request['action'] === 'publish' ? 'published' : 'drafted';
+        // Set post date by submitted time, or by input value if available
+        $date = date('c', $request['id']);
+        // General field(s)
+        $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
+        $link = false;
+        if(isset($request['link']) && trim($request['link']) !== "") {
+            if( ! Guardian::check($request['link'], '->url')) {
+                Notify::error($speak->notify_invalid_url);
+            } else {
+                $link = $request['link'];
+            }
+        }
+        if(strpos($request['slug'], '://') !== false) {
+            $slug = Text::parse($title, '->slug');
+            if( ! Guardian::check($request['slug'], '->url')) {
+                Notify::error($speak->notify_invalid_url);
+            } else {
+                $link = $request['slug'];
+            }
+        } else {
+            $slug = Text::parse(Request::post('slug', $title, false), '->slug');
+        }
+        $slug = $slug === '--' ? 'post-' . time() : $slug;
+        $content = $request['content'];
+        $description = $request['description'];
+        $author = strip_tags($request['author']);
+        $css = trim(Request::post('css', "", false));
+        $js = trim(Request::post('js', "", false));
+        $field = Request::post('fields', array());
+        // Slug must contains at least one letter or one `-`. This validation added
+        // to prevent user(s) from inputting a page offset instead of post slug.
+        // Because the URL pattern of post's index page is `$post/1` and the
+        // URL pattern of post's single page is `$post/post-slug`
+        if(is_numeric($slug)) {
+            Notify::error($speak->notify_error_slug_missing_letter);
+            Guardian::memorize($request);
+        }
+        // Check for empty post content
+        if(trim($content) === "") {
+            Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->{$segment} : strtolower($speak->{$segment})));
+            Guardian::memorize($request);
+        }
         $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
-        $kind = isset($request['kind']) ? $request['kind'] : array(0);
+        $kind = isset($request['kind']) ? $request['kind'] : array();
         sort($kind);
         // Check for duplicate slug, except for the current old slug.
         // Allow user(s) to change their post slug, but make sure they
@@ -96,27 +169,49 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            include __DIR__ . DS . 'task.field.2.php';
-            include __DIR__ . DS . 'task.field.1.php';
-            include __DIR__ . DS . 'task.field.4.php';
+            include __DIR__ . DS . 'task.ignite.substance.php';
+            include __DIR__ . DS . 'task.fields.php';
+            $header = array(
+                'Title' => $title,
+                'Link' => $link,
+                'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
+                'Author' => $author,
+                'Content Type' => Request::post('content_type', 'HTML'),
+                'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
+            );
+            $_ = POST . DS . $segment . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension;
             // Ignite
             if( ! $id) {
-                $_ = POST . DS . $segment . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension;
                 Page::header($header)->content($content)->saveTo($_);
-                include __DIR__ . DS . 'task.custom.2.php';
-                Notify::success(Config::speak('notify_success_created', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $segment . 'Anchor', $_)->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
-                Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_construct'), array($G, $P));
-                Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . Date::format($date, 'U'));
+                if(( ! empty($css) && $css !== $config->defaults->{$segment . '_css'}) || ( ! empty($js) && $js !== $config->defaults->{$segment . '_js'})) {
+                    Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::slug($date) . $extension);
+                    Weapon::fire(array('on_custom_update', 'on_custom_construct'), array($G, $P));
+                }
             // Repair
             } else {
                 Page::open($post->path)->header($header)->content($content)->save();
-                File::open($post->path)->renameTo(Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension);
-                include __DIR__ . DS . 'task.custom.1.php';
+                File::open($post->path)->renameTo(File::B($_));
+                $custom_ = CUSTOM . DS . Date::slug($post->date->W3C);
+                if(file_exists($custom_ . $extension_o)) {
+                    Weapon::fire('on_custom_update', array($G, $P));
+                    if(trim(File::open($custom_ . $extension_o)->read()) === "" || trim(File::open($custom_ . $extension_o)->read()) === SEPARATOR || (empty($css) && empty($js)) || ($css === $config->defaults->{$segment . '_css'} && $js === $config->defaults->{$segment . '_js'})) {
+                        // Always delete empty custom CSS and JavaScript file(s) ...
+                        File::open($custom_ . $extension_o)->delete();
+                        Weapon::fire('on_custom_destruct', array($G, $P));
+                    } else {
+                        Page::content($css)->content($js)->saveTo($custom_ . $extension_o);
+                        File::open($custom_ . $extension_o)->renameTo(Date::slug($date) . $extension);
+                        Weapon::fire('on_custom_repair', array($G, $P));
+                    }
+                } else {
+                    if(( ! empty($css) && $css !== $config->defaults->{$segment . '_css'}) || ( ! empty($js) && $js !== $config->defaults->{$segment . '_js'})) {
+                        Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::slug($date) . $extension_o);
+                        Weapon::fire(array('on_custom_update', 'on_custom_construct'), array($G, $P));
+                    }
+                }
                 if($post->slug !== $slug && $php_file = File::exist(File::D($post->path) . DS . $post->slug . '.php')) {
                     File::open($php_file)->renameTo($slug . '.php');
                 }
-                Notify::success(Config::speak('notify_success_updated', $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $segment . 'Anchor', $post->path)->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
-                Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_repair'), array($G, $P));
                 // Rename all response file(s) related to post if post date has been changed
                 if(((string) $date !== (string) $post->date->W3C) && $responses = cal_user_func('Get::' . $response . 's', 'DESC', 'post:' . Date::slug($id), 'txt,hold')) {
                     foreach($responses as $v) {
@@ -125,8 +220,10 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                         File::open($v)->renameTo(implode('_', $parts));
                     }
                 }
-                Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . Date::format($date, 'U'));
             }
+            Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $segment . 'Anchor', $_)->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+            Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_' . ($id ? 'repair' : 'construct')), array($G, $P));
+            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . Date::format($date, 'U'));
         }
     }
     Shield::lot(array('segment' => $segment))->attach('manager');
@@ -161,8 +258,13 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
             }
         }
         $P = array('data' => $request);
-        include __DIR__ . DS . 'task.field.3.php';
-        include __DIR__ . DS . 'task.custom.3.php';
+        include __DIR__ . DS . 'task.kill.substance.php';
+        // Deleting custom CSS and JavaScript file of post ...
+        File::open(CUSTOM . DS . Date::slug($id) . '.txt')->delete();
+        File::open(CUSTOM . DS . Date::slug($id) . '.draft')->delete();
+        Weapon::fire(array('on_custom_update', 'on_custom_destruct'), array($G, $P));
+        // Deleting custom PHP file of post ...
+        File::open(File::D($post->path) . DS . $post->slug . '.php')->delete();
         Notify::success(Config::speak('notify_success_deleted', $post->title));
         Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_destruct'), array($G, $G));
         Guardian::kick($config->manager->slug . '/' . $segment);

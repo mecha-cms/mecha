@@ -11,7 +11,6 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
         Shield::abort();
     }
     $fields = Get::state_field(null, null, array(), false);
-    ksort($fields);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
         'cargo' => 'cargo.field.php'
@@ -32,9 +31,19 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
+    if( ! $key) {
+        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+            echo '<script>
+(function($) {
+    $.slug(\'title\', \'key\', \'_\');
+})(window.Zepto || window.jQuery);
+</script>';
+        }, 11);
+    }
     $fields = Get::state_field(null, null, array(), false);
     if($key === false) {
         $data = array(
+            'key' => false,
             'title' => "",
             'type' => 't',
             'placeholder' => "",
@@ -45,15 +54,16 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         $title = Config::speak('manager.title_new_', $speak->field) . $config->title_separator . $config->manager->title;
     } else {
         if( ! isset($fields[$key])) {
-            Shield::abort();
+            Shield::abort(); // Field not found!
         }
         $data = $fields[$key];
-        if( ! isset($data['placeholder'])) $data['placeholder'] = "";
-        if( ! isset($data['description'])) $data['description'] = "";
+        $data['key_raw'] = $data['key'] = $key;
         $title = $speak->editing . ': ' . $data['title'] . $config->title_separator . $config->manager->title;
     }
+    foreach($data as $k => $v) {
+        $data[$k . '_raw'] = $v;
+    }
     $G = array('data' => $data);
-    $G['data']['key'] = $key;
     Config::set(array(
         'page_title' => $title,
         'cargo' => 'repair.field.php'
@@ -68,43 +78,37 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         if(trim($request['key']) === "") {
             $request['key'] = $request['title'];
         }
-        $request_key = Text::parse($request['key'], '->array_key', true);
+        $k = Text::parse($request['key'], '->array_key', true);
         if($key === false) {
-            if(isset($fields[$request_key])) {
-                Notify::error(Config::speak('notify_exist', '<code>' . $request_key . '</code>'));
+            if(isset($fields[$k])) {
+                Notify::error(Config::speak('notify_exist', '<code>' . $k . '</code>'));
             }
         } else {
             unset($fields[$key]);
         }
-        $fields[$request_key] = array(
+        $fields[$k] = array(
             'title' => $request['title'],
             'type' => $request['type'],
             'value' => $request['value']
         );
         if(trim($request['placeholder']) !== "") {
-            $fields[$request_key]['placeholder'] = $request['placeholder'];
+            $fields[$k]['placeholder'] = $request['placeholder'];
         }
         if(trim($request['description']) !== "") {
-            $fields[$request_key]['description'] = $request['description'];
+            $fields[$k]['description'] = $request['description'];
         }
         if(isset($request['scope']) && is_array($request['scope'])) {
-            $fields[$request_key]['scope'] = implode(',', $request['scope']);
+            $fields[$k]['scope'] = implode(',', $request['scope']);
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
+            ksort($fields);
             File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), $request['title']));
             Weapon::fire(array('on_field_update', 'on_field_' . ($key === false ? 'construct' : 'repair')), array($G, $P));
-            Guardian::kick($key !== $request_key ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
+            Guardian::kick($key !== $k ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
         }
     }
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-        echo '<script>
-(function($) {
-    $.slug($(\'input[name="title"]\'), $(\'input[name="key"]\'), \'_\');
-})(window.Zepto || window.jQuery);
-</script>';
-    }, 11);
     Shield::lot(array(
         'segment' => 'field',
         'id' => $key,
@@ -136,10 +140,11 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
         $P['data']['key'] = $key;
-        $deleted_field = $fields[$key]['title'];
+        $s = $fields[$key]['title'];
         unset($fields[$key]); // delete ...
+        ksort($fields);
         File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
-        Notify::success(Config::speak('notify_success_deleted', $deleted_field));
+        Notify::success(Config::speak('notify_success_deleted', $s));
         Weapon::fire(array('on_field_update', 'on_field_destruct'), array($P, $P));
         Guardian::kick($config->manager->slug . '/field');
     } else {

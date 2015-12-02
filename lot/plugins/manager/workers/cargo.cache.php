@@ -1,4 +1,5 @@
 <?php $hooks = array($page, $segment); ?>
+<?php echo $messages; ?>
 <form class="form-action form-cache" id="form-action" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/do" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <div class="main-action-group">
@@ -8,19 +9,57 @@
   </div>
   <?php
 
-  echo $messages;
-
-  $c_path = CACHE . DS;
-
-  $c_url = $config->manager->slug . '/cache';
-  $c_url_kill = $c_url . '/kill/file:';
-  $c_url_repair = $c_url . '/repair/file:';
-
-  include __DIR__ . DS . 'unit.explorer.2.php';
+  $cache_url = $config->manager->slug . '/cache';
+  $cache_url_kill = $cache_url . '/kill/file:';
+  $cache_url_repair = $cache_url . '/repair/file:';
+  $cache_path = CACHE . DS;
 
   ?>
+  <table class="table-bordered table-full-width">
+    <?php if($files): ?>
+    <thead>
+      <tr>
+        <th class="th-icon">
+        <?php echo Form::checkbox(null, null, false, "", array(
+            'data-connection' => 'selected[]'
+        )); ?>
+        </th>
+        <th><?php echo Config::speak('last_', $speak->updated); ?></th>
+        <th><?php echo $speak->file; ?></th>
+        <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>
+      </tr>
+    </thead>
+    <tbody>
+      <?php foreach($files as $file): ?>
+      <?php $url = File::url(str_replace($cache_path, "", $file->path)); ?>
+      <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
+        <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
+        <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
+        <td><span title="<?php echo $file->size; ?>"><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></span></td>
+        <td class="td-icon">
+        <?php echo Jot::a('construct', $cache_url_repair . $url, Jot::icon('pencil'), array(
+            'title' => $speak->edit
+        )); ?>
+        </td>
+        <td class="td-icon">
+        <?php echo Jot::a('destruct', $cache_url_kill . $url, Jot::icon('times'), array(
+            'title' => $speak->delete
+        )); ?>
+        </td>
+      </tr>
+      <?php endforeach; ?>
+    </tbody>
+    <?php else: ?>
+    <tbody>
+      <tr>
+        <td class="td-icon"><?php echo $config->offset === 1 ? Jot::icon('home') : Jot::a('action', $cache_url, Jot::icon('home')); ?></td>
+        <td><?php echo Config::speak('notify_' . ($config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->files)); ?></td>
+      </tr>
+    </tbody>
+    <?php endif; ?>
+  </table>
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>
-<?php echo Jot::finder($c_url, 'q'); ?>
+<?php echo Jot::finder($cache_url, 'q'); ?>
 <?php endif; ?>

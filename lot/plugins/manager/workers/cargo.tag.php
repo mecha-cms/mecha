@@ -49,7 +49,10 @@
         </td>
         <td>
         <?php echo Form::text('name[]', Guardian::wayback('name.' . (max($id) + 1)), null, array(
-            'class' => 'input-block'
+            'class' => array(
+                'input-block',
+                'ignite'
+            )
         )); ?>
         </td>
         <td>

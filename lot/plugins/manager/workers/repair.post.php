@@ -15,15 +15,33 @@
     <?php echo Form::hidden('token', $token); ?>
     <?php Weapon::fire('tab_content_before', $hooks); ?>
     <div class="tab-content" id="tab-content-1">
-      <?php include __DIR__ . DS . 'unit.composer.1.php'; ?>
+    <?php Weapon::fire('tab_content_1_before', $hooks); ?>
+    <?php Weapon::fire('tab_content_1_after', $hooks); ?>
     </div>
     <div class="tab-content hidden" id="tab-content-2">
-      <?php include __DIR__ . DS . 'unit.composer.2.php'; ?>
+      <?php Weapon::fire('tab_content_2_before', $hooks); ?>
+      <?php Weapon::fire('tab_content_2_after', $hooks); ?>
     </div>
     <div class="tab-content hidden" id="tab-content-3">
-      <?php include __DIR__ . DS . 'unit.composer.3.php'; ?>
+      <?php Weapon::fire('tab_content_3_before', $hooks); ?>
+      <?php Weapon::fire('tab_content_3_after', $hooks); ?>
     </div>
     <?php Weapon::fire('tab_content_after', $hooks); ?>
-    <?php include __DIR__ . DS . 'unit.composer.4.php'; ?>
+    <hr>
+    <p>
+      <?php if(strpos($config->url_path, '/id:') === false): ?>
+      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
+      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
+      <?php else: ?>
+      <?php if(Guardian::wayback('state', $page->state) === 'published'): ?>
+      <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
+      <?php echo Jot::button('action:history', $speak->unpublish, 'action:save'); ?>
+      <?php else: ?>
+      <?php echo Jot::button('construct', $speak->publish, 'action:publish'); ?>
+      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
+      <?php endif; ?>
+      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/' . $segment . '/kill/id:' . Guardian::wayback('id', $page->id)); ?>
+      <?php endif; ?>
+    </p>
   </form>
 </div>

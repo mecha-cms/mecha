@@ -5,7 +5,7 @@
 $path_reject = $config->manager->slug . '/shield/' . $folder;
 $path_destruct = $path_reject . '/kill/file:' . File::url(str_replace(SHIELD . DS . $folder . DS, "", $path));
 
-include __DIR__ . DS . 'unit.editor.2.php';
+include __DIR__ . DS . 'unit' . DS . 'editor' . DS . '2.php';
 
 ?>
 <?php echo Form::hidden('token', $token); ?>

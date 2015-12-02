@@ -117,8 +117,7 @@ mark {
 button,
 input,
 select,
-textarea,
-.btn {
+textarea {
   background-color:#333;
   color:white;
 }

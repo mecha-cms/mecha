@@ -39,62 +39,106 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
 
 
 /**
- * Response Repairer
- * -----------------
+ * Response Repairer/Igniter
+ * -------------------------
  */
 
-Route::accept($config->manager->slug . '/(' . $response . ')/repair/id:(:num)', function($segment = "", $id = "") use($config, $speak, $post) {
-    if( ! Guardian::happy(1) || ! $response = call_user_func('Get::' . $segment, $id)) {
-        Shield::abort();
+Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $config->manager->slug . '/(' . $response . ')/repair/id:(:num)'), function($segment = "", $id = false) use($config, $speak, $post) {
+    $units = array('name', 'email', 'url', 'message', 'content_type');
+    foreach($units as $k => $v) {
+        Weapon::add('tab_content_1_before', function($page, $segment) use($config, $speak, $v) {
+            include __DIR__ . DS . 'unit' . DS . 'form' . DS . $v . '.php';
+        }, $k + 1);
     }
+    Weapon::add('tab_content_2_before', function($page, $segment) use($config, $speak) {
+        $segment = $segment[0];
+        include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'fields[].php';
+    }, 1);
     File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
+    if($id && $response = call_user_func('Get::' . $segment, $id, array('message'))) {
+        if( ! Guardian::happy(1)) {
+            Shield::abort();
+        }
+        $title = $speak->editing . ': ' . $speak->{$segment} . $config->title_separator . $config->manager->title;
+    } else {
+        if($id !== false) {
+            Shield::abort(); // File not found!
+        }
+        $response = Mecha::O(array(
+            'id' => "",
+            'path' => "",
+            'post' => "",
+            'parent' => "",
+            'state' => 'pending',
+            'date' => array('W3C' => ""),
+            'name_raw' => Guardian::get('author'),
+            'email' => Guardian::get('email'),
+            'url_raw' => "",
+            'status_raw' => Guardian::get('status_raw'),
+            'content_type_raw' => $config->html_parser,
+            'fields_raw' => array(),
+            'message_raw' => ""
+        ));
+        $title = Config::speak('manager.title_new_', $speak->{$segment}) . $config->title_separator . $config->manager->title;
+    }
     $G = array('data' => Mecha::A($response));
     Config::set(array(
-        'page_title' => $speak->editing . ': ' . $speak->{$segment} . $config->title_separator . $config->manager->title,
+        'page_title' => $title,
         'page' => $response,
         'html_parser' => $response->content_type_raw,
         'cargo' => 'repair.response.php'
     ));
     if($request = Request::post()) {
-        $request['id'] = $id;
-        $request['ua'] = isset($response->ua_raw) ? $response->ua_raw : false;
-        $request['ip'] = isset($response->ip_raw) ? $response->ip_raw : false;
-        $extension = $request['action'] === 'publish' ? '.txt' : '.hold';
         Guardian::checkToken($request['token']);
+        $request['id'] = $id ? $id : time();
+        $request['post'] = Request::post('post');
+        $request['parent'] = Request::post('parent');
+        $extension = $request['action'] === 'publish' ? '.txt' : '.hold';
+        $name = $request['name'];
+        $email = $request['email'];
+        $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
+        $message = $request['message'];
+        $field = Request::post('fields', array());
+        include __DIR__ . DS . 'task.ignite.substance.php';
+        include __DIR__ . DS . 'task.fields.php';
         // Empty name field
-        if(trim($request['name']) === "") {
-            Notify::error(Config::speak('notify_error_empty_field', $speak->{$segment . '_name'}));
+        if(trim($name) === "") {
+            Notify::error(Config::speak('notify_error_empty_field', $speak->name));
             Guardian::memorize($request);
         }
         // Invalid email address
-        if(trim($request['email']) !== "" && ! Guardian::check($request['email'], '->email')) {
+        if(trim($email) !== "" && ! Guardian::check($request['email'], '->email')) {
             Notify::error($speak->notify_invalid_email);
+            Guardian::memorize($request);
+        }
+        $email = Text::parse($email, '->broken_entity');
+        // Check for empty message content
+        if(trim($message) === "") {
+            Notify::error(Config::speak('notify_error_empty_field', $speak->message));
             Guardian::memorize($request);
         }
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            $name = $request['name'];
-            $email = Text::parse($request['email'], '->broken_entity');
-            $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
-            $message = $request['message'];
-            $field = Request::post('fields', array());
-            include __DIR__ . DS . 'task.field.2.php';
-            include __DIR__ . DS . 'task.field.1.php';
-            // Update data
-            Page::open($response->path)->header(array(
+            $header = array(
                 'Name' => $name,
                 'Email' => $email,
                 'URL' => $url,
                 'Status' => $request['status'],
                 'Content Type' => Request::post('content_type', 'HTML'),
-                'UA' => $request['ua'],
-                'IP' => $request['ip'],
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
-            ))->content($message)->save();
-            File::open($response->path)->renameTo(File::N($response->path) . $extension);
-            Notify::success(Config::speak('notify_success_updated', $speak->{$segment}));
-            Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_repair'), array($G, $P));
-            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . $id);
+            );
+            $_ = RESPONSE . DS . $segment . DS . Date::slug($request['post']) . '_' . Date::slug($request['id']) . '_' . ($request['parent'] ? Date::slug($request['parent']) : '0000-00-00-00-00-00') . $extension;
+            // Ignite
+            if( ! $id) {
+                Page::header($header)->content($message)->saveTo($_);
+            // Repair
+            } else {
+                Page::open($response->path)->header($header)->content($message)->save();
+                File::open($response->path)->renameTo(File::B($_));
+            }
+            Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $speak->{$segment}) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $post . 'Anchor', $request['post'])->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+            Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_' . ($id ? 'repair' : 'construct')), array($G, $P));
+            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . $request['id']);
         }
     }
     Shield::lot(array('segment' => array($segment, $post)))->attach('manager');
@@ -106,7 +150,7 @@ Route::accept($config->manager->slug . '/(' . $response . ')/repair/id:(:num)', 
  * ---------------
  */
 
-Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', function($segment = "", $id = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', function($segment = "", $id = "") use($config, $speak, $post) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
@@ -124,7 +168,7 @@ Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', fu
         File::open($response->path)->delete();
         $post_o = $post;
         $post = $response;
-        include __DIR__ . DS . 'task.field.3.php';
+        include __DIR__ . DS . 'task.kill.substance.php';
         $post = $post_o;
         File::write($config->{'total_' . $segment . 's_backend'} - 1)->saveTo(LOG . DS . $segment . 's.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->{$segment}));

@@ -9,7 +9,6 @@ class Widget {
     );
 
     protected static $w = array(
-        'manager' => 1,
         'archive' => 1,
         'tag' => 1,
         'search' => 1,
@@ -457,18 +456,15 @@ class Widget {
         if( ! isset(self::$w[$c][$kin])) {
             Guardian::abort(Config::speak('notify_not_exist', '<code>' . $c . '::' . $kin . '()</code>'), false);
         } else {
-            $html = "";
-            $snake = Text::parse($kin, '->snake_case');
             // built-in
             if( ! is_array(self::$w[$c][$kin])) {
-                $id = Config::get('widget_' . $snake . '_id', 0) + 1;
-                $html .= call_user_func_array(self::$w[$c][$kin], $arguments);
-                Config::set('widget_' . $snake . '_id', $id);
-                return Filter::apply(array('widget:' . $snake, 'widget:' . $kin, 'widget'), $html, $id);
+                return call_user_func_array(self::$w[$c][$kin], $arguments);
             }
             // custom
+            $snake = Text::parse($kin, '->snake_case');
             $slug = Text::parse($snake, '->slug');
             $id = Config::get('widget_custom_' . $snake . '_id', 0) + 1;
+            $html = "";
             if(self::$w[$c][$kin]['wrapper']) {
                 $html .= O_BEGIN . '<div class="widget widget-custom widget-custom-' . $slug . '" id="widget-custom-' . $slug . '-' . $id . '">' . NL;
             }

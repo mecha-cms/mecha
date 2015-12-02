@@ -294,13 +294,13 @@ class Text extends Base {
             return strpos(self::$text, $text) !== false;
         } else {
             $text = is_array($text) ? $text : func_get_args();
-            $text_valid = 0;
+            $text_v = 0;
             foreach($text as $v) {
                 if(strpos(self::$text, $v) !== false) {
-                    $text_valid++;
+                    $text_v++;
                 }
             }
-            return $text_valid === count($text);
+            return $text_v === count($text);
         }
     }
 
@@ -320,7 +320,7 @@ class Text extends Base {
     public static function in($text) {
         if(is_string(self::$text)) {
             if(is_array($text)) {
-                return self::inArray($text);
+                return Mecha::walk($text)->has(self::$text);
             }
             return strpos($text, self::$text) !== false;
         }
@@ -330,25 +330,6 @@ class Text extends Base {
             }
         }
         return false;
-    }
-
-    /**
-     * =====================================================================
-     *  CHECK IF `array( ... )` CONTAIN(S) `A`
-     * =====================================================================
-     *
-     * -- CODE: ------------------------------------------------------------
-     *
-     *    if(Text::check('A')->inArray(array('A', 'B', 'C'))) { ... }
-     *
-     * ---------------------------------------------------------------------
-     *
-     */
-
-    public static function inArray($array, $x = ';;;') {
-        if( ! is_string(self::$text)) return false;
-        if(is_string($array)) return self::$text === $array;
-        return strpos($x . implode($x, $array) . $x, $x . self::$text . $x) !== false;
     }
 
     /**

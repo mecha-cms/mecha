@@ -20,15 +20,13 @@ Weapon::add('shield_before', function() use($config, $speak) {
         $base = SHIELD . DS . $config->shield . DS . 'workers' . DS;
         if($custom = File::exist($base . 'task.comment.php')) {
             require $custom; // Custom comment constructor
-        } else if($custom = File::exist($base . '__task.comment.php')) {
-            require $custom; // Custom comment constructor
         } else {
             // Check token
             Guardian::checkToken($request['token'], $config->url_current . '#' . $comment_form_id);
             $extension = $config->comments->moderation && ! Guardian::happy() ? '.hold' : '.txt';
             // Check name
             if(trim($request['name']) === "") {
-                Notify::error(Config::speak('notify_error_empty_field', $speak->comment_name));
+                Notify::error(Config::speak('notify_error_empty_field', $speak->name));
             }
             // Check email
             if(trim($request['email']) !== "") {
@@ -49,7 +47,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
             }
             // Check message
             if(trim($request['message']) === "") {
-                Notify::error(Config::speak('notify_error_empty_field', $speak->comment_message));
+                Notify::error(Config::speak('notify_error_empty_field', $speak->message));
             }
             // Check challenge
             if( ! Guardian::checkMath($request['math'])) {
@@ -57,19 +55,19 @@ Weapon::add('shield_before', function() use($config, $speak) {
             }
             // Check name length
             if(Guardian::check($request['name'], '->too_long', 100)) {
-                Notify::error(Config::speak('notify_error_too_long', $speak->comment_name));
+                Notify::error(Config::speak('notify_error_too_long', $speak->name));
             }
             // Check email length
             if(Guardian::check($request['email'], '->too_long', 100)) {
-                Notify::error(Config::speak('notify_error_too_long', $speak->comment_email));
+                Notify::error(Config::speak('notify_error_too_long', $speak->email));
             }
             // Check URL length
             if(Guardian::check($request['url'], '->too_long', 100)) {
-                Notify::error(Config::speak('notify_error_too_long', $speak->comment_url));
+                Notify::error(Config::speak('notify_error_too_long', $speak->url));
             }
             // Check message length
             if(Guardian::check($request['message'], '->too_long', 1700)) {
-                Notify::error(Config::speak('notify_error_too_long', $speak->comment_message));
+                Notify::error(Config::speak('notify_error_too_long', $speak->message));
             }
             // Check for spam keyword(s) in comment
             $fucking_words = explode(',', $config->keywords_spam);
@@ -97,7 +95,7 @@ Weapon::add('shield_before', function() use($config, $speak) {
                 $parser = strip_tags(Request::post('content_type', $config->html_parser));
                 $message = $request['message'];
                 $field = Request::post('fields', array());
-                include __DIR__ . DS . 'task.field.1.php';
+                include __DIR__ . DS . 'task.fields.php';
                 $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' || $parser === false ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><li><ol><p><pre><span><strong><sub><sup><time><u><ul><var>' : ""));
                 // Temporarily disallow image(s) in comment to prevent XSS
                 $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);

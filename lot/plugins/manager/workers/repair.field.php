@@ -1,85 +1,13 @@
 <?php echo $messages; ?>
 <form class="form-<?php echo $id ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
-  <?php echo Form::hidden('token', $token); ?>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->title; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::text('title', Guardian::wayback('title', $file->title), null, array(
-        'class' => 'input-block'
-    )); ?>
-    </span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->key; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::text('key', Guardian::wayback('key', $id), null, array(
-        'class' => 'input-block'
-    )); ?>
-    </span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->type; ?></span>
-    <span class="grid span-5">
-    <?php
-
-    $cache = Guardian::wayback('type', $file->type);
-
-    echo Form::select('type', array(
-        't' => $speak->text,
-        's' => $speak->summary,
-        'b' => $speak->boolean,
-        'o' => $speak->option,
-        'f' => $speak->file,
-        'c' => $speak->composer,
-        'e' => $speak->editor
-    ), $cache[0]);
-
-    ?>
-    </span>
-  </label>
-  <div class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->scope; ?></span>
-    <span class="grid span-5">
-    <?php
-
-    $cache = Guardian::wayback('scope', isset($file->scope) ? $file->scope : "");
-    $scopes = array('article' => $speak->article, 'page' => $speak->page, 'comment' => $speak->comment);
-    $cache = ',' . (is_array($cache) ? implode(',', $cache) : $cache) . ',';
-
-    foreach($scopes as $k => $v) {
-        echo '<div>' . Form::checkbox('scope[]', $k, strpos($cache, ',' . $k . ',') !== false, $v) . '</div>';
-    }
-
-    ?>
-    </span>
-  </div>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->placeholder; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::text('placeholder', Converter::toText(Guardian::wayback('placeholder', $file->placeholder)), null, array(
-        'class' => 'input-block'
-    )); ?>
-    </span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->value; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::textarea('value', Converter::str(Guardian::wayback('value', $file->value)), null, array(
-        'class' => array(
-            'textarea-block',
-            'MTE'
-        )
-    )); ?>
-    </span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->description; ?></span>
-    <span class="grid span-5">
-    <?php echo Form::text('description', Converter::toText(Guardian::wayback('description', $file->description)), Config::speak('manager.placeholder_description_', strtolower($speak->field)), array(
-        'class' => 'input-block'
-    )); ?>
-    </span>
-  </label>
+  <?php echo Form::hidden('token', $token); $page = $file; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'title.php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'key.php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'type.php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'scope[].php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'placeholder.php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'value.textarea.php'; ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'description.text.php'; ?>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">

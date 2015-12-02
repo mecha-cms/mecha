@@ -11,7 +11,7 @@
   <div class="tab-content" id="tab-content-1">
     <h3><?php echo Config::speak('manager.title_your_', $speak->plugins); ?></h3>
     <?php if($folders): ?>
-    <?php foreach($folders as $folder): $folder = File::B($folder); ?>
+    <?php foreach($folders as $folder): $folder = File::B($folder->path); ?>
     <?php $r = PLUGIN . DS . $folder . DS; $c = File::exist($r . 'capture.png'); ?>
     <?php $page = Plugin::info($folder); ?>
     <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="plugin:<?php echo $folder; ?>">
@@ -47,7 +47,7 @@
       </div>
     </div>
     <?php endforeach; ?>
-    <?php include __DIR__ . DS . 'unit.pager.1.php'; ?>
+    <?php include __DIR__ . DS . 'unit' . DS . 'pager' . DS . 'step.php'; ?>
     <?php else: ?>
     <p><?php echo Config::speak('notify_' . (Request::get('id') || $config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->plugins)); ?></p>
     <?php endif; ?>

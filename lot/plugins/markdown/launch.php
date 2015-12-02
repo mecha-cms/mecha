@@ -40,7 +40,7 @@ if($config->html_parser === 'HTML') {
     Config::set('html_parser', $config->html_parser);
 }
 
-// Re-write `comment_guide` value
+// Re-write `comment_wizard` value
 if($config->html_parser === 'Markdown Extra') {
-    Config::set('speak.comment_guide', $speak->__comment_guide);
+    Config::set('speak.comment_wizard', $speak->__comment_wizard);
 }

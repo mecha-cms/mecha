@@ -209,6 +209,12 @@ captchas: Captcha
 spam: Sampah
 spams: Sampah
 
+parent: Induk
+parents: Induk
+
+child: Anak
+childs: Anak
+
 post: Pos
 posts: Pos
 
@@ -224,12 +230,7 @@ responses: Respon
 comment: Komentar
 comments: Komentar
 
-comment_name: Nama
-comment_email: Email
-comment_url: URL
-comment_status: Status
-comment_message: Pesan
-comment_guide: Tag <abbr title="Hyper Text Markup Language">HTML</abbr> dasar diperbolehkan.
+comment_wizard: Tag <abbr title="Hyper Text Markup Language">HTML</abbr> dasar diperbolehkan.
 
 title: Judul
 titles: Judul

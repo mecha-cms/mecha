@@ -110,23 +110,7 @@ label {
 .select-small,
 .textarea-small {font-size:86%}
 
-.textarea-expand,
-textarea[name="content"],
-textarea[name="css"],
-textarea[name="html"],
-textarea[name="js"],
-textarea[name="php"],
-textarea[name="json"],
-textarea[name="jsonp"],
-textarea[name="xml"],
-textarea[name="content[]"],
-textarea[name="css[]"],
-textarea[name="html[]"],
-textarea[name="js[]"],
-textarea[name="php[]"],
-textarea[name="json[]"],
-textarea[name="jsonp[]"],
-textarea[name="xml[]"] {height:23.076923076923077em}
+.textarea-expand {height:23.076923076923077em}
 
 .na,
 a.na,

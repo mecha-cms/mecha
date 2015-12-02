@@ -11,27 +11,19 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
         Shield::abort();
     }
     $offset = (int) $offset;
-    $filter = Request::get('q', false);
+    $filter = Request::get('q', "");
     $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
-    $takes = Get::files(CACHE, '*', 'DESC', 'update', $filter);
-    if($_files = Mecha::eat($takes)->chunk($offset, $config->per_page * 2)->vomit()) {
-        $files = array();
-        foreach($_files as $_file) {
-            $files[] = $_file;
-        }
-        unset($_files);
-    } else {
-        $files = false;
-    }
+    $files = Get::files(CACHE, '*', 'DESC', 'update', $filter);
+    $files_chunk = Mecha::eat($files)->chunk($offset, $config->per_page * 2)->vomit();
     Config::set(array(
         'page_title' => $speak->caches . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'pagination' => Navigator::extract($takes, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
+        'pagination' => Navigator::extract($files, $offset, $config->per_page * 2, $config->manager->slug . '/cache'),
         'cargo' => 'cargo.cache.php'
     ));
     Shield::lot(array(
         'segment' => 'cache',
-        'files' => Mecha::O($files)
+        'files' => $files_chunk ? Mecha::O($files_chunk) : false
     ))->attach('manager');
 });
 

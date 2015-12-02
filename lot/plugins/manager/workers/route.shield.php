@@ -14,32 +14,25 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     if( ! File::exist(SHIELD . DS . $folder)) {
         Shield::abort(); // Folder not found!
     }
+    $destination = SHIELD;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        $task_connect_path = SHIELD;
-        include __DIR__ . DS . 'task.package.1.php';
+        include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], SHIELD, function() use($speak) {
+            File::upload($_FILES['file'], $destination, function() use($speak) {
                 Notify::clear();
                 Notify::success(Config::speak('notify_success_uploaded', $speak->shield));
             });
             $P = array('data' => $_FILES);
             Weapon::fire(array('on_shield_update', 'on_shield_construct'), array($P, $P));
             Weapon::fire(, array($P, $P));
-            $task_connect_kick = 'shield';
-            include __DIR__ . DS . 'task.package.2.php';
+            include __DIR__ . DS . 'task.package.php';
         } else {
-            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-                echo '<script>
-(function($) {
-    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
-})(window.Zepto || window.jQuery);
-</script>';
-            }, 11);
+            $tab_id = 'tab-content-2';
+            include __DIR__ . DS . 'task.js.tab.php';
         }
     }
-    $folders = glob(SHIELD . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
-    sort($folders);
+    $folders = Get::closestFolders($destination, 'ASC', null, 'key:path');
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
         'page' => Shield::info($folder, true),
@@ -49,7 +42,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         'segment' => 'shield',
         'folder' => $folder,
         'folders' => $folders,
-        'files' => Mecha::O(Get::files(SHIELD . DS . $folder, SCRIPT_EXT, 'ASC', 'path'))
+        'files' => Mecha::O(Get::files($destination . DS . $folder, SCRIPT_EXT, 'ASC', 'path'))
     ))->attach('manager');
 });
 

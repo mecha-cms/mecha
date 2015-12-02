@@ -28,7 +28,7 @@
   </li>
   <?php endforeach; ?>
 </ol>
-<?php include __DIR__ . DS . 'unit.pager.1.php'; ?>
+<?php include __DIR__ . DS . 'unit' . DS . 'pager' . DS . 'step.php'; ?>
 <?php else: ?>
 <p><?php echo Config::speak('notify_empty', strtolower($speak->{$segment . 's'})); ?></p>
 <?php endif; ?>

@@ -209,6 +209,12 @@ captchas: Captchas
 spam: Spam
 spams: Spams
 
+parent: Parent
+parents: Parents
+
+child: Child
+childs: Children
+
 post: Post
 posts: Posts
 
@@ -224,12 +230,7 @@ responses: Responses
 comment: Comment
 comments: Comments
 
-comment_name: Name
-comment_email: Email
-comment_url: URL
-comment_status: Status
-comment_message: Message
-comment_guide: Basic <abbr title="Hyper Text Markup Language">HTML</abbr> tags are allowed.
+comment_wizard: Basic <abbr title="Hyper Text Markup Language">HTML</abbr> tags are allowed.
 
 title: Title
 titles: Titles

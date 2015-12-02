@@ -17,12 +17,12 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
         Shield::abort();
     }
     $offset = (int) $offset;
+    $destination = PLUGIN;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        $task_connect_path = PLUGIN;
-        include __DIR__ . DS . 'task.package.1.php';
+        include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
-            File::upload($_FILES['file'], PLUGIN, function() use($speak) {
+            File::upload($_FILES['file'], $destination, function() use($speak) {
                 Notify::clear();
                 Notify::success(Config::speak('notify_success_uploaded', $speak->plugin));
             });
@@ -33,10 +33,10 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 'on_plugin_' . md5($path) . '_update',
                 'on_plugin_' . md5($path) . '_construct'
             ), array($P, $P));
-            if($uploaded = File::exist(PLUGIN . DS . $name)) {
+            if($package = File::exist($destination . DS . $name)) {
                 Package::take($uploaded)->extract(); // Extract the ZIP file
-                File::open($uploaded)->delete(); // Delete the ZIP file
-                if(File::exist(PLUGIN . DS . $path . DS . 'launch.php')) {
+                File::open($package)->delete(); // Delete the ZIP file
+                if(File::exist($destination . DS . $path . DS . 'launch.php')) {
                     Weapon::fire(array('on_plugin_mount', 'on_plugin_' . md5($path) . '_mount'), array($P, $P));
                     Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                 } else {
@@ -44,17 +44,13 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                 }
             }
         } else {
-            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-                echo '<script>
-(function($) {
-    $(\'.tab-area .tab[href$="#tab-content-2"]\').trigger("click");
-})(window.Zepto || window.jQuery);
-</script>';
-            }, 11);
+            $tab_id = 'tab-content-2';
+            include __DIR__ . DS . 'task.js.tab.php';
         }
     }
-    $folders = glob(PLUGIN . DS . Request::get('id', '*'), GLOB_NOSORT | GLOB_ONLYDIR);
-    sort($folders);
+    $filter = Request::get('q', "");
+    $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
+    $folders = Get::closestFolders($destination, 'DESC', null, $filter);
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'offset' => $offset,

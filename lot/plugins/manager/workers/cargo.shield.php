@@ -25,17 +25,40 @@
     </div>
     <div class="tab-content-area">
       <div class="tab-content" id="tab-content-1-1">
-      <?php
-
-      $c_path = SHIELD . DS . $folder . DS;
-
-      $c_url = $config->manager->slug . '/shield/' . $folder;
-      $c_url_kill = $c_url . '/kill/file:';
-      $c_url_repair = $c_url . '/repair/file:';
-
-      include __DIR__ . DS . 'unit.explorer.1.php';
-
-      ?>
+        <?php
+  
+        $shield_url = $config->manager->slug . '/shield/' . $folder;
+        $shield_url_kill = $shield_url . '/kill/file:';
+        $shield_url_repair = $shield_url . '/repair/file:';
+  
+        ?>
+        <table class="table-bordered table-full-width">
+          <tbody>
+            <?php if($files): ?>
+            <?php foreach($files as $file): ?>
+            <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
+            <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
+              <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></td>
+              <td class="td-icon">
+              <?php echo Jot::a('construct', $shield_url_repair . $url, Jot::icon('pencil'), array(
+                  'title' => $speak->edit
+              )); ?>
+              </td>
+              <td class="td-icon">
+              <?php echo Jot::a('destruct', $shield_url_kill . $url, Jot::icon('times'), array(
+                  'title' => $speak->delete
+              )); ?>
+              </td>
+            </tr>
+            <?php endforeach; ?>
+            <?php else: ?>
+            <tr>
+              <td class="td-icon"><?php echo $config->offset === 1 ? Jot::icon('home') : Jot::a('action', $shield_url, Jot::icon('home')); ?></td>
+              <td><?php echo Config::speak('notify_' . ($config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->files)); ?></td>
+            </tr>
+            <?php endif; ?>
+          </tbody>
+        </table>
       </div>
       <div class="tab-content hidden" id="tab-content-1-2">
         <p class="about-author">

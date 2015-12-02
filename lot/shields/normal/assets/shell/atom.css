@@ -142,6 +142,7 @@ textarea,
   margin:0;
   font:inherit;
   line-height:normal;
+  background:none;
   border:none;
   text-align:left;
 }
