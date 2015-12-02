@@ -23,6 +23,14 @@ class Get extends Base {
      *        'update'
      *    );
      *
+     *    $files = Get::files(
+     *        'some/path',
+     *        'txt',
+     *        'ASC',
+     *         null,
+     *        'key:path' // output only the `path` data
+     *    );
+     *
      * --------------------------------------------------------------------------
      *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -33,55 +41,65 @@ class Get extends Base {
      *  $order     | string  | Ascending or descending? ASC/DESC?
      *  $sorter    | string  | The key of array item as sorting reference
      *  $filter    | string  | Filter the resulted array by a keyword
-     *  $inclusive | boolean | Include hidden file(s) to result(s)?
+     *  $recursive | boolean | Get file(s) from a folder recursively?
      *  ---------- | ------- | --------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function files($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
-        if( ! file_exists($folder)) return false;
+    public static function files($folder = ASSET, $e = '*', $order = 'ASC', $sorter = 'path', $filter = "", $recursive = true) {
         $results = array();
-        $results_inclusive = array();
-        $e = $e === '*' ? '.*?' : str_replace(array(' ', ','), array("", '|'), $e);
         $folder = rtrim(File::path($folder), DS);
-        $directory = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-        foreach(new RegexIterator(new RecursiveIteratorIterator($directory), '#\.(' . $e . ')$#i') as $file => $object) {
-            if( ! $filter || strpos(File::B($file), $filter) !== false) {
-                $results_inclusive[] = File::inspect($file);
+        $e = $e ? explode(',', str_replace(' ', "", $e)) : true;
+        if($files = File::explore($folder, $recursive, true, false)) {
+            if(strpos($filter, 'key:') === 0) {
+                $s = explode(' ', substr($filter, 4), 2);
+                $output = $s[0];
+                $filter = isset($s[1]) ? $s[1] : "";
+                $sorter = null;
+            } else {
+                $output = null;
             }
-            $_file = str_replace($folder . DS, "", $file);
-            if(
-                // Exclude all file(s) inside a folder from result(s) if the
-                // folder name begins with two underscore(s). Example: `__folder-name`
-                // Exclude file from result(s) if the file name begins with
-                // two underscore(s). Example: `__file-name.txt`
-                strpos($_file, '__') !== 0 &&
-                // Linux?
-                strpos($_file, '.') !== 0
-            ) {
-                if( ! $filter || strpos(File::B($file), $filter) !== false) {
-                    $results[] = File::inspect($file);
+            foreach($files as $k => $v) {
+                $_k = File::B($k);
+                $_kk = DS . str_replace($folder . DS, "", $k);
+                if( ! $filter || strpos(File::N($k), $filter) !== false) {
+                    if($v === 1) {
+                        if($e === true || $e === array('*') || Mecha::walk($e)->has(File::E($k))) {
+                            $o = File::inspect($k, $output);
+                            if(is_null($output)) {
+                                $o['is']['hidden'] = (
+                                    // current file is hidden
+                                    strpos($_k, '__') === 0 ||
+                                    strpos($_k, '.') === 0 ||
+                                    // parent folder of current file is hidden
+                                    strpos($_kk, DS . '__') !== false ||
+                                    strpos($_kk, DS . '.') !== false
+                                );
+                            }
+                            $results[] = $o;
+                        }
+                    } else {
+                        if($e === true || $e === array('/')) {
+                            $results[] = File::inspect($k, $output);
+                        }
+                    }
                 }
             }
-        }
-        if($inclusive) {
-            unset($results);
-            return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
-        } else {
-            unset($results_inclusive);
+            unset($files, $_k, $_kk);
             return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
         }
+        return false;
     }
 
     /**
      * ==========================================================================
-     *  GET ADJACENT FILE(S)
+     *  GET CLOSEST FILE(S) FROM A FOLDER
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
      *
-     *    $files = Get::adjacentFiles(
+     *    $files = Get::closestFiles(
      *        'some/path',
      *        'txt',
      *        'ASC',
@@ -92,56 +110,50 @@ class Get extends Base {
      *
      */
 
-    public static function adjacentFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "", $inclusive = false) {
-        if( ! file_exists($folder)) return false;
-        $results = array();
-        $results_inclusive = array();
-        $e = str_replace(' ', "", $e);
-        $folder = rtrim(File::path($folder), DS);
-        $files = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
-        if($inclusive) {
-            $files = array_merge($files, glob($folder . DS . '.*', GLOB_NOSORT));
-        }
-        foreach($files as $file) {
-            if(is_file($file)) {
-                if( ! $filter || strpos(File::B($file), $filter) !== false) {
-                    $results_inclusive[] = File::inspect($file);
-                }
-                $_file = str_replace($folder . DS, "", $file);
-                if(strpos($_file, '__') !== 0 && strpos($_file, '.') !== 0) {
-                    if( ! $filter || strpos(File::B($file), $filter) !== false) {
-                        $results[] = File::inspect($file);
-                    }
-                }
-            }
-        }
-        if($inclusive) {
-            unset($results);
-            return ! empty($results_inclusive) ? Mecha::eat($results_inclusive)->order($order, $sorter)->vomit() : false;
-        } else {
-            unset($results_inclusive);
-            return ! empty($results) ? Mecha::eat($results)->order($order, $sorter)->vomit() : false;
-        }
+    public static function closestFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::files($folder, $e, $order, $sorter, $filter, false);
     }
 
     /**
      * ==========================================================================
-     *  GET ALL FILE(S) RECURSIVELY INCLUDING THE EXCLUDED FILE(S)
+     *  GET ALL FOLDER(S) RECURSIVELY
      * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    $files = Get::folders(
+     *        'some/path',
+     *        'ASC',
+     *        'update'
+     *    );
+     *
+     * --------------------------------------------------------------------------
+     *
      */
 
-    public static function inclusiveFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::files($folder, $e, $order, $sorter, $filter, true);
+    public static function folders($folder = ASSET, $order = 'DESC', $sorter = 'path', $filter = "", $recursive = true) {
+        return self::files($folder, '/', $order, $sorter, $filter, $recursive);
     }
 
     /**
      * ==========================================================================
-     *  GET ADJACENT FILE(S) INCLUDING THE EXCLUDED FILE(S)
+     *  GET CLOSEST FOLDER(S) FROM A FOLDER
      * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    $files = Get::closestFolders(
+     *        'some/path',
+     *        'ASC',
+     *        'update'
+     *    );
+     *
+     * --------------------------------------------------------------------------
+     *
      */
 
-    public static function inclusiveAdjacentFiles($folder = ASSET, $e = '*', $order = 'DESC', $sorter = 'path', $filter = "") {
-        return self::adjacentFiles($folder, $e, $order, $sorter, $filter, true);
+    public static function closestFolders($folder = ASSET, $order = 'DESC', $sorter = 'path', $filter = "") {
+        return self::folders($folder, $order, $sorter, $filter, false);
     }
 
     // Get stored configuration data (internal only)
@@ -200,14 +212,20 @@ class Get extends Base {
             }
         }
         $field = Converter::strEval($field);
-        foreach($field as &$v) {
-            if( ! isset($v['value'])) $v['value'] = "";
-            if( ! isset($v['scope'])) $v['scope'] = 'article,page,comment';
+        $v_d = array(
+            'title' => "",
+            'type' => 't',
+            'placeholder' => "",
+            'value' => "",
+            'description' => "",
+            'scope' => 'article,page,comment'
+        );
+        foreach($field as $k => $v) {
+            $field[$k] = array_replace($v_d, $v);
         }
-        unset($v);
         // Filter output(s) by `scope`
+        $field_alt = array();
         if( ! is_null($scope)) {
-            $field_alt = array();
             foreach($field as $k => $v) {
                 foreach(explode(',', $scope) as $s) {
                     if(strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
@@ -216,8 +234,8 @@ class Get extends Base {
                 }
             }
             $field = $field_alt;
-            unset($field_alt);
         }
+        unset($field_alt);
         $field = Filter::apply('state:field', $field);
         // Filter output(s) by `key`
         if( ! is_null($key)) {
