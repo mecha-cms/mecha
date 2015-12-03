@@ -455,7 +455,7 @@ Route::accept('/', function() use($config, $excludes) {
         }
         unset($files);
     } else {
-        $articles = 'null';
+        $articles = false;
     }
     Filter::add('pager:url', function($url) {
         return Filter::apply('index:url', $url);

@@ -13,8 +13,9 @@ foreach(glob(__DIR__ . DS . 'workers' . DS . 'kernel' . DS . 'plug' . DS . '*.ph
 
 
 // Loading task(s)
-require __DIR__ . DS . 'workers' . DS . 'task.user.php';
-require __DIR__ . DS . 'workers' . DS . 'task.comment.php';
+Weapon::add('routes_before', function() use($config, $speak) {
+    require __DIR__ . DS . 'workers' . DS . 'task.user.php';
+});
 
 
 /**

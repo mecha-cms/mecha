@@ -50,7 +50,7 @@
             <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
             <?php
   
-            $n = Jot::icon(is_file($file->path) ? 'file-' . Mecha::alter(File::E($file->path), array(
+            $n = Jot::icon($file->is->file ? 'file-' . Mecha::alter($file->extension, array(
                 'xls' => 'excel-o',
                 'xlsx' => 'excel-o',
                 'doc' => 'word-o',

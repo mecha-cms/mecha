@@ -218,14 +218,14 @@ class Text extends Base {
             array(
                 '#\r#',
                 '#(^|\n)\s*\#[^\n]*#',
-                '#\n+#',
-                '#^\n+|\n+$#'
+                '#^\s*|\s*$#',
+                '#\n+#'
             ),
             array(
                 "",
-                "\n",
-                "\n",
-                ""
+                "",
+                "",
+                "\n"
             ),
         $text);
         foreach(explode("\n", $text) as $line) {

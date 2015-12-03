@@ -109,7 +109,7 @@ class HTTP extends Base {
         if(func_num_args() === 2) {
             $query = array($query => $value);
         }
-        $query = ! empty($query) ? array_merge($_GET, $query) : $_GET;
+        $query = Converter::str( ! empty($query) ? array_merge($_GET, $query) : $_GET);
         $results = array();
         foreach($query as $k => $v) {
             if( ! $v) continue;

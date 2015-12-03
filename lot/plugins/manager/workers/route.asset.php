@@ -67,7 +67,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     }
     $filter = Request::get('q', "");
     $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
-    $files = Get::closestFiles($d, '*', 'DESC', 'path', $filter);
+    $files = Get::closestFiles($d, "", 'ASC', 'path', $filter);
     $files_chunk = Mecha::eat($files)->chunk($offset, $config->per_page * 2)->vomit();
     Config::set(array(
         'page_title' => $speak->assets . $config->title_separator . $config->manager->title,

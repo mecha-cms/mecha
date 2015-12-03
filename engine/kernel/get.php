@@ -254,6 +254,8 @@ class Get extends Base {
             $m = File::open($m)->read();
             if(strpos($m, 'a:') === 0 && strpos($m, "\n") === false) {
                 $menu = unserialize($m); // it's serialized
+            } else if(strpos($m, '{"') === 0) {
+                $menu = json_decode($m, true); // it's an encoded JSON
             } else {
                 $menu = Converter::toArray($m, S, '    '); // YAML-like text format
             }

@@ -62,7 +62,7 @@ class Guardian extends Base {
                 // serialized array
                 if(strpos($s, 'a:') === 0) {
                     $s = unserialize($s);
-                // json encoded array
+                // encoded JSON array
                 } else if(strpos($s, '{"') === 0) {
                     $s = json_decode($s, true);
                 // Pattern 1: `user: pass (Author Name: status) email@domain.com`

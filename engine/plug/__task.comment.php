@@ -6,23 +6,23 @@
  * ------------------
  */
 
-Weapon::add('shield_before', function() use($config, $speak) {
+Route::over(Config::get('index.slug') . '/(:any)', function($slug = "") {
     $comment_id = 'comment-%d'; // Your comment ID
     $comment_form_id = 'comment-form'; // Your comment form ID
-    $article = isset(Config::get('article')->path) ? Get::article(Config::get('article')->path) : false;
+    $config = Config::get();
+    $speak = Config::speak();
+    $article = Get::article($slug);
     $G = array('data' => array(
         'article' => Mecha::A($article),
         'comment_id' => $comment_id,
         'comment_form_id' => $comment_form_id
     ));
-    if($article && $config->page_type === 'article' && Request::method('post')) {
-        $request = Request::post();
-        $base = SHIELD . DS . $config->shield . DS . 'workers' . DS;
-        if($custom = File::exist($base . 'task.comment.php')) {
-            require $custom; // Custom comment constructor
+    if($article && $request = Request::post()) {
+        if($task = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'task.comment.php')) {
+            require $task; // Custom comment constructor
         } else {
             // Check token
-            Guardian::checkToken($request['token'], $config->url_current . '#' . $comment_form_id);
+            Guardian::checkToken($request['token'], $article->url . '#' . $comment_form_id);
             $extension = $config->comments->moderation && ! Guardian::happy() ? '.hold' : '.txt';
             // Check name
             if(trim($request['name']) === "") {
@@ -123,4 +123,4 @@ Weapon::add('shield_before', function() use($config, $speak) {
             }
         }
     }
-}, 2);
+});

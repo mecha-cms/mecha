@@ -1,18 +1,1 @@
-*[API]: Application Programming Interface
-*[AJAX]: Asynchronous JavaScript and XML
-*[ASCII]: American Standard Code for Information Interchange
 *[CMS]: Content Management System
-*[CSS]: Cascading Style Sheet
-*[CPU]: Central Proccessing Unit
-*[FTP]: File Transfer Protocol
-*[HTML]: Hyper Text Markup Language
-*[HTML5]: Hyper Text Markup Language Version 5
-*[HTTP]: Hyper Text Transfer Protocol
-*[IE]: Internet Explorer
-*[IP]: Internet Protocol
-*[JPEG]: Joint Photographic Experts Group
-*[JSON]: JavaScript Object Notation
-*[RSS]: Rich Site Summary
-*[SFTP]: SSH File Transfer Protocol
-*[UI]: User Interface
-*[URL]: Uniform Resource Locator
