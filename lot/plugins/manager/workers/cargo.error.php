@@ -1,10 +1,15 @@
-<?php
-
-echo $messages;
-
-if($content) {
-    $path_destruct = $config->url_path . '/kill';
-    include __DIR__ . DS . 'unit' . DS . 'editor' . DS . '1.php';
-} else {
-    echo '<p>' . Config::speak('notify_empty', strtolower($speak->errors)) . '</p>';
-}
+<?php echo $messages; ?>
+<?php if($content): ?>
+<p>
+<?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content)), $speak->manager->placeholder_content, array(
+    'class' => array(
+        'textarea-block',
+        'textarea-expand',
+        'code'
+    )
+)); ?>
+</p>
+<p><?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/error/kill'); ?></p>
+<?php else: ?>
+<p><?php echo Config::speak('notify_empty', strtolower($speak->errors)); ?></p>
+<?php endif; ?>

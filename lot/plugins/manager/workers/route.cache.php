@@ -62,7 +62,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
     }
     Shield::lot(array(
         'segment' => 'cache',
-        'name' => $path,
+        'path' => $path,
         'content' => File::open($file)->read()
     ))->attach('manager');
 });

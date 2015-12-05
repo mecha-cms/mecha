@@ -195,7 +195,9 @@ foreach($plugins = Plugin::load() as $k => $v) {
  * ---------------
  */
 
-Menu::add('navigation', Get::state_menu());
+foreach(Get::state_menu() as $key => $value) {
+    Menu::add($key, $value);
+}
 
 
 /**

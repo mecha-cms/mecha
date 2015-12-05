@@ -2,27 +2,15 @@
   <?php $hooks = array($article); echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
   <?php Weapon::fire('comment_form_input_before', $hooks); ?>
+  <?php Shield::chunk('comment.form.name'); ?>
+  <?php Shield::chunk('comment.form.email'); ?>
+  <?php Shield::chunk('comment.form.url'); ?>
   <?php echo Form::hidden('parent', ""); ?>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->name; ?></span>
-    <span class="grid span-5"><?php echo Form::text('name', Guardian::wayback('name'), null, array('class' => 'input-block')); ?></span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->email; ?></span>
-    <span class="grid span-5"><?php echo Form::email('email', Guardian::wayback('email'), null, array('class' => 'input-block')); ?></span>
-  </label>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->url; ?></span>
-    <span class="grid span-5"><?php echo Form::url('url', Guardian::wayback('url'), null, array('class' => 'input-block')); ?></span>
-  </label>
   <?php Weapon::fire('comment_form_input_after', $hooks); ?>
   <?php Weapon::fire('comment_form_textarea_before', $hooks); ?>
-  <label class="grid-group">
-    <span class="grid span-1 form-label"><?php echo $speak->message; ?></span>
-    <span class="grid span-5"><?php echo Form::textarea('message', Guardian::wayback('message'), null, array('class' => 'textarea-block')); ?></span>
-  </label>
+  <?php Shield::chunk('comment.form.message'); ?>
   <?php Weapon::fire('comment_form_textarea_after', $hooks); ?>
-  <?php Shield::chunk('comment.form.human'); ?>
+  <?php Shield::chunk('comment.form.math'); ?>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <div class="grid span-5">

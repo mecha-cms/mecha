@@ -2,11 +2,11 @@
 
 
 /**
- * Backup/Restore Manager
- * ----------------------
+ * Backup Manager
+ * --------------
  */
 
-Route::accept($config->manager->slug . '/(backup|restore)', function($segment = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
@@ -20,7 +20,7 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
         Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
-        include __DIR__ . DS . 'task.package.ignite.php';
+        include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.ignite.package.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
                 Notify::clear();
@@ -28,17 +28,17 @@ Route::accept($config->manager->slug . '/(backup|restore)', function($segment = 
             });
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));
-            include __DIR__ . DS . 'task.package.php';
+            include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.package.php';
         } else {
             $tab_id = 'tab-content-2';
-            include __DIR__ . DS . 'task.js.tab.php';
+            include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.js.tab.php';
         }
     }
     Config::set(array(
         'page_title' => $speak->backup . '/' . $speak->restore . $config->title_separator . $config->manager->title,
-        'cargo' => 'cargo.' . $segment . '.php'
+        'cargo' => __DIR__ . DS . 'cargo.backup.php'
     ));
-    Shield::lot(array('segment' => $segment))->attach('manager');
+    Shield::lot(array('segment' => 'backup'))->attach('manager');
 });
 
 
@@ -70,7 +70,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
             ));
         }
         if($origin === 'extends') {
-            Package::take(ROOT . DS . $name)->deleteFolder(File::B(CHUNK));
+            Package::take(ROOT . DS . $name)->deleteFolder(File::B(CHUNK)); // delete `chunk` folder
         }
     }
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);

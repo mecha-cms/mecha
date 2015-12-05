@@ -30,13 +30,14 @@
         $shield_url = $config->manager->slug . '/shield/' . $folder;
         $shield_url_kill = $shield_url . '/kill/file:';
         $shield_url_repair = $shield_url . '/repair/file:';
+        $shield_path = SHIELD . DS . $config->shield . DS;
   
         ?>
         <table class="table-bordered table-full-width">
           <tbody>
             <?php if($files): ?>
             <?php foreach($files as $file): ?>
-            <?php $url = File::url(str_replace($c_path, "", $file->path)); ?>
+            <?php $url = File::url(str_replace($shield_path, "", $file->path)); ?>
             <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
               <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></td>
               <td class="td-icon">

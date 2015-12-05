@@ -2,7 +2,8 @@
 
 Weapon::add('shield_lot_after', function() {
     ob_start();
-    $cargo = __DIR__ . DS . Config::get('cargo');
+    $cargo = Config::get('cargo');
+    $cargo = strpos($cargo, ROOT) === false ? __DIR__ . DS . $cargo : $cargo;
     // No buffer for backend cargo, so `chunk:input` and `chunk:output` filter(s) won't work here
     Shield::chunk($cargo, false, false);
     $content = ob_get_clean();

@@ -5,7 +5,7 @@
   <?php Weapon::fire('main_action_after', $hooks); ?>
 </div>
 <?php echo $messages; ?>
-<?php $files_all = Get::state_field(null, null, array(), true); ?>
+<?php $files_all = Get::state_field(null, array()); ?>
 <?php ksort($files_all); if($files): ?>
 <table class="table-bordered table-full-width">
   <thead>
@@ -20,7 +20,7 @@
     <?php foreach(Mecha::O($files_all) as $key => $value): ?>
     <tr>
       <td><?php echo $value->title; ?></td>
-      <td><?php echo $key; ?></td>
+      <td><code><?php echo $key; ?></code></td>
       <?php
 
       $s = Mecha::alter($value->type[0], array(

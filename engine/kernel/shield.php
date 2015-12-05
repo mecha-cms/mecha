@@ -164,22 +164,23 @@ class Shield extends Base {
      */
 
     public static function attach($name, $fallback = false, $buffer = true) {
-        $path = File::path($name);
+        $path__ = File::path($name);
         $s = explode('-', File::N($name), 2);
         $G = array('data' => array('name' => $name, 'name_base' => $s[0]));
-        if(strpos($name, ROOT) === 0 && file_exists($name) && is_file($name)) {
+        if(strpos($path__, ROOT) === 0 && file_exists($path__) && is_file($path__)) {
             // do nothing ...
         } else {
-            if($_path = File::exist(self::path($path, $fallback))) {
-                $path = $_path;
+            if($_path = File::exist(self::path($path__, $fallback))) {
+                $path__ = $_path;
             } else if($_path = File::exist(self::path($s[0], $fallback))) {
-                $path = $_path;
+                $path__ = $_path;
             } else {
-                Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path) . '</code>'));
+                Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path__) . '</code>'));
             }
         }
-        $_path = Filter::apply('shield:path', $path);
-        $G['data']['path'] = $_path;
+        $path__ = Filter::apply('shield:path', $path__);
+        $G['data']['path'] = $path__;
+        $G['data']['path_base'] = $s[0];
         $out = "";
         // Begin shield
         Weapon::fire('shield_lot_before', array($G, $G));
@@ -187,15 +188,15 @@ class Shield extends Base {
         Weapon::fire('shield_lot_after', array($G, $G));
         Weapon::fire('shield_before', array($G, $G));
         if($buffer) {
-            ob_start(function($content) use($path, &$out) {
-                $content = Filter::apply('shield:input', $content, $path);
-                $out = Filter::apply('shield:output', $content, $path);
+            ob_start(function($content) use($path__, &$out) {
+                $content = Filter::apply('shield:input', $content, $path__);
+                $out = Filter::apply('shield:output', $content, $path__);
                 return $out;
             });
-            require $_path;
+            require $path__;
             ob_end_flush();
         } else {
-            require $_path;
+            require $path__;
         }
         $G['data']['content'] = $out;
         // Reset shield lot
@@ -248,31 +249,31 @@ class Shield extends Base {
      */
 
     public static function chunk($name, $fallback = false, $buffer = true) {
-        $name = File::path($name);
+        $path__ = File::path($name);
         $G = array('data' => array('name' => $name));
         if(is_array($fallback)) {
             self::$lot = array_merge(self::$lot, $fallback);
             $fallback = false;
         }
-        $name = Filter::apply('chunk:path', self::path($name, $fallback));
-        $G['data']['path'] = $name;
+        $path__ = Filter::apply('chunk:path', self::path($path__, $fallback));
+        $G['data']['path'] = $path__;
         $out = "";
-        if($name) {
+        if($path__) {
             // Begin chunk
             Weapon::fire('chunk_lot_before', array($G, $G));
             extract(Filter::apply('chunk:lot', self::$lot));
             Weapon::fire('chunk_lot_after', array($G, $G));
             Weapon::fire('chunk_before', array($G, $G));
             if($buffer) {
-                ob_start(function($content) use($name, &$out) {
-                    $content = Filter::apply('chunk:input', $content, $name);
-                    $out = Filter::apply('chunk:output', $content, $name);
+                ob_start(function($content) use($path__, &$out) {
+                    $content = Filter::apply('chunk:input', $content, $path__);
+                    $out = Filter::apply('chunk:output', $content, $path__);
                     return $out;
                 });
-                require $name;
+                require $path__;
                 ob_end_flush();
             } else {
-                require $name;
+                require $path__;
             }
             $G['data']['content'] = $out;
             // End chunk

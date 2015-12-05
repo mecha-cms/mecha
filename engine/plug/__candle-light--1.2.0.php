@@ -17,7 +17,8 @@ Weapon::add('shield_lot_before', function() {
     if(isset($config->excerpt_length)) {
         $config->excerpt = (object) array(
             'length' => $config->excerpt_length,
-            'tail' => $config->excerpt_tail,
+            'prefix' => "",
+            'suffix' => $config->excerpt_tail,
             'id' => 'more:%d'
         );
     }

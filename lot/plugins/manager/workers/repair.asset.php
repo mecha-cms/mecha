@@ -1,12 +1,27 @@
 <?php echo $messages; ?>
 <form class="form-repair form-asset" id="form-repair" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
-<?php
+  <?php echo Form::hidden('token', $token); ?>
+  <?php
 
-$path_reject = $config->manager->slug . '/asset' . $config->url_query;
-$path_destruct = $config->manager->slug . '/asset/kill/file:' . File::url(str_replace(ASSET . DS, "", $path)) . $config->url_query;
+  $e = File::E($path !== false ? $path : "");
+  $is_text = $path === false || strpos(',' . SCRIPT_EXT . ',', ',' . $e . ',') !== false;
+  $path = File::url($path);
 
-include __DIR__ . DS . 'unit' . DS . 'editor' . DS . '2.php';
-
-?>
-<?php echo Form::hidden('token', $token); ?>
+  ?>
+  <?php if($is_text && $content !== false): ?>
+  <p>
+  <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content)), $speak->manager->placeholder_content, array(
+      'class' => array(
+          'textarea-block',
+          'textarea-expand',
+          'code'
+      )
+  )); ?>
+  </p>
+  <?php endif; ?>
+  <p>
+    <?php echo Form::text('name', Request::get('name', Guardian::wayback('name', $path)), $speak->manager->placeholder_file_name); ?>
+    <?php echo Jot::button('action', $is_text ? $speak->update : $speak->rename); ?>
+    <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/asset/kill/file:' . $path); ?>
+  </p>
 </form>

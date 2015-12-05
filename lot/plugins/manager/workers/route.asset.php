@@ -8,7 +8,7 @@
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
     $offset = (int) $offset;
-    $p = Request::get('path', false);
+    $p = Request::get('path', "");
     $d = ASSET . File::path($p ? DS . $p : "");
     if( ! file_exists($d)) {
         Shield::abort(); // Folder not found!
@@ -92,7 +92,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Shield::abort();
     }
     $old = File::path($old);
-    $p = Request::get('path', false);
+    $p = Request::get('path', "");
     if( ! $file = File::exist(ASSET . DS . $old)) {
         Shield::abort(); // File not found!
     }
@@ -148,7 +148,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         Shield::abort();
     }
     $name = File::path($name);
-    $p = Request::get('path', false);
+    $p = Request::get('path', "");
     if(strpos($name, ';') !== false) {
         $deletes = explode(';', $name);
     } else {

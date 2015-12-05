@@ -48,7 +48,8 @@ manager:
 
   title_page_excerpt: Excerpt
   title_page_excerpt_length: Excerpt Length
-  title_page_excerpt_tail: Excerpt Tail
+  title_page_excerpt_prefix: Excerpt Prefix
+  title_page_excerpt_suffix: Excerpt Suffix
   title_page_excerpt_id: Excerpt ID
 
   title_per_page: Per Page

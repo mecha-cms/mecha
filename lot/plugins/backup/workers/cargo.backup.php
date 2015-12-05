@@ -1,14 +1,14 @@
 <?php $hooks = array($page, $segment); ?>
 <div class="tab-button-area">
   <?php Weapon::fire('tab_button_before', $hooks); ?>
-  <a class="tab<?php echo $segment === 'backup' ? ' active' : ""; ?>" href="#tab-content-1"><?php echo Jot::icon('file-archive-o', 'fw') . ' ' . $speak->backup; ?></a>
-  <a class="tab<?php echo $segment === 'restore' ? ' active' : ""; ?>" href="#tab-content-2"><?php echo Jot::icon('recycle', 'fw') . ' ' . $speak->restore; ?></a>
+  <a class="tab-button active" href="#tab-content-1"><?php echo Jot::icon('file-archive-o', 'fw') . ' ' . $speak->backup; ?></a>
+  <a class="tab-button" href="#tab-content-2"><?php echo Jot::icon('recycle', 'fw') . ' ' . $speak->restore; ?></a>
   <?php Weapon::fire('tab_button_after', $hooks); ?>
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
   <?php Weapon::fire('tab_content_before', $hooks); ?>
-  <div class="tab-content<?php echo $segment === 'restore' ? ' hidden' : ""; ?>" id="tab-content-1">
+  <div class="tab-content" id="tab-content-1">
     <h3><?php echo $speak->backup; ?></h3>
     <table class="table-bordered table-full-width">
       <tbody>
@@ -40,7 +40,7 @@
       </tbody>
     </table>
   </div>
-  <div class="tab-content<?php echo $segment === 'backup' ? ' hidden' : ""; ?>" id="tab-content-2">
+  <div class="tab-content hidden" id="tab-content-2">
     <h3><?php echo $speak->restore; ?></h3>
     <?php
 

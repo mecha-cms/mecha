@@ -171,7 +171,7 @@ class Get extends Base {
     }
 
     // Get stored custom field data (internal only)
-    public static function state_field($scope = null, $key = null, $fallback = array(), $all = true) {
+    public static function state_field($key = null, $fallback = array(), $all = true, $scope = null) {
         $config = Config::get();
         $speak = Config::speak();
         $d = WORKER . DS . 'repair.state.field.php';
@@ -180,30 +180,10 @@ class Get extends Base {
             Mecha::extend($field, File::open($file)->unserialize());
         }
         if($all) {
-            // Allow shield to add custom field(s) dynamically by creating
-            // a file named as `fields.php` stored in a folder named as `workers`.
-            // This file contains array of field(s) data.
-            //
-            // -- EXAMPLE CONTENT OF `fields.php`: --------------------------------
-            //
-            //    return array(
-            //        'break_title_text' => array(
-            //            'title' => 'Break Title Text?',
-            //            'type' => 'text',
-            //            'value' => "",
-            //            'scope' => 'article'
-            //        )
-            //    );
-            //
-            // --------------------------------------------------------------------
-            //
             if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'fields.php')) {
                 $field_e = include $e;
                 Mecha::extend($field, $field_e);
             }
-            // Allow plugin to add custom field(s) dynamically by creating
-            // a file named as `fields.php` stored in a folder named as `workers`.
-            // This file contains array of field(s) data.
             foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
                     $field_e = include $e;
@@ -216,7 +196,7 @@ class Get extends Base {
             'title' => "",
             'type' => 't',
             'placeholder' => "",
-            'value' => "",
+            'value' => false,
             'description' => "",
             'scope' => 'article,page,comment'
         );
@@ -246,26 +226,47 @@ class Get extends Base {
     }
 
     // Get stored menu data (internal only)
-    public static function state_menu($fallback = array()) {
+    public static function state_menu($key = null, $fallback = array(), $all = true) {
+        $config = Config::get();
         $speak = Config::speak();
         $d = WORKER . DS . 'repair.state.menu.php';
         $menu = file_exists($d) ? include $d : $fallback;
-        if($m = File::exist(STATE . DS . 'menu.txt')) {
-            $m = File::open($m)->read();
+        if($file = File::exist(STATE . DS . 'menu.txt')) {
+            $m = File::open($file)->read();
             if(strpos($m, 'a:') === 0 && strpos($m, "\n") === false) {
-                $menu = unserialize($m); // it's serialized
+                $file = unserialize($m); // it's serialized
             } else if(strpos($m, '{"') === 0) {
-                $menu = json_decode($m, true); // it's an encoded JSON
+                $file = json_decode($m, true); // it's an encoded JSON
             } else {
-                $menu = Converter::toArray($m, S, '    '); // YAML-like text format
+                $file = Converter::toArray($m, S, '    '); // YAML-like text format
+            }
+            Mecha::extend($menu, $file);
+        }
+        if($all) {
+            if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'menus.php')) {
+                $menu_e = include $e;
+                Mecha::extend($menu, $menu_e);
+            }
+            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+                if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'menus.php')) {
+                    $menu_e = include $e;
+                    Mecha::extend($menu, $menu_e);
+                }
             }
         }
-        return Filter::apply('state:menu', $menu);
+        $menu = Filter::apply('state:menu', $menu);
+        // Filter output(s) by `key`
+        if( ! is_null($key)) {
+            return isset($menu[$key]) ? $menu[$key] : $fallback;
+        }
+        // No filter
+        return $menu;
     }
 
     // Get stored shortcode data (internal only)
     public static function state_shortcode($key = null, $fallback = array(), $all = true) {
         $config = Config::get();
+        $speak = Config::speak();
         $d = WORKER . DS . 'repair.state.shortcode.php';
         $shortcode = file_exists($d) ? include $d : $fallback;
         if($file = File::exist(STATE . DS . 'shortcode.txt')) {
@@ -276,25 +277,10 @@ class Get extends Base {
             $shortcode = array_merge($shortcode, $file);
         }
         if($all) {
-            // Allow shield to add custom built-in shortcode(s) dynamically
-            // by creating a file named as `shortcodes.php` stored in a folder
-            // named as `workers`. This file contains array of shortcode(s) data.
-            //
-            // -- EXAMPLE CONTENT OF `shortcodes.php`: ----------------------------
-            //
-            //    return array(
-            //        '{{shortcode:%s}}' => '<span>$1</span>'
-            //    );
-            //
-            // --------------------------------------------------------------------
-            //
             if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'shortcodes.php')) {
                 $shortcode_e = include $e;
                 Mecha::extend($shortcode, $shortcode_e);
             }
-            // Allow plugin to add custom built-in shortcode(s) dynamically
-            // by creating a file named as `shortcodes.php` stored in a folder
-            // named as `workers`. This file contains array of shortcode(s) data.
             foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'shortcodes.php')) {
                     $shortcode_e = include $e;
@@ -312,11 +298,26 @@ class Get extends Base {
     }
 
     // Get stored tag data (internal only)
-    public static function state_tag($id = null, $fallback = array()) {
+    public static function state_tag($id = null, $fallback = array(), $all = true) {
+        $config = Config::get();
         $speak = Config::speak();
         $d = WORKER . DS . 'repair.state.tag.php';
         $tag = file_exists($d) ? include $d : $fallback;
-        $tag = File::open(STATE . DS . 'tag.txt')->unserialize($tag);
+        if($file = File::exist(STATE . DS . 'tag.txt')) {
+            Mecha::extend($tag, File::open($file)->unserialize());
+        }
+        if($all) {
+            if($e = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'tags.php')) {
+                $tag_e = include $e;
+                Mecha::extend($tag, $tag_e);
+            }
+            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+                if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'tags.php')) {
+                    $tag_e = include $e;
+                    Mecha::extend($tag, $tag_e);
+                }
+            }
+        }
         $tag = Filter::apply('state:tag', Converter::strEval($tag));
         // Filter output(s) by `id`
         if( ! is_null($id)) {
@@ -681,7 +682,7 @@ class Get extends Base {
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
-        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
         $init = array();
         foreach($fields as $key => $value) {
             $init[$key] = $value['value'];
@@ -768,7 +769,7 @@ class Get extends Base {
             $exc = is_array($exc) ? implode("", $exc) : $exc;
             // Generate fake description data
             if($results['description'] === "") {
-                $results['description'] = Converter::curt($exc, $config->excerpt->length, $config->excerpt->tail);
+                $results['description'] = Converter::curt($exc, $config->excerpt->length, $config->excerpt->suffix);
             }
             // Manual post excerpt with `<!-- cut+ "Read More" -->`
             if(strpos($exc, '<!-- cut+ ') !== false) {
@@ -801,7 +802,7 @@ class Get extends Base {
             // user(s) don't have to write `isset()` function multiple time(s)
             // just to prevent error message(s) because of the object key(s)
             // that is not available in the old post(s).
-            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+            $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
             $init = array();
             foreach($fields as $key => $value) {
                 $init[$key] = $value['value'];
@@ -1071,7 +1072,7 @@ class Get extends Base {
             'content_type' => $config->html_parser
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
         $init = array();
         foreach($fields as $key => $value) {
             $init[$key] = $value['value'];
@@ -1142,7 +1143,7 @@ class Get extends Base {
             $results['permalink'] = Filter::colon($FP . 'permalink', $link, $results);
         }
         if( ! isset($excludes['fields'])) {
-            $fields = self::state_field(rtrim($FP, ':'), null, array(), false);
+            $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
             $init = array();
             foreach($fields as $key => $value) {
                 $init[$key] = $value['value'];

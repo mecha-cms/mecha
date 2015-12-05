@@ -261,11 +261,6 @@ Weapon::add('shield_before', function() {
             'url' => $config->manager->slug . '/cache',
             'stack' => 9.11
         );
-        $menus[$speak->backup] = array(
-            'icon' => 'life-ring',
-            'url' => $config->manager->slug . '/backup',
-            'stack' => 9.12
-        );
         $bars[$speak->config] = array(
             'icon' => 'cog',
             'url' => $config->manager->slug . '/config',
@@ -291,9 +286,9 @@ Weapon::add('shield_before', function() {
 
     }
 
-    if($config->page_type === 'article' || $config->page_type === 'page') {
+    if(Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR))->has(POST . DS . $config->page_type)) {
         $type = $config->page_type;
-        $id = $type === 'article' ? $config->article->id : $config->page->id;
+        $id = $config->{$type}->id;
         $text = Config::speak($type);
         $text_repair = Config::speak('manager._this_', array($speak->edit, $text));
         $text_kill = Config::speak('manager._this_', array($speak->delete, $text));

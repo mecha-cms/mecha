@@ -17,7 +17,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     $destination = SHIELD;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        include __DIR__ . DS . 'task.package.ignite.php';
+        include __DIR__ . DS . 'task.ignite.package.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($speak) {
                 Notify::clear();
@@ -25,7 +25,6 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             });
             $P = array('data' => $_FILES);
             Weapon::fire(array('on_shield_update', 'on_shield_construct'), array($P, $P));
-            Weapon::fire(, array($P, $P));
             include __DIR__ . DS . 'task.package.php';
         } else {
             $tab_id = 'tab-content-2';
@@ -93,8 +92,8 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
     Shield::lot(array(
         'segment' => 'shield',
         'folder' => $folder,
-        'path' => null,
-        'content' => null
+        'path' => false,
+        'content' => false
     ))->attach('manager');
 });
 

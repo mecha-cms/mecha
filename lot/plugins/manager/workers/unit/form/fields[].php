@@ -1,10 +1,10 @@
 <?php
 
-$fields = Get::state_field($segment);
+$fields = Get::state_field(null, array(), true, $segment);
 
 if( ! empty($fields)) {
     $html = "";
-    $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
+    $field = Guardian::wayback('fields', Mecha::A($page->fields));
     foreach($fields as $key => $value) {
         if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";

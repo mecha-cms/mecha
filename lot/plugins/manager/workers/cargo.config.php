@@ -89,9 +89,15 @@
       </span>
     </label>
     <label class="grid-group">
-      <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_tail; ?></span>
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_prefix; ?></span>
       <span class="grid span-4">
-      <?php echo Form::text('excerpt[tail]', Guardian::wayback('excerpt.tail', $config->excerpt->tail)); ?>
+      <?php echo Form::text('excerpt[prefix]', Guardian::wayback('excerpt.prefix', $config->excerpt->prefix)); ?>
+      </span>
+    </label>
+    <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_suffix; ?></span>
+      <span class="grid span-4">
+      <?php echo Form::text('excerpt[suffix]', Guardian::wayback('excerpt.suffix', $config->excerpt->suffix)); ?>
       </span>
     </label>
     <label class="grid-group">

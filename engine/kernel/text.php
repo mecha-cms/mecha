@@ -110,7 +110,7 @@ class Text extends Base {
      *
      */
 
-    public static function toPage($text, $content = 'content', $FP = 'page:', $results = array(), $data = null) {
+    public static function toPage($text, $content = 'content', $FP = 'page:', $results = array(), $data = array()) {
         $c = $content !== false ? $content : 'content';
         foreach($results as $k => $v) {
             $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
@@ -170,6 +170,7 @@ class Text extends Base {
                 }
                 $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
             }
+            Mecha::extend($data, $results);
         }
         if(isset($results[$c . '_raw'])) {
             $content_extra = explode(SEPARATOR, $results[$c . '_raw']);
@@ -210,6 +211,7 @@ class Text extends Base {
 
     public static function toArray($text, $s = S, $indent = '    ') {
         if( ! is_string($text)) return false;
+        if(trim($text) === "") return array();
         $results = array();
         $data = array();
         $indent_length = strlen($indent);
@@ -246,7 +248,7 @@ class Text extends Base {
             $parent =& $results;
             foreach($data as $depth => $key) {
                 if( ! isset($parent[$key])) {
-                    $value = isset($parts[1]) && ! empty($parts[1]) ? preg_replace('#^`|`$#', "", trim($parts[1])) : array();
+                    $value = isset($parts[1]) && ! empty($parts[1]) ? trim($parts[1]) : array();
                     $parent[rtrim($parts[0])] = Converter::strEval($value);
                     break;
                 }

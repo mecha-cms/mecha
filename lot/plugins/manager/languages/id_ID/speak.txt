@@ -48,7 +48,8 @@ manager:
 
   title_page_excerpt: Ringkasan
   title_page_excerpt_length: Panjang Ringkasan
-  title_page_excerpt_tail: Ekor Ringkasan
+  title_page_excerpt_prefix: Awalan Ringkasan
+  title_page_excerpt_suffix: Akhiran Ringkasan
   title_page_excerpt_id: ID Ringkasan
 
   title_per_page: Per Halaman

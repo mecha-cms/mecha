@@ -200,16 +200,16 @@ class Converter extends Base {
      *  --------- | ------- | ---------------------------------------------------
      *  $input    | string  | The source text
      *  $chars    | integer | The maximum length of summary
-     *  $tail     | string  | Character that follows at the end of the summary
+     *  $suffix   | string  | Character that follows at the end of the summary
      *  --------- | ------- | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function curt($input, $chars = 100, $tail = '&hellip;', $charset = "") {
+    public static function curt($input, $chars = 100, $suffix = '&hellip;', $charset = "") {
         $input = Text::parse($input, '->text');
-        $charset = $charset !== "" ? $charset : Config::get('charset');
-        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < (function_exists('mb_strlen') ? mb_strlen($input, $charset) : strlen($input)) ? $tail : "");
+        $charset = $charset ? $charset : Config::get('charset');
+        return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < (function_exists('mb_strlen') ? mb_strlen($input, $charset) : strlen($input)) ? $suffix : "");
     }
 
     /**

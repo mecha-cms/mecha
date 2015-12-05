@@ -678,6 +678,8 @@ widget:
   recent_pages: Halaman Terbaru
   recent_article: Artikel Terbaru
   recent_articles: Artikel Terbaru
+  recent_response: Respon Terbaru
+  recent_responses: Respon Terbaru
   recent_comment: Komentar Terbaru
   recent_comments: Komentar Terbaru
 

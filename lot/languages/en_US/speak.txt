@@ -678,6 +678,8 @@ widget:
   recent_pages: Recent Pages
   recent_article: Recent Article
   recent_articles: Recent Articles
+  recent_response: Recent Response
+  recent_responses: Recent Responses
   recent_comment: Recent Comment
   recent_comments: Recent Comments
 

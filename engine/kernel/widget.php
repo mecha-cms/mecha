@@ -259,7 +259,7 @@ class Widget {
                     $html .= $T4 . '<a class="recent-response-name" href="' . $response->url . '" rel="nofollow">' . $response->name . '</a>' . NL;
                 }
                 $html .= $T3 . '</div>' . NL;
-                $html .= $T3 . '<div class="recent-response-body">' . Converter::curt($response->message, $summary, '&hellip;') . '</div>' . NL;
+                $html .= $T3 . '<div class="recent-response-body">' . Converter::curt($response->message, $summary, $config->excerpt->suffix) . '</div>' . NL;
                 $html .= $T3 . '<div class="recent-response-footer">' . NL;
                 $html .= $T4 . '<span class="recent-response-time">' . NL;
                 $html .= $T5 . '<time datetime="' . $response->date->W3C . '">' . $response->date->FORMAT_3 . '</time> <a title="' . ($post ? trim(strip_tags($post->title)) : $speak->notify_error_not_found) . '" href="' . $response->permalink . '" rel="nofollow">#</a>' . NL;
