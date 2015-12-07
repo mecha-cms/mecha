@@ -35,7 +35,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
  */
 
 Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config->manager->slug . '/(' . $post . ')/repair/id:(:num)'), function($segment = "", $id = false) use($config, $speak, $response) {
-    $units = array('title', 'slug', 'link', 'content', 'description', 'post' . DS . 'author');
+    $units = array('title', 'slug', 'link', 'content', 'content_type', 'description', 'post' . DS . 'author');
     foreach($units as $k => $v) {
         Weapon::add('tab_content_1_before', function($page, $segment) use($config, $speak, $v) {
             include __DIR__ . DS . 'unit' . DS . 'form' . DS . $v . '.php';
@@ -54,14 +54,14 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     if(strpos($config->url_path, '/id:') === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>
-    (function($) {
-        $.slug(\'title\', \'slug\', \'-\');
-    })(window.Zepto || window.jQuery);
-    </script>';
+(function($) {
+    $.slug(\'title\', \'slug\', \'-\');
+})(window.Zepto || window.jQuery);
+</script>';
         }, 11);
     }
     if($id && $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
-        $extension_o = $post->state === 'published' ? '.txt' : '.draft';
+        $extension_o = '.' . File::E($post->path);
         if( ! Guardian::happy(1) && Guardian::get('author') !== $post->author) {
             Shield::abort();
         }
@@ -106,11 +106,10 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             Notify::error($speak->notify_invalid_time_pattern);
             Guardian::memorize($request);
         }
-        $request['id'] = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
+        $rid = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
         $request['path'] = $post->path;
-        $request['state'] = $request['action'] === 'publish' ? 'published' : 'drafted';
         // Set post date by submitted time, or by input value if available
-        $date = date('c', $request['id']);
+        $date = date('c', $rid);
         // General field(s)
         $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
         $link = false;
@@ -151,7 +150,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             Notify::error(Config::speak('notify_error__content_empty', strpos($speak->notify_error__content_empty, '%s') === 0 ? $speak->{$segment} : strtolower($speak->{$segment})));
             Guardian::memorize($request);
         }
-        $extension = $request['action'] === 'publish' ? '.txt' : '.draft';
+        $extension = $request['extension'];
         $kind = isset($request['kind']) ? $request['kind'] : array();
         sort($kind);
         // Check for duplicate slug, except for the current old slug.
@@ -236,7 +235,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
  */
 
 Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', function($segment = "", $id = "") use($config, $speak, $response) {
-    if( ! $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
+    if( ! $post = call_user_func('Get::' . $segment, $id, array('content', 'tags'))) {
         Shield::abort();
     }
     if( ! Guardian::happy(1) && Guardian::get('author') !== $post->author) {
@@ -270,7 +269,7 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
         Guardian::kick($config->manager->slug . '/' . $segment);
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', '<strong>' . $post->title . '</strong>'));
-        Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->{$segment})));
+        Notify::warning(Config::speak('notify_confirm_delete_page', strtolower($speak->{$segment}), strtolower($speak->{$response . 's'})));
     }
     Shield::lot(array('segment' => $segment))->attach('manager');
 });

@@ -90,7 +90,7 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
     $speak = Config::speak();
     $html = Cell::begin('form', array(
         'class' => array(
-            'form-ignite',
+            'form-action',
             'form-upload'
         ),
         'action' => Converter::url($action),
@@ -125,7 +125,10 @@ Jot::add('uploader', function($action, $accept = null, $fields = array()) {
 // File finder
 Jot::add('finder', function($action, $name = 'q', $fields = array()) {
     $html = Cell::begin('form', array(
-        'class' => 'form-ignite form-find',
+        'class' => array(
+            'form-action',
+            'form-find'
+        ),
         'action' => Converter::url($action),
         'method' => 'get'
     )) . NL;

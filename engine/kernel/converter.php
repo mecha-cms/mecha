@@ -321,9 +321,9 @@ class Converter extends Base {
      *
      */
 
-    public static function phpEval($input) {
+    public static function phpEval($input, $vars = array()) {
         ob_start();
-        extract(Shield::lot()); // include default variable(s) ...
+        extract($vars);
         eval($input);
         return ob_get_clean();
     }

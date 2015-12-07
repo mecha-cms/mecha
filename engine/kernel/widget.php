@@ -136,7 +136,7 @@ class Widget {
                 }
             }
             foreach(array_count_values($counters) as $id => $count) {
-                $tag = Get::tag('id:' . $id);
+                $tag = call_user_func('Get::' . $p . 'Tag', 'id:' . $id);
                 if($tag && $id !== 0) {
                     $tags[] = array(
                         'id' => $id,
@@ -249,7 +249,15 @@ class Widget {
                 $html .= $T2 . '<li class="recent-response">' . NL;
                 if($avatar_size !== false && $avatar_size > 0) {
                     $html .= $T3 . '<div class="recent-response-avatar">' . NL;
-                    $html .= $T4 . '<img alt="" src="' . $config->protocol . 'www.gravatar.com/avatar/' . md5($response->email) . '?s=' . $avatar_size . '&amp;d=' . urlencode($d) . '" width="' . $avatar_size . '" height="' . $avatar_size . '"' . ES . NL;
+                    $html .= $T4;
+                    $attr = ' alt="" width="' . $avatar_size . '" height="' . $avatar_size . '"';
+                    if($avatar = File::exist(ASSET . DS . '__avatar' . DS . $avatar_size . 'x' . $avatar_size . DS . md5($response->email) . '.png')) {
+                        $html .= Asset::image($avatar, $attr);
+                    } else if($avatar = File::exist(ASSET . DS . '__avatar' . DS . '60x60' . DS . md5($response->email) . '.png')) {
+                        $html .= Asset::image($avatar, $attr);
+                    } else {
+                        $html .= Asset::image($config->protocol . 'www.gravatar.com/avatar/' . md5($response->email) . '?s=' . $avatar_size . '&amp;d=' . urlencode($d), $attr);
+                    }
                     $html .= $T3 . '</div>' . NL;
                 }
                 $html .= $T3 . '<div class="recent-response-header">' . NL;

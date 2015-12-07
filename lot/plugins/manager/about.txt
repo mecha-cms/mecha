@@ -1,0 +1,10 @@
+Title: Site Manager
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Manage your site data with a graphic user interface.
+
+This plugin should not be ejected unless you want to stop updating your site data.

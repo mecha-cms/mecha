@@ -10,7 +10,7 @@ Weapon::fire('routes_before');
 
 
 // Exclude these fields ...
-$excludes = (array) Config::get('article_fields_exclude', array('content'));
+$excludes = (array) Config::get($config->page_type . '_fields_exclude', array('content'));
 
 
 /**
@@ -130,7 +130,7 @@ Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive-
  */
 
 Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
-    if( ! $tag = Get::tag('slug:' . $slug)) {
+    if( ! $tag = Get::articleTag('slug:' . $slug)) {
         Shield::abort('404-tag');
     }
     $articles = array();
@@ -319,7 +319,7 @@ Route::accept('sitemap', function() use($config) {
  *
  */
 
-Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)'), function($path = "", $offset = 1) use($config) {
+Route::accept(array('feed', 'feed/rss', 'feed/rss/(:num)'), function($offset = 1) use($config) {
     Config::set('offset', (int) $offset);
     HTTP::mime('text/xml', $config->charset);
     Shield::attach(SHIELD . DS . 'rss.php');
@@ -337,7 +337,7 @@ Route::accept(array('(feed|feeds)', '(feed|feeds)/rss', '(feed|feeds)/rss/(:num)
  *
  */
 
-Route::accept(array('(feed|feeds)/json', '(feed|feeds)/json/(:num)'), function($path = "", $offset = 1) use($config) {
+Route::accept(array('feed/json', 'feed/json/(:num)'), function($offset = 1) use($config) {
     Config::set('offset', (int) $offset);
     HTTP::mime('application/json', $config->charset);
     Shield::attach(SHIELD . DS . 'json.php');

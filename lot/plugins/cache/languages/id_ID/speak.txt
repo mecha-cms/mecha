@@ -1,2 +1,2 @@
-plugin_cache_content_description: Tambahkan jalur <abbr title="Uniform Resource Locator">URL</abbr> halaman yang ingin Anda buat versi temboloknya pada area teks yang tersedia di bawah ini
-plugin_cache_content_info: Pisahkan setiap jalur <abbr title="Uniform Resource Locator">URL</abbr> dengan ganti baris.
+plugin_cache_description_content: Tambahkan jalur <abbr title="Uniform Resource Locator">URL</abbr> halaman yang ingin Anda buat versi temboloknya pada area teks yang tersedia di bawah ini
+plugin_cache_info_content: Pisahkan setiap jalur <abbr title="Uniform Resource Locator">URL</abbr> dengan ganti baris.

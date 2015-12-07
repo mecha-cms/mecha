@@ -3,6 +3,51 @@
 
 /**
  * ==========================================================================
+ *  GET PAGE/ARTICLE TAG(S)
+ * ==========================================================================
+ *
+ * -- CODE: -----------------------------------------------------------------
+ *
+ *    foreach(Get::pageTags() as $tag) { ... }
+ *    foreach(Get::articleTags() as $tag) { ... }
+ *
+ * --------------------------------------------------------------------------
+ *
+ */
+
+Get::plug('pageTags', function($order = 'ASC', $sorter = 'name') {
+    return Get::tags($order, $sorter, 'page');
+});
+
+Get::plug('articleTags', function($order = 'ASC', $sorter = 'name') {
+    return Get::tags($order, $sorter, 'article');
+});
+
+/**
+ * ==========================================================================
+ *  RETURN SPECIFIC PAGE/ARTICLE TAG ITEM FILTERED BY ITS AVAILABLE DATA
+ * ==========================================================================
+ *
+ * -- CODE: -----------------------------------------------------------------
+ *
+ *    $tag = Get::pageTag('lorem-ipsum');
+ *    $tag = Get::articleTag('lorem-ipsum');
+ *
+ * --------------------------------------------------------------------------
+ *
+ */
+
+Get::plug('pageTag', function($filter, $output = null, $fallback = false) {
+    return Get::tag($filter, $output = null, $fallback = false, 'page');
+});
+
+Get::plug('articleTag', function($filter, $output = null, $fallback = false) {
+    return Get::tag($filter, $output = null, $fallback = false, 'article');
+});
+
+
+/**
+ * ==========================================================================
  *  GET PAGE/ARTICLE PATH
  * ==========================================================================
  *

@@ -76,7 +76,6 @@ Weapon::add('shield_before', function() {
                     if($fuck = trim($spam)) {
                         if(
                             $request['email'] === $fuck || // Block by email address
-                            Get::IP() === $fuck || // Block by IP address
                             strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
                         ) {
                             Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
@@ -109,9 +108,7 @@ Weapon::add('shield_before', function() {
                         'URL' => $url,
                         'Status' => Guardian::happy() ? 1 : 2,
                         'Content Type' => $parser,
-                        'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false,
-                        'UA' => Get::UA(),
-                        'IP' => Get::IP()
+                        'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
                     ))->content($message)->saveTo(COMMENT . DS . $post . '_' . Date::slug($id) . '_' . ($parent ? Date::slug($parent) : '0000-00-00-00-00-00') . $extension);
                     Notify::success(Config::speak('notify_success_submitted', $speak->comment));
                     if($extension === '.hold') {

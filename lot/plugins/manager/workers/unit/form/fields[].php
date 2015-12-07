@@ -14,7 +14,15 @@ if( ! empty($fields)) {
             $description = isset($value['description']) && trim($value['description']) !== "" ? ' ' . Jot::info($value['description']) : "";
             $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
-            if($type === 't') {
+            if($type === 'h') {
+                $html .= '<label class="grid-group grid-group-hidden">';
+                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
+                $html .= '<span class="grid span-4 form-static">';
+                $html .= '<span>' . (isset($field[$key]) ? $field[$key] : $value['value']) . '</span>';
+                $html .= Form::hidden('fields[' . $key . '][value]', Converter::toText(isset($field[$key]) ? $field[$key] : $value['value']));
+                $html .= '</span>';
+                $html .= '</label>';
+            } else if($type === 't') {
                 $html .= '<label class="grid-group grid-group-text">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';

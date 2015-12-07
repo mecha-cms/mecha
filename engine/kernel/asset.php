@@ -56,9 +56,9 @@ class Asset extends Base {
         $path = Filter::colon('asset:path', self::path($source, false));
         $url = File::url($path);
         if($path && strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false ? Filter::colon('asset:url', $url . ($config->resource_versioning && strpos($url, $config->url) === 0 && file_exists($path) ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source) : false;
+            return strpos($url, '://') !== false ? Filter::colon('asset:url', $url, $source) : false;
         }
-        return $path && file_exists($path) ? Filter::colon('asset:url', $url . ($config->resource_versioning ? '?' . sprintf(ASSET_VERSION_FORMAT, filemtime($path)) : ""), $source) : false;
+        return $path && file_exists($path) ? Filter::colon('asset:url', $url, $source) : false;
     }
 
     // Return the HTML stylesheet of asset

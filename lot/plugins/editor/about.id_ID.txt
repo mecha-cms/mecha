@@ -1,0 +1,10 @@
+Title: Editor Teks
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Editor teks dan kode sumber.
+
+Ubah elemen `<textarea>` bawaan Anda menjadi sebuah editor teks dan kode sumber.

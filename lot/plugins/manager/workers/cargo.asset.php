@@ -26,6 +26,8 @@
       $asset_path = ASSET . DS;
       $q_path = Request::get('path', "");
       $q_path_parent = File::D($q_path);
+      $q_path_ = str_replace('&', '&amp;', HTTP::query('path', $q_path ? $q_path : false));
+      $q_path_parent_ = str_replace('&', '&amp;', HTTP::query('path', $q_path_parent ? $q_path_parent : false));
 
       ?>
       <table class="table-bordered table-full-width">
@@ -93,19 +95,19 @@
   
             ?>
             <td>
-              <?php if(is_dir($file->path)): ?>
-              <a href="<?php echo $config->url . '/' . $asset_url . '/1' . HTTP::query('path', ltrim($q_path . '/' . File::B($url), '/')); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
+              <?php if($file->is->folder): ?>
+              <a href="<?php echo $config->url . '/' . $asset_url . '/1' . str_replace('&', '&amp;', HTTP::query('path', ltrim($q_path . '/' . File::B($url), '/'))); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
               <?php else: ?>
               <a href="<?php echo $file->url; ?>" title="<?php echo File::size($file->path); ?>" target="_blank"><?php echo $n; ?></a>
               <?php endif; ?>
             </td>
             <td class="td-icon">
-            <?php echo Jot::a('construct', $asset_url_repair . $url . HTTP::query('path', $q_path), Jot::icon('pencil'), array(
+            <?php echo Jot::a('construct', $asset_url_repair . $url . $q_path_, Jot::icon('pencil'), array(
                 'title' => $speak->edit
             )); ?>
             </td>
             <td class="td-icon">
-            <?php echo Jot::a('destruct', $asset_url_kill . $url . HTTP::query('path', $q_path), Jot::icon('times'), array(
+            <?php echo Jot::a('destruct', $asset_url_kill . $url . $q_path_, Jot::icon('times'), array(
                 'title' => $speak->delete
             )); ?>
             </td>
@@ -123,10 +125,10 @@
           <?php if($q_path): ?>
           <tr>
             <td colspan="3"><?php echo File::B($q_path); ?></td>
-            <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . HTTP::query('path', $q_path_parent), Jot::icon('folder-open'), array(
+            <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . $q_path_parent_, Jot::icon('folder-open'), array(
                 'title' => $speak->exit . '&hellip;'
             )); ?></td>
-            <td class="td-icon"><?php echo Jot::a('destruct', $asset_url_kill . $q_path . HTTP::query('path', $q_path_parent), Jot::icon('times'), array(
+            <td class="td-icon"><?php echo Jot::a('destruct', $asset_url_kill . $q_path . $q_path_parent_, Jot::icon('times'), array(
                 'title' => $speak->delete
             )); ?></td>
           </tr>
@@ -149,7 +151,7 @@
     <?php endif; ?>
   </div>
   <div class="tab-content hidden" id="tab-content-2">
-    <form class="form-ignite form-asset" id="form-ignite" action="<?php echo $config->url . '/' . $asset_url . HTTP::query('path', $q_path); ?>" method="post">
+    <form class="form-ignite form-asset" id="form-ignite" action="<?php echo $config->url . '/' . $asset_url . $q_path_; ?>" method="post">
       <p><code><?php echo ASSET . DS . ($q_path ? File::path($q_path) . DS : ""); ?> &hellip;</code></p>
       <p><?php echo Form::text('folder', Guardian::wayback('folder'), $speak->manager->placeholder_folder_name) . ' ' . Jot::button('construct', $speak->create); ?></p>
       <p><?php echo Form::checkbox('redirect', 1, Request::method('get') ? true : Guardian::wayback('redirect', false), Config::speak('manager.description_redirect_to_', $speak->folder)); ?></p>
@@ -158,8 +160,8 @@
   </div>
   <div class="tab-content hidden" id="tab-content-3">
     <h3><?php echo Config::speak('manager.title__upload_alt', $speak->asset); ?></h3>
-    <?php echo Jot::uploader($asset_url . HTTP::query('path', $q_path)); ?>
-    <p><strong><?php echo $speak->accepted; ?>:</strong> <code>*.<?php echo implode('</code>, <code>*.', File::$config['file_extension_allow']); ?></code></p>
+    <?php echo Jot::uploader($asset_url . $q_path_); ?>
+    <p><strong><?php echo $speak->accepted; ?>:</strong> <code>*.<?php $e = File::$config['file_extension_allow']; sort($e); echo implode('</code>, <code>*.', $e); ?></code></p>
   </div>
   <?php Weapon::fire('tab_content_after', $hooks); ?>
 </div>

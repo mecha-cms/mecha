@@ -72,7 +72,7 @@ class Get extends Base {
                                     // current file is hidden
                                     strpos($_k, '__') === 0 ||
                                     strpos($_k, '.') === 0 ||
-                                    // parent folder of current file is hidden
+                                    // parent(s) folder of current file is hidden
                                     strpos($_kk, DS . '__') !== false ||
                                     strpos($_kk, DS . '.') !== false
                                 );
@@ -197,8 +197,7 @@ class Get extends Base {
             'type' => 't',
             'placeholder' => "",
             'value' => false,
-            'description' => "",
-            'scope' => 'article,page,comment'
+            'description' => ""
         );
         foreach($field as $k => $v) {
             $field[$k] = array_replace($v_d, $v);
@@ -208,7 +207,7 @@ class Get extends Base {
         if( ! is_null($scope)) {
             foreach($field as $k => $v) {
                 foreach(explode(',', $scope) as $s) {
-                    if(strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
+                    if( ! isset($v['scope']) || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
                         $field_alt[$k] = $v;
                     }
                 }
@@ -298,7 +297,7 @@ class Get extends Base {
     }
 
     // Get stored tag data (internal only)
-    public static function state_tag($id = null, $fallback = array(), $all = true) {
+    public static function state_tag($id = null, $fallback = array(), $all = true, $scope = null) {
         $config = Config::get();
         $speak = Config::speak();
         $d = WORKER . DS . 'repair.state.tag.php';
@@ -318,6 +317,19 @@ class Get extends Base {
                 }
             }
         }
+        // Filter output(s) by `scope`
+        $tag_alt = array();
+        if( ! is_null($scope)) {
+            foreach($tag as $k => $v) {
+                foreach(explode(',', $scope) as $s) {
+                    if( ! isset($v['scope']) || strpos(',' . $v['scope'] . ',', ',' . $s . ',') !== false) {
+                        $tag_alt[$k] = $v;
+                    }
+                }
+            }
+            $tag = $tag_alt;
+        }
+        unset($tag_alt);
         $tag = Filter::apply('state:tag', Converter::strEval($tag));
         // Filter output(s) by `id`
         if( ! is_null($id)) {
@@ -333,7 +345,7 @@ class Get extends Base {
 
     /**
      * ==========================================================================
-     *  EXTRACT OBJECT OF TAG(S) FROM TAG FILE
+     *  GET TAG(S)
      * ==========================================================================
      *
      * -- CODE: -----------------------------------------------------------------
@@ -346,8 +358,8 @@ class Get extends Base {
      *
      */
 
-    public static function tags($order = 'ASC', $sorter = 'name') {
-        $tags = Mecha::eat(self::state_tag())->order($order, $sorter)->vomit();
+    public static function tags($order = 'ASC', $sorter = 'name', $scope = null) {
+        $tags = Mecha::eat(self::state_tag(null, array(), true, $scope))->order($order, $sorter)->vomit();
         foreach($tags as $k => $v) {
             $tags[$k] = (object) array(
                 'id' => Filter::colon('tag:id', $v['id'], $tags),
@@ -373,8 +385,8 @@ class Get extends Base {
      *
      */
 
-    public static function tag($filter, $output = null, $fallback = false) {
-        $tags = self::tags();
+    public static function tag($filter, $output = null, $fallback = false, $scope = null) {
+        $tags = self::tags('ASC', 'name', null);
         // alternate 2: `Get::tag('id:2', 'slug', false)`
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
@@ -397,6 +409,43 @@ class Get extends Base {
             }
         }
         return $fallback;
+    }
+
+    /**
+     * ==========================================================================
+     *  GET POST TAG(S)
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    foreach(Get::postTags() as $tag) {
+     *        echo $tag->name . '<br>';
+     *    }
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function postTags($order = 'ASC', $sorter = 'name') {
+        return self::tags($order, $sorter, 'post');
+    }
+
+    /**
+     * ==========================================================================
+     *  RETURN SPECIFIC POST TAG ITEM FILTERED BY ITS AVAILABLE DATA
+     * ==========================================================================
+     *
+     * -- CODE: -----------------------------------------------------------------
+     *
+     *    $tag = Get::postTag('lorem-ipsum');
+     *    echo $tag->name . '<br>';
+     *
+     * --------------------------------------------------------------------------
+     *
+     */
+
+    public static function postTag($filter, $output = null, $fallback = false) {
+        return self::tag($filter, $output = null, $fallback = false, 'post');
     }
 
     /**
@@ -789,7 +838,7 @@ class Get extends Base {
         if( ! isset($excludes['tags'])) {
             $tags = array();
             foreach($results['kind'] as $id) {
-                $tags[] = self::tag('id:' . $id);
+                $tags[] = call_user_func('self::' . rtrim($FP, ':') . 'Tag', 'id:' . $id);
             }
             $results['tags'] = Filter::colon($FP . 'tags', Mecha::eat($tags)->order('ASC', 'name')->vomit(), $results);
         }

@@ -1,10 +1,10 @@
 <?php
 
 /**
- * ================================================================
- *  Mecha -- Content Management System
+ * =================================================================
+ *  Mecha -- Content Management System (CMS)
  *  Copyright (c) 2014-2015 Taufik Nurrohman <http://mecha-cms.com>
- * ================================================================
+ * =================================================================
  */
 
 define('DS', DIRECTORY_SEPARATOR);
@@ -34,7 +34,6 @@ define('SUBSTANCE', EXTEND . DS . 'substance');
 
 define('SEPARATOR', '===='); // Separator between the page header and page content
 define('S', ':'); // Separator between the page header's field key and page header's field value
-define('ASSET_VERSION_FORMAT', 'v=%d'); // For `foo/bar/baz.css?v=1425800809`
 define('ES', '>'); // Self closing HTML tag's end character(s)
 define('TAB', '  '); // Standard indentation on the page
 define('NL', PHP_EOL); // New line character of HTML output

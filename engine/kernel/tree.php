@@ -69,9 +69,11 @@ class Tree extends Base {
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
                 if($value !== "") {
                     // List item without link: `array('foo')`
-                    // List item without link: `array('foo' => null)`
-                    if(is_int($key) || is_null($value)) {
+                    if(is_int($key)) {
                         $twig .= Filter::colon($FP . 'anchor', '<span class="a">' . $value . '</span>');
+                    // List item without link: `array('foo' => null)`
+                    } else if(is_null($value)) {
+                        $twig .= Filter::colon($FP . 'anchor', '<span class="a">' . $key . '</span>');
                     // List item with link: `array('foo' => '/')`
                     } else {
                         $url = Filter::colon($FP . 'url', $url);

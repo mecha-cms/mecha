@@ -45,5 +45,5 @@ if($config->url_path === $config->manager->slug . '/login' || $config->page_type
             }, $content);
         }
         return $content;
-    }, 30);
+    }, 1);
 }

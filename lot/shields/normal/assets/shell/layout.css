@@ -551,14 +551,14 @@ pre {
   right:0;
 }
 
-.widget-recent-comment ul li,
-.widget-recent-comment ul li:first-child {
+.widget-recent-response ul li,
+.widget-recent-response ul li:first-child {
   border-width:0;
   padding:0;
 }
 
-.widget-recent-comment ul li + li {margin-top:.6153846153846154em}
-.widget-recent-comment .recent-comment-time {color:#AAA}
+.widget-recent-response ul li + li {margin-top:.6153846153846154em}
+.widget-recent-response .recent-response-time {color:#AAA}
 
 
 /* SMALLER SCREEN */

@@ -1,6 +1,6 @@
 <form class="form-plugin" action="<?php echo $config->url_current; ?>/update" method="post">
   <?php echo Form::hidden('token', $token); ?>
-  <p><?php echo $speak->plugin_cache_content_description . ' ' . Jot::info($speak->plugin_cache_content_info); ?></p>
+  <p><?php echo $speak->plugin_cache_description_content . ' ' . Jot::info($speak->plugin_cache_info_content); ?></p>
   <?php
 
   $cache_config = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();

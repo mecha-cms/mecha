@@ -1,0 +1,8 @@
+Title: Versi Sumber Daya
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Pengatur tembolok sumber daya di peramban.

@@ -66,5 +66,4 @@ function do_remove_cache() {
     }
 }
 
-Weapon::add('on_article_update', 'do_remove_cache', 10);
-Weapon::add('on_page_update', 'do_remove_cache', 10);
+Weapon::add(array('on_article_update', 'on_page_update'), 'do_remove_cache', 10);

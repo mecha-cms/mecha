@@ -379,8 +379,8 @@ class Package extends Base {
      */
 
     public static function deleteFiles($files) {
-        foreach($files as $key => $value) {
-            self::deleteFile($key, $value);
+        foreach($files as $file) {
+            self::deleteFile($file);
         }
         return new static;
     }

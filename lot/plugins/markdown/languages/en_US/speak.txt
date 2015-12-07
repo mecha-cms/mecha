@@ -1,8 +1,12 @@
-plugin_markdown_title_abbr: Predefined Abbreviation
-plugin_markdown_title_url: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
+MTE:
+  buttons:
+    help: Help
 
 __MTE:
   placeholders:
     table_text: Table Header 1 | Table Header 2\n-------------- | --------------\nTable Cell 1.1 | Table Cell 1.2\nTable Cell 2.1 | Table Cell 2.2\nTable Cell 3.1 | Table Cell 3.2
 
 __comment_wizard: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+
+plugin_markdown_title_abbr: Predefined Abbreviation
+plugin_markdown_title_url: Predefined <abbr title="Uniform Resource Locator">URL</abbr>

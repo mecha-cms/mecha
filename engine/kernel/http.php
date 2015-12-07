@@ -109,13 +109,14 @@ class HTTP extends Base {
         if(func_num_args() === 2) {
             $query = array($query => $value);
         }
-        $query = Converter::str( ! empty($query) ? array_merge($_GET, $query) : $_GET);
+        $query = ! empty($query) ? array_merge($_GET, $query) : $_GET;
         $results = array();
         foreach($query as $k => $v) {
-            if( ! $v) continue;
-            $results[] = $k . '=' . Text::parse($v, '->encoded_url');
+            if($v === false) continue;
+            $value = $v !== true ? '=' . Text::parse(Converter::str($v), '->encoded_url') : "";
+            $results[] = $k . $value;
         }
-        return ! empty($results) ? '?' . implode('&amp;', $results) : "";
+        return ! empty($results) ? '?' . implode('&', $results) : "";
     }
 
     /**

@@ -4,9 +4,7 @@
 
 manager:
 
-  powered: Powered by <strong>Mecha CMS</strong>
-
-  placeholder_title: Your Awesome Title
+  placeholder_title: Title Goes Here
   placeholder_content: Content goes here…
   placeholder_description: Description goes here…
   placeholder_description_: Some description about this %s (optional)
@@ -14,10 +12,9 @@ manager:
   placeholder_css_custom: Custom CSS goes here…
   placeholder_js: JavaScript goes here…
   placeholder_js_custom: Custom JavaScript goes here…
-  placeholder__title_: Your %s Title
+  placeholder__title_: %s Title Goes Here
   placeholder__content: %s content goes here…
   placeholder__description: %s description goes here…
-  placeholder__description_: Some %s description about this %s (optional)
   placeholder__css: %s CSS goes here…
   placeholder__css_custom: Custom %s CSS goes here…
   placeholder__js: %s JavaScript goes here…
@@ -60,8 +57,6 @@ manager:
 
   title_comment_allow: Enable Comments
   title_comment_moderation: Enable Comment Moderation
-
-  title_resource_versioning: Enable Resource Versioning
 
   title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
   title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
@@ -149,7 +144,7 @@ notify_confirm_page_leave: Are you sure you want to leave this page?
 notify_confirm_page_leave_: Are you sure you want to leave %s page?
 notify_confirm_delete: Are you sure you want to delete?
 notify_confirm_delete_: Are you sure you want to delete %s?
-notify_confirm_delete_page: This will also wipe all the comments associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of %1$s.
+notify_confirm_delete_page: This will also wipes all %2$s associated with the %1$s along with the custom <abbr title="Cascading Style Sheet">CSS</abbr> and JavaScript of %1$s.
 notify_confirm_maybe_you_mean: Maybe you mean %s
 
 notify_warning_intruder_detected: Intruder detected.

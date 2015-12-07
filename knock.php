@@ -54,11 +54,11 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         mkdir(ROOT . DS . 'lot' . DS . 'responses' . DS . 'comment', 0766, true);
         mkdir(ROOT . DS . 'lot' . DS . 'scraps', 0766, true);
         chmod(ROOT . DS . 'lot' . DS . 'shields', 0777);
-        mkdir(ROOT . DS . 'lot' . DS . 'states', 0766, true);
+        chmod(ROOT . DS . 'lot' . DS . 'states', 0766);
         chmod(ROOT . DS . 'lot' . DS . 'workers', 0766);
         chmod(ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt', 0600);
         unlink(ROOT . DS . 'engine' . DS . 'plug' . DS . '__.php');
-        unlink(ROOT . DS . 'knock.php');
+        unlink(__FILE__); // self destruct ...
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
         header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login?kick=manager/config');
         exit;

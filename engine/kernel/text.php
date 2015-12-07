@@ -273,7 +273,7 @@ class Text extends Base {
 
     public static function check($text) {
         $arguments = is_array($text) ? $text : func_get_args();
-        self::$text = func_num_args() > 1 ? $arguments : (string) $text;
+        self::$text = func_num_args() > 1 ? $arguments : $text;
         return new static;
     }
 

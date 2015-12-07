@@ -79,7 +79,7 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php')) {
+    if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $slug . DS . '__launch.php')) {
         Shield::abort();
     }
     $info = Plugin::info($slug);

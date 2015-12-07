@@ -1,0 +1,12 @@
+Title: Comment Location
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Get IP and User Agent information of your commenters.
+
+Store IP and User Agent information of the submitted comments in custom fields.
+
+*[IP]: Internet Protocol

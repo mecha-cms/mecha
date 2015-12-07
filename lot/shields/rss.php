@@ -1,7 +1,7 @@
 <?php
 
 $bucket = array();
-$url_base = rtrim($config->url_current, '\\/-.0123456789');
+$url_base = $config->url . '/feed/rss';
 $rss_order = strtoupper(Request::get('order', 'DESC'));
 $rss_filter = Request::get('filter', "");
 $rss_limit = Request::get('limit', 25);
@@ -15,7 +15,7 @@ if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->o
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
 echo '<channel>';
-echo '<generator>Mecha CMS ' . MECHA_VERSION . '</generator>';
+echo '<generator>Mecha ' . MECHA_VERSION . '</generator>';
 echo '<title>' . $config->title . '</title>';
 echo '<link>' . $config->url . '/</link>';
 echo '<description>' . $config->description . '</description>';
@@ -39,8 +39,8 @@ if( ! empty($bucket)) {
         echo '<guid>' . $item->url . '</guid>';
         if( ! empty($kind)) {
             foreach($kind as $k) {
-                $tag = Get::rawTag($k);
-                echo '<category domain="' . Filter::apply('tag:url', Filter::apply('url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug'])) . '">' . $tag['name'] . '</category>';
+                $tag = Get::articleTag($k);
+                echo '<category domain="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag->slug) . '">' . $tag->name . '</category>';
             }
         }
         echo '<source url="' . $item->url . '"><![CDATA[' . $config->title . ': ' . $title . ']]></source>';

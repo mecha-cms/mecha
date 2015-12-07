@@ -23,13 +23,16 @@ Weapon::add('shield_before', function() use($speak) {
     if($parser === 'Markdown' || $parser === 'Markdown Extra') {
         Config::merge('DASHBOARD.languages.MTE', $speak->__MTE);
         Config::set('MTE', 'MTE');
+        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
+            echo Asset::javascript(__DIR__ . DS . 'assets' . DS . 'sword' . DS . 'help.js');
+        }, 11);
         Filter::add('asset:path', function($path) {
             // Replace `HTE` with `MTE`
             if($path === PLUGIN . DS . 'editor' . DS . 'assets' . DS . 'sword' . DS . 'hte.min.js') {
                 return __DIR__ . DS . 'assets' . DS . 'sword' . DS . 'mte.min.js';
             }
             // Replace default `table` button with the new one
-            if($path === PLUGIN . DS . 'editor.button' . DS . 'assets' . DS . 'sword' . DS . 'table.js') {
+            if($path === PLUGIN . DS . 'editor-button' . DS . 'assets' . DS . 'sword' . DS . 'table.js') {
                 return __DIR__ . DS . 'assets' . DS . 'sword' . DS . 'table.js';
             }
             return $path;

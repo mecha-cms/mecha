@@ -6,11 +6,11 @@
  * ---------------
  */
 
+ini_set('error_log', LOG . DS . 'errors.log');
 if(DEBUG) {
     error_reporting(E_ALL | E_STRICT);
     ini_set('display_errors', TRUE);
     ini_set('display_startup_errors', TRUE);
-    ini_set('error_log', LOG . DS . 'errors.log');
     ini_set('html_errors', 1);
 } else {
     error_reporting(0);
@@ -101,6 +101,7 @@ Weapon::add('meta', function() {
     $speak = Config::speak();
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
     $html .= Cell::meta('viewport', 'width=device-width', array(), 2) . NL;
+    $html .= Cell::meta('generator', 'Powered by Mecha ' . MECHA_VERSION, array(), 2) . NL;
     if($config->page_type !== '404' && isset($config->{$config->page_type}->description)) {
         $config->description = $config->{$config->page_type}->description;
     }
@@ -222,17 +223,17 @@ Filter::add('shortcode', function($content) use($config, $speak) {
         // %[a,b,c]: options ... accept `a`, `b`, or `c`
         if(strpos($key, '%\\[') !== false) {
             $key = preg_replace_callback('#%\\\\\[(.*?)\\\\\]#', function($matches) {
-                return '(' . str_replace(',', '|', $matches[1]) . ')';
+                return '(' . str_replace(array(',', '&\\#44;'), array('|', ','), $matches[1]) . ')';
             }, $key);
         }
         // %s: accept any values without line breaks
-        // %S: accept any values with/without line breaks
+        // %m: accept any values with/without line breaks
         // %i: accept integer numbers
         // %f: accept float numbers
         // %b: accept boolean values
         $key = str_replace(
-            array('%s', '%S', '%i', '%f', '%b'),
-            array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|ON|OFF|true|false|yes|no|on|off|1|0)\b'),
+            array('%s', '%m', '%i', '%f', '%b'),
+            array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b'),
         $key);
         $content = preg_replace('#(?<!`)' . $key . '|' . $key . '(?!`)#', Converter::DW($value), $content);
     }

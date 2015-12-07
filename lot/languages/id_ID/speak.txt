@@ -13,6 +13,8 @@ __:
 # SOME DEFAULT TEXT FOR SHIELD
 # ----------------------------
 
+power_generator: Diberdayakan oleh <strong>Mecha %s</strong>
+
 home: Beranda
 about: Tentang
 contact: Kontak

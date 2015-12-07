@@ -1,0 +1,12 @@
+Title: Live Preview
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Live preview with AJAX.
+
+Add preview tab on your article, page and comment editor.
+
+*[AJAX]: Asynchronous JavaScript and XML

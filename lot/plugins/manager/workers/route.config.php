@@ -21,8 +21,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             'comments.moderation' => false,
             'widget_include_css' => false,
             'widget_include_js' => false,
-            'html_parser' => false,
-            'resource_versioning' => false
+            'html_parser' => false
         );
         $pages = array(
             'index' => 'article',
@@ -75,8 +74,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
-            Config::load(); // Refresh the configuration data ...
-            Notify::success(Config::speak('notify_success_updated', Config::speak('config')));
+            Notify::success(Config::speak('notify_success_updated', $speak->config));
             foreach(glob(LOG . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
                 File::open($asset_cache)->delete();
             }

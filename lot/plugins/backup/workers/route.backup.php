@@ -26,6 +26,12 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
                 Notify::clear();
                 Notify::success(Config::speak('notify_success_uploaded', $title));
             });
+            if($destination === STATE) {
+                Config::load(); // refresh ...
+            }
+            if($destination === PLUGIN) {
+                Plugin::reload(); // refresh ...
+            }
             $P = array('data' => $_FILES);
             Weapon::fire('on_restore_construct', array($P, $P));
             include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.package.php';

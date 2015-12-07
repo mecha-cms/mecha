@@ -4,20 +4,17 @@
 
 manager:
 
-  powered: Diberdayakan oleh <strong>CMS Mecha</strong>
-
-  placeholder_title: Judul Mengagumkan Anda
+  placeholder_title: Judul di Sini
   placeholder_content: Konten di sini…
   placeholder_description: Deskripsi di sini…
   placeholder_description_: Deskripsi tentang %s ini (opsional)
   placeholder_css: CSS di sini…
   placeholder_css_custom: CSS kustom di sini…
   placeholder_js: JavaScript di sini…
-  placeholder_js_custom: JavaScript di sini…
-  placeholder__title: Judul %s Anda
+  placeholder_js_custom: JavaScript kustom di sini…
+  placeholder__title: Judul %s di Sini
   placeholder__content: Konten %s di sini…
   placeholder__description: Deskripsi %s di sini…
-  placeholder__description_: Deskripsi %s tentang %s ini (opsional)
   placeholder__css: CSS %s di sini…
   placeholder__css_custom: CSS %s kustom di sini…
   placeholder__js: JavaScript %s di sini…
@@ -60,8 +57,6 @@ manager:
 
   title_comment_allow: Aktifkan Komentar
   title_comment_moderation: Aktifkan Moderasi Komentar
-
-  title_resource_versioning: Aktifkan Versi Sumber Daya
 
   title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
@@ -150,7 +145,7 @@ notify_confirm_page_leave: Anda yakin ingin meninggalkan halaman ini?
 notify_confirm_page_leave_: Anda yakin ingin meninggalkan halaman %s?
 notify_confirm_delete: Anda yakin ingin menghapus?
 notify_confirm_delete_: Anda yakin ingin menghapus %s?
-notify_confirm_delete_page: Ini juga akan menghapus semua komentar yang terkait dengan %1$s ini berikut berkas kustom <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript %1$s.
+notify_confirm_delete_page: Ini juga akan menghapus semua %2$s yang terkait dengan %1$s ini berikut berkas kustom <abbr title="Cascading Style Sheet">CSS</abbr> dan JavaScript %1$s.
 notify_confirm_maybe_you_mean: Mungkin maksud Anda adalah %s
 
 notify_warning_intruder_detected: Penyusup terdeteksi.

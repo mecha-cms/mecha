@@ -7,7 +7,7 @@
 </div>
 <div class="tab-content-area">
   <?php echo $messages; ?>
-  <form class="form-repair form-<?php echo $segment[0]; ?>" id="form-repair" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
+  <form class="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?> form-<?php echo $segment[0]; ?>" id="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
     <?php echo Form::hidden('token', $token); ?>
     <?php Weapon::fire('tab_content_before', $hooks); ?>
     <div class="tab-content" id="tab-content-1">
@@ -22,16 +22,16 @@
     <hr>
     <p>
       <?php if(strpos($config->url_path, '/id:') === false): ?>
-      <?php echo Jot::button('construct', $speak->create, 'action:publish'); ?>
-      <?php echo Jot::button('action:clock-o', $speak->save, 'action:save'); ?>
+        <?php echo Jot::button('construct', $speak->create, 'extension:.txt'); ?>
+        <?php echo Jot::button('action:clock-o', $speak->save, 'extension:.hold'); ?>
       <?php else: ?>
-      <?php if(Guardian::wayback('state', $page->state) === 'approved'): ?>
-      <?php echo Jot::button('action', $speak->update, 'action:publish'); ?>
-      <?php echo Jot::button('action:history', $speak->unapprove, 'action:save'); ?>
-      <?php else: ?>
-      <?php echo Jot::button('construct', $speak->approve, 'action:publish'); ?>
-      <?php endif; ?>
-      <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/' . $segment[0] . '/kill/id:' . Guardian::wayback('id', $page->id)); ?>
+        <?php if($page->state === 'approved'): ?>
+          <?php echo Jot::button('action', $speak->update, 'extension:.txt'); ?>
+          <?php echo Jot::button('action:history', $speak->unapprove, 'extension:.hold'); ?>
+        <?php else: ?>
+          <?php echo Jot::button('construct', $speak->approve, 'extension:.txt'); ?>
+        <?php endif; ?>
+        <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/' . $segment[0] . '/kill/id:' . $page->id); ?>
       <?php endif; ?>
     </p>
   </form>

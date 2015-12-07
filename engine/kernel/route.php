@@ -242,7 +242,7 @@ class Route extends Base {
             return $path === $pattern ? array(
                 'pattern' => $pattern,
                 'path' => $path,
-                'cargo' => array()
+                'lot' => array()
             ) : $fallback;
         }
         if(preg_match('#^' . self::fix($pattern) . '$#', $path, $matches)) {
@@ -250,7 +250,7 @@ class Route extends Base {
             return array(
                 'pattern' => $pattern,
                 'path' => $path,
-                'cargo' => $matches
+                'lot' => $matches
             );
         }
         return $fallback;
@@ -288,11 +288,11 @@ class Route extends Base {
                     if(isset(self::$routes_over[$pattern])) {
                         $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
                         foreach($fn as $v) {
-                            call_user_func_array($v['fn'], $route['cargo']);
+                            call_user_func_array($v['fn'], $route['lot']);
                         }
                     }
                     // Passed!
-                    return call_user_func_array($cargo['fn'], $route['cargo']);
+                    return call_user_func_array($cargo['fn'], $route['lot']);
                 }
             }
         }

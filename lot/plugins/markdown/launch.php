@@ -37,7 +37,7 @@ Filter::add(array('content', 'message'), function($content, $fields) {
 // Set new `html_parser` value
 if($config->html_parser === 'HTML') {
     $config->html_parser = 'Markdown Extra';
-    Config::set('html_parser', $config->html_parser);
+    Config::set('html_parser', 'Markdown Extra');
 }
 
 // Re-write `comment_wizard` value

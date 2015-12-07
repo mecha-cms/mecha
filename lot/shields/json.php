@@ -1,7 +1,7 @@
 <?php
 
 $bucket = array();
-$url_base = rtrim($config->url_current, '\\/-.0123456789');
+$url_base = $config->url . '/feed/json';
 $json_order = strtoupper(Request::get('order', 'DESC'));
 $json_filter = Request::get('filter', "");
 $json_limit = Request::get('limit', 25);
@@ -14,7 +14,7 @@ if($pages = Mecha::eat(Get::articles($json_order, $json_filter))->chunk($config-
 
 $json = array(
     'meta' => array(
-        'generator' => 'Mecha CMS ' . MECHA_VERSION,
+        'generator' => 'Mecha ' . MECHA_VERSION,
         'title' => $config->title,
         'url' => array(
             'home' => $config->url,
@@ -26,7 +26,7 @@ $json = array(
         'author' => (array) $config->author,
         'offset' => $config->offset,
         'total' => $config->total_articles,
-        'tags' => Get::rawTags()
+        'tags' => Get::articleTags()
     ),
     'item' => null
 );

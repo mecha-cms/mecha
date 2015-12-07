@@ -1,0 +1,10 @@
+Title: Backup
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Site backup and restore.
+
+Download and save your site copy easily with this plugin.

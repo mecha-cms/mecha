@@ -1,0 +1,8 @@
+Title: Asset Versioning
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Asset cache manager in browser.

@@ -17,7 +17,7 @@
       'content' => Widget::tag()
   )); ?>
   <?php Shield::chunk('block.widget', array(
-      'title' => $speak->widget->related_articles,
+      'title' => $speak->widget->related_posts,
       'content' => Widget::relatedPost()
   )); ?>
   <?php Shield::chunk('block.widget', array(

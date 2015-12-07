@@ -1,0 +1,10 @@
+Title: Manajer Situs
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Atur data situs Anda dengan tampilan antarmuka grafis.
+
+Plugin ini tidak seharusnya boleh dilepas kecuali jika Anda benar-benar ingin berhenti memperbaharui data situs Anda.

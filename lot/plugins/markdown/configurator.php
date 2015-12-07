@@ -2,9 +2,9 @@
   <?php echo Form::hidden('token', $token); ?>
   <?php
 
-  $state = __DIR__ . DS . 'states' . DS;
-  $url = File::open($state . 'url.txt')->read();
-  $abbr = File::open($state . 'abbr.txt')->read();
+  $s = __DIR__ . DS . 'states' . DS;
+  $url = File::open($s . 'url.txt')->read();
+  $abbr = File::open($s . 'abbr.txt')->read();
 
   ?>
   <fieldset>

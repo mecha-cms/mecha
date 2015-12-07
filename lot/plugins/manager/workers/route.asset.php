@@ -8,7 +8,7 @@
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
     $offset = (int) $offset;
-    $p = Request::get('path', "");
+    $p = Request::get('path', false);
     $d = ASSET . File::path($p ? DS . $p : "");
     if( ! file_exists($d)) {
         Shield::abort(); // Folder not found!
@@ -41,7 +41,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
                 Weapon::fire(array('on_asset_update', 'on_asset_construct'), array($P, $P));
                 if(isset($request['redirect'])) {
                     $folder = File::url($folder);
-                    Guardian::kick($config->manager->slug . '/asset/' . $offset . HTTP::query('path', $p ? $p . '/' . $folder : $folder));
+                    Guardian::kick($config->manager->slug . '/asset/' . $offset . str_replace('&', '&amp;', HTTP::query('path', $p ? $p . '/' . $folder : $folder)));
                 }
                 Guardian::kick($config->manager->slug . '/asset/' . $offset);
             } else {
@@ -58,7 +58,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
                 Weapon::fire(array('on_asset_update', 'on_asset_construct'), array($P, $P));
             }
             if( ! Notify::errors()) {
-                Guardian::kick($config->manager->slug . '/asset/' . $offset . HTTP::query('path', $p));
+                Guardian::kick($config->manager->slug . '/asset/' . $offset . str_replace('&', '&amp;', HTTP::query('path', $p)));
             } else {
                 $tab_id = 'tab-content-3';
                 include __DIR__ . DS . 'task.js.tab.php';
@@ -92,7 +92,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         Shield::abort();
     }
     $old = File::path($old);
-    $p = Request::get('path', "");
+    $p = Request::get('path', false);
     if( ! $file = File::exist(ASSET . DS . $old)) {
         Shield::abort(); // File not found!
     }
@@ -126,7 +126,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                 $new = explode(DS, $new);
                 Session::set('recent_file_update', $new[0]);
                 Weapon::fire(array('on_asset_update', 'on_asset_repair'), array($P, $P));
-                Guardian::kick($config->manager->slug . '/asset/1' . HTTP::query('path', $p));
+                Guardian::kick($config->manager->slug . '/asset/1' . str_replace('&', '&amp;', HTTP::query('path', $p)));
             }
         }
     }
@@ -148,7 +148,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         Shield::abort();
     }
     $name = File::path($name);
-    $p = Request::get('path', "");
+    $p = Request::get('path', false);
     if(strpos($name, ';') !== false) {
         $deletes = explode(';', $name);
     } else {
@@ -174,7 +174,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         $P = array('data' => array('files' => $info_path));
         Notify::success(Config::speak('notify_' . $is_folder_or_file . '_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire(array('on_asset_update', 'on_asset_destruct'), array($P, $P));
-        Guardian::kick($config->manager->slug . '/asset/1' . HTTP::query('path', $p));
+        Guardian::kick($config->manager->slug . '/asset/1' . str_replace('&', '&amp;', HTTP::query('path', $p)));
     } else {
         Notify::warning(count($deletes) === 1 ? Config::speak('notify_confirm_delete_', '<code>' . File::path($name) . '</code>') : $speak->notify_confirm_delete);
     }

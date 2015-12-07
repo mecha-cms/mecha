@@ -13,7 +13,6 @@ return array(
         'allow' => true,
         'moderation' => false
     ),
-    'resource_versioning' => true,
     'excerpt' => array(
         'length' => 300,
         'tail' => '&hellip;',

@@ -90,10 +90,10 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $request['id'] = $id ? $id : time();
+        $rid = $id ? $id : time();
         $request['post'] = Request::post('post');
         $request['parent'] = Request::post('parent');
-        $extension = $request['action'] === 'publish' ? '.txt' : '.hold';
+        $extension = $request['extension'];
         $name = $request['name'];
         $email = $request['email'];
         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
@@ -127,7 +127,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
                 'Content Type' => Request::post('content_type', 'HTML'),
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
             );
-            $_ = RESPONSE . DS . $segment . DS . Date::slug($request['post']) . '_' . Date::slug($request['id']) . '_' . ($request['parent'] ? Date::slug($request['parent']) : '0000-00-00-00-00-00') . $extension;
+            $_ = RESPONSE . DS . $segment . DS . Date::slug($request['post']) . '_' . Date::slug($rid) . '_' . ($request['parent'] ? Date::slug($request['parent']) : '0000-00-00-00-00-00') . $extension;
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($message)->saveTo($_);
@@ -138,7 +138,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
             }
             Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $speak->{$segment}) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $post . 'Anchor', $request['post'])->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
             Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_' . ($id ? 'repair' : 'construct')), array($G, $P));
-            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . $request['id']);
+            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . $rid);
         }
     }
     Shield::lot(array('segment' => array($segment, $post)))->attach('manager');

@@ -1,0 +1,10 @@
+Title: Tombol Editor Teks
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Tombol-tombol kontrol tambahan untuk editor teks Anda.
+
+Termasuk di dalamnya adalah tombol _excerpt_ dan tabel.

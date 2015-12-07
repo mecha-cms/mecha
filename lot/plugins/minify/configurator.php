@@ -6,8 +6,8 @@
     <?php
 
     $c = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
-    foreach($speak->plugin_minifier as $k => $v) {
-        echo '<div>' . Form::checkbox($k, true, isset($c[$k]), $v) . '</div>';
+    foreach($speak->plugin_minifier_title as $k => $v) {
+        echo '<div>' . Form::checkbox($k, 1, isset($c[$k]), $v) . '</div>';
     }
 
     ?>

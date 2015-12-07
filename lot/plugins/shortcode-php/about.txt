@@ -1,0 +1,16 @@
+Title: <code>{{php}}</code> Shortcode
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> Evaluate PHP syntax in page content.
+
+### Usage
+
+~~~ .no-highlight
+`{{php}}`
+echo date('Y/m/d H:i:s');
+`{{/php}}`
+~~~

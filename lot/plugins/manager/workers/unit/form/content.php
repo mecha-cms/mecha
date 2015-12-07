@@ -7,8 +7,7 @@
           'textarea-expand',
           'MTE',
           'code'
-      ),
-      'data-MTE-config' => '{"toolbar":true,"shortcut":true}'
+      )
   )); ?>
   </span>
 </label>
