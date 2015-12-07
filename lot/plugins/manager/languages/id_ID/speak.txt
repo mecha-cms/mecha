@@ -120,6 +120,7 @@ notify_error_file_size_min: Ukuran berkas harus lebih besar dari <code>%s</code>
 notify_error_file_type_unknown: Tipe berkas tidak diketahui.
 notify_error_empty_field: Mohon isi bidang <strong>%s</strong>.
 notify_error_empty_fields: Mohon isi semua bidang yang wajib.
+notify_error_key_exist: Key <code>%s</code> sudah ada.
 notify_error_slug_exist: Slug <code>%s</code> sudah ada.
 notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> harus berisi setidaknya satu huruf, dari <code>A</code> sampai <code>Z</code>.
 notify_error_content_empty: Konten tidak boleh dikosongkan.

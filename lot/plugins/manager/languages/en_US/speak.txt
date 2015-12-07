@@ -119,6 +119,7 @@ notify_error_file_size_min: File size must be greater than <code>%s</code>.
 notify_error_file_type_unknown: Unknown file type.
 notify_error_empty_field: Please fill out the <strong>%s</strong> field.
 notify_error_empty_fields: Please fill out all of the required fields.
+notify_error_key_exist: Key <code>%s</code> already exists.
 notify_error_slug_exist: Slug <code>%s</code> already exists.
 notify_error_slug_missing_letter: Slug <abbr title="Uniform Resource Identifier">URI</abbr> should contains at least one letter, from <code>A</code> to <code>Z</code>.
 notify_error_content_empty: Content should not be emptied.

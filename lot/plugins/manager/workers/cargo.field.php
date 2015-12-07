@@ -34,7 +34,8 @@
 
       ?>
       <td><?php echo Jot::em('info', $s); ?></td>
-      <?php if(isset($files->{$key})): ?>
+      <?php $files_a = (array) $files; ?>
+      <?php if(isset($files_a[$key])): ?>
       <td class="td-icon">
       <?php echo Jot::a('construct', $config->manager->slug . '/field/repair/key:' . $key, Jot::icon('pencil'), array(
           'title' => $speak->edit

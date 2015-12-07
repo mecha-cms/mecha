@@ -11,7 +11,7 @@
   <tbody>
     <tr>
       <td><?php echo $file->title; ?></td>
-      <td><?php echo $id; ?></td>
+      <td><code><?php echo $id; ?></code></td>
       <?php
 
       $s = Mecha::alter($file->type[0], array(
@@ -25,11 +25,11 @@
 
       ?>
       <td><?php echo Jot::em('info', $s); ?></td>
-      <td><?php echo isset($file->scope) ? str_replace(',', '/', $file->scope) : strtolower($speak->article . '/' . $speak->page); ?></td>
+      <td><?php echo isset($file->scope) ? str_replace(',', '/', $file->scope) : '<em>' . $speak->all . '</em>'; ?></td>
     </tr>
   </tbody>
 </table>
-<form class="form-kill form-field" id="form-kill" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
-  <?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $id); ?>
+<form class="form-kill form-field" id="form-kill" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
+  <?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/field/repair/key:' . $id); ?>
 </form>

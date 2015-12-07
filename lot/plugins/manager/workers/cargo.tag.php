@@ -1,75 +1,47 @@
-<form class="form-repair form-tag" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
-  <?php $id = array(); echo $messages; ?>
-  <?php echo Form::hidden('token', $token); ?>
-  <table class="table-bordered table-full-width">
-    <thead>
-      <tr>
-        <th class="text-right" style="width:3em;"><?php echo $speak->id; ?></th>
-        <th><?php echo $speak->name; ?></th>
-        <th><?php echo $speak->slug; ?></th>
-        <th><?php echo $speak->description; ?></th>
-      </tr>
-    </thead>
-    <tbody>
-      <?php foreach($files as $tag): $id[] = $tag->id; ?>
-      <tr>
-        <td class="text-right">
-        <?php echo Form::hidden('id[]', $tag->id); ?>
-        <span><?php echo $tag->id; ?></span>
-        </td>
-        <td>
-        <?php echo Form::text('name[]', $tag->name, null, array(
-            'class' => 'input-block',
-            'readonly' => ! Guardian::happy(1) ? true : null
-        )); ?>
-        </td>
-        <td>
-        <?php echo Form::text('slug[]', $tag->slug, null, array(
-            'class' => 'input-block',
-            'readonly' => ! Guardian::happy(1) ? true : null
-        )); ?>
-        </td>
-        <td>
-        <?php echo Form::text('description[]', Converter::toText($tag->description), null, array(
-            'class' => 'input-block',
-            'readonly' => ! Guardian::happy(1) ? true : null
-        )); ?>
-        </td>
-      </tr>
-      <?php endforeach; ?>
-      <tr>
-        <td class="text-right">
-        <?php echo Form::text('id[]', max($id) + 1, null, array(
-            'class' => array(
-                'input-block',
-                'na'
-            ),
-            'autocomplete' => 'off'
-        )); ?>
-        </td>
-        <td>
-        <?php echo Form::text('name[]', Guardian::wayback('name.' . (max($id) + 1)), null, array(
-            'class' => array(
-                'input-block',
-                'ignite'
-            )
-        )); ?>
-        </td>
-        <td>
-        <?php echo Form::text('slug[]', Guardian::wayback('slug.' . (max($id) + 1)), null, array(
-            'class' => 'input-block'
-        )); ?>
-        </td>
-        <td>
-        <?php echo Form::text('description[]', Guardian::wayback('description.' . (max($id) + 1)), null, array(
-            'class' => 'input-block'
-        )); ?>
-        </td>
-      </tr>
-      <tr class="row-more-less" data-min="<?php echo max($id) + 1; ?>" data-max="9999">
-        <td colspan="4"><?php echo Jot::btn('default.small:plus-circle', $speak->more, '#row:more', array('class' => 'row-more')); ?> <?php echo Jot::btn('default.small:minus-circle', $speak->less, '#row:less', array('class' => 'row-less')); ?></td>
-      </tr>
-    </tbody>
-  </table>
-  <p><?php echo Jot::button('action', $speak->update); ?></p>
-</form>
+<?php $hooks = array($page, $segment); ?>
+<div class="main-action-group">
+  <?php Weapon::fire('main_action_before', $hooks); ?>
+  <?php echo Jot::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->tag), $config->manager->slug . '/tag/ignite'); ?>
+  <?php Weapon::fire('main_action_after', $hooks); ?>
+</div>
+<?php echo $messages; ?>
+<?php $files_all = Get::state_tag(null, array()); ?>
+<?php ksort($files_all); if($files): ?>
+<table class="table-bordered table-full-width">
+  <thead>
+    <tr>
+      <th class="th-collapse"><?php echo $speak->id; ?></th>
+      <th><?php echo $speak->name; ?></th>
+      <th><?php echo $speak->slug; ?></th>
+      <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php foreach(Mecha::O($files_all) as $key => $value): ?>
+    <tr>
+      <td class="text-right"><?php echo $key; ?></td>
+      <td><?php echo $value->name; ?></td>
+      <td><code><?php echo $value->slug; ?></code></td>
+      <?php $files_a = (array) $files; ?>
+      <?php if(isset($files_a[$key])): ?>
+      <td class="td-icon">
+      <?php echo Jot::a('construct', $config->manager->slug . '/tag/repair/id:' . $key, Jot::icon('pencil'), array(
+          'title' => $speak->edit
+      )); ?>
+      </td>
+      <td class="td-icon">
+      <?php echo Jot::a('destruct', $config->manager->slug . '/tag/kill/id:' . $key, Jot::icon('times'), array(
+          'title' => $speak->delete
+      )); ?>
+      </td>
+      <?php else: ?>
+      <td class="td-icon"><?php echo Jot::icon('pencil'); ?></td>
+      <td class="td-icon"><?php echo Jot::icon('times'); ?></td>
+      <?php endif; ?>
+    </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
+<?php else: ?>
+<p><?php echo Config::speak('notify_empty', strtolower($speak->tags)); ?></p>
+<?php endif; ?>

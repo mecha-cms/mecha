@@ -333,11 +333,7 @@ class Get extends Base {
         $tag = Filter::apply('state:tag', Converter::strEval($tag));
         // Filter output(s) by `id`
         if( ! is_null($id)) {
-            foreach($tag as $k => $v) {
-                if($v['id'] === $id) {
-                    return $tag[$k];
-                }
-            }
+            return isset($tag[$id]) ? $tag[$id] : $fallback;
         }
         // No filter
         return $tag;
@@ -359,16 +355,18 @@ class Get extends Base {
      */
 
     public static function tags($order = 'ASC', $sorter = 'name', $scope = null) {
-        $tags = Mecha::eat(self::state_tag(null, array(), true, $scope))->order($order, $sorter)->vomit();
+        $tags = self::state_tag(null, array(), true, $scope);
+        $results = array();
         foreach($tags as $k => $v) {
-            $tags[$k] = (object) array(
-                'id' => Filter::colon('tag:id', $v['id'], $tags),
+            $results[] = (object) array(
+                'id' => Filter::colon('tag:id', $k, $tags),
                 'name' => Filter::colon('tag:name', $v['name'], $tags),
                 'slug' => Filter::colon('tag:slug', $v['slug'], $tags),
                 'description' => Filter::colon('tag:description', $v['description'], $tags)
             );
         }
-        return $tags;
+        unset($tags);
+        return Mecha::eat($results)->order($order, $sorter)->vomit();
     }
 
     /**
@@ -386,25 +384,25 @@ class Get extends Base {
      */
 
     public static function tag($filter, $output = null, $fallback = false, $scope = null) {
-        $tags = self::tags('ASC', 'name', null);
+        $tags = self::tags('ASC', 'name', $scope);
         // alternate 2: `Get::tag('id:2', 'slug', false)`
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
             foreach($tags as $k => $v) {
                 $value = Converter::strEval($value);
-                if(isset($tags[$k]->{$key}) && $tags[$k]->{$key} === $value) {
-                    return is_null($output) ? $tags[$k] : (isset($tags[$k]->{$output}) ? $tags[$k]->{$output} : $fallback);
+                if(isset($v->{$key}) && $v->{$key} === $value) {
+                    return is_null($output) ? $v : (isset($v->{$output}) ? $v->{$output} : $fallback);
                 }
             }
         // alternate 1: `Get::tag(2, 'slug', false)
         } else {
             foreach($tags as $k => $v) {
                 if(
-                    (is_numeric($filter) && (int) $filter === (int) $tags[$k]->id) || // by ID
-                    (is_string($filter) && (string) $filter === (string) $tags[$k]->slug) || // by slug
-                    (is_string($filter) && (string) $filter === (string) $tags[$k]->name) // by name
+                    (is_numeric($filter) && (int) $filter === (int) $v->id) || // by ID
+                    (is_string($filter) && (string) $filter === (string) $v->slug) || // by slug
+                    (is_string($filter) && (string) $filter === (string) $v->name) // by name
                 ) {
-                    return is_null($output) ? $tags[$k] : (isset($tags[$k]->{$output}) ? $tags[$k]->{$output} : $fallback);
+                    return is_null($output) ? $v : (isset($v->{$output}) ? $v->{$output} : $fallback);
                 }
             }
         }

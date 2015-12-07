@@ -32,7 +32,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         Shield::abort();
     }
     $fields = Get::state_field(null, array(), false);
-    if( ! $key) {
+    if($key === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>
 (function($) {
@@ -55,14 +55,13 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             Shield::abort(); // Field not found!
         }
         $data = $fields[$key];
-        $data['key_raw'] = $data['key'] = $key;
+        $data['key'] = $key;
         $title = $speak->editing . ': ' . $data['title'] . $config->title_separator . $config->manager->title;
     }
     foreach($data as $k => $v) {
         $data[$k . '_raw'] = $v;
     }
     $G = array('data' => $data);
-    $G['data']['key'] = $key;
     Config::set(array(
         'page_title' => $title,
         'cargo' => 'repair.field.php'
@@ -78,9 +77,9 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             $request['key'] = $request['title'];
         }
         $k = Text::parse($request['key'], '->array_key', true);
-        if( ! $key) {
+        if($key === false) {
             if(isset($fields[$k])) {
-                Notify::error(Config::speak('notify_exist', '<code>' . $k . '</code>'));
+                Notify::error(Config::speak('notify_error_key_exist', $k));
             }
         } else {
             unset($fields[$key]);
@@ -104,8 +103,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         if( ! Notify::errors()) {
             ksort($fields);
             File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
-            Notify::success(Config::speak('notify_success_' . ( ! $key ? 'created' : 'updated'), $request['title']));
-            Weapon::fire(array('on_field_update', 'on_field_' . ( ! $key ? 'construct' : 'repair')), array($G, $P));
+            Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), $request['title']));
+            Weapon::fire(array('on_field_update', 'on_field_' . ($key === false ? 'construct' : 'repair')), array($G, $P));
             Guardian::kick($key !== $k ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
         }
     }

@@ -4,13 +4,13 @@ $fields = Get::state_field(null, array(), true, $segment);
 
 if( ! empty($fields)) {
     $html = "";
-    $field = Guardian::wayback('fields', Mecha::A($page->fields));
+    $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
     foreach($fields as $key => $value) {
         if(isset($field[$key]['type'])) {
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
         $type = $value['type'][0];
-        if(strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
+        if( ! isset($value['scope']) || strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
             $description = isset($value['description']) && trim($value['description']) !== "" ? ' ' . Jot::info($value['description']) : "";
             $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);

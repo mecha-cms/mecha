@@ -1,5 +1,5 @@
 <?php echo $messages; ?>
-<form class="form-<?php echo $id ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $id ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?> form-field" id="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); $page = $file; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'title.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'key.php'; ?>
@@ -11,7 +11,7 @@
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
-      <?php if($id): ?>
+      <?php if($id !== false): ?>
       <?php echo Jot::button('action', $speak->update); ?>
       <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/field/kill/key:' . $id); ?>
       <?php else: ?>
@@ -22,7 +22,7 @@
 </form>
 <script>
 (function(w, d) {
-    var form = d.getElementById('form-<?php echo $id ? 'repair' : 'ignite'; ?>'),
+    var form = d.getElementById('form-<?php echo $id !== false ? 'repair' : 'ignite'; ?>'),
         type = form.type,
         value = form.value,
         placeholder = form.placeholder,

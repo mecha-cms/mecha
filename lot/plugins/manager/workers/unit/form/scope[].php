@@ -5,7 +5,7 @@
 
   $cache = Guardian::wayback('scope', isset($page->scope_raw) ? $page->scope_raw : $segment);
   $cache = ',' . Request::get('scope', is_array($cache) ? implode(',', $cache) : $cache) . ',';
-  $scopes = array_merge(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), glob(RESPONSE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR));
+  $scopes = glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
   sort($scopes);
   foreach($scopes as $scope) {
       $scope = File::B($scope);
