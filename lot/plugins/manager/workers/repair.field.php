@@ -3,8 +3,24 @@
   <?php echo Form::hidden('token', $token); $page = $file; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'title.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'key.php'; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'type.php'; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'field' . DS . 'scope[].php'; ?>
+  <?php
+
+  $types = array(
+      't' => $speak->text,
+      's' => $speak->summary,
+      'b' => $speak->boolean,
+      'o' => $speak->option,
+      'f' => $speak->file,
+      'c' => $speak->composer,
+      'e' => $speak->editor
+  );
+
+  ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'type.php'; ?>
+  <?php $scopes = Mecha::walk(array_merge(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), glob(RESPONSE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR)), function($v) {
+      return File::B($v);
+  }); ?>
+  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'scope[].php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'placeholder.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'value.textarea.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'description.text.php'; ?>

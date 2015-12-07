@@ -10,11 +10,9 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
     $posts = false;
     $offset = (int) $offset;
     if($files = Mecha::eat(call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive'))->chunk($offset, $config->manager->per_page)->vomit()) {
-        $posts = array();
-        foreach($files as $file) {
-            $posts[] = call_user_func('Get::' . $segment . 'Header', $file);
-        }
-        unset($files);
+        $posts = Mecha::walk($files, function($v) use($segment) {
+            return call_user_func('Get::' . $segment . 'Header', $v);
+        });
     } else {
         if($offset !== 1) Shield::abort();
     }

@@ -164,13 +164,12 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $info_path = array();
-        $is_folder_or_file = count($deletes) === 1 && is_dir(ASSET . DS . $deletes[0]) ? 'folder' : 'file';
-        foreach($deletes as $file_to_delete) {
-            $_path = ASSET . DS . $file_to_delete;
-            $info_path[] = $_path;
+        $info_path = Mecha::walk($deletes, function($v) {
+            $_path = ASSET . DS . $v;
             File::open($_path)->delete();
-        }
+            return $_path;
+        });
+        $is_folder_or_file = count($deletes) === 1 && is_dir(ASSET . DS . $deletes[0]) ? 'folder' : 'file';
         $P = array('data' => array('files' => $info_path));
         Notify::success(Config::speak('notify_' . $is_folder_or_file . '_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire(array('on_asset_update', 'on_asset_destruct'), array($P, $P));
@@ -197,10 +196,9 @@ Route::accept($config->manager->slug . '/asset/do', function($path = "") use($co
             Notify::error($speak->notify_error_no_files_selected);
             Guardian::kick($config->manager->slug . '/asset/1');
         }
-        $files = array();
-        foreach($request['selected'] as $file) {
-            $files[] = str_replace('%2F', '/', Text::parse($file, '->encoded_url'));
-        }
+        $files = Mecha::walk($request['selected'], function($v) {
+            return str_replace('%2F', '/', Text::parse($v, '->encoded_url'));
+        });
         Guardian::kick($config->manager->slug . '/asset/' . $request['action'] . '/files:' . implode(';', $files));
     }
 });

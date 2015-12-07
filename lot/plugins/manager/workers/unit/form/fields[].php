@@ -6,7 +6,7 @@ if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
     foreach($fields as $key => $value) {
-        if(isset($field[$key]['type'])) {
+        if(isset($field[$key]['type'])) { // `POST` request
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
         $type = $value['type'][0];
@@ -15,13 +15,7 @@ if( ! empty($fields)) {
             $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
             if($type === 'h') {
-                $html .= '<label class="grid-group grid-group-hidden">';
-                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
-                $html .= '<span class="grid span-4 form-static">';
-                $html .= '<span>' . (isset($field[$key]) ? $field[$key] : $value['value']) . '</span>';
-                $html .= Form::hidden('fields[' . $key . '][value]', Converter::toText(isset($field[$key]) ? $field[$key] : $value['value']));
-                $html .= '</span>';
-                $html .= '</label>';
+                $html .= Form::hidden('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value']);
             } else if($type === 't') {
                 $html .= '<label class="grid-group grid-group-text">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
@@ -35,7 +29,7 @@ if( ! empty($fields)) {
                 $html .= '<div class="grid-group grid-group-boolean">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
-                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : '1', isset($field[$key]) && ! empty($field[$key]), $value['title']) . $description;
+                $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : 1, isset($field[$key]) && ! empty($field[$key]), $value['title']) . $description;
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type === 'o') {
@@ -43,10 +37,10 @@ if( ! empty($fields)) {
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
                 $select = isset($field[$key]) ? $field[$key] : "";
-                if(isset($value['placeholder']) && ! is_array($value['value'])) {
-                    $value['value'] = S . $value['placeholder'] . "\n" . $value['value'];
-                }
                 $options = Converter::toArray($value['value'], S, '  ');
+                if(isset($value['placeholder'])) {
+                    $options = array("" => $value['placeholder']) + $options;
+                }
                 $html .= Form::select('fields[' . $key . '][value]', $options, $select, array(
                     'class' => 'select-block'
                 ));
@@ -78,8 +72,7 @@ if( ! empty($fields)) {
                         'textarea-block',
                         'MTE',
                         'code'
-                    ),
-                    'data-MTE-config' => '{"toolbar":true,"shortcut":true}'
+                    )
                 ));
                 $html .= '</span>';
                 $html .= '</label>';

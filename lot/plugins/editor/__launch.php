@@ -26,7 +26,7 @@ Weapon::add('shell_after', function() use($editor_config) {
 // Inject editor's JavaScript
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak) {
     echo '<script>(function($) {
-    $(\'.MTE[name="content"], .MTE[name="message"]\').attr(\'data-MTE-config\', \'{"toolbar":true,"shortcut":true}\');
+    $(\'.MTE\').attr(\'data-MTE-config\', \'{"toolbar":true,"shortcut":true}\');
 })(window.Zepto || window.jQuery);</script>';
     $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
     $editor = Config::get('MTE', 'HTE');

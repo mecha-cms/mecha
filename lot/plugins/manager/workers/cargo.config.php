@@ -223,13 +223,16 @@
   </fieldset>
   <fieldset>
     <legend><?php echo $speak->default; ?></legend>
-    <?php foreach(array('article', 'page') as $page): ?>
+    <?php $pages = Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), function($v) {
+        return File::B($v);
+    }); ?>
+    <?php foreach($pages as $page): ?>
     <fieldset>
       <legend><?php $title = Config::speak($page); echo $title; ?></legend>
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
         <span class="grid span-4">
-        <?php echo Form::text('defaults[' . $page . '_title]', Guardian::wayback('defaults.' . $page . '_title', Config::get('defaults.' . $page . '_title')), null, array(
+        <?php echo Form::text('defaults[' . $page . '_title]', Guardian::wayback('defaults.' . $page . '_title', Config::get('defaults.' . $page . '_title', "")), null, array(
             'class' => 'input-block'
         )); ?>
         </span>
@@ -237,7 +240,7 @@
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->content; ?></span>
         <span class="grid span-4">
-        <?php echo Form::textarea('defaults[' . $page . '_content]', Guardian::wayback('defaults.' . $page . '_content', Config::get('defaults.' . $page . '_content')), null, array(
+        <?php echo Form::textarea('defaults[' . $page . '_content]', Guardian::wayback('defaults.' . $page . '_content', Config::get('defaults.' . $page . '_content', "")), null, array(
             'class' => array(
                 'textarea-block',
                 'code'
@@ -248,7 +251,7 @@
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->manager->title_css_custom; ?></span>
         <span class="grid span-4">
-        <?php echo Form::textarea('defaults[' . $page . '_css]', Guardian::wayback('defaults.' . $page . '_css', Config::get('defaults.' . $page . '_css')), null, array(
+        <?php echo Form::textarea('defaults[' . $page . '_css]', Guardian::wayback('defaults.' . $page . '_css', Config::get('defaults.' . $page . '_css', "")), null, array(
             'class' => array(
                 'textarea-block',
                 'code'
@@ -259,7 +262,7 @@
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->manager->title_js_custom; ?></span>
         <span class="grid span-4">
-        <?php echo Form::textarea('defaults[' . $page . '_js]', Guardian::wayback('defaults.' . $page . '_js', Config::get('defaults.' . $page . '_js')), null, array(
+        <?php echo Form::textarea('defaults[' . $page . '_js]', Guardian::wayback('defaults.' . $page . '_js', Config::get('defaults.' . $page . '_js', "")), null, array(
             'class' => array(
                 'textarea-block',
                 'code'

@@ -3,6 +3,9 @@
   <?php echo Form::hidden('token', $token); $page = $file; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'name.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'tag' . DS . 'slug.php'; ?>
+  <?php $scopes = Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), function($v) {
+      return File::B($v);
+  }); ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'scope[].php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'description.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'id.php'; ?>

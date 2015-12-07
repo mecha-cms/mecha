@@ -235,11 +235,10 @@ class Widget {
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-recent widget-recent-response" id="widget-recent-response-' . $id . '">' . NL;
         if($responses = call_user_func('Get::' . $r . 's')) {
-            $responses_id = array();
-            foreach($responses as $response) {
-                $parts = explode('_', File::B($response));
-                $responses_id[] = $parts[1];
-            }
+            $responses_id = Mecha::walk($responses, function($v) {
+                $parts = explode('_', File::B($v));
+                return $parts[1];
+            });
             rsort($responses_id);
             $html .= $T1 . '<ul class="recent-responses">' . NL;
             for($i = 0, $count = count($responses_id); $i < $total; ++$i) {

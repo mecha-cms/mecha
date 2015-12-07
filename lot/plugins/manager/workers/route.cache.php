@@ -93,12 +93,11 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
-        $info_path = array();
-        foreach($deletes as $file_to_delete) {
-            $_path = CACHE . DS . $file_to_delete;
-            $info_path[] = $_path;
+        $info_path = Mecha::walk($deletes, function($v) {
+            $_path = CACHE . DS . $v;
             File::open($_path)->delete();
-        }
+            return $_path;
+        });
         $P = array('data' => array('files' => $info_path));
         Notify::success(Config::speak('notify_file_deleted', '<code>' . implode('</code>, <code>', $deletes) . '</code>'));
         Weapon::fire(array('on_cache_update', 'on_cache_destruct'), array($P, $P));
@@ -125,10 +124,9 @@ Route::accept($config->manager->slug . '/cache/do', function() use($config, $spe
             Notify::error($speak->notify_error_no_files_selected);
             Guardian::kick($config->manager->slug . '/cache/1');
         }
-        $files = array();
-        foreach($request['selected'] as $file) {
-            $files[] = str_replace('%2F', '/', Text::parse($file, '->encoded_url'));
-        }
+        $files = Mecha::walk($request['selected'], function($v) {
+            return str_replace('%2F', '/', Text::parse($v, '->encoded_url'));
+        });
         Guardian::kick($config->manager->slug . '/cache/' . $request['action'] . '/files:' . implode(';', $files));
     }
 });

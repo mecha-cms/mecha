@@ -13,17 +13,15 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
     $offset = (int) $offset;
     File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
     if($files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,hold')) {
-        $responses = array();
-        $responses_id = array();
-        foreach($files as $file) {
-            $parts = explode('_', File::B($file));
-            $responses_id[] = $parts[1];
-        }
+        $responses_id = Mecha::walk($files, function($v) {
+            $parts = explode('_', File::B($v));
+            return $parts[1];
+        });
         rsort($responses_id);
-        foreach(Mecha::eat($responses_id)->chunk($offset, $config->manager->per_page)->vomit() as $v) {
-            $responses[] = call_user_func('Get::' . $segment, $v);
-        }
-        unset($responses_id, $files);
+        $responses_id = Mecha::eat($responses_id)->chunk($offset, $config->manager->per_page)->vomit();
+        $responses = Mecha::walk($responses_id, function($v) use($segment) {
+            return call_user_func('Get::' . $segment, $v);
+        });
     } else {
         $responses = false;
     }

@@ -90,7 +90,14 @@ class Mecha extends Base {
     }
 
     // Walk through the array
-    public static function walk($array) {
+    public static function walk($array, $fn = null) {
+        if(is_callable($fn)) {
+            foreach($array as $k => &$v) {
+                $v = call_user_func($fn, $v, $k);
+            }
+            unset($v);
+            return $array;
+        }
         return self::eat($array);
     }
 
