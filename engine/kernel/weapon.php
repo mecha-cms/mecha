@@ -118,7 +118,7 @@ class Weapon extends Base {
      *  Parameter | Type   | Description
      *  --------- | ------ | ----------------------------------------
      *  $name     | string | Hook name
-     *  $stack    | float  | Hook function priority
+     *  $stack    | float  | Hook function name or priority
      *  --------- | ------ | ----------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -127,12 +127,17 @@ class Weapon extends Base {
     public static function eject($name = null, $stack = null) {
         if( ! is_array($name)) {
             $c = get_called_class();
-            if( ! is_null($name)) {
+            if( ! is_null($name) && isset(self::$armaments[$c][$name])) {
                 self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
-                if( ! isset(self::$armaments[$c][$name])) return;
                 if( ! is_null($stack)) {
                     for($i = 0, $count = count(self::$armaments[$c][$name]); $i < $count; ++$i) {
-                        if(self::$armaments[$c][$name][$i]['stack'] === (float) $stack) {
+                        $s = self::$armaments[$c][$name][$i];
+                        if(
+                            // eject weapon by function stack
+                            is_numeric($stack) && $s['stack'] === (float) $stack ||
+                            // eject weapon by function name
+                            $s['fn'] === $stack
+                        ) {
                             unset(self::$armaments[$c][$name][$i]);
                         }
                     }
