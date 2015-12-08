@@ -6,13 +6,13 @@
   <?php
 
   $types = array(
-      't' => $speak->text,
-      's' => $speak->summary,
-      'b' => $speak->boolean,
-      'o' => $speak->option,
-      'f' => $speak->file,
-      'c' => $speak->composer,
-      'e' => $speak->editor
+      'text' => $speak->text,
+      'summary' => $speak->summary,
+      'boolean' => $speak->boolean,
+      'option' => $speak->option,
+      'file' => $speak->file,
+      'composer' => $speak->composer,
+      'editor' => $speak->editor
   );
 
   ?>

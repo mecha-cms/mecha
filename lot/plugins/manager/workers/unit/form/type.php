@@ -4,7 +4,7 @@
   <?php
 
   $cache = Request::get('type', Guardian::wayback('type', $page->type_raw));
-  echo Form::select('type', $types, $cache[0]);
+  echo Form::select('type', $types, $cache);
 
   ?>
   </span>

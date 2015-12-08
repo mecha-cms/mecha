@@ -1,13 +1,16 @@
 <?php
 
 
+// Get tag(s) ...
+$tags = Get::state_tag(null, array(), false);
+
+
 /**
  * Tag Manager
  * -----------
  */
 
-Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
-    $tags = Get::state_tag(null, array(), false);
+Route::accept($config->manager->slug . '/tag', function() use($config, $speak, $tags) {
     Config::set(array(
         'page_title' => $speak->tags . $config->title_separator . $config->manager->title,
         'cargo' => 'cargo.tag.php'
@@ -24,8 +27,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak) {
  * --------------------
  */
 
-Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->slug . '/tag/repair/id:(:any)'), function($id = false) use($config, $speak) {
-    $tags = Get::state_tag(null, array(), false);
+Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->slug . '/tag/repair/id:(:any)'), function($id = false) use($config, $speak, $tags) {
     if($id === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>
@@ -43,6 +45,7 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
         );
         $title = Config::speak('manager.title_new_', $speak->tag) . $config->title_separator . $config->manager->title;
     } else {
+        $id = (int) $id;
         if( ! isset($tags[$id])) {
             Shield::abort(); // Field not found!
         }
@@ -101,8 +104,9 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
             ksort($tags);
             File::serialize($tags)->saveTo(STATE . DS . 'tag.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($id === false ? 'created' : 'updated'), $request['name']));
+            Session::set('recent_item_update', $rid);
             Weapon::fire(array('on_tag_update', 'on_tag_' . ($id === false ? 'construct' : 'repair')), array($G, $P));
-            Guardian::kick($id !== $rid ? $config->manager->slug . '/tag' : $config->manager->slug . '/field/repair/id:' . $id);
+            Guardian::kick($id !== $rid ? $config->manager->slug . '/tag' : $config->manager->slug . '/tag/repair/id:' . $id);
         }
     }
     Shield::lot(array(
@@ -118,11 +122,10 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
  * ----------
  */
 
-Route::accept($config->manager->slug . '/tag/kill/id:(:any)', function($id = false) use($config, $speak) {
+Route::accept($config->manager->slug . '/tag/kill/id:(:any)', function($id = false) use($config, $speak, $tags) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $tags = Get::state_tag(null, array(), false);
     if( ! isset($tags[$id])) {
         Shield::abort(); // Tag not found!
     }

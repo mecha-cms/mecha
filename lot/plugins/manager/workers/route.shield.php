@@ -84,7 +84,7 @@ Route::accept($config->manager->slug . '/shield/(:any)/ignite', function($folder
         if( ! Notify::errors()) {
             File::write($request['content'])->saveTo(SHIELD . DS . $folder . DS . $path);
             Notify::success(Config::speak('notify_file_created', '<code>' . File::B($path) . '</code>'));
-            Session::set('recent_file_update', File::B($path));
+            Session::set('recent_item_update', File::B($path));
             Weapon::fire(array('on_shield_update', 'on_shield_construct'), array($P, $P));
             Guardian::kick($config->manager->slug . '/shield/' . $folder);
         }

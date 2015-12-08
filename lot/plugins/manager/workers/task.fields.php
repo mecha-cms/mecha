@@ -12,7 +12,7 @@ foreach($field as $k => $v) {
     if( ! isset($v['value']) || $v['value'] === "") {
         unset($field[$k]);
     } else {
-        if( ! file_exists(SUBSTANCE . DS . $v['value']) && $v['type'][0] === 'f') {
+        if( ! file_exists(SUBSTANCE . DS . $v['value']) && ($v['type'] === 'file' || $v['type'] === 'f')) {
             unset($field[$k]);
         } else {
             $field[$k] = $v['value'];

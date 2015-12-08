@@ -38,7 +38,7 @@
             <?php if($files): ?>
             <?php foreach($files as $file): ?>
             <?php $url = File::url(str_replace($shield_path, "", $file->path)); ?>
-            <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
+            <tr<?php echo Session::get('recent_item_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
               <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></td>
               <td class="td-icon">
               <?php echo Jot::a('construct', $shield_url_repair . $url, Jot::icon('pencil'), array(

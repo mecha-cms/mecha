@@ -1,16 +1,18 @@
 <?php
 
 
+// Get field(s) ...
+$fields = Get::state_field(null, array(), false);
+
 /**
  * Field Manager
  * -------------
  */
 
-Route::accept($config->manager->slug . '/field', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/field', function() use($config, $speak, $fields) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $fields = Get::state_field(null, array(), false);
     Config::set(array(
         'page_title' => $speak->fields . $config->title_separator . $config->manager->title,
         'cargo' => 'cargo.field.php'
@@ -27,11 +29,10 @@ Route::accept($config->manager->slug . '/field', function() use($config, $speak)
  * ----------------------
  */
 
-Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak) {
+Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->slug . '/field/repair/key:(:any)'), function($key = false) use($config, $speak, $fields) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $fields = Get::state_field(null, array(), false);
     if($key === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>
@@ -104,6 +105,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
             ksort($fields);
             File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
             Notify::success(Config::speak('notify_success_' . ($key === false ? 'created' : 'updated'), $request['title']));
+            Session::set('recent_item_update', $k);
             Weapon::fire(array('on_field_update', 'on_field_' . ($key === false ? 'construct' : 'repair')), array($G, $P));
             Guardian::kick($key !== $k ? $config->manager->slug . '/field' : $config->manager->slug . '/field/repair/key:' . $key);
         }
@@ -121,11 +123,10 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
  * ------------
  */
 
-Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key = false) use($config, $speak) {
+Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key = false) use($config, $speak, $fields) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $fields = Get::state_field(null, array(), false);
     if( ! isset($fields[$key])) {
         Shield::abort(); // Field not found!
     }

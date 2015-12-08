@@ -9,14 +9,14 @@ if( ! empty($fields)) {
         if(isset($field[$key]['type'])) { // `POST` request
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
         }
-        $type = $value['type'][0];
+        $type = $value['type'];
         if( ! isset($value['scope']) || strpos(',' . $value['scope'] . ',', ',' . $segment . ',') !== false) {
             $description = isset($value['description']) && trim($value['description']) !== "" ? ' ' . Jot::info($value['description']) : "";
             $title = $value['title'] . $description;
             $html .= Form::hidden('fields[' . $key . '][type]', $type);
-            if($type === 'h') {
+            if($type === 'hidden' || $type === 'h') {
                 $html .= Form::hidden('fields[' . $key . '][value]', isset($field[$key]) ? $field[$key] : $value['value']);
-            } else if($type === 't') {
+            } else if($type === 'text' || $type === 't') {
                 $html .= '<label class="grid-group grid-group-text">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -25,14 +25,14 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else if($type === 'b') {
+            } else if($type === 'boolean' || $type === 'b') {
                 $html .= '<div class="grid-group grid-group-boolean">';
                 $html .= '<span class="grid span-2"></span>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::checkbox('fields[' . $key . '][value]', ! empty($value['value']) ? $value['value'] : 1, isset($field[$key]) && ! empty($field[$key]), $value['title']) . $description;
                 $html .= '</span>';
                 $html .= '</div>';
-            } else if($type === 'o') {
+            } else if($type === 'option' || $type === 'o') {
                 $html .= '<label class="grid-group grid-group-option">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -46,7 +46,7 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else if($type === 'f') {
+            } else if($type === 'file' || $type === 'f') {
                 $v = isset($value['value']) && $value['value'] !== "" ? $value['value'] : false;
                 $vv = isset($field[$key]) && $field[$key] !== "" ? File::E($field[$key]) . DS . File::path($field[$key]) : false;
                 $has_file = $vv !== false && file_exists(SUBSTANCE . DS . $vv) && is_file(SUBSTANCE . DS . $vv);
@@ -63,7 +63,7 @@ if( ! empty($fields)) {
                 }
                 $html .= '</span>';
                 $html .= '</div>';
-            } else if($type === 'c') {
+            } else if($type === 'composer' || $type === 'c') {
                 $html .= '<label class="grid-group grid-group-composer">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -76,7 +76,7 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else if($type === 'e') {
+            } else if($type === 'editor' || $type === 'e') {
                 $html .= '<label class="grid-group grid-group-editor">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';
@@ -88,7 +88,7 @@ if( ! empty($fields)) {
                 ));
                 $html .= '</span>';
                 $html .= '</label>';
-            } else { // if($type === 's') {
+            } else { // if($type === 'summary' || $type === 's') {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
                 $html .= '<span class="grid span-4">';

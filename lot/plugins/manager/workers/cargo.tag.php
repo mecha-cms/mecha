@@ -18,7 +18,7 @@
   </thead>
   <tbody>
     <?php foreach(Mecha::O($files_all) as $key => $value): ?>
-    <tr>
+    <tr<?php echo Session::get('recent_item_update') === $key ? ' class="active"' : ""; ?>>
       <td class="text-right"><?php echo $key; ?></td>
       <td><?php echo $value->name; ?></td>
       <td><code><?php echo $value->slug; ?></code></td>

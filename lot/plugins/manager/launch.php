@@ -99,7 +99,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) 
 }, 1);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config) {
-    Session::kill('recent_file_update');
+    Session::kill('recent_item_update');
     $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
     echo Asset::javascript(array(
         $path . 'ajax.js',

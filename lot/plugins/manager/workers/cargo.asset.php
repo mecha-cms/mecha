@@ -47,7 +47,7 @@
           <?php if($files): ?>
           <?php foreach($files as $file): ?>
           <?php $url = File::url(str_replace($asset_path, "", $file->path)); ?>
-          <tr<?php echo Session::get('recent_file_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
+          <tr<?php echo Session::get('recent_item_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
             <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
             <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
             <?php
