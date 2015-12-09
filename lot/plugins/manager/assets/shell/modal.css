@@ -1,4 +1,4 @@
-.modal {
+.modal-area {
   position:fixed !important;
   position:absolute;
   top:10%;
@@ -42,7 +42,7 @@
   height:2.923076923076923em;
 }
 
-.modal-content {
+.modal-body {
   margin:2.923076923076923em 0 3.8461538461538463em 0;
   position:absolute;
   top:0;
@@ -53,7 +53,7 @@
   overflow:auto;
 }
 
-.modal-content-inner {padding:1em}
+.modal-content {padding:1em}
 
 .modal-footer {
   margin:0;
@@ -97,7 +97,7 @@
 }
 
 @media (max-width:40.625em) {
-  .modal {
+  .modal-area {
     width:auto;
     height:auto;
     top:5%;
@@ -109,7 +109,7 @@
 }
 
 @media (max-height:37.5em) {
-  .modal {
+  .modal-area {
     top:5%;
     bottom:5%;
   }

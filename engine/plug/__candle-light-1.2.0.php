@@ -28,6 +28,25 @@ Weapon::add('shield_lot_before', function() {
             'moderation' => $config->comment_moderation
         );
     }
+    if($menu = Get::state_menu(null, false)) {
+        if( ! isset($menu['navigation'])) {
+            File::serialize(array('navigation' => $menu))->saveTo(STATE . DS . 'menu.txt', 0600);
+        }
+    }
+    if($tag = Get::state_tag(null, false)) {
+        if(isset($tag[0]['id'])) {
+            $tags = array();
+            foreach($tag as $t) {
+                $tags[$t['id']] = array(
+                    'name' => $t['name'],
+                    'slug' => $t['slug'],
+                    'description' => $t['description'],
+                    'scope' => 'article'
+                );
+            }
+            File::serialize($tags)->saveTo(STATE . DS . 'tag.txt', 0600);
+        }
+    }
     if(is_string($config->author)) {
         $config->author = (object) array(
             'name' => $config->author,

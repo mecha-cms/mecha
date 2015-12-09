@@ -2,15 +2,17 @@
  * Tab
  * ---
  *
- *    <div class="tab-button-area">
- *      <a class="tab-button active" href="#tab-content-1">Tab 1</a>
- *      <a class="tab-button" href="#tab-content-2">Tab 2</a>
- *      <a class="tab-button" href="#tab-content-3">Tab 3</a>
- *    </div>
- *    <div class="tab-content-area">
- *      <div class="tab-content" id="tab-content-1">Test content 1.</div>
- *      <div class="tab-content hidden" id="tab-content-2">Test content 2.</div>
- *      <div class="tab-content hidden" id="tab-content-3">Test content 3.</div>
+ *    <div class="tab-area">
+ *      <div class="tab-button-area">
+ *        <a class="tab-button active" href="#tab-content-1">Tab 1</a>
+ *        <a class="tab-button" href="#tab-content-2">Tab 2</a>
+ *        <a class="tab-button" href="#tab-content-3">Tab 3</a>
+ *      </div>
+ *      <div class="tab-content-area">
+ *        <div class="tab-content" id="tab-content-1">Test content 1.</div>
+ *        <div class="tab-content hidden" id="tab-content-2">Test content 2.</div>
+ *        <div class="tab-content hidden" id="tab-content-3">Test content 3.</div>
+ *      </div>
  *    </div>
  *
  */
@@ -33,7 +35,7 @@
                 toggle = $(this).hasClass('toggle');
             $panel = hash !== "" ? $('#' + hash) : [];
             if (!$panel.length) {
-                $panel = $tab.parent().parent().find('.tab-content').eq($(this).index());
+                $panel = $tab.closest('.tab-area').find('.tab-content').eq($(this).index());
             }
             // NOTE: Force `addClass` for `.toggle` ...
             $(this).addClass('active').siblings().removeClass('active');

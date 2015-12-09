@@ -62,6 +62,9 @@ Route::accept(array($config->manager->slug . '/menu/ignite', $config->manager->s
         } else {
             unset($menus[$key]);
         }
+        if($k === "" || $k === '__') {
+            Notify::error(Config::speak('notify_error_empty_field', $speak->name));
+        }
         $menus[$k] = Converter::toArray($request['content'], S, '    ');
         $P = array('data' => $request);
         if( ! Notify::errors()) {

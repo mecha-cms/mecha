@@ -12,7 +12,7 @@ Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update'
         unset($request['token']); // Remove token from request array
         $results = array();
         foreach(explode("\n", $request['content']) as $path) {
-            $s = explode(' ', $path, 2);
+            $s = explode(' ~', $path, 2);
             if(trim($path) !== "" && trim($s[0]) !== "") {
                 $results[trim($s[0])] = isset($s[1]) && trim($s[1]) !== "" ? (float) trim($s[1]) : true;
             }

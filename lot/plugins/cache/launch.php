@@ -18,8 +18,8 @@ if($route_cache !== false) {
     Weapon::add('shield_before', function() use($config, $route_cache) {
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
-        $time = filemtime($cache);
-        if(file_exists($cache) && ($route_cache === true || time() - ($route_cache * 60 * 60) < $time)) {
+        $time = file_exists($cache) ? filemtime($cache) : false;
+        if($time !== false && ($route_cache === true || time() - ($route_cache * 60 * 60) < $time)) {
             $content = file_get_contents($cache);
             if(strpos($content, '<?xml ') === 0 || strpos($content, '</html>') !== false) {
                 $content .= '<!-- cached: ' . date('Y-m-d H:i:s', $time) . ' -->';

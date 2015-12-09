@@ -2,10 +2,10 @@
  * Modal
  * -----
  *
- *    <div class="modal" data-trigger="#my-button">
+ *    <div class="modal-area" data-trigger="#my-button">
  *      <h3 class="modal-header">Modal Title</h3>
- *      <div class="modal-content">
- *        <div class="modal-content-inner">
+ *      <div class="modal-body">
+ *        <div class="modal-content">
  *          <p>Test content.</p>
  *        </div>
  *      </div>
@@ -19,7 +19,7 @@
 (function($, base) {
 
     var $base = $(document.body),
-        $modal = $('.modal'),
+        $modal = $('.modal-area'),
         $close = $('.modal-close, .modal-close-x');
 
     if (!$modal.length) return;
