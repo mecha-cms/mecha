@@ -90,6 +90,7 @@ class Date extends Base {
             'unix' => (int) self::format($date, 'U'),
             'W3C' => self::format($date, 'c'),
             'GMT' => self::GMT($date, 'Y-m-d H:i:s'),
+            'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
             'year' => $year,
             'year_short' => $year_short,
             'month' => $month,

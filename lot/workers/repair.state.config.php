@@ -15,7 +15,8 @@ return array(
     ),
     'excerpt' => array(
         'length' => 300,
-        'tail' => '&hellip;',
+        'prefix' => "",
+        'suffix' => '&hellip;',
         'id' => 'more:%d'
     ),
     'html_parser' => 'HTML',

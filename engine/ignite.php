@@ -1,4 +1,4 @@
-<?php if( ! defined('ROOT')) die('Rejected!');
+<?php defined('ROOT') or die;
 
 
 /**
@@ -158,16 +158,16 @@ if($config->widget_include_js) {
  */
 
 foreach($plugins = Plugin::load() as $k => $v) {
-    $_root = PLUGIN . DS . $k . DS;
-    if( ! $language = File::exist($_root . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-        $language = $_root . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+    $root__ = PLUGIN . DS . $k . DS;
+    if( ! $language = File::exist($root__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+        $language = $root__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
     }
     if(file_exists($language)) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
     };
-    if($launch = File::exist($_root . 'launch.php')) {
-        if(strpos(File::B($_root), '__') === 0) {
+    if($launch = File::exist($root__ . 'launch.php')) {
+        if(strpos(File::B($root__), '__') === 0) {
             if(Guardian::happy() && $config->page_type === 'manager') {
                 include $launch; // backend
             }
@@ -175,7 +175,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
             include $launch; // frontend
         }
     }
-    if($launch = File::exist($_root . '__launch.php')) {
+    if($launch = File::exist($root__ . '__launch.php')) {
         if(Guardian::happy() && $config->page_type === 'manager') {
             include $launch; // backend
         }
