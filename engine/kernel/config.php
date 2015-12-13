@@ -74,6 +74,10 @@ class Config {
      *
      * -------------------------------------------------------------
      *
+     *    $bucket = Config::get(array('foo', 'bar', 'baz'));
+     *
+     * -------------------------------------------------------------
+     *
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *  Parameter | Type   | Description
      *  --------- | ------ | ---------------------------------------
@@ -87,6 +91,14 @@ class Config {
     public static function get($key = null, $fallback = false) {
         if(is_null($key)) {
             return Mecha::O(self::$bucket);
+        }
+        if(is_array($key)) {
+            $results = array();
+            foreach($key as $k => $v) {
+                $f = is_array($fallback) && array_key_exists($k, $fallback) ? $fallback[$k] : $fallback;
+                $results[$v] = self::get($v, $f);
+            }
+            return (object) $results;
         }
         if(is_string($key) && strpos($key, '.') !== false) {
             $output = Mecha::GVR(self::$bucket, $key, $fallback);
