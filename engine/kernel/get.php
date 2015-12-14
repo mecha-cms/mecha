@@ -790,7 +790,7 @@ class Get extends Base {
         // RULES: Do not do any tags looping, content parsing
         // and external file requesting if it has been marked as
         // the excluded field(s). For better performance.
-        $results = $results + Text::toPage(File::open($results['path'])->read(), isset($excludes['content']) ? false : 'content', $FP, array(
+        $results = $results + Text::toPage($results['path'], isset($excludes['content']) ? false : 'content', $FP, array(
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
@@ -1116,7 +1116,8 @@ class Get extends Base {
         $results = self::responseExtract($path, $FP);
         $results = $results + Text::toPage($path, false, $FP, array(
             'url' => '#',
-            'content_type' => $config->html_parser
+            'content_type' => $config->html_parser,
+            'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
@@ -1177,9 +1178,10 @@ class Get extends Base {
         }
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results = $results + Text::toPage(File::open($results['path'])->read(), 'message', $FP, array(
+        $results = $results + Text::toPage($results['path'], 'message', $FP, array(
             'url' => '#',
-            'content_type' => $config->html_parser
+            'content_type' => $config->html_parser,
+            'fields' => array()
         ), $results);
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {
