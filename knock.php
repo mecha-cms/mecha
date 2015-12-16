@@ -54,7 +54,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         mkdir(ROOT . DS . 'lot' . DS . 'responses' . DS . 'comment', 0766, true);
         mkdir(ROOT . DS . 'lot' . DS . 'scraps', 0766, true);
         chmod(ROOT . DS . 'lot' . DS . 'shields', 0777);
-        chmod(ROOT . DS . 'lot' . DS . 'states', 0766);
+        mkdir(ROOT . DS . 'lot' . DS . 'states', 0766, true);
         chmod(ROOT . DS . 'lot' . DS . 'workers', 0766);
         chmod(ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt', 0600);
         unlink(ROOT . DS . 'engine' . DS . 'plug' . DS . '__.php');
@@ -78,7 +78,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>Hi!</title>
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css" rel="stylesheet">
     <style>
 * {
   margin:0;

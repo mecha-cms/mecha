@@ -216,21 +216,21 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
  * ------------------------------
  */
 
-Filter::add('shortcode', function($content) use($config, $speak) {
+Filter::add('shortcode', function($content) {
     if(strpos($content, '{{') === false) return $content;
     foreach(Get::state_shortcode() as $key => $value) {
         $key = preg_quote($key, '#');
-        // %[a,b,c]: options ... accept `a`, `b`, or `c`
+        // %[a,b,c]: option(s) ... accept `a`, `b`, or `c`
         if(strpos($key, '%\\[') !== false) {
             $key = preg_replace_callback('#%\\\\\[(.*?)\\\\\]#', function($matches) {
                 return '(' . str_replace(array(',', '&\\#44;'), array('|', ','), $matches[1]) . ')';
             }, $key);
         }
-        // %s: accept any values without line breaks
-        // %m: accept any values with/without line breaks
-        // %i: accept integer numbers
-        // %f: accept float numbers
-        // %b: accept boolean values
+        // %s: accept any value(s) without line break(s)
+        // %m: accept any value(s) with/without line break(s)
+        // %i: accept integer number(s)
+        // %f: accept float number(s)
+        // %b: accept boolean value(s)
         $key = str_replace(
             array('%s', '%m', '%i', '%f', '%b'),
             array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b'),

@@ -58,7 +58,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
 </script>';
         }, 11);
     }
-    if($id && $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
+    if($id && $post = call_user_func('Get::' . $segment, $id, array('excerpt', 'tags'))) {
         $extension_o = '.' . File::E($post->path);
         if( ! Guardian::happy(1) && Guardian::get('author') !== $post->author) {
             Shield::abort();

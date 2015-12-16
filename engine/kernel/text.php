@@ -182,7 +182,7 @@ class Text extends Base {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
                 Mecha::extend($results, self::__doParseHeaders($buffer, $FP, $data));
-                unset($results['__']);
+                unset($results['__'], $results['___raw']);
             // By file content
             } else {
                 $text = str_replace("\r", "", $text);

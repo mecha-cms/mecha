@@ -31,7 +31,7 @@
           $shield_url = $config->manager->slug . '/shield/' . $folder;
           $shield_url_kill = $shield_url . '/kill/file:';
           $shield_url_repair = $shield_url . '/repair/file:';
-          $shield_path = SHIELD . DS . $config->shield . DS;
+          $shield_path = SHIELD . DS . $folder . DS;
     
           ?>
           <table class="table-bordered table-full-width">

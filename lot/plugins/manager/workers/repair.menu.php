@@ -2,7 +2,7 @@
 <form class="form-<?php echo $id === false ? 'ignite' : 'repair'; ?> form-menu" id="form-<?php echo $id === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <p>
-  <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content)), null, array(
+  <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content !== false ? $content : "")), null, array(
       'class' => array(
           'textarea-block',
           'textarea-expand',
@@ -12,7 +12,7 @@
   )); ?>
   </p>
   <p>
-    <?php echo Form::text('key', Request::get('key', Guardian::wayback('key', $id ? 'Menu::' . $id . '()' : "")), 'Menu::navigation()'); ?>
+    <?php echo Form::text('key', Request::get('key', Guardian::wayback('key', $id !== false ? 'Menu::' . $id . '()' : "")), 'Menu::navigation()'); ?>
     <?php if(strpos($config->url_path, '/repair/key:') === false): ?>
     <?php echo Jot::button('construct', $speak->create); ?>
     <?php else: ?>

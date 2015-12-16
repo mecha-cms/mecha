@@ -1,1 +1,0 @@
-a:1:{s:10:"navigation";a:3:{s:4:"Home";s:1:"/";s:4:"Feed";s:9:"/feed/rss";s:7:"Sitemap";s:8:"/sitemap";}}

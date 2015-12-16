@@ -89,7 +89,7 @@
       <?php echo Form::number('excerpt[length]', Guardian::wayback('excerpt.length', $config->excerpt->length)); ?>
       </span>
     </label>
-    <label class="grid-group">
+    <label class="grid-group hidden">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_prefix; ?></span>
       <span class="grid span-4">
       <?php echo Form::text('excerpt[prefix]', Guardian::wayback('excerpt.prefix', $config->excerpt->prefix)); ?>

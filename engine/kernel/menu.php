@@ -75,6 +75,7 @@ class Menu extends Base {
         $arguments = Mecha::extend($AD, $arguments);
         $type = $arguments[0];
         $arguments[0] = self::$menus[$c][$id];
+        if( ! is_array($arguments[0])) return "";
         Tree::$config['trunk'] = $type;
         Tree::$config['branch'] = $type;
         Tree::$config['twig'] = 'li';

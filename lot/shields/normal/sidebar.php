@@ -6,7 +6,7 @@
       'title' => false,
       'content' => Widget::search($speak->search . '&hellip;', '<i class="fa fa-search"></i>')
   )); ?>
-  <?php if($manager): ?>
+  <?php if($manager && Widget::exist('manager')): ?>
   <?php Shield::chunk('block.widget', array(
       'title' => $speak->widget->manager_menus,
       'content' => Widget::manager()

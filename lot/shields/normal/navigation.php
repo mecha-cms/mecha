@@ -1,3 +1,5 @@
+<?php if($menus = Menu::navigation()): ?>
 <nav class="blog-navigation menus">
-  <?php echo Menu::navigation(); ?>
+  <?php echo $menus; ?>
 </nav>
+<?php endif; ?>

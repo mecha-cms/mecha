@@ -29,7 +29,8 @@ Weapon::add('shield_lot_before', function() {
         );
     }
     if($menu = Get::state_menu(null, false)) {
-        if( ! isset($menu['navigation'])) {
+        if( ! isset($menu['navigation']) || $menu['navigation'] === false) {
+            unset($menu['navigation']);
             File::serialize(array('navigation' => $menu))->saveTo(STATE . DS . 'menu.txt', 0600);
         }
     }

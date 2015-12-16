@@ -1,7 +1,7 @@
 <aside class="blog-sidebar widgets">
 <?php
 
-if($manager) {
+if($manager && Widget::exist('manager')) {
     Shield::chunk('block.widget', array(
         'title' => $speak->widget->manager_menus,
         'content' => Widget::manager()
