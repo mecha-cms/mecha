@@ -790,7 +790,7 @@ class Get extends Base {
         // RULES: Do not do any tags looping, content parsing
         // and external file requesting if it has been marked as
         // the excluded field(s). For better performance.
-        $results = $results + Text::toPage($results['path'], isset($excludes['content']) ? false : 'content', $FP, array(
+        $results = $results + Text::toPage(file_get_contents($results['path']), isset($excludes['content']) ? false : 'content', $FP, array(
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
@@ -1178,10 +1178,11 @@ class Get extends Base {
         }
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results = $results + Text::toPage($results['path'], 'message', $FP, array(
+        $results = $results + Text::toPage(file_get_contents($results['path']), 'message', $FP, array(
             'url' => '#',
             'content_type' => $config->html_parser,
-            'fields' => array()
+            'fields' => array(),
+            'message' => ""
         ), $results);
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {
