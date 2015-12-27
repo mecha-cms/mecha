@@ -254,6 +254,8 @@ class Widget {
                         $html .= Asset::image($avatar, $attr);
                     } else if($avatar = File::exist(ASSET . DS . '__avatar' . DS . '60x60' . DS . md5($response->email) . '.png')) {
                         $html .= Asset::image($avatar, $attr);
+                    } else if($avatar = File::exist(ASSET . DS . '__avatar' . DS . md5($response->email) . '.png')) {
+                        $html .= Asset::image($avatar, $attr);
                     } else {
                         $html .= Asset::image($config->protocol . 'www.gravatar.com/avatar/' . md5($response->email) . '?s=' . $avatar_size . '&amp;d=' . urlencode($d), $attr);
                     }
@@ -269,7 +271,7 @@ class Widget {
                 $html .= $T3 . '<div class="recent-response-body">' . Converter::curt($response->message, $summary, $config->excerpt->suffix) . '</div>' . NL;
                 $html .= $T3 . '<div class="recent-response-footer">' . NL;
                 $html .= $T4 . '<span class="recent-response-time">' . NL;
-                $html .= $T5 . '<time datetime="' . $response->date->W3C . '">' . $response->date->FORMAT_3 . '</time> <a title="' . ($post ? trim(strip_tags($post->title)) : $speak->notify_error_not_found) . '" href="' . $response->permalink . '" rel="nofollow">#</a>' . NL;
+                $html .= $T5 . '<time datetime="' . $response->date->W3C . '">' . $response->date->FORMAT_3 . '</time> <a title="' . ($post ? Text::parse($post->title, '->text') : $speak->notify_error_not_found) . '" href="' . $response->permalink . '" rel="nofollow">#</a>' . NL;
                 $html .= $T4 . '</span>' . NL;
                 $html .= $T3 . '</div>' . NL;
                 $html .= $T2 . '</li>' . NL;
