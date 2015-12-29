@@ -148,7 +148,7 @@
       </form>
       <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
       <hr>
-      <?php echo Jot::finder($asset_url, 'q', array('path' => Text::parse($q_path, '->encoded_url'))); ?>
+      <?php echo Jot::finder($asset_url, 'q', array('path' => $q_path)); ?>
       <?php endif; ?>
     </div>
     <div class="tab-content hidden" id="tab-content-2">
