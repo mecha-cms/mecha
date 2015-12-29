@@ -122,11 +122,11 @@
  *
  * -------------------------------------------------------------------------
  *
- *    echo Package::take('file.zip')->getContent('file-1.txt');
+ *    echo Package::take('file.zip')->read('file-1.txt');
  *
  * -------------------------------------------------------------------------
  *
- *    var_dump(Package::take('file.zip')->getInfo());
+ *    var_dump(Package::take('file.zip')->inspect());
  *
  * -------------------------------------------------------------------------
  *
@@ -136,12 +136,14 @@ class Package extends Base {
 
     protected static $open = null;
     protected static $opens = null;
+    protected static $zip = null;
 
     public static function take($files) {
         if( ! extension_loaded('zip')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
         }
         self::$open = self::$opens = null;
+        self::$zip = new ZipArchive();
         if(is_array($files)) {
             self::$opens = array();
             $taken = false;
@@ -175,8 +177,7 @@ class Package extends Base {
      *
      */
 
-    public static function pack($destination, $bucket = false) {
-        $zip = new ZipArchive();
+    public static function pack($destination = null, $bucket = false) {
         if(is_dir(self::$open)) {
             $root = rtrim(self::$open, DS);
             $package = File::B(self::$open);
@@ -202,7 +203,7 @@ class Package extends Base {
         if($old = File::exist($destination)) {
             File::open($old)->delete();
         }
-        if( ! $zip->open($destination, ZIPARCHIVE::CREATE)) {
+        if( ! self::$zip->open($destination, ZIPARCHIVE::CREATE)) {
             return false;
         }
         if($bucket !== false) {
@@ -210,30 +211,30 @@ class Package extends Base {
                 $package = $bucket;
             }
             $dir = $package . DS;
-            $zip->addEmptyDir($package);
+            self::$zip->addEmptyDir($package);
         } else {
             $dir = "";
         }
         if(is_array(self::$opens)) {
             foreach(self::$opens as $key => $value) {
                 if(File::exist($key)) {
-                    $zip->addFile($key, $dir . $value);
+                    self::$zip->addFile($key, $dir . $value);
                 }
             }
-            $zip->close();
+            self::$zip->close();
         } else {
             if(is_dir(self::$open)) {
                 foreach(new RecursiveIteratorIterator(new RecursiveDirectoryIterator(self::$open, FilesystemIterator::SKIP_DOTS), RecursiveIteratorIterator::CHILD_FIRST) as $file) {
                     if(is_dir($file)) {
-                        $zip->addEmptyDir(str_replace(self::$open . DS, $dir, $file . DS));
+                        self::$zip->addEmptyDir(str_replace(self::$open . DS, $dir, $file . DS));
                     } else if(is_file($file)) {
-                        $zip->addFromString(str_replace(self::$open . DS, $dir, $file), file_get_contents($file));
+                        self::$zip->addFromString(str_replace(self::$open . DS, $dir, $file), file_get_contents($file));
                     }
                 }
             } else if(is_file(self::$open)) {
-                $zip->addFromString($dir . File::B(self::$open), file_get_contents(self::$open));
+                self::$zip->addFromString($dir . File::B(self::$open), file_get_contents(self::$open));
             }
-            $zip->close();
+            self::$zip->close();
         }
         self::$open = $destination;
         return new static;
@@ -255,7 +256,6 @@ class Package extends Base {
      */
 
     public static function extractTo($destination, $bucket = false) {
-        $zip = new ZipArchive();
         if(is_null($destination)) {
             $destination = File::D(self::$open);
         } else {
@@ -269,13 +269,13 @@ class Package extends Base {
             $bucket = File::path($bucket);
             mkdir($destination . DS . $bucket, 0777, true);
         }
-        if($zip->open(self::$open) === true) {
+        if(self::$zip->open(self::$open) === true) {
             if($bucket !== false) {
-                $zip->extractTo($destination . DS . $bucket);
+                self::$zip->extractTo($destination . DS . $bucket);
             } else {
-                $zip->extractTo($destination);
+                self::$zip->extractTo($destination);
             }
-            $zip->close();
+            self::$zip->close();
         }
         return new static;
     }
@@ -301,8 +301,7 @@ class Package extends Base {
      */
 
     public static function addFile($file, $destination = null) {
-        $zip = new ZipArchive();
-        if($zip->open(self::$open) === true) {
+        if(self::$zip->open(self::$open) === true) {
             // Handling for `Package::take('file.zip')->addFile('test.txt')`
             if(strpos($file, DS) === false) {
                 $file = File::D(self::$open) . DS . $file;
@@ -311,9 +310,9 @@ class Package extends Base {
                 if(is_null($destination)) {
                     $destination = File::B($file);
                 }
-                $zip->addFile($file, $destination);
+                self::$zip->addFile($file, $destination);
             }
-            $zip->close();
+            self::$zip->close();
         }
         return new static;
     }
@@ -354,12 +353,11 @@ class Package extends Base {
      */
 
     public static function deleteFile($file) {
-        $zip = new ZipArchive();
-        if($zip->open(self::$open) === true) {
-            if($zip->locateName($file) !== false) {
-                $zip->deleteName($file);
+        if(self::$zip->open(self::$open) === true) {
+            if(self::$zip->locateName($file) !== false) {
+                self::$zip->deleteName($file);
             }
-            $zip->close();
+            self::$zip->close();
         }
         return new static;
     }
@@ -400,17 +398,16 @@ class Package extends Base {
      */
 
     public static function deleteFolder($folder) {
-        $zip = new ZipArchive();
         $folder = rtrim(File::path($folder), DS);
-        if($zip->open(self::$open) === true) {
-            for($i = 0; $i < $zip->numFiles; ++$i) {
-                $info = $zip->statIndex($i);
+        if(self::$zip->open(self::$open) === true) {
+            for($i = 0; $i < self::$zip->numFiles; ++$i) {
+                $info = self::$zip->statIndex($i);
                 $b = rtrim(substr(File::path($info['name']), 0, strlen($folder)), DS);
                 if($b === $folder) {
-                    $zip->deleteIndex($i);
+                    self::$zip->deleteIndex($i);
                 }
             }
-            $zip->close();
+            self::$zip->close();
         }
     }
 
@@ -451,12 +448,11 @@ class Package extends Base {
      */
 
     public static function renameFile($old, $new = "") {
-        $zip = new ZipArchive();
-        if($zip->open(self::$open) === true) {
+        if(self::$zip->open(self::$open) === true) {
             $old = File::path($old);
             $root = File::D($old) !== "" ? File::D($old) . DS : "";
-            $zip->renameName($old, $root . File::B($new));
-            $zip->close();
+            self::$zip->renameName($old, $root . File::B($new));
+            self::$zip->close();
         }
         return new static;
     }
@@ -496,14 +492,12 @@ class Package extends Base {
      *
      */
 
-    public static function getContent($file) {
-        $zip = new ZipArchive();
-        $results = false;
-        if($zip->open(self::$open) === true) {
-            if($zip->locateName($file) !== false) {
-                $results = $zip->getFromName($file);
+    public static function read($file, $results = false) {
+        if(self::$zip->open(self::$open) === true) {
+            if(self::$zip->locateName($file) !== false) {
+                $results = self::$zip->getFromName($file);
             }
-            $zip->close();
+            self::$zip->close();
         }
         return $results;
     }
@@ -523,18 +517,17 @@ class Package extends Base {
      *
      */
 
-    public static function getInfo($key = null, $fallback = false) {
+    public static function inspect($key = null, $fallback = false) {
         $results = array();
-        $zip = new ZipArchive();
-        if($zip->open(self::$open) === true) {
+        if(self::$zip->open(self::$open) === true) {
             $results = array_merge(File::inspect(self::$open), array(
-                'status' => $zip->status,
-                'total' => $zip->numFiles
+                'status' => self::$zip->status,
+                'total' => self::$zip->numFiles
             ));
             for($i = 0; $i < $results['total']; ++$i) {
-                $results['files'][$i] = $zip->statIndex($i);
+                $results['files'][$i] = self::$zip->statIndex($i);
             }
-            $zip->close();
+            self::$zip->close();
         }
         if( ! is_null($key)) {
             return Mecha::GVR($results, $key, $fallback);

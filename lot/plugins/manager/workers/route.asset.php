@@ -35,8 +35,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
             if( ! Notify::errors()) {
                 File::pocket($d . DS . $folder);
                 Notify::success(Config::speak('notify_folder_created', '<code>' . $folder . '</code>'));
-                $fo = explode(DS, $folder);
-                Session::set('recent_item_update', $fo[0]);
+                Session::set('recent_item_update', explode(DS, $folder));
                 $P = array('data' => $request);
                 Weapon::fire(array('on_asset_update', 'on_asset_construct'), array($P, $P));
                 if(isset($request['redirect'])) {
@@ -52,7 +51,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         } else {
             if(isset($_FILES) && ! empty($_FILES)) {
                 File::upload($_FILES['file'], $d, function($name, $type, $size, $link) {
-                    Session::set('recent_item_update', $name);
+                    Session::set('recent_item_update', (array) $name);
                 });
                 $P = array('data' => $_FILES);
                 Weapon::fire(array('on_asset_update', 'on_asset_construct'), array($P, $P));
@@ -123,8 +122,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
                 }
                 File::open($file)->moveTo(ASSET . DS . $new);
                 Notify::success(Config::speak('notify_' . (is_dir(ASSET . DS . $old) ? 'folder' : 'file') . '_updated', '<code>' . File::B($old) . '</code>'));
-                $new = explode(DS, $new);
-                Session::set('recent_item_update', $new[0]);
+                Session::set('recent_item_update', explode(DS, $new));
                 Weapon::fire(array('on_asset_update', 'on_asset_repair'), array($P, $P));
                 Guardian::kick($config->manager->slug . '/asset/1' . str_replace('&', '&amp;', HTTP::query('path', $p)));
             }

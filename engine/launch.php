@@ -166,6 +166,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
     $offset = (int) $offset;
     $query = Text::parse($query, '->decoded_url');
     $keywords = Text::parse($query, '->slug');
+    $articles = array();
     if(Session::get('search.query') === $query) {
         $articles = Session::get('search.results');
     } else {

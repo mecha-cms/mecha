@@ -210,7 +210,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                     File::open($php_file)->renameTo($slug . '.php');
                 }
                 // Rename all response file(s) related to post if post date has been changed
-                if(((string) $date !== (string) $post->date->W3C) && $responses = cal_user_func('Get::' . $response . 's', 'DESC', 'post:' . Date::slug($id), 'txt,hold')) {
+                if(((string) $date !== (string) $post->date->W3C) && $responses = call_user_func('Get::' . $response . 's', 'DESC', 'post:' . $id, 'txt,hold')) {
                     foreach($responses as $v) {
                         $parts = explode('_', File::B($v));
                         $parts[0] = Date::slug($date);
@@ -249,7 +249,7 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
         Guardian::checkToken($request['token']);
         File::open($post->path)->delete();
         // Deleting response(s) ...
-        if($responses = call_user_func('Get::' . $response . 's', 'DESC', 'post:' . Date::slug($id), 'txt,hold')) {
+        if($responses = call_user_func('Get::' . $response . 's', 'DESC', 'post:' . $id, 'txt,hold')) {
             foreach($responses as $v) {
                 File::open($v)->delete();
             }

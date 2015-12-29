@@ -994,6 +994,9 @@ class Get extends Base {
         if( ! $filter) return $responses;
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
+            if(is_numeric($value)) { // filter by ID
+                $value = Date::slug($value);
+            }
             if($key === 'post') {
                 for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);

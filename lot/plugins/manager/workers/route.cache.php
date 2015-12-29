@@ -51,7 +51,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
         Notify::success(Config::speak('notify_file_updated', '<code>' . $path . '</code>'));
-        Session::set('recent_item_update', File::B($path));
+        Session::set('recent_item_update', explode(DS, $path));
         $name = File::path($request['name']);
         if($name !== $path) {
             File::open($file)->moveTo(CACHE . DS . $name);

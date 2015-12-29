@@ -135,7 +135,7 @@ class Image extends Base {
             $save = File::path($save);
             File::write($image)->saveTo($save);
         }
-        header('Content-Type: ' . self::getInfo('mime'));
+        header('Content-Type: ' . self::inspect('mime'));
         File::open(self::$placeholder)->delete();
         imagedestroy(self::$GD);
         echo $image;
@@ -149,15 +149,15 @@ class Image extends Base {
      *
      * -- CODE: -----------------------------------------------------------
      *
-     *    var_dump(Image::take('photo.jpg')->getInfo());
+     *    var_dump(Image::take('photo.jpg')->inspect());
      *
      * --------------------------------------------------------------------
      *
-     *    var_dump(Image::take(array('a.jpg', 'b.jpg'))->getInfo());
+     *    var_dump(Image::take(array('a.jpg', 'b.jpg'))->inspect());
      *
      * --------------------------------------------------------------------
      *
-     *    echo Image::take('photo.jpg')->getInfo('width', 0);
+     *    echo Image::take('photo.jpg')->inspect('width', 0);
      *
      * --------------------------------------------------------------------
      *
@@ -171,7 +171,7 @@ class Image extends Base {
      *
      */
 
-    public static function getInfo($key = null, $fallback = false) {
+    public static function inspect($key = null, $fallback = false) {
         File::open(self::$placeholder)->delete();
         if(is_array(self::$open)) {
             $results = array();
@@ -230,7 +230,7 @@ class Image extends Base {
         if(is_null($max_height)) {
             $max_height = $max_width;
         }
-        $info = self::getInfo();
+        $info = self::inspect();
         $old_width = $info['width'];
         $old_height = $info['height'];
         $new_width = $max_width;
@@ -701,7 +701,7 @@ class Image extends Base {
         $max_height = array();
         $orientation = strtolower($orientation);
         self::$open = (array) self::$open;
-        foreach(self::getInfo() as $info) {
+        foreach(self::inspect() as $info) {
             $bucket[] = array(
                 'width' => $info['width'],
                 'height' => $info['height']

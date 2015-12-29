@@ -215,7 +215,7 @@ Get::plug('article', function($reference, $excludes = array()) {
     $FP = 'article:';
     if( ! $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP)) return $results;
     // Include comment(s) data
-    if($comments = Get::comments('ASC', 'post:' . Date::slug($results->id), (Guardian::happy() ? 'txt,hold' : 'txt'))) {
+    if($comments = Get::comments('ASC', 'post:' . $results->id, (Guardian::happy() ? 'txt,hold' : 'txt'))) {
         $results->comments = array();
         $results->total_comments = Filter::colon($FP . 'total_comments', $comments !== false ? count($comments) : 0, $results);
         $results->total_comments_text = Filter::colon($FP . 'total_comments_text', $results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $results);

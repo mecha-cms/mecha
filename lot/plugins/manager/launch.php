@@ -218,7 +218,7 @@ Weapon::add('shield_before', function() {
     );
 
     // only for `pilot`
-    if(Guardian::get('status') === 'pilot') {
+    if(Guardian::happy(1)) {
 
         $menus[$speak->config] = array(
             'icon' => 'cogs',
