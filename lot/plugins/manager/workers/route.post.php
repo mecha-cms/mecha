@@ -9,7 +9,8 @@
 Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manager->slug . '/(' . $post . ')/(:num)'), function($segment = "", $offset = 1) use($config, $speak) {
     $posts = false;
     $offset = (int) $offset;
-    if($files = Mecha::eat(call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive'))->chunk($offset, $config->manager->per_page)->vomit()) {
+    $s = call_user_func('Get::' . $segment . 's', strtoupper(Request::get('order', 'DESC')), Request::get('filter', ""), 'txt,draft,archive');
+    if($files = Mecha::eat($s)->chunk($offset, $config->manager->per_page)->vomit()) {
         $posts = Mecha::walk($files, function($v) use($segment) {
             return call_user_func('Get::' . $segment . 'Header', $v);
         });
@@ -20,7 +21,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
         'page_title' => $speak->{$segment . 's'} . $config->title_separator . $config->manager->title,
         'pages' => $posts,
         'offset' => $offset,
-        'pagination' => Navigator::extract(call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive'), $offset, $config->manager->per_page, $config->manager->slug . '/' . $segment),
+        'pagination' => Navigator::extract($s, $offset, $config->manager->per_page, $config->manager->slug . '/' . $segment),
         'cargo' => 'cargo.post.php'
     ));
     Shield::lot(array('segment' => $segment))->attach('manager');

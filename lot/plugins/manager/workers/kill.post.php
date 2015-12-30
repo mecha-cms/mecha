@@ -5,7 +5,7 @@
 <?php else: ?>
 <p><?php echo $page->description; ?></p>
 <?php endif; ?>
-<p><time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->FORMAT_3; ?></time><?php if(isset($page->total_comments_text)): ?> &middot; <strong><?php echo $page->total_comments_text; ?></strong><?php endif; ?></p>
+<p><time class="text-fade" datetime="<?php echo $page->date->W3C; ?>"><?php echo Jot::icon('clock-o') . ' ' . $page->date->FORMAT_3; ?></time><?php if(isset($page->total_comments)): $t = Jot::icon('comments') . ' ' . $page->total_comments; ?> &middot; <?php echo $page->total_comments === 0 ? Cell::span($t) : Cell::a($config->manager->slug . '/comment?filter=post%3A' . $page->id, $t); ?><?php endif; ?></p>
 <?php if($page->css): ?>
 <pre><code><?php echo substr(Text::parse($page->css, '->encoded_html'), 0, $config->excerpt->length); ?><?php if(strlen($page->css) > $config->excerpt->length) echo $config->excerpt->suffix; ?></code></pre>
 <?php endif; ?>

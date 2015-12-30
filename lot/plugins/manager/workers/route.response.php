@@ -12,24 +12,29 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
     }
     $offset = (int) $offset;
     File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
-    if($files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,hold')) {
+    if($files = call_user_func('Get::' . $segment . 's', 'DESC', Request::get('filter', ""), 'txt,hold')) {
         $responses_id = Mecha::walk($files, function($v) {
             $parts = explode('_', File::B($v));
             return $parts[1];
         });
-        rsort($responses_id);
+        if(strtoupper(Request::get('order', 'ASC')) === 'ASC') {
+            sort($responses_id);
+        } else {
+            rsort($responses_id);
+        }
         $responses_id = Mecha::eat($responses_id)->chunk($offset, $config->manager->per_page)->vomit();
         $responses = Mecha::walk($responses_id, function($v) use($segment) {
             return call_user_func('Get::' . $segment, $v);
         });
     } else {
+        $files = array();
         $responses = false;
     }
     Config::set(array(
         'page_title' => $speak->{$segment . 's'} . $config->title_separator . $config->manager->title,
         'pages' => $responses,
         'offset' => $offset,
-        'pagination' => Navigator::extract(call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,hold'), $offset, $config->manager->per_page, $config->manager->slug . '/' . $segment),
+        'pagination' => Navigator::extract($files, $offset, $config->manager->per_page, $config->manager->slug . '/' . $segment),
         'cargo' => 'cargo.response.php'
     ));
     Shield::lot(array('segment' => array($segment, $post)))->attach('manager');

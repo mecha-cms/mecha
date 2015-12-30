@@ -127,7 +127,9 @@ if($config->page_type === 'manager') {
     Weapon::add('article_footer', function($article) use($config, $speak) {
         $e = File::E($article->path);
         $comments = count(glob(COMMENT . DS . Date::slug($article->time) . '_*_*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
-        $comments = $e !== 'draft' ? '<span title="' . $comments . ' ' . ($comments === 1 ? $speak->comment : $speak->comments) . '">' . Jot::icon('comments') . ' ' . $comments . '</span> &middot; ' : "";
+        $t = Jot::icon('comments') . ' ' . $comments;
+        $tt = array('title' => $comments . ' ' . ($comments === 1 ? $speak->comment : $speak->comments));
+        $comments = ($e === 'draft' || $comments === 0 ? Cell::span($t, $tt) : Cell::a($config->manager->slug . '/comment?filter=post%3A' . $article->id, $t, null, $tt)) . ' &middot; ';
         $status = Mecha::alter($e, array(
             'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
             'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
