@@ -2,7 +2,19 @@
 
 class Plugin extends Base {
 
-    // Loading plugin(s) ...
+    /**
+     * ==========================================================
+     *  LOADING PLUGIN(S)
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    $plugins = Plugin::load();
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
     public static function load($cache = true, $name = 'plugins.order.cache') {
         if($cache && $plugins = File::exist(CACHE . DS . $name)) {
             return File::open($plugins)->unserialize();
@@ -17,13 +29,39 @@ class Plugin extends Base {
         return $plugins;
     }
 
-    // Reload the plugin(s) ...
+    /**
+     * ==========================================================
+     *  RELOAD PLUGIN(S)
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    Weapon::add('on_plugin_update', function() {
+     *        Plugin:reload(); 
+     *    });
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
     public static function reload($cache = true, $name = 'plugins.order.cache') {
         if($cache) File::open(CACHE . DS . $name)->delete();
         self::load(false, $name);
     }
 
-    // Get plugin info by its folder
+    /**
+     * ==========================================================
+     *  GET PLUGIN INFO
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    var_dump(Plugin::info('manager'));
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
     public static function info($folder = null, $array = false) {
         $config = Config::get();
         $speak = Config::speak();
@@ -39,6 +77,24 @@ class Plugin extends Base {
              "\n" . Config::speak('notify_not_available', $speak->description);
         $info = Text::toPage(File::open($info)->read($d), 'content', 'plugin:');
         return $array ? $info : Mecha::O($info);
+    }
+
+    /**
+     * ==========================================================
+     *  CHECK IF PLUGIN ALREADY EXIST
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    if($path = Plugin::exist('manager')) { ... }
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function exist($name, $fallback = false) {
+        $name = PLUGIN . DS . $name;
+        return file_exists($name) && is_dir($name) ? $name : $fallback;
     }
 
 }

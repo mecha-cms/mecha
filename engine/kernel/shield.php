@@ -124,7 +124,7 @@ class Shield extends Base {
      *
      * -- CODE: -------------------------------------------------
      *
-     *    var_dump(Shield::info('aero'));
+     *    var_dump(Shield::info('normal'));
      *
      * ----------------------------------------------------------
      *
@@ -279,6 +279,24 @@ class Shield extends Base {
             // End chunk
             Weapon::fire('chunk_after', array($G, $G));
         }
+    }
+
+    /**
+     * ==========================================================
+     *  CHECK IF SHIELD ALREADY EXIST
+     * ==========================================================
+     *
+     * -- CODE: -------------------------------------------------
+     *
+     *    if($path = Shield::exist('normal')) { ... }
+     *
+     * ----------------------------------------------------------
+     *
+     */
+
+    public static function exist($name, $fallback = false) {
+        $name = SHIELD . DS . $name;
+        return file_exists($name) && is_dir($name) ? $name : $fallback;
     }
 
 }
