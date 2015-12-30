@@ -38,7 +38,7 @@ if( ! empty($fields)) {
                 $html .= '<span class="grid span-4">';
                 $select = isset($field[$key]) ? $field[$key] : "";
                 $options = Converter::toArray($value['value'], S, '  ');
-                if(isset($value['placeholder'])) {
+                if(isset($value['placeholder']) && trim($value['placeholder']) !== "") {
                     $options = array("" => $value['placeholder']) + $options;
                 }
                 $html .= Form::select('fields[' . $key . '][value]', $options, $select, array(

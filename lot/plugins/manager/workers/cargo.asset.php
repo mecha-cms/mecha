@@ -27,8 +27,8 @@
         $asset_path = ASSET . DS;
         $q_path = Request::get('path', "");
         $q_path_parent = File::D($q_path);
-        $q_path_ = str_replace('&', '&amp;', HTTP::query('path', $q_path ? $q_path : false));
-        $q_path_parent_ = str_replace('&', '&amp;', HTTP::query('path', $q_path_parent ? $q_path_parent : false));
+        $q_path_ = str_replace('&', '&amp;', HTTP::query(array('path' => $q_path ? $q_path : false, 'q' => false)));
+        $q_path_parent_ = str_replace('&', '&amp;', HTTP::query(array('path' => $q_path_parent ? $q_path_parent : false, 'q' => false)));
   
         ?>
         <table class="table-bordered table-full-width">
@@ -92,12 +92,12 @@
                   'html' => 'code-o',
                   'php' => 'code-o',
                   'xml' => 'code-o'
-              ), 'o') : 'folder') . ' ' . File::B($url);
+              ), 'o') : 'folder', 'fw') . ' ' . File::B($url);
     
               ?>
               <td>
                 <?php if($file->is->folder): ?>
-                <a href="<?php echo $config->url . '/' . $asset_url . '/1' . str_replace('&', '&amp;', HTTP::query('path', ltrim($q_path . '/' . File::B($url), '/'))); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
+                <a href="<?php echo $config->url . '/' . $asset_url . '/1' . str_replace('&', '&amp;', HTTP::query(array('path' => ltrim($q_path . '/' . File::B($url), '/'), 'q' => false))); ?>" title="<?php echo $speak->enter; ?>&hellip;"><?php echo $n; ?></a>
                 <?php else: ?>
                 <a href="<?php echo $file->url; ?>" title="<?php echo File::size($file->path); ?>" target="_blank"><?php echo $n; ?></a>
                 <?php endif; ?>

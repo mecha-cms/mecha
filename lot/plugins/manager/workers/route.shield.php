@@ -11,7 +11,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         Shield::abort();
     }
     if( ! $folder) $folder = $config->shield;
-    if( ! File::exist(SHIELD . DS . $folder)) {
+    if( ! $_folder = Shield::exist($folder)) {
         Shield::abort(); // Folder not found!
     }
     $destination = SHIELD;
@@ -56,7 +56,7 @@ Route::accept(array($config->manager->slug . '/shield/(:any)/ignite', $config->m
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    if( ! $_folder = File::exist(SHIELD . DS . $folder)) {
+    if( ! $_folder = Shield::exist($folder)) {
         Shield::abort(); // Folder not found!
     }
     if($file === false) {

@@ -135,7 +135,7 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
  */
 
 Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug = "") use($config, $speak) {
-    if( ! Guardian::happy(1) || ! File::exist(PLUGIN . DS . $slug)) {
+    if( ! Guardian::happy(1) || ! $plugin = Plugin::exist($slug)) {
         Shield::abort();
     }
     $info = Plugin::info($slug, true);
@@ -154,7 +154,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
             'on_plugin_' . md5($slug) . '_update',
             'on_plugin_' . md5($slug) . '_destruct'
         ), array($P, $P));
-        File::open(PLUGIN . DS . $slug)->delete(); // delete later ...
+        File::open($plugin)->delete(); // delete later ...
         Notify::success(Config::speak('notify_success_deleted', $speak->plugin));
         Guardian::kick($config->manager->slug . '/plugin');
     } else {
@@ -170,11 +170,11 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
  */
 
 Route::accept($config->manager->slug . '/plugin/backup/id:(:any)', function($slug = "") use($config, $speak) {
-    if( ! File::exist(PLUGIN . DS . $slug)) {
+    if( ! $plugin = Plugin::exist($slug)) {
         Shield::abort();
     }
     $name = $slug . '.zip';
-    Package::take(PLUGIN . DS . $slug)->pack(ROOT . DS . $name, true);
+    Package::take($plugin)->pack(ROOT . DS . $name, true);
     $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
     Weapon::fire('on_backup_construct', array($G, $G));
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);
