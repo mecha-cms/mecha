@@ -215,55 +215,20 @@ Get::plug('article', function($reference, $excludes = array()) {
     $FP = 'article:';
     if( ! $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP)) return $results;
     // Include comment(s) data
+    $c = array();
+    $cc = 0;
+    $ccc = '0 ' . $speak->comments;
     if($comments = Get::comments('ASC', 'post:' . $results->id, (Guardian::happy() ? 'txt,hold' : 'txt'))) {
-        $results->comments = array();
-        $results->total_comments = Filter::colon($FP . 'total_comments', $comments !== false ? count($comments) : 0, $results);
-        $results->total_comments_text = Filter::colon($FP . 'total_comments_text', $results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $results);
+        $cc = $comments !== false ? count($comments) : 0;
+        $ccc = $cc . ' ' . ($cc === 1 ? $speak->comment : $speak->comments);
         foreach($comments as $comment) {
-            $results->comments[] = Get::comment($comment);
+            $c[] = Get::comment($comment);
         }
-        $results->comments = Filter::colon($FP . 'comments', $results->comments, $results);
+        $results->comments = Filter::colon($FP . 'comments', $c, $results);
     }
-    $results->total_comments = Filter::colon($FP . 'total_comments', $comments ? count($comments) : 0, $results);
-    $results->total_comments_text = Filter::colon($FP . 'total_comments_text', $results->total_comments . ' ' . ($results->total_comments === 1 ? $speak->comment : $speak->comments), $results);
-    unset($comments);
-    // Include custom CSS and JS data
-    $results->css = $results->js = $results->css_raw = $results->js_raw = "";
-    if($file = File::exist(CUSTOM . DS . Date::slug($results->time) . '.' . File::E($results->path))) {
-        $custom = explode(SEPARATOR, File::open($file)->read());
-        $css = isset($custom[0]) ? Converter::DS(trim($custom[0])) : "";
-        $js = isset($custom[1]) ? Converter::DS(trim($custom[1])) : "";
-        // css_raw
-        // page:css_raw
-        // custom:css_raw
-        // shortcode
-        // page:shortcode
-        // custom:shortcode
-        // css
-        // page:css
-        // custom:css
-        $css = Filter::colon($FP . 'css_raw', $css, $results);
-        $results->css_raw = Filter::apply('custom:css_raw', $css, $results);
-        $css = Filter::colon($FP . 'shortcode', $css, $results);
-        $css = Filter::apply('custom:shortcode', $css, $results);
-        $css = Filter::colon($FP . 'css', $css, $results);
-        $results->css = Filter::apply('custom:css', $css, $results);
-        // js_raw
-        // page:js_raw
-        // custom:js_raw
-        // shortcode
-        // page:shortcode
-        // custom:shortcode
-        // js
-        // page:js
-        // custom:js
-        $js = Filter::colon($FP . 'js_raw', $js, $results);
-        $results->js_raw = Filter::apply('custom:js_raw', $js, $results);
-        $js = Filter::colon($FP . 'shortcode', $js, $results);
-        $js = Filter::apply('custom:shortcode', $js, $results);
-        $js = Filter::colon($FP . 'js', $js, $results);
-        $results->js = Filter::apply('custom:js', $js, $results);
-    }
+    $results->total_comments = Filter::colon($FP . 'total_comments', $cc, $results);
+    $results->total_comments_text = Filter::colon($FP . 'total_comments_text', $ccc, $results);
+    unset($comments, $c, $cc, $ccc);
     return $results;
 });
 
