@@ -255,7 +255,7 @@ class Mecha extends Base {
     }
 
     // Generate chunk(s) of array
-    public static function chunk($index = null, $count = 25, $fallback = false) {
+    public static function chunk($index = null, $count = 25) {
         if( ! is_array(self::$stomach)) return new static;
         $results = array();
         // 0-based index with `vomit($index)`
@@ -268,8 +268,8 @@ class Mecha extends Base {
         // 1-based index with `chunk($index)`
         // `Mecha::eat($foo)->chunk(2, 25)->vomit();`
         if( ! is_null($index)) {
-            $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : $fallback;
-            self::$stomach = $chunk ? array_values($chunk) : $fallback;
+            $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : false;
+            self::$stomach = $chunk ? array_values($chunk) : array();
         // `Mecha::eat($foo)->chunk(null, 25)->vomit()`
         } else {
             self::$stomach = $chunk;
