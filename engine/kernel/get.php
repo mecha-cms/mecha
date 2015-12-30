@@ -194,7 +194,7 @@ class Get extends Base {
         $field = Converter::strEval($field);
         $v_d = array(
             'title' => "",
-            'type' => 't',
+            'type' => 'summary',
             'placeholder' => "",
             'value' => false,
             'description' => ""
@@ -495,7 +495,7 @@ class Get extends Base {
         $update = File::T($input);
         $update_date = ! is_null($update) ? date('Y-m-d H:i:s', $update) : null;
         list($time, $kind, $slug) = explode('_', File::N($input), 3);
-        $kind = explode(',', $kind);
+        $kind = $kind !== "" ? explode(',', $kind) : array();
         return array(
             'path' => Filter::colon($FP . 'path', $input, $input),
             'id' => Filter::colon($FP . 'id', (int) Date::format($time, 'U'), $input),
@@ -729,20 +729,7 @@ class Get extends Base {
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
-        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-        $init = array();
-        foreach($fields as $key => $value) {
-            $init[$key] = $value['value'];
-        }
-        if(isset($results['fields']) && is_array($results['fields'])) {
-            foreach($results['fields'] as $key => $value) {
-                if(is_array($value) && isset($value['type'])) {
-                    $value = isset($value['value']) ? $value['value'] : false;
-                }
-                $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
-            }
-            $results['fields'] = $init;
-        }
+        self::__fields($results, $FP);
         return Mecha::O($results);
     }
 
@@ -796,7 +783,9 @@ class Get extends Base {
             'description' => "",
             'content_type' => $config->html_parser,
             'fields' => array(),
-            'content' => ""
+            'content' => "",
+            'css' => "",
+            'js' => ""
         ), $results);
         $content = $results['content_raw'];
         $time = str_replace(array(' ', ':'), '-', $results['time']);
@@ -843,30 +832,45 @@ class Get extends Base {
         // Post Images
         $results['images'] = Filter::colon($FP . 'images', self::imagesURL($results['content']), $results);
         $results['image'] = Filter::colon($FP . 'image', isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $results);
-        // Custom Field(s)
+        // Post CSS and JS
+        if($file = File::exist(CUSTOM . DS . Date::slug($results['time']) . '.' . File::E($results['path']))) {
+            $custom = explode(SEPARATOR, File::open($file)->read());
+            $css = isset($custom[0]) ? Converter::DS(trim($custom[0])) : "";
+            $js = isset($custom[1]) ? Converter::DS(trim($custom[1])) : "";
+            // css_raw
+            // post:css_raw
+            // custom:css_raw
+            // shortcode
+            // post:shortcode
+            // custom:shortcode
+            // css
+            // post:css
+            // custom:css
+            $css = Filter::colon($FP . 'css_raw', $css, $results);
+            $results['css_raw'] = Filter::apply('custom:css_raw', $css, $results);
+            $css = Filter::colon($FP . 'shortcode', $css, $results);
+            $css = Filter::apply('custom:shortcode', $css, $results);
+            $css = Filter::colon($FP . 'css', $css, $results);
+            $results['css'] = Filter::apply('custom:css', $css, $results);
+            // js_raw
+            // post:js_raw
+            // custom:js_raw
+            // shortcode
+            // post:shortcode
+            // custom:shortcode
+            // js
+            // post:js
+            // custom:js
+            $js = Filter::colon($FP . 'js_raw', $js, $results);
+            $results['js_raw'] = Filter::apply('custom:js_raw', $js, $results);
+            $js = Filter::colon($FP . 'shortcode', $js, $results);
+            $js = Filter::apply('custom:shortcode', $js, $results);
+            $js = Filter::colon($FP . 'js', $js, $results);
+            $results['js'] = Filter::apply('custom:js', $js, $results);
+        }
+        // Post Field(s)
         if( ! isset($excludes['fields'])) {
-            // Initialize custom field(s) with the default value(s) so that
-            // user(s) don't have to write `isset()` function multiple time(s)
-            // just to prevent error message(s) because of the object key(s)
-            // that is not available in the old post(s).
-            $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-            $init = array();
-            foreach($fields as $key => $value) {
-                $init[$key] = $value['value'];
-            }
-            // Start re-writing ...
-            if(isset($results['fields']) && is_array($results['fields'])) {
-                foreach($results['fields'] as $key => $value) {
-                    // [1]. `Fields: {"my_field":{"type":"t","value":"foo"}}`
-                    // [2]. `Fields: {"my_field":"foo"}`
-                    if(is_array($value) && isset($value['type'])) {
-                        $value = isset($value['value']) ? $value['value'] : false;
-                    }
-                    $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
-                }
-            }
-            $results['fields'] = $init;
-            unset($fields, $init);
+            self::__fields($results, $FP);
         }
         // Exclude some field(s) from result(s)
         foreach($results as $key => $value) {
@@ -1123,20 +1127,7 @@ class Get extends Base {
             'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-        $init = array();
-        foreach($fields as $key => $value) {
-            $init[$key] = $value['value'];
-        }
-        if(isset($results['fields']) && is_array($results['fields'])) {
-            foreach($results['fields'] as $key => $value) {
-                if(is_array($value) && isset($value['type'])) {
-                    $value = isset($value['value']) ? $value['value'] : false;
-                }
-                $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
-            }
-            $results['fields'] = $init;
-        }
+        self::__fields($results, $FP);
         return Mecha::O($results);
     }
 
@@ -1196,21 +1187,7 @@ class Get extends Base {
             $results['permalink'] = Filter::colon($FP . 'permalink', $link, $results);
         }
         if( ! isset($excludes['fields'])) {
-            $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-            $init = array();
-            foreach($fields as $key => $value) {
-                $init[$key] = $value['value'];
-            }
-            if(isset($results['fields']) && is_array($results['fields'])) {
-                foreach($results['fields'] as $key => $value) {
-                    if(is_array($value) && isset($value['type'])) {
-                        $value = isset($value['value']) ? $value['value'] : false;
-                    }
-                    $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
-                }
-                $results['fields'] = $init;
-                unset($fields, $init);
-            }
+            self::__fields($results, $FP);
         }
         foreach($results as $key => $value) {
             if(isset($excludes[$key])) {
@@ -1312,6 +1289,37 @@ class Get extends Base {
     public static function imageURL($source, $sequence = 1, $fallback = null) {
         $images = self::imagesURL($source, array());
         return isset($images[$sequence - 1]) ? $images[$sequence - 1] : (is_null($fallback) ? Image::placeholder() : $fallback);
+    }
+
+    // handle custom field(s)
+    private static function __fields(&$results, $FP) {
+        // Initialize custom field(s) with the default value(s) so that
+        // user(s) don't have to write `isset()` function multiple time(s)
+        // just to prevent error message(s) because of the object key(s)
+        // that is not available in the old post(s).
+        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
+        $init = array();
+        foreach($fields as $key => $value) {
+            // For `option` field type, the first option will be used as the default value
+            if(($value['type'] === 'option' || $value['type'] === 'o') && is_array($value['value'])) {
+                $v = array_keys($value['value']);
+                $value['value'] = isset($v[0]) ? $v[0] : "";
+            }
+            $init[$key] = $value['value'];
+        }
+        // Start re-writing ...
+        if(isset($results['fields']) && is_array($results['fields'])) {
+            foreach($results['fields'] as $key => $value) {
+                // [1]. `Fields: {"my_field":{"type":"text","value":"foo"}}`
+                // [2]. `Fields: {"my_field":"foo"}`
+                if(is_array($value) && isset($value['type'])) {
+                    $value = isset($value['value']) ? $value['value'] : false;
+                }
+                $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
+            }
+        }
+        $results['fields'] = $init;
+        unset($fields, $init);
     }
 
 }
