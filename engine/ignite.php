@@ -166,6 +166,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
     };
+    Weapon::fire('plugin_before', array($k));
     if($launch = File::exist($root__ . 'launch.php')) {
         if(strpos(File::B($root__), '__') === 0) {
             if(Guardian::happy() && $config->page_type === 'manager') {
@@ -180,6 +181,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
             include $launch; // backend
         }
     }
+    Weapon::fire('plugin_after', array($k));
 }
 
 
