@@ -1301,8 +1301,8 @@ class Get extends Base {
         $init = array();
         foreach($fields as $key => $value) {
             // For `option` field type, the first option will be used as the default value
-            if(($value['type'] === 'option' || $value['type'] === 'o') && is_array($value['value'])) {
-                $v = array_keys($value['value']);
+            if($value['type'] === 'option' || $value['type'] === 'o') {
+                $v = array_keys(Converter::toArray($value['value']));
                 $value['value'] = isset($v[0]) ? $v[0] : "";
             }
             $init[$key] = $value['value'];
