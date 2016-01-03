@@ -3,8 +3,8 @@
 if($config->page_type === 'article' && Request::method('post')) {
     if( ! isset($_POST['fields'])) $_POST['fields'] = array();
     Mecha::extend($_POST['fields'], array(
-        'user_ip' => array('value' => Get::IP()),
-        'user_agent' => array('value' => Get::UA())
+        'user_ip' => array('type' => 'hidden', 'value' => Get::IP()),
+        'user_agent' => array('type' => 'hidden', 'value' => Get::UA())
     ));
     // Block comment by IP address
     $fucking_words = explode(',', $config->keywords_spam);

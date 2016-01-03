@@ -1300,44 +1300,32 @@ class Get extends Base {
         // just to prevent error message(s) because of the object key(s)
         // that is not available in the old post(s).
         $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-        $init = array();
-        foreach($fields as $key => $value) {
-            // For `option` field type, the first option will be used as the default value
-            if($value['type'] === 'option' || $value['type'] === 'o') {
-                $v = array_keys(Converter::toArray($value['value']));
-                if(isset($value['placeholder']) && trim($value['placeholder']) !== "") {
-                    $value['value'] = "";
-                } else {
-                    $value['value'] = isset($v[0]) ? $v[0] : "";
+        foreach($fields as $k => $v) {
+            $s = isset($results['fields'][$k]) && trim($results['fields'][$k]) !== "" ? $results['fields'][$k] : "";
+            if($s === "") {
+                // For `option` field type, the first option will be used as the default value
+                if($v['type'] === 'option' || $v['type'] === 'o') {
+                    $vv = array_keys(Converter::toArray($v['value']));
+                    if(isset($v['placeholder']) && trim($v['placeholder']) !== "") {
+                        // do nothing ...
+                    } else {
+                        $s = isset($vv[0]) ? $vv[0] : "";
+                    }
+                } else if($v['type'] === 'boolean' || $v['type'] === 'b') {
+                    $s = false;
+                }
+            } else {
+                // For `file` field type, the original custom field value is used to limit the file extension
+                // So we have to check the existence of the file first. If it does not exist, then it may be
+                // contained with the file extension(s), not with a file name
+                if($v['type'] === 'file' || $v['type'] === 'f') {
+                    $e = File::E($s, false);
+                    $s = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $s, "") : "";
                 }
             }
-            // For `file` field type, the original custom field value is used to limit the file extension
-            // So we have to check the existence of the file first. If it does not exist, then it may be
-            // contained with the file extension(s), not with a file name
-            if($value['type'] === 'file' || $value['type'] === 'f') {
-                if(isset($results['fields'][$key])) {
-                    $_ = $results['fields'][$key];
-                    $e = File::E($_, false);
-                    $results['fields'][$key] = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $_, false) : false;
-                } else {
-                    $results['fields'][$key] = false;
-                }
-            }
-            $init[$key] = $value['value'];
+            $results['fields'][$k] = $s;
         }
-        // Start re-writing ...
-        if(isset($results['fields']) && is_array($results['fields'])) {
-            foreach($results['fields'] as $key => $value) {
-                // [1]. `Fields: {"my_field":{"type":"text","value":"foo"}}`
-                // [2]. `Fields: {"my_field":"foo"}`
-                if(is_array($value) && isset($value['type'])) {
-                    $value = isset($value['value']) ? $value['value'] : false;
-                }
-                $init[$key] = Filter::colon($FP . 'fields.' . $key, $value, $results);
-            }
-        }
-        $results['fields'] = $init;
-        unset($fields, $init);
+        unset($fields, $s);
     }
 
 }
