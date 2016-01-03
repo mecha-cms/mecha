@@ -142,12 +142,12 @@ class Route extends Base {
     public static function reject($pattern) {
         if( ! is_array($pattern)) {
             $pattern = self::path($pattern);
-            self::$routes_x[$pattern] = 1;
+            self::$routes_x[$pattern] = isset(self::$routes[$pattern]) ? self::$routes[$pattern] : 1;
             unset(self::$routes[$pattern]);
         } else {
             foreach($pattern as $p) {
                 $p = self::path($p);
-                self::$routes_x[$p] = 1;
+                self::$routes_x[$p] = isset(self::$routes[$p]) ? self::$routes[$p] : 1;
                 unset(self::$routes[$p]);
             }
         }
