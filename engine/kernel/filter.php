@@ -127,7 +127,7 @@ class Filter extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name) && isset(self::$filters[$c][$name])) {
-                self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+                self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
                 if( ! is_null($stack)) {
                     for($i = 0, $count = count(self::$filters[$c][$name]); $i < $count; ++$i) {
                         $s = self::$filters[$c][$name][$i];
@@ -186,6 +186,28 @@ class Filter extends Base {
             return ! empty(self::$filters[$c]) ? self::$filters[$c] : $fallback;
         }
         return isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : $fallback;
+    }
+
+    /**
+     * ===========================================================================
+     *  CHECK FOR THE REMOVED FILTER(S)
+     * ===========================================================================
+     *
+     * -- CODE: ------------------------------------------------------------------
+     *
+     *    $test = Weapon::ejected('bazooka');
+     *
+     * ---------------------------------------------------------------------------
+     *
+     */
+
+    public static function removed($name = null, $stack = null, $fallback = false) {
+        $c = get_called_class();
+        $stack = ! is_null($stack) ? $stack : 10;
+        if(is_null($name)) {
+            return ! empty(self::$filters_x[$c]) ? self::$filters_x[$c] : $fallback;
+        }
+        return isset(self::$filters_x[$c][$name . '->' . $stack]) ? self::$filters_x[$c][$name . '->' . $stack] : $fallback;
     }
 
 }

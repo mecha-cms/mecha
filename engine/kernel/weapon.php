@@ -128,7 +128,7 @@ class Weapon extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name) && isset(self::$armaments[$c][$name])) {
-                self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = 1;
+                self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
                 if( ! is_null($stack)) {
                     for($i = 0, $count = count(self::$armaments[$c][$name]); $i < $count; ++$i) {
                         $s = self::$armaments[$c][$name][$i];
@@ -187,6 +187,28 @@ class Weapon extends Base {
             return ! empty(self::$armaments[$c]) ? self::$armaments[$c] : $fallback;
         }
         return isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : $fallback;
+    }
+
+    /**
+     * ===========================================================================
+     *  CHECK FOR THE EJECTED WEAPON(S)
+     * ===========================================================================
+     *
+     * -- CODE: ------------------------------------------------------------------
+     *
+     *    $test = Weapon::ejected('bazooka');
+     *
+     * ---------------------------------------------------------------------------
+     *
+     */
+
+    public static function ejected($name = null, $stack = null, $fallback = false) {
+        $c = get_called_class();
+        $stack = ! is_null($stack) ? $stack : 10;
+        if(is_null($name)) {
+            return ! empty(self::$armaments_x[$c]) ? self::$armaments_x[$c] : $fallback;
+        }
+        return isset(self::$armaments_x[$c][$name . '->' . $stack]) ? self::$armaments_x[$c][$name . '->' . $stack] : $fallback;
     }
 
 }
