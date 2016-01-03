@@ -208,11 +208,14 @@ class Route extends Base {
      *
      */
 
-    public static function overed($pattern, $fallback = false, $stack = null) {
+    public static function overed($pattern, $stack = null, $fallback = false) {
         if( ! is_null($stack)) {
             $routes = array();
             foreach(self::$routes_over[$pattern] as $route) {
-                if($route['stack'] === (float) $stack) {
+                if(
+                    is_numeric($stack) && $route['stack'] === (float) $stack ||
+                    $route['fn'] === $stack
+                ) {
                     $routes[] = $route;
                 }
             }

@@ -1311,6 +1311,7 @@ class Get extends Base {
                     } else {
                         $s = isset($vv[0]) ? $vv[0] : "";
                     }
+                // For `boolean` field type, empty value is equal to `false`
                 } else if($v['type'] === 'boolean' || $v['type'] === 'b') {
                     $s = false;
                 }
