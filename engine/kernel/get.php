@@ -841,14 +841,14 @@ class Get extends Base {
             // post:css_raw
             // custom:css_raw
             // shortcode
-            // post:shortcode
             // custom:shortcode
+            // css:shortcode
             // css
             // post:css
             // custom:css
             $css = Filter::colon($FP . 'css_raw', $css, $results);
             $results['css_raw'] = Filter::apply('custom:css_raw', $css, $results);
-            $css = Filter::colon($FP . 'shortcode', $css, $results);
+            $css = Filter::colon('css:shortcode', $css, $results);
             $css = Filter::apply('custom:shortcode', $css, $results);
             $css = Filter::colon($FP . 'css', $css, $results);
             $results['css'] = Filter::apply('custom:css', $css, $results);
@@ -856,14 +856,14 @@ class Get extends Base {
             // post:js_raw
             // custom:js_raw
             // shortcode
-            // post:shortcode
             // custom:shortcode
+            // js:shortcode
             // js
             // post:js
             // custom:js
             $js = Filter::colon($FP . 'js_raw', $js, $results);
             $results['js_raw'] = Filter::apply('custom:js_raw', $js, $results);
-            $js = Filter::colon($FP . 'shortcode', $js, $results);
+            $js = Filter::colon('js:shortcode', $js, $results);
             $js = Filter::apply('custom:shortcode', $js, $results);
             $js = Filter::colon($FP . 'js', $js, $results);
             $results['js'] = Filter::apply('custom:js', $js, $results);
@@ -1259,15 +1259,17 @@ class Get extends Base {
             $results = array_merge($matches[3], $results);
         }
         // Validate URL ...
-        foreach(array_unique($results) as $k => $url) {
+        $results_v = array();
+        foreach(array_unique($results) as $url) {
             $url = strpos($url, '/') === 0 ? $config->protocol . $config->host . $url : $url;
             if(strpos($url, $config->url) === 0 && file_exists(File::path($url))) {
-                $results[$k] = $url;
+                $results_v[] = $url;
             } else if(strpos($url, '://') !== false) {
-                $results[$k] = $url;
+                $results_v[] = $url;
             }
         }
-        return ! empty($results) ? $results : $fallback;
+        unset($results);
+        return ! empty($results_v) ? $results_v : $fallback;
     }
 
     /**
@@ -1291,7 +1293,7 @@ class Get extends Base {
         return isset($images[$sequence - 1]) ? $images[$sequence - 1] : (is_null($fallback) ? Image::placeholder() : $fallback);
     }
 
-    // handle custom field(s)
+    // Handle custom field(s) ...
     private static function __fields(&$results, $FP) {
         // Initialize custom field(s) with the default value(s) so that
         // user(s) don't have to write `isset()` function multiple time(s)
@@ -1303,7 +1305,23 @@ class Get extends Base {
             // For `option` field type, the first option will be used as the default value
             if($value['type'] === 'option' || $value['type'] === 'o') {
                 $v = array_keys(Converter::toArray($value['value']));
-                $value['value'] = isset($v[0]) ? $v[0] : "";
+                if(isset($value['placeholder']) && trim($value['placeholder']) !== "") {
+                    $value['value'] = "";
+                } else {
+                    $value['value'] = isset($v[0]) ? $v[0] : "";
+                }
+            }
+            // For `file` field type, the original custom field value is used to limit the file extension
+            // So we have to check the existence of the file first. If it does not exist, then it may be
+            // contained with the file extension(s), not with a file name
+            if($value['type'] === 'file' || $value['type'] === 'f') {
+                if(isset($results['fields'][$key])) {
+                    $_ = $results['fields'][$key];
+                    $e = File::E($_, false);
+                    $results['fields'][$key] = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $_, false) : false;
+                } else {
+                    $results['fields'][$key] = false;
+                }
             }
             $init[$key] = $value['value'];
         }

@@ -10,8 +10,8 @@ if(isset($_FILES) && ! empty($_FILES)) {
         if($v['size'] > 0 && $v['error'] === 0) {
             $name = $name_o = Text::parse($v['name'], '->safe_file_name');
             // Group substance by extension
-            if($x = File::E($name, false)) {
-                $name = $x . DS . $name;
+            if($e = File::E($name, false)) {
+                $name = $e . DS . $name;
             }
             // File already exists. Don't overwrite and don't show the error message
             if(file_exists(SUBSTANCE . DS . $name)) {
