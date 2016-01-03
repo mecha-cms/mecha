@@ -17,7 +17,7 @@
     )); ?>
     </span>
   </label>
-  <?php $origin = Guardian::wayback('url_origin', $config->manager->slug . '/article'); ?>
+  <?php $origin = Config::get('url_origin', $config->manager->slug . '/article'); ?>
   <?php if($origin !== Filter::colon('manager:url', $config->url . '/' . $config->manager->slug . '/logout')): ?>
   <?php echo Form::hidden('kick', Request::get('kick', $origin)); ?>
   <?php endif; ?>

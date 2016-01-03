@@ -7,4 +7,4 @@ Version: 1.0.0
 
 > Text and source code editor.
 
-Convert your default `<textarea>` element to a text and source code editor.
+Convert your default `<textarea>` element into a text and source code editor.

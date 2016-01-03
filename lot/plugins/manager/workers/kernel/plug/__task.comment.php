@@ -6,8 +6,8 @@
  * ------------------
  */
 
-if( ! function_exists('add_comment')) {
-    function add_comment() {
+if( ! function_exists('do_comment_construct')) {
+    function do_comment_construct() {
         $config = Config::get();
         $speak = Config::speak();
         if($config->page_type === 'article') {
@@ -126,4 +126,4 @@ if( ! function_exists('add_comment')) {
     }
 }
 
-Weapon::add('shield_before', 'add_comment');
+Weapon::add('shield_before', 'do_comment_construct');

@@ -162,20 +162,3 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     }
     Shield::lot(array('segment' => 'plugin'))->attach('manager');
 });
-
-
-/**
- * Plugin Backup
- * -------------
- */
-
-Route::accept($config->manager->slug . '/plugin/backup/id:(:any)', function($slug = "") use($config, $speak) {
-    if( ! $plugin = Plugin::exist($slug)) {
-        Shield::abort();
-    }
-    $name = $slug . '.zip';
-    Package::take($plugin)->pack(ROOT . DS . $name, true);
-    $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
-    Weapon::fire('on_backup_construct', array($G, $G));
-    Guardian::kick($config->manager->slug . '/backup/send:' . $name);
-});

@@ -23,9 +23,10 @@ Config::plug('load', function() {
     $config['protocol'] = $config['url_protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
     $config['host'] = $config['url_host'] = $_SERVER['HTTP_HOST'];
     $config['base'] = $config['url_base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
-    $config['url'] = $config['url_root'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-    $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim('?' . $_SERVER['QUERY_STRING'], '/?') ? "" : preg_replace('#[?&].*$#', "", trim('?' . $_SERVER['QUERY_STRING'], '/?'));
-    $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
+    $config['url'] = $config['url_'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
+    $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim('?' . $_SERVER['QUERY_STRING'], '/?') ? "" : preg_replace('#[?&].*$#', "", trim('?' . $_SERVER['QUERY_STRING'], '/?'));
+    $config['current'] = $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
+    $config['origin'] = $config['url_origin'] = Session::get('url_origin', false);
 
     $config['page_title'] = $config['title'];
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
@@ -79,7 +80,7 @@ Config::plug('load', function() {
         Mecha::extend($lang, $lang_a);
     }
 
-    $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
+    $config['query'] = $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
     $config['offset'] = isset($s[1]) && is_numeric($s[1]) ? (int) $s[1] : 1;
     $config['page_type'] = $page;
     $config['speak'] = $lang;
@@ -167,6 +168,6 @@ Config::plug('speak', function($key = "", $vars = array()) {
  *
  */
 
-Config::plug('url', function($key = 'root', $fallback = false) {
+Config::plug('url', function($key = "", $fallback = false) {
     return Config::get('url_' . $key, $fallback);
 });

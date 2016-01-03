@@ -4,9 +4,9 @@ use \Michelf\MarkdownExtra;
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'Markdown.php';
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
 
-// Re-write `Text::parse($input, '->html')` parser
-Text::parser('to_html', function($input) use($config) {
+function do_markdown_parse($input) {
     if( ! is_string($input)) return $input;
+    global $config;
     $s = __DIR__ . DS . 'states' . DS;
     $url = File::open($s . 'url.txt')->read();
     $abbr = File::open($s . 'abbr.txt')->read();
@@ -23,16 +23,22 @@ Text::parser('to_html', function($input) use($config) {
             '<a rel="nofollow" href="' // add `rel="nofollow"` attribute on external links
         ),
     trim($parser->transform($url . "\n\n" . $abbr . "\n\n" . $input)));
-});
+}
 
-// Apply filter to `content` and `message` data
-Filter::add(array('content', 'message'), function($content, $fields) {
-    $fields = (object) $fields;
-    if( ! isset($fields->content_type) || $fields->content_type === 'Markdown' || $fields->content_type === 'Markdown Extra') {
-        return Text::parse($content, '->html');
+function do_markdown($content, $results) {
+    global $config;
+    $results = (object) $results;
+    if( ! isset($results->content_type) || $results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
+        return do_markdown_parse($content);
     }
     return $content;
-}, 1);
+}
+
+// Apply filter to `content` and `message` data
+Filter::add(array('content', 'message'), 'do_markdown', 1);
+
+// Re-write `Text::parse($input, '->html')` parser
+Text::parser('to_html', 'do_markdown_parse');
 
 // Set new `html_parser` value
 if($config->html_parser === 'HTML') {

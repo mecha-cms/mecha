@@ -197,17 +197,3 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     }
     Guardian::kick($config->manager->slug . '/shield/' . $slug);
 });
-
-
-/**
- * Shield Backup
- * -------------
- */
-
-Route::accept($config->manager->slug . '/shield/backup/id:(:any)', function($folder = "") use($config, $speak) {
-    $name = $folder . '.zip';
-    Package::take(SHIELD . DS . $folder)->pack(ROOT . DS . $name, true);
-    $G = array('data' => array('path' => ROOT . DS . $name, 'file' => ROOT . DS . $name));
-    Weapon::fire('on_backup_construct', array($G, $G));
-    Guardian::kick($config->manager->slug . '/backup/send:' . $name);
-});

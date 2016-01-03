@@ -1,6 +1,6 @@
 <?php
 
-function asset_version($url, $source) {
+function do_asset_version($url, $source) {
     $path = Asset::path($source);
     if($path && strpos($path, '://') === false) {
         return $url . '?v=' . File::T($path);
@@ -8,4 +8,4 @@ function asset_version($url, $source) {
     return $url;
 }
 
-Filter::add('asset:url', 'asset_version');
+Filter::add('asset:url', 'do_asset_version');

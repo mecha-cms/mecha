@@ -6,7 +6,7 @@
 </div>
 <?php echo $messages; ?>
 <?php $files_all = Get::state_tag(null, array()); ?>
-<?php ksort($files_all); if($files): ?>
+<?php ksort($files_all); if($files_all): ?>
 <table class="table-bordered table-full-width">
   <thead>
     <tr>

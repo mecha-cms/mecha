@@ -67,7 +67,7 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
         Package::take(CARGO . DS . $origin)->pack(ROOT . DS . $name);
         if($origin === 'shields') {
             Package::take(ROOT . DS . $name)->deleteFolder('normal'); // delete `normal` shield
-            Package::take(ROOT . DS . $name)->deleteFiles(array(
+            Package::take(ROOT . DS . $name)->deleteFiles(array( // delete `json.php`, `rss.php`, `sitemap.php`, `widgets.css` and `widgets.js` file(s)
                 'json.php',
                 'rss.php',
                 'sitemap.php',
@@ -78,6 +78,25 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
         if($origin === 'extends') {
             Package::take(ROOT . DS . $name)->deleteFolder(File::B(CHUNK)); // delete `chunk` folder
         }
+        /*
+        if($origin === 'plugins') {
+            Package::take(ROOT . DS . $name)->deleteFolders(array( // delete built-in plugin(s)
+                'asset-version',
+                'cache',
+                'comment-location',
+                'comment-notify',
+                'editor',
+                'editor-button',
+                'empty',
+                'facebook-open-graph',
+                'manager',
+                'markdown',
+                'minify',
+                'preview',
+                'shortcode-php'
+            ));
+        }
+        */
     }
     Guardian::kick($config->manager->slug . '/backup/send:' . $name);
 });

@@ -17,10 +17,10 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
             $parts = explode('_', File::B($v));
             return $parts[1];
         });
-        if(strtoupper(Request::get('order', 'ASC')) === 'ASC') {
-            sort($responses_id);
-        } else {
+        if(strtoupper(Request::get('order', 'DESC')) === 'DESC') {
             rsort($responses_id);
+        } else {
+            sort($responses_id);
         }
         $responses_id = Mecha::eat($responses_id)->chunk($offset, $config->manager->per_page)->vomit();
         $responses = Mecha::walk($responses_id, function($v) use($segment) {
