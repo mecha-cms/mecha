@@ -233,19 +233,18 @@ class Converter extends Base {
      */
 
     public static function str($input) {
-        $results = $input;
         if( ! is_array($input) && ! is_object($input)) {
-            if($input === TRUE || $input === true) $results = 'true';
-            if($input === FALSE || $input === false) $results = 'false';
-            if($input === NULL || $input === null) $results = 'null';
-            return (string) $results;
+            if($input === TRUE || $input === true) $input = 'true';
+            if($input === FALSE || $input === false) $input = 'false';
+            if($input === NULL || $input === null) $input = 'null';
+            return (string) $input;
         } else {
-            $results = array();
-            foreach($input as $key => $value) {
-                $results[$key] = self::str($value);
+            foreach($input as &$v) {
+                $v = self::str($v);
             }
+            unset($v);
         }
-        return $results;
+        return $input;
     }
 
     /**

@@ -184,6 +184,8 @@ foreach($plugins = Plugin::load() as $k => $v) {
     Weapon::fire('plugin_after', array($k));
 }
 
+Weapon::fire('plugins_after');
+
 
 /**
  * Check the Plugin(s) Order
