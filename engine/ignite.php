@@ -75,6 +75,16 @@ $speak = Config::speak();
 
 
 /**
+ * Include User Defined Function(s)
+ * --------------------------------
+ */
+
+if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
+    include $function;
+}
+
+
+/**
  * Define Allowed File Extension(s)
  * --------------------------------
  */
@@ -157,6 +167,8 @@ if($config->widget_include_js) {
  * -----------------
  */
 
+Weapon::fire('plugins_before');
+
 foreach($plugins = Plugin::load() as $k => $v) {
     $root__ = PLUGIN . DS . $k . DS;
     if( ! $language = File::exist($root__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
@@ -166,7 +178,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
     };
-    Weapon::fire('plugin_before', array($k));
+    Weapon::fire(array('plugin_before', 'plugin_' . md5($k) . '_before'));
     if($launch = File::exist($root__ . 'launch.php')) {
         if(strpos(File::B($root__), '__') === 0) {
             if(Guardian::happy() && $config->page_type === 'manager') {
@@ -181,7 +193,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
             include $launch; // backend
         }
     }
-    Weapon::fire('plugin_after', array($k));
+    Weapon::fire(array('plugin_after', 'plugin_' . md5($k) . '_after'));
 }
 
 Weapon::fire('plugins_after');
@@ -202,16 +214,6 @@ Weapon::fire('plugins_after');
 
 foreach(Get::state_menu() as $key => $value) {
     Menu::add($key, $value);
-}
-
-
-/**
- * Include User Defined Function(s)
- * --------------------------------
- */
-
-if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
-    include $function;
 }
 
 
