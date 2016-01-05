@@ -21,7 +21,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             'comments.moderation' => false,
             'widget_include_css' => false,
             'widget_include_js' => false,
-            'html_parser' => false
+            'html_parser.active' => Request::post('html_parser.active', false)
         );
         $pages = array(
             'index' => 'article',

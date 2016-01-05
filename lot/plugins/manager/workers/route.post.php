@@ -84,7 +84,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             'link_raw' => "",
             'description_raw' => "",
             'author_raw' => Guardian::get('author'),
-            'content_type_raw' => $config->html_parser,
+            'content_type_raw' => $config->html_parser->active,
             'fields_raw' => array(),
             'content_raw' => $config->defaults->{$segment . '_content'},
             'css_raw' => $config->defaults->{$segment . '_css'},
@@ -96,7 +96,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     Config::set(array(
         'page_title' => $title,
         'page' => $post,
-        'html_parser' => $post->content_type_raw,
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {

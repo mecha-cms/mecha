@@ -59,7 +59,8 @@ manager:
   title_comment_moderation: Aktifkan Moderasi Komentar
 
   title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
-  title_html_parser: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_html_parser_type: Parser <abbr title="Hyper Text Markup Language">HTML</abbr> 
+  title_html_parser_enable: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 
   title_widget_include_css: Sertakan <abbr title="Cascading Style Sheet">CSS</abbr> Widget Bawaan ke Tameng
   title_widget_include_js: Sertakan JavaScript Widget Bawaan ke Tameng

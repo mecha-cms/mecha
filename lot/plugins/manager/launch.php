@@ -59,7 +59,6 @@ Weapon::add('cargo_after', function() use($config, $speak) {
 }, 20);
 
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) {
-    $parser = Config::get('html_parser', 'HTML');
     $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
     echo Asset::javascript(array(
         $path . 'dashboard.js',
@@ -78,7 +77,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) 
     $cargo = array(
         'segment' => $segment,
         'languages' => Config::get('DASHBOARD.languages', array()),
-        'html_parser' => $parser !== false ? $parser : 'HTML',
+        'html_parser' => Config::get('html_parser'),
         'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
         'url' => array(
             'protocol' => $config->protocol,

@@ -68,6 +68,12 @@
       </span>
     </label>
     <label class="grid-group">
+      <span class="grid span-2 form-label"><?php echo $speak->manager->title_html_parser_type; ?></span>
+      <span class="grid span-4"><?php echo Form::select('html_parser[active]', (array) $config->html_parser->type, $config->html_parser->active, array(
+          'class' => 'select-block'
+      )); ?></span>
+    </label>
+    <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_per_page; ?> (<?php echo $speak->all; ?>)</span>
       <span class="grid span-4">
       <?php echo Form::number('per_page', Guardian::wayback('per_page', $config->per_page), null, array(
@@ -75,14 +81,6 @@
       )); ?>
       </span>
     </label>
-    <div class="grid-group">
-      <span class="grid span-2"></span>
-      <div class="grid span-4">
-        <div><?php echo Form::checkbox('comments[allow]', 'true', Guardian::wayback('comments.allow', $config->comments->allow), $speak->manager->title_comment_allow); ?></div>
-        <div><?php echo Form::checkbox('comments[moderation]', 'true', Guardian::wayback('comments.moderation', $config->comments->moderation), $speak->manager->title_comment_moderation); ?></div>
-        <div><?php echo Form::checkbox('html_parser', $config->html_parser !== false ? $config->html_parser : 'HTML', Guardian::wayback('html_parser', $config->html_parser) !== false, $speak->manager->title_html_parser); ?></div>
-      </div>
-    </div>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_page_excerpt_length; ?></span>
       <span class="grid span-4">
@@ -112,6 +110,13 @@
       <div class="grid span-4">
         <div><?php echo Form::checkbox('widget_include_css', 'true', Guardian::wayback('widget_include_css', $config->widget_include_css), $speak->manager->title_widget_include_css); ?></div>
         <div><?php echo Form::checkbox('widget_include_js', 'true', Guardian::wayback('widget_include_js', $config->widget_include_js), $speak->manager->title_widget_include_js); ?></div>
+      </div>
+    </div>
+    <div class="grid-group">
+      <span class="grid span-2"></span>
+      <div class="grid span-4">
+        <div><?php echo Form::checkbox('comments[allow]', 'true', Guardian::wayback('comments.allow', $config->comments->allow), $speak->manager->title_comment_allow); ?></div>
+        <div><?php echo Form::checkbox('comments[moderation]', 'true', Guardian::wayback('comments.moderation', $config->comments->moderation), $speak->manager->title_comment_moderation); ?></div>
       </div>
     </div>
   </fieldset>

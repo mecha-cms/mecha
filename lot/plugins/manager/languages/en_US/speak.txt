@@ -59,7 +59,8 @@ manager:
   title_comment_moderation: Enable Comment Moderation
 
   title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
-  title_html_parser: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
+  title_html_parser_type: <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
+  title_html_parser_enable: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 
   title_widget_include_css: Include Default Widget’s <abbr title="Cascading Style Sheet">CSS</abbr> to the Shield
   title_widget_include_js: Include Default Widget’s JavaScript to the Shield

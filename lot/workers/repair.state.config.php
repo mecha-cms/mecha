@@ -19,7 +19,10 @@ return array(
         'suffix' => '&hellip;',
         'id' => 'more:%d'
     ),
-    'html_parser' => 'HTML',
+    'html_parser' => array(
+        'type' => array('HTML' => 'HTML'),
+        'active' => 'HTML'
+    ),
     'widget_include_css' => true,
     'widget_include_js' => true,
 

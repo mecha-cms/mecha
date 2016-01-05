@@ -78,7 +78,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
             'email' => Guardian::get('email'),
             'url_raw' => "",
             'status_raw' => Guardian::get('status_raw'),
-            'content_type_raw' => $config->html_parser,
+            'content_type_raw' => $config->html_parser->active,
             'fields_raw' => array(),
             'message_raw' => ""
         ));
@@ -88,7 +88,6 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
     Config::set(array(
         'page_title' => $title,
         'page' => $response,
-        'html_parser' => $response->content_type_raw,
         'cargo' => 'repair.response.php'
     ));
     if($request = Request::post()) {

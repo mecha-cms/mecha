@@ -93,11 +93,11 @@ if( ! function_exists('do_comment_construct')) {
                         $name = strip_tags($request['name']);
                         $email = Text::parse($request['email'], '->broken_entity');
                         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
-                        $parser = strip_tags(Request::post('content_type', $config->html_parser));
+                        $parser = strip_tags(Request::post('content_type', $config->html_parser->active));
                         $message = $request['message'];
                         $field = Request::post('fields', array());
                         include File::D(__DIR__, 2) . DS . 'task.fields.php';
-                        $message = strip_tags($message, '<br><img>' . ($parser === 'HTML' || $parser === false ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><li><ol><p><pre><span><strong><sub><sup><time><u><ul><var>' : ""));
+                        $message = strip_tags($message, '<br><img>' . ($parser === false || $parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><li><ol><p><pre><span><strong><sub><sup><time><u><ul><var>' : ""));
                         // Temporarily disallow image(s) in comment to prevent XSS
                         $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
                         $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);

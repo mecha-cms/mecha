@@ -40,11 +40,9 @@ Filter::add(array('content', 'message'), 'do_markdown', 1);
 // Re-write `Text::parse($input, '->html')` parser
 Text::parser('to_html', 'do_markdown_parse');
 
-// Set new `html_parser` value
-if($config->html_parser === 'HTML') {
-    $config->html_parser = 'Markdown Extra';
-    Config::set('html_parser', 'Markdown Extra');
-}
+// Set new `html_parser` type
+$config->html_parser->type = array_merge((array) $config->html_parser->type, array('Markdown Extra' => 'Markdown Extra'));
+Config::set('html_parser.type', $config->html_parser->type);
 
 // Re-write `comment_wizard` value
 if($config->html_parser === 'Markdown Extra') {
