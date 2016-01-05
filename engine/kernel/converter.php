@@ -505,14 +505,14 @@ class Converter extends Base {
                 '#(<!--.*?-->)|(<[^\/]*?>)\s+(<[^\/]*?>)|(<\/.*?>)\s+(<\/.*?>)#s', // o+o || c+c
                 '#(<!--.*?-->)|(<\/.*?>)\s+(\s)(?!\<)|(?<!\>)\s+(\s)(<[^\/]*?\/?>)|(<[^\/]*?\/?>)\s+(\s)(?!\<)#s', // c+t || t+o || o+t -- separated by long white-space(s)
                 '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
-                '#<(img|input)(>| .*?>)<\/\1>#s', // reset previous fix
+                '#<(img|input)(>| .*?>)<\/\1\:>#s', // reset previous fix
                 '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
                 '#(?<=\>)(&nbsp;)(?=\<)#', // --ibid
                 // Remove HTML comment(s) except IE comment(s)
                 '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
             ),
             array(
-                '<$1$2</$1>',
+                '<$1$2</$1:>',
                 '$1$2$3',
                 '$1$2$3',
                 '$1$2$3$4$5',
