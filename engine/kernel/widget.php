@@ -433,7 +433,7 @@ class Widget {
 
     public static function remove($kin) {
         $c = get_called_class();
-        self::$w_x[$c][$kin] = 1;
+        self::$w_x[$c][$kin] = isset(self::$w[$c][$kin]) ? self::$w[$c][$kin] : 1;
         unset(self::$w[$c][$kin]);
     }
 

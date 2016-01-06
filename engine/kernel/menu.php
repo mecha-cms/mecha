@@ -46,7 +46,7 @@ class Menu extends Base {
     // Remove
     public static function remove($id = null) {
         $c = get_called_class();
-        self::$menus_x[$c][$id] = 1;
+        self::$menus_x[$c][$id] = isset(self::$menus[$c][$id]) ? self::$menus[$c][$id] : 1;
         if( ! is_null($id)) {
             unset(self::$menus[$c][$id]);
         } else {
