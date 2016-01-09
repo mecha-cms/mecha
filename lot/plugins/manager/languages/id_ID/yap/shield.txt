@@ -1,13 +1,13 @@
 ﻿Pastikan berkas tameng yang akan Anda unggah memiliki struktur konten seperti ini:
 
 ~~~ .no-highlight
-nama-tameng.zip
- └── nama-tameng/
-      ├── file-1.txt
-      ├── file-2.txt
-      ├── file-3.txt
-      ├── file-4.txt
-      └── …
+shield.zip
+└── shield/
+    ├── file-1.txt
+    ├── file-2.txt
+    ├── file-3.txt
+    ├── file-4.txt
+    └── …
 ~~~
 
 Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas tameng Anda, dan kemudian Anda perlu menamakan berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.

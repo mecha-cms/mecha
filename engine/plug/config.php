@@ -55,9 +55,9 @@ Config::plug('load', function() {
     if(strpos($path, $config['search']['slug'] . '/') === 0) $page = 'search';
     if(strpos($path, $config['manager']['slug'] . '/') === 0) $page = 'manager';
     if($path === 'sitemap') $page = 'sitemap';
-    if($path === 'feed' || $path === 'feeds') $page = 'feed';
-    if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0 || $path === 'feeds/rss' || strpos($path, 'feeds/rss/') === 0) $page = 'rss';
-    if($path === 'feed/json' || strpos($path, 'feed/json/') === 0 || $path === 'feeds/json' || strpos($path, 'feeds/json/') === 0) $page = 'json';
+    if($path === 'feed') $page = 'feed';
+    if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0) $page = 'rss';
+    if($path === 'feed/json' || strpos($path, 'feed/json/') === 0) $page = 'json';
 
     // Create a proper query string data
     if($path !== "") {
@@ -65,6 +65,10 @@ Config::plug('load', function() {
     }
     $queries = array();
     foreach($_GET as $k => $v) {
+        if(is_array($v)) {
+            unset($_GET[$k]);
+            continue;
+        }
         $queries[] = $k . '=' . urlencode($v);
     }
 

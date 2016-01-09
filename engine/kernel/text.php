@@ -2,7 +2,7 @@
 
 class Text extends Base {
 
-    protected static $text = "";
+    protected static $texts = "";
     protected static $parsers = array();
 
     /**
@@ -262,8 +262,7 @@ class Text extends Base {
      */
 
     public static function check($text) {
-        $arguments = is_array($text) ? $text : func_get_args();
-        self::$text = func_num_args() > 1 ? $arguments : $text;
+        self::$texts = is_array($text) ? $text : func_get_args();
         return new static;
     }
 
@@ -281,19 +280,17 @@ class Text extends Base {
      */
 
     public static function has($text) {
-        if( ! is_array($text) && func_num_args() === 1) {
-            $text = (string) $text;
-            return strpos(self::$text, $text) !== false;
-        } else {
-            $text = is_array($text) ? $text : func_get_args();
-            $text_v = 0;
-            foreach($text as $v) {
-                if(strpos(self::$text, $v) !== false) {
-                    $text_v++;
-                }
-            }
-            return $text_v === count($text);
+        $arguments = is_array($text) ? $text : func_get_args();
+        if(count($arguments) === 1) {
+            return strpos(self::$texts[0], $arguments[0]) !== false;
         }
+        $text_v = 0;
+        foreach($arguments as $v) {
+            if(strpos(self::$texts[0], $v) !== false) {
+                $text_v++;
+            }
+        }
+        return $text_v === count($text);
     }
 
     /**
@@ -310,16 +307,15 @@ class Text extends Base {
      */
 
     public static function in($text) {
-        if(is_string(self::$text)) {
-            if(is_array($text)) {
-                return Mecha::walk($text)->has(self::$text);
+        $arguments = is_array($text) ? $text : func_get_args();
+        if(count(self::$texts) === 1) {
+            if(count($arguments) === 1) {
+                return strpos($arguments[0], self::$texts[0]) !== false;
             }
-            return strpos($text, self::$text) !== false;
+            return Mecha::walk($arguments)->has(self::$texts[0]);
         }
-        foreach((array) self::$text as $v) {
-            if(strpos($text, $v) !== false) {
-                return true;
-            }
+        foreach(self::$texts as $v) {
+            if(strpos($arguments[0], $v) !== false) return true;
         }
         return false;
     }
@@ -339,8 +335,8 @@ class Text extends Base {
 
     public static function offset($text) {
         $output = array('start' => -1, 'end' => -1);
-        if( ! is_string(self::$text)) return (object) $output;
-        if(($offset = strpos(self::$text, $text)) !== false) {
+        if( ! is_string(self::$texts)) return (object) $output;
+        if(($offset = strpos(self::$texts, $text)) !== false) {
             $output['start'] = $offset;
             $output['end'] = $offset + strlen($text) - 1;
         }

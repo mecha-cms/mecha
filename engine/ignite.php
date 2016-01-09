@@ -106,7 +106,7 @@ Date::timezone($config->timezone);
  * -------------
  */
 
-Weapon::add('meta', function() {
+function do_meta_1() {
     $config = Config::get();
     $speak = Config::speak();
     $html  = O_BEGIN . Cell::meta(null, null, array('charset' => $config->charset)) . NL;
@@ -118,16 +118,16 @@ Weapon::add('meta', function() {
     $html .= Cell::meta('description', Text::parse($config->description, '->text'), array(), 2) . NL;
     $html .= Cell::meta('author', Text::parse($config->author->name, '->text'), array(), 2) . NL;
     echo Filter::apply('meta', $html, 1);
-}, 10);
+}
 
-Weapon::add('meta', function() {
+function do_meta_2() {
     $config = Config::get();
     $html  = Cell::title(Text::parse($config->page_title, '->text'), array(), 2) . NL;
     $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
-}, 20);
+}
 
-Weapon::add('meta', function() {
+function do_meta_3() {
     $config = Config::get();
     $speak = Config::speak();
     $html  = Cell::link(Filter::apply('url', $config->url . '/favicon.ico'), 'shortcut icon', 'image/x-icon', array(), 2) . NL;
@@ -137,7 +137,11 @@ Weapon::add('meta', function() {
         'title' => $speak->feeds . $config->title_separator . $config->title
     ), 2) . O_END;
     echo Filter::apply('meta', $html, 3);
-}, 30);
+}
+
+Weapon::add('meta', 'do_meta_1', 10);
+Weapon::add('meta', 'do_meta_2', 20);
+Weapon::add('meta', 'do_meta_3', 30);
 
 Weapon::add('SHIPMENT_REGION_TOP', function() {
     Weapon::fire('meta');
@@ -222,7 +226,7 @@ foreach(Get::state_menu() as $key => $value) {
  * ------------------------------
  */
 
-Filter::add('shortcode', function($content) {
+function do_shortcode($content) {
     if(strpos($content, '{{') === false) return $content;
     foreach(Get::state_shortcode() as $key => $value) {
         $key = preg_quote($key, '#');
@@ -244,13 +248,17 @@ Filter::add('shortcode', function($content) {
         $content = preg_replace('#(?<!`)' . $key . '|' . $key . '(?!`)#', Converter::DW($value), $content);
     }
     return $content;
-}, 20);
+}
+
+function do_shortcode_x($content) {
+    if(strpos($content, '`{{') === false) return $content;
+    return str_replace(array('`{{', '}}`'), array('{{', '}}'), $content);
+}
+
+Filter::add('shortcode', 'do_shortcode', 20);
 
 // YOU ARE HERE! -- Specify your own shortcode priority to be greater
 // than the default shortcode file priority, but lesser than the shortcode
 // deactivation priority by determining the shortcode priority between 20 - 30
 
-Filter::add('shortcode', function($content) {
-    if(strpos($content, '`{{') === false) return $content;
-    return str_replace(array('`{{', '}}`'), array('{{', '}}'), $content);
-}, 30);
+Filter::add('shortcode', 'do_shortcode_x', 30);

@@ -83,7 +83,7 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) 
             'protocol' => $config->protocol,
             'base' => $config->base,
             'host' => $config->host,
-            'root' => $config->url,
+            'url' => $config->url,
             'path' => $config->url_path,
             'current' => $config->url_current,
             'query' => $config->url_query

@@ -217,17 +217,17 @@ class Asset extends Base {
     public static function ignore($path) {
         if(is_array($path)) {
             foreach($path as $p) {
-                self::$assets_x[$p] = 1;
+                self::$assets_x[$p] = isset(self::$assets[$p]) ? self::$assets[$p] : 1;
             }
         } else {
-            self::$assets_x[$path] = 1;
+            self::$assets_x[$path] = isset(self::$assets[$path]) ? self::$assets[$path] : 1;
         }
     }
 
     // Check for ignored asset(s)
     public static function ignored($path = null) {
         if(is_null($path)) return self::$assets_x;
-        return isset(self::$assets_x[$path]) ? $path : false;
+        return isset(self::$assets_x[$path]) ? self::$assets_x[$path] : false;
     }
 
 }
