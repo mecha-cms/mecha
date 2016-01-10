@@ -75,6 +75,21 @@ $speak = Config::speak();
 
 
 /**
+ * Include Language File of Shield
+ * -------------------------------
+ */
+
+$__ = SHIELD . DS . $config->shield;
+if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+    $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+}
+if(file_exists($language)) {
+    Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
+    $speak = Config::speak(); // refresh ...
+}
+
+
+/**
  * Include User Defined Function(s)
  * --------------------------------
  */
@@ -174,17 +189,17 @@ if($config->widget_include_js) {
 Weapon::fire('plugins_before');
 
 foreach($plugins = Plugin::load() as $k => $v) {
-    $root__ = PLUGIN . DS . $k . DS;
-    if( ! $language = File::exist($root__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
-        $language = $root__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
+    $__ = PLUGIN . DS . $k . DS;
+    if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
+        $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
     }
     if(file_exists($language)) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
-    };
+    }
     Weapon::fire(array('plugin_before', 'plugin_' . md5($k) . '_before'));
-    if($launch = File::exist($root__ . 'launch.php')) {
-        if(strpos(File::B($root__), '__') === 0) {
+    if($launch = File::exist($__ . 'launch.php')) {
+        if(strpos(File::B($__), '__') === 0) {
             if(Guardian::happy() && $config->page_type === 'manager') {
                 include $launch; // backend
             }
@@ -192,7 +207,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
             include $launch; // frontend
         }
     }
-    if($launch = File::exist($root__ . '__launch.php')) {
+    if($launch = File::exist($__ . '__launch.php')) {
         if(Guardian::happy() && $config->page_type === 'manager') {
             include $launch; // backend
         }

@@ -1,14 +1,14 @@
 /**
- * ==================================================================================
- *  The following is required to style all general appearance of miscellaneous
- *  elements in page. It may seem that this file contains a lot of things that are
- *  not useful, but this is how I can keep your page layout stable accross browsers.
+ * ============================================================================================
+ *  The following is required to style all general appearance of miscellaneous element in
+ *  page. It may seem that this file contains a lot of things that  not useful, but this is
+ *  how I can keep the page layout appearance stable accross browsers.
  *
- *  If you intend to contribute by making a theme for this CMS, I suggest you
- *  to include this file as a base CSS, so that it can accelerate your work.
+ *  If you intend to contribute by making a theme for this CMS, I suggest you to include this
+ *  file as a base CSS, so that it can accelerate your work.
  *
- *  PS: Excuse me with my CSS writing style. I like to keep them compact like this.
- * ==================================================================================
+ *  PS: Excuse me with my CSS writing style. I like to keep everything compact like this.
+ * ============================================================================================
  *
  *  @base-font-size: 13px;
  *  @base-line-height: 18px;
@@ -16,7 +16,7 @@
  */
 
 
-/* RESETS */
+/* RESET */
 
 html,body,div,span,object,iframe,hr,
 h1,h2,h3,h4,h5,h6,p,blockquote,pre,
@@ -125,7 +125,7 @@ abbr[title],dfn[title] {border-bottom:1px solid transparent}
 abbr[title]:hover,dfn[title]:hover {border-bottom:1px solid}
 
 
-/* FORM ELEMENTS */
+/* FORM */
 
 button,
 input,
@@ -300,7 +300,7 @@ legend {
 }
 
 
-/* TABLES */
+/* TABLE */
 
 table {
   border-collapse:collapse;
@@ -328,7 +328,7 @@ table[border="1"] td {
 }
 
 
-/* BLOCKS */
+/* CODE */
 
 pre {
   overflow:auto;
@@ -346,6 +346,9 @@ pre code {
   font-size:100%;
   color:inherit;
 }
+
+
+/* BLOCK */
 
 iframe {
   display:block;
@@ -385,7 +388,7 @@ dt {font-size:120%}
 dd {margin-left:1em}
 
 
-/* ALIGNMENTS */
+/* ALIGNMENT */
 
 .align-left {
   margin-right:1.3846153846153846em;
