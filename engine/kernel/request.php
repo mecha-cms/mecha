@@ -34,7 +34,7 @@ class Request extends Base {
             return $_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST) && ! empty($_POST) ? ($str_eval ? Converter::strEval($_POST, false) : $_POST) : $fallback;
         }
         $output = Mecha::GVR($_POST, $param, $fallback);
-        return ! empty($output) ? ($str_eval ? Converter::strEval($output, false) : $output) : $fallback;
+        return trim($output) !== "" ? ($str_eval ? Converter::strEval($output, false) : $output) : $fallback;
     }
 
     public static function get($param = null, $fallback = false, $str_eval = true) {
@@ -42,7 +42,7 @@ class Request extends Base {
             return $_SERVER['REQUEST_METHOD'] === 'GET' && isset($_GET) && ! empty($_GET) ? ($str_eval ? Converter::strEval($_GET, false) : $_GET) : $fallback;
         }
         $output = Mecha::GVR($_GET, $param, $fallback);
-        return ! empty($output) ? ($str_eval ? Converter::strEval($output, false) : $output) : $fallback;
+        return trim($output) !== "" ? ($str_eval ? Converter::strEval($output, false) : $output) : $fallback;
     }
 
     public static function method($method = null, $fallback = false) {

@@ -112,7 +112,10 @@ class HTTP extends Base {
         $query = ! empty($query) ? array_merge($_GET, $query) : $_GET;
         $results = array();
         foreach($query as $k => $v) {
-            if($v === false) continue;
+            if($v === false || is_array($v)) { // TODO: accept array value
+                unset($_GET[$k]);
+                continue;
+            }
             $value = $v !== true ? '=' . Text::parse(Converter::str($v), '->encoded_url') : "";
             $results[] = $k . $value;
         }

@@ -59,17 +59,9 @@ Config::plug('load', function() {
     if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0) $page = 'rss';
     if($path === 'feed/json' || strpos($path, 'feed/json/') === 0) $page = 'json';
 
-    // Create a proper query string data
+    // Create proper query string data
     if($path !== "") {
         array_shift($_GET);
-    }
-    $queries = array();
-    foreach($_GET as $k => $v) {
-        if(is_array($v)) {
-            unset($_GET[$k]);
-            continue;
-        }
-        $queries[] = $k . '=' . urlencode($v);
     }
 
     // Loading the language file(s)
@@ -84,7 +76,7 @@ Config::plug('load', function() {
         Mecha::extend($lang, $lang_a);
     }
 
-    $config['query'] = $config['url_query'] = ! empty($queries) ? '?' . implode('&', $queries) : "";
+    $config['query'] = $config['url_query'] = HTTP::query($_GET);
     $config['offset'] = isset($s[1]) && is_numeric($s[1]) ? (int) $s[1] : 1;
     $config['page_type'] = $page;
     $config['speak'] = $lang;

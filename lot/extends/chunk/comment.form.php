@@ -5,7 +5,7 @@
   <?php Shield::chunk('comment.form.name'); ?>
   <?php Shield::chunk('comment.form.email'); ?>
   <?php Shield::chunk('comment.form.url'); ?>
-  <?php echo Form::hidden('parent', ""); ?>
+  <?php echo Form::hidden('parent', Guardian::wayback('parent')); ?>
   <?php Weapon::fire('comment_form_input_after', $hooks); ?>
   <?php Weapon::fire('comment_form_textarea_before', $hooks); ?>
   <?php Shield::chunk('comment.form.message'); ?>
