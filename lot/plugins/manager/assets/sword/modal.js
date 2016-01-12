@@ -25,7 +25,7 @@
     if (!$modal.length) return;
 
     $close.on("click", function(e) {
-        $(this).closest('.modal').hide().next().hide();
+        $(this).closest('.modal-area').hide().next().hide();
         $base.css({
             position: "",
             overflow: ""
