@@ -13,6 +13,10 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     if( ! file_exists($d)) {
         Shield::abort(); // Folder not found!
     }
+    // Disallow path traversal
+    if(strpos($d . DS, ASSET . DS . '..' . DS) === 0) {
+        Shield::abort();
+    }
     // Disallow `htaccess` and `php` file extension(s)
     $ee = File::$config['file_extension_allow'];
     foreach(array('htaccess', 'php') as $e) {
