@@ -69,6 +69,8 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
+        // Limit HTML tag(s) allowed in the title field
+        $request['title'] = Text::parse($request['title'], '->text', str_replace('<a>', "", WISE_CELL_I));
         // Empty title field
         if(trim($request['title']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', $speak->title));

@@ -54,5 +54,10 @@ define('SCRIPT_EXT', 'archive,cache,css,draft,htaccess,hold,htm,html,js,json,jso
 define('DEBUG', false); // `true` to enable debug mode
 define('MAX_ERROR_FILE_SIZE', 1048576); // 1 MB
 
+// Common HTML tag(s) allowed to be written in the form field
+define('WISE_CELL_I', '<a><abbr><b><code><del><dfn><em><i><ins><kbd><mark><q><span><strong><sub><sup><time><u>');
+define('WISE_CELL_B', '<blockquote><caption><dd><div><dl><dt><figcaption><figure><li><ol><p><pre><table><tbody><tfoot><td><th><tr><ul>');
+define('WISE_CELL', WISE_CELL_I . WISE_CELL_B);
+
 require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'launch.php';

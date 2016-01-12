@@ -63,6 +63,8 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
     ));
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
+        // Limit HTML tag(s) allowed in the name field
+        $request['name'] = Text::parse($request['name'], '->text', str_replace('<a>', "", WISE_CELL_I));
         // Empty name field
         if(trim($request['name']) === "") {
             Notify::error(Config::speak('notify_error_empty_field', $speak->name));
