@@ -24,7 +24,7 @@ Config::plug('load', function() {
     $config['host'] = $config['url_host'] = $_SERVER['HTTP_HOST'];
     $config['base'] = $config['url_base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
     $config['url'] = $config['url_'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-    $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim('?' . $_SERVER['QUERY_STRING'], '/?') ? "" : preg_replace('#[?&].*$#', "", trim('?' . $_SERVER['QUERY_STRING'], '/?'));
+    $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // kill tag(s) and query string(s) from URL
     $config['current'] = $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
     $config['origin'] = $config['url_origin'] = Session::get('url_origin', false);
 
@@ -34,22 +34,31 @@ Config::plug('load', function() {
 
     foreach(array(ARTICLE, PAGE, COMMENT) as $folder) {
         $s = File::B($folder);
-        $config['total_' . $s . 's'] = count(glob($folder . DS . '*.txt', GLOB_NOSORT));
-        $config['total_' . $s . 's_backend'] = count(glob($folder . DS . '*.{txt,draft,archive,hold}', GLOB_NOSORT | GLOB_BRACE));
+        $config['__' . $s . 's'] = glob($folder . DS . '*.txt', GLOB_NOSORT);
+        $config['__' . $s . 's_backend'] = glob($folder . DS . '*.*', GLOB_NOSORT);
+        $config['total_' . $s . 's'] = count($config['__' . $s . 's']);
+        $config['total_' . $s . 's_backend'] = count($config['__' . $s . 's_backend']);
     }
 
     foreach(array(SHIELD, PLUGIN) as $folder) {
         $s = File::B($folder);
-        $config['total_' . $s] = count(glob($folder . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR));
+        $config['__' . $s] = glob($folder . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
+        $config['total_' . $s] = count($config['__' . $s]);
     }
 
     $page = '404';
     $path = $config['url_path'];
     $s = explode('/', $path);
-    if($path === "") $page = 'home';
-    if($path !== "" && strpos($path, '/') === false) $page = 'page';
+    if($path === "") $page = ""; // home page
+    if($path !== "" && strpos($path, '/') === false && strpos(implode('%', $config['__pages']), '_' . $path . '.') !== false) $page = 'page';
     if($path === $config['index']['slug']) $page = 'index';
-    if($s[0] === $config['index']['slug'] && isset($s[1])) $page = is_numeric($s[1]) ? 'index' : 'article';
+    if($s[0] === $config['index']['slug'] && isset($s[1])) {
+        if( ! is_numeric($s[1])) {
+            $page = strpos(implode('%', $config['__articles']), '_' . $s[1] . '.') !== false ? 'article' : '404';
+        } else {
+            $page = 'index';
+        }
+    }
     if(strpos($path, $config['tag']['slug'] . '/') === 0) $page = 'tag';
     if(strpos($path, $config['archive']['slug'] . '/') === 0) $page = 'archive';
     if(strpos($path, $config['search']['slug'] . '/') === 0) $page = 'search';
@@ -70,9 +79,9 @@ Config::plug('load', function() {
     if( ! file_exists($lang) && ! file_exists($lang_a)) {
         Guardian::abort('Language file not found.');
     }
-    $lang = file_exists($lang) ? Text::toArray(File::open($lang)->read(), S, '  ') : array();
+    $lang = Text::toArray(File::open($lang)->read(""), S, '  ');
     if($config['language'] !== 'en_US') {
-        $lang_a = file_exists($lang_a) ? Text::toArray(File::open($lang_a)->read(), S, '  ') : array();
+        $lang_a = Text::toArray(File::open($lang_a)->read(""), S, '  ');
         Mecha::extend($lang, $lang_a);
     }
 
@@ -80,6 +89,12 @@ Config::plug('load', function() {
     $config['offset'] = isset($s[1]) && is_numeric($s[1]) ? (int) $s[1] : 1;
     $config['page_type'] = $page;
     $config['speak'] = $lang;
+    $config['is'] = array(
+        'post' => $page !== '404' && Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR))->has(POST . DS . $page),
+        'posts' => Mecha::walk(array('index', 'tag', 'archive', 'search', ""))->has($page),
+        'response' => false, // TODO: make this usable
+        'responses' => false // TODO: make this usable
+    );
 
     Config::set($config);
 
