@@ -46,7 +46,7 @@ class Navigator extends Base {
         $q = str_replace('&', '&amp;', $config->url_query);
         $qq = strpos($connector, '?') !== false ? str_replace('?', '&amp;', $q) : $q;
         $total = count($pages);
-        $sn = self::$config;
+        $c = self::$config;
 
         if(strpos($connector, '%s') === false) {
             if(trim($connector, '/') !== "") {
@@ -72,7 +72,7 @@ class Navigator extends Base {
             $bucket['next']['anchor'] = Filter::apply(array('pager:next.anchor', 'pager:anchor', 'anchor'), $next ? '<a href="' . $bucket['next']['url'] . '" rel="next">' . $speak->older . '</a>' : "", $next, $connector);
 
             // Generate pagination anchor(s) for index page
-            $html = '<span' . ($sn['classes']['pagination'] !== false ? ' class="' . $sn['classes']['pagination'] . '"' : "") . '>';
+            $html = '<span' . ($c['classes']['pagination'] !== false ? ' class="' . $c['classes']['pagination'] . '"' : "") . '>';
             $chunk = (int) ceil($total / $per_page);
             $step = $chunk > self::$config['step'] ? self::$config['step'] : $chunk;
             $left = $current - $step;
@@ -88,7 +88,7 @@ class Navigator extends Base {
                     if($chunk > 1) {
                         if($i - 1 < $chunk && ($i > 0 && $i + 1 > $current - $left - round($chunk / 2))) {
                             $bucket['step']['url'][$i] = Filter::apply(array('pager:step.url', 'pager:url'), $i !== $current ? $base . sprintf($connector, $i) . $qq : false, $i, $connector);
-                            $bucket['step']['anchor'][$i] = Filter::apply(array('pager:step.anchor', 'pager:anchor', 'anchor'), $i !== $current ? '<a href="' . $bucket['step']['url'][$i] . '">' . $i . '</a>' : '<strong' . ($sn['classes']['current'] !== false ? ' class="' . $sn['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector);
+                            $bucket['step']['anchor'][$i] = Filter::apply(array('pager:step.anchor', 'pager:anchor', 'anchor'), $i !== $current ? '<a href="' . $bucket['step']['url'][$i] . '">' . $i . '</a>' : '<strong' . ($c['classes']['current'] !== false ? ' class="' . $c['classes']['current'] . '"' : "") . '>' . $i . '</strong>', $i, $connector);
                             $html .= $bucket['step']['anchor'][$i];
                         }
                     }

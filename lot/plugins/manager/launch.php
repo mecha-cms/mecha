@@ -145,7 +145,7 @@ if($config->page_type === 'manager') {
     }, 20);
 }
 
-if($config->page_type === 'manager' || $config->page_type === 'article') {
+if($config->page_type === 'manager' || $config->is->post) {
     // Add default comment footer link(s)
     Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {
         $status = Mecha::alter($comment->state, array(
@@ -287,7 +287,7 @@ Weapon::add('shield_before', function() {
 
     }
 
-    if(Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR))->has(POST . DS . $config->page_type)) {
+    if($config->page_type !== '404' && $config->is->post) {
         $type = $config->page_type;
         $id = $config->{$type}->id;
         $text = Config::speak($type);

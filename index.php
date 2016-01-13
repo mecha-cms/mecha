@@ -55,8 +55,8 @@ define('DEBUG', false); // `true` to enable debug mode
 define('MAX_ERROR_FILE_SIZE', 1048576); // 1 MB
 
 // Common HTML tag(s) allowed to be written in the form field
-define('WISE_CELL_I', '<a><abbr><b><code><del><dfn><em><i><ins><kbd><mark><q><span><strong><sub><sup><time><u>');
-define('WISE_CELL_B', '<blockquote><caption><dd><div><dl><dt><figcaption><figure><li><ol><p><pre><table><tbody><tfoot><td><th><tr><ul>');
+define('WISE_CELL_I', '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><span><strong><sub><sup><time><u><var>');
+define('WISE_CELL_B', '<address><blockquote><caption><dd><div><dl><dt><figcaption><figure><hr><h1><h2><h3><h4><h5><h6><li><ol><p><pre><table><tbody><tfoot><td><th><tr><ul>');
 define('WISE_CELL', WISE_CELL_I . WISE_CELL_B);
 
 require ENGINE . DS . 'ignite.php';

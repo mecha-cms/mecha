@@ -14,3 +14,11 @@ function do_shortcode_php($content) {
 if( ! Guardian::happy() || Guardian::happy(1)) {
     Filter::add('shortcode', 'do_shortcode_php', 20.1);
 }
+
+// Create a new comment
+if($config->is->post && Request::method('post')) {
+    // Disallow `{{php}}` shortcode in comment to prevent PHP script injection
+    if(isset($_POST['message'])) {
+        $_POST['message'] = str_replace(array('{{php}}', '{{/php}}'), "", $_POST['message']);
+    }
+}

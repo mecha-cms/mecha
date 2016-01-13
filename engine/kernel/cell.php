@@ -7,7 +7,9 @@ class Cell {
         'alt' => null,
         'width' => null,
         'height' => null,
+        'property' => null,
         'name' => null,
+        'content' => null,
         'class' => null,
         'id' => null,
         'href' => null,
@@ -87,7 +89,7 @@ class Cell {
     }
 
     // HTML comment
-    public static function _($content = "", $indent = 0, $block = ' ') {
+    public static function __($content = "", $indent = 0, $block = ' ') {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
         if($block === true || $block === '\n\n') {
             $block_start = str_repeat(NL, 2);

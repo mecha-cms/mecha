@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html dir="<?php echo $config->language_direction; ?>" class="page-<?php echo $config->page_type; ?>">
+<html dir="<?php echo $config->language_direction; ?>" class="page-<?php echo $config->page_type ? $config->page_type : 'home'; ?>">
   <head>
     <?php Weapon::fire('SHIPMENT_REGION_TOP'); ?>
     <?php Weapon::fire('shell_before'); ?>

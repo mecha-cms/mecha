@@ -94,15 +94,11 @@ if( ! function_exists('do_comment_construct')) {
                         $email = Text::parse($request['email'], '->broken_entity');
                         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
                         $parser = strip_tags(Request::post('content_type', $config->html_parser->active));
-                        $message = $request['message'];
+                        $message = Text::parse($request['message'], '->text', WISE_CELL . '<img>');
                         $field = Request::post('fields', array());
                         include File::D(__DIR__, 2) . DS . 'task.fields.php';
-                        $message = strip_tags($message, '<br><img>' . ($parser === false || $parser === 'HTML' ? '<a><abbr><b><blockquote><code><del><dfn><em><i><ins><li><ol><p><pre><span><strong><sub><sup><time><u><ul><var>' : ""));
                         // Temporarily disallow image(s) in comment to prevent XSS
-                        $message = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $message);
                         $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);
-                        // Disallow `{{php}}` shortcode in comment to prevent PHP script injection
-                        $message = str_replace(array('{{php}}', '{{/php}}'), "", $message);
                         Page::header(array(
                             'Name' => $name,
                             'Email' => $email,
@@ -126,4 +122,4 @@ if( ! function_exists('do_comment_construct')) {
     }
 }
 
-Weapon::add('shield_before', 'do_comment_construct');
+Weapon::add('shield_before', 'do_comment_construct', 1);

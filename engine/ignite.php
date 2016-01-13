@@ -83,6 +83,7 @@ $__ = SHIELD . DS . $config->shield;
 if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
     $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
 }
+
 if(file_exists($language)) {
     Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
     $speak = Config::speak(); // refresh ...
@@ -138,17 +139,17 @@ function do_meta_1() {
 function do_meta_2() {
     $config = Config::get();
     $html  = Cell::title(Text::parse($config->page_title, '->text'), array(), 2) . NL;
-    $html .= Cell::_('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
+    $html .= Cell::__('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }
 
 function do_meta_3() {
     $config = Config::get();
     $speak = Config::speak();
-    $html  = Cell::link(Filter::apply('url', $config->url . '/favicon.ico'), 'shortcut icon', 'image/x-icon', array(), 2) . NL;
-    $html .= Cell::link(Filter::apply('url', $config->url_current), 'canonical', null, array(), 2) . NL;
-    $html .= Cell::link(Filter::apply('url', $config->url . '/sitemap'), 'sitemap', null, array(), 2) . NL;
-    $html .= Cell::link(Filter::apply('url', $config->url . '/feed/rss'), 'alternate', 'application/rss+xml', array(
+    $html  = Cell::link(Filter::colon('favicon:url', $config->url . '/favicon.ico'), 'shortcut icon', 'image/x-icon', array(), 2) . NL;
+    $html .= Cell::link(Filter::colon('canonical:url', $config->url_current), 'canonical', null, array(), 2) . NL;
+    $html .= Cell::link(Filter::colon('sitemap:url', $config->url . '/sitemap'), 'sitemap', null, array(), 2) . NL;
+    $html .= Cell::link(Filter::colon('feed:url', $config->url . '/feed/rss'), 'alternate', 'application/rss+xml', array(
         'title' => $speak->feeds . $config->title_separator . $config->title
     ), 2) . O_END;
     echo Filter::apply('meta', $html, 3);

@@ -21,8 +21,8 @@ echo '<link>' . $config->url . '/</link>';
 echo '<description>' . $config->description . '</description>';
 echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
 echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
-echo $config->offset > 1 ? '<atom:link rel="previous" href="' . Filter::apply('url', $url_base . '/' . ($config->offset - 1)) . '"/>' : "";
-echo $config->offset < ceil($config->total_articles / $rss_limit) ? '<atom:link rel="next" href="' . Filter::apply('url', $url_base . '/' . ($config->offset + 1)) . '"/>' : "";
+echo $config->offset > 1 ? '<atom:link rel="previous" href="' . Filter::colon('feed:url', $url_base . '/' . ($config->offset - 1)) . '"/>' : "";
+echo $config->offset < ceil($config->total_articles / $rss_limit) ? '<atom:link rel="next" href="' . Filter::colon('feed:url', $url_base . '/' . ($config->offset + 1)) . '"/>' : "";
 
 Weapon::fire('rss_meta');
 
