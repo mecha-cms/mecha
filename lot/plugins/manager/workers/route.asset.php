@@ -10,6 +10,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
     $offset = (int) $offset;
     $p = Request::get('path', false);
     $d = ASSET . File::path($p ? DS . $p : "");
+    $d = str_replace(DS . DS, DS, $d);
     if( ! file_exists($d)) {
         Shield::abort(); // Folder not found!
     }
