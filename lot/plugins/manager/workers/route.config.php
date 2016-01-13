@@ -54,7 +54,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 Notify::error($speak->notify_invalid_per_page_number);
                 Guardian::memorize($request);
             }
-            // Check if slug already exist on static page(s)
+            // Check if slug already exists on static page(s)
             if(isset($slugs[$request[$page]['slug']])) {
                 Notify::error(Config::speak('notify_error_slug_exist', $request[$page]['slug']));
                 Guardian::memorize($request);

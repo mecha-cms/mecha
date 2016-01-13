@@ -32,29 +32,24 @@ Config::plug('load', function() {
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
     $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;
 
+    $ss = array();
     foreach(array(ARTICLE, PAGE, COMMENT) as $folder) {
         $s = File::B($folder);
-        $config['__' . $s . 's'] = glob($folder . DS . '*.txt', GLOB_NOSORT);
-        $config['__' . $s . 's_backend'] = glob($folder . DS . '*.*', GLOB_NOSORT);
-        $config['total_' . $s . 's'] = count($config['__' . $s . 's']);
-        $config['total_' . $s . 's_backend'] = count($config['__' . $s . 's_backend']);
-    }
-
-    foreach(array(SHIELD, PLUGIN) as $folder) {
-        $s = File::B($folder);
-        $config['__' . $s] = glob($folder . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR);
-        $config['total_' . $s] = count($config['__' . $s]);
+        $ss[$s][0] = glob($folder . DS . '*.*', GLOB_NOSORT);
+        $ss[$s][1] = glob($folder . DS . '*.txt', GLOB_NOSORT);
+        $config['total_' . $s . 's'] = count($ss[$s][1]);
+        $config['__total_' . $s . 's'] = count($ss[$s][0]);
     }
 
     $page = '404';
     $path = $config['url_path'];
     $s = explode('/', $path);
     if($path === "") $page = ""; // home page
-    if($path !== "" && strpos($path, '/') === false && strpos(implode('%', $config['__pages']), '_' . $path . '.') !== false) $page = 'page';
+    if($path !== "" && strpos($path, '/') === false && strpos(implode('%', $ss['page'][1]), '_' . $path . '.') !== false) $page = 'page';
     if($path === $config['index']['slug']) $page = 'index';
     if($s[0] === $config['index']['slug'] && isset($s[1])) {
         if( ! is_numeric($s[1])) {
-            $page = strpos(implode('%', $config['__articles']), '_' . $s[1] . '.') !== false ? 'article' : '404';
+            $page = strpos(implode('%', $ss['article'][1]), '_' . $s[1] . '.') !== false ? 'article' : '404';
         } else {
             $page = 'index';
         }
@@ -89,12 +84,15 @@ Config::plug('load', function() {
     $config['offset'] = isset($s[1]) && is_numeric($s[1]) ? (int) $s[1] : 1;
     $config['page_type'] = $page;
     $config['speak'] = $lang;
+
     $config['is'] = array(
         'post' => $page !== '404' && Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR))->has(POST . DS . $page),
         'posts' => Mecha::walk(array('index', 'tag', 'archive', 'search', ""))->has($page),
         'response' => false, // TODO: make this usable
         'responses' => false // TODO: make this usable
     );
+
+    unset($ss, $s, $lang, $lang_a);
 
     Config::set($config);
 

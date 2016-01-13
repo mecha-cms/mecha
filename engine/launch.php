@@ -328,8 +328,8 @@ Route::accept(array('feed', 'feed/rss', 'feed/rss/(:num)'), function($offset = 1
  *
  * [1]. feed/json
  * [2]. feed/json/1
- * [3]. feed/json?callback=theFunction
- * [4]. feed/json/1?callback=theFunction
+ * [3]. feed/json?callback=whatTheFunc
+ * [4]. feed/json/1?callback=whatTheFunc
  *
  */
 

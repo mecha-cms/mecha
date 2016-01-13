@@ -170,7 +170,7 @@ Weapon::add('shield_before', function() {
     $config = Config::get();
     $speak = Config::speak();
 
-    $total = $config->total_comments_backend;
+    $total = $config->__total_comments;
     $destination = LOG . DS . 'comments.total.log';
     if($file = File::exist($destination)) {
         $old = (int) File::open($file)->read();

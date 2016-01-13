@@ -11,7 +11,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
         Shield::abort();
     }
     $offset = (int) $offset;
-    File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
+    File::write($config->{'__total_' . $segment . 's'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
     if($files = call_user_func('Get::' . $segment . 's', 'DESC', Request::get('filter', ""), 'txt,hold')) {
         $responses_id = Mecha::walk($files, function($v) {
             $parts = explode('_', File::B($v));
@@ -57,7 +57,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
         $segment = $segment[0];
         include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'fields[].php';
     }, 1);
-    File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
+    File::write($config->{'__total_' . $segment . 's'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
     if($id && $response = call_user_func('Get::' . $segment, $id, array('message'))) {
         if( ! Guardian::happy(1)) {
             Shield::abort();
@@ -172,12 +172,12 @@ Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', fu
         $post = $response;
         include __DIR__ . DS . 'task.kill.substance.php';
         $post = $post_o;
-        File::write($config->{'total_' . $segment . 's_backend'} - 1)->saveTo(LOG . DS . $segment . 's.total.log', 0600);
+        File::write($config->{'__total_' . $segment . 's'} - 1)->saveTo(LOG . DS . $segment . 's.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->{$segment}));
         Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_destruct'), array($P, $P));
         Guardian::kick($config->manager->slug . '/' . $segment);
     } else {
-        File::write($config->{'total_' . $segment . 's_backend'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
+        File::write($config->{'__total_' . $segment . 's'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
         Notify::warning($speak->notify_confirm_delete);
     }
     Shield::lot(array('segment' => array($segment, $post)))->attach('manager');

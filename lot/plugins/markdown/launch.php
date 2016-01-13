@@ -44,6 +44,8 @@ $config->html_parser->type = array_merge(
     (array) $config->html_parser->type,
     array('Markdown' => 'Markdown Extra')
 );
+
+// --ibid
 Config::set('html_parser.type', $config->html_parser->type);
 
 // Re-write `comment_wizard` value
@@ -53,8 +55,10 @@ if($config->html_parser->active === 'Markdown' || $config->html_parser->active =
 
 // Create a new comment
 if($config->is->post && Request::method('post')) {
-    // Temporarily disallow image(s) in comment to prevent XSS
     if(isset($_POST['message'])) {
+        // **Markdown Extra** does not support syntax to generate `del`, `ins` and `mark` tag
+        $_POST['message'] = Text::parse($_POST['message'], '->text', '<br><del><ins><mark>', false);
+        // Temporarily disallow image(s) in comment to prevent XSS
         $_POST['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $_POST['message']);
     }
 }

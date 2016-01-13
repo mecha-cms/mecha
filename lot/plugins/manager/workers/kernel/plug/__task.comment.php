@@ -94,7 +94,7 @@ if( ! function_exists('do_comment_construct')) {
                         $email = Text::parse($request['email'], '->broken_entity');
                         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
                         $parser = strip_tags(Request::post('content_type', $config->html_parser->active));
-                        $message = Text::parse($request['message'], '->text', WISE_CELL . '<img>');
+                        $message = Text::parse($request['message'], '->text', WISE_CELL . '<img>', false);
                         $field = Request::post('fields', array());
                         include File::D(__DIR__, 2) . DS . 'task.fields.php';
                         // Temporarily disallow image(s) in comment to prevent XSS

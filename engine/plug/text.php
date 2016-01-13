@@ -118,11 +118,11 @@ Text::parser('to_safe_path_name', function($input, $lower = true) {
 });
 
 // Convert HTML/slug pattern to plain text
-Text::parser('to_text', function($input, $tags = "") {
+Text::parser('to_text', function($input, $tags = "", $no_break = true) {
     if( ! is_string($input)) return $input;
     // Should be a HTML input
     if(strpos($input, '<') !== false || strpos($input, ' ') !== false) {
-        return preg_replace('#\s+#', ' ', trim(strip_tags($input, $tags)));
+        return preg_replace($no_break ? '#\s+#' : '# +#', ' ', trim(strip_tags($input, $tags)));
     }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `

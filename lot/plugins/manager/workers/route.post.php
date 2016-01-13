@@ -155,12 +155,9 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         // Allow user(s) to change their post slug, but make sure they
         // do not type the slug of another post.
         if(trim($slug) !== "" && $slug !== $post->slug && $files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive')) {
-            foreach($files as $file) {
-                if(strpos(File::B($file), '_' . $slug . '.') !== false) {
-                    Notify::error(Config::speak('notify_error_slug_exist', $slug));
-                    Guardian::memorize($request);
-                    break;
-                }
+            if(strpos(implode('%', $files), '_' . $slug . '.') !== false) {
+                Notify::error(Config::speak('notify_error_slug_exist', $slug));
+                Guardian::memorize($request);
             }
             unset($files);
         }
