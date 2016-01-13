@@ -1,10 +1,14 @@
 // file
 DASHBOARD.task.file = {
-    B: function(path, s) {
-        return path.split(s || new RegExp('[\\\\\\/]')).pop();
+    B: function(path, step, s) {
+        step = step || 1;
+        s = typeof DS !== "undefined" ? DS : '/';
+        return path.split(s === '/' || s === '\\' ? new RegExp('[\\\\\\/]') : s).slice(-step).join(s);
     },
-    D: function(path, s) {
-        return path.split(s || new RegExp('[\\\\\\/]')).slice(0, -1).join(DS);
+    D: function(path, step, s) {
+        step = step || 1;
+        s = typeof DS !== "undefined" ? DS : '/';
+        return path.split(s === '/' || s === '\\' ? new RegExp('[\\\\\\/]') : s).slice(0, -step).join(s);
     },
     N: function(path, extension) {
         path = path.split(new RegExp('[\\\\\\/]')).pop();
