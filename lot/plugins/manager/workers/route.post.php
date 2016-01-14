@@ -99,8 +99,9 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {
-        Guardian::checkToken($request['token']);// Check for invalid time pattern
-        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^[0-9]{4,}\-[0-9]{2}\-[0-9]{2}T[0-9]{2}\:[0-9]{2}\:[0-9]{2}\+[0-9]{2}\:[0-9]{2}$#', $request['date'])) {
+        Guardian::checkToken($request['token']);
+        // Check for invalid time pattern
+        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^\d{4,}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}$#', $request['date'])) {
             Notify::error($speak->notify_invalid_time_pattern);
             Guardian::memorize($request);
         }
@@ -109,7 +110,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         // Set post date by submitted time, or by input value if available
         $date = date('c', $rid);
         // General field(s)
-        $title = trim(strip_tags(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '<abbr><b><code><del><dfn><em><i><ins><span><strong><sub><sup><time><u><var>'));
+        $title = Text::parse(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '->text', str_replace('<a>', "", WISE_CELL_I));
         $link = false;
         if(isset($request['link']) && trim($request['link']) !== "") {
             if( ! Guardian::check($request['link'], '->url')) {

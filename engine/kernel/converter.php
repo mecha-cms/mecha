@@ -562,13 +562,13 @@ class Converter extends Base {
                 '#:(0\s+0|0\s+0\s+0\s+0)(?=[;\}]|\!important)#i',
                 // Replace `background-position:0` with `background-position:0 0`
                 '#(background-position):0(?=[;\}])#si',
-                // Replace `0.6` with `.6`, but only when preceded by `:`, `,`, `-` or a white-space
-                '#(?<=[\s:,\-])0+\.(\d+)#s',
+                // Replace `0.6` with `.6`, but only when preceded by `=`, `:`, `,`, `-` or a white-space
+                '#(?<=[\s=:,\-])0+\.(\d+)#s',
                 // Minify string value
                 '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
                 // Minify HEX color code
-                '#(?<=[\s:,\-]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
+                '#(?<=[\s=:,]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
                 // Replace `(border|outline):none` with `(border|outline):0`
                 '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
                 // Remove empty selector(s)
@@ -623,14 +623,23 @@ class Converter extends Base {
                 // Minify object attribute(s) except JSON attribute(s). From `{'foo':'bar'}` to `{foo:'bar'}`
                 '#([\{,])([\'])(\d+|[a-z_][a-z0-9_]*)\2(?=\:)#i',
                 // --ibid. From `foo['bar']` to `foo.bar`
-                '#([a-z0-9_\)\]])\[([\'"])([a-z_][a-z0-9_]*)\2\]#i'
+                '#([a-z0-9_\)\]])\[([\'"])([a-z_][a-z0-9_]*)\2\]#i',
+                // Replace `true` with `!0`
+                '#(?<=[=:,])true\b#',
+                // Replace `false` with `!1`
+                '#(?<=[=:,])false\b#',
+                // Clean-up ...
+                '#\s*(\/\*|\*\/)\s*#'
             ),
             array(
                 '$1',
                 '$1$2',
                 '}',
                 '$1$3',
-                '$1.$3'
+                '$1.$3',
+                '!0',
+                '!1',
+                '$1'
             ),
         $input);
     }
