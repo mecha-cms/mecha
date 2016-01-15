@@ -89,12 +89,15 @@ class Cell {
     }
 
     // HTML comment
-    public static function __($content = "", $indent = 0, $block = ' ') {
+    public static function __($content = "", $indent = 0, $block = false) {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
-        if($block === true || $block === '\n\n') {
+        if($block === true) {
             $block_start = str_repeat(NL, 2);
             $block_end = $block_start . $indent;
         } else {
+            if($block === false) {
+                $block = ' ';
+            }
             $block_start = $block;
             $block_end = $block;
         }

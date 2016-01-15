@@ -26,7 +26,7 @@ Cell::add('script', function($attr = array(), $content = "", $indent = 0) {
 // `<a>`
 Cell::add('a', function($href = null, $content = "", $target = null, $attr = array(), $indent = 0) {
     $attr['href'] = Converter::url($href);
-    $attr['target'] = $target;
+    $attr['target'] = $target === true ? '_blank' : $target;
     return Cell::unit('a', $content, $attr, $indent);
 });
 
@@ -51,5 +51,13 @@ foreach(array('ol', 'ul') as $unit) {
             }
         }
         return $html . Cell::end($unit, $indent);
+    });
+}
+
+// `<(hr|br)>`
+foreach(array('hr', 'br') as $unit) {
+    Cell::add($unit, function($repeat = 1, $attr = array(), $indent = 0) use($unit) {
+        $indent = $indent ? str_repeat(TAB, $indent) : "";
+        return $indent . str_repeat(Cell::unit($unit, false, $attr), $repeat);
     });
 }
