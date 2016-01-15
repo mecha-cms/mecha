@@ -127,22 +127,24 @@ class Weapon extends Base {
     public static function eject($name = null, $stack = null) {
         if( ! is_array($name)) {
             $c = get_called_class();
-            if( ! is_null($name) && isset(self::$armaments[$c][$name])) {
-                self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
-                if( ! is_null($stack)) {
-                    for($i = 0, $count = count(self::$armaments[$c][$name]); $i < $count; ++$i) {
-                        $s = self::$armaments[$c][$name][$i];
-                        if(
-                            // eject weapon by function stack
-                            is_numeric($stack) && $s['stack'] === (float) $stack ||
-                            // eject weapon by function name
-                            $s['fn'] === $stack
-                        ) {
-                            unset(self::$armaments[$c][$name][$i]);
+            if( ! is_null($name)) {
+                if(isset(self::$armaments[$c][$name])) {
+                    self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
+                    if( ! is_null($stack)) {
+                        for($i = 0, $count = count(self::$armaments[$c][$name]); $i < $count; ++$i) {
+                            $s = self::$armaments[$c][$name][$i];
+                            if(
+                                // eject weapon by function stack
+                                is_numeric($stack) && $s['stack'] === (float) $stack ||
+                                // eject weapon by function name
+                                $s['fn'] === $stack
+                            ) {
+                                unset(self::$armaments[$c][$name][$i]);
+                            }
                         }
+                    } else {
+                        unset(self::$armaments[$c][$name]);
                     }
-                } else {
-                    unset(self::$armaments[$c][$name]);
                 }
             } else {
                 self::$armaments[$c] = array();

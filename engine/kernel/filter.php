@@ -126,22 +126,24 @@ class Filter extends Base {
     public static function remove($name = null, $stack = null) {
         if( ! is_array($name)) {
             $c = get_called_class();
-            if( ! is_null($name) && isset(self::$filters[$c][$name])) {
-                self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
-                if( ! is_null($stack)) {
-                    for($i = 0, $count = count(self::$filters[$c][$name]); $i < $count; ++$i) {
-                        $s = self::$filters[$c][$name][$i];
-                        if(
-                            // remove filter by function stack
-                            is_numeric($stack) && $s['stack'] === (float) $stack ||
-                            // remove filter by function name
-                            $s['fn'] === $stack
-                        ) {
-                            unset(self::$filters[$c][$name][$i]);
+            if( ! is_null($name)) {
+                if(isset(self::$filters[$c][$name])) {
+                    self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
+                    if( ! is_null($stack)) {
+                        for($i = 0, $count = count(self::$filters[$c][$name]); $i < $count; ++$i) {
+                            $s = self::$filters[$c][$name][$i];
+                            if(
+                                // remove filter by function stack
+                                is_numeric($stack) && $s['stack'] === (float) $stack ||
+                                // remove filter by function name
+                                $s['fn'] === $stack
+                            ) {
+                                unset(self::$filters[$c][$name][$i]);
+                            }
                         }
+                    } else {
+                        unset(self::$filters[$c][$name]);
                     }
-                } else {
-                    unset(self::$filters[$c][$name]);
                 }
             } else {
                 self::$filters[$c] = array();
