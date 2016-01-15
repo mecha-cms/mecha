@@ -29,7 +29,7 @@ Text::parser('to_html', function($input) {
 function do_markdown($content, $results = array()) {
     global $config;
     $results = (object) $results;
-    if($results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
+    if( ! isset($results->content_type) || $results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
         return Text::parse($content, '->html');
     }
     return $content;
