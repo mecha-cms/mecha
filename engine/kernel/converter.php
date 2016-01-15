@@ -508,6 +508,10 @@ class Converter extends Base {
                 '#<(img|input)(>| .*?>)<\/\1\:>#s', // reset previous fix
                 '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
                 '#(?<=\>)(&nbsp;)(?=\<)#', // --ibid
+                // Force line-break with `&#10;` or `&#xa;`
+                '#&\#(?:10|xa);#',
+                // Force white-space with `&#32;` or `&#x20;`
+                '#&\#(?:32|x20);#',
                 // Remove HTML comment(s) except IE comment(s)
                 '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
             ),
@@ -521,6 +525,8 @@ class Converter extends Base {
                 '<$1$2',
                 '$1 ',
                 '$1',
+                "\n",
+                ' ',
                 ""
             ),
         $input);
@@ -628,7 +634,7 @@ class Converter extends Base {
                 '#(?<=[=:,])true\b#',
                 // Replace `false` with `!1`
                 '#(?<=[=:,])false\b#',
-                // Clean-up ...
+                // Clean up ...
                 '#\s*(\/\*|\*\/)\s*#'
             ),
             array(
