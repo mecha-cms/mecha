@@ -1,4 +1,4 @@
-<?php if($responses = call_user_func('Get::' . $segment[0] . 's', 'DESC', 'post:' . Date::slug($page->post))): ?>
+<?php if($responses = call_user_func('Get::' . $segment[0] . 's', 'DESC', 'post:' . Date::slug(Request::get('post', $page->post)))): ?>
 <div class="grid-group">
   <span class="grid span-1 form-label"><?php echo $speak->parent; ?></span>
   <span class="grid span-5">

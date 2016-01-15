@@ -1,4 +1,4 @@
-<form class="comment-form" id="comment-form" action="<?php echo $article->url; ?>" method="post">
+<form class="comment-form" id="comment-form" action="<?php echo $article->url . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php $hooks = array($article); echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
   <?php Weapon::fire('comment_form_input_before', $hooks); ?>

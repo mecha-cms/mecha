@@ -145,7 +145,7 @@ if($config->page_type === 'manager') {
     }, 20);
 }
 
-if($config->page_type === 'manager' || $config->is->post) {
+if($config->page_type === 'manager' || $config->is->post && Guardian::happy()) {
     // Add default comment footer link(s)
     Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {
         $status = Mecha::alter($comment->state, array(

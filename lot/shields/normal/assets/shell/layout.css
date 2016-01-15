@@ -427,6 +427,8 @@ pre {
   position:relative;
 }
 
+.comments-footer {margin:5% 0 0 0}
+
 .comment {
   margin:0;
   padding:1em 0 1em 1em;
@@ -486,7 +488,6 @@ pre {
   color:#AAA;
 }
 
-.comment-form {margin:5% 0 0 0}
 .comment-form input[name="math"] {width:4em}
 
 

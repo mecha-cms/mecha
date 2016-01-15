@@ -112,9 +112,9 @@ if( ! function_exists('do_comment_construct')) {
                             Notify::info($speak->notify_info_comment_moderation);
                         }
                         Weapon::fire(array('on_comment_update', 'on_comment_construct'), array($G, $P));
-                        Guardian::kick($config->url_current . ( ! Guardian::happy() && $config->comments->moderation ? '#' . $comment_form_id : '#' . sprintf($comment_id, Date::format($id, 'U'))));
+                        Guardian::kick($config->url_current . $config->ur_query . ( ! Guardian::happy() && $config->comments->moderation ? '#' . $comment_form_id : '#' . sprintf($comment_id, Date::format($id, 'U'))));
                     } else {
-                        Guardian::kick($config->url_current . '#' . $comment_form_id);
+                        Guardian::kick($config->url_current . $config->url_query . '#' . $comment_form_id);
                     }
                 }
             }

@@ -138,7 +138,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
                 Page::open($response->path)->header($header)->content($message)->save();
                 File::open($response->path)->renameTo(File::B($_));
             }
-            Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $speak->{$segment}) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $post . 'Anchor', $request['post'])->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
+            Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $speak->{$segment}) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $post . 'Anchor', $request['post'])->url . '#' . $segment . '-' . $rid . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
             Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_' . ($id ? 'repair' : 'construct')), array($G, $P));
             Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . $rid);
         }
