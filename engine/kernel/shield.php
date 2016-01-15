@@ -178,13 +178,15 @@ class Shield extends Base {
                 Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path__) . '</code>'));
             }
         }
+        $lot__ = self::cargo();
         $path__ = Filter::apply('shield:path', $path__);
+        $G['data']['lot'] = $lot__;
         $G['data']['path'] = $path__;
         $G['data']['path_base'] = $s[0];
         $out = "";
         // Begin shield
         Weapon::fire('shield_lot_before', array($G, $G));
-        extract(Filter::apply('shield:lot', self::cargo()));
+        extract(Filter::apply('shield:lot', $lot__));
         Weapon::fire('shield_lot_after', array($G, $G));
         Weapon::fire('shield_before', array($G, $G));
         if($buffer) {
@@ -256,6 +258,7 @@ class Shield extends Base {
             $fallback = false;
         }
         $path__ = Filter::apply('chunk:path', self::path($path__, $fallback));
+        $G['data']['lot'] = self::$lot;
         $G['data']['path'] = $path__;
         $out = "";
         if($path__) {
