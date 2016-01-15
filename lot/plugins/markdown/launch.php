@@ -4,7 +4,6 @@ use \Michelf\MarkdownExtra;
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'Markdown.php';
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
 
-
 // Re-write `Text::parse($input, '->html')` parser
 Text::parser('to_html', function($input) {
     if( ! is_string($input)) return $input;
@@ -27,10 +26,10 @@ Text::parser('to_html', function($input) {
     trim($parser->transform($url . "\n\n" . $abbr . "\n\n" . $input)));
 });
 
-function do_markdown($content, $results) {
+function do_markdown($content, $results = array()) {
     global $config;
     $results = (object) $results;
-    if( ! isset($results->content_type) || $results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
+    if($results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
         return Text::parse($content, '->html');
     }
     return $content;

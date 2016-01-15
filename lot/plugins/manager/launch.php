@@ -121,30 +121,6 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config) {
  * --------------
  */
 
-if($config->page_type === 'manager') {
-    // Add default article footer link(s)
-    Weapon::add('article_footer', function($article) use($config, $speak) {
-        $e = File::E($article->path);
-        $comments = count(glob(COMMENT . DS . Date::slug($article->time) . '_*_*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE));
-        $t = Jot::icon('comments') . ' ' . $comments;
-        $tt = array('title' => $comments . ' ' . ($comments === 1 ? $speak->comment : $speak->comments));
-        $comments = ($e === 'draft' || $comments === 0 ? Cell::span($t, $tt) : Cell::a($config->manager->slug . '/comment?filter=post%3A' . $article->id, $t, null, $tt)) . ' &middot; ';
-        $status = Mecha::alter($e, array(
-            'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
-        ), "");
-        echo $comments . $status . Cell::a($config->manager->slug . '/article/repair/id:' . $article->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/article/kill/id:' . $article->id, $speak->delete);
-    }, 20);
-    // Add default page footer link(s)
-    Weapon::add('page_footer', function($page) use($config, $speak) {
-        $status = Mecha::alter(File::E($page->path), array(
-            'draft' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->draft) . ' &middot; ',
-            'archive' => Jot::span('info', Jot::icon('history') . ' ' . $speak->archive) . ' &middot; '
-        ), "");
-        echo $status . Cell::a($config->manager->slug . '/page/repair/id:' . $page->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/page/kill/id:' . $page->id, $speak->delete);
-    }, 20);
-}
-
 if($config->page_type === 'manager' || $config->is->post && Guardian::happy()) {
     // Add default comment footer link(s)
     Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {

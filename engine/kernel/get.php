@@ -724,7 +724,7 @@ class Get extends Base {
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
-            'content_type' => $config->html_parser,
+            'content_type' => $config->html_parser->active,
             'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
@@ -781,7 +781,7 @@ class Get extends Base {
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
-            'content_type' => $config->html_parser,
+            'content_type' => $config->html_parser->active,
             'fields' => array(),
             'content' => "",
             'css' => "",
@@ -1123,7 +1123,7 @@ class Get extends Base {
         $results = self::responseExtract($path, $FP);
         $results = $results + Text::toPage($path, false, $FP, array(
             'url' => '#',
-            'content_type' => $config->html_parser,
+            'content_type' => $config->html_parser->active,
             'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
@@ -1174,7 +1174,7 @@ class Get extends Base {
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results = $results + Text::toPage(file_get_contents($results['path']), 'message', $FP, array(
             'url' => '#',
-            'content_type' => $config->html_parser,
+            'content_type' => $config->html_parser->active,
             'fields' => array(),
             'message' => ""
         ), $results);
