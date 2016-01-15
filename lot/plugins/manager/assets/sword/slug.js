@@ -11,7 +11,7 @@
         if (typeof output === "string") {
             output = $('[name="' + output + '"]');
         }
-        input.off("keyup change").on("keyup change", function() {
+        input.off("keyup change input").on("keyup change input", function() {
             output.val(base.task.slug(this.value.toLowerCase(), connect));
         });
         return input;
