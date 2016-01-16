@@ -101,7 +101,8 @@ Route::accept(array($config->manager->slug . '/shield/(:any)/ignite', $config->m
                 File::open($s)->moveTo($_folder . DS . $name);
             }
             // Remove empty folder(s)
-            if(empty(glob(File::D($s) . DS . '*', GLOB_NOSORT))) {
+            $f = glob(File::D($s) . DS . '*', GLOB_NOSORT);
+            if(empty($f)) {
                 File::open(File::D($s))->delete();
             }
             Notify::success(Config::speak('notify_file_' . ($file === false ? 'created' : 'updated'), '<code>' . File::B($name) . '</code>'));
@@ -150,7 +151,8 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         File::open($_file)->delete();
         if($_file !== false) {
             // Remove empty folder(s)
-            if(empty(glob(File::D($_file) . DS . '*', GLOB_NOSORT))) {
+            $f = glob(File::D($_file) . DS . '*', GLOB_NOSORT);
+            if(empty($f)) {
                 File::open(File::D($_file))->delete();
             }
             Notify::success(Config::speak('notify_file_deleted', '<code>' . File::B($_file) . '</code>'));
