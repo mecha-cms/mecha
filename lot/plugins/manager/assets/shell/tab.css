@@ -42,6 +42,7 @@
   width:999em;
   height:0;
   border-bottom:1px solid;
+  border-color:inherit;
   pointer-events:none;
 }
 

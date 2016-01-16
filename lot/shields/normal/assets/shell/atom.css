@@ -179,8 +179,8 @@ input[type="submit"],
   cursor:pointer;
   text-align:center;
   text-decoration:none;
-  padding-left:.9230769230769231em;
   padding-right:.9230769230769231em;
+  padding-left:.9230769230769231em;
   -webkit-user-select:none;
   -moz-user-select:none;
   -ms-user-select:none;
@@ -380,8 +380,8 @@ ol ol,
 ul ul,
 ol ul,
 ul ol {
-  margin-left:1.3846153846153846em;
   margin-bottom:0;
+  margin-left:1.3846153846153846em;
 }
 
 dt {font-size:120%}
