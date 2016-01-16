@@ -128,18 +128,17 @@ class Weapon extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name)) {
+                self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
                 if(isset(self::$armaments[$c][$name])) {
-                    self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
                     if( ! is_null($stack)) {
-                        for($i = 0, $count = count(self::$armaments[$c][$name]); $i < $count; ++$i) {
-                            $s = self::$armaments[$c][$name][$i];
+                        foreach(self::$armaments[$c][$name] as $k => $v) {
                             if(
                                 // eject weapon by function stack
-                                is_numeric($stack) && $s['stack'] === (float) $stack ||
+                                is_numeric($stack) && $v['stack'] === (float) $stack ||
                                 // eject weapon by function name
-                                $s['fn'] === $stack
+                                $v['fn'] === $stack
                             ) {
-                                unset(self::$armaments[$c][$name][$i]);
+                                unset(self::$armaments[$c][$name][$k]);
                             }
                         }
                     } else {

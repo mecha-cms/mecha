@@ -127,18 +127,17 @@ class Filter extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name)) {
+                self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
                 if(isset(self::$filters[$c][$name])) {
-                    self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
                     if( ! is_null($stack)) {
-                        for($i = 0, $count = count(self::$filters[$c][$name]); $i < $count; ++$i) {
-                            $s = self::$filters[$c][$name][$i];
+                        foreach(self::$filters[$c][$name] as $k => $v) {
                             if(
                                 // remove filter by function stack
-                                is_numeric($stack) && $s['stack'] === (float) $stack ||
+                                is_numeric($stack) && $v['stack'] === (float) $stack ||
                                 // remove filter by function name
-                                $s['fn'] === $stack
+                                $v['fn'] === $stack
                             ) {
-                                unset(self::$filters[$c][$name][$i]);
+                                unset(self::$filters[$c][$name][$k]);
                             }
                         }
                     } else {
