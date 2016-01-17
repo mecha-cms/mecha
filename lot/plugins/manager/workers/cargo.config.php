@@ -1,4 +1,4 @@
-<?php echo $messages; ?>
+<?php $hooks = array($config, $segment); echo $messages; ?>
 <form class="form-repair form-config" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <fieldset>
@@ -278,5 +278,9 @@
     </fieldset>
     <?php endforeach; ?>
   </fieldset>
-  <p><?php echo Jot::button('action', $speak->update); ?></p>
+  <p>
+    <?php Weapon::fire('action_before', $hooks); ?>
+    <?php echo Jot::button('action', $speak->update); ?>
+    <?php Weapon::fire('action_after', $hooks); ?>
+  </p>
 </form>

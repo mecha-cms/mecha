@@ -1,5 +1,5 @@
+<?php $count = 0; $hooks = array($files, $segment); echo $messages; ?>
 <form class="form-repair form-shortcode" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
-  <?php $count = 0; echo $messages; ?>
   <?php echo Form::hidden('token', $token); ?>
   <table class="table-bordered table-full-width table-sortable">
     <thead>
@@ -45,7 +45,11 @@
       </tr>
     </tbody>
   </table>
-  <p><?php echo Jot::button('action', $speak->update); ?></p>
+  <p>
+    <?php Weapon::fire('action_before', $hooks); ?>
+    <?php echo Jot::button('action', $speak->update); ?>
+    <?php Weapon::fire('action_after', $hooks); ?>
+  </p>
 </form>
 <hr>
 <?php echo Guardian::wizard($segment); ?>

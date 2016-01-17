@@ -1,4 +1,4 @@
-<?php $hooks = array($page, $segment); ?>
+<?php $hooks = array($folders, $segment); ?>
 <div class="tab-area">
   <div class="tab-button-area">
     <?php Weapon::fire('tab_button_before', $hooks); ?>
@@ -22,16 +22,17 @@
         <h4 class="media-title"><?php echo Jot::icon(File::exist($r . 'pending.php') ? 'unlock-alt' : 'lock') . ' ' . $page->title; ?></h4>
         <div class="media-content">
           <?php
-  
+
           if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $page->content, $matches)) {
               $curt = Text::parse($matches[2], '->text', '<abbr><sub><sup>'); // get first blockquote content as description
           } else {
               $curt = Converter::curt($page->content);
           }
-  
+
           ?>
           <p><?php echo $curt; ?></p>
           <p>
+            <?php Weapon::fire('action_before', array($page, $segment)); ?>
             <?php if(File::exist($r . 'launch.php') || File::exist($r . '__launch.php')): ?>
             <?php echo Jot::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $folder); ?> <?php echo Jot::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $folder . '?o=' . $config->offset); ?>
             <?php else: ?>
@@ -44,6 +45,7 @@
             <?php else: ?>
             <?php echo Jot::btn('destruct.small:times-circle', $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $folder); ?>
             <?php endif; ?>
+            <?php Weapon::fire('action_after', array($page, $segment)); ?>
           </p>
         </div>
       </div>

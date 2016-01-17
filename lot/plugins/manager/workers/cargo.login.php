@@ -1,4 +1,4 @@
-<?php $form_id = time(); echo $messages; ?>
+<?php $form_id = time(); $hooks = array($page, 'login'); echo $messages; ?>
 <form class="form-login" id="form-login:<?php echo $form_id; ?>" action="<?php echo $config->url_current; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <label class="grid-group">
@@ -24,7 +24,9 @@
   <div class="grid-group">
     <span class="grid span-2"></span>
     <span class="grid span-4">
-    <?php echo Form::button($speak->login, null, null, null, array('class' => array('btn', 'btn-action'))); ?>
+      <?php Weapon::fire('action_before', $hooks); ?>
+      <?php echo Form::button($speak->login, null, null, null, array('class' => array('btn', 'btn-action'))); ?>
+      <?php Weapon::fire('action_after', $hooks); ?>
     </span>
   </div>
 </form>

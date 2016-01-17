@@ -27,12 +27,12 @@
       <div class="tab-content-area">
         <div class="tab-content" id="tab-content-1-1">
           <?php
-    
+
           $shield_url = $config->manager->slug . '/shield/' . $folder;
           $shield_url_kill = $shield_url . '/kill/file:';
           $shield_url_repair = $shield_url . '/repair/file:';
           $shield_path = SHIELD . DS . $folder . DS;
-    
+
           ?>
           <table class="table-bordered table-full-width">
             <tbody>
@@ -99,17 +99,19 @@
         <h4 class="media-title"><?php echo Jot::icon('shield') . ' ' . $page->title; ?></h4>
         <div class="media-content">
           <?php
-  
+
           if(preg_match('#<blockquote(>| .*?>)\s*([\s\S]*?)\s*<\/blockquote>#', $page->content, $matches)) {
               $curt = Text::parse($matches[2], '->text', '<abbr><sub><sup>'); // get first blockquote content as description
           } else {
               $curt = Converter::curt($page->content);
           }
-  
+
           ?>
           <p><?php echo $curt; ?></p>
           <p>
+            <?php Weapon::fire('action_before', array($page, $segment)); ?>
             <?php echo Jot::btn('construct.small:cog', $speak->manage, $config->manager->slug . '/shield/' . $folder); ?> <?php if(File::exist($r . 'manager.php')): ?><?php echo Jot::btn('action.small:shield', $speak->attach, $config->manager->slug . '/shield/attach/id:' . $folder); ?> <?php endif; ?><?php echo Jot::btn('destruct.small:times-circle', $speak->delete, $config->manager->slug . '/shield/kill/id:' . $folder); ?>
+            <?php Weapon::fire('action_after', array($page, $segment)); ?>
           </p>
         </div>
       </div>

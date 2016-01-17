@@ -22,6 +22,7 @@
       <?php Weapon::fire('tab_content_after', $hooks); ?>
       <hr>
       <p>
+        <?php Weapon::fire('action_before', $hooks); ?>
         <?php if(strpos($config->url_path, '/id:') === false): ?>
           <?php echo Jot::button('construct', $speak->create, 'extension:.txt'); ?>
           <?php echo Jot::button('action:clock-o', $speak->save, 'extension:.hold'); ?>
@@ -34,6 +35,7 @@
           <?php endif; ?>
           <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/' . $segment[0] . '/kill/id:' . $page->id); ?>
         <?php endif; ?>
+        <?php Weapon::fire('action_after', $hooks); ?>
       </p>
     </form>
   </div>

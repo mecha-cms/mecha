@@ -1,13 +1,14 @@
+<?php $hooks = array($file, $segment); ?>
 <div class="tab-area">
   <div class="tab-button-area">
-    <?php Weapon::fire('tab_button_before', array($file, $segment)); ?>
+    <?php Weapon::fire('tab_button_before', $hooks); ?>
     <a class="tab-button active" href="#tab-content-1"><?php echo Jot::icon('cog', 'fw') . ' ' . $speak->config; ?></a>
     <a class="tab-button" href="#tab-content-2"><?php echo Jot::icon('user', 'fw') . ' ' . $speak->about; ?></a>
-    <?php Weapon::fire('tab_button_after', array($file, $segment)); ?>
+    <?php Weapon::fire('tab_button_after', $hooks); ?>
   </div>
   <div class="tab-content-area">
     <?php echo $messages; ?>
-    <?php Weapon::fire('tab_content_before', array($file, $segment)); ?>
+    <?php Weapon::fire('tab_content_before', $hooks); ?>
     <div class="tab-content" id="tab-content-1">
     <?php if($file->configurator): ?>
     <?php include $file->configurator; ?>
@@ -30,6 +31,6 @@
       <h3 class="about-title"><?php echo $file->title; ?><?php if(isset($file->version)): ?> <code class="about-version"><?php echo $file->version; ?></code><?php endif; ?></h3>
       <div class="about-content"><?php echo $file->content; ?></div>
     </div>
-    <?php Weapon::fire('tab_content_after', array($file, $segment)); ?>
+    <?php Weapon::fire('tab_content_after', $hooks); ?>
   </div>
 </div>

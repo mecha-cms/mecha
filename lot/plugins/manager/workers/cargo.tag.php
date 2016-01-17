@@ -1,4 +1,4 @@
-<?php $hooks = array($page, $segment); ?>
+<?php $hooks = array($files, $segment); ?>
 <div class="main-action-group">
   <?php Weapon::fire('main_action_before', $hooks); ?>
   <?php echo Jot::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->tag), $config->manager->slug . '/tag/ignite'); ?>

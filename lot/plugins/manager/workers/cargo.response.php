@@ -17,7 +17,7 @@
         <a href="<?php echo $page->permalink; ?>" title="<?php echo $x ? $speak->error : $speak->permalink; ?>" rel="nofollow" target="_blank">#</a>
       </p>
     </header>
-    <div class="page-body"><?php echo $page->message; ?></div>
+    <div class="page-body"><p><?php echo Converter::curt($page->message, $config->excerpt->length); ?></p></div>
     <footer class="page-footer">
       <?php Weapon::fire($segment[0] . '_footer', array($page, false)); ?>
     </footer>

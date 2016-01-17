@@ -1,4 +1,4 @@
-<?php $hooks = array($page, $segment); ?>
+<?php $hooks = array($files, $segment); ?>
 <?php echo $messages; ?>
 <form class="form-action form-cache" id="form-action" action="<?php echo $config->url . '/' . $config->manager->slug; ?>/cache/do" method="post">
   <?php echo Form::hidden('token', $token); ?>

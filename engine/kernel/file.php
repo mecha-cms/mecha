@@ -75,8 +75,8 @@ class File extends Base {
             'extension' => is_file($path) ? $e : null,
             'update_raw' => $update,
             'update' => $update_date,
-            'size_raw' => file_exists($path) && is_file($path) ? filesize($path) : null,
-            'size' => is_file($path) ? self::size($path) : null,
+            'size_raw' => file_exists($path) ? filesize($path) : null,
+            'size' => file_exists($path) ? self::size($path) : null,
             'is' => array(
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
                 'file' => is_file($path),

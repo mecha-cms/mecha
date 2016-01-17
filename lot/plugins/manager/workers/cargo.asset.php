@@ -1,4 +1,4 @@
-<?php $hooks = array($page, $segment); ?>
+<?php $hooks = array($files, $segment); ?>
 <div class="tab-area">
   <div class="tab-button-area">
     <?php Weapon::fire('tab_button_before', $hooks); ?>
@@ -20,7 +20,7 @@
           <?php Weapon::fire('main_action_after', $hooks); ?>
         </div>
         <?php
-  
+
         $asset_url = $config->manager->slug . '/asset';
         $asset_url_kill = $asset_url . '/kill/file:';
         $asset_url_repair = $asset_url . '/repair/file:';
@@ -29,7 +29,7 @@
         $q_path_parent = File::D($q_path);
         $q_path_ = str_replace('&', '&amp;', HTTP::query(array('path' => $q_path ? $q_path : false, 'q' => false)));
         $q_path_parent_ = str_replace('&', '&amp;', HTTP::query(array('path' => $q_path_parent ? $q_path_parent : false, 'q' => false)));
-  
+
         ?>
         <table class="table-bordered table-full-width">
           <thead>
@@ -52,7 +52,7 @@
               <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>
               <td class="td-collapse"><time datetime="<?php echo Date::format($file->update_raw, 'c'); ?>"><?php echo str_replace('-', '/', $file->update); ?></time></td>
               <?php
-    
+
               $n = Jot::icon($file->is->file ? 'file-' . Mecha::alter($file->extension, array(
                   'xls' => 'excel-o',
                   'xlsx' => 'excel-o',
@@ -93,7 +93,7 @@
                   'php' => 'code-o',
                   'xml' => 'code-o'
               ), 'o') : 'folder', 'fw') . ' ' . File::B($url);
-    
+
               ?>
               <td>
                 <?php if($file->is->folder): ?>

@@ -1,4 +1,4 @@
-<?php echo $messages; ?>
+<?php $hooks = array($file, $segment); echo $messages; ?>
 <table class="table-bordered table-full-width">
   <thead>
     <tr>
@@ -18,6 +18,9 @@
   </tbody>
 </table>
 <form class="form-kill form-tag" id="form-kill" action="<?php echo $config->url_current; ?>" method="post">
+  <?php Weapon::fire('action_before', $hooks); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/tag/repair/id:' . $id); ?>
+  <?php Weapon::fire('action_after', $hooks); ?>
   <?php echo Form::hidden('token', $token); ?>
-  <?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/tag/repair/id:' . $id); ?>
 </form>

@@ -1,4 +1,4 @@
-<?php echo $messages; ?>
+<?php $hooks = array($page, $segment); echo $messages; ?>
 <h3><?php echo $page->title; ?></h3>
 <?php if($page->excerpt): ?>
 <?php echo $page->excerpt; ?>
@@ -13,6 +13,9 @@
 <pre><code><?php echo substr(Text::parse($page->js, '->encoded_html'), 0, $config->excerpt->length); ?><?php if(strlen($page->js) > $config->excerpt->length) echo $config->excerpt->suffix; ?></code></pre>
 <?php endif; ?>
 <form class="form-kill form-<?php echo $segment; ?>" id="form-kill" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
-<?php echo Jot::button('action', $speak->yes); ?> <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/' . $segment . '/repair/id:' . $page->id); ?>
-<?php echo Form::hidden('token', $token); ?>
+  <?php Weapon::fire('action_before', $hooks); ?>
+  <?php echo Jot::button('action', $speak->yes); ?>
+  <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/' . $segment . '/repair/id:' . $page->id); ?>
+  <?php Weapon::fire('action_after', $hooks); ?>
+  <?php echo Form::hidden('token', $token); ?>
 </form>

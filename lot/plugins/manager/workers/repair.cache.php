@@ -1,4 +1,4 @@
-<?php echo $messages; ?>
+<?php $hooks = array($page, $segment); echo $messages; ?>
 <form class="form-repair form-cache" id="form-repair" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <?php
@@ -21,7 +21,9 @@
   <?php endif; ?>
   <p>
     <?php echo Form::hidden('name', $path); ?>
+    <?php Weapon::fire('action_before', $hooks); ?>
     <?php echo Jot::button('action', $is_text ? $speak->update : $speak->rename); ?>
     <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/cache/kill/file:' . $path); ?>
+    <?php Weapon::fire('action_after', $hooks); ?>
   </p>
 </form>

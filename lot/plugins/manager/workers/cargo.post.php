@@ -1,4 +1,4 @@
-<?php $hooks = array($page, $segment); ?>
+<?php $hooks = array($pages, $segment); ?>
 <div class="main-action-group">
   <?php Weapon::fire('main_action_before', $hooks); ?>
   <?php echo Jot::btn('begin:plus-square', Config::speak('manager.title_new_', $speak->{$segment}), $config->manager->slug . '/' . $segment . '/ignite'); ?>
@@ -21,7 +21,7 @@
         <time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->FORMAT_3; ?></time>
       </p>
     </header>
-    <div class="page-body"><p><?php echo Text::parse($page->description, '->text', '<a><abbr><b><code><del><dfn><em><i><ins><kbd><mark><strong><sub><sup><time><u>'); ?></p></div>
+    <div class="page-body"><p><?php echo Text::parse($page->description, '->text', WISE_CELL_I); ?></p></div>
     <footer class="page-footer">
       <?php Weapon::fire($segment . '_footer', array($page)); ?>
     </footer>
