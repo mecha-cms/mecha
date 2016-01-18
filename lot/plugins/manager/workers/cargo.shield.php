@@ -64,7 +64,7 @@
         </div>
         <div class="tab-content hidden" id="tab-content-1-2">
           <p class="about-author">
-          <?php echo Cell::strong($speak->author . ':') . ' ' . $page->author; ?><?php if(isset($page->url) && $page->url !== '#'): ?> <?php echo Cell::a($page->url, Jot::icon('external-link-square'), '_blank', array(
+          <?php echo Cell::strong($speak->author . ':') . ' ' . $page->author; ?><?php if(isset($page->url) && $page->url !== '#'): ?> <?php echo Cell::a($page->url, Jot::icon('external-link-square'), true, array(
               'class' => array(
                   'about-url',
                   'help'

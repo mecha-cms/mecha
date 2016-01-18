@@ -18,9 +18,9 @@ Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update'
 });
 
 // Editor ...
-Weapon::add('shield_before', function() use($speak) {
+Weapon::add('shield_before', function() use($config, $speak) {
     $page = Config::get('page', array());
-    $parser = isset($page->content_type_raw) ? $page->content_type_raw : 'HTML';
+    $parser = isset($page->content_type_raw) ? $page->content_type_raw : $config->html_parser->active;
     if($parser === 'Markdown' || $parser === 'Markdown Extra') {
         Config::merge('DASHBOARD.languages.MTE', $speak->__MTE);
         Config::set('MTE', 'MTE');
@@ -39,4 +39,4 @@ Weapon::add('shield_before', function() use($speak) {
             return $path;
         });
     }
-}, 1);
+}, 1.1);

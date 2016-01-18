@@ -62,7 +62,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
         if( ! Guardian::happy(1)) {
             Shield::abort();
         }
-        $title = $speak->editing . ': ' . $speak->{$segment} . $config->title_separator . $config->manager->title;
+        $title = $speak->editing . ': ' . ($response->permalink !== '#' ? Cell::a($response->permalink, $speak->{$segment}, true) : $speak->{$segment}) . $config->title_separator . $config->manager->title;
     } else {
         if($id !== false) {
             Shield::abort(); // File not found!

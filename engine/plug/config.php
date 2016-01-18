@@ -23,7 +23,7 @@ Config::plug('load', function() {
     $config['protocol'] = $config['url_protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
     $config['host'] = $config['url_host'] = $_SERVER['HTTP_HOST'];
     $config['base'] = $config['url_base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
-    $config['url'] = $config['url_'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
+    $config['url'] = $config['url_url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
     $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // kill tag(s) and query string(s) from URL
     $config['current'] = $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
     $config['origin'] = $config['url_origin'] = Session::get('url_origin', false);
@@ -177,6 +177,6 @@ Config::plug('speak', function($key = "", $vars = array()) {
  *
  */
 
-Config::plug('url', function($key = "", $fallback = false) {
+Config::plug('url', function($key = 'url', $fallback = false) {
     return Config::get('url_' . $key, $fallback);
 });

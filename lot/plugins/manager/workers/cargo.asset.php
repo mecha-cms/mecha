@@ -125,7 +125,18 @@
             <?php endif; ?>
             <?php if($q_path): ?>
             <tr>
-              <td colspan="3"><?php echo File::B($q_path); ?></td>
+              <?php
+
+              $__ = array();
+              $___ = explode('/', $q_path);
+              foreach($___ as $_) {
+                  array_pop($___);
+                  $t = end($___);
+                  $__[] = Cell::a($config->url_path . HTTP::query('path', $___ ? implode('/', $___) : false), $t ? $t : '..');
+              }
+
+              ?>
+              <td colspan="3"><?php echo implode(' &raquo; ', array_reverse($__)) . ' &raquo; ' . File::B($q_path); ?></td>
               <td class="td-icon"><?php echo Jot::a('accept', $config->url_path . $q_path_parent_, Jot::icon('folder-open'), array(
                   'title' => $speak->exit . '&hellip;'
               )); ?></td>

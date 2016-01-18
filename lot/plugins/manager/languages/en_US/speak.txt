@@ -4,6 +4,8 @@
 
 manager:
 
+  title_manager: Manager
+
   placeholder_title: Title Goes Here
   placeholder_content: Content goes here…
   placeholder_description: Description goes here…

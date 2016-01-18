@@ -1,6 +1,13 @@
 <?php
 
 
+// Title
+if( ! $config->manager->title) {
+    $config->manager->title = $speak->manager->title_manager;
+    Config::set('manager.title', $speak->manager->title_manager);
+}
+
+
 /**
  * Footer Link(s)
  * --------------
@@ -41,7 +48,7 @@ Weapon::add('page_footer', function($page) use($config, $speak) {
 Weapon::add('routes_before', function() use($config, $speak, $segment) {
     // loading cargo ...
     if($config->page_type === 'manager') {
-        include __DIR__ . DS . 'workers' . DS . 'cargo.php';
+        require __DIR__ . DS . 'workers' . DS . 'cargo.php';
     }
     if($detour = File::exist(__DIR__ . DS . 'workers' . DS . 'route.' . $segment . '.php')) {
         require $detour;

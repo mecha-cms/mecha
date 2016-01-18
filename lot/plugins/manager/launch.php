@@ -80,10 +80,10 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) 
         'html_parser' => Config::get('html_parser'),
         'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
         'url' => array(
-            'protocol' => $config->protocol,
-            'base' => $config->base,
-            'host' => $config->host,
-            'url' => $config->url,
+            'protocol' => $config->url_protocol,
+            'base' => $config->url_base,
+            'host' => $config->url_host,
+            'url' => $config->url_url,
             'path' => $config->url_path,
             'current' => $config->url_current,
             'query' => $config->url_query
@@ -124,8 +124,8 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config) {
 if($config->page_type === 'manager' || $config->is->post && Guardian::happy()) {
     // Add default comment footer link(s)
     Weapon::add('comment_footer', function($comment, $article) use($config, $speak) {
-        $status = Mecha::alter($comment->state, array(
-            'pending' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; '
+        $status = Mecha::alter(File::E($comment->path), array(
+            'hold' => Jot::span('info', Jot::icon('clock-o') . ' ' . $speak->pending) . ' &middot; '
         ), "");
         echo $status . Cell::a($config->manager->slug . '/comment/repair/id:' . $comment->id, $speak->edit) . ' / ' . Cell::a($config->manager->slug . '/comment/kill/id:' . $comment->id, $speak->delete);
     }, 20);

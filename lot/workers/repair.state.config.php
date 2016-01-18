@@ -71,7 +71,7 @@ return array(
 
     // Manager Page
     'manager' => array(
-        'title' => 'Manager',
+        'title' => "",
         'slug' => 'manager',
         'per_page' => 7
     ),

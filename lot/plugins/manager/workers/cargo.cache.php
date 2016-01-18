@@ -24,7 +24,7 @@
             'data-connection' => 'selected[]'
         )); ?>
         </th>
-        <th><?php echo Config::speak('last_', $speak->updated); ?></th>
+        <th class="th-collapse"><?php echo Config::speak('last_', $speak->updated); ?></th>
         <th><?php echo $speak->file; ?></th>
         <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>
       </tr>

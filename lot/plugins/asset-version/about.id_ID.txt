@@ -5,4 +5,4 @@ Version: 1.0.0
 
 ====
 
-> Pengatur tembolok sumber daya di peramban.
+> Pengelola tembolok sumber daya di peramban.

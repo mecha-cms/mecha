@@ -68,7 +68,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             $post->css_raw = $config->defaults->{$segment . '_css'};
             $post->js_raw = $config->defaults->{$segment . '_js'};
         }
-        $title = $speak->editing . ': ' . $post->title . $config->title_separator . $config->manager->title;
+        $title = $speak->editing . ': ' . ($post->state !== 'drafted' ? Cell::a($post->url, $post->title, true) : $post->title) . $config->title_separator . $config->manager->title;
     } else {
         if($id !== false) {
             Shield::abort(); // File not found!

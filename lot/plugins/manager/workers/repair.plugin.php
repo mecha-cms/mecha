@@ -18,7 +18,7 @@
     </div>
     <div class="tab-content hidden" id="tab-content-2">
       <p class="about-author">
-      <?php echo Cell::strong($speak->author . ':') . ' ' . $file->author; ?><?php if(isset($file->url) && $file->url !== '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), '_blank', array(
+      <?php echo Cell::strong($speak->author . ':') . ' ' . $file->author; ?><?php if(isset($file->url) && $file->url !== '#'): ?> <?php echo Cell::a($file->url, Jot::icon('external-link-square'), true, array(
           'class' => array(
               'about-url',
               'help'

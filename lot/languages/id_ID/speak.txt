@@ -323,8 +323,8 @@ configs: Konfigurasi
 setting: Pengaturan
 settings: Pengaturan
 
-cache: Cache
-caches: Cache
+cache: Tembolok
+caches: Tembolok
 
 feed: Umpan
 feeds: Umpan

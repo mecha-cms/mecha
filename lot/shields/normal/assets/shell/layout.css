@@ -653,11 +653,11 @@ pre {
     width:auto;
     margin:0;
     padding:0;
+    text-align:inherit;
   }
   .grid.form-label {
-    text-align:left;
     line-height:inherit;
-    margin:0 0 1.3846153846153846em;
+    margin-bottom:1.3846153846153846em;
   }
   .grid:empty {display:none}
   .form-login {padding:0}

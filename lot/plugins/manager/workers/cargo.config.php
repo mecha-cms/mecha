@@ -206,7 +206,13 @@
       <label class="grid-group">
         <span class="grid span-2 form-label"><?php echo $speak->title; ?></span>
         <span class="grid span-4">
-        <?php echo Form::text($page . '[title]', Guardian::wayback($page . '.title', Config::get($page . '.title'))); ?>
+        <?php
+
+        $t = Config::get($page . '.title');
+        $t = $t === Config::speak('manager.title_' . $page) ? "" : $t;
+
+        ?>
+        <?php echo Form::text($page . '[title]', Guardian::wayback($page . '.title', $t)); ?>
         </span>
       </label>
       <label class="grid-group">
