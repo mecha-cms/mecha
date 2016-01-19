@@ -303,3 +303,17 @@ Weapon::add('shield_before', function() {
     Config::merge('manager_bar', $bars);
 
 });
+
+
+// Add log in/out link in shield footer
+function do_footer_manager_link($content, $path) {
+	global $config, $speak;
+	if(File::N($path) === 'block.footer.bar') {
+		$s = Guardian::happy() ? '<a href="' . Filter::colon('manager:url', $config->url . '/' . $config->manager->slug . '/logout') . '" rel="nofollow">' . $speak->log_out . '</a>' : '<a href="' . Filter::colon('manager:url', $config->url . '/' . $config->manager->slug . '/login') . '" rel="nofollow">' . $speak->log_in . '</a>';
+		return str_replace('<div class="blog-footer-right">', '<div class="blog-footer-right">' . $s, $content);
+	}
+	return $content;
+}
+
+// Apply `do_footer_manager_link` filter
+Filter::add('chunk:output', 'do_footer_manager_link');
