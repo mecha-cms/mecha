@@ -1,6 +1,7 @@
 <?php
 
-Weapon::add('shield_lot_before', function() {
+// Run after shield lot data up-to-date
+Weapon::add('shield_lot_after', function() {
     ob_start();
     $config = Config::get();
     $config->cargo = (string) $config->cargo;

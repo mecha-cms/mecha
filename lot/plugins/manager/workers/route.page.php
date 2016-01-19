@@ -13,4 +13,19 @@ if(strpos($config->url_path, '/id:') !== false) {
     }, .9);
 }
 
+// You can't use index, tag, archive, search, manager and feed slug URL for page(s)
+if($slug = Request::post('slug')) {
+    $s = array(
+        $config->index->slug => 1,
+        $config->tag->slug => 1,
+        $config->archive->slug => 1,
+        $config->search->slug => 1,
+        $config->manager->slug => 1,
+        'feed' => 1
+    );
+    if(isset($s[$slug])) {
+        Notify::error(Config::speak('notify_error_slug_exist', $slug));
+    }
+}
+
 require __DIR__ . DS . 'route.post.php';

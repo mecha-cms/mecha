@@ -4,7 +4,7 @@ $bucket = array();
 $url_base = $config->url . '/feed/rss';
 $rss_order = strtoupper(Request::get('order', 'DESC'));
 $rss_filter = Request::get('filter', "");
-$rss_limit = Request::get('limit', 25);
+$rss_limit = Request::get('chunk', 25);
 
 if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->offset, $rss_limit)->vomit()) {
     foreach($pages as $path) {

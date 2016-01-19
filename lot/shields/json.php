@@ -4,7 +4,7 @@ $bucket = array();
 $url_base = $config->url . '/feed/json';
 $json_order = strtoupper(Request::get('order', 'DESC'));
 $json_filter = Request::get('filter', "");
-$json_limit = Request::get('limit', 25);
+$json_limit = Request::get('chunk', 25);
 
 if($pages = Mecha::eat(Get::articles($json_order, $json_filter))->chunk($config->offset, $json_limit)->vomit()) {
     foreach($pages as $path) {
@@ -16,6 +16,7 @@ $json = array(
     'meta' => array(
         'generator' => 'Mecha ' . MECHA_VERSION,
         'title' => $config->title,
+        'slogan' => $config->slogan,
         'url' => array(
             'home' => $config->url,
             'previous' => $config->offset > 1 ? Filter::colon('feed:url', $url_base . '/' . ($config->offset - 1)) : null,

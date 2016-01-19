@@ -17,7 +17,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
         Guardian::kick($config->manager->slug . '/article');
     }
     Config::set(array(
-        'page_title' => $speak->log_in . $config->title_separator . $config->manager->title,
+        'page_title' => $speak->log_in . $config->title_separator . $config->title,
         'cargo' => 'cargo.login.php'
     ));
     include __DIR__ . DS . 'cargo.php';
