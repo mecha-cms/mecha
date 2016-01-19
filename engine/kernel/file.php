@@ -239,7 +239,7 @@ class File extends Base {
     public static function moveTo($destination = ROOT) {
         if(file_exists(self::$open)) {
             $destination = rtrim(self::path($destination), DS);
-            if(is_dir($destination)) {
+            if(is_dir($destination) && is_file(self::$open)) {
                 $destination .= DS . self::B(self::$open);
             }
             if( ! file_exists(self::D($destination))) {
