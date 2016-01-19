@@ -113,15 +113,29 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         $title = Text::parse(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '->text', str_replace('<a>', "", WISE_CELL_I));
         $link = false;
         if(isset($request['link']) && trim($request['link']) !== "") {
-            if( ! Guardian::check($request['link'], '->url')) {
+			$_ = $request['link'];
+			// Allow relative URL protocol
+			if(strpos($_, '//') === 0) {
+				$_ = str_replace('://', ':', $config->protocol) . $_;
+			}
+            if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);
             } else {
                 $link = $request['link'];
             }
         }
-        if(strpos($request['slug'], '://') !== false) {
+		// If you set the post slug value with a `*://` or `//` at the beginning,
+		// then Mecha will treat it as an external link value for your post data.
+		// The original slug value will be created automatically based on the
+		// post title text, but you can edit it later.
+		$_ = $request['slug'];
+        if(strpos($_, '://') !== false || strpos($_, '//') === 0) {
             $slug = Text::parse($title, '->slug');
-            if( ! Guardian::check($request['slug'], '->url')) {
+			// Allow relative URL protocol
+			if(strpos($_, '//') === 0) {
+				$_ = str_replace('://', ':', $config->protocol) . $_;
+			}
+            if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);
             } else {
                 $link = $request['slug'];
@@ -184,7 +198,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                 }
             // Repair
             } else {
-                Page::open($post->path)->header($header)->content($content)->save();
+                Page::header($header)->content($content)->saveTo($post->path);
                 File::open($post->path)->renameTo(File::B($_));
                 $custom_ = CUSTOM . DS . Date::slug($post->date->W3C);
                 if(file_exists($custom_ . $extension_o)) {
