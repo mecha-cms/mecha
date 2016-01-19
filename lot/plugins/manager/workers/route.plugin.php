@@ -52,11 +52,14 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     }
     $filter = Request::get('q', "");
     $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
-    $folders = Get::closestFolders($destination, 'ASC', 'path', $filter);
+    $s = Get::closestFolders($destination, 'ASC', 'path', $filter);
+    if( ! $folders = Mecha::eat($s)->chunk($offset, $config->manager->per_page)->vomit()) {
+        Shield::abort();
+    }
     Config::set(array(
         'page_title' => $speak->plugins . $config->title_separator . $config->manager->title,
         'offset' => $offset,
-        'pagination' => Navigator::extract($folders, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
+        'pagination' => Navigator::extract($s, $offset, $config->manager->per_page, $config->manager->slug . '/plugin'),
         'cargo' => 'cargo.plugin.php'
     ));
     Shield::lot(array(
