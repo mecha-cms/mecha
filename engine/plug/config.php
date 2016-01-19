@@ -64,7 +64,7 @@ Config::plug('load', function() {
     if($path === 'feed/json' || strpos($path, 'feed/json/') === 0) $page = 'json';
 
     // Create proper query string data
-    if($path !== "") {
+    if($path === "") {
         array_shift($_GET);
     }
 
