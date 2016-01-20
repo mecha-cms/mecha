@@ -75,7 +75,9 @@ class Plugin extends Base {
              'Version' . S . ' 0.0.0' . "\n" .
              "\n" . SEPARATOR . "\n" .
              "\n" . Config::speak('notify_not_available', $speak->description);
-        $info = Text::toPage(File::open($info)->read($d), 'content', 'plugin:');
+        $info = Text::toPage(File::open($info)->read($d), 'content', 'plugin:', array(
+            'id' => File::exist(PLUGIN . DS . $folder) ? $folder : false
+        ));
         return $array ? $info : Mecha::O($info);
     }
 
