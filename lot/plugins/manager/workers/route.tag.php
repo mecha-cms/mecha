@@ -41,7 +41,7 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
             'name' => "",
             'slug' => "",
             'description' => "",
-            'scope' => 'article'
+            'scope' => "" // no scope
         );
         $title = Config::speak('manager.title_new_', $speak->tag) . $config->title_separator . $config->manager->title;
     } else {

@@ -8,7 +8,7 @@
   sort($scopes);
   foreach($scopes as $scope) {
       $scope_text = isset($speak->{$scope}) ? $speak->{$scope} : Text::parse($scope, '->title');
-      echo '<div>' . Form::checkbox('scope[]', $scope, ! isset($page->scope_raw) || strpos($cache, ',' . $scope . ',') !== false, $scope_text) . '</div>';
+      echo '<div>' . Form::checkbox('scope[]', $scope, strpos($cache, ',' . $scope . ',') !== false, $scope_text) . '</div>';
   }
 
   ?>

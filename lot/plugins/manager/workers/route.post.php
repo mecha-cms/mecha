@@ -113,28 +113,28 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         $title = Text::parse(Request::post('title', $speak->untitled . ' ' . Date::format($date, 'Y/m/d H:i:s'), false), '->text', str_replace('<a>', "", WISE_CELL_I));
         $link = false;
         if(isset($request['link']) && trim($request['link']) !== "") {
-			$_ = $request['link'];
-			// Allow relative URL protocol
-			if(strpos($_, '//') === 0) {
-				$_ = str_replace('://', ':', $config->protocol) . $_;
-			}
+            $_ = $request['link'];
+            // Allow relative URL protocol
+            if(strpos($_, '//') === 0) {
+                $_ = str_replace('://', ':', $config->protocol) . $_;
+            }
             if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);
             } else {
                 $link = $request['link'];
             }
         }
-		// If you set the post slug value with a `*://` or `//` at the beginning,
-		// then Mecha will treat it as an external link value for your post data.
-		// The original slug value will be created automatically based on the
-		// post title text, but you can edit it later.
-		$_ = $request['slug'];
+        // If you set the post slug value with a `*://` or `//` at the beginning,
+        // then Mecha will treat it as an external link value for your post data.
+        // The original slug value will be created automatically based on the
+        // post title text, but you can edit it later.
+        $_ = $request['slug'];
         if(strpos($_, '://') !== false || strpos($_, '//') === 0) {
             $slug = Text::parse($title, '->slug');
-			// Allow relative URL protocol
-			if(strpos($_, '//') === 0) {
-				$_ = str_replace('://', ':', $config->protocol) . $_;
-			}
+            // Allow relative URL protocol
+            if(strpos($_, '//') === 0) {
+                $_ = str_replace('://', ':', $config->protocol) . $_;
+            }
             if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);
             } else {
