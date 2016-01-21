@@ -5,6 +5,7 @@ $fields = Get::state_field(null, array(), true, $segment);
 if( ! empty($fields)) {
     $html = "";
     $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
+    $_ = 'unit:' . time() . '--';
     foreach($fields as $key => $value) {
         if(isset($field[$key]['type'])) { // `POST` request
             $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
@@ -64,30 +65,32 @@ if( ! empty($fields)) {
                 $html .= '</span>';
                 $html .= '</div>';
             } else if($type === 'composer' || $type === 'c') {
-                $html .= '<label class="grid-group grid-group-composer">';
-                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
+                $html .= '<div class="grid-group grid-group-composer">';
+                $html .= '<label class="grid span-2 form-label" for="' . $_ . $key . '">' . $title . '</label>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
                     'class' => array(
                         'textarea-block',
                         'MTE',
                         'code'
-                    )
+                    ),
+                    'id' => $_ . $key
                 ));
                 $html .= '</span>';
-                $html .= '</label>';
+                $html .= '</div>';
             } else if($type === 'editor' || $type === 'e') {
-                $html .= '<label class="grid-group grid-group-editor">';
-                $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
+                $html .= '<div class="grid-group grid-group-editor">';
+                $html .= '<label class="grid span-2 form-label" for="' . $_ . $key . '">' . $title . '</label>';
                 $html .= '<span class="grid span-4">';
                 $html .= Form::textarea('fields[' . $key . '][value]', Converter::str(isset($field[$key]) ? $field[$key] : $value['value']), Converter::toText(isset($value['placeholder']) ? $value['placeholder'] : $value['value']), array(
                     'class' => array(
                         'textarea-block',
                         'code'
-                    )
+                    ),
+                    'id' =>  $_ . $key
                 ));
                 $html .= '</span>';
-                $html .= '</label>';
+                $html .= '</div>';
             } else { // if($type === 'summary' || $type === 's') {
                 $html .= '<label class="grid-group grid-group-summary">';
                 $html .= '<span class="grid span-2 form-label">' . $title . '</span>';
