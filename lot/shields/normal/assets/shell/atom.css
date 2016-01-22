@@ -364,7 +364,10 @@ iframe {
 form,blockquote,hr,dl,dd,dt,fieldset,
 figcaption,figure,ol,ul,p,pre,table,iframe,
 .fluid-media,.fluid-video,.grid-group,
-.image-container,.p {margin:0 0 1.3846153846153846em}
+.image-container,.p {
+  margin:0 0 1.3846153846153846em;
+  margin-bottom:1.3846153846153846rem;
+}
 
 ol {
   margin-left:2.3846153846153846em;
