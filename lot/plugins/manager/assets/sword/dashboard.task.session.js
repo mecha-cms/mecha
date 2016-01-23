@@ -13,7 +13,7 @@ DASHBOARD.task.session = {
             }
             document.cookie = session + '=' + value + str + '; path=/';
         } else {
-            localStorage.setItem(session, value);
+            localStorage.setItem(session, JSON.stringify(value));
         }
     },
     get: function(session, fallback) {
@@ -30,7 +30,7 @@ DASHBOARD.task.session = {
             }
             return Object.keys(output).length ? output : fallback;
         } else {
-            return localStorage.getItem(session) || fallback;
+            return JSON.parse(localStorage.getItem(session)) || fallback;
         }
     },
     kill: function(session) {

@@ -26,8 +26,8 @@ Parse pola `{{ini}}`, tapi bukan ``{{ini}}``
 
 Anda bisa menerapkan variabel di dalam pola _kode pintasan_ melalui simbol <code>&#37;s</code>. Sebagai contoh:
 
-Kunci                      | Nilai
--------------------------- | ----------------------------
+Kunci | Nilai
+----- | -----
 <code>`{{div class:&#37;s id:&#37;s}}`</code> | <code>&lt;div class="$1" id="$2"&gt;</code>
 
 Sehingga, menuliskan ``{{div class:foo id:bar}}`` di dalam halaman tulis akan menghasilkan ``<div class="foo" id="bar">`` di hasil keluaran.

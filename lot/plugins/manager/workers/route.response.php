@@ -88,6 +88,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
     Config::set(array(
         'page_title' => $title,
         'page' => $response,
+        'html_parser' => array('active' => $response->content_type_raw),
         'cargo' => 'repair.response.php'
     ));
     if($request = Request::post()) {
