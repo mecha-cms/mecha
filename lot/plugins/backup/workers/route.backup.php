@@ -81,18 +81,18 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
         /*
         if($origin === 'plugins') {
             Package::take(ROOT . DS . $name)->deleteFolders(array( // delete built-in plugin(s)
+                '__editor',
+                '__editor-button',
+                '__preview',
                 'asset-version',
                 'cache',
                 'comment-location',
                 'comment-notify',
-                'editor',
-                'editor-button',
                 'empty',
                 'facebook-open-graph',
                 'manager',
                 'markdown',
                 'minify',
-                'preview',
                 'shortcode-php'
             ));
         }
@@ -117,7 +117,7 @@ Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "
         header('Content-Type: application/zip');
         // header('Content-Length: ' . filesize($backup));
         header('Content-Disposition: attachment; filename=' . $file);
-        ob_clean();
+        @ob_clean();
         readfile($backup);
         ignore_user_abort(true);
         File::open($backup)->delete();
