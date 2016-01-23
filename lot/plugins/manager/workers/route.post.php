@@ -52,11 +52,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     // Ignite
     if(strpos($config->url_path, '/id:') === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-            echo '<script>
-(function($) {
-    $.slug(\'title\', \'slug\', \'-\');
-})(window.Zepto || window.jQuery);
-</script>';
+            echo '<script>(function($){$.slug(\'title\',\'slug\',\'-\')})(DASHBOARD.$);</script>';
         }, 11);
     }
     if($id && $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
@@ -96,6 +92,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     Config::set(array(
         'page_title' => $title,
         'page' => $post,
+        'html_parser' => array('active' => $post->content_type_raw),
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {
@@ -193,7 +190,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo($_);
                 if(( ! empty($css) && $css !== $config->defaults->{$segment . '_css'}) || ( ! empty($js) && $js !== $config->defaults->{$segment . '_js'})) {
-                    Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::slug($date) . $extension);
+                    File::write(Converter::ES($css) . "\n\n" . SEPARATOR . "\n\n" . Converter::ES($js))->saveTo(CUSTOM . DS . Date::slug($date) . $extension);
                     Weapon::fire(array('on_custom_update', 'on_custom_construct'), array($G, $P));
                 }
             // Repair
@@ -208,13 +205,13 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                         File::open($custom_ . $extension_o)->delete();
                         Weapon::fire('on_custom_destruct', array($G, $P));
                     } else {
-                        Page::content($css)->content($js)->saveTo($custom_ . $extension_o);
+                        File::write(Converter::ES($css) . "\n\n" . SEPARATOR . "\n\n" . Converter::ES($js))->saveTo($custom_ . $extension_o);
                         File::open($custom_ . $extension_o)->renameTo(Date::slug($date) . $extension);
                         Weapon::fire('on_custom_repair', array($G, $P));
                     }
                 } else {
                     if(( ! empty($css) && $css !== $config->defaults->{$segment . '_css'}) || ( ! empty($js) && $js !== $config->defaults->{$segment . '_js'})) {
-                        Page::content($css)->content($js)->saveTo(CUSTOM . DS . Date::slug($date) . $extension_o);
+                        File::write(Converter::ES($css) . "\n\n" . SEPARATOR . "\n\n" . Converter::ES($js))->saveTo(CUSTOM . DS . Date::slug($date) . $extension_o);
                         Weapon::fire(array('on_custom_update', 'on_custom_construct'), array($G, $P));
                     }
                 }
