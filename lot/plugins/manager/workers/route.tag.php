@@ -30,11 +30,7 @@ Route::accept($config->manager->slug . '/tag', function() use($config, $speak, $
 Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->slug . '/tag/repair/id:(:any)'), function($id = false) use($config, $speak, $tags) {
     if($id === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-            echo '<script>
-(function($) {
-    $.slug(\'name\', \'slug\', \'-\');
-})(window.Zepto || window.jQuery);
-</script>';
+            echo '<script>(function($){$.slug(\'name\',\'slug\',\'-\')})(DASHBOARD.$);</script>';
         }, 11);
         $data = array(
             'id' => max(array_keys($tags)) + 1,

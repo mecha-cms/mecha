@@ -1,4 +1,4 @@
-(function($, base) {
+(function(base, $) {
     var $css = $('textarea[name="css"]'),
         $js = $('textarea[name="js"]'),
         $check = {
@@ -29,4 +29,4 @@
     $check.js.on("change", function() {
         $preview.js.html(this.checked ? $js.val() : "");
     });
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

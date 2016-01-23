@@ -3,7 +3,7 @@
  * --------------
  */
 
-(function($, base) {
+(function(base, $) {
     $.slug = function(input, output, connect) {
         if (typeof input === "string") {
             input = $('[name="' + input + '"]');
@@ -16,4 +16,4 @@
         });
         return input;
     };
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

@@ -16,7 +16,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $base = $(document.body),
         $modal = $('.modal-area'),
@@ -90,4 +90,4 @@
         }
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

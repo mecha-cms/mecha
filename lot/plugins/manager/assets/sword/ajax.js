@@ -11,7 +11,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $btn = $('.ajax-post, .ajax-get');
 
@@ -63,4 +63,4 @@
         return false;
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

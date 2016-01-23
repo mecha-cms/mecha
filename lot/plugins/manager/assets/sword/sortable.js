@@ -23,7 +23,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $tbody = $('.table-sortable tbody'),
         selected = null;
@@ -94,7 +94,7 @@
         }
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);
 
 
 /**
@@ -110,7 +110,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $sortable = $('.sortable-area'),
         $base = $sortable.parent(),
@@ -182,4 +182,4 @@
         }
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

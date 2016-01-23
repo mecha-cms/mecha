@@ -13,7 +13,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $accordion = $('.accordion-area');
 
@@ -34,4 +34,4 @@
         return false;
     }).on("mousedown", false);
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

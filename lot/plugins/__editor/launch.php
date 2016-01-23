@@ -25,16 +25,14 @@ Weapon::add('shell_after', function() use($editor_config) {
 
 // Inject editor's JavaScript
 Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak) {
-    echo '<script>(function($) {
-    $(\'.MTE\').attr(\'data-MTE-config\', \'{"toolbar":true,"shortcut":true}\');
-})(window.Zepto || window.jQuery);</script>';
+    echo '<script>(function($){$(\'.MTE\').attr(\'data-MTE-config\',\'{"toolbar":true,"shortcut":true}\')})(DASHBOARD.$);</script>';
     $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
     $editor = Config::get('MTE', 'HTE');
     echo Asset::javascript(array(
         $path . 'editor.min.js',
         $path . 'hte.min.js'
     ));
-    echo '<script>var MTE = ' . $editor . ';</script>';
+    echo '<script>var MTE=' . $editor . ';</script>';
     echo Asset::javascript($path . 'run.js', "", 'sword/run.min.js');
 }, 2);
 

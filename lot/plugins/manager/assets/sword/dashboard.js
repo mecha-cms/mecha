@@ -4,6 +4,7 @@
  */
 
 window.DASHBOARD = {
+    $: window.Zepto || window.jQuery, // library ...
     hook: [],
     task: {}, // stuff ...
     add: function(name, fn, stack) {

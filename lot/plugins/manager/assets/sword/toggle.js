@@ -3,7 +3,7 @@
  * -------------------------
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $checkbox = $('input[type="checkbox"]'),
         $radio = $('input[type="radio"]');
@@ -65,4 +65,4 @@
         $radio.filter('[readonly]').prev().addClass('readonly').closest('label').on("click mousedown", false);
     }
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

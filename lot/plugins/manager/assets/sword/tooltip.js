@@ -6,7 +6,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $window = $(window),
         $document = $(document),
@@ -112,4 +112,4 @@
         });
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

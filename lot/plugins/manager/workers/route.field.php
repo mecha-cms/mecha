@@ -35,11 +35,7 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
     }
     if($key === false) {
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-            echo '<script>
-(function($) {
-    $.slug(\'title\', \'key\', \'_\');
-})(window.Zepto || window.jQuery);
-</script>';
+            echo '<script>(function($){$.slug(\'title\',\'key\',\'_\')})(DASHBOARD.$);</script>';
         }, 11);
         $data = array(
             'key' => false,

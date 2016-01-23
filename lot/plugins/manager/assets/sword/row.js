@@ -11,7 +11,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $row = $('.row-more-less');
 
@@ -51,4 +51,4 @@
 
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);

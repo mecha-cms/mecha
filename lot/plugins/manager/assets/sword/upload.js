@@ -11,7 +11,7 @@
  *
  */
 
-(function($, base) {
+(function(base, $) {
 
     var $uploader = $('.form-upload input[type="file"]'),
         accepted = ($uploader.data('acceptedExtensions') || base.file_extension_allow).split(','),
@@ -46,4 +46,4 @@
         base.fire('on_file_' + (ok ? 'accept' : 'reject'), data);
     });
 
-})(window.Zepto || window.jQuery, DASHBOARD);
+})(DASHBOARD, DASHBOARD.$);
