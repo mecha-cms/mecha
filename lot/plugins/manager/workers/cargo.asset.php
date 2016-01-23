@@ -132,7 +132,7 @@
               foreach($___ as $_) {
                   array_pop($___);
                   $t = end($___);
-                  $__[] = Cell::a($config->url_path . HTTP::query('path', $___ ? implode('/', $___) : false), $t ? $t : '..');
+                  $__[] = Cell::a($asset_url . '/1' . str_replace('&', '&amp', HTTP::query(array('path' => $___ ? implode('/', $___) : false, 'q' => false))), $t ? $t : '..');
               }
 
               ?>
