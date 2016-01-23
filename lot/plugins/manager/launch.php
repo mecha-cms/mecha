@@ -1,17 +1,17 @@
 <?php
 
 
+// URL segment(s)
+$segment = explode('/', $config->url_path);
+$segment = $config->page_type === 'manager' ? $segment[1] : $segment[0];
+
+// Loading plug(s)
+foreach(glob(__DIR__ . DS . 'workers' . DS . 'kernel' . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
+    require $plug;
+}
+
 // Logged in user(s) only
 if(Guardian::happy()) {
-
-    // URL segment(s)
-    $segment = explode('/', $config->url_path);
-    $segment = $config->page_type === 'manager' ? $segment[1] : $segment[0];
-
-    // Loading plug(s)
-    foreach(glob(__DIR__ . DS . 'workers' . DS . 'kernel' . DS . 'plug' . DS . '*.php', GLOB_NOSORT) as $plug) {
-        require $plug;
-    }
 
 
     /**
