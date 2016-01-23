@@ -62,7 +62,8 @@ if(Guardian::happy()) {
             $path . 'dashboard.task.file.js',
             $path . 'dashboard.task.query.js',
             $path . 'dashboard.task.session.js',
-            $path . 'dashboard.task.slug.js'
+            $path . 'dashboard.task.slug.js',
+            $path . 'dashboard.add.js'
         ), "", 'sword/dashboard.min.js');
         $constant = get_defined_constants(true);
         $constant_js = "";
