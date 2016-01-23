@@ -22,39 +22,11 @@ if(Guardian::happy()) {
      *
      */
 
-    Weapon::add('meta', function() use($config) {
+    Weapon::add('meta', function() use($config, $speak, $segment) {
         echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
         if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
             echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
         }
-    }, 20);
-
-    Weapon::add('shell_after', function() use($config) {
-        $path = __DIR__ . DS . 'assets' . DS . 'shell' . DS;
-        echo Asset::stylesheet(array(
-            $path . 'row.css',
-            $path . 'upload.css',
-            $path . 'tab.css',
-            $path . 'toggle.css',
-            $path . 'modal.css',
-            $path . 'tooltip.css',
-            $path . 'sortable.css',
-            $path . 'accordion.css',
-            $path . 'layout.css',
-            SHIELD . DS . $config->shield . DS . 'assets' . DS . 'shell' . DS . 'manager.css', // => taken from the current shield folder (if available)
-        ), "", 'shell/manager.min.css');
-        if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
-            echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
-        }
-    }, 10);
-
-    Weapon::add('cargo_after', function() use($config, $speak) {
-        if(Config::get('widget_manager_bar_id', 0) <= 1) {
-            echo Widget::manager('BAR'); // include once ...
-        }
-    }, 20);
-
-    Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak, $segment) {
         $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
         echo Asset::javascript(array(
             $path . 'dashboard.js',
@@ -92,7 +64,32 @@ if(Guardian::happy()) {
         }
         $output .= 'DASHBOARD.url.hash=window.location.hash;';
         echo $output . '</script>' . O_END;
-    }, 1);
+    }, 20);
+
+    Weapon::add('shell_after', function() use($config) {
+        if( ! Asset::loaded($config->protocol . ICON_LIBRARY_PATH)) {
+            echo Asset::stylesheet($config->protocol . ICON_LIBRARY_PATH);
+        }
+        $path = __DIR__ . DS . 'assets' . DS . 'shell' . DS;
+        echo Asset::stylesheet(array(
+            $path . 'row.css',
+            $path . 'upload.css',
+            $path . 'tab.css',
+            $path . 'toggle.css',
+            $path . 'modal.css',
+            $path . 'tooltip.css',
+            $path . 'sortable.css',
+            $path . 'accordion.css',
+            $path . 'layout.css',
+            SHIELD . DS . $config->shield . DS . 'assets' . DS . 'shell' . DS . 'manager.css', // => taken from the current shield folder (if any)
+        ), "", 'shell/manager.min.css');
+    }, 10);
+
+    Weapon::add('cargo_after', function() use($config, $speak) {
+        if(Config::get('widget_manager_bar_id', 0) <= 1) {
+            echo Widget::manager('BAR'); // include once ...
+        }
+    }, 20);
 
     Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config) {
         Session::kill('recent_item_update');
@@ -108,9 +105,9 @@ if(Guardian::happy()) {
             $path . 'tooltip.js',
             $path . 'sortable.js',
             $path . 'accordion.js',
-            SHIELD . DS . $config->shield . DS . 'assets' . DS . 'sword' . DS . 'manager.js', // => taken from the current shield folder (if available)
+            SHIELD . DS . $config->shield . DS . 'assets' . DS . 'sword' . DS . 'manager.js', // => taken from the current shield folder (if any)
         ), "", 'sword/manager.min.js');
-    }, 10);
+    }, 1);
 
 
     /**
