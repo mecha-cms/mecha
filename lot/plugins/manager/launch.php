@@ -30,11 +30,6 @@ if(Guardian::happy()) {
         $path = __DIR__ . DS . 'assets' . DS . 'sword' . DS;
         echo Asset::javascript(array(
             $path . 'dashboard.js',
-            $path . 'dashboard.task.extend.js',
-            $path . 'dashboard.task.file.js',
-            $path . 'dashboard.task.query.js',
-            $path . 'dashboard.task.session.js',
-            $path . 'dashboard.task.slug.js',
             $path . 'dashboard.add.js'
         ), "", 'sword/dashboard.min.js');
         $constant = get_defined_constants(true);
@@ -301,8 +296,9 @@ if(Guardian::happy()) {
 }
 
 
-// Loading frontend route(s)    
+// Loading frontend task(s) and route(s)
 Weapon::add('routes_before', function() use($config, $speak) {
+    require __DIR__ . DS . 'workers' . DS . 'task.comment.ignite.php';
     require __DIR__ . DS . 'workers' . DS . 'route.login.php';
 });
 
