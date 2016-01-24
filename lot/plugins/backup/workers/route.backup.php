@@ -20,7 +20,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
-        include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.ignite.package.php';
+        include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($title) {
                 Notify::clear();

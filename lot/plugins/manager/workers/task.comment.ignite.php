@@ -20,8 +20,11 @@ if( ! function_exists('do_comment_construct')) {
                 'comment_form_id' => $comment_form_id
             ));
             if($article !== false && $request = Request::post()) {
-                if($task = File::exist(SHIELD . DS . $config->shield . DS . 'workers' . DS . 'task.comment.php')) {
+                $s = SHIELD . DS . $config->shield . DS . 'workers' . DS;
+                if($task = File::exist($s . 'task.comment.php')) {
                     require $task; // Custom comment constructor
+                } else if($task = File::exist($s . 'task.comment.ignite.php')) {
+                    require $task; // --ibid
                 } else {
                     // Check token
                     Guardian::checkToken($request['token'], $article->url . '#' . $comment_form_id);
@@ -96,7 +99,7 @@ if( ! function_exists('do_comment_construct')) {
                         $parser = strip_tags(Request::post('content_type', $config->html_parser->active));
                         $message = Text::parse($request['message'], '->text', WISE_CELL . '<img>', false);
                         $field = Request::post('fields', array());
-                        include File::D(__DIR__, 2) . DS . 'task.fields.php';
+                        include __DIR__ . DS . 'task.fields.php';
                         // Temporarily disallow image(s) in comment to prevent XSS
                         $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);
                         Page::header(array(

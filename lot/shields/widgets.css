@@ -34,6 +34,7 @@ time {display:inline}
   min-height:1px;
   float:left;
   margin-left:4.349%;
+  cursor:inherit;
 }
 
 .grid:first-child {margin-left:0}

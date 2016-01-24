@@ -20,7 +20,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     $destination = PLUGIN;
     if(isset($_FILES) && ! empty($_FILES)) {
         Guardian::checkToken(Request::post('token'));
-        include __DIR__ . DS . 'task.ignite.package.php';
+        include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($speak) {
                 Notify::clear();
