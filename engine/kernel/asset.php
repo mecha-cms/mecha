@@ -31,7 +31,7 @@ class Asset extends Base {
     // Get full version of private asset path
     public static function path($path, $fallback = false) {
         // External URL, nothing to check!
-        if(strpos($path, '://') !== false) {
+        if(strpos($path, '://') !== false || strpos($path, '//') === 0) {
             return $path;
         }
         $path = File::path($path);
@@ -56,7 +56,7 @@ class Asset extends Base {
         $path = Filter::colon('asset:path', self::path($source, false));
         $url = File::url($path);
         if($path && strpos($path, ROOT) === false) {
-            return strpos($url, '://') !== false ? Filter::colon('asset:url', $url, $source) : false;
+            return strpos($url, '://') !== false || strpos($url, '//') === 0 ? Filter::colon('asset:url', $url, $source) : false;
         }
         return $path && file_exists($path) ? Filter::colon('asset:url', $url, $source) : false;
     }
@@ -80,7 +80,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . $url . '" rel="stylesheet"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
+                $html .= str_repeat(TAB, 2) . '<!-- ' . $url . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -105,7 +105,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . $url . '"' . $attr . '></script>' . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
+                $html .= str_repeat(TAB, 2) . '<!-- ' . $url . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -130,7 +130,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . $url . '"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= '<!-- ' . $path[$i] . ' -->' . NL;
+                $html .= '<!-- ' . $url . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim($html, NL) . O_END;

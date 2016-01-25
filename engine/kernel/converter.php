@@ -25,6 +25,7 @@ class Converter extends Base {
     public static function url($input) {
         if(
             strpos($input, '://') === false &&
+            strpos($input, '//') !== 0 &&
             strpos($input, '?') !== 0 &&
             strpos($input, '&') !== 0 &&
             strpos($input, '#') !== 0 &&

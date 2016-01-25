@@ -27,7 +27,7 @@ class Shield extends Base {
         );
         Session::set(Guardian::$token, $token);
         unset($config, $token);
-        self::$lot = array_merge($results, self::$lot);
+        self::$lot = array_merge(self::$lot, $results);
         return self::$lot;
     }
 
@@ -177,7 +177,7 @@ class Shield extends Base {
             } else if($_path = File::exist(self::path($s[0], $fallback))) {
                 $path__ = $_path;
             } else {
-                Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . self::path($path__) . '</code>'));
+                Guardian::abort(Config::speak('notify_file_not_exist', '<code>' . $path__ . '</code>'));
             }
         }
         $lot__ = self::cargo();
