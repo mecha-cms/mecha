@@ -1301,8 +1301,10 @@ class Get extends Base {
         // that is not available in the old post(s).
         $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
         foreach($fields as $k => $v) {
-            $s = isset($results['fields'][$k]) && trim($results['fields'][$k]) !== "" ? $results['fields'][$k] : "";
-            if($s === "") {
+            $s = isset($results['fields'][$k]) && trim($results['fields'][$k]) !== "" ? $results['fields'][$k] : null;
+            $s = Filter::colon($FP . 'fields_raw.' . $k, $s, $results);
+            $results['fields_raw'][$k] = $s;
+            if($s === null) {
                 // For `option` field type, the first option will be used as the default value
                 if($v['type'] === 'option' || $v['type'] === 'o') {
                     $vv = array_keys(Converter::toArray($v['value']));
@@ -1324,7 +1326,7 @@ class Get extends Base {
                     $s = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $s, "") : "";
                 }
             }
-            $results['fields'][$k] = $s;
+            $results['fields'][$k] = Filter::colon($FP . 'fields.' . $k, $s, $results);
         }
         unset($fields, $s);
     }
