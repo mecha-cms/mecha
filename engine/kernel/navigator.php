@@ -5,7 +5,7 @@ class Navigator extends Base {
     public static $config = array(
         'step' => 5,
         'classes' => array(
-            'pagination' => 'pagination',
+            'navigation' => 'pagination',
             'current' => 'current'
         )
     );
@@ -72,7 +72,7 @@ class Navigator extends Base {
             $bucket['next']['anchor'] = Filter::apply(array('pager:next.anchor', 'pager:anchor', 'anchor'), $next ? '<a href="' . $bucket['next']['url'] . '" rel="next">' . $speak->older . '</a>' : "", $next, $connector);
 
             // Generate pagination anchor(s) for index page
-            $html = '<span' . ($c['classes']['pagination'] !== false ? ' class="' . $c['classes']['pagination'] . '"' : "") . '>';
+            $html = '<span' . ($c['classes']['navigation'] !== false ? ' class="' . $c['classes']['navigation'] . '"' : "") . '>';
             $chunk = (int) ceil($total / $per_page);
             $step = $chunk > self::$config['step'] ? self::$config['step'] : $chunk;
             $left = $current - $step;
@@ -101,7 +101,7 @@ class Navigator extends Base {
                 $html .= $bucket['step']['anchor']['next'] . $bucket['step']['anchor']['last'];
             }
 
-            $bucket['step']['html'] = Filter::apply('pager:step.html', $html . '</span>');
+            $bucket['step']['html'] = Filter::apply(array('pager:step.html', 'pager:html'), $html . '</span>');
 
         }
 
