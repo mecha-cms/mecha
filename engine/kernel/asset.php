@@ -138,7 +138,7 @@ class Asset extends Base {
 
     // Merge multiple asset file(s) into a single file
     public static function merge($path, $name = null, $addon = "", $call = null) {
-        $the_path = ASSET . DS . File::path($name);
+        $the_path = strpos($name, ROOT) === 0 ? File::path($name) : ASSET . DS . File::path($name);
         $the_log = LOG . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
         $is_valid = true;
         if( ! file_exists($the_log)) {
