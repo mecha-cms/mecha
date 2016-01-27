@@ -683,7 +683,8 @@ class Get extends Base {
             $parts = explode(S, $buffer, 2);
             $results['url'] = Filter::colon($FP . 'url', Config::get('url') . $connector . $results['slug'], $results);
             $v = isset($parts[1]) ? Converter::DS(trim($parts[1])) : "";
-            $results['title_raw'] = Filter::colon($FP . 'title_raw', $v, $results);
+            $v = Filter::colon($FP . 'title_raw', $v, $results);
+            $results['title_raw'] = $v;
             $results['title'] = Filter::colon($FP . 'title', $v, $results);
             return Mecha::O($results);
         }
@@ -1016,6 +1017,7 @@ class Get extends Base {
                     }
                 }
             } else if($key === 'parent') {
+                if($value === 'null') $value = '0000-00-00-00-00-00'; // select response(s) with no parent ID
                 for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
                     if(strpos($parent, $value) === 0) {
@@ -1094,8 +1096,10 @@ class Get extends Base {
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
             $results = self::responseExtract($path, $FP);
             $parts = explode(S, $buffer, 2);
-            $results['name_raw'] = Filter::colon($FP . 'name_raw', isset($parts[1]) ? Converter::DS(trim($parts[1])) : "", $results);
-            $results['name'] = Filter::colon($FP . 'name', $results['name_raw'], $results);
+            $v = isset($parts[1]) ? Converter::DS(trim($parts[1])) : "";
+            $v = Filter::colon($FP . 'name_raw', $v, $results);
+            $results['name_raw'] = $v;
+            $results['name'] = Filter::colon($FP . 'name', $v, $results);
             return Mecha::O($results);
         }
         return false;
