@@ -208,9 +208,14 @@ class Asset extends Base {
     }
 
     // Check for loaded asset(s)
-    public static function loaded($path = null) {
+    public static function loaded($path = null, $fallback = false) {
         if(is_null($path)) return self::$assets;
-        return isset(self::$assets[$path]) ? $path : false;
+        return isset(self::$assets[$path]) ? $path : $fallback;
+    }
+
+    // alias for `Asset::loaded()`
+    public static function exist($path, $fallback = false) {
+        return self::loaded($path, $fallback);
     }
 
     // Do not let the `Asset` loads these file(s) ...
@@ -225,9 +230,9 @@ class Asset extends Base {
     }
 
     // Check for ignored asset(s)
-    public static function ignored($path = null) {
+    public static function ignored($path = null, $fallback = false) {
         if(is_null($path)) return self::$assets_x;
-        return isset(self::$assets_x[$path]) ? self::$assets_x[$path] : false;
+        return isset(self::$assets_x[$path]) ? self::$assets_x[$path] : $fallback;
     }
 
 }

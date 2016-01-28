@@ -88,6 +88,11 @@ class Route extends Base {
         return isset(self::$routes[$pattern]) ? self::$routes[$pattern] : $fallback;
     }
 
+    // alias for `Route::accepted()`
+    public static function exist($pattern, $fallback = false) {
+        return self::accepted($pattern, $fallback);
+    }
+
     /**
      * ===========================================================================
      *  GET REQUEST ONLY
