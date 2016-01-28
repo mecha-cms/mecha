@@ -33,9 +33,11 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
         }
     }
     $folders = Get::closestFolders($destination, 'ASC', null, 'key:path');
+    $info = Shield::info($folder);
+    $info->configurator = File::exist($_folder . DS . 'workers' . DS . 'configurator.php');
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
-        'page' => Shield::info($folder, true),
+        'page' => $info,
         'cargo' => 'cargo.shield.php'
     ));
     Shield::lot(array(
@@ -199,3 +201,27 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     }
     Guardian::kick($config->manager->slug . '/shield/' . $slug);
 });
+
+
+/**
+ * Shield Updater (Base)
+ * ---------------------
+ */
+
+if($route = Route::is($config->manager->slug . '/shield/(:any)/update')) {
+    Weapon::add('routes_before', function() use($config, $speak, $route) {
+        if( ! Route::accepted($route['path'])) {
+            Route::accept($route['path'], function() use($config, $speak, $route) {
+                if($request = Request::post()) {
+                    Guardian::checkToken($request['token']);
+                    unset($request['token']); // remove token from request array
+                    $s = $route['lot'][0];
+                    $request = Filter::apply(array('request:shield.' . md5($s), 'request:shield'), $request, $s);
+                    File::serialize($request)->saveTo(SHIELD . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
+                    Notify::success(Config::speak('notify_success_updated', $speak->shield));
+                    Guardian::kick(File::D($config->url_current));
+                }
+            });
+        }
+    }, 1);
+}

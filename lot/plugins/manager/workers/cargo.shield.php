@@ -21,7 +21,8 @@
       <div class="tab-button-area">
         <?php Weapon::fire('tab_button_before', $hooks); ?>
         <a class="tab-button active" href="#tab-content-1-1"><?php echo Jot::icon('file-code-o', 'fw') . ' ' . $speak->file; ?></a>
-        <a class="tab-button" href="#tab-content-1-2"><?php echo Jot::icon('user', 'fw') . ' ' . $speak->about; ?></a>
+        <a class="tab-button" href="#tab-content-1-2"><?php echo Jot::icon('cog', 'fw') . ' ' . $speak->config; ?></a>
+        <a class="tab-button" href="#tab-content-1-3"><?php echo Jot::icon('user', 'fw') . ' ' . $speak->about; ?></a>
         <?php Weapon::fire('tab_button_after', $hooks); ?>
       </div>
       <div class="tab-content-area">
@@ -38,6 +39,7 @@
             <tbody>
               <?php if($files): ?>
               <?php foreach($files as $file): ?>
+              <?php if(strpos($file->path, $shield_path . 'states' . DS) === 0 || strpos($file->path, $shield_path . 'workers' . DS) === 0) continue; ?>
               <?php $url = File::url(str_replace($shield_path, "", $file->path)); ?>
               <tr<?php echo Session::get('recent_item_update') === File::B($file->path) ? ' class="active"' : ""; ?>>
                 <td><?php echo strpos($url, '/') !== false ? Jot::span('fade', File::D($url) . '/') . File::B($url) : $url; ?></td>
@@ -63,6 +65,35 @@
           </table>
         </div>
         <div class="tab-content hidden" id="tab-content-1-2">
+        <?php
+
+        if($page->configurator) {
+            $test = file_get_contents($page->configurator);
+            if(strpos($test, '</form>') === false) { // allow plugin configurator without `<form>` tag
+                echo '<form class="form-plugin" action="' . $config->url . '/' . $config->manager->slug . '/shield/' . $folder . '/update" method="post">';
+                echo Form::hidden('token', $token);
+                include $page->configurator;
+                if(strpos($test, 'Jot::button(\'action\', $speak->update)') === false && strpos($test, 'Jot::button("action", $speak->update)') === false) {
+                    echo '<div class="grid-group">';
+                    echo '<span class="grid span-1"></span>';
+                    echo '<span class="grid span-5">';
+                    Weapon::fire('action_before', $hooks);
+                    echo Jot::button('action', $speak->update);
+                    Weapon::fire('action_after', $hooks);
+                    echo '</span>';
+                    echo '</div>';
+                }
+                echo '</form>';
+            } else {
+                include $page->configurator;
+            }
+        } else {
+            echo Cell::p(Config::speak('notify_not_available', $speak->config));
+        }
+
+        ?>
+        </div>
+        <div class="tab-content hidden" id="tab-content-1-3">
           <p class="about-author">
           <?php echo Cell::strong($speak->author . ':') . ' ' . $page->author; ?><?php if(isset($page->url) && $page->url !== '#'): ?> <?php echo Cell::a($page->url, Jot::icon('external-link-square'), true, array(
               'class' => array(
