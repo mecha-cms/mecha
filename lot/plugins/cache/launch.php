@@ -1,12 +1,12 @@
 <?php
 
-$cache_config = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
+$c = $config->states->{'plugin_' . md5(File::B(__DIR__))};
 
 $route_cache = false;
-if(isset($cache_config['path'][$config->url_path])) {
-    $route_cache = $cache_config['path'][$config->url_path];
+if(isset($c->path->{$config->url_path})) {
+    $route_cache = $c->path->{$config->url_path};
 } else {
-    foreach($cache_config['path'] as $path => $exp) {
+    foreach($c->path as $path => $exp) {
         if(Route::is($path)) {
             $route_cache = $exp;
             break;

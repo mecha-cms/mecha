@@ -75,11 +75,15 @@ $speak = Config::speak();
 
 
 /**
- * Include Language File of Shield
- * -------------------------------
+ * Loading Shield
+ * --------------
  */
 
 $__ = SHIELD . DS . $config->shield;
+$s = File::open($__ . 'states' . DS . 'config.txt')->unserialize();
+Config::set('states.shield_' . md5($config->shield), $s);
+Config::set('states.shield', $s); // current shield
+$config = Config::get(); // refresh ...
 if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
     $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
 }
@@ -191,6 +195,8 @@ Weapon::fire('plugins_before');
 
 foreach($plugins = Plugin::load() as $k => $v) {
     $__ = PLUGIN . DS . $k . DS;
+    Config::set('states.plugin_' . md5($k), File::open($__ . 'states' . DS . 'config.txt')->unserialize());
+    $config = Config::get(); // refresh ...
     if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
         $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
     }

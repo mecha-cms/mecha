@@ -45,12 +45,10 @@ Weapon::add('page_footer', function($page) use($config, $speak) {
  *
  */
 
-Weapon::add('routes_before', function() use($config, $speak, $segment) {
+Weapon::add('plugins_after', function() use($config, $speak, $segment) {
     // loading cargo ...
-    if($config->page_type === 'manager') {
-        require __DIR__ . DS . 'workers' . DS . 'cargo.php';
-    }
+    require __DIR__ . DS . 'workers' . DS . 'cargo.php';
     if($detour = File::exist(__DIR__ . DS . 'workers' . DS . 'route.' . $segment . '.php')) {
         require $detour;
     }
-});
+}, 1);

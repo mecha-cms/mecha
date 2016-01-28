@@ -1,15 +1,15 @@
 <?php
 
 // Load the configuration data
-$editor_config = File::open(__DIR__ . DS . 'states' . DS . 'config.txt')->unserialize();
+$c = $config->states->{'plugin_' . md5(File::B(__DIR__))};
 
 // Merge language data to the `DASHBOARD`
-Weapon::add('shield_before', function() use($editor_config) {
+Weapon::add('shield_before', function() use($c) {
     // Manage editor button(s)
     $editor = Config::speak('MTE');
     foreach($editor->buttons as $k => $v) {
         if( ! Text::check($k)->in(array('yes', 'no', 'ok', 'cancel', 'open', 'close'))) {
-            if( ! isset($editor_config['buttons'][$k])) {
+            if( ! isset($c->buttons->{$k})) {
                 $editor->buttons->{$k} = false;
             }
         }
@@ -19,7 +19,7 @@ Weapon::add('shield_before', function() use($editor_config) {
 }, 1);
 
 // Inject editor's CSS
-Weapon::add('shell_after', function() use($editor_config) {
+Weapon::add('shell_after', function() {
     echo Asset::stylesheet(__DIR__ . DS . 'assets' . DS . 'shell' . DS . 'editor.css', "", 'shell/editor.min.css');
 }, 2);
 
@@ -35,19 +35,3 @@ Weapon::add('SHIPMENT_REGION_BOTTOM', function() use($config, $speak) {
     echo '<script>var MTE=' . $editor . ';</script>';
     echo Asset::javascript($path . 'run.js', "", 'sword/run.min.js');
 }, 2);
-
-
-/**
- * Plugin Updater
- * --------------
- */
-
-Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
-    if($request = Request::post()) {
-        Guardian::checkToken($request['token']);
-        unset($request['token']); // Remove token from request array
-        File::serialize($request)->saveTo(__DIR__ . DS . 'states' . DS . 'config.txt', 0600);
-        Notify::success(Config::speak('notify_success_updated', $speak->plugin));
-        Guardian::kick(File::D($config->url_current));
-    }
-});

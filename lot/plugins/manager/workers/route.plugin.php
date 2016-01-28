@@ -89,11 +89,11 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
     $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info->title . $config->title_separator . $config->manager->title,
+        'page' => $info,
         'cargo' => 'repair.plugin.php'
     ));
     Shield::lot(array(
         'segment' => 'plugin',
-        'file' => $info,
         'folder' => $slug
     ))->attach('manager');
 });
@@ -165,3 +165,27 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
     }
     Shield::lot(array('segment' => 'plugin'))->attach('manager');
 });
+
+
+/**
+ * Plugin Updater (Base)
+ * ---------------------
+ */
+
+if($route = Route::is($config->manager->slug . '/plugin/(:any)/update')) {
+    Weapon::add('routes_before', function() use($config, $speak, $route) {
+        if( ! Route::accepted($route['path'])) {
+            Route::accept($route['path'], function() use($config, $speak, $route) {
+                if($request = Request::post()) {
+                    Guardian::checkToken($request['token']);
+                    unset($request['token']); // remove token from request array
+                    $s = $route['lot'][0];
+                    $request = Filter::apply(array('request:plugin.' . md5($s), 'request:plugin'), $request, $s);
+                    File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
+                    Notify::success(Config::speak('notify_success_updated', $speak->plugin));
+                    Guardian::kick(File::D($config->url_current));
+                }
+            });
+        }
+    }, 1);
+}
