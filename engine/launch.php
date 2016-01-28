@@ -149,6 +149,10 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
         'articles' => $articles,
         'pagination' => Navigator::extract($s, $offset, $config->tag->per_page, $config->tag->slug . '/' . $slug)
     ));
+    // `meta` description data based on current tag description
+    if($description = Text::parse($tag->description, '->text')) {
+        Config::set('tag.description', $description);
+    }
     Shield::attach('index-tag');
 }, 50);
 
