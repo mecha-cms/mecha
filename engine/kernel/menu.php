@@ -74,7 +74,7 @@ class Menu extends Base {
         $AD = array('ul', "", $id . ':');
         $arguments = Mecha::extend($AD, $arguments);
         $type = $arguments[0];
-        $arguments[0] = self::$menus[$c][$id];
+        $arguments[0] = Filter::apply('menu:input', self::$menus[$c][$id], $id);
         if( ! is_array($arguments[0])) return "";
         Tree::$config['trunk'] = $type;
         Tree::$config['branch'] = $type;
@@ -86,7 +86,7 @@ class Menu extends Base {
         Tree::$config['classes']['chink'] = $dd['separator'];
         $output = call_user_func_array('Tree::grow', $arguments);
         Tree::$config = $d; // reset to the previous state
-        return $output;
+        return Filter::apply('menu:output', $output, $id);
     }
 
 }
