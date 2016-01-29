@@ -32,8 +32,8 @@ Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update'
  */
 
 function do_remove_cache() {
-    global $config, $cache_config;
-    foreach($cache_config['path'] as $path => $expire) {
+    global $config, $c;
+    foreach($c->path as $path => $expire) {
         $path = str_replace(
             array(
                 '(:any)',
