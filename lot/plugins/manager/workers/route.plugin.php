@@ -108,27 +108,28 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $page_current = Request::get('o', 1);
+    $offset = Request::get('o', 1);
     $mode = $path === 'freeze' ? 'eject' : 'mount';
-    if($mode === 'mount') {
-        // Rename `pending.php` to `launch.php` or `__pending.php` to `__launch.php`
-        File::open(PLUGIN . DS . $slug . DS . 'pending.php')->renameTo('launch.php');
-        File::open(PLUGIN . DS . $slug . DS . '__pending.php')->renameTo('__launch.php');
-    }
     $G = array('data' => array('id' => $slug, 'action' => $path));
-    Notify::success(Config::speak('notify_success_updated', $speak->plugin));
     Weapon::fire(array(
         'on_plugin_update',
         'on_plugin_' . $mode,
         'on_plugin_' . md5($slug) . '_update',
         'on_plugin_' . md5($slug) . '_' . $mode
     ), array($G, $G));
-    if($mode === 'eject') {
-        // Rename `launch.php` to `pending.php` or `__launch.php` to `__pending.php`
-        File::open(PLUGIN . DS . $slug . DS . 'launch.php')->renameTo('pending.php');
-        File::open(PLUGIN . DS . $slug . DS . '__launch.php')->renameTo('__pending.php');
-    }
-    Guardian::kick($config->manager->slug . '/plugin/' . $page_current);
+    Weapon::add('shield_lot_before', function() use($config, $speak, $mode, $slug, $offset) {
+        if($mode === 'mount') {
+            // Rename `pending.php` to `launch.php` or `__pending.php` to `__launch.php`
+            File::open(PLUGIN . DS . $slug . DS . 'pending.php')->renameTo('launch.php');
+            File::open(PLUGIN . DS . $slug . DS . '__pending.php')->renameTo('__launch.php');
+        } else {
+            // Rename `launch.php` to `pending.php` or `__launch.php` to `__pending.php`
+            File::open(PLUGIN . DS . $slug . DS . 'launch.php')->renameTo('pending.php');
+            File::open(PLUGIN . DS . $slug . DS . '__launch.php')->renameTo('__pending.php');
+        }
+        Notify::success(Config::speak('notify_success_updated', $speak->plugin));
+        Guardian::kick($config->manager->slug . '/plugin/' . $offset);
+    }, 1);
 });
 
 
