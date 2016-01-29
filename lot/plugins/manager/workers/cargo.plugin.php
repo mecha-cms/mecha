@@ -41,9 +41,9 @@
             <?php endif; ?>
             <?php endif; ?>
             <?php if( ! File::exist($r . 'configurator.php') && ! File::exist($r . 'launch.php') && ! File::exist($r . 'pending.php') && ! File::exist($r . '__launch.php') && ! File::exist($r . '__pending.php')): ?>
-            <?php echo Jot::btn('destruct.small.disabled:times-circle', $speak->remove, null); ?>
+            <?php echo Jot::btn('destruct.small.disabled:times-circle', $speak->delete, null); ?>
             <?php else: ?>
-            <?php echo Jot::btn('destruct.small:times-circle', $speak->remove, $config->manager->slug . '/plugin/kill/id:' . $folder); ?>
+            <?php echo Jot::btn('destruct.small:times-circle', $speak->delete, $config->manager->slug . '/plugin/kill/id:' . $folder); ?>
             <?php endif; ?>
             <?php Weapon::fire('action_after', array($page, $segment)); ?>
           </p>
