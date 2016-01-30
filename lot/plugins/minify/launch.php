@@ -5,13 +5,13 @@ function do_minify($content) {
     $c_minify = $config->states->{'plugin_' . md5(File::B(__DIR__))};
     $url = $config->protocol . $config->host;
     // Minify HTML
-    if(isset($c_minify->html_minifier)) {
-        Config::set('html_minifier', true);
+    if(isset($c_minify->html_minify)) {
+        Config::set('html_minify', true);
         $content = Converter::detractSkeleton($content);
     }
     // Minify URL
-    if(isset($c_minify->url_minifier) && Text::check($content)->has('="' . $url)) {
-        Config::set('url_minifier', true);
+    if(isset($c_minify->url_minify) && Text::check($content)->has('="' . $url)) {
+        Config::set('url_minify', true);
         $content = str_replace(
             array(
                 '="' . $url . '"',
@@ -28,19 +28,19 @@ function do_minify($content) {
         $content);
     }
     // Minify Embedded CSS
-    if(isset($c_minify->css_minifier)) {
-        Config::set('css_minifier', true);
+    if(isset($c_minify->css_minify)) {
+        Config::set('css_minify', true);
         $content = preg_replace_callback('#<style(>| .*?>)([\s\S]*?)<\/style>#i', function($matches) use($config, $c_minify, $url) {
             $css = Converter::detractShell($matches[2]);
-            if(isset($c_minify->url_minifier)) {
+            if(isset($c_minify->url_minify)) {
                 $css = preg_replace('#(?<=[\s:])(src|url)\(' . preg_quote($url, '/') . '#', '$1(', $css);
             }
             return '<style' . $matches[1] . $css . '</style>';
         }, $content);
     }
     // Minify Embedded JavaScript
-    if(isset($c_minify->js_minifier)) {
-        Config::set('js_minifier', true);
+    if(isset($c_minify->js_minify)) {
+        Config::set('js_minify', true);
         $content = preg_replace_callback('#<script(>| .*?>)([\s\S]*?)<\/script>#i', function($matches) {
             $js = Converter::detractSword($matches[2]);
             return '<script' . $matches[1] . $js . '</script>';

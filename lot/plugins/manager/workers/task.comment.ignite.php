@@ -89,7 +89,7 @@ if( ! function_exists('do_comment_construct')) {
                         }
                     }
                     if( ! Notify::errors()) {
-                        $post = Date::slug($article->time);
+                        $post = $article->date->slug;
                         $id = (int) time();
                         $parent = Request::post('parent');
                         $P = array('data' => $request);

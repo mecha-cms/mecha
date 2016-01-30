@@ -53,11 +53,12 @@ if($config->html_parser->active === 'Markdown' || $config->html_parser->active =
 }
 
 // Create a new comment
-if($config->is->post && Request::method('post')) {
-    if(isset($_POST['message'])) {
+Filter::add('request:comment', function($lot) {
+    if(isset($lot['message'])) {
         // **Markdown Extra** does not support syntax to generate `del`, `ins` and `mark` tag
-        $_POST['message'] = Text::parse($_POST['message'], '->text', '<br><del><ins><mark>', false);
+        $lot['message'] = Text::parse($lot['message'], '->text', '<br><del><ins><mark>', false);
         // Temporarily disallow image(s) in comment to prevent XSS
-        $_POST['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $_POST['message']);
+        $lot['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $lot['message']);
     }
-}
+    return $lot;
+});

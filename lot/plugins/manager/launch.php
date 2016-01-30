@@ -40,6 +40,7 @@ if(Guardian::happy()) {
         unset($constant);
         $cargo = array(
             'segment' => $segment,
+            'language' => $config->language,
             'languages' => Config::get('DASHBOARD.languages', array()),
             'html_parser' => Config::get('html_parser'),
             'file_extension_allow' => implode(',', File::$config['file_extension_allow']),

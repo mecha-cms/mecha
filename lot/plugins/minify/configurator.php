@@ -4,7 +4,7 @@
   <?php
 
   $c_minify = $config->states->{'plugin_' . md5(File::B(__DIR__))};
-  foreach($speak->plugin_minifier_title as $k => $v) {
+  foreach($speak->plugin_minify->title as $k => $v) {
       echo '<div>' . Form::checkbox($k, 1, isset($c_minify->{$k}), $v) . '</div>';
   }
 

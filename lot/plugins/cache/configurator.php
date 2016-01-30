@@ -1,4 +1,4 @@
-<p><?php echo $speak->plugin_cache_description_content . ' ' . Jot::info($speak->plugin_cache_info_content); ?></p>
+<p><?php echo $speak->plugin_cache->description->content . ' ' . Jot::info($speak->plugin_cache->info->content); ?></p>
 <?php
 
 $c_cache = $config->states->{'plugin_' . md5(File::B(__DIR__))};

@@ -2,13 +2,13 @@
 
 return array(
     'user_ip' => array(
-        'title' => $speak->plugin_comment_location_title_ip,
+        'title' => $speak->plugin_comment_location->title->ip,
         'type' => 'text',
         'value' => "",
         'scope' => 'comment'
     ),
     'user_agent' => array(
-        'title' => $speak->plugin_comment_location_title_ua,
+        'title' => $speak->plugin_comment_location->title->ua,
         'type' => 'text',
         'value' => "",
         'scope' => 'comment'

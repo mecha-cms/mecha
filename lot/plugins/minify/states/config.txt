@@ -1,1 +1,1 @@
-a:1:{s:13:"html_minifier";i:1;}
+a:1:{s:11:"html_minify";i:1;}

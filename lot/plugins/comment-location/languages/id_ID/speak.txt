@@ -1,2 +1,4 @@
-plugin_comment_location_title_ip: <abbr title="Internet Protocol">IP</abbr>
-plugin_comment_location_title_ua: Agen Pengguna
+plugin_comment_location:
+  title:
+    ip: <abbr title="Internet Protocol">IP</abbr>
+    ua: Agen Pengguna
