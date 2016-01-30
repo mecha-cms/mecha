@@ -1,13 +1,13 @@
 <?php
 
-$c = $config->states->{'plugin_' . md5(File::B(__DIR__))};
+$c_cache = $config->states->{'plugin_' . md5(File::B(__DIR__))};
 
 if( ! Guardian::happy()) {
     $route_cache = false;
     if(isset($c->path->{$config->url_path})) {
-        $route_cache = $c->path->{$config->url_path};
+        $route_cache = $c_cache->path->{$config->url_path};
     } else {
-        foreach($c->path as $path => $exp) {
+        foreach($c_cache->path as $path => $exp) {
             if(Route::is($path)) {
                 $route_cache = $exp;
                 break;

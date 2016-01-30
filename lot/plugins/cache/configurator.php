@@ -1,9 +1,9 @@
 <p><?php echo $speak->plugin_cache_description_content . ' ' . Jot::info($speak->plugin_cache_info_content); ?></p>
 <?php
 
-$c = $config->states->{'plugin_' . md5(File::B(__DIR__))};
+$c_cache = $config->states->{'plugin_' . md5(File::B(__DIR__))};
 $content = "";
-foreach($c->path as $path => $exp) {
+foreach($c_cache->path as $path => $exp) {
     if($exp !== true) {
         $exp = ' ' . $exp;
     } else {

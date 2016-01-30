@@ -1,15 +1,15 @@
 <?php
 
 // Load the configuration data
-$c = $config->states->{'plugin_' . md5(File::B(__DIR__))};
+$c_editor = $config->states->{'plugin_' . md5(File::B(__DIR__))};
 
 // Merge language data to the `DASHBOARD`
-Weapon::add('shield_before', function() use($c) {
+Weapon::add('shield_before', function() use($c_editor) {
     // Manage editor button(s)
     $editor = Config::speak('MTE');
     foreach($editor->buttons as $k => $v) {
         if( ! Text::check($k)->in(array('yes', 'no', 'ok', 'cancel', 'open', 'close'))) {
-            if( ! isset($c->buttons->{$k})) {
+            if( ! isset($c_editor->buttons->{$k})) {
                 $editor->buttons->{$k} = false;
             }
         }

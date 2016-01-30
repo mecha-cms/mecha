@@ -32,8 +32,8 @@ Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update'
  */
 
 function do_remove_cache() {
-    global $config, $c;
-    foreach($c->path as $path => $expire) {
+    global $config, $c_cache;
+    foreach($c_cache->path as $path => $expire) {
         $path = str_replace(
             array(
                 '(:any)',
@@ -66,4 +66,8 @@ function do_remove_cache() {
     }
 }
 
-Weapon::add(array('on_article_update', 'on_page_update'), 'do_remove_cache', 10);
+$hooks = Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), function($v) {
+    return 'on_' . File::B($v) . '_update';
+});
+
+Weapon::add($hooks, 'do_remove_cache', 10);
