@@ -23,7 +23,6 @@ $excludes = (array) Config::get($config->page_type . '_fields_exclude', array('c
  */
 
 Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), function($offset = 1) use($config, $excludes) {
-    $offset = (int) $offset;
     $s = Get::articles();
     if($articles = Mecha::eat($s)->chunk($offset, $config->index->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
@@ -59,7 +58,6 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
  */
 
 Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
-    $offset = (int) $offset;
     $s = Get::articles('DESC', 'time:' . $slug);
     if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
@@ -94,7 +92,6 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
 Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak, $excludes) {
     $months = (array) $speak->month_names;
     $slug = $year . '-' . $month;
-    $offset = (int) $offset;
     $s = Get::articles('DESC', 'time:' . $slug);
     if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
@@ -130,7 +127,6 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
     if( ! $tag = Get::articleTag('slug:' . $slug)) {
         Shield::abort('404-tag');
     }
-    $offset = (int) $offset;
     $s = Get::articles('DESC', 'kind:' . $tag->id);
     if($articles = Mecha::eat($s)->chunk($offset, $config->tag->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
@@ -167,7 +163,6 @@ Route::accept(array($config->tag->slug . '/(:any)', $config->tag->slug . '/(:any
  */
 
 Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '/(:any)/(:num)'), function($query = "", $offset = 1) use($config, $speak, $excludes) {
-    $offset = (int) $offset;
     $query = Text::parse($query, '->decoded_url');
     $keywords = Text::parse($query, '->slug');
     $articles = array();
@@ -320,7 +315,7 @@ Route::accept('sitemap', function() use($config) {
  */
 
 Route::accept(array('feed', 'feed/rss', 'feed/rss/(:num)'), function($offset = 1) use($config) {
-    Config::set('offset', (int) $offset);
+    Config::set('offset', $offset);
     HTTP::mime('text/xml', $config->charset);
     Shield::attach(SHIELD . DS . 'rss.php');
 }, 81);
@@ -338,7 +333,7 @@ Route::accept(array('feed', 'feed/rss', 'feed/rss/(:num)'), function($offset = 1
  */
 
 Route::accept(array('feed/json', 'feed/json/(:num)'), function($offset = 1) use($config) {
-    Config::set('offset', (int) $offset);
+    Config::set('offset', $offset);
     HTTP::mime('application/json', $config->charset);
     Shield::attach(SHIELD . DS . 'json.php');
 }, 82);

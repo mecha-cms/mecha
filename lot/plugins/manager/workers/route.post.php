@@ -8,7 +8,6 @@
 
 Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manager->slug . '/(' . $post . ')/(:num)'), function($segment = "", $offset = 1) use($config, $speak) {
     $posts = false;
-    $offset = (int) $offset;
     $s = call_user_func('Get::' . $segment . 's', strtoupper(Request::get('order', 'DESC')), Request::get('filter', ""), 'txt,draft,archive');
     if($files = Mecha::eat($s)->chunk($offset, $config->manager->per_page)->vomit()) {
         $posts = Mecha::walk($files, function($v) use($segment) {
@@ -34,6 +33,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
  */
 
 Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config->manager->slug . '/(' . $post . ')/repair/id:(:num)'), function($segment = "", $id = false) use($config, $speak, $response) {
+    $id = Converter::strEval($id);
     $units = array('title', 'slug', 'link', 'content', 'content_type', 'description', 'post' . DS . 'author');
     foreach($units as $k => $v) {
         Weapon::add('tab_content_1_before', function($page, $segment) use($config, $speak, $v) {
@@ -96,6 +96,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         // Check for invalid time pattern
         if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^\d{4,}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}$#', $request['date'])) {
@@ -142,7 +143,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         }
         $slug = $slug === '--' ? 'post-' . time() : $slug;
         $content = $request['content'];
-        $description = $request['description'];
+        $description = trim($request['description']);
         $author = strip_tags($request['author']);
         $css = trim(Request::post('css', "", false));
         $js = trim(Request::post('js', "", false));
@@ -166,7 +167,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         // Check for duplicate slug, except for the current old slug.
         // Allow user(s) to change their post slug, but make sure they
         // do not type the slug of another post.
-        if(trim($slug) !== "" && $slug !== $post->slug && $files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive')) {
+        if($slug !== "" && $slug !== $post->slug && $files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive')) {
             if(strpos(implode('%', $files), '_' . $slug . '.') !== false) {
                 Notify::error(Config::speak('notify_error_slug_exist', $slug));
                 Guardian::memorize($request);
@@ -180,7 +181,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             $header = array(
                 'Title' => $title,
                 'Link' => $link,
-                'Description' => trim($description) !== "" ? Text::parse(trim($description), '->encoded_json') : false,
+                'Description' => $description !== "" ? Text::parse($description, '->encoded_json') : false,
                 'Author' => $author,
                 'Content Type' => Request::post('content_type', 'HTML'),
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
@@ -255,6 +256,7 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
     ));
     $G = array('data' => Mecha::A($post));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         File::open($post->path)->delete();
         // Deleting response(s) ...

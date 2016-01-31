@@ -15,6 +15,7 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         'cargo' => 'cargo.config.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__config', $request);
         Guardian::checkToken($request['token']);
         $bools = array(
             'comments.allow' => false,

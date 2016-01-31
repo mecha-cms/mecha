@@ -21,7 +21,7 @@ if($slug = Request::post('slug')) {
         $config->archive->slug => 1,
         $config->search->slug => 1,
         $config->manager->slug => 1,
-        'feed' => 1
+        'feed' => 1 // hard-coded :(
     );
     if(isset($s[$slug])) {
         Notify::error(Config::speak('notify_error_slug_exist', $slug));

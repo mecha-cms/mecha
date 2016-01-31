@@ -23,7 +23,7 @@ Route::accept($config->manager->slug . '/error', function() use($config, $speak)
  * ----------------
  */
 
-Route::accept($config->manager->slug . '/error/kill', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/error/do:kill', function() use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }

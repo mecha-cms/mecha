@@ -11,7 +11,7 @@
 </p>
 <p>
   <?php Weapon::fire('action_before', $hooks); ?>
-  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/error/kill'); ?>
+  <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/error/do:kill'); ?>
   <?php Weapon::fire('action_after', $hooks); ?>
 </p>
 <?php else: ?>

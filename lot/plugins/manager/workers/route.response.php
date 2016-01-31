@@ -10,7 +10,6 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $offset = (int) $offset;
     File::write($config->{'__total_' . $segment . 's'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
     if($files = call_user_func('Get::' . $segment . 's', 'DESC', Request::get('filter', ""), 'txt,hold')) {
         $responses_id = Mecha::walk($files, function($v) {
@@ -92,6 +91,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
         'cargo' => 'repair.response.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         $rid = $id ? $id : time();
         $request['post'] = Request::post('post');
@@ -166,6 +166,7 @@ Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', fu
         'cargo' => 'kill.response.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__' . $segment, $request, $id);
         $P = array('data' => Mecha::A($response));
         Guardian::checkToken($request['token']);
         File::open($response->path)->delete();

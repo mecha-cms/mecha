@@ -84,12 +84,15 @@ class Route extends Base {
      *
      */
 
-    public static function accepted($pattern, $fallback = false) {
-        return isset(self::$routes[$pattern]) ? self::$routes[$pattern] : $fallback;
+    public static function accepted($pattern = null, $fallback = false) {
+        if( ! is_null($pattern)) {
+            return isset(self::$routes[$pattern]) ? self::$routes[$pattern] : $fallback;
+        }
+        return ! empty(self::$routes) ? self::$routes : $fallback;
     }
 
     // alias for `Route::accepted()`
-    public static function exist($pattern, $fallback = false) {
+    public static function exist($pattern = null, $fallback = false) {
         return self::accepted($pattern, $fallback);
     }
 
@@ -171,8 +174,11 @@ class Route extends Base {
      *
      */
 
-    public static function rejected($pattern, $fallback = false) {
-        return isset(self::$routes_x[$pattern]) ? self::$routes_x[$pattern] : $fallback;
+    public static function rejected($pattern = null, $fallback = false) {
+        if( ! is_null($pattern)) {
+            return isset(self::$routes_x[$pattern]) ? self::$routes_x[$pattern] : $fallback;
+        }
+        return ! empty(self::$routes_x) ? self::$routes_x : $fallback;
     }
 
     /**
@@ -213,21 +219,24 @@ class Route extends Base {
      *
      */
 
-    public static function overed($pattern, $stack = null, $fallback = false) {
-        if( ! is_null($stack)) {
-            $routes = array();
-            foreach(self::$routes_over[$pattern] as $route) {
-                if(
-                    is_numeric($stack) && $route['stack'] === (float) $stack ||
-                    $route['fn'] === $stack
-                ) {
-                    $routes[] = $route;
+    public static function overed($pattern = null, $stack = null, $fallback = false) {
+        if( ! is_null($pattern)) {
+            if( ! is_null($stack)) {
+                $routes = array();
+                foreach(self::$routes_over[$pattern] as $route) {
+                    if(
+                        is_numeric($stack) && $route['stack'] === (float) $stack ||
+                        $route['fn'] === $stack
+                    ) {
+                        $routes[] = $route;
+                    }
                 }
+                return ! empty($routes) ? $routes : $fallback;
+            } else {
+                return isset(self::$routes_over[$pattern]) ? self::$routes_over[$pattern] : $fallback;
             }
-            return ! empty($routes) ? $routes : $fallback;
-        } else {
-            return isset(self::$routes_over[$pattern]) ? self::$routes_over[$pattern] : $fallback;
         }
+        return ! empty(self::$routes_over) ? self::$routes_over : $fallback;
     }
 
     /**
@@ -258,7 +267,7 @@ class Route extends Base {
             return array(
                 'pattern' => $pattern,
                 'path' => $path,
-                'lot' => $matches
+                'lot' => Converter::strEval($matches)
             );
         }
         return $fallback;

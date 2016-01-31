@@ -7,7 +7,6 @@
  */
 
 Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . '/asset/(:num)'), function($offset = 1) use($config, $speak) {
-    $offset = (int) $offset;
     $p = Request::get('path', false);
     $d = ASSET . File::path($p ? DS . $p : "");
     $d = str_replace(DS . DS, DS, $d);
@@ -26,6 +25,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         }
     }
     if($request = Request::post()) {
+        $request = Filter::apply('request:__asset', $request);
         Guardian::checkToken($request['token']);
         // New folder
         if(isset($request['folder'])) {
@@ -91,11 +91,11 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
  * --------------
  */
 
-Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($path = "", $old = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', function($slug = "", $file = "") use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $old = File::path($old);
+    $old = File::path($file);
     $p = Request::get('path', false);
     if( ! $file = File::exist(ASSET . DS . $old)) {
         Shield::abort(); // File not found!
@@ -105,6 +105,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         'cargo' => 'repair.asset.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__asset', $request, $file);
         Guardian::checkToken($request['token']);
         // Empty field
         if( ! Request::post('name')) {
@@ -146,11 +147,11 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
  * ------------
  */
 
-Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', function($path = "", $name = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', function($slug = "", $file = "") use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $name = File::path($name);
+    $name = File::path($file);
     $p = Request::get('path', false);
     if(strpos($name, ';') !== false) {
         $deletes = explode(';', $name);
@@ -166,6 +167,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
         'cargo' => 'kill.asset.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__asset', $request, $file);
         Guardian::checkToken($request['token']);
         $info_path = Mecha::walk($deletes, function($v) {
             $_path = ASSET . DS . $v;
@@ -194,6 +196,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
 
 Route::accept($config->manager->slug . '/asset/do', function($path = "") use($config, $speak) {
     if($request = Request::post()) {
+        $request = Filter::apply('request:__asset', $request);
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);

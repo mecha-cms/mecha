@@ -37,7 +37,7 @@ Weapon::add('plugins_before', function() use(&$config) {
     }
     $menus = Get::state_menu(null, false);
     if( ! isset($menus['navigation'])) {
-        $menus['navigation'] = $menus;
+        $menus = array('navigation' => $menus);
         File::serialize($menus)->saveTo(STATE . DS . 'menu.txt', 0600);
     }
     if($tag = Get::state_tag(null, false)) {

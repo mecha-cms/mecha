@@ -47,18 +47,17 @@ $config->html_parser->type = array_merge(
 // --ibid
 Config::set('html_parser.type', $config->html_parser->type);
 
-// Re-write `comment_wizard` value
 if($config->html_parser->active === 'Markdown' || $config->html_parser->active === 'Markdown Extra') {
+    // Re-write `comment_wizard` value
     Config::set('speak.comment_wizard', $speak->__comment_wizard);
+    // Create a new comment
+    Filter::add('request:comment', function($lot) {
+        if(isset($lot['message'])) {
+            // **Markdown Extra** does not support syntax to generate `del`, `ins` and `mark` tag
+            $lot['message'] = Text::parse($lot['message'], '->text', '<br><del><ins><mark>', false);
+            // Temporarily disallow image(s) in comment to prevent XSS
+            $lot['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $lot['message']);
+        }
+        return $lot;
+    });
 }
-
-// Create a new comment
-Filter::add('request:comment', function($lot) {
-    if(isset($lot['message'])) {
-        // **Markdown Extra** does not support syntax to generate `del`, `ins` and `mark` tag
-        $lot['message'] = Text::parse($lot['message'], '->text', '<br><del><ins><mark>', false);
-        // Temporarily disallow image(s) in comment to prevent XSS
-        $lot['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $lot['message']);
-    }
-    return $lot;
-});

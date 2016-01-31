@@ -17,7 +17,8 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         }
     }
     if(isset($_FILES) && ! empty($_FILES)) {
-        Guardian::checkToken(Request::post('token'));
+        $request = Filter::apply('request:__backup', Request::post());
+        Guardian::checkToken($request['token']);
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
         include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.package.ignite.php';

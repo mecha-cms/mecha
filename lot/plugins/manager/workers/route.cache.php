@@ -10,7 +10,6 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $offset = (int) $offset;
     $filter = Request::get('q', "");
     $filter = $filter ? Text::parse($filter, '->safe_file_name') : "";
     $files = Get::files(CACHE, '*', 'DESC', 'update', $filter);
@@ -33,11 +32,11 @@ Route::accept(array($config->manager->slug . '/cache', $config->manager->slug . 
  * --------------
  */
 
-Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', function($prefix = "", $file = "") use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $path = File::path($path);
+    $path = File::path($file);
     if( ! $file = File::exist(CACHE . DS . $path)) {
         Shield::abort(); // File not found!
     }
@@ -47,6 +46,7 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         'cargo' => 'repair.cache.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__cache', $request, $file);
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
@@ -73,11 +73,11 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
  * ------------
  */
 
-Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', function($prefix = "", $path = "") use($config, $speak) {
+Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', function($prefix = "", $file = "") use($config, $speak) {
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $path = File::path($path);
+    $path = File::path($file);
     if(strpos($path, ';') !== false) {
         $deletes = explode(';', $path);
     } else {
@@ -92,6 +92,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         'cargo' => 'kill.cache.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__cache', $request, $file);
         Guardian::checkToken($request['token']);
         $info_path = Mecha::walk($deletes, function($v) {
             $_path = CACHE . DS . $v;
@@ -119,6 +120,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
 
 Route::accept($config->manager->slug . '/cache/do', function() use($config, $speak) {
     if($request = Request::post()) {
+        $request = Filter::apply('request:__cache', $request);
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);

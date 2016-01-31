@@ -17,6 +17,7 @@ Route::accept($config->manager->slug . '/shortcode', function() use($config, $sp
         'cargo' => 'cargo.shortcode.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__shortcode', $request);
         Guardian::checkToken($request['token']);
         $data = array();
         for($i = 0, $keys = $request['key'], $count = count($keys); $i < $count; ++$i) {

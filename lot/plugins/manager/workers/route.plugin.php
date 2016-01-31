@@ -16,10 +16,10 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    $offset = (int) $offset;
     $destination = PLUGIN;
     if(isset($_FILES) && ! empty($_FILES)) {
-        Guardian::checkToken(Request::post('token'));
+        $request = Filter::apply('request:__plugin', Request::post());
+        Guardian::checkToken($request['token']);
         include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
             File::upload($_FILES['file'], $destination, function() use($speak) {
@@ -86,7 +86,9 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
         Shield::abort();
     }
     $info = Plugin::info($slug);
-    $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php');
+    if( ! $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php')) {
+        $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'workers' . DS . 'configurator.php');
+    }
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info->title . $config->title_separator . $config->manager->title,
         'page' => $info,
@@ -150,6 +152,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         'cargo' => 'kill.plugin.php'
     ));
     if($request = Request::post()) {
+        $request = Filter::apply('request:__plugin', $request);
         Guardian::checkToken($request['token']);
         $P = array('data' => array('id' => $slug));
         Weapon::fire(array(
@@ -178,10 +181,10 @@ if($route = Route::is($config->manager->slug . '/plugin/(:any)/update')) {
         if( ! Route::accepted($route['path'])) {
             Route::accept($route['path'], function() use($config, $speak, $route) {
                 if($request = Request::post()) {
+                    $s = $route['lot'][0];
+                    $request = Filter::apply('request:__plugin', $request, $s);
                     Guardian::checkToken($request['token']);
                     unset($request['token']); // remove token from request array
-                    $s = $route['lot'][0];
-                    $request = Filter::apply(array('request:plugin.' . md5($s), 'request:plugin'), $request, $s);
                     File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
                     Notify::success(Config::speak('notify_success_updated', $speak->plugin));
                     Guardian::kick(File::D($config->url_current));
