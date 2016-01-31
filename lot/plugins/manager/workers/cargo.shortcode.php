@@ -1,5 +1,5 @@
 <?php $count = 0; $hooks = array($files, $segment); echo $messages; ?>
-<form class="form-repair form-shortcode" id="form-repair" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-repair form-shortcode" id="form-repair" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <table class="table-bordered table-full-width table-sortable">
     <thead>

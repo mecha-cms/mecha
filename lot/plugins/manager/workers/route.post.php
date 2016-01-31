@@ -230,7 +230,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             }
             Notify::success(Config::speak('notify_success_' . ($id ? 'updated' : 'created'), $title) . ($extension === '.txt' ? ' <a class="pull-right" href="' . call_user_func('Get::' . $segment . 'Anchor', $_)->url . '" target="_blank"><i class="fa fa-eye"></i> ' . $speak->view . '</a>' : ""));
             Weapon::fire(array('on_' . $segment . '_update', 'on_' . $segment . '_' . ($id ? 'repair' : 'construct')), array($G, $P));
-            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . Date::format($date, 'U'));
+            Guardian::kick($config->manager->slug . '/' . $segment . '/repair/id:' . Date::format($date, 'U') . $config->url_query);
         }
     }
     Shield::lot(array('segment' => $segment))->attach('manager');

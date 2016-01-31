@@ -1,5 +1,5 @@
 <?php $hooks = array($file, $segment); echo $messages; ?>
-<form class="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?> form-tag" id="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?> form-tag" id="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); $page = $file; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'name.php'; ?>
   <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'tag' . DS . 'slug.php'; ?>

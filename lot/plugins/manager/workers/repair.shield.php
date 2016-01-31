@@ -1,5 +1,5 @@
 <?php $hooks = array($page, $segment); echo $messages; ?>
-<form class="form-<?php echo $path === false ? 'ignite' : 'repair'; ?> form-shield" id="form-<?php echo $path === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
+<form class="form-<?php echo $path === false ? 'ignite' : 'repair'; ?> form-shield" id="form-<?php echo $path === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <p>
   <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content !== false ? $content : "")), $speak->manager->placeholder_content, array(

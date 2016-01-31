@@ -12,7 +12,7 @@
 <?php if($page->js): ?>
 <pre><code><?php echo substr(Text::parse($page->js, '->encoded_html'), 0, $config->excerpt->length); ?><?php if(strlen($page->js) > $config->excerpt->length) echo $config->excerpt->suffix; ?></code></pre>
 <?php endif; ?>
-<form class="form-kill form-<?php echo $segment; ?>" id="form-kill" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
+<form class="form-kill form-<?php echo $segment; ?>" id="form-kill" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php Weapon::fire('action_before', $hooks); ?>
   <?php echo Jot::button('action', $speak->yes); ?>
   <?php echo Jot::btn('reject', $speak->no, $config->manager->slug . '/' . $segment . '/repair/id:' . $page->id); ?>

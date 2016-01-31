@@ -15,7 +15,7 @@
     if($page->configurator) {
         $test = file_get_contents($page->configurator);
         if(strpos($test, '</form>') === false) { // allow plugin configurator without `<form>` tag
-            echo '<form class="form-plugin" action="' . $config->url_current . '/update" method="post">';
+            echo '<form class="form-plugin" action="' . $config->url_current . '/update' . str_replace('&', '&amp;', $config->url_query) . '" method="post">';
             echo Form::hidden('token', $token);
             include $page->configurator;
             if(strpos($test, 'Jot::button(\'action\', $speak->update)') === false && strpos($test, 'Jot::button("action", $speak->update)') === false) {

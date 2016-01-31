@@ -1,5 +1,5 @@
 <?php $hooks = array($page, $segment); echo $messages; ?>
-<form class="form-<?php echo $id === false ? 'ignite' : 'repair'; ?> form-menu" id="form-<?php echo $id === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current; ?>" method="post">
+<form class="form-<?php echo $id === false ? 'ignite' : 'repair'; ?> form-menu" id="form-<?php echo $id === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <p>
   <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content !== false ? $content : "")), null, array(

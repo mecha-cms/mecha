@@ -1,5 +1,5 @@
 <?php $hooks = array($page, $segment); echo $messages; ?>
-<form class="form-repair form-asset" id="form-repair" action="<?php echo $config->url_current . $config->url_query; ?>" method="post">
+<form class="form-repair form-asset" id="form-repair" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <?php
 

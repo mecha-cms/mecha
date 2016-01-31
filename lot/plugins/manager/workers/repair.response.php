@@ -8,7 +8,7 @@
   </div>
   <div class="tab-content-area">
     <?php echo $messages; ?>
-    <form class="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?> form-<?php echo $segment[0]; ?>" id="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current; ?>" method="post" enctype="multipart/form-data">
+    <form class="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?> form-<?php echo $segment[0]; ?>" id="form-<?php echo strpos($config->url_path, '/id:') === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post" enctype="multipart/form-data">
       <?php echo Form::hidden('token', $token); ?>
       <?php Weapon::fire('tab_content_before', $hooks); ?>
       <div class="tab-content" id="tab-content-1">
