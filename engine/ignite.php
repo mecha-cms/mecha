@@ -7,6 +7,7 @@
  */
 
 ini_set('error_log', LOG . DS . 'errors.log');
+
 if(DEBUG) {
     error_reporting(E_ALL | E_STRICT);
     ini_set('display_errors', TRUE);
@@ -204,19 +205,23 @@ foreach($plugins = Plugin::load() as $k => $v) {
         Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
     }
+    $load__ = Request::get('plugin:' . $k, 1);
+    if( ! Guardian::happy()) $load__ = 1; // force 1 for passenger(s)
     Weapon::fire(array('plugin_before', 'plugin_' . md5($k) . '_before'));
-    if($launch = File::exist($__ . 'launch.php')) {
-        if(strpos(File::B($__), '__') === 0) {
+    if($load__ !== false && $load__ > 0) {
+        if($launch = File::exist($__ . 'launch.php')) {
+            if(strpos(File::B($__), '__') === 0) {
+                if(Guardian::happy() && $config->page_type === 'manager') {
+                    include $launch; // backend
+                }
+            } else {
+                include $launch; // frontend
+            }
+        }
+        if($launch = File::exist($__ . '__launch.php')) {
             if(Guardian::happy() && $config->page_type === 'manager') {
                 include $launch; // backend
             }
-        } else {
-            include $launch; // frontend
-        }
-    }
-    if($launch = File::exist($__ . '__launch.php')) {
-        if(Guardian::happy() && $config->page_type === 'manager') {
-            include $launch; // backend
         }
     }
     Weapon::fire(array('plugin_after', 'plugin_' . md5($k) . '_after'));
