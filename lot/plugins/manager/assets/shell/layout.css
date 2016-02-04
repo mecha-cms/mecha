@@ -83,6 +83,30 @@ html {
 
 .pages .page + .page {margin-top:2px}
 
+.page-image {
+  margin:0;
+  padding:0;
+  background:none;
+  border:none;
+  float:left;
+}
+
+.page-image img {
+  display:block;
+  width:60px;
+  height:60px;
+  max-width:none;
+  max-height:none;
+}
+
+.page-image + .page-header,
+.page-image + .page-header + .page-body,
+.page-image + .page-header + .page-body + .page-footer {
+  margin-left:60px;
+  padding-left:1.3846153846153846em;
+  overflow:hidden;
+}
+
 .page-header,
 .page-body {
   margin-bottom:.6153846153846154em;

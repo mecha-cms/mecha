@@ -95,6 +95,8 @@ label {
   user-select:none;
 }
 
+.form-label {cursor:inherit}
+
 .btn-block,
 .input-block,
 .select-block,
