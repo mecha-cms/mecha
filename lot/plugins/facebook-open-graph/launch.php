@@ -13,7 +13,7 @@ function do_facebook_open_graph() {
     if($config->page_type !== '404' && isset($config->{$config->page_type}->image)) {
         echo $T2 . '<meta property="og:image" content="' . $config->{$config->page_type}->image . '"' . ES . NL;
     } else {
-        echo $T2 . '<meta property="og:image" content="' . $config->url . '/favicon.ico"' . ES . NL;
+        echo $T2 . '<meta property="og:image" content="' . Filter::colon('favicon:url', $config->url . '/favicon.ico') . '"' . ES . NL;
     }
     echo $T2 . '<meta property="og:site_name" content="' . $config->title . '"' . ES . NL;
     echo $T2 . '<meta property="og:type" content="' . ($config->page_type === 'article' ? 'article' : 'website') . '"' . ES . NL;
