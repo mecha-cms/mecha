@@ -55,7 +55,8 @@ class Widget {
                 foreach($archives as $year => $months) {
                     if(is_array($months)) {
                         $posts_count_per_year = 0;
-                        $expand = $query ? (int) substr($query, 0, 4) === (int) $year : $i === 0;
+                        $s = explode('-', $query);
+                        $expand = $query ? (int) $s[0] === (int) $year : $i === 0;
                         foreach($months as $month) {
                             $posts_count_per_year += count($month);
                         }
@@ -75,7 +76,8 @@ class Widget {
             }
             if($type === 'LIST' || $type === 'DROPDOWN') {
                 foreach($files as $name) {
-                    $archives[] = substr(File::N($name), 0, 7);
+                    $s = explode('-', File::N($name));
+                    $archives[] = $s[0] . '-' . $s[1];
                 }
                 $counter = array_count_values($archives);
                 $archives = array_unique($archives);

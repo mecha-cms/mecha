@@ -4,8 +4,6 @@
 
 manager:
 
-  title_manager: Pengurus
-
   placeholder_title: Judul di Sini
   placeholder_content: Konten di sini…
   placeholder_description: Deskripsi di sini…
@@ -26,6 +24,8 @@ manager:
   placeholder_folder_name: contoh-nama-folder
   placeholder_asset_name: contoh-nama-aset.jpg
   placeholder_keyword_spam: Daftar kata kunci yang ingin diblokir, pisahkan setiap kata dengan tanda koma.
+
+  title_manager: Pengurus
 
   title_new_: %s Baru
   title_your_: %s Anda
@@ -76,6 +76,7 @@ manager:
   _these_: %s %s Ini
 
   description_redirect_to_: Alihkan ke %s
+  description_donate: Menggunakan proyek kode sumber terbuka itu sangatlah menyenangkan dan murah, akan tetapi kita juga perlu biaya untuk memelihara dan menjaga mereka tetap ada di <code>www</code>.
 
 
 # -------------

@@ -91,6 +91,7 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
 
 Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak, $excludes) {
     $months = (array) $speak->month_names;
+    if($month < 10) $month = '0' . $month;
     $slug = $year . '-' . $month;
     $s = Get::articles('DESC', 'time:' . $slug);
     if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {

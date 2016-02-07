@@ -409,7 +409,7 @@ class Package extends Base {
             }
             self::$zip->close();
         }
-		return new static;
+        return new static;
     }
 
     /**

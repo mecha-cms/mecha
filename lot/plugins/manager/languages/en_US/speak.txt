@@ -4,8 +4,6 @@
 
 manager:
 
-  title_manager: Manager
-
   placeholder_title: Title Goes Here
   placeholder_content: Content goes here…
   placeholder_description: Description goes here…
@@ -26,6 +24,8 @@ manager:
   placeholder_folder_name: example-folder-name
   placeholder_asset_name: example-asset-name.jpg
   placeholder_keyword_spam: Comma separated list of keywords to be blacklisted.
+
+  title_manager: Manager
 
   title_new_: New %s
   title_your_: Your %s
@@ -76,6 +76,7 @@ manager:
   _these_: %s These %s
 
   description_redirect_to_: Redirect to %s
+  description_donate: Using an open source project is incredibly fun and cheap, but we also need costs to maintain and keep them exist in the <code>www</code>.
 
 
 # -------------
