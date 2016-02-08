@@ -19,7 +19,7 @@
           list($_post, $_time, $_parent) = explode('_', File::N($v), 3);
           $results[($s === $_time ? '.' : "") . Date::format($_time, 'U')] = Date::extract($_time, 'FORMAT_3');
       }
-      krsort($results);
+      arsort($results);
       echo Form::select('parent', array("" => '&mdash; ' . $speak->none . ' &mdash;') + $results, Request::get('parent', Guardian::wayback('parent', $page->parent)));
   }
 
