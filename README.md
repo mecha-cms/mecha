@@ -54,7 +54,7 @@ http://mecha-cms.com
 
 ### Pull Request
 
-If you want to do a _pull request_, make sure that you are using the **latest development version** of this CMS. You can download it from the front page, not from the release version page. Do not do a _pull request_ from a file that is derrived from your installed Mecha CMS, your CMS version maybe already out of date. Always use fresh installed CMS. This is done to prevent ambiguous in those files that are combined. For example, if someone is editing a file, and then someone else also editing the same file, then most likely the file that has been edited at the end of time will erase the previous user edits.
+If you want to do a _pull request_, make sure that you are using the **latest development version** of this CMS. You can download it from the front page, not from the release version page. Do not do a _pull request_ from a file that is derived from your installed Mecha CMS, your CMS version maybe already out of date. Always use fresh installed CMS. This is done to prevent ambiguous in those files that are combined. For example, if someone is editing a file, and then someone else also editing the same file, then most likely the file that has been edited at the end of time will erase the previous user edits.
 
 ### PS
 
