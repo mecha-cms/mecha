@@ -419,7 +419,7 @@ class Guardian extends Base {
         self::checkToken($token);
         if(trim($user) !== "" && trim($pass) !== "") {
             $author = self::ally($user);
-            if($author && $pass === $author['pass']) {
+            if($author && (string) $pass === (string) $author['pass']) {
                 $token = self::token();
                 $author['token'] = $token;
                 $author['author'] = $author['name'];
