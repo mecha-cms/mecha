@@ -481,7 +481,7 @@ class Widget {
             }
             $html .= call_user_func_array(self::$w[$c][$kin]['fn'], $arguments);
             if(self::$w[$c][$kin]['wrapper']) {
-                $html .= '</div>' . O_END;
+                $html .= NL . '</div>' . O_END;
             }
             Config::set('widget_custom_' . $snake . '_id', $id);
             return Filter::apply(array('widget:custom.' . $snake, 'widget:custom.' . $kin, 'widget:custom', 'widget'), $html, $id);

@@ -526,7 +526,9 @@ class Package extends Base {
                 'total' => self::$zip->numFiles
             ));
             for($i = 0; $i < $results['total']; ++$i) {
-                $results['files'][$i] = self::$zip->statIndex($i);
+                $data = self::$zip->statIndex($i);
+                $data['name'] = str_replace(DS . DS, DS, File::path($data['name']));
+                $results['files'][$i] = $data;
             }
             self::$zip->close();
         }

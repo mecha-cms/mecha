@@ -75,16 +75,16 @@ class Date extends Base {
         $time = explode('.', $time);
         $time = Converter::strEval($time);
         $data = array(
-            $speak->year . '|' . $speak->years => $time[0],
-            $speak->month . '|' . $speak->months => $time[1],
-            $speak->day . '|' . $speak->days => $time[2],
-            $speak->hour . '|' . $speak->hours => $time[3],
-            $speak->minute . '|' . $speak->minutes => $time[4],
-            $speak->second . '|' . $speak->seconds => $time[5]
+            'year' => $time[0],
+            'month' => $time[1],
+            'day' => $time[2],
+            'hour' => $time[3],
+            'minute' => $time[4],
+            'second' => $time[5]
         );
         if($compact) {
             foreach($data as $k => $v) {
-                if($offset === 0) {
+                if($v === 0) {
                     unset($data[$k]);
                 } else {
                     break;
@@ -93,8 +93,8 @@ class Date extends Base {
         }
         $results = array();
         foreach($data as $k => $v) {
-            $text = explode('|', $k);
-            $results[strtolower($text[0])] = $v . ' ' . ($v === 1 ? $text[0] : $text[1]);
+            $text = array($speak->{$k}, $speak->{$k . 's'});
+            $results[$k] = $v . ' ' . ($v === 1 ? $text[0] : $text[1]);
         }
         unset($data);
         return ! is_null($output) ? $results[$output] : $results;

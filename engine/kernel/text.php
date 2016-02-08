@@ -2,7 +2,7 @@
 
 class Text extends Base {
 
-    protected static $texts = "";
+    protected static $texts = array();
     protected static $parsers = array();
 
     /**
@@ -112,22 +112,11 @@ class Text extends Base {
         $results = array();
         $data = array();
         $indent_length = strlen($indent);
-        // Remove comment(s) and empty line break(s)
-        $text = preg_replace(
-            array(
-                '#\r#',
-                '#(^|\n)\s*\#[^\n]*#',
-                '#^\s*|\s*$#',
-                '#\n+#'
-            ),
-            array(
-                "",
-                "",
-                "",
-                "\n"
-            ),
-        $text);
+        // Normalize line-break
+        $text = str_replace(array("\r\n", "\r"), "\n", $text);
         foreach(explode("\n", $text) as $line) {
+            // Ignore comment and empty line-break
+            if($line === "" || strpos($line, '#') === 0) continue;
             $depth = 0;
             while(substr($line, 0, $indent_length) === $indent) {
                 $depth += 1;
@@ -138,7 +127,7 @@ class Text extends Base {
             }
             // No `:` ... fix it!
             if(strpos($line, $s) === false) {
-                $line = $line . $s . 'true';
+                $line = $line . $s . $line;
             }
             $parts = explode($s, $line, 2);
             $data[$depth] = rtrim($parts[0]);
@@ -290,7 +279,7 @@ class Text extends Base {
                 $text_v++;
             }
         }
-        return $text_v === count($text);
+        return $text_v === count($arguments);
     }
 
     /**
@@ -335,8 +324,7 @@ class Text extends Base {
 
     public static function offset($text) {
         $output = array('start' => -1, 'end' => -1);
-        if( ! is_string(self::$texts)) return (object) $output;
-        if(($offset = strpos(self::$texts, $text)) !== false) {
+        if(($offset = strpos(self::$texts[0], $text)) !== false) {
             $output['start'] = $offset;
             $output['end'] = $offset + strlen($text) - 1;
         }

@@ -30,16 +30,17 @@ class Asset extends Base {
 
     // Get full version of private asset path
     public static function path($path, $fallback = false) {
+        $config = Config::get();
         // External URL, nothing to check!
         if(strpos($path, '://') !== false || strpos($path, '//') === 0) {
-            return $path;
+            if(strpos($path, $config->url) !== 0) return $path;
         }
         $path = File::path($path);
         // Full path, be quick!
         if(strpos($path, ROOT) === 0) {
             return File::exist($path, $fallback);
         }
-        if($_path = File::exist(SHIELD . DS . Config::get('shield') . DS . ltrim($path, DS))) {
+        if($_path = File::exist(SHIELD . DS . $config->shield . DS . ltrim($path, DS))) {
             return $_path;
         } else if($_path = File::exist(ASSET . DS . ltrim($path, DS))) {
             return $_path;
@@ -80,7 +81,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:stylesheet', str_repeat(TAB, 2) . '<link href="' . $url . '" rel="stylesheet"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= str_repeat(TAB, 2) . '<!-- ' . $url . ' -->' . NL;
+                $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -105,7 +106,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:javascript', str_repeat(TAB, 2) . '<script src="' . $url . '"' . $attr . '></script>' . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= str_repeat(TAB, 2) . '<!-- ' . $url . ' -->' . NL;
+                $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
@@ -130,7 +131,7 @@ class Asset extends Base {
                 $html .= ! self::ignored($path[$i]) ? Filter::apply('asset:image', '<img src="' . $url . '"' . $attr . ES . NL, $path[$i], $url) : "";
             } else {
                 // File does not exist
-                $html .= '<!-- ' . $url . ' -->' . NL;
+                $html .= '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
         return O_BEGIN . rtrim($html, NL) . O_END;

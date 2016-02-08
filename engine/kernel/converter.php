@@ -362,7 +362,9 @@ class Converter extends Base {
         foreach($array as $key => $value) {
             if( ! is_array($value) && ! is_object($value)) {
                 $value = $NRT ? self::EW(self::str($value)) : self::str($value);
-                if(is_string($key) && strpos($key, '#') === 0) { // Comment
+                if(is_int($key) && $value === 'null') { // Empty line-break
+                    $results .= "\n";
+                } else if(is_string($key) && strpos($key, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($key) . "\n";
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
                     $results .= str_repeat($indent, $depth) . trim($value) . "\n";
@@ -449,11 +451,10 @@ class Converter extends Base {
         $M[5] = preg_replace('#(^|(' . $E2 . ')+)(' . $A[3] . ')(' . $A2 . ')(' . $A0 . ')(' . $A1 . ')#', '$1$2$3$4$5<attr:value>$6', $M[5]);
         $results = array(
             'element' => $M[2],
-            'attributes' => null,
+            'attributes' => array(),
             'content' => isset($M[8]) && $M[9] === $E[0] . $E[3] . $M[2] . $E[1] ? $M[8] : null
         );
         if(preg_match_all('#(' . $A[3] . ')((' . $A2 . ')(' . $A0 . ')(.*?)(' . $A1 . '))?(?:(' . $E2 . ')|$)#', $M[5], $A)) {
-            $results['attributes'] = array();
             foreach($A[1] as $k => $v) {
                 $results['attributes'][$v] = isset($A[5][$k]) && ! empty($A[5][$k]) ? (strpos($A[5][$k], '<attr:value>') === false ? $A[5][$k] : str_replace('<attr:value>', "", $A[5][$k])) : $v;
             }

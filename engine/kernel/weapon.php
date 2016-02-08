@@ -39,7 +39,7 @@ class Weapon extends Base {
         $c = get_called_class();
         $stack = ! is_null($stack) ? $stack : 10;
         if( ! is_array($name)) {
-            if( ! isset(self::$armaments_x[$c][$name . '->' . $stack])) {
+            if( ! isset(self::$armaments_x[$c][$name][$stack])) {
                 if( ! isset(self::$armaments[$c][$name])) {
                     self::$armaments[$c][$name] = array();
                 }
@@ -128,15 +128,15 @@ class Weapon extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name)) {
-                self::$armaments_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
+                self::$armaments_x[$c][$name][ ! is_null($stack) ? $stack : 10] = isset(self::$armaments[$c][$name]) ? self::$armaments[$c][$name] : 1;
                 if(isset(self::$armaments[$c][$name])) {
                     if( ! is_null($stack)) {
                         foreach(self::$armaments[$c][$name] as $k => $v) {
                             if(
-                                // eject weapon by function stack
-                                is_numeric($stack) && $v['stack'] === (float) $stack ||
                                 // eject weapon by function name
-                                $v['fn'] === $stack
+                                $v['fn'] === $stack ||
+                                // eject weapon by function stack
+                                is_numeric($stack) && $v['stack'] === (float) $stack
                             ) {
                                 unset(self::$armaments[$c][$name][$k]);
                             }
@@ -208,8 +208,10 @@ class Weapon extends Base {
         $stack = ! is_null($stack) ? $stack : 10;
         if(is_null($name)) {
             return ! empty(self::$armaments_x[$c]) ? self::$armaments_x[$c] : $fallback;
+        } else if(is_null($stack)) {
+            return ! empty(self::$armaments_x[$c][$name]) ? self::$armaments_x[$c][$name] : $fallback;
         }
-        return isset(self::$armaments_x[$c][$name . '->' . $stack]) ? self::$armaments_x[$c][$name . '->' . $stack] : $fallback;
+        return isset(self::$armaments_x[$c][$name][$stack]) ? self::$armaments_x[$c][$name][$stack] : $fallback;
     }
 
 }

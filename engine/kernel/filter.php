@@ -37,7 +37,7 @@ class Filter extends Base {
         $c = get_called_class();
         $stack = ! is_null($stack) ? $stack : 10;
         if( ! is_array($name)) {
-            if( ! isset(self::$filters_x[$c][$name . '->' . $stack])) {
+            if( ! isset(self::$filters_x[$c][$name][$stack])) {
                 if( ! isset(self::$filters[$c][$name])) {
                     self::$filters[$c][$name] = array();
                 }
@@ -127,15 +127,15 @@ class Filter extends Base {
         if( ! is_array($name)) {
             $c = get_called_class();
             if( ! is_null($name)) {
-                self::$filters_x[$c][$name . '->' . ( ! is_null($stack) ? $stack : 10)] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
+                self::$filters_x[$c][$name][ ! is_null($stack) ? $stack : 10] = isset(self::$filters[$c][$name]) ? self::$filters[$c][$name] : 1;
                 if(isset(self::$filters[$c][$name])) {
                     if( ! is_null($stack)) {
                         foreach(self::$filters[$c][$name] as $k => $v) {
                             if(
-                                // remove filter by function stack
-                                is_numeric($stack) && $v['stack'] === (float) $stack ||
                                 // remove filter by function name
-                                $v['fn'] === $stack
+                                $v['fn'] === $stack ||
+                                // remove filter by function stack
+                                is_numeric($stack) && $v['stack'] === (float) $stack
                             ) {
                                 unset(self::$filters[$c][$name][$k]);
                             }
@@ -207,8 +207,10 @@ class Filter extends Base {
         $stack = ! is_null($stack) ? $stack : 10;
         if(is_null($name)) {
             return ! empty(self::$filters_x[$c]) ? self::$filters_x[$c] : $fallback;
+        } else if(is_null($stack)) {
+            return ! empty(self::$filters_x[$c][$name]) ? self::$filters_x[$c][$name] : $fallback;
         }
-        return isset(self::$filters_x[$c][$name . '->' . $stack]) ? self::$filters_x[$c][$name . '->' . $stack] : $fallback;
+        return isset(self::$filters_x[$c][$name][$stack]) ? self::$filters_x[$c][$name][$stack] : $fallback;
     }
 
 }
