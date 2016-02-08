@@ -27,7 +27,7 @@ Mecha CMS
  - PHP 5.3.1 and above.
  - Enabled [mod_rewrite](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module mod_rewrite") module.
 
-### Steps to Install
+### Getting Started
 
  1. Make sure that you already have the required component.
  2. Download **Mecha** by cloning [this](https://github.com/mecha-cms/mecha-cms) **GitHub** repo.
