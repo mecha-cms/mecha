@@ -40,13 +40,15 @@ class Cell {
     }
 
     // Setup HTML attribute(s) ...
-    public static function bond($array) {
+    public static function bond($array, $unit = "") {
         if( ! is_array($array)) {
             $attr = trim((string) $array);
-            return strlen($attr) ? ' ' . $attr : "";
+            return strlen($attr) ? ' ' . $attr : ""; // no filter(s) applied ...
         }
         $output = "";
-        $array = array_replace(self::$attr_order, $array);
+        $c = strtolower(get_called_class());
+        $unit = $unit ? '.' . $unit : "";
+        $array = Filter::apply($c . ':bond' . $unit, array_replace(self::$attr_order, $array));
         // HTML5 `data-*` attribute
         if(isset($array['data']) && is_array($array['data'])) {
             foreach($array['data'] as $k => $v) {
@@ -82,10 +84,11 @@ class Cell {
     // Base HTML tag constructor
     public static function unit($tag = 'html', $content = "", $attr = array(), $indent = 0) {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
+        $c = strtolower(get_called_class());
         if($content === false) {
-            return $indent . '<' . $tag . self::bond($attr) . ES;
+            return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . ES);
         }
-        return $indent . '<' . $tag . self::bond($attr) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>';
+        return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>');
     }
 
     // HTML comment
@@ -101,7 +104,8 @@ class Cell {
             $block_start = $block;
             $block_end = $block;
         }
-        return $indent . '<!--' . $block_start . $content . $block_end . '-->';
+        $c = strtolower(get_called_class());
+        return Filter::apply($c . ':unit.__', $indent . '<!--' . $block_start . $content . $block_end . '-->');
     }
 
     // Base HTML tag open
@@ -109,7 +113,8 @@ class Cell {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
         self::$tag[] = $tag;
         self::$tag_indent[] = $indent;
-        return $indent . '<' . $tag . self::bond($attr) . '>';
+        $c = strtolower(get_called_class());
+        return Filter::apply($c . ':begin.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>');
     }
 
     // Base HTML tag close
@@ -122,7 +127,8 @@ class Cell {
         } else {
             $indent = $indent ? str_repeat(TAB, $indent) : "";
         }
-        return $tag ? $indent . '</' . $tag . '>' : "";
+        $c = strtolower(get_called_class());
+        return Filter::apply($c . ':end.' . $tag, $tag ? $indent . '</' . $tag . '>' : "");
     }
 
     // Show the added method(s)
@@ -146,7 +152,8 @@ class Cell {
             $arguments = array_merge(array($kin), $arguments);
             return call_user_func_array('self::unit', $arguments);
         }
-        return call_user_func_array(self::$o[$c][$kin], $arguments);
+        $s = call_user_func_array(self::$o[$c][$kin], $arguments);
+        return Filter::apply(strtolower($c) . ':unit.' . $kin, $s);
     }
 
 }
