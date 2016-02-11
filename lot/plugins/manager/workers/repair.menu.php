@@ -2,13 +2,12 @@
 <form class="form-<?php echo $id === false ? 'ignite' : 'repair'; ?> form-menu" id="form-<?php echo $id === false ? 'ignite' : 'repair'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
   <?php echo Form::hidden('token', $token); ?>
   <p>
-  <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content !== false ? $content : "")), null, array(
+  <?php echo Form::textarea('content', Request::get('content', Guardian::wayback('content', $content !== false ? $content : "")), $speak->home . S . ' /', array(
       'class' => array(
           'textarea-block',
           'textarea-expand',
           'code'
-      ),
-      'data-MTE-config' => '{"tabSize":"    "}'
+      )
   )); ?>
   </p>
   <p>

@@ -16,7 +16,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     $destination = SHIELD;
     if(isset($_FILES) && ! empty($_FILES)) {
-        $request = Filter::apply('request:__shield', Request::post(), $folder);
+        $request = Filter::apply('request:__shield', Request::post(), $folder, null);
         Guardian::checkToken($request['token']);
         include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
@@ -217,11 +217,13 @@ if($route = Route::is($config->manager->slug . '/shield/(:any)/update')) {
             Route::accept($route['path'], function() use($config, $speak, $route) {
                 if($request = Request::post()) {
                     $s = $route['lot'][0];
-                    $request = Filter::apply('request:__shield', $request, $s);
+                    $request = Filter::apply('request:__shield', $request, $s, null);
                     Guardian::checkToken($request['token']);
                     unset($request['token']); // remove token from request array
-                    File::serialize($request)->saveTo(SHIELD . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
-                    Notify::success(Config::speak('notify_success_updated', $speak->shield));
+                    if( ! empty($request)) {
+                        File::serialize($request)->saveTo(SHIELD . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
+                    }
+                    Notify::success(Config::speak('notify_success_updated', $speak->config));
                     Guardian::kick(File::D($config->url_current));
                 }
             });

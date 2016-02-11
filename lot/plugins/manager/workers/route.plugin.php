@@ -18,7 +18,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     }
     $destination = PLUGIN;
     if(isset($_FILES) && ! empty($_FILES)) {
-        $request = Filter::apply('request:__plugin', Request::post());
+        $request = Filter::apply('request:__plugin', Request::post(), null);
         Guardian::checkToken($request['token']);
         include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
@@ -152,7 +152,7 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         'cargo' => 'kill.plugin.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__plugin', $request);
+        $request = Filter::apply('request:__plugin', $request, $slug);
         Guardian::checkToken($request['token']);
         $P = array('data' => array('id' => $slug));
         Weapon::fire(array(
@@ -185,8 +185,10 @@ if($route = Route::is($config->manager->slug . '/plugin/(:any)/update')) {
                     $request = Filter::apply('request:__plugin', $request, $s);
                     Guardian::checkToken($request['token']);
                     unset($request['token']); // remove token from request array
-                    File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
-                    Notify::success(Config::speak('notify_success_updated', $speak->plugin));
+                    if( ! empty($request)) {
+                        File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
+                    }
+                    Notify::success(Config::speak('notify_success_updated', $speak->config));
                     Guardian::kick(File::D($config->url_current));
                 }
             });

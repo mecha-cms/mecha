@@ -120,7 +120,7 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
 
 Route::accept($config->manager->slug . '/cache/do', function() use($config, $speak) {
     if($request = Request::post()) {
-        $request = Filter::apply('request:__cache', $request);
+        $request = Filter::apply('request:__cache', $request, null);
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);

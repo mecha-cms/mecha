@@ -25,7 +25,7 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         }
     }
     if($request = Request::post()) {
-        $request = Filter::apply('request:__asset', $request);
+        $request = Filter::apply('request:__asset', $request, null);
         Guardian::checkToken($request['token']);
         // New folder
         if(isset($request['folder'])) {
@@ -196,7 +196,7 @@ Route::accept($config->manager->slug . '/asset/kill/(file|files):(:all)', functi
 
 Route::accept($config->manager->slug . '/asset/do', function($path = "") use($config, $speak) {
     if($request = Request::post()) {
-        $request = Filter::apply('request:__asset', $request);
+        $request = Filter::apply('request:__asset', $request, null);
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);
