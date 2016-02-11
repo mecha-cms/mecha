@@ -109,12 +109,9 @@
   margin:0;
 }
 
-.custom-modal-action {
-  float:right;
-  overflow:hidden;
-}
+.custom-modal-footer {float:right}
 
-.custom-modal-action button {
+.custom-modal-footer button {
   display:block;
   float:left;
   outline:none;
@@ -123,4 +120,4 @@
   box-shadow:none;
 }
 
-.custom-modal-action button + button {margin:0 0 0 .3076923076923077em}
+.custom-modal-footer button + button {margin:0 0 0 .3076923076923077em}

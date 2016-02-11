@@ -4,8 +4,7 @@ use \Michelf\MarkdownExtra;
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'Markdown.php';
 require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
 
-// Re-write `Text::parse($input, '->html')` parser
-Text::parser('to_html', function($input) {
+function do_markdown_parse($input) {
     if( ! is_string($input)) return $input;
     global $config;
     $s = __DIR__ . DS . 'states' . DS;
@@ -14,26 +13,42 @@ Text::parser('to_html', function($input) {
     $parser = new MarkdownExtra;
     $parser->empty_element_suffix = ES;
     $parser->table_align_class_tmpl = 'text-%%'; // table align class, example: `<td class="text-right">`
-    return preg_replace(
+    //(?!javascript:|[./?\#]|' . preg_quote($config->url, '/') . ')
+    return str_replace(
         array(
-            '#<table>#',
-            '#<a href="(?!javascript:|[./?\#]|' . preg_quote($config->url, '/') . ')#'
+            '<table>',
+            '<a href="',
+            '<a rel="nofollow" href=".',
+            '<a rel="nofollow" href="/',
+            '<a rel="nofollow" href="?',
+            '<a rel="nofollow" href="#',
+            '<a rel="nofollow" href="javascript:',
+            '<a rel="nofollow" href="' . $config->url
         ),
         array(
             '<table class="table-bordered table-full-width">', // add bordered class on table(s)
-            '<a rel="nofollow" href="' // add `rel="nofollow"` attribute on external link(s)
+            '<a rel="nofollow" href="', // add `rel="nofollow"` attribute on external link(s),
+            '<a href=".',
+            '<a href="/',
+            '<a href="?',
+            '<a href="#',
+            '<a href="javascript:',
+            '<a href="' . $config->url
         ),
     trim($parser->transform($url . "\n\n" . $abbr . "\n\n" . $input)));
-});
+}
 
 function do_markdown($content, $results = array()) {
     global $config;
     $results = (object) $results;
     if( ! isset($results->content_type) || $results->content_type === 'Markdown' || $results->content_type === 'Markdown Extra') {
-        return Text::parse($content, '->html');
+        return do_markdown_parse($content);
     }
     return $content;
 }
+
+// Re-write `Text::parse($input, '->html')` parser
+Text::parser('to_html', 'do_markdown_parse');
 
 // Apply `do_markdown` filter
 Filter::add(array('content', 'message'), 'do_markdown', 1);

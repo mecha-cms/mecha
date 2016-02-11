@@ -2,7 +2,7 @@
  * Run the MTE Plugin
  * ------------------
  *
- * Apply MTE to all `<textarea>` elements ...
+ * Apply MTE to all `<textarea>` element(s) ...
  *
  */
 
@@ -14,7 +14,7 @@
     base.add('on_ajax_error', function(data) {
         base.fire('on_preview_failure', data);
     });
-    var area = d.getElementsByTagName('textarea'),
+    var area = d.querySelectorAll('textarea, input'),
         speak = base.languages.MTE;
     if (!area || !area.length) return;
     var c_na = "", c_nu = 0;
@@ -30,9 +30,8 @@
             c_na = name;
             c_nu = 0;
         }
-        // Replace `foo[]` with `foo_0`
-        // Replace `foo[bar]` with `foo_bar`
-        hook = name.replace(/\[\]/g, '_' + c_nu).replace(/\[(.*?)\]/g, '_$1');
+        // Replace `foo[]` with `foo[0]`
+        hook = name.replace(/\[\]/g, '[' + c_nu + ']');
         config = area[i].getAttribute('data-MTE-config') || '{}';
         config = typeof JSON.parse === "function" ? JSON.parse(config) : {};
         prefix = is_composer ? 'composer' : 'editor';
@@ -47,24 +46,14 @@
             }
         });
         base[prefix + '_' + hook] = is_target ? new MTE(area[i], base.task.extend({
-            tabSize: TAB || '    ',
+            tabSize: typeof TAB !== "undefined" && TAB.length ? TAB : '    ',
             toolbar: false,
             shortcut: false,
-            areaClass: 'editor-area',
-            toolbarClass: 'editor-toolbar cf',
-            toolbarIconClass: 'fa fa-%s',
-            toolbarButtonClass: 'editor-toolbar-button editor-toolbar-button-%s',
-            toolbarSeparatorClass: 'editor-toolbar-separator',
-            dropClass: 'custom-drop custom-drop-%s cf',
-            modalClass: 'custom-modal custom-modal-%s cf',
-            modalHeaderClass: 'custom-modal-header custom-modal-%s-header cf',
-            modalContentClass: 'custom-modal-content custom-modal-%s-content cf',
-            modalFooterClass: 'custom-modal-action custom-modal-%s-action cf',
-            modalOverlayClass: 'custom-modal-overlay custom-modal-%s-overlay cf',
-            emptyElementSuffix: ES || '>',
+            emptyElementSuffix: typeof ES !== "undefined" ? ES : '>',
+            actions: speak.actions,
             buttons: speak.buttons,
-            prompts: speak.prompts,
             placeholders: speak.placeholders,
+            prompts: speak.prompts,
             update: function(e, editor, id) {
                 base.fire('on_' + prefix + '_event_update', {
                     'event': e,

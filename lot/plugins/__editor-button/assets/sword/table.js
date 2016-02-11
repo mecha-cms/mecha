@@ -1,18 +1,17 @@
 (function(w, d, base) {
     if (!base.composer) return;
     var speak = base.languages.MTE,
-        classes = 'table plugin-editor';
-    base.composer.button(classes, {
+        name = 'table plugin-editor';
+    base.composer.button(name, {
         title: speak.buttons.table,
         position: -3,
         click: function(e, editor) {
-            var editor = editor.grip,
-                s = editor.selection(),
-                table = speak.placeholders.table_text;
-            table = table.replace(/\t/g, TAB);
-            var clean_B = s.before.replace(/\s+$/, ""),
+            editor = editor.grip;
+            var s = editor.selection(),
+                table = speak.placeholders.table_text.replace(/\t/g, TAB),
+                clean_B = s.before.replace(/\s+$/, ""),
                 B = clean_B.length,
-                S = 25 + (TAB.length * 6),
+                S = 48 + (TAB.length * 6),
                 E = table.indexOf('</th>'),
                 X = B ? 2 : 0,
                 start = B + S + X,
@@ -22,16 +21,14 @@
             } else {
                 editor.tidy('\n\n', function() {
                     editor.insert(table, function() {
-                        editor.select(start, end, function() {
-                            editor.updateHistory();
-                        });
+                        editor.select(start, end, true);
                     });
                 }, '\n\n', true);
             }
         }
     });
     // `Ctrl + T` for "table"
-    base.composer.shortcut('CTRL+84', function() {
-        return base.composer.grip.config.buttons[classes].click(null, base.composer), false;
+    base.composer.shortcut('ctrl+t', function() {
+        return base.composer.grip.config.buttons[name].click(null, base.composer), false;
     });
 })(window, document, DASHBOARD);
