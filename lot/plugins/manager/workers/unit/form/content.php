@@ -7,6 +7,7 @@
           'textarea-block',
           'textarea-expand',
           'MTE',
+          'MTE-main',
           'code'
       ),
       'id' => $_
