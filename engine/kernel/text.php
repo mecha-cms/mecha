@@ -299,9 +299,13 @@ class Text extends Base {
         $arguments = is_array($text) ? $text : func_get_args();
         if(count(self::$texts) === 1) {
             if(count($arguments) === 1) {
+                if($arguments[0] === "") return self::$texts[0] === "";
+                if(self::$texts[0] === "") return $arguments[0] === "";
                 return strpos($arguments[0], self::$texts[0]) !== false;
             }
-            return Mecha::walk($arguments)->has(self::$texts[0]);
+            foreach($arguments as $v) {
+                if(strpos(self::$texts[0], $v) !== false) return true;
+            }
         }
         foreach(self::$texts as $v) {
             if(strpos($arguments[0], $v) !== false) return true;
