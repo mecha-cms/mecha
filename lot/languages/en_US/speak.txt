@@ -6,7 +6,7 @@ __:
   title: English
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.0
+  version: 1.2.1
 
 
 # ----------------------------
@@ -385,9 +385,9 @@ scopes: Scopes
 pending: Pending
 
 
-# ---------------------------------
-# MONTHS AND DAY NAMES LOCALIZATION
-# ---------------------------------
+# --------------------------------
+# MONTH AND DAY NAMES LOCALIZATION
+# --------------------------------
 
 month_names:
   0: January
@@ -660,6 +660,7 @@ widget:
   widget: Widget
   widgets: Widgets
 
+  manager_: Manager %s
   manager_menu: Manager Menu
   manager_menus: Manager Menus
   manager_bar: Manager Bar
@@ -671,9 +672,11 @@ widget:
   tag: Tag
   tags: Tags
 
-  search_form: Seasrch Form
+  search_: Search %s
+  search_form: Search Form
   search_forms: Search Forms
 
+  recent_: Recent %s
   recent_post: Recent Post
   recent_posts: Recent Posts
   recent_page: Recent Page
@@ -685,6 +688,7 @@ widget:
   recent_comment: Recent Comment
   recent_comments: Recent Comments
 
+  random_: Random %s
   random_post: Random Post
   random_posts: Random Posts
   random_page: Random Page
@@ -692,6 +696,7 @@ widget:
   random_article: Random Article
   random_articles: Random Articles
 
+  related_: Related %s
   related_post: Related Post
   related_posts: Related Posts
   related_page: Related Page

@@ -1,14 +1,26 @@
 MTE:
   buttons:
-    help: Help
+    help:
+      0: Help
+      1: F1
 
 __MTE:
+  buttons:
+    info:
+      0: Abbreviation
   placeholders:
     table_text: Table Header 1 | Table Header 2\n-------------- | --------------\nTable Cell 1.1 | Table Cell 1.2\nTable Cell 2.1 | Table Cell 2.2\nTable Cell 3.1 | Table Cell 3.2
+  prompts:
+    image_title: image title goes here…
+    image_title_title: Image Title
 
 __comment_wizard: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 
 plugin_markdown:
   title:
     abbr: Predefined Abbreviation
-    url: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
+    a: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
+    editor: Editor Configuration
+    toggle_enableSETextHeader: Enable <abbr>SEText</abbr> Header Style
+    toggle_closeATXHeader: Enable Closed <abbr>ATX</abbr> Header Style
+    toggle_PRE: Enable Fenced Code Block Style

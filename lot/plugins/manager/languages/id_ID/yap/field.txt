@@ -1,85 +1,49 @@
-Untuk bidang bertipe _file_, batasi ekstensi berkas yang diperbolehkan pada bidang **Nilai**:
-
-~~~ .no-highlight
-gif,bmp,jpeg,jpg,png
-~~~
-
-Untuk bidang bertipe _option_, tulis beberapa baris teks pada bidang **Nilai** sebagai representasi dari setiap pilihan:
-
-~~~ .no-highlight
-Opsi 1
+<p>Untuk bidang bertipe <em>file</em>, batasi ekstensi berkas yang diperbolehkan pada bidang <strong>Nilai</strong>:</p>
+<pre><code class="no-highlight">gif,bmp,jpeg,jpg,png</code></pre>
+<p>Untuk bidang bertipe <em>option</em>, tulis beberapa baris teks pada bidang <strong>Nilai</strong> sebagai representasi dari setiap pilihan:</p>
+<pre><code class="no-highlight">Opsi 1
 Opsi 2
-Opsi 3
-~~~
-
-Hasil:
-
-~~~ .html
-<select>
-  <option value="Opsi 1">Opsi 1</option>
-  <option value="Opsi 2">Opsi 2</option>
-  <option value="Opsi 3">Opsi 3</option>
-</select>
-~~~
-
-Ini juga bisa diterima:
-
-~~~ .no-highlight
-nilai_1: Label 1
+Opsi 3</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;select&gt;
+  &lt;option value="Opsi 1"&gt;Opsi 1&lt;/option&gt;
+  &lt;option value="Opsi 2"&gt;Opsi 2&lt;/option&gt;
+  &lt;option value="Opsi 3"&gt;Opsi 3&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+<p>Ini juga bisa diterima:</p>
+<pre><code class="no-highlight">nilai_1: Label 1
 nilai_2: Label 2
-nilai_3: Label 3
-~~~
-
-Hasil:
-
-~~~ .html
-<select>
-  <option value="nilai_1">Label 1</option>
-  <option value="nilai_2">Label 2</option>
-  <option value="nilai_3">Label 3</option>
-</select>
-~~~
-
-Contoh sebagai grup pilihan:
-
-~~~ .no-highlight
-Grup 1:
+nilai_3: Label 3</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;select&gt;
+  &lt;option value="nilai_1"&gt;Label 1&lt;/option&gt;
+  &lt;option value="nilai_2"&gt;Label 2&lt;/option&gt;
+  &lt;option value="nilai_3"&gt;Label 3&lt;/option&gt;
+&lt;/select&gt;</code></pre>
+<p>Contoh sebagai grup pilihan:</p>
+<pre><code class="no-highlight">Grup 1:
   nilai_1_1: Label 1.1
   nilai_1_2: Label 1.2
   nilai_1_3: Label 1.3
 Grup 2:
   nilai_2_1: Label 2.1
   nilai_2_2: Label 2.2
-  nilai_2_3: Label 2.3
-~~~
-
-Result:
-
-~~~ .html
-<select>
-  <optgroup label="Grup 1">
-    <option value="nilai_1_1">Label 1</option>
-    <option value="nilai_1_2">Label 2</option>
-    <option value="nilai_1_3">Label 3</option>
-  </optgroup>
-  <optgroup label="Grup 2">
-    <option value="nilai_2_1">Label 1</option>
-    <option value="nilai_2_2">Label 2</option>
-    <option value="nilai_2_3">Label 3</option>
-  </optgroup>
-</select>
-~~~
-
-Semua bidang kustom akan tersedia di dalam artikel dan halaman statis melalui variabel ini:
-
-#### Untuk Artikel
-
-~~~ .php
-$article->fields->kunci_bidang_kustom_anda
-~~~
-
-#### Untuk Halaman
-
-~~~ .php
-$page->fields->kunci_bidang_kustom_anda
-~~~
+  nilai_2_3: Label 2.3</code></pre>
+<p>Result:</p>
+<pre><code class="html">&lt;select&gt;
+  &lt;optgroup label="Grup 1"&gt;
+    &lt;option value="nilai_1_1"&gt;Label 1&lt;/option&gt;
+    &lt;option value="nilai_1_2"&gt;Label 2&lt;/option&gt;
+    &lt;option value="nilai_1_3"&gt;Label 3&lt;/option&gt;
+  &lt;/optgroup&gt;
+  &lt;optgroup label="Grup 2"&gt;
+    &lt;option value="nilai_2_1"&gt;Label 1&lt;/option&gt;
+    &lt;option value="nilai_2_2"&gt;Label 2&lt;/option&gt;
+    &lt;option value="nilai_2_3"&gt;Label 3&lt;/option&gt;
+  &lt;/optgroup&gt;
+&lt;/select&gt;</code></pre>
+<p>Semua bidang kustom akan tersedia di dalam artikel dan halaman statis melalui variabel ini:</p>
+<h4>Untuk Artikel</h4>
+<pre><code class="php">$article-&gt;fields-&gt;kunci_bidang_kustom_anda</code></pre>
+<h4>Untuk Halaman</h4>
+<pre><code class="php">$page-&gt;fields-&gt;kunci_bidang_kustom_anda</code></pre>

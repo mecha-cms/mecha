@@ -1,13 +1,9 @@
-﻿Make sure the plugin package you want to upload is structured like this:
-
-~~~ .no-highlight
-plugin.zip
+<p>﻿Make sure the plugin package you want to upload is structured like this:</p>
+<pre><code class="no-highlight">plugin.zip
 └── plugin/
     ├── file-1.txt
     ├── file-2.txt
     ├── file-3.txt
     ├── file-4.txt
-    └── …
-~~~
-
-You need to add a root folder as a wrapper for all of your plugin files, and then you have to give a name for the `ZIP` file with the same name as the root folder name.
+    └── …</code></pre>
+<p>You need to add a root folder as a wrapper for all of your plugin files, and then you have to give a name for the <code>ZIP</code> file with the same name as the root folder name.</p>

@@ -1,15 +1,10 @@
-﻿Pastikan berkas tameng yang akan Anda unggah memiliki struktur konten seperti ini:
-
-~~~ .no-highlight
-shield.zip
+<p>﻿Pastikan berkas tameng yang akan Anda unggah memiliki struktur konten seperti ini:</p>
+<pre><code class="no-highlight">shield.zip
 └── shield/
     ├── file-1.txt
     ├── file-2.txt
     ├── file-3.txt
     ├── file-4.txt
-    └── …
-~~~
-
-Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas tameng Anda, dan kemudian Anda perlu menamakan berkas `ZIP` tersebut dengan nama yang sama seperti nama folder tersebut.
-
-Setelah itu, Anda bisa mengaktifkan tameng melalui [manajer konfigurasi]({{url.manager}}config "Konfigurasi").
+    └── …</code></pre>
+<p>Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas tameng Anda, dan kemudian Anda perlu menamakan berkas <code>ZIP</code> tersebut dengan nama yang sama seperti nama folder tersebut.</p>
+<p>Setelah itu, Anda bisa mengaktifkan tameng melalui <a href="{{url.manager}}config" title="Konfigurasi">manajer konfigurasi</a>.</p>

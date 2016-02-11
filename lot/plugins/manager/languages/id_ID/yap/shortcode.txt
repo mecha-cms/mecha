@@ -1,35 +1,26 @@
-Untuk menyingkirkan _kode pintasan_, cukup biarkan bidang kode yang ingin dihapus menjadi kosong.
-
-### Penggunaan
-
-#### Sebagai HTML
-
-~~~ .html
-<a href="`{{url.page:about}}`">teks tautan</a>
-~~~
-
-#### Sebagai Markdown
-
-~~~
-[teks tautan](`{{url.page:about}}`)
-~~~
-
-### Meng-Escape Kode Pintasan
-
-Apit _kode pintasan_ dengan simbol _backtick_ untuk mencegah parse kode:
-
-~~~
-Parse pola `{{ini}}`, tapi bukan ``{{ini}}``
-~~~
-
-### Tingkat Lanjut
-
-Anda bisa menerapkan variabel di dalam pola _kode pintasan_ melalui simbol <code>&#37;s</code>. Sebagai contoh:
-
-Kunci | Nilai
------ | -----
-<code>`{{div class:&#37;s id:&#37;s}}`</code> | <code>&lt;div class="$1" id="$2"&gt;</code>
-
-Sehingga, menuliskan ``{{div class:foo id:bar}}`` di dalam halaman tulis akan menghasilkan ``<div class="foo" id="bar">`` di hasil keluaran.
-
-*[HTML]: Hyper Text Markup Language
+<p>Untuk menyingkirkan <em>kode pintasan</em>, cukup biarkan bidang kode yang ingin dihapus menjadi kosong.</p>
+<h3>Penggunaan</h3>
+<h4>Sebagai <abbr title="Hyper Text Markup Language">HTML</abbr></h4>
+<pre><code class="html">&lt;a href="`{{url.page:about}}`"&gt;teks tautan&lt;/a&gt;</code></pre>
+<h4>Sebagai Markdown</h4>
+<pre><code>[teks tautan](`{{url.page:about}}`)</code></pre>
+<h3>Meng-Escape Kode Pintasan</h3>
+<p>Apit <em>kode pintasan</em> dengan simbol <em>backtick</em> untuk mencegah parse kode:</p>
+<pre><code>Parse pola `{{ini}}`, tapi bukan ``{{ini}}``</code></pre>
+<h3>Tingkat Lanjut</h3>
+<p>Anda bisa menerapkan variabel di dalam pola <em>kode pintasan</em> melalui simbol <code>&#37;s</code>. Sebagai contoh:</p>
+<table class="table-bordered table-full-width">
+  <thead>
+    <tr>
+      <th>Kunci</th>
+      <th>Nilai</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><code>`{{div class:&#37;s id:&#37;s}}`</code></td>
+      <td><code>&lt;div class="$1" id="$2"&gt;</code></td>
+    </tr>
+  </tbody>
+</table>
+<p>Sehingga, menuliskan <code>`{{div class:foo id:bar}}`</code> di dalam halaman tulis akan menghasilkan <code>&lt;div class="foo" id="bar"&gt;</code> di hasil keluaran.</p>

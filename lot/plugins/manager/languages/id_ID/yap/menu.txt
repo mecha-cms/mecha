@@ -1,85 +1,54 @@
-### Membuat Menu Sederhana
-
-~~~ .no-highlight
-Beranda: /
+<h3>Membuat Menu Sederhana</h3>
+<pre><code class="no-highlight">Beranda: /
 Tentang: /tentang
-Kontak: /kontak
-~~~
-
-Hasil:
-
-~~~ .html
-<ul class="parent">
-  <li><a href="{{url.home}}">Beranda</a></li>
-  <li><a href="{{url}}tentang">Tentang</a></li>
-  <li><a href="{{url}}kontak">Kontak</a></li>
-</ul>
-~~~
-
-### Menu Dropdown
-
-Gunakan 4 spasi untuk indentasi.
-
-~~~ .no-highlight
-Menu:
+Kontak: /kontak</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;ul class="parent"&gt;
+  &lt;li&gt;&lt;a href="{{url.home}}"&gt;Beranda&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="{{url}}tentang"&gt;Tentang&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="{{url}}kontak"&gt;Kontak&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<h3>Menu Dropdown</h3>
+<p>Gunakan 4 spasi untuk indentasi.</p>
+<pre><code class="no-highlight">Menu:
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
     Submenu 3:
-        Submenu 3.1: /submenu-3-1
-~~~
-
-Hasil:
-
-~~~ .html
-<ul class="parent">
-  <li class="ul">
-    <a href="#">Menu</a>
-    <ul class="child child-1">
-      <li><a href="{{url}}submenu-1">Submenu 1</a></li>
-      <li><a href="{{url}}submenu-2">Submenu 2</a></li>
-      <li class="ul">
-        <a href="#">Submenu 3</a>
-        <ul class="child child-2">
-          <li><a href="{{url}}submenu-3-1">Submenu 3.1</a></li>
-        </ul>
-      </li>
-    </ul>
-  </li>
-</ul>
-~~~
-
-### Menu Induk Aktif
-
-~~~ .no-highlight
-Menu (/suatu-tempat):
+        Submenu 3.1: /submenu-3-1</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;ul class="parent"&gt;
+  &lt;li class="ul"&gt;
+    &lt;a href="#"&gt;Menu&lt;/a&gt;
+    &lt;ul class="child child-1"&gt;
+      &lt;li&gt;&lt;a href="{{url}}submenu-1"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url}}submenu-2"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
+      &lt;li class="ul"&gt;
+        &lt;a href="#"&gt;Submenu 3&lt;/a&gt;
+        &lt;ul class="child child-2"&gt;
+          &lt;li&gt;&lt;a href="{{url}}submenu-3-1"&gt;Submenu 3.1&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<h3>Menu Induk Aktif</h3>
+<pre><code class="no-highlight">Menu (/suatu-tempat):
     Submenu 1: /submenu-1
     Submenu 2: /submenu-2
-~~~
-
-Hasil:
-
-~~~ .html
-<ul class="parent">
-  <li class="ul">
-    <a href="{{url}}suatu-tempat">Menu</a>
-    <ul class="child child-1">
-      <li><a href="{{url}}submenu-1">Submenu 1</a></li>
-      <li><a href="{{url}}submenu-2">Submenu 2</a></li>
-    </ul>
-  </li>
-</ul>
-~~~
-
-### Tautan Eksternal
-
-~~~ .no-highlight
-Menu: http://example.org
-~~~
-
-Hasil:
-
-~~~ .html
-<ul class="parent">
-  <li><a href="http://example.org">Menu</a></li>
-</ul>
-~~~
+</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;ul class="parent"&gt;
+  &lt;li class="ul"&gt;
+    &lt;a href="{{url}}suatu-tempat"&gt;Menu&lt;/a&gt;
+    &lt;ul class="child child-1"&gt;
+      &lt;li&gt;&lt;a href="{{url}}submenu-1"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url}}submenu-2"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
+    &lt;/ul&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;</code></pre>
+<h3>Tautan Eksternal</h3>
+<pre><code class="no-highlight">Menu: http://example.org</code></pre>
+<p>Hasil:</p>
+<pre><code class="html">&lt;ul class="parent"&gt;
+  &lt;li&gt;&lt;a href="http://example.org"&gt;Menu&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;</code></pre>

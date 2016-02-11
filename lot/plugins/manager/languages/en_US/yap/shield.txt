@@ -1,15 +1,10 @@
-﻿Make sure the shield package you want to upload is structured like this:
-
-~~~ .no-highlight
-shield.zip
+<p>Make sure the shield package you want to upload is structured like this:</p>
+<pre><code class="no-highlight">shield.zip
 └── shield/
     ├── file-1.txt
     ├── file-2.txt
     ├── file-3.txt
     ├── file-4.txt
-    └── …
-~~~
-
-You need to add a root folder as a wrapper for all of your shield files, and then you have to give a name for the `ZIP` file with the same name as the root folder name.
-
-After that, you can activate the shield through the [configuration manager]({{url.manager}}config "Configurations") or by pressing the **Attach** button.
+    └── …</code></pre>
+<p>You need to add a root folder as a wrapper for all of your shield files, and then you have to give a name for the <code>ZIP</code> file with the same name as the root folder name.</p>
+<p>After that, you can activate the shield through the <a href="{{url.manager}}config" title="Configurations">configuration manager</a> or by pressing the <strong>Attach</strong> button.</p>

@@ -1,35 +1,26 @@
-To remove a _shortcode_, simply leave the field to be empty.
-
-### Usage
-
-#### As HTML
-
-~~~ .html
-<a href="`{{url.page:about}}`">link text</a>
-~~~
-
-#### As Markdown
-
-~~~ .markdown
-[link text](`{{url.page:about}}`)
-~~~
-
-### Escaping a Shortcode
-
-Wrap your _shortcode_ with backtick characters to prevent code parsing:
-
-~~~ .markdown
-Parse `{{this}}` pattern, but not ``{{this}}``
-~~~
-
-### Advanced
-
-You can pass some variables inside a _shortcode_ pattern via <code>&#37;s</code> symbol. For example:
-
-Key | Value
---- | -----
-<code>`{{div class:&#37;s id:&#37;s}}`</code> | <code>&lt;div class="$1" id="$2"&gt;</code>
-
-So, writing ``{{div class:foo id:bar}}`` in the page composer will produce ``<div class="foo" id="bar">`` in the output.
-
-*[HTML]: Hyper Text Markup Language
+<p>To remove a <em>shortcode</em>, simply leave the field to be empty.</p>
+<h3>Usage</h3>
+<h4>As <abbr title="Hyper Text Markup Language">HTML</abbr></h4>
+<pre><code class="html">&lt;a href="`{{url.page:about}}`"&gt;link text&lt;/a&gt;</code></pre>
+<h4>As Markdown</h4>
+<pre><code class="markdown">[link text](`{{url.page:about}}`)</code></pre>
+<h3>Escaping a Shortcode</h3>
+<p>Wrap your <em>shortcode</em> with backtick characters to prevent code parsing:</p>
+<pre><code class="markdown">Parse `{{this}}` pattern, but not ``{{this}}``</code></pre>
+<h3>Advanced</h3>
+<p>You can pass some variables inside a <em>shortcode</em> pattern via <code>&#37;s</code> symbol. For example:</p>
+<table class="table-bordered table-full-width">
+  <thead>
+    <tr>
+      <th>Key</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+  <tr>
+    <td><code>`{{div class:&#37;s id:&#37;s}}`</code></td>
+    <td><code>&lt;div class="$1" id="$2"&gt;</code></td>
+  </tr>
+  </tbody>
+</table>
+<p>So, writing <code>`{{div class:foo id:bar}}`</code> in the page composer will produce <code>&lt;div class="foo" id="bar"&gt;</code> in the output.</p>

@@ -1,14 +1,26 @@
 MTE:
   buttons:
-    help: Bantuan
+    help:
+      0: Bantuan
+      1: F1
 
 __MTE:
+  buttons:
+    info:
+      0: Singkatan
   placeholders:
     table_text: Judul Tabel 1 | Judul Tabel 2\n------------- | -------------\nSel Tabel 1.1 | Sel Tabel 1.2\nSel Tabel 2.1 | Sel Tabel 2.2\nSel Tabel 3.1 | Sel Tabel 3.2
+  prompts:
+    image_title: judul gambar di sini…
+    image_title_title: Judul Gambar
 
 __comment_wizard: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
 
 plugin_markdown:
   title:
     abbr: Singkatan Terdefinisi
-    url: <abbr title="Uniform Resource Locator">URL</abbr> Terdefinisi
+    a: <abbr title="Uniform Resource Locator">URL</abbr> Terdefinisi
+    editor: Konfigurasi Editor
+    toggle_enableSETextHeader: Aktifkan Gaya Judul <abbr>SEText</abbr>
+    toggle_closeATXHeader: Aktifkan Gaya Judul <abbr>ATX</abbr> Tertutup
+    toggle_PRE: Aktifkan Gaya Blok Kode Berpagar

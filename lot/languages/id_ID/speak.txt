@@ -6,7 +6,7 @@ __:
   title: Bahasa Indonesia
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.0
+  version: 1.2.1
 
 
 # ----------------------------
@@ -385,9 +385,9 @@ scopes: Cakupan
 pending: Tertunda
 
 
-# ---------------------------------
-# MONTHS AND DAY NAMES LOCALIZATION
-# ---------------------------------
+# --------------------------------
+# MONTH AND DAY NAMES LOCALIZATION
+# --------------------------------
 
 month_names:
   0: Januari
@@ -660,6 +660,7 @@ widget:
   widget: Widget
   widgets: Widget
 
+  manager_: %s Manajer
   manager_menu: Menu Manajer
   manager_menus: Menu Manajer
   manager_bar: Bar Manajer
@@ -671,9 +672,11 @@ widget:
   tag: Tag
   tags: Tag
 
+  search_: %s Penelusuran
   search_form: Formulir Penelusuran
   search_forms: Formulir Penelusuran
 
+  recent_: %s Terbaru
   recent_post: Pos Terbaru
   recent_posts: Pos Terbaru
   recent_page: Halaman Terbaru
@@ -685,6 +688,7 @@ widget:
   recent_comment: Komentar Terbaru
   recent_comments: Komentar Terbaru
 
+  random_: %s Acak
   random_post: Pos Acak
   random_posts: Pos Acak
   random_page: Halaman Acak
@@ -692,6 +696,7 @@ widget:
   random_article: Artikel Acak
   random_articles: Artikel Acak
 
+  related_: %s Terkait
   related_post: Pos Terkait
   related_posts: Pos Terkait
   related_page: Halaman Terkait
