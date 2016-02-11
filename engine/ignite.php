@@ -196,8 +196,10 @@ Weapon::fire('plugins_before');
 
 foreach($plugins = Plugin::load() as $k => $v) {
     $__ = PLUGIN . DS . $k . DS;
-    Config::set('states.plugin_' . md5($k), File::open($__ . 'states' . DS . 'config.txt')->unserialize());
-    $config = Config::get(); // refresh ...
+    if(file_exists($__ . 'launch.php') || file_exists($__ . '__launch.php')) {
+        Config::set('states.plugin_' . md5($k), File::open($__ . 'states' . DS . 'config.txt')->unserialize());
+        $config = Config::get(); // refresh ...
+    }
     if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 'speak.txt')) {
         $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
     }
