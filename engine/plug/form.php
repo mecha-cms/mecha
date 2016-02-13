@@ -14,6 +14,7 @@ Form::add('file', function($name = null, $attr = array(), $indent = 0) {
 Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
     $attr['checked'] = $check ? true : null;
     $indent = $indent ? str_repeat(TAB, $indent) : "";
+    if($value === true) $value = 'true';
     return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? ' <span>' . $text . '</span>' : "") . '</label>';
 });
 
