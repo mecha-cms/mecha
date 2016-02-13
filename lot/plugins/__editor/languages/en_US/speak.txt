@@ -83,6 +83,6 @@ plugin_editor:
   title:
     toolbars: Toolbars
     features: Features
-    toggle__button: Show <strong>%s</strong> Button
-    toggle_autoComplete: Automatic Character Insertion
-    toggle_autoIndent: Automatic Indentation
+    is__button_active: Show <strong>%s</strong> Button
+    is_insert_auto_active: Automatic Character Insertion
+    is_indent_auto_active: Automatic Indentation

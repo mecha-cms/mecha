@@ -10,7 +10,7 @@ MTE:
       0: Abbreviation/Definition
       1: ⌘+?
   placeholders:
-    table_text: <table class="table-bordered">\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Table Header 1</th>\n\t\t\t<th>Table Header 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Table Cell 1.1</td>\n\t\t\t<td>Table Cell 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 2.1</td>\n\t\t\t<td>Table Cell 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 3.1</td>\n\t\t\t<td>Table Cell 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>
+    table_text: <table border="1">\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Table Header 1</th>\n\t\t\t<th>Table Header 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Table Cell 1.1</td>\n\t\t\t<td>Table Cell 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 2.1</td>\n\t\t\t<td>Table Cell 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Table Cell 3.1</td>\n\t\t\t<td>Table Cell 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>
   prompts:
     abbr_title_title: Abbreviation
     dfn_title_title: Definition

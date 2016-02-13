@@ -83,6 +83,6 @@ plugin_editor:
   title:
     toolbars: Palang Perkakas
     features: Fitur
-    toggle__button: Tampilkan Tombol <strong>%s</strong>
-    toggle_autoComplete: Penyisipan Karakter Otomatis
-    toggle_autoIndent: Indentasi Otomatis
+    is__button_active: Tampilkan Tombol <strong>%s</strong>
+    is_insert_auto_active: Penyisipan Karakter Otomatis
+    is_indent_auto_active: Indentasi Otomatis

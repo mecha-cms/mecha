@@ -11,7 +11,7 @@
                 table = speak.placeholders.table_text.replace(/\t/g, TAB),
                 clean_B = s.before.replace(/\s+$/, ""),
                 B = clean_B.length,
-                S = 48 + (TAB.length * 6),
+                S = table.indexOf('<th>') + 4,
                 E = table.indexOf('</th>'),
                 X = B ? 2 : 0,
                 start = B + S + X,
