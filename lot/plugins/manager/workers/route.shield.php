@@ -16,7 +16,7 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     $destination = SHIELD;
     if(isset($_FILES) && ! empty($_FILES)) {
-        $request = Filter::apply('request:__shield', Request::post(), $folder, null);
+        $request = Request::post();
         Guardian::checkToken($request['token']);
         include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
@@ -35,7 +35,11 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
     }
     $folders = Get::closestFolders($destination, 'ASC', null, 'key:path');
     $info = Shield::info($folder);
-    $info->configurator = File::exist($_folder . DS . 'workers' . DS . 'configurator.php');
+    // `lot\shields\{$folder}\configurator.php`
+    if( ! $info->configurator = File::exist($_folder . DS . 'configurator.php')) {
+        // `lot\shields\{$folder}\workers\configurator.php`
+        $info->configurator = File::exist($_folder . DS . 'workers' . DS . 'configurator.php');
+    }
     Config::set(array(
         'page_title' => $speak->shields . $config->title_separator . $config->manager->title,
         'page' => $info,
@@ -79,7 +83,6 @@ Route::accept(array($config->manager->slug . '/shield/(:any)/ignite', $config->m
         'cargo' => 'repair.shield.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__shield', $request, $folder, $file);
         Guardian::checkToken($request['token']);
         $name = Text::parse(File::path($request['name']), '->safe_path_name');
         if(trim($request['name']) === "") {
@@ -150,7 +153,6 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
         'cargo' => 'kill.shield.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__shield', $request, $folder, $file);
         Guardian::checkToken($request['token']);
         $P = array('data' => array('path' => $_file));
         File::open($_file)->delete();
@@ -165,7 +167,7 @@ Route::accept(array($config->manager->slug . '/shield/kill/id:(:any)', $config->
             Notify::success(Config::speak('notify_success_deleted', $speak->shield));
         }
         Weapon::fire(array('on_shield_update', 'on_shield_destruct'), array($P, $P));
-        Guardian::kick($config->manager->slug . '/shield' . ($_file !== false  ? '/' . $folder : ""));
+        Guardian::kick($config->manager->slug . '/shield' . ($file !== false  ? '/' . $folder : ""));
     } else {
         Notify::warning(Config::speak('notify_confirm_delete_', $file !== false ? '<code>' . $path . '</code>' : '<strong>' . $info->title . '</strong>'));
     }
@@ -188,6 +190,7 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
         Shield::abort();
     }
     $mode = $path === 'attach' ? 'mount' : 'eject';
+    $G = array('data' => array('id' => $slug, 'action' => $path));
     Weapon::fire(array(
         'on_shield_update',
         'on_shield_' . $mode,
@@ -197,10 +200,9 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
     $new_config = Get::state_config();
     $new_config['shield'] = $path === 'attach' ? $slug : 'normal';
     File::serialize($new_config)->saveTo(STATE . DS . 'config.txt', 0600);
-    $G = array('data' => array('id' => $slug, 'action' => $path));
     Notify::success(Config::speak('notify_success_updated', $speak->shield));
-    foreach(glob(LOG . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
-        File::open($asset_cache)->delete();
+    foreach(glob(CACHE . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
+        File::open($asset_cache)->delete(); // clear cache log ...
     }
     Guardian::kick($config->manager->slug . '/shield/' . $slug);
 });
@@ -213,19 +215,17 @@ Route::accept($config->manager->slug . '/shield/(attach|eject)/id:(:any)', funct
 
 if($route = Route::is($config->manager->slug . '/shield/(:any)/update')) {
     Weapon::add('routes_before', function() use($config, $speak, $route) {
-        if( ! Route::accepted($route['path'])) {
+        if( ! Route::accepted($route['path']) && Request::method('post')) {
+            Guardian::checkToken($_POST['token']);
+            unset($_POST['token']); // remove token from request array
             Route::accept($route['path'], function() use($config, $speak, $route) {
-                if($request = Request::post()) {
-                    $s = $route['lot'][0];
-                    $request = Filter::apply('request:__shield', $request, $s, null);
-                    Guardian::checkToken($request['token']);
-                    unset($request['token']); // remove token from request array
-                    if( ! empty($request)) {
-                        File::serialize($request)->saveTo(SHIELD . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
-                    }
-                    Notify::success(Config::speak('notify_success_updated', $speak->config));
-                    Guardian::kick(File::D($config->url_current));
+                $request = Request::post();
+                $s = $route['lot'][0];
+                if( ! empty($request)) {
+                    File::serialize($request)->saveTo(SHIELD . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
                 }
+                Notify::success(Config::speak('notify_success_updated', $speak->config));
+                Guardian::kick(File::D($config->url_current));
             });
         }
     }, 1);

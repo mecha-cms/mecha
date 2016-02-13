@@ -15,7 +15,6 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         'cargo' => 'cargo.config.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__config', $request);
         Guardian::checkToken($request['token']);
         $bools = array(
             'comments.allow' => false,
@@ -76,8 +75,8 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
         if( ! Notify::errors()) {
             File::serialize($request)->saveTo(STATE . DS . 'config.txt', 0600);
             Notify::success(Config::speak('notify_success_updated', $speak->config));
-            foreach(glob(LOG . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
-                File::open($asset_cache)->delete();
+            foreach(glob(CACHE . DS . 'asset.*.log', GLOB_NOSORT) as $asset_cache) {
+                File::open($asset_cache)->delete(); // clear cache log ...
             }
             Weapon::fire('on_config_update', array($G, $P));
             Guardian::kick($request['manager']['slug'] . '/config');

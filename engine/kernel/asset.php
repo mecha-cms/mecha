@@ -25,8 +25,8 @@
 
 class Asset extends Base {
 
-    protected static $assets = array();
-    protected static $assets_x = array();
+    public static $assets = array();
+    public static $assets_x = array();
 
     // Get full version of private asset path
     public static function path($path, $fallback = false) {
@@ -140,7 +140,7 @@ class Asset extends Base {
     // Merge multiple asset file(s) into a single file
     public static function merge($path, $name = null, $addon = "", $call = null) {
         $the_path = strpos($name, ROOT) === 0 ? File::path($name) : ASSET . DS . File::path($name);
-        $the_log = LOG . DS . 'asset.' . str_replace(array(ASSET . DS, DS), array("", '__'), $the_path) . '.log';
+        $the_log = CACHE . DS . 'asset.' . md5($the_path) . '.log';
         $is_valid = true;
         if( ! file_exists($the_log)) {
             $is_valid = false;
@@ -162,7 +162,8 @@ class Asset extends Base {
         $content = "";
         $e = File::E($name);
         if( ! file_exists($the_path) || ! $is_valid) {
-            if(Text::check($e)->in(array('gif', 'jpeg', 'jpg', 'png'))) {
+            File::open($the_path)->delete(); // delete cache ...
+            if(Mecha::walk(array('gif', 'jpeg', 'jpg', 'png'))->has($e)) {
                 foreach($path as &$p) {
                     $p = Filter::colon('asset:source', $p);
                     if( ! self::ignored($p) && $p = Filter::colon('asset:path', self::path($p, false))) {
