@@ -64,7 +64,6 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         'cargo' => 'repair.field.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__field', $request, $key);
         Guardian::checkToken($request['token']);
         // Limit HTML tag(s) allowed in the title field
         $request['title'] = Text::parse($request['title'], '->text', str_replace('<a>', "", WISE_CELL_I));
@@ -137,7 +136,6 @@ Route::accept($config->manager->slug . '/field/kill/key:(:any)', function($key =
     $G = array('data' => $fields);
     $G['data']['key'] = $key;
     if($request = Request::post()) {
-        $request = Filter::apply('request:__field', $request, $key);
         Guardian::checkToken($request['token']);
         unset($fields[$key]); // delete ...
         ksort($fields);

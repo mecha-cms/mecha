@@ -46,7 +46,6 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
         'cargo' => 'repair.cache.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__cache', $request, $file);
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
         File::open($file)->write($request['content'])->save(0600);
@@ -92,7 +91,6 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
         'cargo' => 'kill.cache.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__cache', $request, $file);
         Guardian::checkToken($request['token']);
         $info_path = Mecha::walk($deletes, function($v) {
             $_path = CACHE . DS . $v;
@@ -120,7 +118,6 @@ Route::accept($config->manager->slug . '/cache/kill/(file|files):(:all)', functi
 
 Route::accept($config->manager->slug . '/cache/do', function() use($config, $speak) {
     if($request = Request::post()) {
-        $request = Filter::apply('request:__cache', $request, null);
         Guardian::checkToken($request['token']);
         if( ! isset($request['selected'])) {
             Notify::error($speak->notify_error_no_files_selected);

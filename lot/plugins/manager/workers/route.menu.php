@@ -48,7 +48,6 @@ Route::accept(array($config->manager->slug . '/menu/ignite', $config->manager->s
     ));
     $G = array('data' => array('content' => $menu_raw));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__menu', $request, $key);
         Guardian::checkToken($request['token']);
         // Check for invalid input
         if(preg_match('#(^|\n)(\t| {1,3})(?:[^ ])#', $request['content'])) {
@@ -104,7 +103,6 @@ Route::accept($config->manager->slug . '/menu/kill/key:(:any)', function($key = 
     $G = array('data' => $menus);
     $G['data']['key'] = $key;
     if($request = Request::post()) {
-        $request = Filter::apply('request:__menu', $request, $key);
         Guardian::checkToken($request['token']);
         unset($menus[$key]); // delete ...
         ksort($menus);

@@ -96,7 +96,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         'cargo' => 'repair.post.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         // Check for invalid time pattern
         if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^\d{4,}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}$#', $request['date'])) {
@@ -256,7 +255,6 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
     ));
     $G = array('data' => Mecha::A($post));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         File::open($post->path)->delete();
         // Deleting response(s) ...

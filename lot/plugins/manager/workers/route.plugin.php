@@ -18,7 +18,7 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
     }
     $destination = PLUGIN;
     if(isset($_FILES) && ! empty($_FILES)) {
-        $request = Filter::apply('request:__plugin', Request::post(), null);
+        $request = Request::post();
         Guardian::checkToken($request['token']);
         include __DIR__ . DS . 'task.package.ignite.php';
         if( ! Notify::errors()) {
@@ -82,12 +82,14 @@ Route::accept($config->manager->slug . '/plugin/(:any)', function($slug = 1) use
     if( ! Guardian::happy(1)) {
         Shield::abort();
     }
-    if( ! File::exist(PLUGIN . DS . $slug . DS . 'launch.php') && ! File::exist(PLUGIN . DS . $slug . DS . '__launch.php')) {
-        Shield::abort();
+    if( ! $_slug = Plugin::exist($slug)) {
+        Shield::abort(); // Folder not found!
     }
     $info = Plugin::info($slug);
-    if( ! $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'configurator.php')) {
-        $info->configurator = File::exist(PLUGIN . DS . $slug . DS . 'workers' . DS . 'configurator.php');
+    // `lot\plugins\{$slug}\configurator.php`
+    if( ! $info->configurator = File::exist($_slug . DS . 'configurator.php')) {
+        // `lot\plugins\{$slug}\workers\configurator.php`
+        $info->configurator = File::exist($_slug . DS . 'workers' . DS . 'configurator.php');
     }
     Config::set(array(
         'page_title' => $speak->managing . ': ' . $info->title . $config->title_separator . $config->manager->title,
@@ -152,7 +154,6 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
         'cargo' => 'kill.plugin.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__plugin', $request, $slug);
         Guardian::checkToken($request['token']);
         $P = array('data' => array('id' => $slug));
         Weapon::fire(array(
@@ -178,19 +179,17 @@ Route::accept($config->manager->slug . '/plugin/kill/id:(:any)', function($slug 
 
 if($route = Route::is($config->manager->slug . '/plugin/(:any)/update')) {
     Weapon::add('routes_before', function() use($config, $speak, $route) {
-        if( ! Route::accepted($route['path'])) {
+        if( ! Route::accepted($route['path']) && Request::method('post')) {
+            Guardian::checkToken($_POST['token']);
+            unset($_POST['token']); // remove token from request array
             Route::accept($route['path'], function() use($config, $speak, $route) {
-                if($request = Request::post()) {
-                    $s = $route['lot'][0];
-                    $request = Filter::apply('request:__plugin', $request, $s);
-                    Guardian::checkToken($request['token']);
-                    unset($request['token']); // remove token from request array
-                    if( ! empty($request)) {
-                        File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
-                    }
-                    Notify::success(Config::speak('notify_success_updated', $speak->config));
-                    Guardian::kick(File::D($config->url_current));
+                $request = Request::post();
+                $s = $route['lot'][0];
+                if( ! empty($request)) {
+                    File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
                 }
+                Notify::success(Config::speak('notify_success_updated', $speak->config));
+                Guardian::kick(File::D($config->url_current));
             });
         }
     }, 1);
