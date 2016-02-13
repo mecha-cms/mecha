@@ -108,15 +108,15 @@
     <div class="grid-group">
       <span class="grid span-2"></span>
       <div class="grid span-4">
-        <div><?php echo Form::checkbox('widget_include_css', 'true', Guardian::wayback('widget_include_css', $config->widget_include_css), $speak->manager->title_widget_include_css); ?></div>
-        <div><?php echo Form::checkbox('widget_include_js', 'true', Guardian::wayback('widget_include_js', $config->widget_include_js), $speak->manager->title_widget_include_js); ?></div>
+        <div><?php echo Form::checkbox('widget_include_css', true, Guardian::wayback('widget_include_css', $config->widget_include_css), $speak->manager->title_widget_include_css); ?></div>
+        <div><?php echo Form::checkbox('widget_include_js', true, Guardian::wayback('widget_include_js', $config->widget_include_js), $speak->manager->title_widget_include_js); ?></div>
       </div>
     </div>
     <div class="grid-group">
       <span class="grid span-2"></span>
       <div class="grid span-4">
-        <div><?php echo Form::checkbox('comments[allow]', 'true', Guardian::wayback('comments.allow', $config->comments->allow), $speak->manager->title_comment_allow); ?></div>
-        <div><?php echo Form::checkbox('comments[moderation]', 'true', Guardian::wayback('comments.moderation', $config->comments->moderation), $speak->manager->title_comment_moderation); ?></div>
+        <div><?php echo Form::checkbox('comments[allow]', true, Guardian::wayback('comments.allow', $config->comments->allow), $speak->manager->title_comment_allow); ?></div>
+        <div><?php echo Form::checkbox('comments[moderation]', true, Guardian::wayback('comments.moderation', $config->comments->moderation), $speak->manager->title_comment_moderation); ?></div>
       </div>
     </div>
   </fieldset>
