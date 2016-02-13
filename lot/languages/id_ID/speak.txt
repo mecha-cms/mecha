@@ -279,6 +279,12 @@ defaults: Bawaan
 general: Umum
 generals: Umum
 
+common: Umum
+commons: Umum
+
+specific: Spesifik
+specifics: Spesifik
+
 timezone: Zona Waktu
 timezones: Zona Waktu
 

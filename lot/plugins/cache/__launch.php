@@ -6,23 +6,15 @@
  * --------------
  */
 
-Route::accept($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
-    if($request = Request::post()) {
-        Guardian::checkToken($request['token']);
-        unset($request['token']); // Remove token from request array
-        $results = array();
-        foreach(explode("\n", $request['content']) as $path) {
-            $s = explode(' ~', $path, 2);
-            if(trim($path) !== "" && trim($s[0]) !== "") {
-                $results[trim($s[0])] = isset($s[1]) && trim($s[1]) !== "" ? (float) trim($s[1]) : true;
-            }
+Route::over($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
+    $_POST['path'] = array();
+    foreach(explode("\n", Request::post('content')) as $path) {
+        $s = explode(' ~', $path, 2);
+        if(trim($path) !== "" && trim($s[0]) !== "") {
+            $_POST['path'][trim($s[0])] = isset($s[1]) && trim($s[1]) !== "" ? (float) trim($s[1]) : true;
         }
-        unset($request['content']); // Remove content from request array
-        $request['path'] = $results;
-        File::serialize($request)->saveTo(__DIR__ . DS . 'states' . DS . 'config.txt', 0600);
-        Notify::success(Config::speak('notify_success_updated', $speak->plugin));
-        Guardian::kick(File::D($config->url_current));
     }
+    unset($_POST['content']);
 });
 
 

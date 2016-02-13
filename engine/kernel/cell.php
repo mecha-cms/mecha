@@ -86,9 +86,9 @@ class Cell {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
         $c = strtolower(get_called_class());
         if($content === false) {
-            return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . ES);
+            return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . ES, $attr);
         }
-        return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>');
+        return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>', $attr);
     }
 
     // HTML comment
@@ -114,7 +114,7 @@ class Cell {
         self::$tag[] = $tag;
         self::$tag_indent[] = $indent;
         $c = strtolower(get_called_class());
-        return Filter::apply($c . ':begin.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>');
+        return Filter::apply($c . ':begin.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>', $attr);
     }
 
     // Base HTML tag close
@@ -153,7 +153,7 @@ class Cell {
             return call_user_func_array('self::unit', $arguments);
         }
         $s = call_user_func_array(self::$o[$c][$kin], $arguments);
-        return Filter::apply(strtolower($c) . ':unit.' . $kin, $s);
+        return Filter::apply(strtolower($c) . ':custom.' . $kin, $s, $arguments);
     }
 
 }

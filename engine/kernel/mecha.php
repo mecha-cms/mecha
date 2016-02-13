@@ -103,7 +103,8 @@ class Mecha extends Base {
 
     // Check if `$array` contain `$key` -- should be faster than `in_array($key, $array)`
     public static function has($key, $x = ';;;') {
-        return strpos($x . implode($x, self::$stomach) . $x, $x . $key . $x) !== false;
+        $s = is_array(self::$stomach) ? implode($x, self::$stomach) : (string) self::$stomach;
+        return strpos($x . $s . $x, $x . $key . $x) !== false;
     }
 
     // Sort array based on its value's key

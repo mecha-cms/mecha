@@ -16,12 +16,11 @@ if( ! Guardian::happy() || Guardian::happy(1)) {
 }
 
 // Create a new comment
-if( ! Guardian::happy(1)) {
+if(Request::method('post') && ! Guardian::happy(1)) {
     // Disallow `{{php}}` shortcode in comment to prevent PHP script injection
-    Filter::add('request:comment', function($lot) {
-        if(isset($lot['message'])) {
-            $lot['message'] = str_replace(array('{{php}}', '{{/php}}'), "", $lot['message']);
+    Route::over($config->index->slug . '/(:any)', function() {
+        if(isset($_POST['message'])) {
+            $_POST['message'] = str_replace(array('{{php}}', '{{/php}}'), "", $_POST['message']);
         }
-        return $lot;
     });
 }

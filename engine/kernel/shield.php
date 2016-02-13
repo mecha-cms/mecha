@@ -147,7 +147,7 @@ class Shield extends Base {
              "\n" . SEPARATOR . "\n" .
              "\n" . Config::speak('notify_not_available', $speak->description);
         $info = Text::toPage(File::open($info)->read($d), 'content', 'shield:', array(
-            'id' => File::exist(SHIELD . DS . $folder) ? $folder : false
+            'id' => self::exist($folder) ? $folder : false
         ));
         return $array ? $info : Mecha::O($info);
     }

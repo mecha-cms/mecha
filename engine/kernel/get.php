@@ -768,7 +768,7 @@ class Get extends Base {
             if(strpos($reference, $folder) !== 0) {
                 $reference = self::postPath($reference, $folder);
             }
-            // By path => `lot\posts\$folder\2014-06-21-20-05-17_1,2,3_page-slug.txt`
+            // By path => `lot\posts\{$folder}\2014-06-21-20-05-17_1,2,3_page-slug.txt`
             $results = self::postExtract($reference, $FP);
         } else {
             // From `Get::postExtract()`
@@ -1168,7 +1168,7 @@ class Get extends Base {
             if(strpos($reference, $folder[0]) !== 0) {
                 $reference = self::responsePath($reference, $folder[0]);
             }
-            // By path => `lot\responses\$folder[0]\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
+            // By path => `lot\responses\{$folder[0]}\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
             $results = self::responseExtract($reference, $FP);
         } else {
             // From `Get::responseExtract()`
@@ -1324,7 +1324,7 @@ class Get extends Base {
             } else {
                 // For `file` field type, the original custom field value is used to limit the file extension
                 // So we have to check the existence of the file first. If it does not exist, then it may be
-                // contained with the file extension(s), not with a file name
+                // contained with file extension(s), not with a file name
                 if($v['type'] === 'file' || $v['type'] === 'f') {
                     $e = File::E($s, false);
                     $s = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $s, "") : "";
