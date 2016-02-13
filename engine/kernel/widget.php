@@ -60,7 +60,7 @@ class Widget {
                         foreach($months as $month) {
                             $posts_count_per_year += count($month);
                         }
-                        $html .= $T2 . '<li class="' . ($expand ? 'open' : 'close') . ((int) $query === (int) $year ? ' ' . self::$config['classes']['current'] : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '">' . ($expand ? '&#9660;' : '&#9658;') . '</a> <a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                        $html .= $T2 . '<li class="' . ($expand ? 'open' : 'close') . ((int) $query === (int) $year ? ' ' . self::$config['classes']['current'] : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '"></a> <a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
                         $html .= $T3 . '<ul>' . NL;
                         foreach($months as $month => $days) {
                             if(is_array($days)) {

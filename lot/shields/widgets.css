@@ -273,6 +273,9 @@ table[border="1"] td {border:1px solid}
   font-family:Sans-Serif;
 }
 
+.widget-archive-hierarchy .toggle:before {content:'\25BC'}
+.widget-archive-hierarchy .toggle.close:before {content:'\25BA'}
+
 .widget-archive-hierarchy li ul {margin-left:1.2em}
 .widget-archive-hierarchy li.close ul {display:none}
 

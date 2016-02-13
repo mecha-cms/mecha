@@ -13,17 +13,14 @@ var Widget = function() {
             if (!elem) return;
             var toggle = elem.getElementsByTagName('ul')[0].getElementsByTagName('a'),
                 click = function(ref) {
-                    var arrow = ['&#9660;', '&#9658;'];
                     ref.onclick = function() {
                         var parent = this.parentNode,
                             s = /\scurrent$/i.test(parent.className) ? ' current' : "";
                         if (this.className === 'toggle close') {
                             this.className = 'toggle open';
-                            this.innerHTML = arrow[0];
                             parent.className = 'open' + s;
                         } else {
                             this.className = 'toggle close';
-                            this.innerHTML = arrow[1];
                             parent.className = 'close' + s;
                         }
                         return false;
