@@ -1,8 +1,6 @@
 PHP Markdown
 ============
 
-PHP Markdown Lib 1.4.1 - 4 May 2013
-
 by Michel Fortin  
 <http://michelf.ca/>
 

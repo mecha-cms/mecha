@@ -8,7 +8,7 @@
         click: function(e, editor) {
             editor = editor.grip;
             var s = editor.selection(),
-                table = speak.placeholders.table_text.replace(/\t/g, TAB),
+                table = speak.placeholders.table_text,
                 clean_B = s.before.replace(/\s+$/, ""),
                 B = clean_B.length,
                 S = 0,

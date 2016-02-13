@@ -18,9 +18,21 @@ __comment_wizard: All comments are parsed with <a href="http://en.wikipedia.org/
 
 plugin_markdown:
   title:
-    abbr: Predefined Abbreviation
+    footnote_id_prefix: Footnote ID Prefix
+    footnote_link_title: Footnote Link Title
+    footnote_link_back_title: Footnote Back Link Title
+    footnote_class: Footnote Class
+    footnote_link_class: Footnote Link Class
+    footnote_link_back_class: Footnote Back Link Class
+    code_class_prefix: Code Class Prefix
+    code_attr_on_pre: Put Code Attribute on <code>&lt;pre&gt;</code> Element
+    table_class: Table Class
+    table_data_class: Table Alignment Class
+    disallow_html_tag: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Tags
+    disallow_html_entity: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Entities
     a: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
+    abbr: Predefined Abbreviation
     editor: Editor Configuration
-    toggle_enableSETextHeader: Enable <abbr>SEText</abbr> Header Style
-    toggle_closeATXHeader: Enable Closed <abbr>ATX</abbr> Header Style
-    toggle_PRE: Enable Fenced Code Block Style
+    is_header_setext_active: Enable <abbr title="Structure Enhanced Text">SEText</abbr> Header Style
+    is_header_atx_close_active: Enable Closed <abbr>ATX</abbr> Header Style
+    is_code_block_fence_active: Enable Fenced Code Block Style

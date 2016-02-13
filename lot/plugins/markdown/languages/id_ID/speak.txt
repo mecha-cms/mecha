@@ -18,9 +18,21 @@ __comment_wizard: Semua komentar diparse dengan <a href="http://en.wikipedia.org
 
 plugin_markdown:
   title:
-    abbr: Singkatan Terdefinisi
+    footnote_id_prefix: Prefiks ID Catatan Kaki
+    footnote_link_title: Judul Taut Catatan Kaki
+    footnote_link_back_title: Judul Taut Kembali Catatan Kaki
+    footnote_class: Kelas Catatan Kaki
+    footnote_link_class: Kelas Taut Catatan Kaki
+    footnote_link_back_class: Kelas Taut Kembali Catatan Kaki
+    code_class_prefix: Prefiks Kelas Kode
+    code_attr_on_pre: Tempatkan Atribut Kode pada Elemen <code>&lt;pre&gt;</code>
+    table_class: Kelas Tabel
+    table_data_class: Kelas Perataan Tabel
+    disallow_html_tag: Jangan Izinkan Tag <abbr title="Hyper Text Markup Language">HTML</abbr>
+    disallow_html_entity: Jangan Izinkan Entitas <abbr title="Hyper Text Markup Language">HTML</abbr>
     a: <abbr title="Uniform Resource Locator">URL</abbr> Terdefinisi
+    abbr: Singkatan Terdefinisi
     editor: Konfigurasi Editor
-    toggle_enableSETextHeader: Aktifkan Gaya Judul <abbr>SEText</abbr>
-    toggle_closeATXHeader: Aktifkan Gaya Judul <abbr>ATX</abbr> Tertutup
-    toggle_PRE: Aktifkan Gaya Blok Kode Berpagar
+    is_header_setext_active: Aktifkan Gaya Judul <abbr title="Structure Enhanced Text">SEText</abbr>
+    is_header_atx_close_active: Aktifkan Gaya Judul <abbr>ATX</abbr> Tertutup
+    is_code_block_fence_active: Aktifkan Gaya Blok Kode Berpagar

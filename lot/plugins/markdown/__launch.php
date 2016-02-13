@@ -1,50 +1,44 @@
 <?php
 
 Route::over($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
-    $state = __DIR__ . DS . 'states' . DS;
-    File::write(trim(Request::post('abbr')))->saveTo($state . 'abbr.txt', 0600);
-    File::write(trim(Request::post('a')))->saveTo($state . 'a.txt', 0600);
+    // Convert pattern to array ...
+    $predef = array();
+    if($a = trim(Request::post('a'))) {
+        foreach(explode("\n", $a) as $v) {
+            if(preg_match('#^\s*\[\s*(.*?)\s*\]: *<?\s*(.*?)\s*>? +(?:[\'"\(])\s*(.*?)\s*(?:[\)"\'])\s*$#', $v, $matches)) {
+                $predef[0][$matches[1]] = $matches[2];
+                $predef[1][$matches[1]] = $matches[3];
+            }
+        }
+        $_POST['predef_urls'] = $predef[0];
+        $_POST['predef_titles'] = $predef[1];
+    }
+    if($abbr = trim(Request::post('abbr'))) {
+        foreach(explode("\n", $abbr) as $v) {
+            if(preg_match('#^\s*\*\[\s*(.*?)\s*\]: *(.*?)\s*$#', $v, $matches)) {
+                $predef[2][$matches[1]] = $matches[2];
+            }
+        }
+        $_POST['predef_abbr'] = $predef[2];
+    }
+    $_POST['no_markup'] = Request::post('no_markup', false);
+    $_POST['no_entities'] = Request::post('no_entities', false);
+    $_POST['code_attr_on_pre'] = Request::post('code_attr_on_pre', false);
+    unset($_POST['abbr'], $_POST['a'], $predef);
     // Hijacking the `__editor` territory ...
     if($c_editor = Config::get('states.plugin_' . md5('__editor'))) {
-        $c_editor->enableSETextHeader = Request::post('enableSETextHeader', 0);
-        $c_editor->closeATXHeader = Request::post('closeATXHeader', 0);
-        if($fence = Request::post('PRE')) {
-            $c_editor->PRE = Converter::DW($fence);
-        } else {
-            unset($c_editor->PRE);
-        }
-        unset($_POST['enableSETextHeader'], $_POST['closeATXHeader'], $_POST['PRE']);
-        File::serialize(Mecha::A($c_editor))->saveTo(PLUGIN . DS . '__editor' . DS . 'states' . DS . 'config.txt', 0600);
+        include __DIR__ . DS . 'workers' . DS . '__editor.hijack.php';
     }
-    unset($_POST['abbr'], $_POST['a']);
 });
 
 // Editor ...
 Weapon::add('shield_before', function() use($config, $speak) {
     if($c_editor = Config::get('states.plugin_' . md5('__editor'))) {
-        $page = Config::get('page', array());
-        $parser = isset($page->content_type_raw) ? $page->content_type_raw : $config->html_parser->active;
-        if($parser === 'Markdown' || $parser === 'Markdown Extra') {
-            Config::merge('DASHBOARD.languages.MTE', $speak->__MTE);
-            Config::set('MTE', 'MTE'); // Replace `HTE` with `MTE`
-            Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-                echo Asset::javascript(__DIR__ . DS . 'assets' . DS . 'sword' . DS . 'help.js', "", 'sword/editor.button.help.min.js');
-            }, 11);
-            Filter::add('asset:path', function($path) {
-                // Replace `HTE` with `MTE`
-                if($path === PLUGIN . DS . '__editor' . DS . 'assets' . DS . 'sword' . DS . 'hte.min.js') {
-                    return __DIR__ . DS . 'assets' . DS . 'sword' . DS . 'mte.min.js';
-                }
-                // Replace default `info` button with the new one
-                if($path === PLUGIN . DS . '__editor-button' . DS . 'assets' . DS . 'sword' . DS . 'info.js') {
-                    return __DIR__ . DS . 'assets' . DS . 'sword' . DS . 'info.js';
-                }
-                // Replace default `table` button with the new one
-                if($path === PLUGIN . DS . '__editor-button' . DS . 'assets' . DS . 'sword' . DS . 'table.js') {
-                    return __DIR__ . DS . 'assets' . DS . 'sword' . DS . 'table.js';
-                }
-                return $path;
-            });
+        $s = Config::get('page', array());
+        $parser = isset($s->content_type_raw) ? $s->content_type_raw : $config->html_parser->active;
+        if($parser === 'Markdown') {
+            // Altering the `__editor` territory ...
+            include __DIR__ . DS . 'workers' . DS . '__editor.alter.php';
         }
     }
 }, 1.1);
