@@ -317,7 +317,7 @@ pre {
 }
 
 .blog-navigation a,
-.blog-navigation span {
+.blog-navigation .a {
   display:block;
   padding:0 1.2307692307692308em;
   margin:0 2px 0 0;
@@ -358,7 +358,7 @@ pre {
 }
 
 .blog-navigation li li a,
-.blog-navigation li li span {
+.blog-navigation li li .a {
   padding:0 1.1538461538461537em;
   margin:0;
 }
@@ -374,7 +374,7 @@ pre {
 /* POST */
 
 .blog-sidebar + .blog-main {
-  float:left;
+  float:right;
   width:70%;
   padding:0 0 0 5%;
   overflow:hidden;
@@ -598,7 +598,7 @@ pre {
   }
   .blog-navigation li li ul {margin-left:0}
   .blog-navigation li ul a,
-  .blog-navigation li ul span {
+  .blog-navigation li ul .a {
     font-weight:normal;
     font-size:96%;
     margin:0;

@@ -25,7 +25,7 @@
   cursor:pointer;
 }
 
-.tab-button .fa {margin-left:-.15384615384615385em}
+.tab-button .fa.fa-fw {margin-left:-.15384615384615385em}
 .tab-button abbr {cursor:inherit}
 
 .tab-button:focus,
@@ -57,7 +57,7 @@
 @media (max-width:36.25em) {
   .tab-button-area {
     height:auto;
-    line-height:42px;
+    line-height:3.230769230769231em;
   }
   .tab-button {
     float:none;

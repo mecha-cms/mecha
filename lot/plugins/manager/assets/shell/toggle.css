@@ -10,7 +10,7 @@
 
 .checkbox:before,
 .radio:before {
-  content:"\f0c8";
+  content:"\F0C8";
   display:inherit;
   font-style:normal;
   font-weight:normal;
@@ -18,10 +18,10 @@
   line-height:inherit;
 }
 
-.radio:before {content:"\f111"}
+.radio:before {content:"\F111"}
 
-.checkbox.checked:before {content:"\f14a"}
-.radio.checked:before {content:"\f192"}
+.checkbox.checked:before {content:"\F14A"}
+.radio.checked:before {content:"\F192"}
 
 .checkbox.disabled,
 .checkbox.readonly,

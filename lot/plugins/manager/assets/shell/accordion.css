@@ -5,7 +5,7 @@
 }
 
 .accordion-header:before {
-  content:"\f0fe";
+  content:"\F0FE";
   display:inline-block;
   width:1.28571429em;
   text-align:center;
@@ -16,7 +16,7 @@
   margin-right:.3076923076923077em;
 }
 
-.accordion-header.active:before {content:"\f146"}
+.accordion-header.active:before {content:"\F146"}
 
 .accordion-content {
   margin:0 0 2px;
