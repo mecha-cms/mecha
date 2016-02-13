@@ -57,7 +57,6 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
         'cargo' => 'repair.tag.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__tag', $request, $id);
         Guardian::checkToken($request['token']);
         // Limit HTML tag(s) allowed in the name field
         $request['name'] = Text::parse($request['name'], '->text', str_replace('<a>', "", WISE_CELL_I));
@@ -135,7 +134,6 @@ Route::accept($config->manager->slug . '/tag/kill/id:(:any)', function($id = fal
     $G = array('data' => $tags);
     $G['data']['id'] = $id;
     if($request = Request::post()) {
-        $request = Filter::apply('request:__tag', $request, $id);
         Guardian::checkToken($request['token']);
         unset($tags[$id]); // delete ...
         ksort($tags);

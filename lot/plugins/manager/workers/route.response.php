@@ -91,7 +91,6 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
         'cargo' => 'repair.response.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__' . $segment, $request, $id);
         Guardian::checkToken($request['token']);
         $rid = $id ? $id : time();
         $request['post'] = Request::post('post');
@@ -166,7 +165,6 @@ Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', fu
         'cargo' => 'kill.response.php'
     ));
     if($request = Request::post()) {
-        $request = Filter::apply('request:__' . $segment, $request, $id);
         $P = array('data' => Mecha::A($response));
         Guardian::checkToken($request['token']);
         File::open($response->path)->delete();

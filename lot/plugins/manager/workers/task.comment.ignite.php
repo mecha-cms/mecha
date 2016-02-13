@@ -20,7 +20,6 @@ if( ! function_exists('do_comment_construct')) {
                 'comment_form_id' => $comment_form_id
             ));
             if($article !== false && $request = Request::post()) {
-                $request = Filter::apply('request:comment', $request, $G);
                 $s = SHIELD . DS . $config->shield . DS . 'workers' . DS;
                 if($task = File::exist($s . 'task.comment.php')) {
                     require $task; // Custom comment constructor
