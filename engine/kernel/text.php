@@ -111,9 +111,13 @@ class Text extends Base {
         if(trim($text) === "") return array();
         $results = array();
         $data = array();
-        $indent_length = strlen($indent);
         // Normalize line-break
         $text = str_replace(array("\r\n", "\r"), "\n", $text);
+        if(strpos($indent, "\t") === false) {
+            // Force translate 1 tab to 4 space
+            $indent = str_replace("\t", '    ', $indent);
+        }
+        $indent_length = strlen($indent);
         foreach(explode("\n", $text) as $line) {
             // Ignore comment and empty line-break
             if($line === "" || strpos($line, '#') === 0) continue;
