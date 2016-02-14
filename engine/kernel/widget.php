@@ -252,12 +252,16 @@ class Widget {
                     $html .= $T3 . '<div class="recent-response-avatar">' . NL;
                     $html .= $T4;
                     $attr = ' alt="" width="' . $avatar_size . '" height="' . $avatar_size . '"';
+                    // `lot\assets\__avatar\{$avatar_size}x{$avatar_size}\ ...`
                     if($avatar = File::exist(ASSET . DS . '__avatar' . DS . $avatar_size . 'x' . $avatar_size . DS . md5($response->email) . '.png')) {
                         $html .= Asset::image($avatar, $attr);
+                    // `lot\assets\__avatar\60x60\ ...`
                     } else if($avatar = File::exist(ASSET . DS . '__avatar' . DS . '60x60' . DS . md5($response->email) . '.png')) {
                         $html .= Asset::image($avatar, $attr);
+                    // `lot\assets\__avatar\ ...`
                     } else if($avatar = File::exist(ASSET . DS . '__avatar' . DS . md5($response->email) . '.png')) {
                         $html .= Asset::image($avatar, $attr);
+                    // `http://www.gravatar.com/avatar/ ...`
                     } else {
                         $html .= Asset::image($config->protocol . 'www.gravatar.com/avatar/' . md5($response->email) . '?s=' . $avatar_size . '&amp;d=' . urlencode($d), $attr);
                     }
