@@ -149,11 +149,12 @@ class Asset extends Base {
             if(count($the_time) !== count($path)) {
                 $is_valid = false;
             } else {
-                foreach($the_time as $i => $unix) {
-                    $p = self::path($path[$i]);
-                    if( ! file_exists($p) || (int) filemtime($p) !== (int) $unix) {
-                        $is_valid = false;
-                        break;
+                foreach($the_time as $i => $u) {
+                    if($p = Filter::colon('asset:path', self::path($path[$i], false))) {
+                        if( ! file_exists($p) || (int) filemtime($p) !== (int) $u) {
+                            $is_valid = false;
+                            break;
+                        }
                     }
                 }
             }
@@ -179,9 +180,9 @@ class Asset extends Base {
                         $unix .= filemtime($p) . "\n";
                         $c = Filter::apply('asset:input', file_get_contents($p) . "\n", $p);
                         if(strpos(File::B($p), '.min.') === false) {
-                            if(strpos(File::B($the_path), '.min.css') !== false) {
+                            if(strpos(File::B($the_path) . '$', '.min.css$') !== false) {
                                 $c = Converter::detractShell($c);
-                            } else if(strpos(File::B($the_path), '.min.js') !== false) {
+                            } else if(strpos(File::B($the_path) . '$', '.min.js$') !== false) {
                                 $c = Converter::detractSword($c);
                             } else {
                                 $c = $c . "\n";
