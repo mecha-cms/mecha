@@ -22,7 +22,7 @@
   <p>
     <?php echo Form::hidden('name', $path); ?>
     <?php Weapon::fire('action_before', $hooks); ?>
-    <?php echo Jot::button('action', $is_text ? $speak->update : $speak->rename); ?>
+    <?php echo $is_text ? Jot::button('action', $speak->update) : ""; ?>
     <?php echo Jot::btn('destruct', $speak->delete, $config->manager->slug . '/cache/kill/file:' . $path); ?>
     <?php Weapon::fire('action_after', $hooks); ?>
   </p>

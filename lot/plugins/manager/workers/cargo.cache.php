@@ -52,12 +52,14 @@
     <?php else: ?>
     <tbody>
       <tr>
-        <td class="td-icon"><?php echo $config->offset === 1 ? Jot::icon('home') : Jot::a('action', $cache_url, Jot::icon('home')); ?></td>
-        <td><?php echo Config::speak('notify_' . ($config->offset === 1 ? 'empty' : 'error_not_found'), strtolower($speak->files)); ?></td>
+        <td colspan="3"><?php echo $config->offset !== 1 ? $speak->notify_error_not_found : Cell::strong('..'); ?></td>
+        <td class="td-icon"><?php echo Jot::icon('pencil'); ?></td>
+        <td class="td-icon"><?php echo Jot::icon('times'); ?></td>
       </tr>
     </tbody>
     <?php endif; ?>
   </table>
+  <?php include __DIR__ . DS . 'unit' . DS . 'pager' . DS . 'step.php'; ?>
 </form>
 <?php if( ! empty($pager->step->url) || Request::get('q')): ?>
 <hr>

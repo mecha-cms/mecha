@@ -48,7 +48,9 @@ Route::accept($config->manager->slug . '/cache/repair/(file|files):(:all)', func
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $P = array('data' => $request);
-        File::open($file)->write($request['content'])->save(0600);
+        if(isset($request['content'])) {
+            File::open($file)->write($request['content'])->save(0600);
+        }
         Notify::success(Config::speak('notify_file_updated', '<code>' . $path . '</code>'));
         Session::set('recent_item_update', explode(DS, $path));
         $name = File::path($request['name']);
