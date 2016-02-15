@@ -3,6 +3,11 @@
 $post = 'article';
 $response = 'comment';
 
+// default tag is `untagged`
+if( ! isset($_POST['kind'])) {
+    $_POST['kind'] = array(0);
+}
+
 // Repair
 if(strpos($config->url_path, '/id:') !== false) {
     Weapon::add('tab_button_before', function($page, $segment) use($config, $speak) {

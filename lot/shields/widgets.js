@@ -11,7 +11,7 @@ var Widget = function() {
         if (type === 'HIERARCHY') {
             var elem = doc.getElementById(id);
             if (!elem) return;
-            var toggle = elem.getElementsByTagName('ul')[0].getElementsByTagName('a'),
+            var ul = elem.getElementsByTagName('ul'),
                 click = function(ref) {
                     ref.onclick = function() {
                         var parent = this.parentNode,
@@ -26,7 +26,9 @@ var Widget = function() {
                         return false;
                     };
                 };
-            if (!toggle) return;
+            if (!ul.length) return;
+            var toggle = ul[0].getElementsByTagName('a');
+            if (!toggle.length) return;
             for (var i = 0, toggles = toggle.length; i < toggles; ++i) {
                 if (/(^|\s)toggle(\s|$)/.test(toggle[i].className)) click(toggle[i]);
             }
@@ -36,9 +38,9 @@ var Widget = function() {
         if (type === 'DROPDOWN') {
             elem = doc.getElementById(id);
             if (!elem) return;
-            var select = elem.getElementsByTagName('select')[0];
-            if (!select) return;
-            select.onchange = function() {
+            var select = elem.getElementsByTagName('select');
+            if (!select.length) return;
+            select[0].onchange = function() {
                 win.location.href = this.value;
             };
         }
@@ -52,9 +54,9 @@ var Widget = function() {
         if (type === 'DROPDOWN') {
             elem = doc.getElementById(id);
             if (!elem) return;
-            var select = elem.getElementsByTagName('select')[0];
-            if (!select) return;
-            select.onchange = function() {
+            var select = elem.getElementsByTagName('select');
+            if (!select.length) return;
+            select[0].onchange = function() {
                 win.location.href = this.value;
             };
         }
