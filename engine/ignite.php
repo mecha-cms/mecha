@@ -285,9 +285,4 @@ function do_shortcode_x($content) {
 }
 
 Filter::add('shortcode', 'do_shortcode', 20);
-
-// YOU ARE HERE! -- Specify your own shortcode priority to be greater
-// than the default shortcode file priority, but lesser than the shortcode
-// deactivation priority by determining the shortcode priority between 20 - 30
-
-Filter::add('shortcode', 'do_shortcode_x', 30);
+Filter::add(array('content', 'message'), 'do_shortcode_x', 0);
