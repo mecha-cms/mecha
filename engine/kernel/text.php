@@ -115,7 +115,7 @@ class Text extends Base {
         $text = str_replace(array("\r\n", "\r"), "\n", $text);
         if(strpos($indent, "\t") === false) {
             // Force translate 1 tab to 4 space
-            $indent = str_replace("\t", '    ', $indent);
+            $text = str_replace("\t", '    ', $text);
         }
         $indent_length = strlen($indent);
         foreach(explode("\n", $text) as $line) {
