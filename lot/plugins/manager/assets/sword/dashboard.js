@@ -89,7 +89,7 @@
                 },
                 get: function(session, fallback) {
                     if (session === 'cookies' || session.indexOf('cookie:') === 0) {
-                        fallback = fallback || false;
+                        if (typeof fallback === "undefined") fallback = false;
                         var output = {},
                             cookies = document.cookie.split(/;\s*/);
                         for (var i = 0, len = cookies.length; i < len; ++i) {
