@@ -283,10 +283,10 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     ));
     Weapon::add('shell_after', function() use($article) {
         if(isset($article->css) && trim($article->css) !== "") echo O_BEGIN . $article->css . O_END;
-    });
+    }, 11);
     Weapon::add('sword_after', function() use($article) {
         if(isset($article->js) && trim($article->js) !== "") echo O_BEGIN . $article->js . O_END;
-    });
+    }, 11);
     Shield::attach('article-' . $slug);
 }, 70);
 

@@ -90,7 +90,7 @@ if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')
  * --------------
  */
 
-$__ = SHIELD . DS . $config->shield;
+$__ = SHIELD . DS . $config->shield . DS;
 $s = File::open($__ . 'states' . DS . 'config.txt')->unserialize();
 Config::set('states.shield_' . md5($config->shield), $s);
 Config::set('states.shield', $s); // current shield
