@@ -300,10 +300,12 @@ table[border="1"] td {border:1px solid}
 .widget-tag-cloud .size-6 {font-size:140%}
 .widget-tag-cloud .size-7 {font-size:150%}
 
+.widget-recent-response ul,
 .widget-recent-response li {
   margin:0;
   padding:0;
   border:none;
+  list-style:none;
   overflow:hidden;
 }
 
