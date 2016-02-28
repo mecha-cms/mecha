@@ -298,10 +298,11 @@ class Widget {
      *
      * [1]. Widget::recentPost();
      * [2]. Widget::recentPost(5);
+     * [3]. Widget::recentPost(5, 'kind:1,2,3');
      *
      */
 
-    public static function recentPost($total = 7, $folder = ARTICLE, $class = 'recent') {
+    public static function recentPost($total = 7, $filter = "", $folder = ARTICLE, $class = 'recent') {
         $T1 = TAB;
         $T2 = str_repeat($T1, 2);
         $p = $folder !== POST ? File::B($folder) : 'post';
@@ -309,7 +310,7 @@ class Widget {
         $config = Config::get();
         $speak = Config::speak();
         $html = O_BEGIN . '<div class="widget widget-' . $class . ' widget-' . $class . '-post" id="widget-' . $class . '-post-' . $id . '">' . NL;
-        if($files = call_user_func('Get::' . $p . 's')) {
+        if($files = call_user_func('Get::' . $p . 's', 'DESC', $filter)) {
             if($class !== 'recent') {
                 $files = Mecha::eat($files)->shake()->vomit();
             }
@@ -335,11 +336,12 @@ class Widget {
      *
      * [1]. Widget::randomPost();
      * [2]. Widget::randomPost(5);
+     * [3]. Widget::randomPost(5, 'kind:1,2,3');
      *
      */
 
-    public static function randomPost($total = 7, $folder = ARTICLE) {
-        return self::recentPost($total, $folder, 'random');
+    public static function randomPost($total = 7, $filter = "", $folder = ARTICLE) {
+        return self::recentPost($total, $filter, $folder, 'random');
     }
 
 
@@ -352,29 +354,33 @@ class Widget {
      *
      */
 
-    public static function relatedPost($total = 7, $folder = ARTICLE) {
+    public static function relatedPost($total = 7, $shake = true, $folder = ARTICLE) {
         $T1 = TAB;
         $T2 = str_repeat($T1, 2);
         $p = $folder !== POST ? File::B($folder) : 'post';
         $id = Config::get('widget_related_' . $p . '_id', 0) + 1;
         $config = Config::get();
         $speak = Config::speak();
-        $kind = isset($config->{$p}->kind) ? (array) $config->{$p}->kind : array();
+        $k = isset($config->{$p}->kind) && ! empty($config->{$p}->kind) ? (array) $config->{$p}->kind : array(0);
         $html = O_BEGIN . '<div class="widget widget-related widget-related-post" id="widget-related-post-' . $id . '">' . NL;
         if($config->page_type !== $p) {
-            return self::randomPost($total, $folder);
+            return self::randomPost($total, "", $folder);
         } else {
-            if($files = call_user_func('Get::' . $p . 's', 'DESC', 'kind:' . implode(',', $kind))) {
+            if($files = call_user_func('Get::' . $p . 's', 'DESC', 'kind:' . implode(',', $k))) {
                 if(count($files) <= 1) {
-                    return self::randomPost($total, $folder);
+                    return self::randomPost($total, "", $folder);
                 }
-                $files = Mecha::eat($files)->shake()->vomit();
+                if($shake) $files = Mecha::eat($files)->shake()->vomit();
                 $html .= $T1 . '<ul>' . NL;
-                for($i = 0, $count = count($files); $i < $total; ++$i) {
-                    if($i === $count) break;
+                // +1 because we will skip the current post path
+                $skip = 0;
+                for($i = 0, $count = count($files); $i < $total + 1; ++$i) {
+                    if($i === $count || $i === $total + $skip) break;
                     if($files[$i] !== $config->{$p}->path) {
                         $post = call_user_func('Get::' . $p . 'Anchor', $files[$i]);
                         $html .= $T2 . '<li><a href="' . $post->url . '">' . $post->title . '</a></li>' . NL;
+                    } else {
+                        $skip = 1; // +1 for the skipped post path
                     }
                 }
                 $html .= $T1 . '</ul>' . NL;
