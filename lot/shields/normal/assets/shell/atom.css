@@ -237,11 +237,13 @@ input[type="range"] {
 }
 
 input[type="color"] {
-  font-size:1em;
-  line-height:1em;
-  padding:0;
   width:2em;
   height:2em;
+  font-size:1em;
+  line-height:2em;
+  border:none;
+  margin:0;
+  padding:0;
   cursor:pointer;
 }
 

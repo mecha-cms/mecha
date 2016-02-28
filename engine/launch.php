@@ -263,9 +263,6 @@ Route::accept($config->index->slug . '/(:any)', function($slug = "") use($config
     if($article->state === 'drafted') {
         Shield::abort('404-article');
     }
-    if(isset($_GET['repair']) && Guardian::happy()) {
-        Guardian::kick($config->manager->slug . '/article/repair/id:' . $article->id);
-    }
     // Collecting article slug ...
     if($articles = Get::articles('DESC', "", File::E($article->path))) {
         $articles = Mecha::walk($articles, function($path) {
@@ -413,9 +410,6 @@ Route::accept('(:any)', function($slug = "") use($config) {
     if($page->state === 'drafted') {
         Shield::abort('404-page');
     }
-    if(isset($_GET['repair']) && Guardian::happy()) {
-        Guardian::kick($config->manager->slug . '/page/repair/id:' . $page->id);
-    }
     Filter::add('pager:url', function($url) {
         return Filter::apply('page:url', $url);
     });
@@ -425,10 +419,10 @@ Route::accept('(:any)', function($slug = "") use($config) {
     ));
     Weapon::add('shell_after', function() use($page) {
         if(isset($page->css) && trim($page->css) !== "") echo O_BEGIN . $page->css . O_END;
-    });
+    }, 11);
     Weapon::add('sword_after', function() use($page) {
         if(isset($page->js) && trim($page->js) !== "") echo O_BEGIN . $page->js . O_END;
-    });
+    }, 11);
     Shield::attach('page-' . $slug);
 }, 100);
 

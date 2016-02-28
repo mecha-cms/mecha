@@ -1,5 +1,5 @@
 <a href="#toggle" class="blog-sidebar-toggle">
-  <i class="fa fa-bars"></i>
+  <i class="fa fa-navicon"></i>
 </a>
 <aside class="blog-sidebar widgets">
   <?php Shield::chunk('block.widget', array(

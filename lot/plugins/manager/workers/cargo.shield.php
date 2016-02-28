@@ -36,6 +36,12 @@
 
           ?>
           <table class="table-bordered table-full-width">
+            <thead>
+              <tr>
+                <th><?php echo $speak->file; ?></th>
+                <th class="text-center" colspan="2"><?php echo $speak->action; ?></th>
+              </tr>
+            </thead>
             <tbody>
               <?php if($files): ?>
               <?php foreach($files as $file): ?>
