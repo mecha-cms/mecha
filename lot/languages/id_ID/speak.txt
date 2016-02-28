@@ -6,7 +6,7 @@ __:
   title: Bahasa Indonesia
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.1
+  version: 1.2.2
 
 
 # ----------------------------
@@ -675,8 +675,8 @@ widget:
   archive: Arsip
   archives: Arsip
 
-  tag: Tag
-  tags: Tag
+  tag: Label
+  tags: Label
 
   search_: %s Penelusuran
   search_form: Formulir Penelusuran
