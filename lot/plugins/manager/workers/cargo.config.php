@@ -69,7 +69,7 @@
     </label>
     <label class="grid-group">
       <span class="grid span-2 form-label"><?php echo $speak->manager->title_html_parser_type; ?></span>
-      <span class="grid span-4"><?php echo Form::select('html_parser[active]', (array) $config->html_parser->type, $config->html_parser->active, array(
+      <span class="grid span-4"><?php echo Form::select('html_parser[active]', Mecha::eat($config->html_parser->type)->order('ASC', null, true)->vomit(), $config->html_parser->active, array(
           'class' => 'select-block'
       )); ?></span>
     </label>
