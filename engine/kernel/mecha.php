@@ -134,6 +134,7 @@ class Mecha extends Base {
             self::$stomach = $after;
             unset($before, $after);
         } else {
+            self::$stomach = (array) self::$stomach;
             if($order === 'DESC') {
                 arsort(self::$stomach);
             } else {
