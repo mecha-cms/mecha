@@ -70,10 +70,10 @@ class Tree extends Base {
                 if($value !== "") {
                     // List item without link: `array('foo')`
                     if(is_int($key)) {
-                        $twig .= Filter::colon($FP . 'anchor', '<span class="a">' . $value . '</span>');
+                        $twig .= Filter::colon($FP . 'anchor', '<span class="a" tabindex="0">' . $value . '</span>');
                     // List item without link: `array('foo' => null)`
                     } else if(is_null($value)) {
-                        $twig .= Filter::colon($FP . 'anchor', '<span class="a">' . $key . '</span>');
+                        $twig .= Filter::colon($FP . 'anchor', '<span class="a" tabindex="0">' . $key . '</span>');
                     // List item with link: `array('foo' => '/')`
                     } else {
                         $url = Filter::colon($FP . 'url', $url);
@@ -99,7 +99,7 @@ class Tree extends Base {
                 $c = trim(($c_class['twig'] !== false ? $c_class['twig'] : "") . $current . $s);
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
                 $twig .= NL . $indent . str_repeat(TAB, $i + 2);
-                $twig .= Filter::colon($FP . 'anchor', $_value !== null ? '<a href="' . $url . '">' . $_key . '</a>' : '<span class="a">' . $_key . '</span>');
+                $twig .= Filter::colon($FP . 'anchor', $_value !== null ? '<a href="' . $url . '">' . $_key . '</a>' : '<span class="a" tabindex="0">' . $_key . '</span>');
                 $twig .= NL . self::create($value, $indent, $FP, $i + 2);
                 $twig .= $indent . str_repeat(TAB, $i + 1);
                 $s = explode(' ', $c_element['twig']);
