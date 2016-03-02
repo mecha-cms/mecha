@@ -20,4 +20,4 @@ function do_facebook_open_graph() {
     echo $T2 . '<!-- End Facebook Open Graph -->' . O_END;
 }
 
-Weapon::add('meta', 'do_facebook_open_graph', 11);
+if($config->page_type !== 'manager') Weapon::add('meta', 'do_facebook_open_graph', 11);
