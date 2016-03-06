@@ -10,6 +10,13 @@
 .editor-toolbar {
   display:block;
   line-height:2em;
+  zoom:1;
+}
+
+.editor-toolbar:after {
+  content:"";
+  display:table;
+  clear:both;
 }
 
 .editor-toolbar-button {

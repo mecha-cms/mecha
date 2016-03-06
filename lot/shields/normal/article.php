@@ -1,5 +1,4 @@
 <?php Shield::chunk('header'); ?>
-<?php Shield::chunk('sidebar'); ?>
 <div class="blog-main posts">
   <article class="post" id="post-<?php echo $article->id; ?>">
     <?php Shield::chunk('article.header'); ?>

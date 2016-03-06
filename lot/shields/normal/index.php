@@ -1,5 +1,4 @@
 <?php Shield::chunk('header'); ?>
-<?php Shield::chunk('sidebar'); ?>
 <div class="blog-main posts">
   <?php if($config->total_articles > 0): ?>
   <?php foreach($articles as $article): ?>

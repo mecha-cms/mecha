@@ -208,7 +208,7 @@ class Converter extends Base {
      */
 
     public static function curt($input, $chars = 100, $suffix = '&hellip;', $charset = "") {
-        $input = Text::parse($input, '->text');
+        $input = Text::parse(str_replace('<br' . ES, ' ', $input), '->text');
         $charset = $charset ? $charset : Config::get('charset');
         return trim((function_exists('mb_substr') ? mb_substr($input, 0, $chars, $charset) : substr($input, 0, $chars))) . ($chars < (function_exists('mb_strlen') ? mb_strlen($input, $charset) : strlen($input)) ? $suffix : "");
     }

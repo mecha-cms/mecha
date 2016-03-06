@@ -26,7 +26,7 @@ Config::plug('load', function() {
     $config['url'] = $config['url_url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
     $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // kill tag(s) and query string(s) from URL
     $config['current'] = $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
-    $config['origin'] = $config['url_origin'] = Session::get('url_origin', false);
+    $config['origin'] = $config['url_origin'] = Session::get('cookie:url_origin', false);
 
     $config['page_title'] = $config['title'];
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";

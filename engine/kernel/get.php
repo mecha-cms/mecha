@@ -805,7 +805,7 @@ class Get extends Base {
             $exc = $exc['content'];
             $exc = is_array($exc) ? implode("", $exc) : $exc;
             // Generate fake description data
-            if($results['description'] === "") {
+            if(empty($results['description_raw'])) {
                 $results['description'] = Converter::curt($exc, $config->excerpt->length, $config->excerpt->suffix);
             }
             // Manual post excerpt with `<!-- cut+ "Read More" -->`

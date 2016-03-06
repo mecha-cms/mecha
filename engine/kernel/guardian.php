@@ -319,7 +319,7 @@ class Guardian extends Base {
         $path = Converter::url(File::url($path));
         $path = Filter::apply('guardian:kick', $path);
         $G = array('data' => array('url' => $path));
-        Session::set('url_origin', Config::get('url_current'));
+        Session::set('cookie:url_origin', Config::get('url_current'));
         Weapon::fire('before_kick', array($G, $G));
         header('Location: ' . $path);
         exit;

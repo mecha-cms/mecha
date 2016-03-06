@@ -16,3 +16,4 @@
       <?php Shield::chunk('block.header'); ?>
       <?php Shield::chunk('navigation'); ?>
       <div class="blog-content">
+        <?php Shield::chunk('sidebar'); ?>
