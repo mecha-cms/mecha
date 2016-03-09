@@ -61,7 +61,7 @@
   }
   .tab-button {
     float:none;
-    border:none;
+    border-width:1px;
     margin:0 0 2px;
     padding:0 1.2307692307692308em 0 1.0769230769230769em;
   }

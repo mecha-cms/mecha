@@ -131,6 +131,7 @@ label:hover .radio {color:#3A64A4}
 .about-url:hover {color:#FFA}
 
 @media (max-width:36.25em) {
+  .tab-button {border-width:0}
   .tab-button.active {
     background-color:#365D98;
     color:white;
