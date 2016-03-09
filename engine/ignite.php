@@ -80,8 +80,19 @@ $speak = Config::speak();
  * --------------------------------
  */
 
-if($function = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
-    include $function;
+// frontend only
+if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions__.php')) {
+    if($config->page_type !== 'manager') include $fn;
+}
+
+// backend only
+if($fn = File::exist(SHIELD . DS . $config->shield . DS . '__functions.php')) {
+    if($config->page_type === 'manager') include $fn;
+}
+
+// frontend and backend
+if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
+    include $fn;
 }
 
 
@@ -196,7 +207,7 @@ Weapon::fire('plugins_before');
 
 foreach($plugins = Plugin::load() as $k => $v) {
     $__ = PLUGIN . DS . $k . DS;
-    if(file_exists($__ . 'launch.php') || file_exists($__ . '__launch.php')) {
+    if(file_exists($__ . 'launch__.php') || file_exists($__ . '__launch.php') || file_exists($__ . 'launch.php')) {
         Config::set('states.plugin_' . md5($k), File::open($__ . 'states' . DS . 'config.txt')->unserialize());
         $config = Config::get(); // refresh ...
     }
@@ -211,17 +222,26 @@ foreach($plugins = Plugin::load() as $k => $v) {
     if( ! Guardian::happy()) $load__ = 1; // force 1 for passenger(s)
     if($load__ !== false && $load__ > 0) {
         Weapon::fire(array('plugin_before', 'plugin_' . md5($k) . '_before'));
-        if($launch = File::exist($__ . 'launch.php')) {
-            if(strpos(File::B($__), '__') === 0) {
-                if(Guardian::happy() && $config->page_type === 'manager') {
-                    include $launch; // backend
-                }
-            } else {
+        if($launch = File::exist($__ . 'launch__.php')) {
+            if($config->page_type !== 'manager') {
                 include $launch; // frontend
             }
         }
+        if($launch = File::exist($__ . 'launch.php')) {
+            if(strpos(File::B($__), '__') === 0) {
+                if($config->page_type === 'manager' && Guardian::happy()) {
+                    include $launch; // backend
+                }
+            } else if(substr(File::B($__), -2) === '__') {
+                if($config->page_type !== 'manager') {
+                    include $launch; // frontend
+                }
+            } else {
+                include $launch; // frontend and backend
+            }
+        }
         if($launch = File::exist($__ . '__launch.php')) {
-            if(Guardian::happy() && $config->page_type === 'manager') {
+            if($config->page_type === 'manager' && Guardian::happy()) {
                 include $launch; // backend
             }
         }

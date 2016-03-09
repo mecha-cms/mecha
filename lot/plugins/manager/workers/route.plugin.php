@@ -37,7 +37,8 @@ Route::accept(array($config->manager->slug . '/plugin', $config->manager->slug .
                         'on_plugin_' . md5($path) . '_update',
                         'on_plugin_' . md5($path) . '_construct'
                     ), array($P, $P));
-                    if(File::exist($destination . DS . $path . DS . 'launch.php')) {
+                    $s = $destination . DS . $path . DS;
+                    if(file_exists($s . 'launch__.php') || file_exists($s . '__launch.php') || file_exists($s . 'launch.php')) {
                         Weapon::fire(array('on_plugin_mount', 'on_plugin_' . md5($path) . '_mount'), array($P, $P));
                         Guardian::kick($config->manager->slug . '/plugin/' . $path); // Redirect to the plugin manager page
                     } else {
@@ -123,13 +124,15 @@ Route::accept($config->manager->slug . '/plugin/(freeze|fire)/id:(:any)', functi
     ), array($G, $G));
     Weapon::add('shield_lot_before', function() use($config, $speak, $mode, $slug, $offset) {
         if($mode === 'mount') {
-            // Rename `pending.php` to `launch.php` or `__pending.php` to `__launch.php`
-            File::open(PLUGIN . DS . $slug . DS . 'pending.php')->renameTo('launch.php');
+            // Rename `pending.php` to `launch.php`
+            File::open(PLUGIN . DS . $slug . DS . 'pending__.php')->renameTo('launch__.php');
             File::open(PLUGIN . DS . $slug . DS . '__pending.php')->renameTo('__launch.php');
+            File::open(PLUGIN . DS . $slug . DS . 'pending.php')->renameTo('launch.php');
         } else {
-            // Rename `launch.php` to `pending.php` or `__launch.php` to `__pending.php`
-            File::open(PLUGIN . DS . $slug . DS . 'launch.php')->renameTo('pending.php');
+            // Rename `launch.php` to `pending.php`
+            File::open(PLUGIN . DS . $slug . DS . 'launch__.php')->renameTo('pending__.php');
             File::open(PLUGIN . DS . $slug . DS . '__launch.php')->renameTo('__pending.php');
+            File::open(PLUGIN . DS . $slug . DS . 'launch.php')->renameTo('pending.php');
         }
         Notify::success(Config::speak('notify_success_updated', $speak->plugin));
         Guardian::kick($config->manager->slug . '/plugin/' . $offset);

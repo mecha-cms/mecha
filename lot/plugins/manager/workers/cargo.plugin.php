@@ -33,14 +33,14 @@
           <p><?php echo $curt; ?></p>
           <p>
             <?php Weapon::fire('action_before', array($page, $segment)); ?>
-            <?php if(File::exist($r . 'launch.php') || File::exist($r . '__launch.php')): ?>
+            <?php if(File::exist($r . 'launch__.php') || File::exist($r . '__launch.php') || File::exist($r . 'launch.php')): ?>
             <?php echo Jot::btn('begin.small:cog', $speak->manage, $config->manager->slug . '/plugin/' . $folder); ?> <?php echo Jot::btn('action.small:cog', $speak->uninstall, $config->manager->slug . '/plugin/freeze/id:' . $folder . '?o=' . $config->offset); ?>
             <?php else: ?>
             <?php if(File::exist($r . 'pending.php') || File::exist($r . '__pending.php')): ?>
             <?php echo Jot::btn('action.small:plus-circle', $speak->install, $config->manager->slug . '/plugin/fire/id:' . $folder . '?o=' . $config->offset); ?>
             <?php endif; ?>
             <?php endif; ?>
-            <?php if( ! File::exist($r . 'configurator.php') && ! File::exist($r . 'launch.php') && ! File::exist($r . 'pending.php') && ! File::exist($r . '__launch.php') && ! File::exist($r . '__pending.php')): ?>
+            <?php if( ! File::exist($r . 'configurator.php') && ! File::exist($r . 'workers' . DS . 'configurator.php') && ! File::exist($r . 'launch__.php') && ! File::exist($r . 'pending__.php') && ! File::exist($r . '__launch.php') && ! File::exist($r . '__pending.php') && ! File::exist($r . 'launch.php') && ! File::exist($r . 'pending.php')): ?>
             <?php echo Jot::btn('destruct.small.disabled:times-circle', $speak->delete, null); ?>
             <?php else: ?>
             <?php echo Jot::btn('destruct.small:times-circle', $speak->delete, $config->manager->slug . '/plugin/kill/id:' . $folder); ?>
