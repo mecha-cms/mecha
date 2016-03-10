@@ -37,6 +37,8 @@ Config::plug('load', function() {
         $s = File::B($folder);
         $ss[$s][0] = glob($folder . DS . '*.*', GLOB_NOSORT);
         $ss[$s][1] = glob($folder . DS . '*.txt', GLOB_NOSORT);
+        $config[$s . 's_path'] = $ss[$s][1];
+        $config['__' . $s . 's_path'] = $ss[$s][0];
         $config['total_' . $s . 's'] = count($ss[$s][1]);
         $config['__total_' . $s . 's'] = count($ss[$s][0]);
     }
@@ -57,7 +59,7 @@ Config::plug('load', function() {
     if(strpos($path, $config['tag']['slug'] . '/') === 0) $page = 'tag';
     if(strpos($path, $config['archive']['slug'] . '/') === 0) $page = 'archive';
     if(strpos($path, $config['search']['slug'] . '/') === 0) $page = 'search';
-    if(strpos($path, $config['manager']['slug'] . '/') === 0) $page = 'manager';
+    if(strpos($path, $config['manager']['slug'] . '/') === 0 && Plugin::exist('manager')) $page = 'manager';
     if($path === 'sitemap') $page = 'sitemap';
     if($path === 'feed') $page = 'feed';
     if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0) $page = 'rss';

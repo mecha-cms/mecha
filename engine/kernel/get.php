@@ -184,7 +184,7 @@ class Get extends Base {
                 $field_e = include $e;
                 Mecha::extend($field, $field_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
                     $field_e = include $e;
                     Mecha::extend($field, $field_e);
@@ -246,7 +246,7 @@ class Get extends Base {
                 $menu_e = include $e;
                 Mecha::extend($menu, $menu_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'menus.php')) {
                     $menu_e = include $e;
                     Mecha::extend($menu, $menu_e);
@@ -280,7 +280,7 @@ class Get extends Base {
                 $shortcode_e = include $e;
                 Mecha::extend($shortcode, $shortcode_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'shortcodes.php')) {
                     $shortcode_e = include $e;
                     Mecha::extend($shortcode, $shortcode_e);
@@ -310,7 +310,7 @@ class Get extends Base {
                 $tag_e = include $e;
                 Mecha::extend($tag, $tag_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'tags.php')) {
                     $tag_e = include $e;
                     Mecha::extend($tag, $tag_e);
@@ -467,7 +467,7 @@ class Get extends Base {
      */
 
     public static function postPath($detector, $folder = POST) {
-        foreach(glob($folder . DS . '*.{txt,draft,archive}', GLOB_NOSORT | GLOB_BRACE) as $path) {
+        foreach(Config::get('__' . File::B($folder) . 's_path', array()) as $path) {
             list($time, $kind, $slug) = explode('_', File::N($path), 3);
             if($slug === $detector || $time === Date::slug($detector)) {
                 return $path;
@@ -903,7 +903,7 @@ class Get extends Base {
      */
 
     public static function responsePath($detector, $folder = RESPONSE) {
-        foreach(glob($folder . DS . '*.{txt,hold}', GLOB_NOSORT | GLOB_BRACE) as $path) {
+        foreach(Config::get('__' . File::B($folder) . 's_path', array()) as $path) {
             list($post, $time, $parent) = explode('_', File::N($path), 3);
             if($time === $detector || (string) $time === Date::slug($detector)) {
                 return $path;
