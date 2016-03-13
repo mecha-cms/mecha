@@ -1,32 +1,44 @@
 <?php
 
-use \Michelf\MarkdownExtra;
-require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'Markdown.php';
-require __DIR__ . DS . 'workers' . DS . 'Michelf' . DS . 'MarkdownExtra.php';
+require __DIR__ . DS . 'workers' . DS . 'Parsedown' . DS . 'Parsedown.php';
+require __DIR__ . DS . 'workers' . DS . 'Parsedown' . DS . 'ParsedownExtra.php';
+require __DIR__ . DS . 'workers' . DS . 'ParsedownExtraPlugin' . DS . 'ParsedownExtraPlugin.php';
 
 function do_markdown_parse($input) {
     if( ! is_string($input)) return $input;
     global $config;
     $c_markdown = Config::get('states.plugin_' . md5(File::B(__DIR__)), array());
-    $parser = new MarkdownExtra;
-    $parser->empty_element_suffix = ES;
+    $parser = call_user_func(Filter::apply('parser:markdown', 'ParsedownExtraPlugin::instance'));
+    $parser->element_suffix = ES;
+    $parser->setUrlsLinked(false);
+    // do filter ...
+    if(Filter::exist('parser:markdown.code_text')) {
+        $parser->code_text = function($data) {
+            return Filter::apply('parser:markdown.code_text', $data['element']['text'], $data);
+        };
+    }
+    // --ibid
+    if(Filter::exist('parser:markdown.code_block_text')) {
+        $parser->code_block_text = function($data) {
+            return Filter::apply('parser:markdown.code_block_text', $data['element']['text']['text'], $data);
+        };
+    }
     // override default configuration value
     foreach($c_markdown as $k => $v) {
-        $parser->{$k} = is_object($v) ? (array) $v : $v;
+        if(strpos($k, '__') === 0) continue;
+        $parser->{$k} = is_object($v) ? Mecha::A($v) : $v;
+    }
+    if(isset($c_markdown->__setBreaksEnabled)) {
+        $parser->setBreaksEnabled(true);
+    }
+    if(isset($c_markdown->__setMarkupEscaped)) {
+        $parser->setMarkupEscaped(true);
+    }
+    if(isset($c_markdown->__setUrlsLinked)) {
+        $parser->setUrlsLinked(true);
     }
     // do parse input
-    $output = $parser->transform($input);
-    // add class on table(s)
-    $output = str_replace('<table>', '<table class="' . $parser->table_class . '">', $output);
-    // modify default footnote class
-    $output = str_replace('<div class="footnotes">', '<div class="' . $parser->fn_class . '">', $output);
-    // add `rel="nofollow"` attribute on external link(s)
-    if(strpos($output, '<a ') !== false) {
-        $url = preg_quote($config->url, '/');
-        $s = '[a-zA-Z0-9\-_./?\#]';
-        $output = preg_replace('#<a href="(?!javascript:|' . $s . '|' . $url . ')#', '<a rel="nofollow" href="', $output);
-    }
-    return $output;
+    return $parser->text($input);
 }
 
 function do_markdown($content, $results = array()) {
@@ -45,7 +57,7 @@ Filter::add(array('content', 'message'), 'do_markdown', 1);
 
 // Set new `html_parser` type
 Config::merge('html_parser.type', array(
-    'Markdown' => 'Markdown Extra'
+    'Markdown' => 'Parsedown Extra'
 ));
 
 // refresh ...
@@ -59,10 +71,12 @@ if($config->html_parser->active === 'Markdown') {
         Route::over($config->index->slug . '/(:any)', function() {
             $is_mkd = ! isset($_POST['content_type']) || $_POST['content_type'] === 'Markdown';
             if($is_mkd && isset($_POST['message'])) {
-                // **Markdown Extra** does not support syntax to generate `del`, `ins` and `mark` tag
-                $_POST['message'] = Text::parse($_POST['message'], '->text', '<br><del><ins><mark>', false);
+                // **Parsedown Extra** does not support syntax to generate `ins` and `mark` tag
+                $_POST['message'] = Text::parse($_POST['message'], '->text', '<br><ins><mark>', false);
                 // Temporarily disallow image(s) in comment to prevent XSS
-                $_POST['message'] = preg_replace('#(\!\[.*?\]\(.*?\))#','`$1`', $_POST['message']);
+                if(strpos($_POST['message'], '![') !== false) {
+                    $_POST['message'] = preg_replace('#(\!\[.*?\](?:\(.*?\)|\[.*?\]))#','`$1`', $_POST['message']);
+                }
             }
         });
     }

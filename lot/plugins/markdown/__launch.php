@@ -3,28 +3,27 @@
 Route::over($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', function() use($config, $speak) {
     // Convert pattern to array ...
     $predef = array();
-    if($a = trim(Request::post('a'))) {
-        foreach(explode("\n", $a) as $v) {
+    if($links = trim(Request::post('links'))) {
+        foreach(explode("\n", $links) as $v) {
             if(preg_match('#^\s*\[\s*(.*?)\s*\]: *<?\s*(.*?)\s*>? +(?:[\'"\(])\s*(.*?)\s*(?:[\)"\'])\s*$#', $v, $matches)) {
-                $predef[0][$matches[1]] = $matches[2];
-                $predef[1][$matches[1]] = $matches[3];
+                $predef[$matches[1]] = array(
+                    'url' => $matches[2],
+                    'title' => $matches[3]
+                );
             }
         }
-        $_POST['predef_urls'] = $predef[0];
-        $_POST['predef_titles'] = $predef[1];
+        $_POST['links'] = $predef;
     }
-    if($abbr = trim(Request::post('abbr'))) {
-        foreach(explode("\n", $abbr) as $v) {
+    $predef = array();
+    if($abbreviations = trim(Request::post('abbreviations'))) {
+        foreach(explode("\n", $abbreviations) as $v) {
             if(preg_match('#^\s*\*\[\s*(.*?)\s*\]: *(.*?)\s*$#', $v, $matches)) {
-                $predef[2][$matches[1]] = $matches[2];
+                $predef[$matches[1]] = $matches[2];
             }
         }
-        $_POST['predef_abbr'] = $predef[2];
+        $_POST['abbreviations'] = $predef;
     }
-    $_POST['no_markup'] = Request::post('no_markup', false);
-    $_POST['no_entities'] = Request::post('no_entities', false);
-    $_POST['code_attr_on_pre'] = Request::post('code_attr_on_pre', false);
-    unset($_POST['abbr'], $_POST['a'], $predef);
+    unset($predef);
     // Hijacking the `__editor` territory ...
     if($c_editor = Config::get('states.plugin_' . md5('__editor'))) {
         include __DIR__ . DS . 'workers' . DS . '__editor.hijack.php';
