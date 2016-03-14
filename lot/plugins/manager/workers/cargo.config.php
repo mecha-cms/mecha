@@ -212,7 +212,7 @@
         $t = $t === Config::speak('manager.title_' . $page) ? "" : $t;
 
         ?>
-        <?php echo Form::text($page . '[title]', Guardian::wayback($page . '.title', $t)); ?>
+        <?php echo Form::text($page . '[title]', Guardian::wayback($page . '.title', $t), null, array('readonly' => $page === 'manager' ? true : null)); ?>
         </span>
       </label>
       <label class="grid-group">

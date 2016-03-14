@@ -6,7 +6,7 @@ class Form extends Cell {
     public static function input($type = 'text', $name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) {
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
-            $name = ltrim($name, '.');
+            $name = substr($name, 1);
         }
         $attr['name'] = $name;
         $attr['value'] = self::protect($value);
@@ -19,7 +19,7 @@ class Form extends Cell {
     public static function button($text = "", $name = null, $type = null, $value = null, $attr = array(), $indent = 0) {
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
-            $name = ltrim($name, '.');
+            $name = substr($name, 1);
         }
         $attr['name'] = $name;
         $attr['type'] = $type;
@@ -32,7 +32,7 @@ class Form extends Cell {
         $o = "";
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
-            $name = ltrim($name, '.');
+            $name = substr($name, 1);
         }
         $attr['name'] = $name;
         foreach($option as $key => $value) {
@@ -41,7 +41,7 @@ class Form extends Cell {
                 $attr_o = array();
                 if(strpos($key, '.') === 0) {
                     $attr_o['disabled'] = true;
-                    $key = ltrim($key, '.');
+                    $key = substr($key, 1);
                 }
                 $attr_o['label'] = $key;
                 $o .= NL . self::begin('optgroup', $attr_o, $indent + 1);
@@ -49,9 +49,10 @@ class Form extends Cell {
                     $attr_o = array();
                     if(strpos($k, '.') === 0) {
                         $attr_o['disabled'] = true;
-                        $k = ltrim($k, '.');
+                        $k = substr($k, 1);
                     }
-                    if(ltrim($select, '.') === (string) $k) {
+                    $k = (string) $k;
+                    if($select === $k || $select === '.' . $k) {
                         $attr_o['selected'] = true;
                     }
                     $attr_o['value'] = $k;
@@ -63,9 +64,10 @@ class Form extends Cell {
                 $attr_o = array();
                 if(strpos($key, '.') === 0) {
                     $attr_o['disabled'] = true;
-                    $key = ltrim($key, '.');
+                    $key = substr($key, 1);
                 }
-                if(ltrim($select, '.') === (string) $key) {
+                $key = (string) $key;
+                if($select === $key || $select === '.' . $key) {
                     $attr_o['selected'] = true;
                 }
                 $attr_o['value'] = $key;
@@ -79,7 +81,7 @@ class Form extends Cell {
     public static function textarea($name = null, $content = "", $placeholder = null, $attr = array(), $indent = 0) {
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
-            $name = ltrim($name, '.');
+            $name = substr($name, 1);
         }
         $attr['name'] = $name;
         $attr['placeholder'] = $placeholder;

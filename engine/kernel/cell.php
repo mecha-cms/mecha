@@ -1,6 +1,6 @@
 <?php
 
-class Cell {
+class Cell extends Base {
 
     protected static $attr_order = array(
         'src' => null,
@@ -29,7 +29,6 @@ class Cell {
         'style' => null
     );
 
-    protected static $o = array();
     protected static $tag = array();
     protected static $tag_indent = array();
 
@@ -131,18 +130,9 @@ class Cell {
         return Filter::apply($c . ':end.' . $tag, $tag ? $indent . '</' . $tag . '>' : "");
     }
 
-    // Show the added method(s)
-    public static function kin($kin = null, $fallback = false) {
-        $c = get_called_class();
-        if( ! is_null($kin)) {
-            return isset(self::$o[$c][$kin]) ? self::$o[$c][$kin] : $fallback;
-        }
-        return ! empty(self::$o[$c]) ? self::$o[$c] : $fallback;
-    }
-
     // Add new method with `Cell::add('foo')`
     public static function add($kin, $action) {
-        self::$o[get_called_class()][$kin] = $action;
+        self::plug($kin, $action);
     }
 
     // Call the added method with `Cell::foo()`
@@ -152,7 +142,7 @@ class Cell {
             $arguments = array_merge(array($kin), $arguments);
             return call_user_func_array('self::unit', $arguments);
         }
-        $s = call_user_func_array(self::$o[$c][$kin], $arguments);
+        $s = parent::__callStatic($kin, $arguments);
         return Filter::apply(strtolower($c) . ':custom.' . $kin, $s, $arguments);
     }
 

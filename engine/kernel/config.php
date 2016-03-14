@@ -1,9 +1,8 @@
 <?php
 
-class Config {
+class Config extends Base {
 
     protected static $bucket = array();
-    protected static $o = array();
 
     /**
      * =============================================================
@@ -158,23 +157,10 @@ class Config {
         self::set($key, $value);
     }
 
-    // Show the added method(s)
-    public static function kin($kin = null, $fallback = false) {
-        $c = get_called_class();
-        if( ! is_null($kin)) {
-            return isset(self::$o[$c][$kin]) ? self::$o[$c][$kin] : $fallback;
-        }
-        return ! empty(self::$o[$c]) ? self::$o[$c] : $fallback;
-    }
-
-    // Add new method with `Config::plug('foo')`
-    public static function plug($kin, $action) {
-        self::$o[get_called_class()][$kin] = $action;
-    }
-
     // Call the added method or use them as a shortcut for the default `get` method.
     // Example: You can use `Config::foo()` as a shortcut for `Config::get('foo')` as
     // long as `foo` is not defined yet by `Config::plug()`
+    // NOTE: `Config::plug()` and `Config::kin()` method(s) are inherited to `Base`
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();
         if( ! isset(self::$o[$c][$kin])) {
@@ -185,7 +171,7 @@ class Config {
             }
             return self::get($kin, $fallback);
         }
-        return call_user_func_array(self::$o[$c][$kin], $arguments);
+        return parent::__callStatic($kin, $arguments);
     }
 
 }

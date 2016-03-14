@@ -18,21 +18,26 @@ __comment_wizard: All comments are parsed with <a href="http://en.wikipedia.org/
 
 plugin_markdown:
   title:
-    footnote_id_prefix: Footnote ID Prefix
-    footnote_link_title: Footnote Link Title
-    footnote_link_back_title: Footnote Back Link Title
+    editor: Editor Configuration
+    links: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
+    abbreviations: Predefined Abbreviation
+    code_class: Code Class
+    table_class: Table Class
+    table_align_class: Table Alignment Class
     footnote_class: Footnote Class
     footnote_link_class: Footnote Link Class
-    footnote_link_back_class: Footnote Back Link Class
-    code_class_prefix: Code Class Prefix
-    code_attr_on_pre: Put Code Attribute on <code>&lt;pre&gt;</code> Element
-    table_class: Table Class
-    table_data_class: Table Alignment Class
-    disallow_html_tag: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Tags
-    disallow_html_entity: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Entities
-    a: Predefined <abbr title="Uniform Resource Locator">URL</abbr>
-    abbr: Predefined Abbreviation
-    editor: Editor Configuration
+    footnote_back_link_class: Footnote Back Link Class
+    footnote_link_id: Footnote Link ID
+    footnote_back_link_id: Footnote Back Link ID
+    is_links_external_attr_rel: Automatic <code>rel="nofollow"</code> Attribute on External Links
+    is_links_external_attr_target: Open External Links in New Window
+    is_code_block_attr_on_pre_active: Put Code Attributes on <code>&lt;pre&gt;</code> Element
+    is_set_break_enable_active: Quick Line Break
+    is_set_urls_link_active: Automatic Link
+    is_set_markup_escape_active: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Tags
     is_header_setext_active: Enable <abbr title="Structure Enhanced Text">SEText</abbr> Header Style
     is_header_atx_close_active: Enable Closed <abbr>ATX</abbr> Header Style
     is_code_block_fence_active: Enable Fenced Code Block Style
+  description:
+    is_set_break_enable_active: Convert single line break into <code>&lt;br&gt;</code> tag.
+    is_set_urls_link_active: Convert plain <abbr title="Uniform Resource Locator">URL</abbr> into clickable link.

@@ -2,13 +2,13 @@
 
 class Image extends Base {
 
-    protected static $open = null;
-    protected static $original = null;
-    protected static $placeholder = null;
+    public static $open = null;
+    public static $original = null;
+    public static $placeholder = null;
 
-    protected static $GD = false;
+    public static $GD = false;
 
-    protected static function gen($file = null) {
+    public static function gen($file = null) {
         if(is_null($file)) $file = self::$placeholder;
         switch(File::E($file)) {
             case 'gif': self::$GD = imagecreatefromgif($file); break;
@@ -18,7 +18,7 @@ class Image extends Base {
         }
     }
 
-    protected static function twin($resource = null, $e = null) {
+    public static function twin($resource = null, $e = null) {
         $file = self::$placeholder;
         if(is_null($resource)) $resource = self::$GD;
         $old_e = File::E(self::$original);
