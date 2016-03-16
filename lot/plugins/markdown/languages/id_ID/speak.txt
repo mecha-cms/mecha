@@ -14,7 +14,7 @@ __MTE:
     image_title: judul gambar di sini…
     image_title_title: Judul Gambar
 
-__comment_wizard: Semua komentar diparse dengan <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+__comment_wizard: Semua komentar diparse dengan <a href="http://parsedown.org/extra" rel="nofollow" target="_blank">Parsedown Extra</a>
 
 plugin_markdown:
   title:

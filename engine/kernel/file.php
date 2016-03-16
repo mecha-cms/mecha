@@ -149,14 +149,13 @@ class File extends Base {
         $results = "";
         if($handle = fopen(self::$open, 'r')) {
             while(($buffer = fgets($handle, $chars)) !== false) {
-                $buffer = str_replace("\r", "", $buffer);
                 if(is_int($stop_at) && $stop_at === $i) break;
                 $results .= $buffer;
                 $i++;
                 if(is_string($stop_at) && strpos($buffer, $stop_at) !== false) break;
             }
             fclose($handle);
-            return rtrim($results);
+            return rtrim(str_replace("\r", "", $results));
         }
         return $fallback;
     }

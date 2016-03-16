@@ -14,7 +14,7 @@ __MTE:
     image_title: image title goes here…
     image_title_title: Image Title
 
-__comment_wizard: All comments are parsed with <a href="http://en.wikipedia.org/wiki/Markdown_Extra" rel="nofollow" target="_blank">Markdown Extra</a>
+__comment_wizard: All comments are parsed with <a href="http://parsedown.org/extra" rel="nofollow" target="_blank">Parsedown Extra</a>
 
 plugin_markdown:
   title:

@@ -19,7 +19,11 @@
         <?php echo Form::button($speak->publish, null, 'submit', null, array('class' => array('btn', 'btn-construct'))); ?>
         <?php Weapon::fire('comment_form_button_after', $hooks); ?>
       </p>
+      <?php if(strpos($speak->comment_wizard, '</p>') === false): ?>
       <p><?php echo $speak->comment_wizard; ?></p>
+      <?php else: ?>
+      <?php echo $speak->comment_wizard; ?>
+      <?php endif; ?>
     </div>
   </div>
 </form>
