@@ -251,7 +251,7 @@ class File extends Base {
     }
 
     // Copy a file
-    public static function copyTo($destination = ROOT) {
+    public static function copyTo($destination = ROOT, $s = '.') {
         if(file_exists(self::$open)) {
             $destination = (array) $destination;
             foreach($destination as $dest) {
@@ -266,12 +266,12 @@ class File extends Base {
                         mkdir(self::D($dest), 0777, true);
                     }
                 }
-                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest))) {
+                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', $s . self::$index . '.$1', $dest))) {
                     self::$index = 0;
                     copy(self::$open, $dest);
                 } else {
                     self::$index++;
-                    copy(self::$open, preg_replace('#\.(.*?)$#', '.' . self::$index . '.$1', $dest));
+                    copy(self::$open, preg_replace('#\.(.*?)$#', $s . self::$index . '.$1', $dest));
                 }
             }
             self::$index = 0;
