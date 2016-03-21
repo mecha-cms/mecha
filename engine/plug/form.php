@@ -15,7 +15,7 @@ Form::add('checkbox', function($name = null, $value = null, $check = false, $tex
     $attr['checked'] = $check ? true : null;
     $indent = $indent ? str_repeat(TAB, $indent) : "";
     if($value === true) $value = 'true';
-    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? ' <span>' . $text . '</span>' : "") . '</label>';
+    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? '&nbsp;<span>' . $text . '</span>' : "") . '</label>';
 });
 
 // `<input type="radio">`
@@ -25,7 +25,7 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
     foreach($option as $key => $value) {
         $attr['disabled'] = strpos($key, '.') === 0 ? true : null;
         $attr['checked'] = $select === $key || $select === '.' . $key || '.' . $select === $key ? true : null;
-        $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? ' <span>' . $value . '</span>' : "") . '</label>';
+        $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? '&nbsp;<span>' . $value . '</span>' : "") . '</label>';
     }
     return implode(' ', $output);
 });
