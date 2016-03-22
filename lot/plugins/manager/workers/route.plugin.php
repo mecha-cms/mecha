@@ -186,11 +186,9 @@ if($route = Route::is($config->manager->slug . '/plugin/(:any)/update')) {
             Guardian::checkToken($_POST['token']);
             unset($_POST['token']); // remove token from request array
             Route::accept($route['path'], function() use($config, $speak, $route) {
-                $request = Request::post();
+                $request = Request::post(null, array());
                 $s = $route['lot'][0];
-                if( ! empty($request)) {
-                    File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
-                }
+                File::serialize($request)->saveTo(PLUGIN . DS . $s . DS . 'states' . DS . 'config.txt', 0600);
                 Notify::success(Config::speak('notify_success_updated', $speak->config));
                 Guardian::kick(File::D($config->url_current));
             });
