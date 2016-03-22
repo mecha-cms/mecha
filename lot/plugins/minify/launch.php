@@ -4,11 +4,6 @@ function do_minify($content) {
     global $config;
     $c_minify = $config->states->{'plugin_' . md5(File::B(__DIR__))};
     $url = $config->protocol . $config->host;
-    // Minify HTML
-    if(isset($c_minify->html_minify)) {
-        Config::set('html_minify', true);
-        $content = Converter::detractSkeleton($content);
-    }
     // Minify URL
     if(isset($c_minify->url_minify) && Text::check($content)->has('="' . $url)) {
         Config::set('url_minify', true);
@@ -45,6 +40,11 @@ function do_minify($content) {
             $js = Converter::detractSword($matches[2]);
             return '<script' . $matches[1] . $js . '</script>';
         }, $content);
+    }
+    // Minify HTML
+    if(isset($c_minify->html_minify)) {
+        Config::set('html_minify', true);
+        $content = Converter::detractSkeleton($content);
     }
     return $content;
 }

@@ -4,11 +4,10 @@ require __DIR__ . DS . 'workers' . DS . 'parsedown-extra' . DS . 'Parsedown.php'
 require __DIR__ . DS . 'workers' . DS . 'parsedown-extra' . DS . 'ParsedownExtra.php';
 require __DIR__ . DS . 'workers' . DS . 'parsedown-extra' . DS . 'ParsedownExtraPlugin.php';
 
-$c_markdown = Config::get('states.plugin_' . md5(File::B(__DIR__)), array());
-
 function do_parse_markdown($input) {
     if( ! is_string($input)) return $input;
-    global $config, $c_markdown;
+    global $config;
+    $c_markdown = Config::get('states.plugin_' . md5(File::B(__DIR__)), array());
     $parser = new ParsedownExtraPlugin;
     foreach($c_markdown as $k => $v) {
         if(strpos($k, '__') === 0) continue;

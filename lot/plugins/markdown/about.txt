@@ -5,7 +5,7 @@ Version: 2.0.0
 
 ====
 
-> Convert Markdown pattern into HTML.
+> Convert Markdown pattern to HTML.
 
 **Markdown** is two things: a plain text markup syntax, and a software tool that converts the plain text markup to HTML for publishing on the web.
 

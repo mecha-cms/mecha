@@ -1,7 +1,7 @@
 Title: Manajer Situs
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.0.2
+Version: 1.0.3
 
 ====
 

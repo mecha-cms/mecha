@@ -509,7 +509,6 @@ class Converter extends Base {
                 '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
                 '#<(img|input)(>| .*?>)<\/\1\:>#s', // reset previous fix
                 '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
-                '#(?<=\>)(&nbsp;)(?=\<)#', // --ibid
                 // Force line-break with `&#10;` or `&#xa;`
                 '#&\#(?:10|xa);#',
                 // Force white-space with `&#32;` or `&#x20;`
@@ -526,7 +525,6 @@ class Converter extends Base {
                 '$1$2$3',
                 '<$1$2',
                 '$1 ',
-                '$1',
                 "\n",
                 ' ',
                 ""
