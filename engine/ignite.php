@@ -80,6 +80,11 @@ $speak = Config::speak();
  * --------------------------------
  */
 
+// frontend and backend
+if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
+    include $fn;
+}
+
 // frontend only
 if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions__.php')) {
     if($config->page_type !== 'manager') include $fn;
@@ -88,11 +93,6 @@ if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions__.php')) {
 // backend only
 if($fn = File::exist(SHIELD . DS . $config->shield . DS . '__functions.php')) {
     if($config->page_type === 'manager') include $fn;
-}
-
-// frontend and backend
-if($fn = File::exist(SHIELD . DS . $config->shield . DS . 'functions.php')) {
-    include $fn;
 }
 
 
@@ -222,11 +222,6 @@ foreach($plugins = Plugin::load() as $k => $v) {
     if( ! Guardian::happy()) $load__ = 1; // force 1 for passenger(s)
     if($load__ !== false && $load__ > 0) {
         Weapon::fire(array('plugin_before', 'plugin_' . md5($k) . '_before'));
-        if($launch = File::exist($__ . 'launch__.php')) {
-            if($config->page_type !== 'manager') {
-                include $launch; // frontend
-            }
-        }
         if($launch = File::exist($__ . 'launch.php')) {
             if(strpos(File::B($__), '__') === 0) {
                 if($config->page_type === 'manager' && Guardian::happy()) {
@@ -238,6 +233,11 @@ foreach($plugins = Plugin::load() as $k => $v) {
                 }
             } else {
                 include $launch; // frontend and backend
+            }
+        }
+        if($launch = File::exist($__ . 'launch__.php')) {
+            if($config->page_type !== 'manager') {
+                include $launch; // frontend
             }
         }
         if($launch = File::exist($__ . '__launch.php')) {
