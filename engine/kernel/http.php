@@ -109,17 +109,32 @@ class HTTP extends Base {
         if(func_num_args() === 2) {
             $query = array($query => $value);
         }
-        $query = ! empty($query) ? array_merge($_GET, $query) : $_GET;
+        $query = ! empty($query) ? array_replace_recursive($_GET, $query) : $_GET;
         $results = array();
-        foreach($query as $k => $v) {
-            if($v === false || is_array($v)) { // TODO: accept array value
-                unset($_GET[$k]);
-                continue;
-            }
-            $value = $v !== true ? '=' . Text::parse(Converter::str($v), '->encoded_url') : "";
+        foreach(self::flat($query, false) as $k => $v) {
+            if($v === false) continue;
+            $value = $v !== true ? '=' . urlencode(Converter::str($v)) : "";
             $results[] = $k . $value;
         }
         return ! empty($results) ? '?' . implode('&', $results) : "";
+    }
+
+    protected static function flat($array, $key) {
+        $results = array();
+        if($key === false) {
+            $key = $o = $c = "";
+        } else {
+            $o = '[';
+            $c = ']';
+        }
+        foreach($array as $k => $v) {
+            if(is_array($v)) {
+                $results = array_merge($results, self::flat($v, $key . $k . $c . '['));
+            } else {
+                $results[$key . $k . $c] = $v;
+            }
+        }
+        return $results;
     }
 
     /**
