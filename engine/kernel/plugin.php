@@ -20,7 +20,7 @@ class Plugin extends Base {
             return File::open($plugins)->unserialize();
         }
         $plugins = array();
-        foreach(glob(PLUGIN . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $plugin) {
+        foreach(glob(PLUGIN . DS . '*', GLOB_ONLYDIR) as $plugin) {
             $plugin = File::B($plugin);
             $plugins[$plugin] = (float) File::open(PLUGIN . DS . $plugin . DS . '__stack.txt')->read(10);
         }

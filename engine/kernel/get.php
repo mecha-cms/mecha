@@ -157,15 +157,15 @@ class Get extends Base {
     }
 
     // Get stored configuration data (internal only)
-    public static function state_config($output = null, $fallback = array()) {
+    public static function state_config($key = null, $fallback = array()) {
         $d = WORKER . DS . 'repair.state.config.php';
         $config = file_exists($d) ? include $d : $fallback;
         if($file = File::exist(STATE . DS . 'config.txt')) {
             Mecha::extend($config, File::open($file)->unserialize());
         }
         $config = Filter::apply('state:config', $config);
-        if( ! is_null($output)) {
-            return isset($config[$output]) ? $config[$output] : $fallback;
+        if( ! is_null($key)) {
+            return Mecha::GVR($config, $key, $fallback);
         }
         return $config;
     }
@@ -218,7 +218,7 @@ class Get extends Base {
         $field = Filter::apply('state:field', $field);
         // Filter output(s) by `key`
         if( ! is_null($key)) {
-            return isset($field[$key]) ? $field[$key] : $fallback;
+            return Mecha::GVR($field, $key, $fallback);
         }
         // No filter
         return $field;
@@ -256,7 +256,7 @@ class Get extends Base {
         $menu = Filter::apply('state:menu', $menu);
         // Filter output(s) by `key`
         if( ! is_null($key)) {
-            return isset($menu[$key]) ? $menu[$key] : $fallback;
+            return Mecha::GVR($menu, $key, $fallback);
         }
         // No filter
         return $menu;
@@ -290,7 +290,7 @@ class Get extends Base {
         $shortcode = Filter::apply('state:shortcode', Converter::strEval($shortcode));
         // Filter output(s) by `key`
         if( ! is_null($key)) {
-            return isset($shortcode[$key]) ? $shortcode[$key] : $fallback;
+            return Mecha::GVR($shortcode, $key, $fallback);
         }
         // No filter
         return $shortcode;
@@ -333,7 +333,7 @@ class Get extends Base {
         $tag = Filter::apply('state:tag', Converter::strEval($tag));
         // Filter output(s) by `id`
         if( ! is_null($id)) {
-            return isset($tag[$id]) ? $tag[$id] : $fallback;
+            return Mecha::GVR($tag, $id, $fallback);
         }
         // No filter
         return $tag;
