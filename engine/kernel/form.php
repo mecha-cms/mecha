@@ -30,6 +30,7 @@ class Form extends Cell {
     // `<select>`
     public static function select($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
         $o = "";
+        $select = (string) $select;
         if(strpos($name, '.') === 0) {
             $attr['disabled'] = true;
             $name = substr($name, 1);
