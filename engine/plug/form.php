@@ -22,10 +22,16 @@ Form::add('checkbox', function($name = null, $value = null, $check = false, $tex
 Form::add('radio', function($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
     $output = array();
     $indent = $indent ? str_repeat(TAB, $indent) : "";
+    $select = (string) $select;
     foreach($option as $key => $value) {
-        $attr['disabled'] = strpos($key, '.') === 0 ? true : null;
-        $attr['checked'] = $select === $key || $select === '.' . $key || '.' . $select === $key ? true : null;
-        $output[] = $indent . '<label>' . Form::input('radio', $name, ltrim($key, '.'), null, $attr) . ($value ? '&nbsp;<span>' . $value . '</span>' : "") . '</label>';
+        $attr['disabled'] = null;
+        if(strpos($key, '.') === 0) {
+            $attr['disabled'] = true;
+            $key = substr($key, 1);
+        }
+        $key = (string) $key;
+        $attr['checked'] = $select === $key || $select === '.' . $key ? true : null;
+        $output[] = $indent . '<label>' . Form::input('radio', $name, $key, null, $attr) . ($value ? '&nbsp;<span>' . $value . '</span>' : "") . '</label>';
     }
     return implode(' ', $output);
 });
