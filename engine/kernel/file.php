@@ -311,7 +311,7 @@ class File extends Base {
 
     // Get file name without extension
     public static function N($path, $extension = false) {
-        return $extension ? basename($path) : basename($path, '.' . pathinfo($path, PATHINFO_EXTENSION));
+        return pathinfo($path, $extension ? PATHINFO_BASENAME : PATHINFO_FILENAME);
     }
 
     // Get file name extension
