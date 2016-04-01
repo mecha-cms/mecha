@@ -1,7 +1,7 @@
 <h3>Membuat Menu Sederhana</h3>
-<pre><code class="no-highlight">Beranda: /
-Tentang: /tentang
-Kontak: /kontak</code></pre>
+<pre><code class="no-highlight">Beranda: 
+Tentang: tentang
+Kontak: kontak</code></pre>
 <p>Hasil:</p>
 <pre><code class="html">&lt;ul class="parent"&gt;
   &lt;li&gt;&lt;a href="{{url.home}}"&gt;Beranda&lt;/a&gt;&lt;/li&gt;
@@ -11,10 +11,10 @@ Kontak: /kontak</code></pre>
 <h3>Menu Dropdown</h3>
 <p>Gunakan 4 spasi untuk indentasi.</p>
 <pre><code class="no-highlight">Menu:
-    Submenu 1: /submenu-1
-    Submenu 2: /submenu-2
+    Submenu 1: submenu-1
+    Submenu 2: submenu-2
     Submenu 3:
-        Submenu 3.1: /submenu-3-1</code></pre>
+        Submenu 3.1: submenu-3-1</code></pre>
 <p>Hasil:</p>
 <pre><code class="html">&lt;ul class="parent"&gt;
   &lt;li class="ul"&gt;
@@ -32,10 +32,9 @@ Kontak: /kontak</code></pre>
   &lt;/li&gt;
 &lt;/ul&gt;</code></pre>
 <h3>Menu Induk Aktif</h3>
-<pre><code class="no-highlight">Menu (/suatu-tempat):
-    Submenu 1: /submenu-1
-    Submenu 2: /submenu-2
-</code></pre>
+<pre><code class="no-highlight">Menu (suatu-tempat):
+    Submenu 1: submenu-1
+    Submenu 2: submenu-2</code></pre>
 <p>Hasil:</p>
 <pre><code class="html">&lt;ul class="parent"&gt;
   &lt;li class="ul"&gt;

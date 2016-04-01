@@ -20,7 +20,9 @@
  *        ),
  *        '|',
  *        'Text 1',
- *        'Text 2' => null
+ *        'Text 2' => null,
+ *        'Text 3' => false,
+ *        'Text 3' => 'false'
  *    );
  *
  *    Tree::$config['trunk'] = 'ul';
@@ -63,11 +65,11 @@ class Tree extends Base {
         foreach($array as $key => $value) {
             if( ! is_array($value)) {
                 $url = Converter::url($value);
-                $hole = $value === "" ? ' ' . $c_class['chink'] : "";
+                $hole = $value === false ? ' ' . $c_class['chink'] : "";
                 $current = $url === $c_url_current || ($url !== $c_url && strpos($c_url_current . '/', $url . '/') === 0) ? ' ' . $c_class['current'] : "";
                 $c = trim(($c_class['twig'] !== false ? $c_class['twig'] : "") . $hole . $current);
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
-                if($value !== "") {
+                if($value !== false) {
                     // List item without link: `array('foo')`
                     if(is_int($key)) {
                         $twig .= Filter::colon($FP . 'anchor', '<span class="a" tabindex="0">' . $value . '</span>');

@@ -8,7 +8,7 @@
  */
 
 define('DS', DIRECTORY_SEPARATOR);
-define('MECHA_VERSION', '1.2.3');
+define('MECHA_VERSION', '1.2.4');
 define('ROOT', rtrim(__DIR__, DS));
 define('CARGO', ROOT . DS . 'lot');
 define('ENGINE', ROOT . DS . 'engine');

@@ -23,6 +23,12 @@ class Converter extends Base {
      */
 
     public static function url($input) {
+        if( ! is_string($input)) return $input;
+        $config = Config::get();
+        // relative to root domain
+        if(strpos($input, '/') === 0) {
+            $input = trim($config->protocol . $config->host . '/' . ltrim($input, '/'), '/');
+        }
         if(
             strpos($input, '://') === false &&
             strpos($input, '//') !== 0 &&
@@ -44,7 +50,7 @@ class Converter extends Base {
                     '&',
                     '#'
                 ),
-            trim(Config::get('url') . '/' . ltrim($input, '/'), '/'));
+            trim($config->url . '/' . ltrim($input, '/'), '/'));
         }
         return $input;
     }
