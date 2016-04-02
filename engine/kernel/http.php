@@ -111,7 +111,7 @@ class HTTP extends Base {
         }
         $query = ! empty($query) ? array_replace_recursive($_GET, $query) : $_GET;
         $results = array();
-        foreach(self::flat($query, false) as $k => $v) {
+        foreach(self::__($query, "") as $k => $v) {
             if($v === false) continue;
             $value = $v !== true ? '=' . urlencode(Converter::str($v)) : "";
             $results[] = $k . $value;
@@ -119,19 +119,14 @@ class HTTP extends Base {
         return ! empty($results) ? '?' . implode('&', $results) : "";
     }
 
-    protected static function flat($array, $key) {
+    protected static function __($array, $key) {
         $results = array();
-        if($key === false) {
-            $key = $o = $c = "";
-        } else {
-            $o = '[';
-            $c = ']';
-        }
+        $s = $key ? '[' : "";
         foreach($array as $k => $v) {
             if(is_array($v)) {
-                $results = array_merge($results, self::flat($v, $key . $k . $c . '['));
+                $results = array_merge($results, self::__($v, $key . $k . $s . '['));
             } else {
-                $results[$key . $k . $c] = $v;
+                $results[$key . $k . $s] = $v;
             }
         }
         return $results;

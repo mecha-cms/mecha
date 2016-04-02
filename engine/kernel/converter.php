@@ -26,8 +26,8 @@ class Converter extends Base {
         if( ! is_string($input)) return $input;
         $config = Config::get();
         // relative to root domain
-        if(strpos($input, '/') === 0) {
-            $input = trim($config->protocol . $config->host . '/' . ltrim($input, '/'), '/');
+        if(strpos($input, '/') === 0 && strpos($input, '//') !== 0) {
+            return trim($config->protocol . $config->host . '/' . ltrim($input, '/'), '/');
         }
         if(
             strpos($input, '://') === false &&
@@ -50,7 +50,7 @@ class Converter extends Base {
                     '&',
                     '#'
                 ),
-            trim($config->url . '/' . ltrim($input, '/'), '/'));
+            trim($config->url . '/' . $input, '/'));
         }
         return $input;
     }
