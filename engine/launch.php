@@ -54,11 +54,17 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
  *
  * [1]. archive/2014
  * [2]. archive/2014/1
+ * [3]. archive/2014-02
+ * [4]. archive/2014-02/1
+ * [5]. archive/2014-02-12
+ * [6]. archive/2014-02-12/1
+ * [7]. ...
  *
  */
 
-Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug . '/(:num)/(:num)'), function($slug = "", $offset = 1) use($config, $excludes) {
+Route::accept(array($config->archive->slug . '/(:any)', $config->archive->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config, $speak, $excludes) {
     $s = Get::articles('DESC', 'time:' . $slug);
+    $months = (array) $speak->month_names;
     if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
             return Get::article($path, $excludes);
@@ -69,8 +75,14 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
     Filter::add('pager:url', function($url) {
         return Filter::apply('archive:url', $url);
     });
+    $t = explode('-', $slug);
+    $title = $t[0];
+    if(isset($t[1])) {
+        $title .= ', ' . $months[(int) $t[1] - 1];
+    }
+    $title = sprintf($config->archive->title, $title);
     Config::set(array(
-        'page_title' => sprintf($config->archive->title, $slug) . $config->title_separator . $config->title,
+        'page_title' => $title . $config->title_separator . $config->title,
         'archive_query' => $slug,
         'offset' => $offset,
         'articles' => $articles,
@@ -78,41 +90,6 @@ Route::accept(array($config->archive->slug . '/(:num)', $config->archive->slug .
     ));
     Shield::attach('index-archive');
 }, 40);
-
-
-/**
- * Archive Page
- * ------------
- *
- * [1]. archive/2014-04
- * [2]. archive/2014-04/1
- *
- */
-
-Route::accept(array($config->archive->slug . '/(:num)-(:num)', $config->archive->slug . '/(:num)-(:num)/(:num)'), function($year = "", $month = "", $offset = 1) use($config, $speak, $excludes) {
-    $months = (array) $speak->month_names;
-    if($month < 10) $month = '0' . $month;
-    $slug = $year . '-' . $month;
-    $s = Get::articles('DESC', 'time:' . $slug);
-    if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {
-        $articles = Mecha::walk($articles, function($path) use($excludes) {
-            return Get::article($path, $excludes);
-        });
-    } else {
-        Shield::abort('404-archive');
-    }
-    Filter::add('pager:url', function($url) {
-        return Filter::apply('archive:url', $url);
-    });
-    Config::set(array(
-        'page_title' => sprintf($config->archive->title, $year . ', ' . $months[(int) $month - 1]) . $config->title_separator . $config->title,
-        'archive_query' => $slug,
-        'offset' => $offset,
-        'articles' => $articles,
-        'pagination' => Navigator::extract($s, $offset, $config->archive->per_page, $config->archive->slug . '/' . $slug)
-    ));
-    Shield::attach('index-archive');
-}, 41);
 
 
 /**
