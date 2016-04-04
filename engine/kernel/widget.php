@@ -60,11 +60,11 @@ class Widget {
                         foreach($months as $month) {
                             $posts_count_per_year += count($month);
                         }
-                        $html .= $T2 . '<li class="' . ($expand ? 'open' : 'close') . ((int) $query === (int) $year ? ' ' . self::$config['classes']['current'] : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '"></a> <a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
+                        $html .= $T2 . '<li class="' . ($expand ? 'open' : 'close') . (strpos($query . '-', $year . '-') === 0 ? ' ' . self::$config['classes']['current'] : "") . '">' . NL . $T3 . '<a href="javascript:;" class="toggle ' . ($expand ? 'open' : 'close') . '"></a> <a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year) . '">' . $year . '</a> <span class="counter">' . $posts_count_per_year . '</span>' . NL;
                         $html .= $T3 . '<ul>' . NL;
                         foreach($months as $month => $days) {
                             if(is_array($days)) {
-                                $html .= $T4 . '<li' . ((string) $query === $year . '-' . $month ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
+                                $html .= $T4 . '<li' . (strpos($query . '-', $year . '-' . $month . '-') === 0 ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $year . '-' . $month) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . count($days) . '</span></li>' . NL;
                             }
                         }
                         $html .= $T3 . '</ul>' . NL;
@@ -86,7 +86,7 @@ class Widget {
                     $html .= $T1 . '<ul>' . NL;
                     foreach($archives as $archive) {
                         list($year, $month) = explode('-', $archive);
-                        $html .= $T2 . '<li' . ((string) $query === $year . '-' . $month ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $archive) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
+                        $html .= $T2 . '<li' . (strpos($query . '-', $year . '-' . $month . '-') === 0 ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $archive) . '">' . $year . ' ' . $month_names[(int) $month - 1] . '</a> <span class="counter">' . $counter[$archive] . '</span></li>' . NL;
                         $i++;
                     }
                     $html .= $T1 . '</ul>' . NL;
@@ -94,7 +94,7 @@ class Widget {
                     $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                     foreach($archives as $archive) {
                         list($year, $month) = explode('-', $archive);
-                        $html .= $T2 . '<option value="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $archive) . '"' . ((string) $query === $year . '-' . $month ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
+                        $html .= $T2 . '<option value="' . Filter::colon('archive:url', $config->url . '/' . $config->archive->slug . '/' . $archive) . '"' . (strpos($query . '-', $year . '-' . $month . '-') === 0 ? ' selected' : "") . '>' . $year . ' ' . $month_names[(int) $month - 1] . ' (' . $counter[$archive] . ')</option>' . NL;
                     }
                     $html .= $T1 . '</select>' . NL;
                 }

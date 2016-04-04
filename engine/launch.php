@@ -80,6 +80,9 @@ Route::accept(array($config->archive->slug . '/(:any)', $config->archive->slug .
     if(isset($t[1])) {
         $title .= ', ' . $months[(int) $t[1] - 1];
     }
+    if(isset($t[2])) {
+        $title .= ' ' . $t[2];
+    }
     $title = sprintf($config->archive->title, $title);
     Config::set(array(
         'page_title' => $title . $config->title_separator . $config->title,
