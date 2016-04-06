@@ -53,14 +53,14 @@ class Page extends Base {
         if( ! $content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
-                Mecha::extend($results, self::__parseHeader($buffer, $FP, $data));
+                Mecha::extend($results, self::__($buffer, $FP, $data));
                 unset($results['__'], $results['___raw']);
             // By file content
             } else {
                 $text = str_replace("\r", "", $text);
                 if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
                     $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
-                    Mecha::extend($results, self::__parseHeader($parts[0], $FP, $data));
+                    Mecha::extend($results, self::__($parts[0], $FP, $data));
                     $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
                 }
             }
@@ -75,7 +75,7 @@ class Page extends Base {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
                 $parts = explode(SEPARATOR, trim($text), 2);
-                Mecha::extend($results, self::__parseHeader($parts[0], $FP, $data));
+                Mecha::extend($results, self::__($parts[0], $FP, $data));
                 $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
             }
             Mecha::extend($data, $results);
@@ -104,7 +104,7 @@ class Page extends Base {
         return $results;
     }
 
-    protected static function __parseHeader($text, $FP, $data) {
+    protected static function __($text, $FP, $data) {
         $results = array();
         $headers = explode("\n", trim($text));
         foreach($headers as $header) {
