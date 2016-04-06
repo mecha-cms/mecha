@@ -2,5 +2,5 @@
 
 // DEPRECATED. Please use `File::pocket()`
 File::plug('dir', function($paths, $permission = 0777) {
-    return File::pocket($paths, $permission);
+    return call_user_func_array('File::pocket', func_get_args());
 });

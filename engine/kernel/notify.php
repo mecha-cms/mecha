@@ -67,8 +67,8 @@ class Notify extends Base {
         $header .= "Reply-To: " . $from . "\n";
         $header .= "Return-Path: " . $from . "\n";
         $header .= "X-Mailer: PHP/" . phpversion();
-        $header = Filter::apply($FP . 'notification.email.header', $header);
-        $message = Filter::apply($FP . 'notification.email.message', $message);
+        $header = Filter::apply($FP . 'notify.email.header', $header);
+        $message = Filter::apply($FP . 'notify.email.message', $message);
         return mail($to, $subject, $message, $header);
     }
 

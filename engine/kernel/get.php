@@ -184,7 +184,7 @@ class Get extends Base {
                 $field_e = include $e;
                 Mecha::extend($field, $field_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch,launch__,__launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'fields.php')) {
                     $field_e = include $e;
                     Mecha::extend($field, $field_e);
@@ -246,7 +246,7 @@ class Get extends Base {
                 $menu_e = include $e;
                 Mecha::extend($menu, $menu_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch,launch__,__launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'menus.php')) {
                     $menu_e = include $e;
                     Mecha::extend($menu, $menu_e);
@@ -280,7 +280,7 @@ class Get extends Base {
                 $shortcode_e = include $e;
                 Mecha::extend($shortcode, $shortcode_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch,launch__,__launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'shortcodes.php')) {
                     $shortcode_e = include $e;
                     Mecha::extend($shortcode, $shortcode_e);
@@ -310,7 +310,7 @@ class Get extends Base {
                 $tag_e = include $e;
                 Mecha::extend($tag, $tag_e);
             }
-            foreach(glob(PLUGIN . DS . '*' . DS . '{launch__,__launch,launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
+            foreach(glob(PLUGIN . DS . '*' . DS . '{launch,launch__,__launch}.php', GLOB_NOSORT | GLOB_BRACE) as $active) {
                 if($e = File::exist(File::D($active) . DS . 'workers' . DS . 'tags.php')) {
                     $tag_e = include $e;
                     Mecha::extend($tag, $tag_e);
@@ -566,7 +566,7 @@ class Get extends Base {
         if( ! is_array($pages) || $total_pages === 0) return false;
         if($order === 'DESC') {
             rsort($pages);
-        } else {
+        } else if($order === 'ASC') {
             sort($pages);
         }
         if( ! $filter) return $pages;
@@ -721,7 +721,7 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::postExtract($path, $FP);
-        $results = $results + Text::toPage($path, false, $FP, array(
+        $results = $results + Page::text($path, false, $FP, array(
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
@@ -752,7 +752,7 @@ class Get extends Base {
      *  $excludes  | array  | Exclude some field(s) from result(s)
      *  $folder    | string | Folder of the post(s)
      *  $connector | string | Path connector for post URL
-     *  $FP        | string | Filter prefix for `Text::toPage()`
+     *  $FP        | string | Filter prefix for `Page::text()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -778,7 +778,7 @@ class Get extends Base {
         // RULES: Do not do any tags looping, content parsing
         // and external file requesting if it has been marked as
         // the excluded field(s). For better performance.
-        $results = $results + Text::toPage(file_get_contents($results['path']), isset($excludes['content']) ? false : 'content', $FP, array(
+        $results = $results + Page::text(file_get_contents($results['path']), isset($excludes['content']) ? false : 'content', $FP, array(
             'link' => "",
             'author' => $config->author->name,
             'description' => "",
@@ -801,7 +801,7 @@ class Get extends Base {
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
         $results['excerpt'] = $more = "";
         if($content !== "") {
-            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Text::toPage(Converter::ES($content), 'content', $FP, array(), $results) : $results;
+            $exc = isset($excludes['content']) && strpos($content, '<!--') !== false ? Page::text(Converter::ES($content), 'content', $FP, array(), $results) : $results;
             $exc = $exc['content'];
             $exc = is_array($exc) ? implode("", $exc) : $exc;
             // Generate fake description data
@@ -993,7 +993,7 @@ class Get extends Base {
         if( ! is_array($responses) || $total_responses === 0) return false;
         if($order === 'DESC') {
             rsort($responses);
-        } else {
+        } else if($order === 'ASC') {
             sort($responses);
         }
         if( ! $filter) return $responses;
@@ -1125,7 +1125,7 @@ class Get extends Base {
         }
         if( ! $path) return false;
         $results = self::responseExtract($path, $FP);
-        $results = $results + Text::toPage($path, false, $FP, array(
+        $results = $results + Page::text($path, false, $FP, array(
             'url' => '#',
             'content_type' => $config->html_parser->active,
             'fields' => array()
@@ -1153,7 +1153,7 @@ class Get extends Base {
      *  $excludes  | array  | Exclude some field(s) from result(s)
      *  $folder    | string | Folder of response(s) and response(s)' post
      *  $connector | string | Path connector for permalink URL
-     *  $FP        | string | Filter prefix for `Text::toPage()`
+     *  $FP        | string | Filter prefix for `Page::text()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
@@ -1176,7 +1176,7 @@ class Get extends Base {
         }
         if( ! $results || ! file_exists($results['path'])) return false;
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results = $results + Text::toPage(file_get_contents($results['path']), 'message', $FP, array(
+        $results = $results + Page::text(file_get_contents($results['path']), 'message', $FP, array(
             'url' => '#',
             'content_type' => $config->html_parser->active,
             'fields' => array(),

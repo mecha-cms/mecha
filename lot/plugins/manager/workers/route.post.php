@@ -166,7 +166,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         // Check for duplicate slug, except for the current old slug.
         // Allow user(s) to change their post slug, but make sure they
         // do not type the slug of another post.
-        if($slug !== "" && $slug !== $post->slug && $files = call_user_func('Get::' . $segment . 's', 'DESC', "", 'txt,draft,archive')) {
+        if($slug !== "" && $slug !== $post->slug && $files = call_user_func('Get::' . $segment . 's', null, "", 'txt,draft,archive')) {
             if(strpos(implode('%', $files), '_' . $slug . '.') !== false) {
                 Notify::error(Config::speak('notify_error_slug_exist', $slug));
                 Guardian::memorize($request);
@@ -219,7 +219,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                     File::open($php_file)->renameTo($slug . '.php');
                 }
                 // Rename all response file(s) related to post if post date has been changed
-                if(((string) $date !== (string) $post->date->W3C) && $responses = call_user_func('Get::' . $response . 's', 'DESC', 'post:' . $id, 'txt,hold')) {
+                if(((string) $date !== (string) $post->date->W3C) && $responses = call_user_func('Get::' . $response . 's', null, 'post:' . $id, 'txt,hold')) {
                     foreach($responses as $v) {
                         $parts = explode('_', File::B($v));
                         $parts[0] = Date::slug($date);
@@ -258,7 +258,7 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
         Guardian::checkToken($request['token']);
         File::open($post->path)->delete();
         // Deleting response(s) ...
-        if($responses = call_user_func('Get::' . $response . 's', 'DESC', 'post:' . $id, 'txt,hold')) {
+        if($responses = call_user_func('Get::' . $response . 's', null, 'post:' . $id, 'txt,hold')) {
             foreach($responses as $v) {
                 File::open($v)->delete();
             }

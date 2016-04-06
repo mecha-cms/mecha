@@ -6,8 +6,7 @@
  * ---------------------
  */
 
-// Convert text to ASCII character
-// `$mode` can be `dec` or `hex`
+// Convert text to ASCII character, `$mode` can be `dec` or `hex`
 Text::parser('to_ascii', function($input, $mode = 'dec') {
     if( ! is_string($input)) return $input;
     $results = "";

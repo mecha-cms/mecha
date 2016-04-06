@@ -76,9 +76,9 @@ Config::plug('load', function() {
     if( ! file_exists($lang) && ! file_exists($lang_a)) {
         Guardian::abort('Language file not found.');
     }
-    $lang = Text::toArray(File::open($lang)->read(""), S, '  ');
+    $lang = Converter::toArray(File::open($lang)->read(""), S, '  ');
     if($config['language'] !== 'en_US') {
-        $lang_a = Text::toArray(File::open($lang_a)->read(""), S, '  ');
+        $lang_a = Converter::toArray(File::open($lang_a)->read(""), S, '  ');
         Mecha::extend($lang, $lang_a);
     }
 

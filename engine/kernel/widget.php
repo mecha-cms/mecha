@@ -483,7 +483,7 @@ class Widget {
             }
             // custom
             $snake = Text::parse($kin, '->snake_case');
-            $slug = Text::parse($snake, '->slug');
+            $slug = str_replace('_', '-', $snake);
             $id = Config::get('widget_custom_' . $snake . '_id', 0) + 1;
             $html = "";
             if(self::$w[$c][$kin]['wrapper']) {

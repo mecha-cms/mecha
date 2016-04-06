@@ -102,13 +102,13 @@ class Mecha extends Base {
     }
 
     // Check if `$array` contain `$key` -- should be faster than `in_array($key, $array)`
-    public static function has($key, $x = ';;;') {
+    public static function has($key, $x = "\r\r\r\r\r\r\r") {
         $s = is_array(self::$stomach) ? implode($x, self::$stomach) : (string) self::$stomach;
         return strpos($x . $s . $x, $x . $key . $x) !== false;
     }
 
     // Sort array based on its value's key
-    public static function order($order = 'ASC', $key = null, $preserve_key = false, $default = '\0') {
+    public static function order($order = 'ASC', $key = null, $preserve_key = false, $default = "\r\r\r\r\r\r\r") {
         if( ! is_null($key)) {
             $before = array();
             $after = array();
@@ -117,7 +117,7 @@ class Mecha extends Base {
                     $v = (array) $v;
                     if(array_key_exists($key, $v)) {
                         $before[$k] = $v[$key];
-                    } else if($default !== '\0') {
+                    } else if($default !== "\r\r\r\r\r\r\r") {
                         $before[$k] = $default;
                         self::$stomach[$k][$key] = $default;
                     }

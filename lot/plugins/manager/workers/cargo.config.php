@@ -26,7 +26,7 @@
 
       $language = array();
       foreach(glob(LANGUAGE . DS . '*', GLOB_ONLYDIR) as $folder) {
-          $s = Text::toArray(File::open($folder . DS . 'speak.txt')->get('  title:'), S, '  ');
+          $s = Converter::toArray(File::open($folder . DS . 'speak.txt')->get('  title:'), S, '  ');
           $folder = File::B($folder);
           $language[$folder] = isset($s['__']['title']) ? $s['__']['title'] : $folder;
       }

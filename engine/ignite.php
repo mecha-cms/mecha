@@ -111,7 +111,7 @@ if( ! $language = File::exist($__ . 'languages' . DS . $config->language . DS . 
 }
 
 if(file_exists($language)) {
-    Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
+    Config::merge('speak', Converter::toArray(File::open($language)->read(), S, '  '));
     $speak = Config::speak(); // refresh ...
 }
 
@@ -215,7 +215,7 @@ foreach($plugins = Plugin::load() as $k => $v) {
         $language = $__ . 'languages' . DS . 'en_US' . DS . 'speak.txt';
     }
     if(file_exists($language)) {
-        Config::merge('speak', Text::toArray(File::open($language)->read(), S, '  '));
+        Config::merge('speak', Converter::toArray(File::open($language)->read(), S, '  '));
         $speak = Config::speak(); // refresh ...
     }
     $load__ = Request::get('plugin:' . $k, 1);

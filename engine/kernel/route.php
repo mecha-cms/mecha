@@ -297,19 +297,32 @@ class Route extends Base {
                 call_user_func_array(self::$routes[$pattern]['fn'], $arguments);
             }
         } else {
-            $routes = Mecha::eat(self::$routes)->order('ASC', 'stack', true)->vomit();
-            foreach($routes as $pattern => $cargo) {
-                // If matched with the URL path
-                if($route = self::is($pattern)) {
-                    // Loading cargo(s) ...
-                    if(isset(self::$routes_over[$pattern])) {
-                        $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
-                        foreach($fn as $v) {
-                            call_user_func_array($v['fn'], $route['lot']);
-                        }
+            $pattern = Config::get('url_path');
+            if(isset(self::$routes[$pattern])) {
+                // Loading cargo(s) ...
+                if(isset(self::$routes_over[$pattern])) {
+                    $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
+                    foreach($fn as $v) {
+                        call_user_func($v['fn']);
                     }
-                    // Passed!
-                    return call_user_func_array($cargo['fn'], $route['lot']);
+                }
+                // Passed!
+                return call_user_func(self::$routes[$pattern]['fn']);
+            } else {
+                $routes = Mecha::eat(self::$routes)->order('ASC', 'stack', true)->vomit();
+                foreach($routes as $pattern => $cargo) {
+                    // If matched with the URL path
+                    if($route = self::is($pattern)) {
+                        // Loading cargo(s) ...
+                        if(isset(self::$routes_over[$pattern])) {
+                            $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
+                            foreach($fn as $v) {
+                                call_user_func_array($v['fn'], $route['lot']);
+                            }
+                        }
+                        // Passed!
+                        return call_user_func_array($cargo['fn'], $route['lot']);
+                    }
                 }
             }
         }

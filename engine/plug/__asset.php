@@ -2,5 +2,5 @@
 
 // DEPRECATED. Please use `Asset::javascript()`
 Asset::plug('script', function($path, $addon = "", $merge = false) {
-    return Asset::javascript($path, $addon, $merge);
+    return call_user_func_array('Asset::javascript', func_get_args());
 });

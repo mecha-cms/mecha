@@ -11,7 +11,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')', $config->ma
         Shield::abort();
     }
     File::write($config->{'__total_' . $segment . 's'})->saveTo(LOG . DS . $segment . 's.total.log', 0600);
-    if($files = call_user_func('Get::' . $segment . 's', 'DESC', Request::get('filter', ""), 'txt,hold')) {
+    if($files = call_user_func('Get::' . $segment . 's', null, Request::get('filter', ""), 'txt,hold')) {
         $responses_id = Mecha::walk($files, function($v) {
             $parts = explode('_', File::B($v));
             return $parts[1];

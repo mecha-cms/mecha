@@ -409,9 +409,44 @@ class Converter extends Base {
      */
 
     public static function toArray($input, $s = S, $indent = '    ') {
-        if(is_array($input)) return $input;
-        if(is_object($input)) return Mecha::A($input);
-        return Text::toArray((string) $input, $s, $indent);
+        if( ! is_string($input)) return Mecha::A($input);
+        if(trim($input) === "") return array();
+        $results = $data = array();
+        // Normalize line-break
+        $text = str_replace(array("\r\n", "\r"), "\n", $input);
+        if(strpos($indent, "\t") === false) {
+            // Force translate 1 tab to 4 space
+            $text = str_replace("\t", '    ', $text);
+        }
+        $indent_length = strlen($indent);
+        foreach(explode("\n", $text) as $line) {
+            // Ignore comment and empty line-break
+            if(trim($line) === "" || strpos($line, '#') === 0) continue;
+            $depth = 0;
+            while(substr($line, 0, $indent_length) === $indent) {
+                $depth += 1;
+                $line = rtrim(substr($line, $indent_length));
+            }
+            while($depth < count($data)) {
+                array_pop($data);
+            }
+            // No `:` ... fix it!
+            if(strpos($line, $s) === false) {
+                $line = $line . $s . $line;
+            }
+            $parts = explode($s, $line, 2);
+            $data[$depth] = rtrim($parts[0]);
+            $parent =& $results;
+            foreach($data as $i => $key) {
+                if( ! isset($parent[$key])) {
+                    $value = isset($parts[1]) && ! empty($parts[1]) ? trim($parts[1]) : array();
+                    $parent[rtrim($parts[0])] = Converter::strEval($value);
+                    break;
+                }
+                $parent =& $parent[$key];
+            }
+        }
+        return $results;
     }
 
     /**
@@ -433,7 +468,7 @@ class Converter extends Base {
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------------
      *  $input    | string  | The string of element to be converted
-     *  $element  | array   | Tag open, tag close, tag separator
+     *  $element  | array   | Tag open, tag close, tag separator, tag end
      *  $attr     | array   | Value open, value close, attribute separator
      *  $str_eval | boolean | Convert value with `Converter::strEval()` ?
      *  --------- | ------- | ---------------------------------------------
@@ -442,8 +477,8 @@ class Converter extends Base {
      */
 
     public static function attr($input, $element = array(), $attr = array(), $str_eval = true) {
-        $ED = array('<', '>', ' ', '/', '[a-zA-Z0-9\-._:]+');
-        $AD = array('"', '"', '=', '[a-zA-Z0-9\-._:]+');
+        $ED = array('<', '>', ' ', '/', '[\w\-._:]+');
+        $AD = array('"', '"', '=', '[\w\-._:]+');
         $E = Mecha::extend($ED, $element);
         $A = Mecha::extend($AD, $attr);
         $E0 = preg_quote($E[0], '#');
@@ -453,19 +488,23 @@ class Converter extends Base {
         $A0 = preg_quote($A[0], '#');
         $A1 = preg_quote($A[1], '#');
         $A2 = preg_quote($A[2], '#');
-        if( ! preg_match('#^\s*(' . $E0 . ')(' . $E[4] . ')((' . $E2 . ')+(.*?))?((' . $E1 . ')([\s\S]*?)((' . $E0 . ')' . $E3 . '\2(' . $E1 . '))|(' . $E2 . ')*' . $E3 . '?(' . $E1 . '))\s*$#', $input, $M)) return false;
-        $M[5] = preg_replace('#(^|(' . $E2 . ')+)(' . $A[3] . ')(' . $A2 . ')(' . $A0 . ')(' . $A1 . ')#', '$1$2$3$4$5<attr:value>$6', $M[5]);
-        $results = array(
-            'element' => $M[2],
-            'attributes' => array(),
-            'content' => isset($M[8]) && $M[9] === $E[0] . $E[3] . $M[2] . $E[1] ? $M[8] : null
-        );
-        if(preg_match_all('#(' . $A[3] . ')((' . $A2 . ')(' . $A0 . ')(.*?)(' . $A1 . '))?(?:(' . $E2 . ')|$)#', $M[5], $A)) {
-            foreach($A[1] as $k => $v) {
-                $results['attributes'][$v] = isset($A[5][$k]) && ! empty($A[5][$k]) ? (strpos($A[5][$k], '<attr:value>') === false ? $A[5][$k] : str_replace('<attr:value>', "", $A[5][$k])) : $v;
+        $results = array('element' => null, 'attributes' => null, 'content' => null);
+        if( ! preg_match('#^\s*' . $E0 . '(' . $E[4] . ')(?:' . $E2 . '*' . $E3 . '?' . $E1 . '|(' . $E2 . '+.*?)' . $E2 . '*' . $E3 . '?' . $E1 . ')(([\s\S]*?)' . $E0 . $E3 . '\1' . $E1 . ')?\s*$#s', $input, $s)) return false;
+        $results['element'] = $s[1];
+        $results['content'] = isset($s[4]) ? $s[4] : null;
+        if( ! empty($s[2])) {
+            if(preg_match_all('#' . $E2 . '+(' . $A[3] . '+)(?:' . $A2 . $A0 . '([\s\S]*?)' . $A1 . ')?#s', $s[2], $ss)) {
+                $results['attributes'] = array();
+                foreach($ss[1] as $k => $v) {
+                    $vv = $str_eval ? Converter::strEval($ss[2][$k]) : $ss[2][$k];
+                    if($vv === "" && strpos($ss[0][$k], $A[2] . $A[0] . $A[1]) === false) {
+                        $vv = $v;
+                    }
+                    $results['attributes'][$v] = $vv;
+                }
             }
         }
-        return $str_eval ? self::strEval($results) : $results;
+        return $results;
     }
 
     /**
