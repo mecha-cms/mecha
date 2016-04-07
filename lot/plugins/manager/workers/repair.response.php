@@ -27,8 +27,8 @@
           <?php echo Jot::button('construct', $speak->create, 'extension:.txt'); ?>
           <?php echo Jot::button('action:clock-o', $speak->save, 'extension:.hold'); ?>
         <?php else: ?>
+          <?php echo Jot::button('action', $speak->update, 'extension:.' . File::E($page->path)); ?>
           <?php if($page->state === 'approved'): ?>
-            <?php echo Jot::button('action', $speak->update, 'extension:.txt'); ?>
             <?php echo Jot::button('action:history', $speak->unapprove, 'extension:.hold'); ?>
           <?php else: ?>
             <?php echo Jot::button('construct', $speak->approve, 'extension:.txt'); ?>
