@@ -477,8 +477,8 @@ class Converter extends Base {
      */
 
     public static function attr($input, $element = array(), $attr = array(), $str_eval = true) {
-        $ED = array('<', '>', ' ', '/', '[\w\-._:]+');
-        $AD = array('"', '"', '=', '[\w\-._:]+');
+        $ED = array('<', '>', ' ', '/', '[\w\-.:]+');
+        $AD = array('"', '"', '=', '[\w\-.:]+');
         $E = Mecha::extend($ED, $element);
         $A = Mecha::extend($AD, $attr);
         $E0 = preg_quote($E[0], '#');
