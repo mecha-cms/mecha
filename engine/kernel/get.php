@@ -1265,7 +1265,7 @@ class Get extends Base {
         // Validate URL ...
         $results_v = array();
         foreach(array_unique($results) as $url) {
-            $url = strpos($url, '/') === 0 ? $config->protocol . $config->host . $url : $url;
+            $url = Converter::url($url);
             if(strpos($url, $config->url) === 0 && file_exists(File::path($url))) {
                 $results_v[] = $url;
             } else if(strpos($url, '://') !== false) {

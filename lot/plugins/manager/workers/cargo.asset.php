@@ -47,6 +47,7 @@
           <tbody>
             <?php if($files): ?>
             <?php foreach($files as $file): ?>
+            <?php if($file->is->hidden && ! Guardian::happy(1)) continue; ?>
             <?php $url = File::url(str_replace($asset_path, "", $file->path)); ?>
             <tr<?php echo Mecha::walk(Session::get('recent_item_update', array()))->has(File::B($file->path)) ? ' class="active"' : ""; ?>>
               <td class="td-icon"><?php echo Form::checkbox('selected[]', $url); ?></td>

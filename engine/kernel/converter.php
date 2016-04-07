@@ -601,6 +601,12 @@ class Converter extends Base {
 
     public static function detractShell($input) {
         if(trim($input) === "") return $input;
+        // Force white-space(s) in `calc()`
+        if(strpos($input, 'calc(') !== false) {
+            $input = preg_replace_callback('#(?<=[\s:])calc\(\s*(.*?)\s*\)#', function($matches) {
+                return 'calc(' . preg_replace('#\s+#', '&#32;', $matches[1]) . ')';
+            }, $input);
+        }
         return preg_replace(
             array(
                 // Remove comment(s)
@@ -614,7 +620,7 @@ class Converter extends Base {
                 // Replace `background-position:0` with `background-position:0 0`
                 '#(background-position):0(?=[;\}])#si',
                 // Replace `0.6` with `.6`, but only when preceded by a white-space or `=`, `:`, `,`, `(`, `-`
-                '#(?<=[\s=:,\(\-])0+\.(\d+)#s',
+                '#(?<=[\s=:,\(\-]|&\#32;)0+\.(\d+)#s',
                 // Minify string value
                 '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
@@ -623,7 +629,8 @@ class Converter extends Base {
                 // Replace `(border|outline):none` with `(border|outline):0`
                 '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
                 // Remove empty selector(s)
-                '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s'
+                '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s',
+                '#&\#32;#'
             ),
             array(
                 '$1',
@@ -636,7 +643,8 @@ class Converter extends Base {
                 '$1$2$4$5',
                 '$1$2$3',
                 '$1:0',
-                '$1$2'
+                '$1$2',
+                ' '
             ),
         $input);
     }
