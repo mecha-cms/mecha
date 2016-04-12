@@ -151,7 +151,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
         $articles = Session::get('search.results');
     } else {
         // Matched with all keyword(s) combined
-        if($files = Get::articles('DESC', 'keyword:' . $keywords)) {
+        if(trim($keywords) && $files = Get::articles('DESC', 'keyword:' . $keywords)) {
             foreach($files as $file) {
                 $articles[] = $file;
                 $anchor = Get::articleAnchor($file);
@@ -165,7 +165,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
         // Matched with a keyword
         $keywords = explode('-', $keywords);
         foreach($keywords as $keyword) {
-            if($files = Get::articles('DESC', 'keyword:' . $keyword)) {
+            if(trim($keyword) && $files = Get::articles('DESC', 'keyword:' . $keyword)) {
                 foreach($files as $file) {
                     $articles[] = $file;
                     $anchor = Get::articleAnchor($file);
