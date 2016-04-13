@@ -561,56 +561,57 @@ class Get extends Base {
     public static function posts($order = 'DESC', $filter = "", $e = 'txt', $folder = POST) {
         $results = array();
         $e = str_replace(' ', "", $e);
-        $pages = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
-        $total_pages = count($pages);
-        if( ! is_array($pages) || $total_pages === 0) return false;
+        $posts = strpos($e, ',') !== false ? glob($folder . DS . '*.{' . $e . '}', GLOB_NOSORT | GLOB_BRACE) : glob($folder . DS . '*.' . $e, GLOB_NOSORT);
+        $total_posts = count($posts);
+        if( ! is_array($posts) || $total_posts === 0) return false;
         if($order === 'DESC') {
-            rsort($pages);
+            rsort($posts);
         } else if($order === 'ASC') {
-            sort($pages);
+            sort($posts);
         }
-        if( ! $filter) return $pages;
+        if( ! $filter) return $posts;
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
+            if( ! $value) return $posts;
             if($key === 'time') {
-                for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
+                for($i = 0; $i < $total_posts; ++$i) {
+                    list($time, $kind, $slug) = explode('_', File::N($posts[$i]), 3);
                     if(strpos($time, $value) === 0) {
-                        $results[] = $pages[$i];
+                        $results[] = $posts[$i];
                     }
                 }
             } else if($key === 'kind') {
                 $kinds = explode(',', $value);
-                for($i = 0; $i < $total_pages; ++$i) {
-                    $name = str_replace('_', ',', File::N($pages[$i]));
+                for($i = 0; $i < $total_posts; ++$i) {
+                    $name = str_replace('_', ',', File::N($posts[$i]));
                     foreach($kinds as $kind) {
                         if(strpos($name, ',' . $kind . ',') !== false) {
-                            $results[] = $pages[$i];
+                            $results[] = $posts[$i];
                         }
                     }
                 }
             } else if($key === 'slug') {
-                for($i = 0; $i < $total_pages; ++$i) {
-                    list($time, $kind, $slug) = explode('_', File::N($pages[$i]), 3);
+                for($i = 0; $i < $total_posts; ++$i) {
+                    list($time, $kind, $slug) = explode('_', File::N($posts[$i]), 3);
                     if(strpos($slug, $value) !== false) {
-                        $results[] = $pages[$i];
+                        $results[] = $posts[$i];
                     }
                 }
             } else { // if($key === 'keyword') {
-                for($i = 0; $i < $total_pages; ++$i) {
-                    if(strpos(File::N($pages[$i]), $value) !== false) {
-                        $results[] = $pages[$i];
+                for($i = 0; $i < $total_posts; ++$i) {
+                    if(strpos(File::N($posts[$i]), $value) !== false) {
+                        $results[] = $posts[$i];
                     }
                 }
             }
         } else {
-            for($i = 0; $i < $total_pages; ++$i) {
-                if(strpos(File::N($pages[$i]), $filter) !== false) {
-                    $results[] = $pages[$i];
+            for($i = 0; $i < $total_posts; ++$i) {
+                if(strpos(File::N($posts[$i]), $filter) !== false) {
+                    $results[] = $posts[$i];
                 }
             }
         }
-        unset($pages);
+        unset($posts);
         return ! empty($results) ? $results : false;
     }
 
@@ -999,6 +1000,7 @@ class Get extends Base {
         if( ! $filter) return $responses;
         if(strpos($filter, ':') !== false) {
             list($key, $value) = explode(':', $filter, 2);
+            if( ! $value) return $responses;
             if(is_numeric($value)) { // filter by ID
                 $value = Date::slug($value);
             }
@@ -1017,7 +1019,7 @@ class Get extends Base {
                     }
                 }
             } else if($key === 'parent') {
-                if($value === 'null') $value = '0000-00-00-00-00-00'; // select response(s) with no parent ID
+                if(strtolower($value) === 'null') $value = '0000-00-00-00-00-00'; // select response(s) with no parent ID
                 for($i = 0; $i < $total_responses; ++$i) {
                     list($post, $time, $parent) = explode('_', File::N($responses[$i]), 3);
                     if(strpos($parent, $value) === 0) {

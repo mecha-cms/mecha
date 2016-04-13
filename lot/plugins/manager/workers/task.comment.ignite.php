@@ -80,7 +80,7 @@ if( ! function_exists('do_comment_construct')) {
                         if($fuck = trim($spam)) {
                             if(
                                 $request['email'] === $fuck || // Block by email address
-                                strpos(strtolower($request['message']), strtolower($fuck)) !== false // Block by message word(s)
+                                stripos($request['message'], $fuck) !== false // Block by message word(s)
                             ) {
                                 Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
                                 break;
