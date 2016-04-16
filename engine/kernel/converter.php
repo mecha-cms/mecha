@@ -355,12 +355,13 @@ class Converter extends Base {
      *  $input    | array  | The array of data to be converted
      *  $s        | string | Separator between array key and array value
      *  $indent   | string | Indentation as nested array data level
+     *  $n        | string | Separator between data, default is `\n`
      *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function toText($array, $s = S, $indent = '    ', $depth = 0, $NRT = true) {
+    public static function toText($array, $s = S, $indent = '    ', $n = "\n", $depth = 0, $NRT = true) {
         $results = "";
         if( ! is_array($array) && ! is_object($array)) {
             return self::str($NRT ? self::EW($array) : $array);
@@ -369,19 +370,19 @@ class Converter extends Base {
             if( ! is_array($value) && ! is_object($value)) {
                 $value = $NRT ? self::EW(self::str($value)) : self::str($value);
                 if(is_int($key) && $value === 'null') { // Empty line-break
-                    $results .= "\n";
+                    $results .= $n;
                 } else if(is_string($key) && strpos($key, '#') === 0) { // Comment
-                    $results .= str_repeat($indent, $depth) . trim($key) . "\n";
+                    $results .= str_repeat($indent, $depth) . trim($key) . $n;
                 } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
-                    $results .= str_repeat($indent, $depth) . trim($value) . "\n";
+                    $results .= str_repeat($indent, $depth) . trim($value) . $n;
                 } else {
-                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . $value . "\n";
+                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . $value . $n;
                 }
             } else {
-                $results .= str_repeat($indent, $depth) . (string) $key . $s . "\n" . self::toText($value, $s, $indent, $depth + 1, $NRT) . "\n";
+                $results .= str_repeat($indent, $depth) . (string) $key . $s . $n . self::toText($value, $s, $indent, $n, $depth + 1, $NRT) . $n;
             }
         }
-        return rtrim($results);
+        return rtrim($results, $n);
     }
 
     /**
@@ -403,23 +404,24 @@ class Converter extends Base {
      *  $input    | string | The string of data to be converted
      *  $s        | string | Separator between data key and data value
      *  $indent   | string | Indentation of nested string data level
+     *  $n        | string | Separator between data, default is `\n`
      *  --------- | ------ | ----------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function toArray($input, $s = S, $indent = '    ') {
+    public static function toArray($input, $s = S, $indent = '    ', $n = "\n") {
         if( ! is_string($input)) return Mecha::A($input);
         if(trim($input) === "") return array();
         $results = $data = array();
         // Normalize line-break
-        $text = str_replace(array("\r\n", "\r"), "\n", $input);
+        $text = str_replace(array("\r\n", "\r"), $n, $input);
         if(strpos($indent, "\t") === false) {
             // Force translate 1 tab to 4 space
             $text = str_replace("\t", '    ', $text);
         }
         $indent_length = strlen($indent);
-        foreach(explode("\n", $text) as $line) {
+        foreach(explode($n, $text) as $line) {
             // Ignore comment and empty line-break
             if(trim($line) === "" || strpos($line, '#') === 0) continue;
             $depth = 0;

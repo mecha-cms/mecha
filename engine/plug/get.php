@@ -38,11 +38,11 @@ Get::plug('articleTags', function($order = 'ASC', $sorter = 'name') {
  */
 
 Get::plug('pageTag', function($filter, $output = null, $fallback = false) {
-    return Get::tag($filter, $output = null, $fallback = false, 'page');
+    return Get::tag($filter, $output, $fallback, 'page');
 });
 
 Get::plug('articleTag', function($filter, $output = null, $fallback = false) {
-    return Get::tag($filter, $output = null, $fallback = false, 'article');
+    return Get::tag($filter, $output, $fallback, 'article');
 });
 
 
