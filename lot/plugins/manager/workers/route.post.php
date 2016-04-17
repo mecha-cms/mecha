@@ -33,7 +33,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')', $config->manage
  */
 
 Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config->manager->slug . '/(' . $post . ')/repair/id:(:num)'), function($segment = "", $id = false) use($config, $speak, $response) {
-    $id = Converter::strEval($id);
     $units = array('title', 'slug', 'link', 'content', 'content_type', 'description', 'post' . DS . 'author');
     foreach($units as $k => $v) {
         Weapon::add('tab_content_1_before', function($page, $segment) use($config, $speak, $v) {

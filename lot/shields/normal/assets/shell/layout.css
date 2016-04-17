@@ -647,6 +647,10 @@ pre {
 }
 
 @media (max-width:36.25em) {
+  .grid-group {
+    margin-right:0;
+    margin-left:0;
+  }
   .grid {
     float:none;
     display:block;

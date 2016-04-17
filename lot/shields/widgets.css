@@ -30,6 +30,13 @@ time {display:inline}
   clear:both;
 }
 
+.grid-group {
+  margin-right:-.6923076923076923em;
+  margin-right:-.6923076923076923rem;
+  margin-left:-.6923076923076923em;
+  margin-left:-.6923076923076923rem;
+}
+
 .grid {
   -webkit-box-sizing:border-box;
   -moz-box-sizing:border-box;
@@ -44,8 +51,10 @@ time {display:inline}
   cursor:inherit;
 }
 
-.grid:first-child {padding-left:0}
-.grid:last-child {padding-right:0}
+.grid-group.no-gap {
+  margin-right:0;
+  margin-left:0;
+}
 
 .no-gap .grid {
   padding-right:0;
