@@ -121,7 +121,7 @@ class HTTP extends Base {
 
     protected static function __($array, $key) {
         $results = array();
-        $s = $key ? '[' : "";
+        $s = $key ? ']' : "";
         foreach($array as $k => $v) {
             if(is_array($v)) {
                 $results = array_merge($results, self::__($v, $key . $k . $s . '['));
