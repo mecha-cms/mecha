@@ -2,7 +2,7 @@
 
 
 // URL segment(s)
-$segment = explode('/', $config->url_path);
+$segment = explode('/', $config->url_path . '/');
 $segment = $config->page_type === 'manager' ? $segment[1] : $segment[0];
 
 // Loading plug(s)

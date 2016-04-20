@@ -17,9 +17,9 @@
     )); ?>
     </span>
   </label>
-  <?php $origin = Config::get('url_origin', $config->manager->slug . '/article'); ?>
+  <?php $origin = Config::get('url_origin'); ?>
   <?php if($origin !== Filter::colon('manager:url', $config->url . '/' . $config->manager->slug . '/logout')): ?>
-  <?php echo Form::hidden('kick', Request::get('kick', $origin)); ?>
+  <?php echo Form::hidden('kick', Request::get('kick', $origin ? $origin : $config->manager->slug . '/article')); ?>
   <?php endif; ?>
   <div class="grid-group">
     <span class="grid span-2"></span>

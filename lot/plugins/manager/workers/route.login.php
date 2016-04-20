@@ -22,7 +22,7 @@ Route::accept($config->manager->slug . '/login', function() use($config, $speak)
     ));
     include __DIR__ . DS . 'cargo.php';
     if($request = Request::post()) {
-        Guardian::authorize()->kick(isset($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');
+        Guardian::authorize()->kick( ! empty($request['kick']) ? $request['kick'] : $config->manager->slug . '/article');
     }
     Shield::attach('manager-login');
 }, 20);

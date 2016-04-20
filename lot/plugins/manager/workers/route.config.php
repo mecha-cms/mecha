@@ -30,14 +30,6 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
             'search' => 'search',
             'manager' => 'manager'
         );
-        $slugs = array();
-        if($files = Get::pages()) {
-            foreach($files as $file) {
-                list($_time, $_kind, $_slug) = explode('_', File::N($file), 3);
-                $slugs[$_slug] = 1;
-            }
-            unset($files);
-        }
         foreach($bools as $bool => $fallback) {
             // Fix(es) for checkbox input(s)
             Mecha::SVR($request, $bool, Request::post($bool, $fallback));
@@ -52,11 +44,6 @@ Route::accept($config->manager->slug . '/config', function() use($config, $speak
                 floor(Request::post($page . '.per_page')) != Request::post($page . '.per_page')
             ) {
                 Notify::error($speak->notify_invalid_per_page_number);
-                Guardian::memorize($request);
-            }
-            // Check if slug already exists on static page(s)
-            if(isset($slugs[$request[$page]['slug']])) {
-                Notify::error(Config::speak('notify_error_slug_exist', $request[$page]['slug']));
                 Guardian::memorize($request);
             }
         }

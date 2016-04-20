@@ -56,14 +56,14 @@ Config::plug('load', function() {
             $page = 'index';
         }
     }
-    if(strpos($path, $config['tag']['slug'] . '/') === 0) $page = 'tag';
-    if(strpos($path, $config['archive']['slug'] . '/') === 0) $page = 'archive';
-    if(strpos($path, $config['search']['slug'] . '/') === 0) $page = 'search';
-    if(strpos($path, $config['manager']['slug'] . '/') === 0 && Plugin::exist('manager')) $page = 'manager';
-    if($path === 'sitemap') $page = 'sitemap';
-    if($path === 'feed') $page = 'feed';
-    if($path === 'feed/rss' || strpos($path, 'feed/rss/') === 0) $page = 'rss';
-    if($path === 'feed/json' || strpos($path, 'feed/json/') === 0) $page = 'json';
+    if(strpos($path . '/', $config['tag']['slug'] . '/') === 0) $page = 'tag';
+    if(strpos($path . '/', $config['archive']['slug'] . '/') === 0) $page = 'archive';
+    if(strpos($path . '/', $config['search']['slug'] . '/') === 0) $page = 'search';
+    if(strpos($path . '/', $config['manager']['slug'] . '/') === 0 && Plugin::exist('manager')) $page = 'manager';
+    if(strpos($path . '/', 'sitemap/') === 0) $page = 'sitemap';
+    if(strpos($path . '/', 'feed/') === 0) $page = 'feed';
+    if(strpos($path . '/', 'feed/rss/') === 0) $page = 'rss';
+    if(strpos($path . '/', 'feed/json/') === 0) $page = 'json';
 
     // Create proper query string data
     if($path !== "") {
