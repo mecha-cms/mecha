@@ -137,11 +137,11 @@ Get::plug('articles', function($order = 'DESC', $filter = "", $e = 'txt') {
  */
 
 Get::plug('pagesExtract', function($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt') {
-    return Get::postsExtract($order, $sorter, $filter, $e, 'page:', PAGE);
+    return Get::postsExtract($order, $sorter, $filter, $e, PAGE, 'page:');
 });
 
 Get::plug('articlesExtract', function($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt') {
-    return Get::postsExtract($order, $sorter, $filter, $e, 'article:', ARTICLE);
+    return Get::postsExtract($order, $sorter, $filter, $e, ARTICLE, 'article:');
 });
 
 
@@ -160,11 +160,11 @@ Get::plug('articlesExtract', function($order = 'DESC', $sorter = 'time', $filter
  */
 
 Get::plug('pageAnchor', function($path) {
-    return Get::postAnchor($path, PAGE, '/', 'page:');
+    return Get::postAnchor($path, PAGE, 'page:', '/');
 });
 
 Get::plug('articleAnchor', function($path) {
-    return Get::postAnchor($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    return Get::postAnchor($path, ARTICLE, 'article:', '/' . Config::get('index.slug') . '/');
 });
 
 
@@ -183,11 +183,11 @@ Get::plug('articleAnchor', function($path) {
  */
 
 Get::plug('pageHeader', function($path) {
-    return Get::postHeader($path, PAGE, '/', 'page:');
+    return Get::postHeader($path, PAGE, 'page:', '/');
 });
 
 Get::plug('articleHeader', function($path) {
-    return Get::postHeader($path, ARTICLE, '/' . Config::get('index.slug') . '/', 'article:');
+    return Get::postHeader($path, ARTICLE, 'article:', '/' . Config::get('index.slug') . '/');
 });
 
 
@@ -206,14 +206,14 @@ Get::plug('articleHeader', function($path) {
  */
 
 Get::plug('page', function($reference, $excludes = array()) {
-    return Get::post($reference, $excludes, PAGE, '/', 'page:');
+    return Get::post($reference, $excludes, PAGE, 'page:', '/');
 });
 
 Get::plug('article', function($reference, $excludes = array()) {
     $config = Config::get();
     $speak = Config::speak();
     $FP = 'article:';
-    if( ! $results = Get::post($reference, $excludes, ARTICLE, '/' . $config->index->slug . '/', $FP)) return $results;
+    if( ! $results = Get::post($reference, $excludes, ARTICLE, $FP, '/' . $config->index->slug . '/')) return $results;
     // Include comment(s) data
     $c = array();
     $cc = 0;
@@ -328,7 +328,7 @@ Get::plug('comments', function($order = 'ASC', $filter = "", $e = 'txt') {
  */
 
 Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt') {
-    return Get::responsesExtract($order, $sorter, $filter, $e, 'comment:', COMMENT);
+    return Get::responsesExtract($order, $sorter, $filter, $e, COMMENT, 'comment:');
 });
 
 
@@ -346,7 +346,7 @@ Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter 
  */
 
 Get::plug('commentAnchor', function($path) {
-    return Get::responseAnchor($path, array(COMMENT), 'comment:');
+    return Get::responseAnchor($path, array(COMMENT), array('comment:'));
 });
 
 
@@ -364,7 +364,7 @@ Get::plug('commentAnchor', function($path) {
  */
 
 Get::plug('commentHeader', function($path) {
-    return Get::responseHeader($path, array(COMMENT), '/' . Config::get('index.slug') . '/', 'comment:');
+    return Get::responseHeader($path, array(COMMENT), array('comment:'), '/' . Config::get('index.slug') . '/');
 });
 
 
@@ -390,7 +390,7 @@ Get::plug('commentHeader', function($path) {
  */
 
 Get::plug('comment', function($reference, $excludes = array()) {
-    return Get::response($reference, $excludes, array(COMMENT, ARTICLE), '/' . Config::get('index.slug') . '/', 'comment:');
+    return Get::response($reference, $excludes, array(COMMENT, ARTICLE), array('comment:', 'article:'), '/' . Config::get('index.slug') . '/');
 });
 
 

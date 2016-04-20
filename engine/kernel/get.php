@@ -640,7 +640,7 @@ class Get extends Base {
      *
      */
 
-    public static function postsExtract($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'page:', $folder = POST) {
+    public static function postsExtract($order = 'DESC', $sorter = 'time', $filter = "", $e = 'txt', $folder = POST, $FP = 'page:') {
         if($files = self::posts($order, $filter, $e, $folder)) {
             $results = array();
             foreach($files as $file) {
@@ -668,14 +668,14 @@ class Get extends Base {
      *  ---------- | ------ | ---------------------------------------------------
      *  $path      | string | The URL path of the post file, or a post slug
      *  $folder    | string | Folder of the post(s)
-     *  $connector | string | See `Get::post()`
      *  $FP        | string | See `Get::post()`
+     *  $connector | string | See `Get::post()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function postAnchor($path, $folder = POST, $connector = '/', $FP = 'post:') {
+    public static function postAnchor($path, $folder = POST, $FP = 'post:', $connector = '/') {
         if(strpos($path, ROOT) === false) {
             $path = self::postPath($path, $folder); // By post slug, ID or time
         }
@@ -708,14 +708,14 @@ class Get extends Base {
      *  ---------- | ------ | ---------------------------------------------------
      *  $path      | string | The URL path of the post file, or a post slug
      *  $folder    | string | Folder of the post(s)
-     *  $connector | string | See `Get::post()`
      *  $FP        | string | See `Get::post()`
+     *  $connector | string | See `Get::post()`
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function postHeader($path, $folder = POST, $connector = '/', $FP = 'post:') {
+    public static function postHeader($path, $folder = POST, $FP = 'post:', $connector = '/') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::postPath($path, $folder); // By page slug, ID or time
@@ -752,14 +752,14 @@ class Get extends Base {
      *  $reference | mixed  | Slug, ID, path or array of `Get::postExtract()`
      *  $excludes  | array  | Exclude some field(s) from result(s)
      *  $folder    | string | Folder of the post(s)
-     *  $connector | string | Path connector for post URL
      *  $FP        | string | Filter prefix for `Page::text()`
+     *  $connector | string | Path connector for post URL
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function post($reference, $excludes = array(), $folder = POST, $connector = '/', $FP = 'post:') {
+    public static function post($reference, $excludes = array(), $folder = POST, $FP = 'post:', $connector = '/') {
         $config = Config::get();
         $speak = Config::speak();
         $excludes = array_flip($excludes);
@@ -1066,7 +1066,7 @@ class Get extends Base {
      *
      */
 
-    public static function responsesExtract($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt', $FP = 'response:', $folder = RESPONSE) {
+    public static function responsesExtract($order = 'ASC', $sorter = 'time', $filter = "", $e = 'txt', $folder = RESPONSE, $FP = 'response:') {
         if($files = self::responses($order, $filter, $e, $folder)) {
             $results = array();
             foreach($files as $file) {
@@ -1091,17 +1091,17 @@ class Get extends Base {
      *
      */
 
-    public static function responseAnchor($path, $folder = array(RESPONSE, POST), $FP = 'response:') {
+    public static function responseAnchor($path, $folder = array(RESPONSE, POST), $FP = array('response:')) {
         if(strpos($path, ROOT) === false) {
             $path = self::responsePath($path, $folder[0]); // By post slug, ID or time
         }
         if($path && ($buffer = File::open($path)->get(1)) !== false) {
-            $results = self::responseExtract($path, $FP);
+            $results = self::responseExtract($path, $FP[0]);
             $parts = explode(S, $buffer, 2);
             $v = isset($parts[1]) ? Converter::DS(trim($parts[1])) : "";
-            $v = Filter::colon($FP . 'name_raw', $v, $results);
+            $v = Filter::colon($FP[0] . 'name_raw', $v, $results);
             $results['name_raw'] = $v;
-            $results['name'] = Filter::colon($FP . 'name', $v, $results);
+            $results['name'] = Filter::colon($FP[0] . 'name', $v, $results);
             return Mecha::O($results);
         }
         return false;
@@ -1120,20 +1120,20 @@ class Get extends Base {
      *
      */
 
-    public static function responseHeader($path, $folder = array(RESPONSE, POST), $connector = '/', $FP = 'response:') {
+    public static function responseHeader($path, $folder = array(RESPONSE, POST), $FP = array('response:'), $connector = '/') {
         $config = Config::get();
         if(strpos($path, ROOT) === false) {
             $path = self::responsePath($path, $folder[0]); // By response ID or time
         }
         if( ! $path) return false;
-        $results = self::responseExtract($path, $FP);
-        $results = $results + Page::text($path, false, $FP, array(
+        $results = self::responseExtract($path, $FP[0]);
+        $results = $results + Page::text($path, false, $FP[0], array(
             'url' => '#',
             'content_type' => $config->html_parser->active,
             'fields' => array()
         ), $results);
-        $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        self::__fields($results, $FP);
+        $results['date'] = Filter::colon($FP[0] . 'date', Date::extract($results['time']), $results);
+        self::__fields($results, $FP[0]);
         return Mecha::O($results);
     }
 
@@ -1154,14 +1154,14 @@ class Get extends Base {
      *  $reference | string | Response path, ID or time
      *  $excludes  | array  | Exclude some field(s) from result(s)
      *  $folder    | string | Folder of response(s) and response(s)' post
-     *  $connector | string | Path connector for permalink URL
      *  $FP        | string | Filter prefix for `Page::text()`
+     *  $connector | string | Path connector for permalink URL
      *  ---------- | ------ | ---------------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function response($reference, $excludes = array(), $folder = array(), $connector = '/', $FP = 'response:') {
+    public static function response($reference, $excludes = array(), $folder = array(), $FP = array('response:', 'post:'), $connector = '/') {
         $config = Config::get();
         $excludes = array_flip($excludes);
         $results = false;
@@ -1171,14 +1171,14 @@ class Get extends Base {
                 $reference = self::responsePath($reference, $folder[0]);
             }
             // By path => `lot\responses\{$folder[0]}\2014-05-24-11-17-06_2014-06-21-20-05-17_0000-00-00-00-00-00.txt`
-            $results = self::responseExtract($reference, $FP);
+            $results = self::responseExtract($reference, $FP[0]);
         } else {
             // From `Get::responseExtract()`
             $results = $reference;
         }
         if( ! $results || ! file_exists($results['path'])) return false;
-        $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
-        $results = $results + Page::text(file_get_contents($results['path']), 'message', $FP, array(
+        $results['date'] = Filter::colon($FP[0] . 'date', Date::extract($results['time']), $results);
+        $results = $results + Page::text(file_get_contents($results['path']), 'message', $FP[0], array(
             'url' => '#',
             'content_type' => $config->html_parser->active,
             'fields' => array(),
@@ -1186,14 +1186,14 @@ class Get extends Base {
         ), $results);
         if( ! isset($excludes['permalink'])) {
             if($path = self::postPath($results['post'], $folder[1])) {
-                $link = self::postAnchor($path, $folder[1], $connector, "")->url . '#' . rtrim($FP, ':') . '-' . $results['id'];
+                $link = self::postAnchor($path, $folder[1], $FP[1], $connector)->url . '#' . rtrim($FP[0], ':') . '-' . $results['id'];
             } else {
                 $link = '#';
             }
-            $results['permalink'] = Filter::colon($FP . 'permalink', $link, $results);
+            $results['permalink'] = Filter::colon($FP[0] . 'permalink', $link, $results);
         }
         if( ! isset($excludes['fields'])) {
-            self::__fields($results, $FP);
+            self::__fields($results, $FP[0]);
         }
         foreach($results as $key => $value) {
             if(isset($excludes[$key])) {
