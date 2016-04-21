@@ -1328,7 +1328,7 @@ class Get extends Base {
                 // So we have to check the existence of the file first. If it does not exist, then it may be
                 // contained with file extension(s), not with a file name
                 if($v['type'] === 'file' || $v['type'] === 'f') {
-                    $e = File::E($s, false);
+                    $e = strpos($s, '.') !== false ? File::E($s, false) : false;
                     $s = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $s, "") : "";
                 }
             }
