@@ -1313,7 +1313,7 @@ class Get extends Base {
             if($s === null) {
                 // For `option` field type, the first option will be used as the default value
                 if($v['type'] === 'option' || $v['type'] === 'o') {
-                    $vv = array_keys(Converter::toArray($v['value']));
+                    $vv = array_values(Converter::toArray($v['value'], S, '  '));
                     if(isset($v['placeholder']) && trim($v['placeholder']) !== "") {
                         // do nothing ...
                     } else {

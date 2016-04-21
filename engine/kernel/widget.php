@@ -9,13 +9,15 @@ class Widget {
     );
 
     protected static $w = array(
-        'archive' => 1,
-        'tag' => 1,
-        'search' => 1,
-        'recentResponse' => 1,
-        'recentPost' => 1,
-        'randomPost' => 1,
-        'relatedPost' => 1
+        __CLASS__ => array(
+            'archive' => 1,
+            'tag' => 1,
+            'search' => 1,
+            'recentResponse' => 1,
+            'recentPost' => 1,
+            'randomPost' => 1,
+            'relatedPost' => 1
+        )
     );
 
     protected static $w_x = array();
