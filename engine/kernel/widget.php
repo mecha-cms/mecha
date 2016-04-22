@@ -129,6 +129,7 @@ class Widget {
         $id = Config::get('widget_tag_' . $kin . '_id', 0) + 1;
         $config = Config::get();
         $speak = Config::speak();
+        $query = $config->tag_query;
         $counters = array();
         $tags = array();
         $html = O_BEGIN . '<div class="widget widget-tag widget-tag-' . $kin . '" id="widget-tag-' . $kin . '-' . $id . '">' . NL;
@@ -155,7 +156,7 @@ class Widget {
                 if($type === 'LIST') {
                     $html .= $T1 . '<ul>' . NL;
                     foreach($tags as $tag) {
-                        $html .= $T2 . '<li' . ($config->tag_query === $tag['slug'] ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
+                        $html .= $T2 . '<li' . ($query === $tag['slug'] ? ' class="' . self::$config['classes']['current'] . '"' : "") . '><a href="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></li>' . NL;
                     }
                     $html .= $T1 . '</ul>' . NL;
                 }
@@ -168,14 +169,14 @@ class Widget {
                     $_html = array();
                     foreach($tags as $tag) {
                         $size = ceil(($tag['count'] / $highest_count) * $max_level);
-                        $_html[] = '<span class="size size-' . $size . ($config->tag_query === $tag['slug'] ? ' ' . self::$config['classes']['current'] : "") . '"><a href="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
+                        $_html[] = '<span class="size size-' . $size . ($query === $tag['slug'] ? ' ' . self::$config['classes']['current'] : "") . '"><a href="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '" rel="tag">' . $tag['name'] . '</a> <span class="counter">' . $tag['count'] . '</span></span>';
                     }
                     $html .= $T1 . implode(' ', $_html) . NL;
                 }
                 if($type === 'DROPDOWN') {
-                    $html .= $T1 . '<select>' . NL . ($config->tag_query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
+                    $html .= $T1 . '<select>' . NL . ($query === "" ? $T2 . '<option disabled selected>' . $speak->select . '&hellip;</option>' . NL : "");
                     foreach($tags as $tag) {
-                        $html .= $T2 . '<option value="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '"' . ($config->tag_query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
+                        $html .= $T2 . '<option value="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag['slug']) . '"' . ($query === $tag['slug'] ? ' selected' : "") . '>' . $tag['name'] . ' (' . $tag['count'] . ')</option>' . NL;
                     }
                     $html .= $T1 . '</select>' . NL;
                 }
