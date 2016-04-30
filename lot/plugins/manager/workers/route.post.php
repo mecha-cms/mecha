@@ -102,7 +102,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             Guardian::memorize($request);
         }
         $rid = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());
-        $request['path'] = $post->path;
         // Set post date by submitted time, or by input value if available
         $date = date('c', $rid);
         // General field(s)
@@ -172,6 +171,10 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             }
             unset($files);
         }
+        $_ = POST . DS . $segment . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension;
+        $request['path'] = $_;
+        $request['kind'] = $kind;
+        $request['slug'] = $slug;
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             include __DIR__ . DS . 'task.substance.ignite.php';
@@ -184,7 +187,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
                 'Content Type' => Request::post('content_type', 'HTML'),
                 'Fields' => ! empty($field) ? Text::parse($field, '->encoded_json') : false
             );
-            $_ = POST . DS . $segment . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension;
             // Ignite
             if( ! $id) {
                 Page::header($header)->content($content)->saveTo($_);
