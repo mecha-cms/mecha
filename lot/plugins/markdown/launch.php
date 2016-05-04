@@ -22,19 +22,17 @@ function do_parse_markdown($input) {
     return $parser->text($input);
 }
 
-function do_parse($content, $results = array()) {
-    $results = (object) $results;
-    if( ! isset($results->content_type) || $results->content_type === 'Markdown') {
-        return do_parse_markdown($content);
-    }
-    return $content;
-}
-
 // Re-write `Text::parse($input, '->html')` parser
 Text::parser('to_html', 'do_parse_markdown');
 
 // Apply `do_parse` filter
-Filter::add(array('content', 'message'), 'do_parse', 1);
+Filter::add(array('content', 'message'), function($content, $header = array()) {
+    $header = (object) $header;
+    if( ! isset($header->content_type) || $header->content_type === 'Markdown') {
+        return do_parse_markdown($content);
+    }
+    return $content;
+}, 1);
 
 // Set new `html_parser` type
 Config::merge('html_parser.type', array(

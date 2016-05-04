@@ -93,6 +93,7 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         $rid = $id ? $id : time();
+        $request['id'] = $rid;
         $request['post'] = Request::post('post');
         $request['parent'] = Request::post('parent');
         $extension = $request['extension'];

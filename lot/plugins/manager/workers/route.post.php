@@ -147,8 +147,8 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         $field = Request::post('fields', array());
         // Slug must contains at least one letter or one `-`. This validation added
         // to prevent user(s) from inputting a page offset instead of post slug.
-        // Because the URL pattern of post's index page is `$post/1` and the
-        // URL pattern of post's single page is `$post/post-slug`
+        // Because the URL pattern of post's index page is `{$post}/1` and the
+        // URL pattern of post's single page is `{$post}/post-slug`
         if(is_numeric($slug)) {
             Notify::error($speak->notify_error_slug_missing_letter);
             Guardian::memorize($request);
@@ -172,9 +172,11 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             unset($files);
         }
         $_ = POST . DS . $segment . DS . Date::slug($date) . '_' . implode(',', $kind) . '_' . $slug . $extension;
-        $request['path'] = $_;
+        $request['id'] = $rid;
+        $request['date'] = $date;
         $request['kind'] = $kind;
         $request['slug'] = $slug;
+        $request['path'] = $_;
         $P = array('data' => $request);
         if( ! Notify::errors()) {
             include __DIR__ . DS . 'task.substance.ignite.php';

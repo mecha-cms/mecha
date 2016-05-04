@@ -69,7 +69,7 @@ Weapon::add('meta', function() use($config, $speak, $segment) {
             'query' => $config->url_query
         )
     );
-    $output = O_BEGIN . '<script>var ' . rtrim($constant_js, ',') . ';';
+    $output = O_BEGIN . '<script>var ' . substr($constant_js, 0, -1) . ';';
     foreach($cargo as $k => $v) {
         $output .= 'DASHBOARD.' . $k . '=' . json_encode($v) . ';';
     }

@@ -1,7 +1,7 @@
 Title: Cache
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.0.1
+Version: 1.0.2
 
 ====
 

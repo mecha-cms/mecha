@@ -101,7 +101,7 @@ if( ! function_exists('do_comment_construct')) {
                         $field = Request::post('fields', array());
                         include __DIR__ . DS . 'task.fields.php';
                         // Temporarily disallow image(s) in comment to prevent XSS
-                        $message = preg_replace('#<img(\s[^<>]*?)>#i', '&lt;img$1&gt;', $message);
+                        $message = preg_replace('#<img(\s[^>]*?)>#i', '&lt;img$1&gt;', $message);
                         Page::header(array(
                             'Name' => $name,
                             'Email' => $email,

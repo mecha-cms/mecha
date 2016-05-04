@@ -6,7 +6,7 @@ __:
   title: Bahasa Indonesia
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.2
+  version: 1.2.3
 
 
 # ----------------------------
@@ -176,6 +176,7 @@ descriptions: Deskripsi
 text: Teks
 
 summary: Ringkasan
+summarys: Ringkasan
 summaries: Ringkasan
 
 boolean: Boolean
@@ -307,12 +308,16 @@ contents: Konten
 
 tag: Label
 tags: Label
-tagged: Ditandai sebagai
+tagged: Ditandai
 untagged: Tak Berlabel
 
 category: Kategori
+categorys: Kategori
 categories: Kategori
+categorised: Dikategorikan
+categorized: Dikategorikan
 uncategorised: Tak Berkategori
+uncategorized: Tak Berkategori
 
 archive: Arsip
 archives: Arsip

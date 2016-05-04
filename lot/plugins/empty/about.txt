@@ -1,6 +1,6 @@
 Title: Empty Plugin
 Author: Taufik Nurrohman
-URL: #
+URL: http://mecha-cms.com
 Version: 0.0.0
 
 ====

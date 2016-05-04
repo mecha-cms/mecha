@@ -68,7 +68,7 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
         if(trim($request['slug']) === "") {
             $request['slug'] = $request['name'];
         }
-        $s = Text::parse($request['slug'], '->slug');
+        $s = $request['slug'] = Text::parse($request['slug'], '->slug');
         $rid = $request['id'];
         if($id === false) {
             $slugs = array();
@@ -93,6 +93,7 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
             'description' => $request['description']
         );
         if(isset($request['scope']) && is_array($request['scope'])) {
+            sort($request['scope']);
             $tags[$rid]['scope'] = implode(',', $request['scope']);
         }
         $P = array('data' => $request);

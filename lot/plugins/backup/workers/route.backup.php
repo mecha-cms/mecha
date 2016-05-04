@@ -7,9 +7,6 @@
  */
 
 Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
-    if( ! Guardian::happy(1)) {
-        Shield::abort();
-    }
     // Remove backup file(s) that is failed to delete
     if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip', GLOB_NOSORT)) {
         foreach($backup as $back) {
@@ -17,7 +14,6 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         }
     }
     if(isset($_FILES) && ! empty($_FILES)) {
-        $request = Filter::apply('request:__backup', Request::post());
         Guardian::checkToken($request['token']);
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
@@ -55,9 +51,6 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
  */
 
 Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin = "") use($config, $speak) {
-    if( ! Guardian::happy(1)) {
-        Shield::abort();
-    }
     $time = Date::slug(time());
     $site = Text::parse($config->title, '->slug');
     if(trim($origin, '.') === "") {
@@ -86,11 +79,12 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
                 '__editor-button',
                 '__preview',
                 'asset-version',
+                'backup',
                 'cache',
                 'comment-location',
                 'comment-notify',
                 'empty',
-                'facebook-open-graph',
+                'facebook-open-graph__',
                 'manager',
                 'markdown',
                 'minify',
@@ -109,9 +103,6 @@ Route::accept($config->manager->slug . '/backup/origin:(:all)', function($origin
  */
 
 Route::accept($config->manager->slug . '/backup/send:(:any)', function($file = "") use($config, $speak) {
-    if( ! Guardian::happy(1)) {
-        Shield::abort();
-    }
     if($backup = File::exist(ROOT . DS . $file)) {
         $G = array('data' => array('path' => $backup, 'file' => $backup));
         Weapon::fire('on_backup_construct', array($G, $G));

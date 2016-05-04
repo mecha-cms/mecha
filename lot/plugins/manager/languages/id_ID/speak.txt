@@ -60,7 +60,7 @@ manager:
   title_comment_allow: Aktifkan Komentar
   title_comment_moderation: Aktifkan Moderasi Komentar
 
-  title_html_charset: Charset <abbr title="Hyper Text Markup Language">HTML</abbr>
+  title_html_charset: Set Karakter <abbr title="Hyper Text Markup Language">HTML</abbr>
   title_html_parser_type: Parser <abbr title="Hyper Text Markup Language">HTML</abbr> 
   title_html_parser_enable: Aktifkan Parser <abbr title="Hyper Text Markup Language">HTML</abbr>
 

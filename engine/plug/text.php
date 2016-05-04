@@ -22,7 +22,7 @@ Text::parser('to_ascii', function($input, $mode = 'dec') {
     return $results;
 });
 
-// Obfuscate text (taken from the source code of Markdown plugin)
+// Obfuscate text (taken from the source code of PHP Markdown)
 Text::parser('to_broken_entity', function($input) {
     if( ! is_string($input) || $input === "") return $input;
     $chars = preg_split('#(?<!^)(?!$)#', $input);
@@ -32,7 +32,7 @@ Text::parser('to_broken_entity', function($input) {
         if($ord < 128) {
             $r = ($s * (1 + $k)) % 100;
             if($r > 90 && strpos('@"&>', $v) === false) {
-                /* do nothing */
+                // do nothing ...
             } else if($r < 45) {
                 $chars[$k] = '&#x' . dechex($ord) . ';';
             } else {

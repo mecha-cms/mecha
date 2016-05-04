@@ -18,6 +18,11 @@ class Base {
         self::$o[get_called_class()][$kin] = $action;
     }
 
+    // Remove the added method with `Base::unplug('foo')`
+    public static function unplug($kin) {
+        unset(self::$o[get_called_class()][$kin]);
+    }
+
     // Call the added method with `Base::foo()`
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();

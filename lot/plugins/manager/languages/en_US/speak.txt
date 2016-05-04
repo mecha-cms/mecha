@@ -60,7 +60,7 @@ manager:
   title_comment_allow: Enable Comments
   title_comment_moderation: Enable Comment Moderation
 
-  title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Charset
+  title_html_charset: <abbr title="Hyper Text Markup Language">HTML</abbr> Character Set
   title_html_parser_type: <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
   title_html_parser_enable: Enable <abbr title="Hyper Text Markup Language">HTML</abbr> Parser
 

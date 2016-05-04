@@ -399,8 +399,8 @@ class Get extends Base {
             foreach($tags as $k => $v) {
                 if(
                     (is_numeric($filter) && (int) $filter === (int) $v->id) || // by ID
-                    (is_string($filter) && (string) $filter === (string) $v->slug) || // by slug
-                    (is_string($filter) && (string) $filter === (string) $v->name) // by name
+                    (string) $filter === (string) $v->slug || // by slug
+                    (string) $filter === (string) $v->name // by name
                 ) {
                     return is_null($output) ? $v : (isset($v->{$output}) ? $v->{$output} : $fallback);
                 }

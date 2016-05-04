@@ -5,7 +5,7 @@ function do_facebook_open_graph() {
     $T2 = str_repeat(TAB, 2);
     echo O_BEGIN . $T2 . '<!-- Start Facebook Open Graph -->' . NL;
     echo $T2 . '<meta property="og:title" content="' . Text::parse($config->page_title, '->text') . '"' . ES . NL;
-    echo $T2 . '<meta property="og:url" content="' . Filter::colon('og:url', $config->url_current) . '"' . ES . NL;
+    echo $T2 . '<meta property="og:url" content="' . $config->url_current . '"' . ES . NL;
     if(isset($config->{$config->page_type}->description)) {
         $config->description = $config->{$config->page_type}->description;
     }

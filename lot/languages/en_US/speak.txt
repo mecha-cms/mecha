@@ -6,7 +6,7 @@ __:
   title: English
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.2
+  version: 1.2.3
 
 
 # ----------------------------
@@ -176,6 +176,7 @@ descriptions: Descriptions
 text: Text
 
 summary: Summary
+summarys: Summaries
 summaries: Summaries
 
 boolean: Boolean
@@ -311,8 +312,12 @@ tagged: Tagged
 untagged: Untagged
 
 category: Category
+categorys: Categories
 categories: Categories
+categorised: Categorised
+categorized: Categorized
 uncategorised: Uncategorised
+uncategorized: Uncategorized
 
 archive: Archive
 archives: Archives

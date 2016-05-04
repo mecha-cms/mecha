@@ -9,14 +9,14 @@ Weapon::add('tab_content_2_before', function($page, $segment) use($config, $spea
     }
 }, .9);
 
-Weapon::add('tab_content_after', function($page, $segment) use($config, $speak) {
-    if(isset($page->path) && ($page->path === "" || Text::check(array(POST . DS, RESPONSE . DS))->in($page->path))) {
-        include __DIR__ . DS . 'workers' . DS . 'unit' . DS . 'tab' . DS . 'content' . DS . 'preview.php';
-    }
-});
-
 Weapon::add('tab_button_after', function($page, $segment) use($config, $speak) {
     if(isset($page->path) && ($page->path === "" || Text::check(array(POST . DS, RESPONSE . DS))->in($page->path))) {
         include __DIR__ . DS . 'workers' . DS . 'unit' . DS . 'tab' . DS . 'button' . DS . 'preview.php';
+    }
+});
+
+Weapon::add('tab_content_after', function($page, $segment) use($config, $speak) {
+    if(isset($page->path) && ($page->path === "" || Text::check(array(POST . DS, RESPONSE . DS))->in($page->path))) {
+        include __DIR__ . DS . 'workers' . DS . 'unit' . DS . 'tab' . DS . 'content' . DS . 'preview.php';
     }
 });

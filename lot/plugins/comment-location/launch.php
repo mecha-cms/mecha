@@ -1,6 +1,6 @@
 <?php
 
-if($config->page_type === 'article' && Request::method('post')) {
+if($config->is->post && Request::method('post')) {
     if( ! isset($_POST['fields'])) $_POST['fields'] = array();
     Mecha::extend($_POST['fields'], array(
         'user_ip' => array('type' => 'hidden', 'value' => Get::IP()),
