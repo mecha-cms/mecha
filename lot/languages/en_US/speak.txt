@@ -311,14 +311,6 @@ tags: Tags
 tagged: Tagged
 untagged: Untagged
 
-category: Category
-categorys: Categories
-categories: Categories
-categorised: Categorised
-categorized: Categorized
-uncategorised: Uncategorised
-uncategorized: Uncategorized
-
 archive: Archive
 archives: Archives
 

@@ -24,7 +24,8 @@ Route::over($config->manager->slug . '/plugin/' . File::B(__DIR__) . '/update', 
  */
 
 function do_remove_cache() {
-    global $config, $c_cache;
+    global $config;
+    $c_cache = $config->states->{'plugin_' . md5(File::B(__DIR__))};
     foreach($c_cache->path as $path => $expire) {
         $path = str_replace(
             array(

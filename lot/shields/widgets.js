@@ -2,14 +2,15 @@ var Widget = function() {
 
     var base = this,
         win = window,
-        doc = document;
+        doc = document,
+        elem;
 
     // Widget Archive
     base.archive = function(type, id) {
 
         // Hierarchy
         if (type === 'HIERARCHY') {
-            var elem = doc.getElementById(id);
+            elem = doc.getElementById(id);
             if (!elem) return;
             var ul = elem.getElementsByTagName('ul'),
                 click = function(ref) {

@@ -311,14 +311,6 @@ tags: Label
 tagged: Ditandai
 untagged: Tak Berlabel
 
-category: Kategori
-categorys: Kategori
-categories: Kategori
-categorised: Dikategorikan
-categorized: Dikategorikan
-uncategorised: Tak Berkategori
-uncategorized: Tak Berkategori
-
 archive: Arsip
 archives: Arsip
 

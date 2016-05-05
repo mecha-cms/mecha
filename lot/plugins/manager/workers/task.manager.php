@@ -293,12 +293,13 @@ Weapon::add('shield_before', function() {
             'stack' => 9.05
         );
     } else {
-        $posts = Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), function($v) use($config, $speak) {
-            $s = File::B($v);
-            $ss = isset($speak->{$s}) ? $speak->{$s} : Text::parse($s, '->title');
-            $ss = Config::speak('manager.title_new_', $ss);
-            return Cell::a($config->manager->slug . '/' . $s . '/ignite', $ss);
-        });
+        $posts = array();
+        foreach(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $post) {
+            $post = File::B($post);
+            $s = isset($speak->{$post}) ? $speak->{$post} : Text::parse($post, '->title');
+            $s = Config::speak('manager.title_new_', $s);
+            $posts[] = Cell::a($config->manager->slug . '/' . $post . '/ignite', $s);
+        }
         $bars[$speak->add] = array(
             'icon' => 'plus',
             'url' => $config->manager->slug . '/article/ignite',

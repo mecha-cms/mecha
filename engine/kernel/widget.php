@@ -135,9 +135,9 @@ class Widget {
         $html = O_BEGIN . '<div class="widget widget-tag widget-tag-' . $kin . '" id="widget-tag-' . $kin . '-' . $id . '">' . NL;
         if($files = call_user_func('Get::' . $p . 's')) {
             foreach($files as $file) {
-                list($_time, $_kind, $_name) = explode('_', File::B($file), 3);
+                list($_time, $_kind, $_slug) = explode('_', File::N($file), 3);
                 foreach(explode(',', $_kind) as $kind) {
-                    $counters[] = (int) $kind;
+                    $counters[] = $kind;
                 }
             }
             foreach(array_count_values($counters) as $id => $count) {
