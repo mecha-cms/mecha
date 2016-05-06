@@ -1,50 +1,58 @@
 <?php
 
-$bucket = array();
-$url_base = $config->url . '/feed/rss';
-$rss_order = strtoupper(Request::get('order', 'DESC'));
-$rss_filter = Request::get('filter', "");
-$rss_limit = Request::get('chunk', 25);
+HTTP::mime('text/xml', $config->charset);
 
-if($pages = Mecha::eat(Get::articles($rss_order, $rss_filter))->chunk($config->offset, $rss_limit)->vomit()) {
-    foreach($pages as $path) {
-        $bucket[] = Get::articleHeader($path);
-    }
-}
+$s = Request::get('scope', 'article');
+
+$rss = array(
+    'meta' => array(
+        'generator' => 'Mecha ' . MECHA_VERSION,
+        'title' => $config->title,
+        'slogan' => $config->slogan,
+        'url' => array(
+            'home' => $config->url,
+            'prev' => $pager->prev->anchor ? $pager->prev->url : null,
+            'next' => $pager->next->anchor ? $pager->next->url : null,
+            'current' => $config->url_current
+        ),
+        'description' => $config->description,
+        'update' => date('c'),
+        'author' => (array) $config->author,
+        'offset' => $config->offset,
+        'total' => $config->{'total_' . $s . 's'},
+        'tags' => call_user_func('Get::' . $s . 'Tags')
+    ),
+    'item' => ! empty($config->{$s . 's'}) ? Mecha::A($config->{$s . 's'}) : null
+);
+
+$rss = Filter::colon($s . ':rss', $rss);
 
 echo '<?xml version="1.0" encoding="UTF-8" ?>';
 echo '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">';
 echo '<channel>';
-echo '<generator>Mecha ' . MECHA_VERSION . '</generator>';
-echo '<title>' . $config->title . '</title>';
-echo '<link>' . $config->url . '/</link>';
-echo '<description>' . $config->description . '</description>';
-echo '<lastBuildDate>' . Date::format(time(), 'r') . '</lastBuildDate>';
-echo '<atom:link rel="self" href="' . $config->url_current . '"/>';
-echo $config->offset > 1 ? '<atom:link rel="previous" href="' . Filter::colon('feed:url', $url_base . '/' . ($config->offset - 1)) . '"/>' : "";
-echo $config->offset < ceil($config->total_articles / $rss_limit) ? '<atom:link rel="next" href="' . Filter::colon('feed:url', $url_base . '/' . ($config->offset + 1)) . '"/>' : "";
+echo '<generator>' . $rss['meta']['generator'] . '</generator>';
+echo '<title>' . $rss['meta']['title'] . '</title>';
+echo '<link>' . $rss['meta']['url']['home'] . '/</link>';
+echo '<description>' . $rss['meta']['description'] . '</description>';
+echo '<lastBuildDate>' . Date::format($rss['meta']['update'], 'r') . '</lastBuildDate>';
+echo '<atom:link rel="self" href="' . $rss['meta']['url']['current'] . '"/>';
+echo $rss['meta']['url']['prev'] ? '<atom:link rel="previous" href="' . $rss['meta']['url']['prev'] . '"/>' : "";
+echo $rss['meta']['url']['next'] ? '<atom:link rel="next" href="' . $rss['meta']['url']['next'] . '"/>' : "";
 
-Weapon::fire('rss_meta');
-
-if( ! empty($bucket)) {
-    foreach($bucket as $i => $item) {
-        $title = strip_tags($item->title);
-        $description = $item->description;
-        $kind = Mecha::A($item->kind);
+if( ! empty($rss['item'])) {
+    foreach($rss['item'] as $k => $v) {
         echo '<item>';
-        echo '<title><![CDATA[' . $title . ']]></title>';
-        echo '<link>' . $item->url . '</link>';
-        echo '<description><![CDATA[' . $description . ']]></description>';
-        echo '<pubDate>' . Date::format($item->time, 'r') . '</pubDate>';
-        echo '<guid>' . $item->url . '</guid>';
-        if( ! empty($kind)) {
-            foreach($kind as $k) {
-                $tag = Get::articleTag($k);
-                echo '<category domain="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $tag->slug) . '">' . $tag->name . '</category>';
+        echo '<title><![CDATA[' . $v['title'] . ']]></title>';
+        echo '<link>' . $v['url'] . '</link>';
+        echo '<description><![CDATA[' . $v['description'] . ']]></description>';
+        echo '<pubDate>' . Date::format($v['time'], 'r') . '</pubDate>';
+        echo '<guid>' . $v['url'] . '</guid>';
+        foreach($v['kind'] as $vv) {
+            if($vv = call_user_func('Get::' . $s . 'Tag', 'id:' . $vv)) {
+                echo '<category domain="' . Filter::colon('tag:url', $config->url . '/' . $config->tag->slug . '/' . $vv->slug) . '">' . $vv->name . '</category>';
             }
         }
-        echo '<source url="' . $item->url . '"><![CDATA[' . $config->title . ': ' . $title . ']]></source>';
-        Weapon::fire('rss_item', array($item, $i));
+        echo '<source url="' . $v['url'] . '"><![CDATA[' . $rss['meta']['title'] . ': ' . $v['title'] . ']]></source>';
         echo '</item>';
     }
 }

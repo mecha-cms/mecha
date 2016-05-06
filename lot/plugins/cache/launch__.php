@@ -16,7 +16,7 @@ if(isset($c_cache->path->{$config->url_path})) {
 }
 
 if($route_cache !== false) {
-    Weapon::add('shield_before', function() use($config, $route_cache) {
+    Weapon::add('shield_lot_after', function() use($config, $route_cache) {
         $q = ! empty($config->url_query) ? '.' . md5($config->url_query) : "";
         $cache = CACHE . DS . str_replace(array('/', ':'), '.', $config->url_path) . $q . '.cache';
         $time = file_exists($cache) ? filemtime($cache) : false;

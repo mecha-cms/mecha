@@ -32,8 +32,9 @@ Route::accept(array($config->manager->slug . '/tag/ignite', $config->manager->sl
         Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
             echo '<script>(function($){$.slug(\'name\',\'slug\',\'-\')})(DASHBOARD.$);</script>';
         }, 11);
+        $_ = array_keys($tags);
         $data = array(
-            'id' => max(array_keys($tags)) + 1,
+            'id' => $_ ? max($_) + 1 : 0,
             'name' => "",
             'slug' => "",
             'description' => "",

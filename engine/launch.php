@@ -283,38 +283,52 @@ Route::accept('sitemap', function() use($config) {
 
 
 /**
- * RSS Feed
- * --------
+ * Feed
+ * ----
  *
  * [1]. feed
  * [2]. feed/rss
  * [3]. feed/rss/1
- *
- */
-
-Route::accept(array('feed', 'feed/rss', 'feed/rss/(:num)'), function($offset = 1) use($config) {
-    Config::set('offset', $offset);
-    HTTP::mime('text/xml', $config->charset);
-    Shield::attach(SHIELD . DS . 'rss.php');
-}, 81);
-
-
-/**
- * JSON Feed
- * ---------
  *
  * [1]. feed/json
  * [2]. feed/json/1
  * [3]. feed/json?callback=whatTheFunc
  * [4]. feed/json/1?callback=whatTheFunc
  *
+ * [1]. feed/sitemap
+ *
  */
 
-Route::accept(array('feed/json', 'feed/json/(:num)'), function($offset = 1) use($config) {
-    Config::set('offset', $offset);
-    HTTP::mime('application/json', $config->charset);
-    Shield::attach(SHIELD . DS . 'json.php');
-}, 82);
+Route::accept(array('feed', 'feed/(:any)', 'feed/(:any)/(:num)'), function($slug = 'rss', $offset = 1) use($config) {
+    if($slug === 'sitemap') Route::execute('sitemap');
+    $order = strtoupper(Request::get('order', 'DESC'));
+    $filter = Request::get('filter', "");
+    $chunk = Request::get('chunk', 25);
+    $scope = Request::get('scope', 'article');
+    if( ! file_exists(SHIELD . DS . $slug . '.php') || ! Get::kin($scope . 's') || ! is_callable('Get::' . $scope . 's')) {
+        Shield::abort('404-feed');
+    }
+    $s = call_user_func('Get::' . $scope . 's', $order, $filter);
+    if($posts = Mecha::eat($s)->chunk($offset, $chunk)->vomit()) {
+        $posts = Mecha::walk($posts, function($path) use($scope) {
+            $post = call_user_func('Get::' . $scope . 'Header', $path);
+            // Hide sensitive data from public ...
+            unset($post->path, $post->date, $post->fields, $post->fields_raw);
+            return $post;
+        });
+    } else {
+        Shield::abort('404-feed');
+    }
+    Filter::add('pager:url', function($url) {
+        return Filter::apply('feed:url', $url);
+    });
+    Config::set(array(
+        'offset' => $offset,
+        $scope . 's' => $posts,
+        'pagination' => Navigator::extract($s, $offset, $chunk, 'feed/' . $slug)
+    ));
+    Shield::attach(SHIELD . DS . $slug . '.php');
+}, 81);
 
 
 /**
