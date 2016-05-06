@@ -81,7 +81,7 @@ foreach($c_markdown->abbreviations as $k => $v) {
     <div class="grid span-4">
       <div><?php echo Form::checkbox('links_external_attr[rel]', 'nofollow', isset($c_markdown->links_external_attr->rel), $speak->plugin_markdown->title->is_links_external_attr_rel); ?></div>
       <div><?php echo Form::checkbox('links_external_attr[target]', '_blank', isset($c_markdown->links_external_attr->target), $speak->plugin_markdown->title->is_links_external_attr_target); ?></div>
-      <div><?php echo Form::checkbox('code_block_attr_on_pre', true, isset($c_markdown->code_block_attr_on_pre), $speak->plugin_markdown->title->is_code_block_attr_on_pre_active); ?></div>
+      <div><?php echo Form::checkbox('code_block_attr_on_parent', true, isset($c_markdown->code_block_attr_on_parent), $speak->plugin_markdown->title->is_code_block_attr_on_parent_active); ?></div>
       <div><?php echo Form::checkbox('__setBreaksEnabled', true, isset($c_markdown->__setBreaksEnabled), $speak->plugin_markdown->title->is_set_break_enable_active . ' ' . Jot::info($speak->plugin_markdown->description->is_set_break_enable_active)); ?></div>
       <div><?php echo Form::checkbox('__setUrlsLinked', true, isset($c_markdown->__setUrlsLinked), $speak->plugin_markdown->title->is_set_urls_link_active . ' ' . Jot::info($speak->plugin_markdown->description->is_set_urls_link_active)); ?></div>
       <div><?php echo Form::checkbox('__setMarkupEscaped', true, isset($c_markdown->__setMarkupEscaped), $speak->plugin_markdown->title->is_set_markup_escape_active); ?></div>

@@ -31,7 +31,7 @@ plugin_markdown:
     footnote_back_link_id: ID Tautan Kembali Catatan Kaki
     is_links_external_attr_rel: Atribut <code>rel="nofollow"</code> Otomatis pada Tautan Eksternal
     is_links_external_attr_target: Buka Tautan Eksternal pada Jendela Baru
-    is_code_block_attr_on_pre_active: Letakkan Atribut Kode pada Elemen <code>&lt;pre&gt;</code>
+    is_code_block_attr_on_parent_active: Letakkan Atribut Kode pada Elemen <code>&lt;pre&gt;</code>
     is_set_break_enable_active: Ganti Baris Praktis
     is_set_urls_link_active: Tautan Otomatis
     is_set_markup_escape_active: Jangan Izinkan Tag <abbr title="Hyper Text Markup Language">HTML</abbr>

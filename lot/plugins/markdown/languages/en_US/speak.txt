@@ -31,7 +31,7 @@ plugin_markdown:
     footnote_back_link_id: Footnote Back Link ID
     is_links_external_attr_rel: Automatic <code>rel="nofollow"</code> Attribute on External Links
     is_links_external_attr_target: Open External Links in New Window
-    is_code_block_attr_on_pre_active: Put Code Attributes on <code>&lt;pre&gt;</code> Element
+    is_code_block_attr_on_parent_active: Put Code Attributes on <code>&lt;pre&gt;</code> Element
     is_set_break_enable_active: Quick Line Break
     is_set_urls_link_active: Automatic Link
     is_set_markup_escape_active: Disallow <abbr title="Hyper Text Markup Language">HTML</abbr> Tags

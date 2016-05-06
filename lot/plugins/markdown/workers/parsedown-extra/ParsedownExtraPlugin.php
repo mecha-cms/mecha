@@ -43,7 +43,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     public $code_block_text = null;
 
     // put `<code>` attributes on `<pre>` element?
-    public $code_block_attr_on_pre = false;
+    public $code_block_attr_on_parent = false;
 
     // custom table class or use `1` to add `border="1"` attribute
     public $table_class = null;
@@ -172,7 +172,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
                     'text' => $element
                 )
             );
-            if( ! $this->code_block_attr_on_pre) {
+            if( ! $this->code_block_attr_on_parent) {
                 $block['element']['text']['attributes'] = $attrs;
             } else {
                 $block['element']['attributes'] = $attrs;
