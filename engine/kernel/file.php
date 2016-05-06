@@ -49,7 +49,7 @@
  *
  */
 
-class File extends Base {
+class File extends __ {
 
     protected static $cache = "";
     protected static $open = null;

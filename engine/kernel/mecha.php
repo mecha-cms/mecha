@@ -13,7 +13,7 @@
  *
  */
 
-class Mecha extends Base {
+class Mecha extends __ {
 
     protected static $stomach = array();
     protected static $index = 0;

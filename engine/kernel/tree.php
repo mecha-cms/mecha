@@ -41,7 +41,7 @@
  *
  */
 
-class Tree extends Base {
+class Tree extends __ {
 
     public static $config = array(
         'trunk' => 'ul',

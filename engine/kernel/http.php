@@ -1,6 +1,6 @@
 <?php
 
-class HTTP extends Base {
+class HTTP extends __ {
 
     public static $message = array(
         100 => 'Continue',

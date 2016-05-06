@@ -1,26 +1,12 @@
 <?php
 
-class Widget {
+class Widget extends __ {
 
     public static $config = array(
         'classes' => array(
             'current' => 'current'
         )
     );
-
-    protected static $w = array(
-        __CLASS__ => array(
-            'archive' => 1,
-            'tag' => 1,
-            'search' => 1,
-            'recentResponse' => 1,
-            'recentPost' => 1,
-            'randomPost' => 1,
-            'relatedPost' => 1
-        )
-    );
-
-    protected static $w_x = array();
 
 
     /**
@@ -396,108 +382,54 @@ class Widget {
         return Filter::apply(array('widget:related.' . $p, 'widget:related.post', 'widget:related', 'widget'), $html, $id);
     }
 
-
-    /**
-     * Add a Built-In Widget
-     * ---------------------
-     *
-     * [1]. Widget::plug('my_widget', function($a, $b, $c) { ... });
-     *
-     */
-
-    public static function plug($kin, $action) {
+    // Add a custom widget ...
+    public static function add($kin, $action, $block = false) {
         $c = get_called_class();
-        if( ! isset(self::$w_x[$c][$kin])) {
-            if(isset(self::$w[$c][$kin])) {
+        if( ! isset(self::$_x[$c][$kin])) {
+            if(isset(self::$_[$c][$kin])) {
                 Guardian::abort(Config::speak('notify_exist', '<code>' . $c . '::' . $kin . '()</code>'));
             }
-            self::$w[$c][$kin] = $action;
-        }
-    }
-
-
-    /**
-     * Add a Custom Widget
-     * -------------------
-     *
-     * [1]. Widget::add('my_custom_widget', function($a, $b, $c) { ... });
-     *
-     */
-
-    public static function add($kin, $action, $wrapper = false) {
-        $c = get_called_class();
-        if( ! isset(self::$w_x[$c][$kin])) {
-            if(isset(self::$w[$c][$kin])) {
-                Guardian::abort(Config::speak('notify_exist', '<code>' . $c . '::' . $kin . '()</code>'));
-            }
-            self::$w[$c][$kin] = array(
+            self::$_[$c][$kin] = array(
                 'fn' => $action,
-                'wrapper' => $wrapper
+                'block' => $block
             );
         }
     }
 
-
-    /**
-     * Remove a Custom Widget
-     * ----------------------
-     *
-     * [1]. Widget::remove('my_custom_widget');
-     *
-     */
-
+    // Remove a custom widget ...
     public static function remove($kin) {
-        $c = get_called_class();
-        self::$w_x[$c][$kin] = isset(self::$w[$c][$kin]) ? self::$w[$c][$kin] : 1;
-        unset(self::$w[$c][$kin]);
+        self::unplug($kin);
     }
 
-
-    /**
-     * Check a Custom Widget
-     * ---------------------
-     *
-     * [1]. if(Widget::exist('my_custom_widget')) { ... }
-     *
-     */
-
-    public static function exist($kin, $fallback = false) {
-        $c = get_called_class();
-        return isset(self::$w[$c][$kin]) ? self::$w[$c][$kin] : $fallback;
+    // Check a custom widget ...
+    public static function exist($kin = null, $fallback = false) {
+        return self::kin($kin, $fallback);
     }
 
-
-    /**
-     * Custom Widget
-     * -------------
-     *
-     * [1]. Widget::my_custom_widget($a, $b, $c);
-     *
-     */
-
+    // Show the added widget ...
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();
-        if( ! isset(self::$w[$c][$kin])) {
+        if( ! isset(self::$_[$c][$kin])) {
             Guardian::abort(Config::speak('notify_not_exist', '<code>' . $c . '::' . $kin . '()</code>'), false);
         } else {
             // built-in
-            if( ! is_array(self::$w[$c][$kin])) {
-                return call_user_func_array(self::$w[$c][$kin], $arguments);
+            if( ! is_array(self::$_[$c][$kin])) {
+                return call_user_func_array(self::$_[$c][$kin], $arguments);
             }
             // custom
-            $snake = Text::parse($kin, '->snake_case');
-            $slug = str_replace('_', '-', $snake);
-            $id = Config::get('widget_custom_' . $snake . '_id', 0) + 1;
+            $a = Text::parse($kin, '->snake_case');
+            $b = str_replace('_', '-', $a);
+            $id = Config::get('widget_custom_' . $a . '_id', 0) + 1;
             $html = "";
-            if(self::$w[$c][$kin]['wrapper']) {
-                $html .= O_BEGIN . '<div class="widget widget-custom widget-custom-' . $slug . '" id="widget-custom-' . $slug . '-' . $id . '">' . NL;
+            if(self::$_[$c][$kin]['block']) {
+                $html .= O_BEGIN . '<div class="widget widget-custom widget-custom-' . $b . '" id="widget-custom-' . $b . '-' . $id . '">' . NL;
             }
-            $html .= call_user_func_array(self::$w[$c][$kin]['fn'], $arguments);
-            if(self::$w[$c][$kin]['wrapper']) {
+            $html .= call_user_func_array(self::$_[$c][$kin]['fn'], $arguments);
+            if(self::$_[$c][$kin]['block']) {
                 $html .= NL . '</div>' . O_END;
             }
-            Config::set('widget_custom_' . $snake . '_id', $id);
-            return Filter::apply(array('widget:custom.' . $snake, 'widget:custom.' . $kin, 'widget:custom', 'widget'), $html, $id);
+            Config::set('widget_custom_' . $a . '_id', $id);
+            return Filter::apply(array('widget:custom.' . $a, 'widget:custom.' . $kin, 'widget:custom', 'widget'), $html, $id);
         }
     }
 

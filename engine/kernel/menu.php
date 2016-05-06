@@ -21,7 +21,7 @@
  *
  */
 
-class Menu extends Base {
+class Menu extends __ {
 
     protected static $menus = array();
     protected static $menus_x = array();

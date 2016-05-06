@@ -59,7 +59,7 @@
  *
  */
 
-class Session extends Base {
+class Session extends __ {
 
     public static function set($session, $value = "", $expire = 1, $path = '/', $domain = "", $secure = false, $http_only = false) {
         if(strpos($session, 'cookie:') === 0) {

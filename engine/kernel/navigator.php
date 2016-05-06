@@ -1,6 +1,6 @@
 <?php
 
-class Navigator extends Base {
+class Navigator extends __ {
 
     public static $config = array(
         'step' => 5,

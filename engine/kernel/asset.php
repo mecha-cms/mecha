@@ -23,7 +23,7 @@
  *
  */
 
-class Asset extends Base {
+class Asset extends __ {
 
     public static $assets = array();
     public static $assets_x = array();

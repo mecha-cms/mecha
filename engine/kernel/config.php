@@ -1,6 +1,6 @@
 <?php
 
-class Config extends Base {
+class Config extends __ {
 
     protected static $bucket = array();
 
@@ -160,10 +160,10 @@ class Config extends Base {
     // Call the added method or use them as a shortcut for the default `get` method.
     // Example: You can use `Config::foo()` as a shortcut for `Config::get('foo')` as
     // long as `foo` is not defined yet by `Config::plug()`
-    // NOTE: `Config::plug()` and `Config::kin()` method(s) are inherited to `Base`
+    // NOTE: `Config::plug()` and `Config::kin()` method(s) are inherited to `__`
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();
-        if( ! isset(self::$o[$c][$kin])) {
+        if( ! isset(self::$_[$c][$kin])) {
             $fallback = false;
             if(count($arguments) > 0) {
                 $kin .= '.' . array_shift($arguments);

@@ -1,6 +1,6 @@
 <?php
 
-class Text extends Base {
+class Text extends __ {
 
     protected static $text = array();
     protected static $parser = array();

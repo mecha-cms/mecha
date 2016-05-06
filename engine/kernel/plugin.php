@@ -1,6 +1,6 @@
 <?php
 
-class Plugin extends Base {
+class Plugin extends __ {
 
     /**
      * ==========================================================

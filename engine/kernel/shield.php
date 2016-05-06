@@ -1,6 +1,6 @@
 <?php
 
-class Shield extends Base {
+class Shield extends __ {
 
     protected static $lot = array();
 

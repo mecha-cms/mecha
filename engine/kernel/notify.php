@@ -25,7 +25,7 @@
  *
  */
 
-class Notify extends Base {
+class Notify extends __ {
 
     public static $message = 'message';
     public static $errors = 0;

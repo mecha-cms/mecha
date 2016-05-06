@@ -1,6 +1,6 @@
 <?php
 
-class Route extends Base {
+class Route extends __ {
 
     public static $routes = array();
     public static $routes_x = array();

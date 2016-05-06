@@ -27,7 +27,7 @@
  *
  */
 
-class Request extends Base {
+class Request extends __ {
 
     public static function post($param = null, $fallback = false, $str_eval = true) {
         if(is_null($param)) {

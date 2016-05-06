@@ -305,7 +305,7 @@ Route::accept(array('feed', 'feed/(:any)', 'feed/(:any)/(:num)'), function($slug
     $filter = Request::get('filter', "");
     $chunk = Request::get('chunk', 25);
     $scope = Request::get('scope', 'article');
-    if( ! file_exists(SHIELD . DS . $slug . '.php') || ! Get::kin($scope . 's') || ! is_callable('Get::' . $scope . 's')) {
+    if( ! file_exists(SHIELD . DS . $slug . '.php') || ! Get::kin($scope . 's', false, true)) {
         Shield::abort('404-feed');
     }
     $s = call_user_func('Get::' . $scope . 's', $order, $filter);

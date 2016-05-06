@@ -1,6 +1,6 @@
 <?php
 
-class Image extends Base {
+class Image extends __ {
 
     public static $open = null;
     public static $original = null;

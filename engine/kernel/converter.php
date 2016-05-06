@@ -1,6 +1,6 @@
 <?php
 
-class Converter extends Base {
+class Converter extends __ {
 
     /**
      * ====================================================================

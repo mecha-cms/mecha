@@ -1,6 +1,6 @@
 <?php
 
-class Weapon extends Base {
+class Weapon extends __ {
 
     protected static $armaments = array();
     protected static $armaments_x = array();

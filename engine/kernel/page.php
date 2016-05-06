@@ -16,7 +16,7 @@
  *
  */
 
-class Page extends Base {
+class Page extends __ {
 
     public static $open = null;
     public static $bucket = array();

@@ -1,6 +1,6 @@
 <?php
 
-class Cell extends Base {
+class Cell extends __ {
 
     protected static $attr_order = array(
         'src' => null,
@@ -138,7 +138,7 @@ class Cell extends Base {
     // Call the added method with `Cell::foo()`
     public static function __callStatic($kin, $arguments = array()) {
         $c = get_called_class();
-        if( ! isset(self::$o[$c][$kin])) {
+        if( ! isset(self::$_[$c][$kin])) {
             $arguments = array_merge(array($kin), $arguments);
             return call_user_func_array('self::unit', $arguments);
         }

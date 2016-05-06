@@ -1,6 +1,6 @@
 <?php
 
-class Guardian extends Base {
+class Guardian extends __ {
 
     public static $token = 'token';
     public static $user = 'user';

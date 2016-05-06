@@ -132,7 +132,7 @@
  *
  */
 
-class Package extends Base {
+class Package extends __ {
 
     protected static $open = null;
     protected static $opens = null;

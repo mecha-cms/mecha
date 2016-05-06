@@ -1,6 +1,6 @@
 <?php
 
-class Filter extends Base {
+class Filter extends __ {
 
     protected static $filters = array();
     protected static $filters_x = array();
