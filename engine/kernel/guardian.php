@@ -67,7 +67,7 @@ class Guardian extends Base {
                     $s = json_decode($s, true);
                 // Pattern 1: `user: pass (Author Name: status) email@domain.com`
                 // Pattern 2: `user: pass (Author Name $status) email@domain.com`
-                } else if(preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*\$|\:\s*)(pilot|[a-z0-9_.]+)\)(?:\s+(.*?))?$#', $s, $matches)) {
+                } else if(preg_match('#^(.*?)\:\s*(.*?)\s+\((.*?)(?:\s*\$|\:\s*)(pilot|[\w.]+)\)(?:\s+(.*?))?$#', $s, $matches)) {
                     $s = array();
                     $s['user'] = $matches[1];
                     $s['pass'] = $matches[2];

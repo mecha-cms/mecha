@@ -241,9 +241,13 @@ class Converter extends Base {
 
     public static function str($input) {
         if( ! is_array($input) && ! is_object($input)) {
-            if($input === TRUE || $input === true) $input = 'true';
-            if($input === FALSE || $input === false) $input = 'false';
-            if($input === NULL || $input === null) $input = 'null';
+            if($input === true) {
+                $input = 'true';
+            } else if($input === false) {
+                $input = 'false';
+            } else if($input === null) {
+                $input = 'null';
+            }
             return (string) $input;
         } else {
             foreach($input as &$v) {
@@ -279,11 +283,13 @@ class Converter extends Base {
         if(is_numeric($input)) {
             $input = strpos($input, '.') !== false ? (float) $input : (int) $input;
         } else if(is_string($input)) {
-            if((strpos($input, '[') === 0 || strpos($input, '{"') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
+            if((strpos($input, '{"') === 0 || strpos($input, '[') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
                 $input = json_decode($input, true);
                 if(is_array($input)) {
                     $input = self::strEval($input, $NRT);
                 }
+            } else if($input && ($input[0] === '"' && substr($input, -1) === '"' || $input[0] === "'" && substr($input, -1) === "'")) {
+                $input = substr(substr($input, 1), 0, -1);
             } else {
                 $input = Mecha::alter($input, array(
                     'TRUE' => true,
@@ -554,7 +560,7 @@ class Converter extends Base {
                 '#(<!--.*?-->)|(<[^\/]*?>)\s+(<[^\/]*?>)|(<\/.*?>)\s+(<\/.*?>)#s', // o+o || c+c
                 '#(<!--.*?-->)|(<\/.*?>)\s+(\s)(?!\<)|(?<!\>)\s+(\s)(<[^\/]*?\/?>)|(<[^\/]*?\/?>)\s+(\s)(?!\<)#s', // c+t || t+o || o+t -- separated by long white-space(s)
                 '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
-                '#<(img|input)(>| .*?>)<\/\1\:>#s', // reset previous fix
+                '#<(img|input)(>| .*?>)<\/\1\x1A>#s', // reset previous fix
                 '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
                 // Force line-break with `&#10;` or `&#xa;`
                 '#&\#(?:10|xa);#',
@@ -564,7 +570,7 @@ class Converter extends Base {
                 '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
             ),
             array(
-                '<$1$2</$1:>',
+                "<$1$2</$1\x1A>",
                 '$1$2$3',
                 '$1$2$3',
                 '$1$2$3$4$5',
@@ -606,7 +612,7 @@ class Converter extends Base {
         // Force white-space(s) in `calc()`
         if(strpos($input, 'calc(') !== false) {
             $input = preg_replace_callback('#(?<=[\s:])calc\(\s*(.*?)\s*\)#', function($matches) {
-                return 'calc(' . preg_replace('#\s+#', '&#32;', $matches[1]) . ')';
+                return 'calc(' . preg_replace('#\s+#', "\x1A", $matches[1]) . ')';
             }, $input);
         }
         return preg_replace(
@@ -624,7 +630,7 @@ class Converter extends Base {
                 // Replace `0.6` with `.6`, but only when preceded by a white-space or `=`, `:`, `,`, `(`, `-`
                 '#(?<=[\s=:,\(\-]|&\#32;)0+\.(\d+)#s',
                 // Minify string value
-                '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][a-z0-9\-_]*?)\2(?=[\s\{\}\];,])#si',
+                '#(\/\*(?>.*?\*\/))|(?<!content\:)([\'"])([a-z_][-\w]*?)\2(?=[\s\{\}\];,])#si',
                 '#(\/\*(?>.*?\*\/))|(\burl\()([\'"])([^\s]+?)\3(\))#si',
                 // Minify HEX color code
                 '#(?<=[\s=:,\(]\#)([a-f0-6]+)\1([a-f0-6]+)\2([a-f0-6]+)\3#i',
@@ -632,7 +638,7 @@ class Converter extends Base {
                 '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
                 // Remove empty selector(s)
                 '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s',
-                '#&\#32;#'
+                '#\x1A#'
             ),
             array(
                 '$1',
@@ -682,9 +688,9 @@ class Converter extends Base {
                 // Remove the last semicolon
                 '#;+\}#',
                 // Minify object attribute(s) except JSON attribute(s). From `{'foo':'bar'}` to `{foo:'bar'}`
-                '#([\{,])([\'])(\d+|[a-z_][a-z0-9_]*)\2(?=\:)#i',
+                '#([\{,])([\'])(\d+|[a-z_]\w*)\2(?=\:)#i',
                 // --ibid. From `foo['bar']` to `foo.bar`
-                '#([a-z0-9_\)\]])\[([\'"])([a-z_][a-z0-9_]*)\2\]#i',
+                '#([\w\)\]])\[([\'"])([a-z_]\w*)\2\]#i',
                 // Replace `true` with `!0`
                 '#(?<=return |[=:,\(\[])true\b#',
                 // Replace `false` with `!1`
