@@ -229,9 +229,8 @@ class Guardian extends __ {
 
     public static function checker($name, $action) {
         $name = strtolower($name);
-        if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
+        if(strpos($name, 'is_') !== 0) $name = 'is_' . $name;
         self::$validator[get_called_class()][$name] = $action;
-        self::plug($name, $action); // add `Guardian::this_is_email()` shortcut
     }
 
     /**
@@ -257,7 +256,7 @@ class Guardian extends __ {
             return isset(self::$validator[$c]) && ! empty(self::$validator[$c]) ? self::$validator[$c] : $fallback;
         }
         $name = strtolower($name);
-        if(strpos($name, 'this_is_') !== 0) $name = 'this_is_' . $name;
+        if(strpos($name, 'is_') !== 0) $name = 'is_' . $name;
         return isset(self::$validator[$c][$name]) ? self::$validator[$c][$name] : $fallback;
     }
 
@@ -287,7 +286,7 @@ class Guardian extends __ {
         $c = get_called_class();
         // Alternate function for faster checking process => `Guardian::check('foo, '->url')`
         if(count($arguments) > 1 && is_string($arguments[1]) && strpos($arguments[1], '->') === 0) {
-            $validator = str_replace('->', 'this_is_', strtolower($arguments[1]));
+            $validator = str_replace('->', 'is_', strtolower($arguments[1]));
             unset($arguments[1]);
             return isset(self::$validator[$c][$validator]) ? call_user_func_array(self::$validator[$c][$validator], $arguments) : false;
         }
@@ -502,12 +501,30 @@ class Guardian extends __ {
      *
      */
 
-    public static function abort($reason = "", $stop = true) {
-        if(DEBUG) {
-            $id = 'guardian-' . time();
-            echo $reason ? '<style>#' . $id . '{font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:1em 1.2em;margin:0 0 1px}#' . $id . ' a{font:inherit;background:none;color:#F97F71;text-decoration:none}#' . $id . ' a:focus,#' . $id . ' a:hover{text-decoration:underline}</style><div id="' . $id . '">' . $reason . '</div>' : "";
-            if($stop) exit;
+    public static function abort($reason = "", $exit = true) {
+        if(DEBUG && $reason) {
+            $x = new Exception($reason);
+            $x = explode("\n", trim($x->getTraceAsString()));
+            array_pop($x);
+            $html = '<div style="font:normal normal 18px/1.4 Helmet,FreeSans,Sans-Serif;background-color:#333;color:#FFA;padding:.65em .8em;margin:1px;"><p style="font-size:65%;margin-top:0;">';
+            foreach(array_reverse($x) as $v) {
+                $html .= '<span style="display:block;">&darr; <code style="font-family:&quot;Courier New&quot;,Courier,&quot;Nimbus Mono L&quot;,Monospace;background:none;color:inherit;text-shadow:none;text-decoration:none;">';
+                $v = explode(' ', $v, 2);
+                if(strpos($v[1], ROOT) === 0 && preg_match('#^(.*?)\((\d+)\):\s+(.*?)$#', $v[1], $m)) {
+                    $fn = preg_replace('#^([\w\\\\]+)::(?=\w)#', '<span style="color:#86CDA7;">$1</span><span style="color:#EDCB7E;">::</span>', htmlentities($m[3]));
+                    $fn = preg_replace('#(?<=\w)\((.*)\)#', '<span style="color:#EDCB7E;">()</span> <span style="font-weight:normal;font-style:italic;color:#5D6D8B;">&hellip; <span title="Function Arguments">$1</span></span>', $fn);
+                    $html .= '<span title="File">' . str_replace(ROOT . DS, "", $m[1]) . '</span> <span style="color:#E59D95;" title="Line">#' . $m[2] . '</span> &hellip; <span style="font-weight:bold;color:#EDBB54;" title="Function">' . $fn . '</span>';
+                } else {
+                    $fn = preg_replace('#(\{(.*)\})#', '<span style="font-weight:bold;">$1</span>', $v[1]);
+                    $fn = preg_replace('#(\[.*\]:?)#', '<span style="font-weight:bold;color:#D3FAFA;">$1</span>', $fn);
+                    $html .= '<span>' . $fn . '</span>';
+                }
+                $html .= '</code></span>';
+            }
+            $reason = str_replace('<a ', '<a style="font:inherit;background:none;color:#F97F71;text-shadow:none;text-decoration:none;" ', $reason);
+            echo $html . '</p><p style="margin:1em 0 0;">' . $reason . '</p></div>';
         }
+        if($exit) exit;
     }
 
     /**
