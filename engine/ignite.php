@@ -41,6 +41,7 @@ array_walk_recursive($gpc, function(&$value) {
  */
 
 spl_autoload_register(function($worker) {
+    $worker = str_replace('\\', '.', $worker);
     $path = ENGINE . DS . 'kernel' . DS . strtolower($worker) . '.php';
     if(file_exists($path)) require $path;
 });
