@@ -2,68 +2,80 @@
 
 class Image extends __ {
 
-    public static $open = null;
-    public static $original = null;
-    public static $placeholder = null;
+    public $open = null;
+    public $origin = null;
+    public $placeholder = null;
 
-    public static $GD = false;
+    public $GD = false;
 
-    public static function gen($file = null) {
-        if(is_null($file)) $file = self::$placeholder;
-        switch(File::E($file)) {
-            case 'gif': self::$GD = imagecreatefromgif($file); break;
-            case 'jpeg': self::$GD = imagecreatefromjpeg($file); break;
-            case 'jpg': self::$GD = imagecreatefromjpeg($file); break;
-            case 'png': self::$GD = imagecreatefrompng($file); break;
+    public static $config = array(
+        'placeholder' => 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+    );
+
+    public function gen($file = null) {
+        if(is_null($file)) {
+            if( ! file_exists($this->placeholder)) {
+                File::open($this->origin)->copyTo($this->placeholder);
+            }
+            $file = $this->placeholder;
         }
+        switch(File::E($file)) {
+            case 'gif': $this->GD = imagecreatefromgif($file); break;
+            case 'jpeg': $this->GD = imagecreatefromjpeg($file); break;
+            case 'jpg': $this->GD = imagecreatefromjpeg($file); break;
+            case 'png': $this->GD = imagecreatefrompng($file); break;
+        }
+        return $this;
     }
 
-    public static function twin($resource = null, $e = null) {
-        $file = self::$placeholder;
-        if(is_null($resource)) $resource = self::$GD;
-        $old_e = File::E(self::$original);
-        $new_e = File::E($file);
+    public function twin($resource = null, $e = null) {
+        $file = $this->placeholder;
+        if(is_null($resource)) $resource = $this->GD;
+        $o_e = File::E($this->origin);
+        $n_e = File::E($file);
         if( ! is_null($e)) {
             $file = preg_replace('#\.([a-z]+)$#i', '.' . $e, $file);
-            File::open(self::$placeholder)->delete();
-            self::$placeholder = $file;
-            $new_e = $e;
+            File::open($this->placeholder)->delete();
+            $this->placeholder = $file;
+            $n_e = $e;
         }
-        switch($new_e) {
+        switch($n_e) {
             case 'gif': imagegif($resource, $file); break;
             case 'jpeg': imagejpeg($resource, $file, 100); break;
             case 'jpg': imagejpeg($resource, $file, 100); break;
             case 'png': imagepng($resource, $file); break;
         }
+        return $this;
     }
 
-    public static function take($files) {
+    public function __construct($files) {
         if( ! extension_loaded('gd')) {
             Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
         }
         if(is_array($files)) {
-            self::$open = array();
+            $this->open = array();
             foreach($files as $file) {
-                self::$open[] = File::path($file);
+                $this->open[] = File::path($file);
             }
         } else {
-            self::$open = File::path($files);
+            $this->open = File::path($files);
         }
-        $file = is_array(self::$open) ? self::$open[0] : self::$open;
-        self::$placeholder = File::D($file) . DS . '__' . File::B($file);
-        self::$original = $file;
-        File::open($file)->copyTo(self::$placeholder);
-        self::gen($file);
-        return new static;
+        $file = is_array($this->open) ? $this->open[0] : $this->open;
+        $this->origin = $file;
+        $this->placeholder = File::D($file) . DS . '__' . File::B($file);
+        return $this;
     }
 
-    // Generate a 1 x 1 pixel transparent image
-    // or a random image URL output from array
+    public static function take($files) {
+        return new Image($files);
+    }
+
+    // Generate a 1 x 1 pixel transparent image or a random image URL output from array
     public static function placeholder($url = null) {
         if(is_array($url)) {
             return Mecha::eat($url)->shake()->get(0);
         }
-        return 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7';
+        return self::$config['placeholder'];
     }
 
     /**
@@ -80,18 +92,17 @@ class Image extends __ {
      *
      */
 
-    public static function saveTo($destination) {
+    public function saveTo($destination) {
         if(is_dir($destination)) {
-            $destination .= DS . File::B(self::$original);
+            $destination .= DS . File::B($this->origin);
         }
-        $old_e = File::E(self::$original);
-        $new_e = File::E($destination);
-        if($old_e !== $new_e) {
-            self::gen();
-            self::twin(null, $new_e);
+        $o_e = File::E($this->origin);
+        $n_e = File::E($destination);
+        if($o_e !== $n_e || ! file_exists($this->placeholder)) {
+            $this->gen()->twin(null, $n_e);
         }
-        File::open(self::$placeholder)->moveTo($destination);
-        imagedestroy(self::$GD);
+        File::open($this->placeholder)->moveTo($destination);
+        imagedestroy($this->GD);
     }
 
     /**
@@ -108,8 +119,8 @@ class Image extends __ {
      *
      */
 
-    public static function saveAs($name = 'image-%d.png') {
-        return self::saveTo(File::D(self::$placeholder) . DS . sprintf($name, time()));
+    public function saveAs($name = 'image-%d.png') {
+        return $this->saveTo(File::D($this->origin) . DS . sprintf($name, time()));
     }
 
     /**
@@ -129,15 +140,16 @@ class Image extends __ {
      *
      */
 
-    public static function draw($save = false) {
-        $image = file_get_contents(self::$placeholder);
+    public function draw($save = false) {
+        $this->gen();
+        $image = file_get_contents($this->placeholder);
         if($save !== false) {
             $save = File::path($save);
             File::write($image)->saveTo($save);
         }
-        header('Content-Type: ' . self::inspect('mime'));
-        File::open(self::$placeholder)->delete();
-        imagedestroy(self::$GD);
+        header('Content-Type: ' . $this->inspect('mime'));
+        File::open($this->placeholder)->delete();
+        imagedestroy($this->GD);
         echo $image;
         exit;
     }
@@ -171,11 +183,10 @@ class Image extends __ {
      *
      */
 
-    public static function inspect($key = null, $fallback = false) {
-        File::open(self::$placeholder)->delete();
-        if(is_array(self::$open)) {
+    public function inspect($key = null, $fallback = false) {
+        if(is_array($this->open)) {
             $results = array();
-            foreach(self::$open as $file) {
+            foreach($this->open as $file) {
                 $data = getimagesize($file);
                 $results[] = array_merge(File::inspect($file), array(
                     'width' => $data[0],
@@ -186,8 +197,8 @@ class Image extends __ {
             }
             return $results;
         } else {
-            $data = getimagesize(self::$open);
-            $results = array_merge(File::inspect(self::$open), array(
+            $data = getimagesize($this->open);
+            $results = array_merge(File::inspect($this->open), array(
                 'width' => $data[0],
                 'height' => $data[1],
                 'bits' => $data['bits'],
@@ -225,12 +236,12 @@ class Image extends __ {
      *
      */
 
-    public static function resize($max_width = 100, $max_height = null, $proportional = true, $crop = false) {
-        self::gen();
+    public function resize($max_width = 100, $max_height = null, $proportional = true, $crop = false) {
+        $this->gen();
         if(is_null($max_height)) {
             $max_height = $max_width;
         }
-        $info = self::inspect();
+        $info = $this->inspect();
         $old_width = $info['width'];
         $old_height = $info['height'];
         $new_width = $max_width;
@@ -243,8 +254,7 @@ class Image extends __ {
         if($proportional) {
             // Don't do anything if the new image size is bigger than the original image size
             if($old_width < $max_width && $old_height < $max_height) {
-                self::twin();
-                return new static;
+                return $this->twin();
             }
             if($crop) {
                 // Wider than the thumbnail (in aspect ratio sense)
@@ -276,10 +286,10 @@ class Image extends __ {
         // Draw ...
         imagealphablending($pallete, false);
         imagesavealpha($pallete, true);
-        imagecopyresampled($pallete, self::$GD, 0, 0, $x, $y, $new_width, $new_height, $old_width, $old_height);
-        self::twin($pallete);
+        imagecopyresampled($pallete, $this->GD, 0, 0, $x, $y, $new_width, $new_height, $old_width, $old_height);
+        $this->twin($pallete);
         imagedestroy($pallete);
-        return new static;
+        return $this;
     }
 
     /**
@@ -305,18 +315,18 @@ class Image extends __ {
      *
      */
 
-    public static function crop($x = 72, $y = null, $width = null, $height = null) {
+    public function crop($x = 72, $y = null, $width = null, $height = null) {
         if(is_null($width)) {
             if(is_null($y)) $y = $x;
-            return self::resize($x, $y, true, true);
+            return $this->resize($x, $y, true, true);
         }
         if(is_null($height)) $height = $width;
-        self::gen();
+        $this->gen();
         $pallete = imagecreatetruecolor($width, $height);
-        imagecopy($pallete, self::$GD, 0, 0, $x, $y, $width, $height);
-        self::twin($pallete);
+        imagecopy($pallete, $this->GD, 0, 0, $x, $y, $width, $height);
+        $this->twin($pallete);
         imagedestroy($pallete);
-        return new static;
+        return $this;
     }
 
     /**
@@ -334,12 +344,11 @@ class Image extends __ {
      *
      */
 
-    public static function brightness($level = 0) {
-        self::gen();
+    public function brightness($level = 0) {
+        $this->gen();
         // -255 = min brightness, 0 = no change, +255 = max brightness
-        imagefilter(self::$GD, IMG_FILTER_BRIGHTNESS, $level);
-        self::twin();
-        return new static;
+        imagefilter($this->GD, IMG_FILTER_BRIGHTNESS, $level);
+        return $this->twin();
     }
 
     /**
@@ -357,12 +366,11 @@ class Image extends __ {
      *
      */
 
-    public static function contrast($level = 0) {
-        self::gen();
+    public function contrast($level = 0) {
+        $this->gen();
         // -100 = max contrast, 0 = no change, +100 = min contrast (it's inverted)
-        imagefilter(self::$GD, IMG_FILTER_CONTRAST, $level * -1);
-        self::twin();
-        return new static;
+        imagefilter($this->GD, IMG_FILTER_CONTRAST, $level * -1);
+        return $this->twin();
     }
 
     /**
@@ -398,8 +406,8 @@ class Image extends __ {
      *
      */
 
-    public static function colorize($r = 255, $g = 255, $b = 255, $a = 1) {
-        self::gen();
+    public function colorize($r = 255, $g = 255, $b = 255, $a = 1) {
+        $this->gen();
         // For red, green and blue: -255 = min, 0 = no change, +255 = max
         if(is_array($r)) {
             if(count($r) === 3) {
@@ -422,9 +430,8 @@ class Image extends __ {
         }
         // For alpha: 127 = transparent, 0 = opaque
         $a = 127 - ($a * 127);
-        imagefilter(self::$GD, IMG_FILTER_COLORIZE, $r, $g, $b, $a);
-        self::twin();
-        return new static;
+        imagefilter($this->GD, IMG_FILTER_COLORIZE, $r, $g, $b, $a);
+        return $this->twin();
     }
 
     /**
@@ -442,11 +449,10 @@ class Image extends __ {
      *
      */
 
-    public static function grayscale() {
-        self::gen();
-        imagefilter(self::$GD, IMG_FILTER_GRAYSCALE);
-        self::twin();
-        return new static;
+    public function grayscale() {
+        $this->gen();
+        imagefilter($this->GD, IMG_FILTER_GRAYSCALE);
+        return $this->twin();
     }
 
     /**
@@ -464,11 +470,10 @@ class Image extends __ {
      *
      */
 
-    public static function negate() {
-        self::gen();
-        imagefilter(self::$GD, IMG_FILTER_NEGATE);
-        self::twin();
-        return new static;
+    public function negate() {
+        $this->gen();
+        imagefilter($this->GD, IMG_FILTER_NEGATE);
+        return $this->twin();
     }
 
     /**
@@ -486,14 +491,14 @@ class Image extends __ {
      *
      */
 
-    public static function emboss($level = 1) {
+    public function emboss($level = 1) {
         $level = round($level);
         for($i = 0; $i < $level; ++$i) {
-            self::gen();
-            imagefilter(self::$GD, IMG_FILTER_EMBOSS);
-            self::twin();
+            $this->gen();
+            imagefilter($this->GD, IMG_FILTER_EMBOSS);
+            $this->twin();
         }
-        return new static;
+        return $this;
     }
 
     /**
@@ -511,14 +516,14 @@ class Image extends __ {
      *
      */
 
-    public static function blur($level = 1) {
+    public function blur($level = 1) {
         $level = round($level);
         for($i = 0; $i < $level; ++$i) {
-            self::gen();
-            imagefilter(self::$GD, IMG_FILTER_GAUSSIAN_BLUR);
-            self::twin();
+            $this->gen();
+            imagefilter($this->GD, IMG_FILTER_GAUSSIAN_BLUR);
+            $this->twin();
         }
-        return new static;
+        return $this;
     }
 
     /**
@@ -536,7 +541,7 @@ class Image extends __ {
      *
      */
 
-    public static function sharpen($level = 1) {
+    public function sharpen($level = 1) {
         $level = round($level);
         $matrix = array(
             array(-1, -1, -1),
@@ -545,11 +550,11 @@ class Image extends __ {
         );
         $divisor = array_sum(array_map('array_sum', $matrix));
         for($i = 0; $i < $level; ++$i) {
-            self::gen();
-            imageconvolution(self::$GD, $matrix, $divisor, 0);
-            self::twin();
+            $this->gen();
+            imageconvolution($this->GD, $matrix, $divisor, 0);
+            $this->twin();
         }
-        return new static;
+        return $this;
     }
 
     /**
@@ -573,11 +578,10 @@ class Image extends __ {
      *
      */
 
-    public static function pixelate($level = 1, $advanced_pixelation_effect = false) {
-        self::gen();
-        imagefilter(self::$GD, IMG_FILTER_PIXELATE, $level, $advanced_pixelation_effect);
-        self::twin();
-        return new static;
+    public function pixelate($level = 1, $advanced_pixelation_effect = false) {
+        $this->gen();
+        imagefilter($this->GD, IMG_FILTER_PIXELATE, $level, $advanced_pixelation_effect);
+        return $this->twin();
     }
 
     /**
@@ -595,8 +599,8 @@ class Image extends __ {
      *
      */
 
-    public static function rotate($angle = 0, $bg = false, $alpha_for_hex = 1) {
-        self::gen();
+    public function rotate($angle = 0, $bg = false, $alpha_for_hex = 1) {
+        $this->gen();
         if( ! $bg) {
             $bg = array(0, 0, 0, 0); // transparent
         }
@@ -620,16 +624,16 @@ class Image extends __ {
             }
         }
         $a = 127 - ($a * 127);
-        $bg = imagecolorallocatealpha(self::$GD, $r, $g, $b, $a);
-        imagealphablending(self::$GD, false);
-        imagesavealpha(self::$GD, true);
+        $bg = imagecolorallocatealpha($this->GD, $r, $g, $b, $a);
+        imagealphablending($this->GD, false);
+        imagesavealpha($this->GD, true);
         // The angle value in `imagerotate` function is also inverted
-        $rotated = imagerotate(self::$GD, (floor($angle) * -1), $bg, 0);
+        $rotated = imagerotate($this->GD, (floor($angle) * -1), $bg, 0);
         imagealphablending($rotated, false);
         imagesavealpha($rotated, true);
-        self::twin($rotated);
+        $this->twin($rotated);
         imagedestroy($rotated);
-        return new static;
+        return $this;
     }
 
     /**
@@ -647,33 +651,32 @@ class Image extends __ {
      *
      */
 
-    public static function flip($direction = 'horizontal') {
-        self::gen();
+    public function flip($direction = 'horizontal') {
+        $this->gen();
         // Function `imageflip` only available in PHP 5 >= 5.5.0
         // Fallback to a simple horizontal image flipper if `imageflip` is not available
         if(function_exists('imageflip')) {
             switch(strtolower($direction[0])) {
                 // `horizontal`, `vertical` or `both` ?
-                case 'h': imageflip(self::$GD, IMG_FLIP_HORIZONTAL); break;
-                case 'v': imageflip(self::$GD, IMG_FLIP_VERTICAL); break;
-                case 'b': imageflip(self::$GD, IMG_FLIP_BOTH); break;
+                case 'h': imageflip($this->GD, IMG_FLIP_HORIZONTAL); break;
+                case 'v': imageflip($this->GD, IMG_FLIP_VERTICAL); break;
+                case 'b': imageflip($this->GD, IMG_FLIP_BOTH); break;
             }
         } else {
-            $width = imagesx(self::$GD);
-            $height = imagesy(self::$GD);
+            $width = imagesx($this->GD);
+            $height = imagesy($this->GD);
             $x = 0;
             $y = 0;
             $pallete = imagecreatetruecolor(1, $height);
             $x_2 = $x + $width - 1;
             for($i = (int) floor(($width - 1) / 2); $i >= 0; --$i) {
-                imagecopy($pallete, self::$GD, 0, 0, $x_2 - $i, $y, 1, $height);
-                imagecopy(self::$GD, self::$GD, $x_2 - $i, $y, $x + $i, $y, 1, $height);
-                imagecopy(self::$GD, $pallete, $x + $i, $y, 0, 0, 1, $height);
+                imagecopy($pallete, $this->GD, 0, 0, $x_2 - $i, $y, 1, $height);
+                imagecopy($this->GD, $this->GD, $x_2 - $i, $y, $x + $i, $y, 1, $height);
+                imagecopy($this->GD, $pallete, $x + $i, $y, 0, 0, 1, $height);
             }
             imagedestroy($pallete);
         }
-        self::twin();
-        return new static;
+        return $this->twin();
     }
 
     /**
@@ -693,15 +696,15 @@ class Image extends __ {
      *
      */
 
-    public static function merge($gap = 0, $orientation = 'vertical', $bg = false, $alpha_for_hex = 1) {
+    public function merge($gap = 0, $orientation = 'vertical', $bg = false, $alpha_for_hex = 1) {
         $bucket = array();
         $width = 0;
         $height = 0;
         $max_width = array();
         $max_height = array();
         $orientation = strtolower($orientation);
-        self::$open = (array) self::$open;
-        foreach(self::inspect() as $info) {
+        $this->open = (array) $this->open;
+        foreach($this->inspect() as $info) {
             $bucket[] = array(
                 'width' => $info['width'],
                 'height' => $info['height']
@@ -745,16 +748,15 @@ class Image extends __ {
         imagesavealpha($pallete, true);
         $start_width_from = 0;
         $start_height_from = 0;
-        for($i = 0, $count = count(self::$open); $i < $count; ++$i) {
-            self::gen(self::$open[$i]);
-            imagealphablending(self::$GD, false);
-            imagesavealpha(self::$GD, true);
-            imagecopyresampled($pallete, self::$GD, $start_width_from, $start_height_from, 0, 0, $bucket[$i]['width'], $bucket[$i]['height'], $bucket[$i]['width'], $bucket[$i]['height']);
+        for($i = 0, $count = count($this->open); $i < $count; ++$i) {
+            $this->gen($this->open[$i]);
+            imagealphablending($this->GD, false);
+            imagesavealpha($this->GD, true);
+            imagecopyresampled($pallete, $this->GD, $start_width_from, $start_height_from, 0, 0, $bucket[$i]['width'], $bucket[$i]['height'], $bucket[$i]['width'], $bucket[$i]['height']);
             $start_width_from += $orientation[0] === 'h' ? $bucket[$i]['width'] + $gap : 0;
             $start_height_from += $orientation[0] === 'v' ? $bucket[$i]['height'] + $gap : 0;
         }
-        self::twin($pallete, 'png');
-        return new static;
+        return $this->twin($pallete, 'png');
     }
 
 }
