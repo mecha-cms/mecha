@@ -15,6 +15,9 @@ class __ {
             }
             return $fallback;
         }
+        if($kin === true) {
+            return ! empty(self::$_) ? self::$_ : $fallback;
+        }
         return ! empty(self::$_[$c]) ? self::$_[$c] : $fallback;
     }
 
@@ -25,9 +28,13 @@ class __ {
 
     // Remove the added method with `__::unplug('foo')`
     public static function unplug($kin) {
-        $c = get_called_class();
-        self::$_x[$c][$kin] = 1;
-        unset(self::$_[$c][$kin]);
+        if($kin === true) {
+            self::$_ = self::$_x = array();
+        } else {
+            $c = get_called_class();
+            self::$_x[$c][$kin] = 1;
+            unset(self::$_[$c][$kin]);
+        }
     }
 
     // Call the added method with `__::foo()`
