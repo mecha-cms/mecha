@@ -2,12 +2,8 @@
 
 class __ {
 
-    public static $config = array();
     public static $_ = array();
     public static $_x = array();
-
-    // Nothing here ...
-    public function __construct() {}
 
     // Show the added method(s)
     public static function kin($kin = null, $fallback = false, $origin = false) {

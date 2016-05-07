@@ -24,7 +24,6 @@ class Text extends __ {
         $name = strtolower($name);
         if(strpos($name, 'to_') !== 0) $name = 'to_' . $name;
         self::$parser[get_called_class()][$name] = $action;
-        self::plug($name, $action); // add `Text::to_upper_case()` shortcut
     }
 
     /**

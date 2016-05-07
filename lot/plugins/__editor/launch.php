@@ -33,9 +33,9 @@ Weapon::add('shell_after', function() {
 }, 2);
 
 // Set `data-MTE-config` attribute(s)
-Filter::add('form:bond.textarea', function($attr) use($config, $segment) {
+Filter::add('form:bond.textarea', function($attr) use($config, $segment, $c_editor) {
     if( ! isset($attr['class'])) return $attr;
-    $s = Config::get('states.plugin_' . md5(File::B(__DIR__))); // don't use the previously defined `$c_editor`
+    $s = clone $c_editor; // don't touch the previously defined `$c_editor`
     unset($s->buttons);
     if(Config::get('html_parser.active') === 'HTML') {
         unset($s->PRE);
