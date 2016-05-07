@@ -53,7 +53,7 @@ class File extends __ {
 
     protected static $cache = "";
     protected static $open = null;
-    protected static $index = 0;
+    protected static $i = 0;
 
     public static $config = array(
         'file_size_min_allow' => 0, // Minimum allowed file size
@@ -122,7 +122,7 @@ class File extends __ {
         $path = self::path($path);
         self::$cache = "";
         self::$open = $path;
-        self::$index = 0;
+        self::$i = 0;
         return new static;
     }
 
@@ -266,15 +266,15 @@ class File extends __ {
                         mkdir(self::D($dest), 0777, true);
                     }
                 }
-                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', $s . self::$index . '.$1', $dest))) {
-                    self::$index = 0;
+                if( ! file_exists($dest) && ! file_exists(preg_replace('#\.(.*?)$#', $s . self::$i . '.$1', $dest))) {
+                    self::$i = 0;
                     copy(self::$open, $dest);
                 } else {
-                    self::$index++;
-                    copy(self::$open, preg_replace('#\.(.*?)$#', $s . self::$index . '.$1', $dest));
+                    self::$i++;
+                    copy(self::$open, preg_replace('#\.(.*?)$#', $s . self::$i . '.$1', $dest));
                 }
             }
-            self::$index = 0;
+            self::$i = 0;
         }
     }
 
@@ -364,25 +364,20 @@ class File extends __ {
         }
         if( ! Notify::errors()) {
             // Destination not found
-            if( ! file_exists($destination)) {
-                self::pocket($destination);
-            }
+            if( ! file_exists($destination)) self::pocket($destination);
             // Move the uploaded file to the destination folder
             if( ! file_exists($destination . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $destination . DS . $file['name']);
-            } else {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . $file['name'] . '</code>'));
-            }
-            if( ! Notify::errors()) {
-                // Create public asset link to show on file uploaded
-                $link = self::url($destination) . '/' . $file['name'];
+                // Create public asset URL to show on file uploaded
+                $url = self::url($destination) . '/' . $file['name'];
                 Notify::success(Config::speak('notify_file_uploaded', '<code>' . $file['name'] . '</code>'));
-                self::$open = $destination . DS . $file['name'];
                 if(is_callable($callback)) {
-                    call_user_func($callback, $file['name'], $file['type'], $file['size'], $link);
+                    return call_user_func($callback, $file['name'], $file['type'], $file['size'], $url);
                 }
+                return $destination . DS . $file['name'];
             }
-            return new static;
+            Notify::error(Config::speak('notify_file_exist', '<code>' . $file['name'] . '</code>'));
+            return false;
         }
         return false;
     }
