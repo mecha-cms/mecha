@@ -1,91 +1,72 @@
-var Widget = function() {
+(function(win, doc) {
 
-    var base = this,
-        win = window,
-        doc = document,
-        elem;
+    var W = function() {
 
-    // Widget Archive
-    base.archive = function(type, id) {
+        var base = this, $;
+    
+        base.el = function(em) {
+            return typeof em === "string" ? doc.getElementById(em) : em;
+        };
 
-        // Hierarchy
-        if (type === 'HIERARCHY') {
-            elem = doc.getElementById(id);
-            if (!elem) return;
-            var ul = elem.getElementsByTagName('ul'),
-                click = function(ref) {
-                    ref.onclick = function() {
-                        var parent = this.parentNode,
-                            s = /\scurrent$/i.test(parent.className) ? ' current' : "";
-                        if (this.className === 'toggle close') {
-                            this.className = 'toggle open';
-                            parent.className = 'open' + s;
-                        } else {
-                            this.className = 'toggle close';
-                            parent.className = 'close' + s;
-                        }
-                        return false;
+        base.archive = function(type, id) {
+            $ = base.el(id);
+            if (!$) return;
+            if (type === 'HIERARCHY') {
+                var ul = $.getElementsByTagName('ul'),
+                    click = function(r) {
+                        r.onclick = function() {
+                            var parent = this.parentNode,
+                                s = /\scurrent$/i.test(parent.className) ? ' current' : "",
+                                close = this.className === 'toggle close';
+                            this.className = 'toggle ' + (close ? 'open' : 'close');
+                            parent.className = (close ? 'open' : 'close') + s;
+                            return false;
+                        };
                     };
-                };
-            if (!ul.length) return;
-            var toggle = ul[0].getElementsByTagName('a');
-            if (!toggle.length) return;
-            for (var i = 0, toggles = toggle.length; i < toggles; ++i) {
-                if (/(^|\s)toggle(\s|$)/.test(toggle[i].className)) click(toggle[i]);
+                if (!ul.length) return;
+                var a = ul[0].getElementsByTagName('a');
+                if (!a.length) return;
+                for (var i = 0, as = a.length; i < as; ++i) {
+                    if (/(^|\s)toggle(\s|$)/.test(a[i].className)) click(a[i]);
+                }
             }
-        }
+            if (type === 'DROPDOWN') {
+                var select = $.getElementsByTagName('select');
+                if (!select.length) return;
+                select[0].onchange = function() {
+                    win.location.href = this.value;
+                };
+            }
+        };
 
-        // Dropdown
-        if (type === 'DROPDOWN') {
-            elem = doc.getElementById(id);
-            if (!elem) return;
-            var select = elem.getElementsByTagName('select');
-            if (!select.length) return;
-            select[0].onchange = function() {
-                win.location.href = this.value;
-            };
-        }
-
-    };
-
-    // Widget Tag
-    base.tag = function(type, id) {
-
-        // Dropdown
-        if (type === 'DROPDOWN') {
-            elem = doc.getElementById(id);
-            if (!elem) return;
-            var select = elem.getElementsByTagName('select');
-            if (!select.length) return;
-            select[0].onchange = function() {
-                win.location.href = this.value;
-            };
-        }
+        base.tag = function(type, id) {
+            $ = base.el(id);
+            if (!$) return;
+            if (type === 'DROPDOWN') {
+                var select = $.getElementsByTagName('select');
+                if (!select.length) return;
+                select[0].onchange = function() {
+                    win.location.href = this.value;
+                };
+            }
+        };
 
     };
 
-};
+    // plug ...
+    win.Widget = new W();
 
-
-/**
- * FIRE !!!
- * --------
- */
-
-(function(d) {
-    var elem = d.getElementsByTagName('div'),
-        widget = new Widget();
-    for (var i = 0, len = elem.length; i < len; ++i) {
-        var e_class = elem[i].className,
-            e_id = elem[i].id;
-        if (/(^|\s)widget-archive widget-archive-hierarchy(\s|$)/.test(e_class)) {
-            widget.archive('HIERARCHY', e_id);
-        }
-        if (/(^|\s)widget-archive widget-archive-dropdown(\s|$)/.test(e_class)) {
-            widget.archive('DROPDOWN', e_id);
-        }
-        if (/(^|\s)widget-tag widget-tag-dropdown(\s|$)/.test(e_class)) {
-            widget.tag('DROPDOWN', e_id);
+    // and run ...
+    var $ = doc.getElementsByTagName('div');
+    for (var i = 0, len = $.length; i < len; ++i) {
+        var cl = $[i].className;
+        if (/(^|\s)widget-archive-hierarchy(\s|$)/.test(cl)) {
+            Widget.archive('HIERARCHY', $[i]);
+        } else if (/(^|\s)widget-archive-dropdown(\s|$)/.test(cl)) {
+            Widget.archive('DROPDOWN', $[i]);
+        } else if (/(^|\s)widget-tag-dropdown(\s|$)/.test(cl)) {
+            Widget.tag('DROPDOWN', $[i]);
         }
     }
-})(document);
+
+})(window, document);

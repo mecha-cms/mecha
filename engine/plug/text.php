@@ -103,7 +103,7 @@ Text::parser('to_slug', function($input, $join = '-') {
 
 // Convert text to safe file name pattern
 Text::parser('to_safe_file_name', function($input, $lower = true) {
-    return is_string($input) ? do_slug($lower ? strtolower($input) : $input, '-', 'a-zA-Z0-9_.') : $input;
+    return is_string($input) ? do_slug($lower ? strtolower($input) : $input, '-', '\w.') : $input;
 });
 
 // Convert text to safe folder name pattern
@@ -113,7 +113,10 @@ Text::parser('to_safe_folder_name', function($input, $lower = true) {
 
 // Convert text to safe path name pattern
 Text::parser('to_safe_path_name', function($input, $lower = true) {
-    return is_string($input) ? do_slug($lower ? strtolower($input) : $input, '-', 'a-zA-Z0-9_.\\\/') : $input;
+    if( ! is_string($input)) return $input;
+    $s = '-' . DS;
+    $input = str_replace(array('\\', '/', '\\\\', '//'), array(DS, DS, $s, $s), $input);
+    return do_slug($lower ? strtolower($input) : $input, '-', '\w.\\\/');
 });
 
 // Convert HTML/slug pattern to plain text
