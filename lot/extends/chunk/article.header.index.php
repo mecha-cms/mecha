@@ -1,4 +1,4 @@
-<header class="article-header">
+<header class="post-header">
   <?php Shield::chunk('article.time'); ?>
   <h4 class="post-title">
     <?php if($article->link): ?>

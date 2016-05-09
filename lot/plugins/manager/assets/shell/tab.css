@@ -1,6 +1,6 @@
 .tab-button-area {
   margin:0 0 1.3846153846153846em;
-  height:2.4615384615384617em;
+  min-height:2.4615384615384617em;
   line-height:2.3076923076923075em;
   font-weight:bold;
   overflow:hidden;
