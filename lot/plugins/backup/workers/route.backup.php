@@ -6,7 +6,7 @@
  * --------------
  */
 
-Route::accept($config->manager->slug . '/backup', function() use($config, $speak) {
+Route::accept($config->manager->slug . '/backup', function() use($config, $speak, $segment) {
     // Remove backup file(s) that is failed to delete
     if($backup = glob(ROOT . DS . Text::parse($config->title, '->slug') . '_*.zip', GLOB_NOSORT)) {
         foreach($backup as $back) {
@@ -14,7 +14,7 @@ Route::accept($config->manager->slug . '/backup', function() use($config, $speak
         }
     }
     if(isset($_FILES) && ! empty($_FILES)) {
-        Guardian::checkToken($request['token']);
+        Guardian::checkToken(Request::post('token'));
         $destination = Request::post('destination', ROOT, false);
         $title = Request::post('title', $speak->files, false);
         include PLUGIN . DS . 'manager' . DS . 'workers' . DS . 'task.package.ignite.php';
