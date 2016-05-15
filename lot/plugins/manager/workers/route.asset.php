@@ -111,13 +111,14 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
         } else {
             // Safe file name
             $new = Text::parse(File::path($request['name']), '->safe_path_name');
+            $is_file = is_file(ASSET . DS . $new);
             // Missing file extension
-            if(is_file(ASSET . DS . $new) && ! preg_match('#^.*?\.(.+?)$#', $new)) {
+            if($is_file && ! preg_match('#^.*?\.(.+?)$#', $new)) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             // File name already exist
             if($old !== $new && File::exist(ASSET . DS . $new)) {
-                Notify::error(Config::speak('notify_file_exist', '<code>' . File::B($new) . '</code>'));
+                Notify::error(Config::speak('notify_' . ($is_file ? 'file' : 'folder') . '_exist', '<code>' . File::B($new) . '</code>'));
             }
             $P = array('data' => $request);
             if( ! Notify::errors()) {
