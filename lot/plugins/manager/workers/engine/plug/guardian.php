@@ -22,6 +22,6 @@ Guardian::plug('wizard', function($name = "", $vars = array(), $folder = 'yap') 
     } else if($file = File::exist($name . '.txt')) {
         $_file = $file;
     }
-    $wizard = $_file ? Text::toPage(File::open($_file)->read(), 'content', 'wizard:', array('content_type' => 'HTML')) : false;
+    $wizard = $_file ? Page::text(File::open($_file)->read(), 'content', 'wizard:', array('content_type' => 'HTML')) : false;
     return $wizard ? vsprintf($wizard['content'], $vars) : "";
 });
