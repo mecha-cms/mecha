@@ -53,11 +53,12 @@ class Page extends __ {
         if( ! $content) {
             // By file path
             if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
+                $buffer = Filter::apply($FP . 'input', $buffer, $FP, $data);
                 Mecha::extend($results, self::__($buffer, $FP, $data));
                 unset($results['__'], $results['___raw']);
             // By file content
             } else {
-                $text = str_replace("\r", "", $text);
+                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
                 if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
                     $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
                     Mecha::extend($results, self::__($parts[0], $FP, $data));
@@ -69,7 +70,7 @@ class Page extends __ {
             if(strpos($text, ROOT) === 0 && file_exists($text)) {
                 $text = file_get_contents($text);
             }
-            $text = str_replace("\r", "", $text);
+            $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
             // By file content
             if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
@@ -81,10 +82,10 @@ class Page extends __ {
             Mecha::extend($data, $results);
         }
         if(isset($results[$c . '_raw'])) {
-            $content_extra = explode(SEPARATOR, $results[$c . '_raw']);
-            if(count($content_extra) > 1) {
+            $content_x = explode(SEPARATOR, $results[$c . '_raw']);
+            if(count($content_x) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
-                foreach($content_extra as $k => $v) {
+                foreach($content_x as $k => $v) {
                     $v = Converter::DS(trim($v));
                     $v = Filter::colon($FP . $c . '_raw', $v, $data, $k + 1);
                     $results[$c . '_raw'][$k] = $v;
@@ -101,7 +102,7 @@ class Page extends __ {
                 $results[$c] = $v;
             }
         }
-        return $results;
+        return Filter::apply($FP . 'output', $results, $FP, $data);
     }
 
     protected static function __($text, $FP, $data) {
