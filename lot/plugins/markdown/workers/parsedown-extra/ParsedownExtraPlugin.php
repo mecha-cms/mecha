@@ -346,9 +346,8 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         $text = str_replace(array('#', '.'), array(' #', ' .'), $text);
         if(strpos($text, '="') !== false || strpos($text, '=\'') !== false) {
             $text = preg_replace_callback('#([-\w]+=)(["\'])([^\n]*?)\2#', function($m) {
-                $m[3] = str_replace(array(' #', ' .'), array('#', '.'), $m[3]);
-                $m[3] = str_replace(' ', "\n", $m[3]);
-                return $m[1] . $m[2] . $m[3] . $m[2];
+                $s = str_replace(array(' #', ' .', ' '), array('#', '.', "\n"), $m[3]);
+                return $m[1] . $m[2] . $s . $m[2];
             }, $text);
         }
         $attrs = array();
