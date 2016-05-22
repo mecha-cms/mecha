@@ -421,10 +421,10 @@ class Converter extends __ {
         if(trim($input) === "") return array();
         $results = $data = array();
         // Normalize line-break
-        $text = str_replace(array("\r\n", "\r"), $n, $input);
+        $text = self::RN($input, $n);
         if(strpos($indent, "\t") === false) {
             // Force translate 1 tab to 4 space
-            $text = str_replace("\t", '    ', $text);
+            $text = self::TS($text);
         }
         $indent_length = strlen($indent);
         foreach(explode($n, $text) as $line) {
@@ -540,7 +540,7 @@ class Converter extends __ {
         // Remove extra white-space(s) between HTML attribute(s)
         $input = preg_replace_callback('#<([^\/\s<>!]+)(?:\s+([^<>]*?)\s*|\s*)(\/?)>#s', function($matches) {
             return '<' . $matches[1] . preg_replace('#([^\s=]+)(\=([\'"]?)(.*?)\3)?(\s+|$)#s', ' $1$2', $matches[2]) . $matches[3] . '>';
-        }, str_replace("\r", "", $input));
+        }, self::RN($input));
         // Minify inline CSS declaration(s)
         if(strpos($input, ' style=') !== false) {
             $input = preg_replace_callback('#<([^<]+?)\s+style=([\'"])(.*?)\2(?=[\/\s>])#s', function($matches) {
@@ -709,6 +709,26 @@ class Converter extends __ {
                 '$1'
             ),
         $input);
+    }
+
+    // Normalize line-break(s) (internal only)
+    public static function RN($text, $n = "\n") {
+        return str_replace(array("\r\n", "\r"), $n, $text);
+    }
+
+    // Reverse ...
+    public static function NR($text, $r = "\r") {
+        return str_replace(array("\n", "\r\n"), $r, $text);
+    }
+
+    // Tab to space
+    public static function TS($text, $s = '    ') {
+        return str_replace("\t", $s, $text);
+    }
+
+    // Space to tab
+    public static function ST($text, $s = '    ') {
+        return str_replace($s, "\t", $text);
     }
 
     // Encode the bogus `SEPARATOR`s (internal only)

@@ -155,7 +155,7 @@ class File extends __ {
                 if(is_string($stop_at) && strpos($buffer, $stop_at) !== false) break;
             }
             fclose($handle);
-            return rtrim(str_replace("\r", "", $results));
+            return rtrim(Converter::RN($results));
         }
         return $fallback;
     }
