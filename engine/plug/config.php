@@ -33,7 +33,11 @@ Config::plug('load', function() {
     $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;
 
     $ss = array();
-    foreach(array(ARTICLE, PAGE, COMMENT) as $folder) {
+    $folders = array_merge(
+        glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR),
+        glob(RESPONSE . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR)
+    );
+    foreach($folders as $folder) {
         $s = File::B($folder);
         $ss[$s][0] = glob($folder . DS . '*.*', GLOB_NOSORT);
         $ss[$s][1] = glob($folder . DS . '*.txt', GLOB_NOSORT);

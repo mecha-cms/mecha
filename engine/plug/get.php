@@ -160,11 +160,15 @@ Get::plug('articlesExtract', function($order = 'DESC', $sorter = 'time', $filter
  */
 
 Get::plug('pageAnchor', function($path) {
-    return Get::postAnchor($path, PAGE, 'page:', '/');
+    $_ = Config::get('index.slug');
+    Config::set('index.slug', false);
+    $post = Get::postAnchor($path, PAGE, 'page:');
+    Config::set('index.slug', $_);
+    return $post;
 });
 
 Get::plug('articleAnchor', function($path) {
-    return Get::postAnchor($path, ARTICLE, 'article:', '/' . Config::get('index.slug') . '/');
+    return Get::postAnchor($path, ARTICLE, 'article:');
 });
 
 
@@ -183,11 +187,15 @@ Get::plug('articleAnchor', function($path) {
  */
 
 Get::plug('pageHeader', function($path) {
-    return Get::postHeader($path, PAGE, 'page:', '/');
+    $_ = Config::get('index.slug');
+    Config::set('index.slug', false);
+    $post = Get::postHeader($path, PAGE, 'page:');
+    Config::set('index.slug', $_);
+    return $post;
 });
 
 Get::plug('articleHeader', function($path) {
-    return Get::postHeader($path, ARTICLE, 'article:', '/' . Config::get('index.slug') . '/');
+    return Get::postHeader($path, ARTICLE, 'article:');
 });
 
 
@@ -205,31 +213,16 @@ Get::plug('articleHeader', function($path) {
  *
  */
 
-Get::plug('page', function($reference, $excludes = array()) {
-    return Get::post($reference, $excludes, PAGE, 'page:', '/');
+Get::plug('page', function($path, $excludes = array()) {
+    $_ = Config::get('index.slug');
+    Config::set('index.slug', false);
+    $post = Get::post($path, $excludes, PAGE, 'page:');
+    Config::set('index.slug', $_);
+    return $post;
 });
 
-Get::plug('article', function($reference, $excludes = array()) {
-    $config = Config::get();
-    $speak = Config::speak();
-    $FP = 'article:';
-    if( ! $results = Get::post($reference, $excludes, ARTICLE, $FP, '/' . $config->index->slug . '/')) return $results;
-    // Include comment(s) data
-    $c = array();
-    $cc = 0;
-    $ccc = '0 ' . $speak->comments;
-    if($comments = Get::comments('ASC', 'post:' . $results->id, (Guardian::happy() ? 'txt,hold' : 'txt'))) {
-        $cc = $comments !== false ? count($comments) : 0;
-        $ccc = $cc . ' ' . ($cc === 1 ? $speak->comment : $speak->comments);
-        foreach($comments as $comment) {
-            $c[] = Get::comment($comment);
-        }
-        $results->comments = Filter::colon($FP . 'comments', $c, $results);
-    }
-    $results->total_comments = Filter::colon($FP . 'total_comments', $cc, $results);
-    $results->total_comments_text = Filter::colon($FP . 'total_comments_text', $ccc, $results);
-    unset($comments, $c, $cc, $ccc);
-    return $results;
+Get::plug('article', function($path, $excludes = array()) {
+    return Get::post($path, $excludes, ARTICLE, 'article:');
 });
 
 
@@ -345,8 +338,8 @@ Get::plug('commentsExtract', function($order = 'ASC', $sorter = 'time', $filter 
  *
  */
 
-Get::plug('commentAnchor', function($path) {
-    return Get::responseAnchor($path, array(COMMENT), array('comment:'));
+Get::plug('commentAnchor', function($path, $folder = ARTICLE, $FP = 'article:') {
+    return Get::responseAnchor($path, array(COMMENT, $folder), array('comment:', $FP));
 });
 
 
@@ -363,8 +356,8 @@ Get::plug('commentAnchor', function($path) {
  *
  */
 
-Get::plug('commentHeader', function($path) {
-    return Get::responseHeader($path, array(COMMENT), array('comment:'), '/' . Config::get('index.slug') . '/');
+Get::plug('commentHeader', function($path, $folder = ARTICLE, $FP = 'article:') {
+    return Get::responseHeader($path, array(COMMENT, $folder), array('comment:', $FP));
 });
 
 
@@ -380,17 +373,17 @@ Get::plug('commentHeader', function($path) {
  * --------------------------------------------------------------------------
  *
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *  Parameter  | Type   | Description
- *  ---------- | ------ | ---------------------------------------------------
- *  $reference | string | Comment path, ID or time
- *  $excludes  | array  | Exclude some field(s) from result(s)
- *  ---------- | ------ | ---------------------------------------------------
+ *  Parameter  | Type  | Description
+ *  ---------- | ----- | ----------------------------------------------------
+ *  $path      | mixed | Comment path, ID or time
+ *  $excludes  | array | Exclude some field(s) from result(s)
+ *  ---------- | ----- | ----------------------------------------------------
  * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
  *
  */
 
-Get::plug('comment', function($reference, $excludes = array()) {
-    return Get::response($reference, $excludes, array(COMMENT, ARTICLE), array('comment:', 'article:'), '/' . Config::get('index.slug') . '/');
+Get::plug('comment', function($path, $excludes = array(), $folder = ARTICLE, $FP = 'article:') {
+    return Get::response($path, $excludes, array(COMMENT, $folder), array('comment:', $FP));
 });
 
 

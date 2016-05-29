@@ -46,6 +46,7 @@ class Page extends __ {
     // Create from text
     public static function text($text, $content = 'content', $FP = 'page:', $results = array(), $data = array()) {
         $c = $content !== false ? $content : 'content';
+        $_ = "\n" . SEPARATOR . "\n";
         foreach($results as $k => $v) {
             $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
             $results[$k] = Filter::colon($FP . $k, $v, $data);
@@ -59,9 +60,10 @@ class Page extends __ {
             // By file content
             } else {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                if(strpos($text, "\n" . SEPARATOR . "\n") !== false) {
-                    $parts = explode("\n" . SEPARATOR . "\n", trim($text), 2);
-                    Mecha::extend($results, self::__($parts[0], $FP, $data));
+                $text = trim($text) . "\n";
+                if(strpos($text, $_) !== false) {
+                    $parts = explode($_, $text, 2);
+                    Mecha::extend($results, self::__(trim($parts[0]), $FP, $data));
                     $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
                 }
             }
@@ -71,18 +73,19 @@ class Page extends __ {
                 $text = file_get_contents($text);
             }
             $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
+            $text = trim($text) . "\n";
             // By file content
-            if(strpos($text, "\n" . SEPARATOR . "\n") === false) {
+            if(strpos($text, $_) === false) {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
-                $parts = explode(SEPARATOR, trim($text), 2);
-                Mecha::extend($results, self::__($parts[0], $FP, $data));
+                $parts = explode($_, $text, 2);
+                Mecha::extend($results, self::__(trim($parts[0]), $FP, $data));
                 $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
             }
             Mecha::extend($data, $results);
         }
         if(isset($results[$c . '_raw'])) {
-            $content_x = explode(SEPARATOR, $results[$c . '_raw']);
+            $content_x = explode($_, str_replace(trim($_), $_, $results[$c . '_raw']));
             if(count($content_x) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
                 foreach($content_x as $k => $v) {
@@ -125,7 +128,8 @@ class Page extends __ {
     public static function open($path) {
         self::reset();
         self::$open = $path;
-        $parts = explode(SEPARATOR, file_get_contents($path), 2);
+        $text = file_get_contents($path);
+        $parts = explode("\n" . SEPARATOR . "\n", Converter::RN($text) . "\n", 2);
         $headers = explode("\n", trim($parts[0]));
         foreach($headers as $header) {
             $field = explode(S, $header, 2);
