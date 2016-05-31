@@ -35,7 +35,7 @@ class Navigator extends __ {
      *
      */
 
-    public static function extract($pages = array(), $current = 1, $per_page = 10, $connector = '/') {
+    public static function extract($pages = array(), $current = 1, $per_page = 10, $connector = false) {
 
         // Set default next, previous and step data
         $bucket = array('prev' => false, 'next' => false, 'step' => false);
@@ -44,19 +44,20 @@ class Navigator extends __ {
         $speak = Config::speak();
         $base = $config->url;
         $q = str_replace('&', '&amp;', $config->url_query);
+        if($connector === false) $connector = '/';
         $qq = strpos($connector, '?') !== false ? str_replace('?', '&amp;', $q) : $q;
         $total = count($pages);
         $c = self::$config;
 
         if(strpos($connector, '%s') === false) {
-            if(trim($connector, '/') !== "") {
-                $connector = '/' . trim($connector, '/') . '/%s';
+            if(($s = trim($connector, '/')) !== "") {
+                $connector = '/' . $s . '/%s';
             } else {
                 $connector = '/%s';
             }
         }
 
-        if(is_int($current)) {
+        if(is_numeric($current)) {
 
             $current = (int) $current;
 
@@ -103,9 +104,7 @@ class Navigator extends __ {
 
             $bucket['step']['html'] = Filter::apply(array('pager:step.html', 'pager:html'), $html . '</span>');
 
-        }
-
-        if(is_string($current)) {
+        } else if(is_string($current)) {
 
             for($i = 0; $i < $total; ++$i) {
 

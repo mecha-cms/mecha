@@ -19,8 +19,10 @@
 class Page extends __ {
 
     public static $open = null;
-    public static $bucket = array();
-    public static $bucket_alt = "";
+    public static $header = array();
+    public static $content = array();
+
+    protected static $i = 0;
 
     // Remove `:` in field key
     protected static function fix($key) {
@@ -30,41 +32,44 @@ class Page extends __ {
     // Reset the cached data
     protected static function reset() {
         self::$open = null;
-        self::$bucket = array();
-        self::$bucket_alt = "";
+        self::$header = array();
+        self::$content = array();
+        self::$i = 0;
     }
 
     // Create the page
     protected static function create() {
-        $output = "";
-        foreach(self::$bucket as $key => $value) {
-            $output .= $key . S . ' ' . $value . "\n";
+        $header = "";
+        $_ = "\n\n" . SEPARATOR . "\n\n";
+        foreach(self::$header as $k => $v) {
+            $header .= $k . S . ' ' . $v . "\n";
         }
-        return trim($output) !== "" ? trim($output) . (trim(self::$bucket_alt) !== "" ? "\n\n" . SEPARATOR . "\n\n" . self::$bucket_alt : "") : self::$bucket_alt;
+        $content = implode($_, self::$content);
+        return trim(substr($header, 0, -1) . $_ . $content);
     }
 
     // Create from text
     public static function text($text, $content = 'content', $FP = 'page:', $results = array(), $data = array()) {
         $c = $content !== false ? $content : 'content';
-        $_ = "\n" . SEPARATOR . "\n";
+        $_ = SEPARATOR;
         foreach($results as $k => $v) {
             $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
             $results[$k] = Filter::colon($FP . $k, $v, $data);
         }
         if( ! $content) {
             // By file path
-            if(strpos($text, ROOT) === 0 && ($buffer = File::open($text)->get(SEPARATOR)) !== false) {
-                $buffer = Filter::apply($FP . 'input', $buffer, $FP, $data);
-                Mecha::extend($results, self::__($buffer, $FP, $data));
-                unset($results['__'], $results['___raw']);
+            if(strpos($text, ROOT) === 0 && ($text = File::open($text)->get($_)) !== false) {
+                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
+                Mecha::extend($results, self::__($text, $FP, $data));
             // By file content
             } else {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                $text = trim($text) . "\n";
                 if(strpos($text, $_) !== false) {
-                    $parts = explode($_, $text, 2);
-                    Mecha::extend($results, self::__(trim($parts[0]), $FP, $data));
-                    $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
+                    $s = explode($_, $text, 2);
+                    Mecha::extend($results, self::__(trim($s[0]), $FP, $data));
+                    if(isset($s[1]) && $s[1] !== "") {
+                        $results[$c . '_raw'] = trim($s[1]);
+                    }
                 }
             }
         } else {
@@ -73,28 +78,32 @@ class Page extends __ {
                 $text = file_get_contents($text);
             }
             $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-            $text = trim($text) . "\n";
             // By file content
-            if(strpos($text, $_) === false) {
+            if($text === $_ || strpos($text, $_) === false) {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
-                $parts = explode($_, $text, 2);
-                Mecha::extend($results, self::__(trim($parts[0]), $FP, $data));
-                $results[$c . '_raw'] = isset($parts[1]) ? trim($parts[1]) : "";
+                $s = explode($_, $text, 2);
+                Mecha::extend($results, self::__(trim($s[0]), $FP, $data));
+                if(isset($s[1]) && $s[1] !== "") {
+                    $results[$c . '_raw'] = trim($s[1]);
+                }
             }
-            Mecha::extend($data, $results);
         }
+        unset($results['__'], $results['___raw']);
+        Mecha::extend($data, $results);
         if(isset($results[$c . '_raw'])) {
-            $content_x = explode($_, str_replace(trim($_), $_, $results[$c . '_raw']));
+            $content_x = explode($_, $results[$c . '_raw']);
             if(count($content_x) > 1) {
                 $results[$c . '_raw'] = $results[$c] = array();
-                foreach($content_x as $k => $v) {
+                $i = 0;
+                foreach($content_x as $v) {
                     $v = Converter::DS(trim($v));
-                    $v = Filter::colon($FP . $c . '_raw', $v, $data, $k + 1);
-                    $results[$c . '_raw'][$k] = $v;
-                    $v = Filter::colon($FP . 'shortcode', $v, $data, $k + 1);
-                    $v = Filter::colon($FP . $c, $v, $data, $k + 1);
-                    $results[$c][$k] = $v;
+                    $v = Filter::colon($FP . $c . '_raw', $v, $data, $i + 1);
+                    $results[$c . '_raw'][$i] = $v;
+                    $v = Filter::colon($FP . 'shortcode', $v, $data, $i + 1);
+                    $v = Filter::colon($FP . $c, $v, $data, $i + 1);
+                    $results[$c][$i] = $v;
+                    $i++;
                 }
             } else {
                 $v = Converter::DS($results[$c . '_raw']);
@@ -128,14 +137,20 @@ class Page extends __ {
     public static function open($path) {
         self::reset();
         self::$open = $path;
+        $_ = "\n" . SEPARATOR . "\n";
         $text = file_get_contents($path);
-        $parts = explode("\n" . SEPARATOR . "\n", Converter::RN($text) . "\n", 2);
-        $headers = explode("\n", trim($parts[0]));
+        $s = explode($_, Converter::RN($text) . "\n", 2);
+        $headers = explode("\n", trim($s[0]));
         foreach($headers as $header) {
             $field = explode(S, $header, 2);
-            self::$bucket[trim($field[0])] = isset($field[1]) ? trim($field[1]) : false;
+            self::$header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : false;
         }
-        self::$bucket_alt = trim($parts[1]);
+        if(isset($s[1])) {
+            $contents = explode($_, trim($s[1]));
+            foreach($contents as $content) {
+                self::$content[] = trim($content);
+            }
+        }
         return new static;
     }
 
@@ -145,27 +160,32 @@ class Page extends __ {
             $data = array(self::fix($data) => $value);
         }
         foreach($data as $k => $v) {
+            $kk = self::fix($k);
             if($v === false) {
-                unset($data[self::fix($k)], self::$bucket[self::fix($k)]);
+                unset($data[$kk], self::$header[$kk]);
             } else {
                 // Restrict user(s) from inputting the `SEPARATOR` constant
                 // to prevent mistake(s) in parsing the file content
-                $data[self::fix($k)] = Converter::ES($v);
+                $data[$kk] = Converter::ES(trim($v));
             }
         }
-        Mecha::extend(self::$bucket, $data);
+        Mecha::extend(self::$header, $data);
         return new static;
     }
 
     // Add page content or update the existing page content
-    public static function content($data = "") {
+    public static function content($data = "", $i = null) {
         if($data === false) {
-            $data = "";
+            if( ! is_null($i)) {
+                unset(self::$content[$i]);
+            } else {
+                self::$content = array();
+            }
         }
         // Restrict user(s) from inputting the `SEPARATOR` constant
         // to prevent mistake(s) in parsing the file content
-        $data = Converter::ES($data);
-        self::$bucket_alt = trim(self::$bucket_alt) !== "" && is_null(self::$open) ? trim(self::$bucket_alt) . (trim($data) !== "" ? "\n\n" . SEPARATOR . "\n\n" . $data : "") : $data;
+        self::$content[is_null($i) ? self::$i : $i] = Converter::ES(trim($data));
+        self::$i++;
         return new static;
     }
 
@@ -178,10 +198,10 @@ class Page extends __ {
 
     // Show page data as array
     public static function read($content = 'content', $FP = 'page:') {
-        $results = self::text(self::create(), $content, $FP);
         if($content === false) {
-            unset($results['content'], $results['content_raw']);
+            self::$content = array();
         }
+        $results = self::text(self::create(), $content, $FP);
         self::reset();
         return $results;
     }
