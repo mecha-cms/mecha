@@ -113,7 +113,7 @@ Route::accept($config->manager->slug . '/asset/repair/(file|files):(:all)', func
             $new = Text::parse(File::path($request['name']), '->safe_path_name');
             $is_file = is_file(ASSET . DS . $new);
             // Missing file extension
-            if($is_file && ! preg_match('#^.*?\.(.+?)$#', $new)) {
+            if($is_file && ! preg_match('#\.\w+$#', $new)) {
                 Notify::error($speak->notify_error_file_extension_missing);
             }
             // File name already exist

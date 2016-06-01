@@ -1,16 +1,18 @@
-<p>For the <em>file</em> field type, limit the allowed file extensions in the <strong>Value</strong> field:</p>
+<p>For <code>file</code> field type, limit the allowed file extensions in the <strong>Value</strong> field:</p>
 <pre><code class="no-highlight">gif,bmp,jpeg,jpg,png</code></pre>
-<p>For the <em>option</em> field type, write some lines of text in the <strong>Value</strong> field as a representation of each option:</p>
+<p>For <code>option</code> and <code>options</code> field type, write some lines of text in the <strong>Value</strong> field as a representation of each option:</p>
 <pre><code class="no-highlight">Option 1
 Option 2
-Option 3
-</code></pre>
+Option 3</code></pre>
 <p>Result:</p>
 <pre><code class="html">&lt;select&gt;
   &lt;option value="Option 1"&gt;Option 1&lt;/option&gt;
   &lt;option value="Option 2"&gt;Option 2&lt;/option&gt;
   &lt;option value="Option 3"&gt;Option 3&lt;/option&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">&lt;input type="checkbox" value="Option 1"&gt; Option 1
+&lt;input type="checkbox" value="Option 2"&gt; Option 2
+&lt;input type="checkbox" value="Option 3"&gt; Option 3</code></pre>
 <p>This also acceptable:</p>
 <pre><code class="no-highlight">value_1: Label 1
 value_2: Label 2
@@ -21,6 +23,9 @@ value_3: Label 3</code></pre>
   &lt;option value="value_2"&gt;Label 2&lt;/option&gt;
   &lt;option value="value_3"&gt;Label 3&lt;/option&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">&lt;input type="checkbox" value="value_1"&gt; Label 1
+&lt;input type="checkbox" value="value_2"&gt; Label 2
+&lt;input type="checkbox" value="value_3"&gt; Label 3</code></pre>
 <p>Example as option group:</p>
 <pre><code class="no-highlight">Group 1:
   value_1_1: Label 1.1
@@ -43,8 +48,20 @@ Group 2:
     &lt;option value="value_2_3"&gt;Label 2.3&lt;/option&gt;
   &lt;/optgroup&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">Group 1
+&lt;input type="checkbox" value="value_1_1"&gt; Label 1.1
+&lt;input type="checkbox" value="value_1_2"&gt; Label 1.2
+&lt;input type="checkbox" value="value_1_3"&gt; Label 1.3
+Group 2
+&lt;input type="checkbox" value="value_2_1"&gt; Label 2.1
+&lt;input type="checkbox" value="value_2_2"&gt; Label 2.2
+&lt;input type="checkbox" value="value_2_3"&gt; Label 2.3</code></pre>
 <p>All custom fields will be available in the articles and pages through this variable:</p>
 <h4>For Articles</h4>
-<pre><code class="php">$article-&gt;fields-&gt;your_custom_field_key</code></pre>
+<pre><code class="php">echo $article-&gt;fields-&gt;your_custom_field_key;</code></pre>
 <h4>For Pages</h4>
-<pre><code class="php">$page-&gt;fields-&gt;your_custom_field_key</code></pre>
+<pre><code class="php">echo $page-&gt;fields-&gt;your_custom_field_key;</code></pre>
+<p>You may need to convert your custom fields value into array if the value you want to get is known as an object with numeric keys (usually produced by custom fields with type of <code>options</code>):</p><pre><code class="php">$field = Mecha::A($article-&gt;fields-&gt;your_custom_field_key);
+
+echo $field[1]; // option
+echo $field[1][0]; // option group</code></pre>

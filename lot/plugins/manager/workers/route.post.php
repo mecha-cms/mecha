@@ -48,12 +48,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     Weapon::add('tab_content_3_before', function($page, $segment) use($config, $speak) {
         include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'fields[].php';
     }, 1);
-    // Ignite
-    if(strpos($config->url_path, '/id:') === false) {
-        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-            echo '<script>(function($){$.slug(\'title\',\'slug\',\'-\')})(DASHBOARD.$);</script>';
-        }, 11);
-    }
     if($id && $post = call_user_func('Get::' . $segment, $id, array('content', 'excerpt', 'tags'))) {
         $extension_o = '.' . File::E($post->path);
         if( ! Guardian::happy(1) && Guardian::get('author') !== $post->author) {
@@ -97,8 +91,8 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
     if($request = Request::post()) {
         Guardian::checkToken($request['token']);
         // Check for invalid time pattern
-        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^\d{4,}\-\d{2}\-\d{2}T\d{2}\:\d{2}\:\d{2}\+\d{2}\:\d{2}$#', $request['date'])) {
-            Notify::error($speak->notify_invalid_time_pattern);
+        if(isset($request['date']) && trim($request['date']) !== "" && ! preg_match('#^\d{4,}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}\+\d{2}:\d{2}$#', $request['date'])) {
+            Notify::error(Config::speak('notify_invalid_format', array($speak->date, '<code>' . date('c') . '</code>')));
             Guardian::memorize($request);
         }
         $rid = (int) date('U', isset($request['date']) && trim($request['date']) !== "" ? strtotime($request['date']) : time());

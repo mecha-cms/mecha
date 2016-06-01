@@ -1,6 +1,6 @@
-<p>Untuk bidang bertipe <em>file</em>, batasi ekstensi berkas yang diperbolehkan pada bidang <strong>Nilai</strong>:</p>
+<p>Untuk tipe bidang <code>file</code>, batasi ekstensi berkas yang diperbolehkan untuk diunggah pada bidang <strong>Nilai</strong>:</p>
 <pre><code class="no-highlight">gif,bmp,jpeg,jpg,png</code></pre>
-<p>Untuk bidang bertipe <em>option</em>, tulis beberapa baris teks pada bidang <strong>Nilai</strong> sebagai representasi dari setiap pilihan:</p>
+<p>Untuk tipe bidang <code>option</code> dan <code>options</code>, tulis beberapa baris teks pada bidang <strong>Nilai</strong> sebagai representasi dari setiap pilihan:</p>
 <pre><code class="no-highlight">Opsi 1
 Opsi 2
 Opsi 3</code></pre>
@@ -10,6 +10,9 @@ Opsi 3</code></pre>
   &lt;option value="Opsi 2"&gt;Opsi 2&lt;/option&gt;
   &lt;option value="Opsi 3"&gt;Opsi 3&lt;/option&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">&lt;input type="checkbox" value="Opsi 1"&gt; Opsi 1
+&lt;input type="checkbox" value="Opsi 2"&gt; Opsi 2
+&lt;input type="checkbox" value="Opsi 3"&gt; Opsi 3</code></pre>
 <p>Ini juga bisa diterima:</p>
 <pre><code class="no-highlight">nilai_1: Label 1
 nilai_2: Label 2
@@ -20,6 +23,9 @@ nilai_3: Label 3</code></pre>
   &lt;option value="nilai_2"&gt;Label 2&lt;/option&gt;
   &lt;option value="nilai_3"&gt;Label 3&lt;/option&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">&lt;input type="checkbox" value="nilai_1"&gt; Label 1
+&lt;input type="checkbox" value="nilai_2"&gt; Label 2
+&lt;input type="checkbox" value="nilai_3"&gt; Label 3</code></pre>
 <p>Contoh sebagai grup pilihan:</p>
 <pre><code class="no-highlight">Grup 1:
   nilai_1_1: Label 1.1
@@ -32,18 +38,30 @@ Grup 2:
 <p>Result:</p>
 <pre><code class="html">&lt;select&gt;
   &lt;optgroup label="Grup 1"&gt;
-    &lt;option value="nilai_1_1"&gt;Label 1&lt;/option&gt;
-    &lt;option value="nilai_1_2"&gt;Label 2&lt;/option&gt;
-    &lt;option value="nilai_1_3"&gt;Label 3&lt;/option&gt;
+    &lt;option value="nilai_1_1"&gt;Label 1.1&lt;/option&gt;
+    &lt;option value="nilai_1_2"&gt;Label 1.2&lt;/option&gt;
+    &lt;option value="nilai_1_3"&gt;Label 1.3&lt;/option&gt;
   &lt;/optgroup&gt;
   &lt;optgroup label="Grup 2"&gt;
-    &lt;option value="nilai_2_1"&gt;Label 1&lt;/option&gt;
-    &lt;option value="nilai_2_2"&gt;Label 2&lt;/option&gt;
-    &lt;option value="nilai_2_3"&gt;Label 3&lt;/option&gt;
+    &lt;option value="nilai_2_1"&gt;Label 2.1&lt;/option&gt;
+    &lt;option value="nilai_2_2"&gt;Label 2.2&lt;/option&gt;
+    &lt;option value="nilai_2_3"&gt;Label 2.3&lt;/option&gt;
   &lt;/optgroup&gt;
 &lt;/select&gt;</code></pre>
+<pre><code class="html">Grup 1
+&lt;input type="checkbox" value="nilai_1_1"&gt; Label 1.1
+&lt;input type="checkbox" value="nilai_1_2"&gt; Label 1.2
+&lt;input type="checkbox" value="nilai_1_3"&gt; Label 1.3
+Grup 2
+&lt;input type="checkbox" value="nilai_2_1"&gt; Label 2.1
+&lt;input type="checkbox" value="nilai_2_2"&gt; Label 2.2
+&lt;input type="checkbox" value="nilai_2_3"&gt; Label 2.3</code></pre>
 <p>Semua bidang kustom akan tersedia di dalam artikel dan halaman statis melalui variabel ini:</p>
 <h4>Untuk Artikel</h4>
-<pre><code class="php">$article-&gt;fields-&gt;kunci_bidang_kustom_anda</code></pre>
+<pre><code class="php">echo $article-&gt;fields-&gt;kunci_bidang_kustom_anda;</code></pre>
 <h4>Untuk Halaman</h4>
-<pre><code class="php">$page-&gt;fields-&gt;kunci_bidang_kustom_anda</code></pre>
+<pre><code class="php">echo $page-&gt;fields-&gt;kunci_bidang_kustom_anda;</code></pre>
+<p>Anda mungkin perlu untuk mengubah nilai data bidang kustom Anda menjadi larik jika nilai yang coba Anda dapatkan diketahui merupakan objek dengan kunci numerik (biasanya dihasilkan oleh bidang kustom dengan tipe <code>options</code>):</p><pre><code class="php">$field = Mecha::A($article-&gt;fields-&gt;kunci_bidang_kustom_anda);
+
+echo $field[1]; // pilihan
+echo $field[1][0]; // grup pilihan</code></pre>

@@ -134,9 +134,9 @@ notify_error_duplicate: Duplicate.
 
 notify_invalid_token: Invalid token.
 notify_invalid_user_or_pass: Invalid username or password.
-notify_invalid_time_pattern: Invalid time pattern.
 notify_invalid_per_page_number: Number of pages only accept non-decimal, positive number. Greater than zero.
 notify_invalid_indent_character: Use 4 spaces for indentation.
+notify_invalid_format: Invalid <strong>%s</strong> format. Expected %s.
 notify_invalid_email: Invalid email address.
 notify_invalid_url: Invalid <abbr title="Uniform Resource Locator">URL</abbr>.
 notify_invalid_math_answer: Wrong math answer.

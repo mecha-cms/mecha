@@ -135,9 +135,9 @@ notify_error_duplicate: Duplikat.
 
 notify_invalid_token: Token tidak valid.
 notify_invalid_user_or_pass: Nama pengguna atau kata kunci Anda tidak valid.
-notify_invalid_time_pattern: Pola waktu tidak valid.
 notify_invalid_per_page_number: Jumlah halaman hanya menerima angka positif, non-desimal. Lebih besar dari nol.
 notify_invalid_indent_character: Gunakan 4 spasi untuk indentasi.
+notify_invalid_format: Format <strong>%s</strong> tidak valid. Mengharapkan %s.
 notify_invalid_email: Alamat email tidak valid.
 notify_invalid_url: <abbr title="Uniform Resource Locator">URL</abbr> tidak valid.
 notify_invalid_math_answer: Jawaban matematika salah.

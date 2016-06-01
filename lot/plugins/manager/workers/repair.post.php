@@ -49,3 +49,6 @@
     </form>
   </div>
 </div>
+<?php if(strpos($config->url_path, '/id:') !== false): ?>
+<script>!function(e){e(function(){e.slug("title","slug","-")})}(DASHBOARD.$);</script>
+<?php endif; ?>

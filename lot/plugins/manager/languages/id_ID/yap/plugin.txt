@@ -6,4 +6,4 @@
     ├── file-3.txt
     ├── file-4.txt
     └── …</code></pre>
-<p>Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas plugin Anda, dan kemudian Anda perlu menamakan berkas <code>ZIP</code> tersebut dengan nama yang sama seperti nama folder tersebut.</p>
+<p>Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas plugin Anda, dan kemudian Anda perlu menamai berkas <code>ZIP</code> tersebut dengan nama yang sama seperti nama folder tersebut.</p>

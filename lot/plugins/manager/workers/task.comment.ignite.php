@@ -10,12 +10,13 @@ if( ! function_exists('do_comment_construct')) {
     function do_comment_construct() {
         $config = Config::get();
         $speak = Config::speak();
-        if($config->page_type === 'article') {
+        if($config->comments->allow && $config->is->post) {
             $comment_id = 'comment-%d'; // Your comment ID
             $comment_form_id = 'comment-form'; // Your comment form ID
-            $article = isset($config->article->path) ? $config->article : false;
+            $s = $config->page_type;
+            $article = isset($config->{$s}->path) ? $config->{$s} : false;
             $G = array('data' => array(
-                'article' => Mecha::A($article),
+                $s => Mecha::A($article),
                 'comment_id' => $comment_id,
                 'comment_form_id' => $comment_form_id
             ));
@@ -77,26 +78,25 @@ if( ! function_exists('do_comment_construct')) {
                     // Check for spam keyword(s) in comment
                     $fucking_words = explode(',', $config->keywords_spam);
                     foreach($fucking_words as $spam) {
-                        if($fuck = trim($spam)) {
-                            if(
-                                $request['email'] === $fuck || // Block by email address
-                                stripos($request['message'], $fuck) !== false // Block by message word(s)
-                            ) {
-                                Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
-                                break;
-                            }
+                        if( ! $fuck = trim($spam)) continue;
+                        if(
+                            $request['email'] === $fuck || // Block by email address
+                            stripos($request['message'], $fuck) !== false // Block by message word(s)
+                        ) {
+                            Notify::warning($speak->notify_warning_intruder_detected . ' <strong class="text-error pull-right">' . $fuck . '</strong>');
+                            break;
                         }
                     }
                     if( ! Notify::errors()) {
                         $post = $article->date->slug;
-                        $id = (int) time();
+                        $id = time();
                         $parent = Request::post('parent');
                         $P = array('data' => $request);
                         $P['data']['id'] = $id;
-                        $name = strip_tags($request['name']);
+                        $name = Text::parse($request['name'], '->text');
                         $email = Text::parse($request['email'], '->broken_entity');
                         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
-                        $parser = strip_tags(Request::post('content_type', $config->html_parser->active));
+                        $parser = Text::parse(Request::post('content_type', $config->html_parser->active), '->text');
                         $message = Text::parse($request['message'], '->text', WISE_CELL . '<img>', false);
                         $field = Request::post('fields', array());
                         include __DIR__ . DS . 'task.fields.php';

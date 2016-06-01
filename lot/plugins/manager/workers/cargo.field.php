@@ -21,24 +21,7 @@
     <tr<?php echo Session::get('recent_item_update') === $key ? ' class="active"' : ""; ?>>
       <td><?php echo $value->title; ?></td>
       <td><code><?php echo $key; ?></code></td>
-      <?php
-
-      $s = Mecha::alter($value->type, array(
-          'text' => $speak->text,
-          'boolean' => $speak->boolean,
-          'option' => $speak->option,
-          'file' => $speak->file,
-          'composer' => $speak->composer,
-          'editor' => $speak->editor,
-          't' => $speak->text,
-          'b' => $speak->boolean,
-          'o' => $speak->option,
-          'f' => $speak->file,
-          'c' => $speak->composer,
-          'e' => $speak->editor
-      ), $speak->summary);
-
-      ?>
+      <?php $s = isset($speak->{$value->type}) ? $speak->{$value->type} : $speak->summary; ?>
       <td><?php echo Jot::em('info', $s); ?></td>
       <?php $files_a = (array) $files; ?>
       <?php if(isset($files_a[$key])): ?>

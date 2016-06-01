@@ -1,14 +1,14 @@
 <?php $hooks = array($file, $segment); echo $messages; ?>
 <form class="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?> form-tag" id="form-<?php echo $id !== false ? 'repair' : 'ignite'; ?>" action="<?php echo $config->url_current . str_replace('&', '&amp;', $config->url_query); ?>" method="post">
-  <?php echo Form::hidden('token', $token); $page = $file; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'name.php'; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'tag' . DS . 'slug.php'; ?>
-  <?php $scopes = Mecha::walk(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR), function($v) {
+  <?php echo Form::hidden('token', $token); $page = $file; $_ = __DIR__ . DS . 'unit' . DS . 'form' . DS; ?>
+  <?php include $_ . 'name.php'; ?>
+  <?php include $_ . 'tag' . DS . 'slug.php'; ?>
+  <?php $scopes = Mecha::walk(glob(POST . DS . '*', GLOB_ONLYDIR), function($v) {
       return File::B($v);
   }); ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'scope[].php'; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'description.php'; ?>
-  <?php include __DIR__ . DS . 'unit' . DS . 'form' . DS . 'id.php'; ?>
+  <?php include $_ . 'scope[].php'; ?>
+  <?php include $_ . 'description.php'; ?>
+  <?php include $_ . 'id.php'; ?>
   <div class="grid-group">
     <span class="grid span-1"></span>
     <span class="grid span-5">
@@ -23,3 +23,6 @@
     </span>
   </div>
 </form>
+<?php if($id === false): ?>
+<script>!function(e){e(function(){e.slug("title","slug","-")})}(DASHBOARD.$);</script>
+<?php endif; ?>
