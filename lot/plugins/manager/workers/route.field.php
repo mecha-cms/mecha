@@ -34,17 +34,17 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         Shield::abort();
     }
     if($key === false) {
-        Weapon::add('SHIPMENT_REGION_BOTTOM', function() {
-            echo '<script>(function($){$.slug(\'title\',\'key\',\'_\')})(DASHBOARD.$);</script>';
-        }, 11);
         $data = array(
             'key' => false,
             'title' => "",
-            'type' => 't',
+            'type' => 'text',
             'placeholder' => "",
             'value' => "",
             'description' => "",
-            'scope' => 'article'
+            'scope' => 'article',
+            'attributes' => array(
+                'pattern' => null
+            )
         );
         $title = Config::speak('manager.title_new_', $speak->field) . $config->title_separator . $config->manager->title;
     } else {
@@ -83,23 +83,30 @@ Route::accept(array($config->manager->slug . '/field/ignite', $config->manager->
         } else {
             unset($fields[$key]);
         }
-        $fields[$k] = array(
-            'title' => $request['title'],
-            'type' => $request['type'],
-            'value' => $request['value']
-        );
-        if(trim($request['placeholder']) !== "") {
-            $fields[$k]['placeholder'] = $request['placeholder'];
-        }
-        if(trim($request['description']) !== "") {
-            $fields[$k]['description'] = $request['description'];
-        }
-        if(isset($request['scope']) && is_array($request['scope'])) {
-            sort($request['scope']);
-            $fields[$k]['scope'] = implode(',', $request['scope']);
-        }
         $P = array('data' => $request);
         $P['data']['key'] = $key;
+        unset($request['token']);
+        $fields[$k] = $request;
+        foreach($fields[$k] as $kk => &$vv) {
+            // Translate array to string
+            if($kk === 'scope' && is_array($vv)) {
+                sort($vv);
+                $vv = implode(',', $vv);
+            }
+            // Remove field(s) with empty value
+            if($kk === 'placeholder' || $kk === 'description') {
+                if(trim($vv) === "") unset($fields[$k][$kk]);
+            }
+            // --ibid
+            if($kk === 'attributes' && empty($vv)) {
+                unset($fields[$k][$kk]);
+            }
+            // --ibid
+            if(isset($vv['pattern']) && trim($vv['pattern']) === "") {
+                unset($fields[$k][$kk]['pattern']);
+            }
+        }
+        unset($vv);
         if( ! Notify::errors()) {
             ksort($fields);
             File::serialize($fields)->saveTo(STATE . DS . 'field.txt', 0600);
