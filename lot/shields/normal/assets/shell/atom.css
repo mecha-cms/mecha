@@ -228,34 +228,24 @@ input[type="radio"] {
 input[type="number"]::-webkit-inner-spin-button,
 input[type="number"]::-webkit-outer-spin-button {height:auto}
 
+input[type="color"],
 input[type="file"],
+input[type="image"],
 input[type="range"] {
+  margin:0;
   padding:0;
   background:none;
+  border:none;
   color:inherit;
   cursor:pointer;
 }
 
-input[type="color"] {
-  width:2em;
-  height:2em;
-  font-size:1em;
-  line-height:2em;
-  border:none;
-  margin:0;
-  padding:0;
-  cursor:pointer;
-}
-
-label,select {cursor:pointer}
-
 input[type="image"] {
   width:auto;
   height:auto;
-  padding:0;
-  background:none;
-  border:none;
 }
+
+label,select {cursor:pointer}
 
 option,
 optgroup {

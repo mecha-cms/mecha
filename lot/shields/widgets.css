@@ -108,6 +108,13 @@ label {
   user-select:none;
 }
 
+input[type="color"] {
+  width:2em;
+  height:2em;
+  font-size:1em;
+  line-height:2em;
+}
+
 .form-label {cursor:inherit}
 
 .btn-block,

@@ -180,6 +180,13 @@ html {
   height:auto;
 }
 
+.grid-group-color input[type="color"] {
+  display:block;
+  margin:.38461538461538464em 0;
+}
+
+.grid-group-options .options .options {padding-left:1em}
+
 @media (max-width:36.25em) {
   .media {padding-left:0}
   .media-capture {display:none}

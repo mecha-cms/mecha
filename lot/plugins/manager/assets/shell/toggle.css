@@ -23,6 +23,9 @@
 .checkbox.checked:before {content:"\F14A"}
 .radio.checked:before {content:"\F192"}
 
+.checkbox.disabled:before {content:"\F146"}
+.radio.disabled:before {content:"\F056"}
+
 .checkbox.disabled,
 .checkbox.readonly,
 .radio.disabled,
@@ -32,7 +35,9 @@
 }
 
 .checkbox.disabled,
-.radio.disabled {
+.radio.disabled,
+.checkbox.disabled + input + span,
+.radio.disabled + input + span {
   opacity:.8;
   cursor:not-allowed;
 }
