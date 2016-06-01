@@ -1,11 +1,12 @@
 <?php
 
-// New file data
+// Take file extension(s) data internally
+$field_d = Get::state_field(null, array(), true);
 if(isset($_FILES) && ! empty($_FILES)) {
     $accept = File::$config['file_extension_allow'];
     foreach($_FILES as $k => $v) {
-        if(isset($field[$k]['accept'])) {
-            File::$config['file_extension_allow'] = explode(',', $field[$k]['accept']);
+        if( ! empty($field_d[$k]['value'])) {
+            File::$config['file_extension_allow'] = explode(',', $field_d[$k]['value']);
         }
         if($v['size'] > 0 && $v['error'] === 0) {
             $name = $name_o = Text::parse($v['name'], '->safe_file_name');

@@ -6,7 +6,7 @@ __:
   title: English
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.3
+  version: 1.2.4
 
 
 # ----------------------------
@@ -128,6 +128,7 @@ up: Up
 down: Down
 
 read_more: Read More
+read_only: Read Only
 
 from: From
 for: For
@@ -172,6 +173,9 @@ slugs: Slugs
 
 description: Description
 descriptions: Descriptions
+
+hidden: Hidden
+visible: Visible
 
 text: Text
 
@@ -298,6 +302,9 @@ charsets: Charsets
 char_set: Character Set
 char_sets: Character Sets
 
+chars_set: Characters Set
+chars_sets: Characters Sets
+
 language: Language
 languages: Languages
 
@@ -379,11 +386,20 @@ placeholders: Placeholders
 place_holder: Place Holder
 place_holders: Place Holders
 
+hint: Hint
+hints: Hints
+
 value: Value
 values: Values
 
 scope: Scope
 scopes: Scopes
+
+pattern: Pattern
+patterns: Patterns
+
+format: Format
+formats: Formats
 
 pending: Pending
 
@@ -445,6 +461,15 @@ day_names_short:
 
 enter: Enter
 exit: Exit
+
+show: Show
+showing: Showing
+shown: Shown
+showed: Shown
+
+hide: Hide
+hiding: Hiding
+hided: Hidden
 
 compose: Compose
 composing: Composing
@@ -531,6 +556,10 @@ add: Add
 adding: Adding
 added: Added
 
+move: Move
+moving: Moving
+moved: Moved
+
 remove: Remove
 removing: Removing
 removed: Removed
@@ -603,6 +632,14 @@ upload: Upload
 uploading: Uploading
 uploaded: Uploaded
 
+transfer: Transfer
+transfering: Transfering
+transfered: Transfered
+
+request: Request
+requesting: Requesting
+requested: Requested
+
 download: Download
 downloading: Downloading
 downloaded: Downloaded
@@ -652,6 +689,10 @@ backed_up: Backed Up
 restore: Restore
 restoring: Restoring
 restored: Restored
+
+require: Require
+requiring: Requiring
+required: Required
 
 
 # ---------------------

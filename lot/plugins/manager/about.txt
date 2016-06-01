@@ -1,7 +1,7 @@
 Title: Site Manager
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.0.10
+Version: 1.1.0
 
 ====
 

@@ -6,7 +6,7 @@ __:
   title: Bahasa Indonesia
   author: Taufik Nurrohman
   url: http://mecha-cms.com
-  version: 1.2.3
+  version: 1.2.4
 
 
 # ----------------------------
@@ -128,6 +128,7 @@ up: Naik
 down: Turun
 
 read_more: Baca Selengkapnya
+read_only: Hanya Baca
 
 from: Dari
 for: Untuk
@@ -173,6 +174,9 @@ slugs: Slug
 description: Deskripsi
 descriptions: Deskripsi
 
+hidden: Tersembunyi
+visible: Terlihat
+
 text: Teks
 
 summary: Ringkasan
@@ -183,7 +187,7 @@ boolean: Boolean
 booleans: Boolean
 
 option: Pilihan
-options: Pilihan
+options: Pilihan Ganda
 
 composer: Komposer
 composers: Komposer
@@ -298,6 +302,9 @@ charsets: Charset
 char_set: Set Karakter
 char_sets: Set Karakter
 
+chars_set: Set Karakter
+chars_sets: Set Karakter
+
 language: Bahasa
 languages: Bahasa
 
@@ -379,11 +386,20 @@ placeholders: Contoh Nilai
 place_holder: Contoh Nilai
 place_holders: Contoh Nilai
 
+hint: Petunjuk
+hints: Petunjuk
+
 value: Nilai
 values: Nilai
 
 scope: Cakupan
 scopes: Cakupan
+
+pattern: Pola
+patterns: Pola
+
+format: Format
+formats: Format
 
 pending: Tertunda
 
@@ -445,6 +461,15 @@ day_names_short:
 
 enter: Masuk
 exit: Keluar
+
+show: Tampilkan
+showing: Menampilkan
+shown: Ditampilkan
+showed: Ditampilkan
+
+hide: Sembunyikan
+hiding: Menyembunyikan
+hided: Disembunyikan
 
 compose: Tulis
 composing: Menulis
@@ -531,6 +556,10 @@ add: Tambahkan
 adding: Menambahkan
 added: Ditambahkan
 
+move: Move
+moving: Moving
+moved: Moved
+
 remove: Singkirkan
 removing: Menyingkirkan
 removed: Disingkirkan
@@ -603,6 +632,14 @@ upload: Unggah
 uploading: Mengunggah
 uploaded: Diunggah
 
+transfer: Transfer
+transfering: Mentransfer
+transfered: Ditransfer
+
+request: Minta
+requesting: Meminta
+requested: Diminta
+
 download: Unduh
 downloading: Mengunduh
 downloaded: Diunduh
@@ -652,6 +689,10 @@ backed_up: Dicadangkan
 restore: Pulihkan
 restoring: Memulihkan
 restored: Dipulihkan
+
+require: Perlu
+requiring: Memerlukan
+required: Diperlukan
 
 
 # ---------------------

@@ -12,10 +12,12 @@ Form::add('file', function($name = null, $attr = array(), $indent = 0) {
 
 // `<input type="checkbox">`
 Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
-    $attr['checked'] = $check ? true : null;
+    $attr_o = array('checked' => $check ? true : null);
     $indent = $indent ? str_repeat(TAB, $indent) : "";
     if($value === true) $value = 'true';
-    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr) . ($text ? '&nbsp;<span>' . $text . '</span>' : "") . '</label>';
+    Mecha::extend($attr_o, $attr);
+    $text = $text ? '&nbsp;<span>' . Text::parse($text, '->text', WISE_CELL_I) . '</span>' : "";
+    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr_o) . $text . '</label>';
 });
 
 // `<input type="radio">`
@@ -24,14 +26,16 @@ Form::add('radio', function($name = null, $option = array(), $select = null, $at
     $indent = $indent ? str_repeat(TAB, $indent) : "";
     $select = (string) $select;
     foreach($option as $key => $value) {
-        $attr['disabled'] = null;
+        $attr_o = array('disabled' => null);
         if(strpos($key, '.') === 0) {
-            $attr['disabled'] = true;
+            $attr_o['disabled'] = true;
             $key = substr($key, 1);
         }
         $key = (string) $key;
-        $attr['checked'] = $select === $key || $select === '.' . $key ? true : null;
-        $output[] = $indent . '<label>' . Form::input('radio', $name, $key, null, $attr) . ($value ? '&nbsp;<span>' . $value . '</span>' : "") . '</label>';
+        $attr_o['checked'] = $select === $key || $select === '.' . $key ? true : null;
+        Mecha::extend($attr_o, $attr);
+        $value = $value ? '&nbsp;<span>' . Text::parse($value, '->text', WISE_CELL_I) . '</span>' : "";
+        $output[] = $indent . '<label>' . Form::input('radio', $name, $key, null, $attr_o) . $value . '</label>';
     }
     return implode(' ', $output);
 });
