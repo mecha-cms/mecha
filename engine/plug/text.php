@@ -149,7 +149,10 @@ Text::parser('to_text', function($input, $tags = "", $no_break = true) {
 
 // Convert text to array key pattern
 Text::parser('to_array_key', function($input, $lower = false) {
-    return is_string($input) ? do_slug($lower ? strtolower($input) : $input, '_') : $input;
+    if( ! is_string($input)) return $input;
+    $input = do_slug($lower ? strtolower($input) : $input, '_');
+    $input = preg_replace('#^[\d_]+#', "", $input); // invalid if prefixed by number(s)
+    return trim($input, '_') === "" ? '__' : $input;
 });
 
 // Convert plain text to HTML

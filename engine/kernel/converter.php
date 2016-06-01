@@ -80,7 +80,7 @@ class Converter extends __ {
      */
 
     public static function RGB($rgba, $output = null) {
-        if(is_string($rgba) && preg_match('#^rgba?\(\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})\s*,\s*([0-9]{1,3})(\s*,\s*([0-9\.]+))?\s*\)$#i', $rgba, $matches)) {
+        if(is_string($rgba) && preg_match('#^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})(\s*,\s*([\d\.]+))?\s*\)$#i', $rgba, $matches)) {
             $colors = array(
                 'r' => (int) $matches[1],
                 'g' => (int) $matches[2],
@@ -166,27 +166,15 @@ class Converter extends __ {
 
     public static function RGB2HEX($r = null, $g = null, $b = null, $a = 1) {
         $hex = '#';
-        if(is_numeric($g)) {
-            $hex .= str_pad(dechex($r), 2, '0', STR_PAD_LEFT);
-            $hex .= str_pad(dechex($g), 2, '0', STR_PAD_LEFT);
-            $hex .= str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
-            return $hex;
-        } else {
-            if(is_array($r)) {
-                list($r, $g, $b) = array_values($r);
-                $hex .= str_pad(dechex($r), 2, '0', STR_PAD_LEFT);
-                $hex .= str_pad(dechex($g), 2, '0', STR_PAD_LEFT);
-                $hex .= str_pad(dechex($b), 2, '0', STR_PAD_LEFT);
-                return $hex;
-            } else {
-                $r = (string) $r;
-                if($rgba = self::RGB($r)) {
-                    $hex .= str_pad(dechex($rgba['r']), 2, '0', STR_PAD_LEFT);
-                    $hex .= str_pad(dechex($rgba['g']), 2, '0', STR_PAD_LEFT);
-                    $hex .= str_pad(dechex($rgba['b']), 2, '0', STR_PAD_LEFT);
-                    return $hex;
-                }
-            }
+        $s = is_array($r) || is_string($r) && is_null($g) ? $r : func_get_args();
+        if(is_string($s) && $s = self::RGB($s)) {
+            $s = array_values($s);
+        }
+        if($s) {
+            $hex .= str_pad(dechex($s[0]), 2, '0', STR_PAD_LEFT);
+            $hex .= str_pad(dechex($s[1]), 2, '0', STR_PAD_LEFT);
+            $hex .= str_pad(dechex($s[2]), 2, '0', STR_PAD_LEFT);
+            return strtoupper($hex);
         }
         return false;
     }

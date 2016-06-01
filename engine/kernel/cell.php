@@ -70,7 +70,7 @@ class Cell extends __ {
                         }
                         $value = rtrim($css);
                     } else {
-                        $value = implode(' ', $value);
+                        $value = implode(' ', array_unique($value));
                     }
                 }
                 $q = is_string($value) && strpos($value, '"') !== false ? "'" : '"';

@@ -4,89 +4,97 @@ class Form extends Cell {
 
     // `<input>`
     public static function input($type = 'text', $name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) {
+        $attr_o = array();
         if(strpos($name, '.') === 0) {
-            $attr['disabled'] = true;
+            $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
-        $attr['name'] = $name;
-        $attr['value'] = self::protect($value);
-        $attr['placeholder'] = $placeholder;
-        $attr['type'] = $type;
-        return self::unit('input', false, $attr, $indent);
+        $attr_o['name'] = $name;
+        $attr_o['value'] = self::protect($value);
+        $attr_o['placeholder'] = $placeholder;
+        $attr_o['type'] = $type;
+        Mecha::extend($attr_o, $attr); // allow over-write with `$attr`
+        return self::unit('input', false, $attr_o, $indent);
     }
 
     // `<button>`
     public static function button($text = "", $name = null, $type = null, $value = null, $attr = array(), $indent = 0) {
+        $attr_o = array();
         if(strpos($name, '.') === 0) {
-            $attr['disabled'] = true;
+            $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
-        $attr['name'] = $name;
-        $attr['type'] = $type;
-        $attr['value'] = $value;
-        return self::unit('button', $text, $attr, $indent);
+        $attr_o['name'] = $name;
+        $attr_o['type'] = $type;
+        $attr_o['value'] = $value;
+        Mecha::extend($attr_o, $attr); // allow over-write with `$attr`
+        return self::unit('button', $text, $attr_o, $indent);
     }
 
     // `<select>`
     public static function select($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
         $o = "";
+        $attr_o = array();
         $select = (string) $select;
         if(strpos($name, '.') === 0) {
-            $attr['disabled'] = true;
+            $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
-        $attr['name'] = $name;
+        $attr_o['name'] = $name;
+        Mecha::extend($attr_o, $attr); // allow over-write with `$attr`
         foreach($option as $key => $value) {
             // option list group
             if(is_array($value)) {
-                $attr_o = array();
+                $s = array();
                 if(strpos($key, '.') === 0) {
-                    $attr_o['disabled'] = true;
+                    $s['disabled'] = true;
                     $key = substr($key, 1);
                 }
-                $attr_o['label'] = $key;
-                $o .= NL . self::begin('optgroup', $attr_o, $indent + 1);
+                $s['label'] = $key;
+                $o .= NL . self::begin('optgroup', $s, $indent + 1);
                 foreach($value as $k => $v) {
-                    $attr_o = array();
+                    $s = array();
                     if(strpos($k, '.') === 0) {
-                        $attr_o['disabled'] = true;
+                        $s['disabled'] = true;
                         $k = substr($k, 1);
                     }
                     $k = (string) $k;
                     if($select === $k || $select === '.' . $k) {
-                        $attr_o['selected'] = true;
+                        $s['selected'] = true;
                     }
-                    $attr_o['value'] = $k;
-                    $o .= NL . self::unit('option', $v, $attr_o, $indent + 2);
+                    $s['value'] = $k;
+                    $o .= NL . self::unit('option', $v, $s, $indent + 2);
                 }
                 $o .= NL . self::end();
             // option list
             } else {
-                $attr_o = array();
+                $s = array();
                 if(strpos($key, '.') === 0) {
-                    $attr_o['disabled'] = true;
+                    $s['disabled'] = true;
                     $key = substr($key, 1);
                 }
                 $key = (string) $key;
                 if($select === $key || $select === '.' . $key) {
-                    $attr_o['selected'] = true;
+                    $s['selected'] = true;
                 }
-                $attr_o['value'] = $key;
-                $o .= NL . self::unit('option', $value, $attr_o, $indent + 1);
+                $s['value'] = $key;
+                $o .= NL . self::unit('option', $value, $s, $indent + 1);
             }
         }
-        return self::unit('select', $o . NL . ($indent ? str_repeat(TAB, $indent) : ""), $attr, $indent);
+        return self::unit('select', $o . NL . ($indent ? str_repeat(TAB, $indent) : ""), $attr_o, $indent);
     }
 
     // `<textarea>`
     public static function textarea($name = null, $content = "", $placeholder = null, $attr = array(), $indent = 0) {
+        $attr_o = array();
         if(strpos($name, '.') === 0) {
-            $attr['disabled'] = true;
+            $attr_o['disabled'] = true;
             $name = substr($name, 1);
         }
-        $attr['name'] = $name;
-        $attr['placeholder'] = $placeholder;
-        return self::unit('textarea', self::protect($content), $attr, $indent);
+        $attr_o['name'] = $name;
+        $attr_o['placeholder'] = $placeholder;
+        Mecha::extend($attr_o, $attr); // allow over-write with `$attr`
+        return self::unit('textarea', self::protect($content), $attr_o, $indent);
     }
 
 }

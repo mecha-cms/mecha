@@ -196,11 +196,15 @@ class Get extends __ {
             'title' => "",
             'type' => 'summary',
             'placeholder' => "",
-            'value' => false,
-            'description' => ""
+            'value' => "",
+            'description' => "",
+            'attributes' => array(
+                'pattern' => null,
+                'required' => null
+            )
         );
         foreach($field as $k => $v) {
-            $field[$k] = array_replace($v_d, $v);
+            $field[$k] = array_replace_recursive($v_d, $v);
         }
         // Filter output(s) by `scope`
         $field_alt = array();
@@ -1271,7 +1275,7 @@ class Get extends __ {
         // that is not available in the old post(s).
         $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
         foreach($fields as $k => $v) {
-            $s = isset($results['fields'][$k]) && trim($results['fields'][$k]) !== "" ? $results['fields'][$k] : null;
+            $s = isset($results['fields'][$k]) && $results['fields'][$k] !== "" ? $results['fields'][$k] : null;
             $s = Filter::colon($FP . 'fields_raw.' . $k, $s, $results);
             $results['fields_raw'][$k] = $s;
             if($s === null) {
