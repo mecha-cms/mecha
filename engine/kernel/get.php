@@ -1273,14 +1273,14 @@ class Get extends __ {
         // user(s) don't have to write `isset()` function multiple time(s)
         // just to prevent error message(s) because of the object key(s)
         // that is not available in the old post(s).
-        $fields = self::state_field(null, array(), true, rtrim($FP, ':'));
-        foreach($fields as $k => $v) {
+        $field_d = self::state_field(null, array(), true, rtrim($FP, ':'));
+        foreach($field_d as $k => $v) {
             $s = isset($results['fields'][$k]) && $results['fields'][$k] !== "" ? $results['fields'][$k] : null;
             $s = Filter::colon($FP . 'fields_raw.' . $k, $s, $results);
             $results['fields_raw'][$k] = $s;
             if($s === null) {
                 // For `option` field type, the first option will be used as the default value
-                if($v['type'] === 'option' || $v['type'] === 'o') {
+                if($v['type'] === 'option') {
                     $vv = array_values(Converter::toArray($v['value'], S, '  '));
                     if(isset($v['placeholder']) && trim($v['placeholder']) !== "") {
                         // do nothing ...
@@ -1302,7 +1302,7 @@ class Get extends __ {
             }
             $results['fields'][$k] = Filter::colon($FP . 'fields.' . $k, $s, $results);
         }
-        unset($fields, $s);
+        unset($field_d, $s);
     }
 
 }

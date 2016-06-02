@@ -1,12 +1,12 @@
 <?php
 
-$fields = Get::state_field(null, array(), true, $segment);
-$fields_e = Cell::p(Config::speak('notify_empty', strtolower($speak->fields)));
+$field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
+$field_d = Get::state_field(null, array(), true, $segment);
+$x = Cell::p(Config::speak('notify_empty', strtolower($speak->fields)));
 
-if( ! empty($fields)) {
+if( ! empty($field_d)) {
     $html = "";
-    $field = Guardian::wayback('fields', Mecha::A($page->fields_raw));
-    foreach($fields as $key => $data) {
+    foreach($field_d as $key => $data) {
         // Define variable(s) for the included file(s)
         //
         // `$data`
@@ -26,21 +26,17 @@ if( ! empty($fields)) {
             }
         }
         $data['key'] = $key;
-        if(isset($field[$key]['type'])) { // `POST` request
-            $field[$key] = isset($field[$key]['value']) ? $field[$key]['value'] : "";
-        }
         $type = $data['type'];
         $value = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : $data['value'];
-        $placeholder = Converter::str( ! empty($data['placeholder']) ? $data['placeholder'] : $value);
-        $description = ! empty($data['description']) ? '&nbsp;' . Jot::info($data['description']) : "";
-        $title = ( ! empty($data['title']) ? $data['title'] : '<em>' . $key . '</em>') . $description;
+        $placeholder = Converter::str(isset($data['placeholder']) && trim($data['placeholder']) !== "" ? $data['placeholder'] : $value);
+        $description = isset($data['description']) && trim($data['description']) !== "" ? '&nbsp;' . Jot::info($data['description']) : "";
+        $title = isset($data['title']) && trim($data['title']) !== "" ? $data['title'] : '<code>' . $key . '</code>';
         $attributes = array('id' => 'unit:' . time());
-        $html .= Form::hidden('fields[' . $key . '][type]', $type);
         // Default is `summary`
         $s = __DIR__ . DS . 'fields[]' . DS;
         include File::exist($s . $type . '.php', File::exist($s . '__' . $type . '.php', $s . 'summary.php'));
     }
-    echo ! empty($html) ? $html : $fields_e;
+    echo $html ? $html : $x;
 } else {
-    echo $fields_e;
+    echo $x;
 }
