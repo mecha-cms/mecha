@@ -31,13 +31,13 @@ class Mecha extends __ {
         return $e;
     }
 
-    // Handle missing array variable(s)
+    // Fix missing array key(s)
     public static function extend(&$default, $alternate) {
         $default = array_replace_recursive($default, $alternate);
         return $default;
     }
 
-    // Merge more variable data
+    // Merge array(s)
     public static function concat(&$default, $alternate) {
         $default = array_merge_recursive($default, $alternate);
         return $default;
@@ -46,7 +46,7 @@ class Mecha extends __ {
     // Convert array to object
     public static function O($a, $int_x = true) {
         if(is_array($a)) {
-            $a = $int_x && ! empty($a) && self::is_assoc($a) ? (object) $a : $a;
+            $a = $int_x && ! empty($a) && self::_assoc($a) ? (object) $a : $a;
             foreach($a as &$v) {
                 $v = self::O($v, $int_x);
             }
@@ -66,7 +66,7 @@ class Mecha extends __ {
     }
 
     // http://stackoverflow.com/a/173479
-    protected static function is_assoc($a) {
+    protected static function _assoc($a) {
         return array_keys($a) !== range(0, count($a) - 1);
     }
 
