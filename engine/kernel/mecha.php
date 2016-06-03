@@ -45,7 +45,7 @@ class Mecha extends __ {
 
     // Convert array to object
     public static function O($a, $int_x = true) {
-        if(is_array($a)) {
+        if(is_array($a) || is_object($a)) {
             $a = $int_x && ! empty($a) && self::_assoc($a) ? (object) $a : $a;
             foreach($a as &$v) {
                 $v = self::O($v, $int_x);
@@ -56,7 +56,7 @@ class Mecha extends __ {
 
     // Convert object to array
     public static function A($o) {
-        if(is_object($o)) {
+        if(is_object($o) || is_array($o)) {
             $o = (array) $o;
             foreach($o as &$v) {
                 $v = self::A($v);
@@ -298,15 +298,15 @@ class Mecha extends __ {
     public function chunk($index = null, $count = 25) {
         if( ! is_array($this->stomach)) return $this;
         $results = array();
-        // 0-based index with `vomit($index)`
-        // `Mecha::eat($foo)->chunk(25)->vomit(1);`
+        // `0`-based index with `vomit($index)`
+        // `Mecha::eat($foo)->chunk(25)->vomit(1)`
         if(func_num_args() === 1) {
             $count = $index;
             $index = null;
         }
         $chunk = array_chunk($this->stomach, $count, true);
-        // 1-based index with `chunk($index)`
-        // `Mecha::eat($foo)->chunk(2, 25)->vomit();`
+        // `1`-based index with `chunk($index)`
+        // `Mecha::eat($foo)->chunk(2, 25)->vomit()`
         if( ! is_null($index)) {
             $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : false;
             $this->stomach = $chunk ? array_values($chunk) : array();
