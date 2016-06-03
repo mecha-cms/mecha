@@ -60,6 +60,17 @@ Guardian::checker('is_boolean', function($input) {
     return filter_var($input, FILTER_VALIDATE_BOOLEAN);
 });
 
+// Check for JSON format
+Guardian::checker('is_json', function($input) {
+    return (strpos($input, '{"') === 0 || strpos($input, '[') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true));
+});
+
+// Check for serialize format
+Guardian::checker('is_serialize', function($input) {
+    if(trim($input) === "") return false;
+    return $input === 'N;' || strpos($input, 'a:') === 0 || strpos($input, 'b:') === 0 || strpos($input, 'd:') === 0 || strpos($input, 'i:') === 0 || strpos($input, 's:') === 0 || strpos($input, 'O:') === 0;
+});
+
 // Check whether the input value is too large
 Guardian::checker('is_too_large', function($input, $max = 3000) {
     return is_numeric($input) ? $input > $max : false;
