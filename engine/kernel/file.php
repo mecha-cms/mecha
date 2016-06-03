@@ -78,12 +78,25 @@ class File extends __ {
             'size_raw' => file_exists($path) ? filesize($path) : null,
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => array(
+                // hidden file/folder only
                 'hidden' => strpos($n, '__') === 0 || strpos($n, '.') === 0,
                 'file' => is_file($path),
                 'folder' => is_dir($path)
             )
         );
         return ! is_null($output) ? Mecha::GVR($results, $output, $fallback) : $results;
+    }
+
+    // Check if file/folder is hidden
+    public static function hidden($path, $recursive = true) {
+        if( ! $recursive) {
+            $path = File::B($path);
+            // hidden file/folder only
+            return strpos($path, '.') === 0 || strpos($path, '__') === 0;
+        }
+        $path = DS . self::path($path);
+        // hidden file/folder or visible file/folder in hidden folder(s)
+        return strpos($path, DS . '.') !== false || strpos($path, DS . '__') !== false;
     }
 
     // List all file(s) from a folder
@@ -176,7 +189,7 @@ class File extends __ {
     public static function unserialize($fallback = array()) {
         if(file_exists(self::$open)) {
             $data = file_get_contents(self::$open);
-            return preg_match('#^([adObis]:|N;)#', $data) ? unserialize($data) : $fallback;
+            return Guardian::check($data, '->serialize') ? unserialize($data) : $fallback;
         }
         return $fallback;
     }
@@ -316,6 +329,7 @@ class File extends __ {
 
     // Get file name extension
     public static function E($path, $fallback = "") {
+        if(strpos($path, '.') === false) return $fallback;
         $e = strtolower(pathinfo($path, PATHINFO_EXTENSION));
         return $e ? $e : $fallback;
     }
@@ -336,7 +350,7 @@ class File extends __ {
         $config = Config::get();
         $speak = Config::speak();
         $destination = rtrim(self::path($destination), DS);
-        $errors = (array) $speak->notify_file;
+        $errors = $speak->notify_file;
         // Create a safe file name
         $file['name'] = Text::parse($file['name'], '->safe_file_name');
         $e = self::E($file['name']);
