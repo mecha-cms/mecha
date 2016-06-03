@@ -67,7 +67,8 @@ class Mecha extends __ {
 
     // http://stackoverflow.com/a/173479
     protected static function _assoc($a) {
-        return array_keys((array) $a) !== range(0, count($a) - 1);
+        $a = (array) $a;
+        return array_keys($a) !== range(0, count($a) - 1);
     }
 
     // Set array value recursively
