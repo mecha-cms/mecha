@@ -160,10 +160,10 @@ Get::plug('articlesExtract', function($order = 'DESC', $sorter = 'time', $filter
  */
 
 Get::plug('pageAnchor', function($path) {
-    $_ = Config::get('index.slug');
+    $c = Config::get('index.slug');
     Config::set('index.slug', false);
     $post = Get::postAnchor($path, PAGE, 'page:');
-    Config::set('index.slug', $_);
+    Config::set('index.slug', $c);
     return $post;
 });
 
@@ -187,10 +187,10 @@ Get::plug('articleAnchor', function($path) {
  */
 
 Get::plug('pageHeader', function($path) {
-    $_ = Config::get('index.slug');
+    $c = Config::get('index.slug');
     Config::set('index.slug', false);
     $post = Get::postHeader($path, PAGE, 'page:');
-    Config::set('index.slug', $_);
+    Config::set('index.slug', $c);
     return $post;
 });
 
@@ -214,10 +214,10 @@ Get::plug('articleHeader', function($path) {
  */
 
 Get::plug('page', function($path, $excludes = array()) {
-    $_ = Config::get('index.slug');
+    $c = Config::get('index.slug');
     Config::set('index.slug', false);
     $post = Get::post($path, $excludes, PAGE, 'page:');
-    Config::set('index.slug', $_);
+    Config::set('index.slug', $c);
     return $post;
 });
 

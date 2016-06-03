@@ -3,6 +3,152 @@
 
 /**
  * ====================================================================
+ *  CONVERT ARRAY DATA INTO NESTED STRING
+ * ====================================================================
+ *
+ * -- CODE: -----------------------------------------------------------
+ *
+ *    echo Converter::toText(array(
+ *        'key_1' => 'Value 1',
+ *        'key_2' => 'Value 2',
+ *        'key_3' => 'Value 3'
+ *    ));
+ *
+ * --------------------------------------------------------------------
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Parameter | Type   | Description
+ *  --------- | ------ | ----------------------------------------------
+ *  $input    | array  | The array of data to be converted
+ *  $s        | string | Separator between array key and array value
+ *  $indent   | string | Indentation as nested array data level
+ *  $n        | string | Separator between data, default is `\n`
+ *  --------- | ------ | ----------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ */
+
+Converter::plug('toText', function($input, $s = S, $indent = '    ', $n = "\n", $depth = 0) {
+    if(is_array($input) || is_object($input)) {
+        $text = "";
+        foreach($input as $k => $v) {
+            if( ! is_array($v) && ! is_object($v)) {
+                $v = Converter::str($v);
+                $v = $v !== $n && strpos($v, $n) !== false ? json_encode($v) : $v;
+                $T = str_repeat($indent, $depth);
+                // Line
+                if($v === $n) {
+                    $text .= $n;
+                // Comment
+                } else if(strpos($v, '#') === 0) {
+                    $text .= $T . trim($v) . $n;
+                // ...
+                } else {
+                    $text .= $T . trim($k) . $s . ' ' . $v . $n;
+                }
+            } else {
+                $ss = Converter::toText($v, $s, $indent, $n, $depth + 1);
+                $text .= $T . $k . $s . $n . $ss . $n;
+            }
+        }
+        return str_replace($s . ' ' . $n, $s . ' ""' . $n, substr($text, 0, -strlen($n)));
+    }
+    return $input !== $n && strpos($input, $n) !== false ? json_encode($input) : $input;
+});
+
+
+/**
+ * ====================================================================
+ *  CONVERT NESTED STRING INTO ASSOCIATIVE ARRAY
+ * ====================================================================
+ *
+ * -- CODE: -----------------------------------------------------------
+ *
+ *    echo Converter::toArray('key_1: Value 1
+ *    key_2: Value 2
+ *    key_3: Value 3');
+ *
+ * --------------------------------------------------------------------
+ *
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *  Parameter | Type   | Description
+ *  --------- | ------ | ----------------------------------------------
+ *  $input    | string | The string of data to be converted
+ *  $s        | string | Separator between data key and data value
+ *  $indent   | string | Indentation of nested string data level
+ *  $n        | string | Separator between data, default is `\n`
+ *  --------- | ------ | ----------------------------------------------
+ * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+ *
+ */
+
+Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n") {
+    if( ! is_string($input)) return Mecha::A($input);
+    if(trim($input) === "") return array();
+    $i = 0;
+    $results = $data = array();
+    // Normalize line-break
+    $text = Converter::RN($input, $n);
+    // Save `\:` as `\x1A`
+    $text = str_replace('\\' . $s, "\x1A", $text);
+    if(strpos($indent, "\t") === false) {
+        // Force translate 1 tab to 4 space
+        $text = Converter::TS($text);
+    }
+    $indent_length = strlen($indent);
+    foreach(explode($n, $text) as $line) {
+        $depth = 0;
+        $line = rtrim($line);
+        // Ignore comment and empty line-break
+        if($line === "" || strpos($line, '#') === 0) continue;
+        while(substr($line, 0, $indent_length) === $indent) {
+            $depth += 1;
+            $line = substr($line, $indent_length);
+        }
+        $line = ltrim($line);
+        while($depth < count($data)) {
+            array_pop($data);
+        }
+        // No `:` ... fix it!
+        if(strpos($line, $s) === false) {
+            $line = $line . $s . $line;
+        // Start with `:`
+        } else if($line[0] === $s) {
+            $line = $i . $line;
+            $i++;
+        // else ...
+        } else {
+            $i = 0;
+        }
+        $part = explode($s, $line, 2);
+        $v = trim($part[1]);
+        // Remove inline comment(s) ...
+        if($v && strpos($v, '#') !== false) {
+            if(strpos($v, '"') === 0 || strpos($v, "'") === 0) {
+                $vv = '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*\#.*#';
+                $v = preg_replace($vv, '$1', $v);
+            } else {
+                $v = explode('#', $v, 2);
+                $v = trim($v[0]);
+            }
+        }
+        // Restore `\x1A` as `:`
+        $data[$depth] = str_replace("\x1A", $s, trim($part[0]));
+        $parent =& $results;
+        foreach($data as $k) {
+            if( ! isset($parent[$k])) {
+                $parent[$k] = Converter::strEval($v ? $v : array());
+                break;
+            }
+            $parent =& $parent[$k];
+        }
+    }
+    return $results;
+});
+
+
+/**
+ * ====================================================================
  *  HTML MINIFIER
  * ====================================================================
  *
@@ -49,9 +195,9 @@ Converter::plug('detractSkeleton', function($input) {
             '#<(img|input)(>| .*?>)<\/\1\x1A>#s', // reset previous fix
             '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
             // Force line-break with `&#10;` or `&#xa;`
-            '#&\#(?:10|xa);#',
+            '#&\#(?:10|xa);#i',
             // Force white-space with `&#32;` or `&#x20;`
-            '#&\#(?:32|x20);#',
+            '#&\#(?:32|x20);#i',
             // Remove HTML comment(s) except IE comment(s)
             '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
         ),

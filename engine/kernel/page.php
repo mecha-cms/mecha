@@ -60,13 +60,13 @@ class Page extends __ {
             // By file path
             if(strpos($text, ROOT) === 0 && ($text = File::open($text)->get($_)) !== false) {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                Mecha::extend($results, self::__($text, $FP, $data));
+                Mecha::extend($results, self::_header($text, $FP, $data));
             // By file content
             } else {
                 $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
                 if(strpos($text, $_) !== false) {
                     $s = explode($_, $text, 2);
-                    Mecha::extend($results, self::__(trim($s[0]), $FP, $data));
+                    Mecha::extend($results, self::_header(trim($s[0]), $FP, $data));
                     if(isset($s[1]) && $s[1] !== "") {
                         $results[$c . '_raw'] = trim($s[1]);
                     }
@@ -83,7 +83,7 @@ class Page extends __ {
                 $results[$c . '_raw'] = Converter::DS(trim($text));
             } else {
                 $s = explode($_, $text, 2);
-                Mecha::extend($results, self::__(trim($s[0]), $FP, $data));
+                Mecha::extend($results, self::_header(trim($s[0]), $FP, $data));
                 if(isset($s[1]) && $s[1] !== "") {
                     $results[$c . '_raw'] = trim($s[1]);
                 }
@@ -117,7 +117,7 @@ class Page extends __ {
         return Filter::apply($FP . 'output', $results, $FP, $data);
     }
 
-    protected static function __($text, $FP, $data) {
+    protected static function _header($text, $FP, $data) {
         $results = array();
         $headers = explode("\n", trim($text));
         foreach($headers as $header) {

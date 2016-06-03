@@ -43,19 +43,17 @@ class Navigator extends __ {
         $config = Config::get();
         $speak = Config::speak();
         $base = $config->url;
+
+        if($connector === false) {
+            $connector = '/%s';
+        } else if(strpos($connector, '%s') === false) {
+            $connector = '/' . $connector . '/%s';
+        }
+
         $q = str_replace('&', '&amp;', $config->url_query);
-        if($connector === false) $connector = '/';
         $qq = strpos($connector, '?') !== false ? str_replace('?', '&amp;', $q) : $q;
         $total = count($pages);
         $c = self::$config;
-
-        if(strpos($connector, '%s') === false) {
-            if(($s = trim($connector, '/')) !== "") {
-                $connector = '/' . $s . '/%s';
-            } else {
-                $connector = '/%s';
-            }
-        }
 
         if(is_numeric($current)) {
 

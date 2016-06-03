@@ -111,7 +111,7 @@ class HTTP extends __ {
         }
         $query = ! empty($query) ? array_replace_recursive($_GET, $query) : $_GET;
         $results = array();
-        foreach(self::__($query, "") as $k => $v) {
+        foreach(self::_query($query, "") as $k => $v) {
             if($v === false) continue;
             $value = $v !== true ? '=' . urlencode(Converter::str($v)) : "";
             $results[] = $k . $value;
@@ -119,7 +119,7 @@ class HTTP extends __ {
         return ! empty($results) ? '?' . implode('&', $results) : "";
     }
 
-    protected static function __($array, $key) {
+    protected static function _query($array, $key) {
         $results = array();
         $s = $key ? '%5D' : "";
         foreach($array as $k => $v) {
