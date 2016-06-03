@@ -1,5 +1,7 @@
 <?php
 
+$SEPARATOR_x = Text::parse(SEPARATOR, '->ascii');
+
 class Converter extends __ {
 
     /**
@@ -228,22 +230,19 @@ class Converter extends __ {
      */
 
     public static function str($input) {
-        if( ! is_array($input) && ! is_object($input)) {
-            if($input === true) {
-                $input = 'true';
-            } else if($input === false) {
-                $input = 'false';
-            } else if($input === null) {
-                $input = 'null';
-            }
-            return (string) $input;
-        } else {
+        if(is_array($input) || is_object($input)) {
             foreach($input as &$v) {
                 $v = self::str($v);
             }
-            unset($v);
+            return $input;
+        } else if($input === true) {
+            return 'true';
+        } else if($input === false) {
+            return 'false';
+        } else if($input === null) {
+            return 'null';
         }
-        return $input;
+        return (string) $input;
     }
 
     /**
@@ -261,42 +260,37 @@ class Converter extends __ {
      *  Parameter | Type    | Description
      *  --------- | ------- | ---------------------------------------------
      *  $input    | mixed   | String or array of string to be converted
-     *  $NRT      | boolean | Translate `\n`, `\r` and `\t` ?
      *  --------- | ------- | ---------------------------------------------
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
      *
      */
 
-    public static function strEval($input, $NRT = true) {
-        if(is_numeric($input)) {
-            $input = strpos($input, '.') !== false ? (float) $input : (int) $input;
-        } else if(is_string($input)) {
-            if((strpos($input, '{"') === 0 || strpos($input, '[') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true))) {
-                $input = json_decode($input, true);
-                if(is_array($input)) {
-                    $input = self::strEval($input, $NRT);
-                }
-            } else if($input && ($input[0] === '"' && substr($input, -1) === '"' || $input[0] === "'" && substr($input, -1) === "'")) {
-                $input = substr(substr($input, 1), 0, -1);
-            } else {
-                $input = Mecha::alter($input, array(
-                    'TRUE' => true,
-                    'FALSE' => false,
-                    'NULL' => null,
-                    'true' => true,
-                    'false' => false,
-                    'null' => null,
-                    'yes' => true,
-                    'no' => false,
-                    'on' => true,
-                    'off' => false
-                ), $NRT ? self::DW($input) : $input);
+    public static function strEval($input) {
+        if(is_string($input)) {
+            if($input === "") return $input;
+            if(is_numeric($input)) {
+                return strpos($input, '.') !== false ? (float) $input : (int) $input;
+            } else if(Guardian::check($input, '->json') && $v = json_decode($input, true)) {
+                return is_array($v) ? self::strEval($v) : $v;
+            } else if($input[0] === '"' && substr($input, -1) === '"' || $input[0] === "'" && substr($input, -1) === "'") {
+                return substr(substr($input, 1), 0, -1);
             }
+            return Mecha::alter($input, array(
+                'TRUE' => true,
+                'FALSE' => false,
+                'NULL' => null,
+                'true' => true,
+                'false' => false,
+                'null' => null,
+                'yes' => true,
+                'no' => false,
+                'on' => true,
+                'off' => false
+            ));
         } else if(is_array($input) || is_object($input)) {
             foreach($input as &$v) {
-                $v = self::strEval($v, $NRT);
+                $v = self::strEval($v);
             }
-            unset($v);
         }
         return $input;
     }
@@ -326,123 +320,6 @@ class Converter extends __ {
         extract($vars);
         eval($input);
         return ob_get_clean();
-    }
-
-    /**
-     * ====================================================================
-     *  CONVERT ARRAY DATA INTO NESTED STRING
-     * ====================================================================
-     *
-     * -- CODE: -----------------------------------------------------------
-     *
-     *    echo Converter::toText(array(
-     *        'key_1' => 'Value 1',
-     *        'key_2' => 'Value 2',
-     *        'key_3' => 'Value 3'
-     *    ));
-     *
-     * --------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------------
-     *  $input    | array  | The array of data to be converted
-     *  $s        | string | Separator between array key and array value
-     *  $indent   | string | Indentation as nested array data level
-     *  $n        | string | Separator between data, default is `\n`
-     *  --------- | ------ | ----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function toText($array, $s = S, $indent = '    ', $n = "\n", $depth = 0, $NRT = true) {
-        $results = "";
-        if( ! is_array($array) && ! is_object($array)) {
-            return self::str($NRT ? self::EW($array) : $array);
-        }
-        foreach($array as $key => $value) {
-            if( ! is_array($value) && ! is_object($value)) {
-                $value = $NRT ? self::EW(self::str($value)) : self::str($value);
-                if(is_int($key) && $value === 'null') { // Empty line-break
-                    $results .= $n;
-                } else if(is_string($key) && strpos($key, '#') === 0) { // Comment
-                    $results .= str_repeat($indent, $depth) . trim($key) . $n;
-                } else if(is_int($key) && strpos($value, '#') === 0) { // Comment
-                    $results .= str_repeat($indent, $depth) . trim($value) . $n;
-                } else {
-                    $results .= str_repeat($indent, $depth) . trim(str_replace($s, '_', $key)) . $s . ' ' . $value . $n;
-                }
-            } else {
-                $results .= str_repeat($indent, $depth) . (string) $key . $s . $n . self::toText($value, $s, $indent, $n, $depth + 1, $NRT) . $n;
-            }
-        }
-        return rtrim($results, $n);
-    }
-
-    /**
-     * ====================================================================
-     *  CONVERT NESTED STRING INTO ASSOCIATIVE ARRAY
-     * ====================================================================
-     *
-     * -- CODE: -----------------------------------------------------------
-     *
-     *    echo Converter::toArray('key_1: Value 1
-     *    key_2: Value 2
-     *    key_3: Value 3');
-     *
-     * --------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ----------------------------------------------
-     *  $input    | string | The string of data to be converted
-     *  $s        | string | Separator between data key and data value
-     *  $indent   | string | Indentation of nested string data level
-     *  $n        | string | Separator between data, default is `\n`
-     *  --------- | ------ | ----------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function toArray($input, $s = S, $indent = '    ', $n = "\n") {
-        if( ! is_string($input)) return Mecha::A($input);
-        if(trim($input) === "") return array();
-        $results = $data = array();
-        // Normalize line-break
-        $text = self::RN($input, $n);
-        if(strpos($indent, "\t") === false) {
-            // Force translate 1 tab to 4 space
-            $text = self::TS($text);
-        }
-        $indent_length = strlen($indent);
-        foreach(explode($n, $text) as $line) {
-            // Ignore comment and empty line-break
-            if(trim($line) === "" || strpos($line, '#') === 0) continue;
-            $depth = 0;
-            while(substr($line, 0, $indent_length) === $indent) {
-                $depth += 1;
-                $line = rtrim(substr($line, $indent_length));
-            }
-            while($depth < count($data)) {
-                array_pop($data);
-            }
-            // No `:` ... fix it!
-            if(strpos($line, $s) === false) {
-                $line = $line . $s . $line;
-            }
-            $parts = explode($s, $line, 2);
-            $data[$depth] = rtrim($parts[0]);
-            $parent =& $results;
-            foreach($data as $i => $key) {
-                if( ! isset($parent[$key])) {
-                    $value = isset($parts[1]) && ! empty($parts[1]) ? trim($parts[1]) : array();
-                    $parent[rtrim($parts[0])] = Converter::strEval($value);
-                    break;
-                }
-                $parent =& $parent[$key];
-            }
-        }
-        return $results;
     }
 
     /**
@@ -525,22 +402,24 @@ class Converter extends __ {
 
     // Encode the bogus `SEPARATOR`s (internal only)
     public static function ES($text) {
-        return str_replace(SEPARATOR, Text::parse(SEPARATOR, '->ascii'), $text);
+        global $SEPARATOR_x;
+        return str_replace(SEPARATOR, $SEPARATOR_x, $text);
     }
 
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
-        return str_replace(Text::parse(SEPARATOR, '->ascii'), SEPARATOR, $text);
+        global $SEPARATOR_x;
+        return str_replace($SEPARATOR_x, SEPARATOR, $text);
     }
 
     // Encode white-space(s) (internal only)
     public static function EW($text) {
-        return str_replace(array("\n", "\r", "\t"), array('\n', '\r', '\t'), $text);
+        return str_replace(array("\n", "\r", "\s", "\t", "\v"), array('\n', '\r', '\s', '\t', '\v'), $text);
     }
 
     // Decode the encoded white-space(s) (internal only)
     public static function DW($text) {
-        return str_replace(array('\n', '\r', '\t'), array("\n", "\r", "\t"), $text);
+        return str_replace(array('\n', '\r', '\s', '\t', '\v'), array("\n", "\r", "\s", "\t", "\v"), $text);
     }
 
 }
