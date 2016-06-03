@@ -2,7 +2,7 @@
 
 $type = 'composer';
 
-Mecha::extend($attributes, array(
+Mecha::concat($attributes, array(
     'class' => array(
         'MTE'
     )

@@ -5,7 +5,7 @@
 
   $options = array();
   foreach($types as $type) {
-      if($hidden = strpos($type, '__') === 0) {
+      if($hidden = File::hidden($type)) {
           $type = substr($type, 2);
       }
       $options[($hidden ? '.' : "") . $type] = isset($speak->{$type}) ? $speak->{$type} : Text::parse($type, '->title');

@@ -16,13 +16,13 @@ if(isset($_FILES) && ! empty($_FILES)) {
             }
             // File already exists. Don't overwrite and don't show the error message
             if(file_exists(SUBSTANCE . DS . $name)) {
-                $field[$k]['value'] = File::url($name_o);
+                $field[$k] = File::url($name_o);
                 Notify::info(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
             // Upload new file
             } else {
                 File::upload($v, SUBSTANCE . DS . File::D($name));
                 if( ! Notify::errors()) {
-                    $field[$k]['value'] = File::url($name_o);
+                    $field[$k] = File::url($name_o);
                     Weapon::fire(array('on_substance_update', 'on_substance_construct'), array($G, $P));
                 }
             }

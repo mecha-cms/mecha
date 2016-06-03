@@ -126,7 +126,7 @@
     <div class="tab-content hidden" id="tab-content-3">
       <h3><?php echo Config::speak('manager.title_your_', $speak->shields); ?></h3>
       <?php foreach($folders as $folder): $folder = File::B($folder); ?>
-      <?php if($config->shield !== $folder && strpos($folder, '__') !== 0): ?>
+      <?php if($config->shield !== $folder && ! File::hidden($folder)): ?>
       <?php $r = SHIELD . DS . $folder . DS; $c = File::exist($r . 'capture.png'); ?>
       <?php $page = Shield::info($folder); ?>
       <div class="media<?php if( ! $c): ?> no-capture<?php endif; ?>" id="shield:<?php echo $folder; ?>">

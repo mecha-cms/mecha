@@ -1,5 +1,5 @@
 <h3>Creating a Simple Menu</h3>
-<pre><code class="no-highlight">Home: 
+<pre><code class="no-highlight">Home: ""
 About: about
 Contact: contact</code></pre>
 <p>Result:</p>

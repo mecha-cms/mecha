@@ -6,7 +6,7 @@
   $cache = Guardian::wayback('scope', isset($page->scope_raw) ? $page->scope_raw : $segment);
   $cache = ',' . Request::get('scope', is_array($cache) ? implode(',', $cache) : $cache) . ',';
   foreach($scopes as $scope) {
-      if($hidden = strpos($scope, '__') === 0) {
+      if($hidden = File::hidden($scope)) {
           $scope = substr($scope, 2);
       }
       $s = isset($speak->{$scope}) ? $speak->{$scope} : Text::parse($scope, '->title');

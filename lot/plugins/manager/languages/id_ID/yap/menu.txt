@@ -1,5 +1,5 @@
 <h3>Membuat Menu Sederhana</h3>
-<pre><code class="no-highlight">Beranda: 
+<pre><code class="no-highlight">Beranda: ""
 Tentang: tentang
 Kontak: kontak</code></pre>
 <p>Hasil:</p>

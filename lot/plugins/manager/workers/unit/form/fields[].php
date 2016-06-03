@@ -26,15 +26,15 @@ if( ! empty($field_d)) {
             }
         }
         $data['key'] = $key;
-        $type = $data['type'];
+        $type = isset($data['attributes']['type']) ? $data['attributes']['type'] : $data['type'];
         $value = isset($field[$key]) && $field[$key] !== "" ? $field[$key] : $data['value'];
-        $placeholder = Converter::str(isset($data['placeholder']) && trim($data['placeholder']) !== "" ? $data['placeholder'] : $value);
+        $placeholder = Converter::str(isset($data['placeholder']) && trim($data['placeholder']) !== "" ? $data['placeholder'] : str_replace("\n", ' ', $value));
         $description = isset($data['description']) && trim($data['description']) !== "" ? '&nbsp;' . Jot::info($data['description']) : "";
         $title = isset($data['title']) && trim($data['title']) !== "" ? $data['title'] : '<code>' . $key . '</code>';
         $attributes = array('id' => 'unit:' . time());
         // Default is `summary`
         $s = __DIR__ . DS . 'fields[]' . DS;
-        include File::exist($s . $type . '.php', File::exist($s . '__' . $type . '.php', $s . 'summary.php'));
+        include File::exist($s . $data['type'] . '.php', File::exist($s . '__' . $data['type'] . '.php', $s . 'summary.php'));
     }
     echo $html ? $html : $x;
 } else {

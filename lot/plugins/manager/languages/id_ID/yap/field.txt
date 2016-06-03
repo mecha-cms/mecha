@@ -61,7 +61,3 @@ Grup 2
 <pre><code class="php">echo $article-&gt;fields-&gt;kunci_bidang_kustom_anda;</code></pre>
 <h4>Untuk Halaman</h4>
 <pre><code class="php">echo $page-&gt;fields-&gt;kunci_bidang_kustom_anda;</code></pre>
-<p>Anda mungkin perlu untuk mengubah nilai data bidang kustom Anda menjadi larik jika nilai yang coba Anda dapatkan diketahui merupakan objek dengan kunci numerik (biasanya dihasilkan oleh bidang kustom dengan tipe <code>options</code>):</p><pre><code class="php">$field = Mecha::A($article-&gt;fields-&gt;kunci_bidang_kustom_anda);
-
-echo $field[1]; // pilihan
-echo $field[1][0]; // grup pilihan</code></pre>

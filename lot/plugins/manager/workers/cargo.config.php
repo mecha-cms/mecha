@@ -56,9 +56,8 @@
       $info = array();
       foreach(glob(SHIELD . DS . '*', GLOB_ONLYDIR) as $folder) {
           $s = File::B($folder);
-          if(strpos($s, '__') !== 0) {
-              $info[$s] = Shield::info($s)->title;
-          }
+          if(File::hidden($s)) continue;
+          $info[$s] = Shield::info($s)->title;
       }
       echo Form::select('shield', $info, Guardian::wayback('shield', $config->shield), array(
           'class' => 'select-block'

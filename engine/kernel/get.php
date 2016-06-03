@@ -68,14 +68,7 @@ class Get extends __ {
                         if($e === true || $e === array('*') || Mecha::walk($e)->has(File::E($k))) {
                             $o = File::inspect($k, $output);
                             if(is_null($output)) {
-                                $o['is']['hidden'] = (
-                                    // current file is hidden
-                                    strpos($_k, '__') === 0 ||
-                                    strpos($_k, '.') === 0 ||
-                                    // parent(s) folder of current file is hidden
-                                    strpos($_kk, DS . '__') !== false ||
-                                    strpos($_kk, DS . '.') !== false
-                                );
+                                $o['is']['hidden'] = File::hidden($_k);
                             }
                             $results[] = $o;
                         }
@@ -198,10 +191,7 @@ class Get extends __ {
             'placeholder' => "",
             'value' => "",
             'description' => "",
-            'attributes' => array(
-                'pattern' => null,
-                'required' => null
-            )
+            'attributes' => array('pattern' => null)
         );
         foreach($field as $k => $v) {
             $field[$k] = array_replace_recursive($v_d, $v);
@@ -736,7 +726,7 @@ class Get extends __ {
         ), $results);
         $results['date'] = Filter::colon($FP . 'date', Date::extract($results['time']), $results);
         $results['url'] = Filter::colon($FP . 'url', $config->url . $connector . $results['slug'], $results);
-        self::__fields($results, $FP);
+        self::_fields($results, $FP);
         return Mecha::O($results);
     }
 
@@ -841,7 +831,7 @@ class Get extends __ {
         $results['image'] = Filter::colon($FP . 'image', isset($results['images'][0]) ? $results['images'][0] : Image::placeholder(), $results);
         // Post Field(s)
         if( ! isset($excludes['fields'])) {
-            self::__fields($results, $FP);
+            self::_fields($results, $FP);
         }
         // Exclude some field(s) from result(s)
         foreach($results as $key => $value) {
@@ -1102,7 +1092,7 @@ class Get extends __ {
             'fields' => array()
         ), $results);
         $results['date'] = Filter::colon($FP[0] . 'date', Date::extract($results['time']), $results);
-        self::__fields($results, $FP[0]);
+        self::_fields($results, $FP[0]);
         return Mecha::O($results);
     }
 
@@ -1161,7 +1151,7 @@ class Get extends __ {
             $results['permalink'] = Filter::colon($FP[0] . 'permalink', $link, $results);
         }
         if( ! isset($excludes['fields'])) {
-            self::__fields($results, $FP[0]);
+            self::_fields($results, $FP[0]);
         }
         foreach($results as $key => $value) {
             if(isset($excludes[$key])) {
@@ -1268,7 +1258,7 @@ class Get extends __ {
     }
 
     // Handle custom field(s) ...
-    private static function __fields(&$results, $FP) {
+    private static function _fields(&$results, $FP) {
         // Initialize custom field(s) with the default value(s) so that
         // user(s) don't have to write `isset()` function multiple time(s)
         // just to prevent error message(s) because of the object key(s)
@@ -1278,25 +1268,26 @@ class Get extends __ {
             $s = isset($results['fields'][$k]) && $results['fields'][$k] !== "" ? $results['fields'][$k] : null;
             $s = Filter::colon($FP . 'fields_raw.' . $k, $s, $results);
             $results['fields_raw'][$k] = $s;
+            // No value(s) stored in the page file
             if($s === null) {
                 // For `option` field type, the first option will be used as the default value
                 if($v['type'] === 'option') {
-                    $vv = array_values(Converter::toArray($v['value'], S, '  '));
                     if(isset($v['placeholder']) && trim($v['placeholder']) !== "") {
                         // do nothing ...
                     } else {
-                        $s = isset($vv[0]) ? $vv[0] : "";
+                        $vv = array_keys(Converter::toArray($v['value'], S, '  '));
+                        $v = isset($vv[0]) ? $vv[0] : "";
                     }
-                // For `boolean` field type, empty value is equal to `false`
-                } else if($v['type'] === 'boolean' || $v['type'] === 'b') {
+                // For `boolean` field type, empty value will be translated to `false`
+                } else if($v['type'] === 'boolean') {
                     $s = false;
                 }
             } else {
                 // For `file` field type, the original custom field value is used to limit the file extension
                 // So we have to check the existence of the file first. If it does not exist, then it may be
                 // contained with file extension(s), not with a file name
-                if($v['type'] === 'file' || $v['type'] === 'f') {
-                    $e = strpos($s, '.') !== false ? File::E($s, false) : false;
+                if($v['type'] === 'file') {
+                    $e = File::E($s, false);
                     $s = $e !== false ? File::exist(SUBSTANCE . DS . $e . DS . $s, "") : "";
                 }
             }

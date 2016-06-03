@@ -1,7 +1,9 @@
 <?php
 
-Mecha::extend($attributes, array(
-    'class' => 'select-block'
+Mecha::concat($attributes, array(
+    'class' => array(
+        'select-block'
+    )
 ));
 
 Mecha::extend($attributes, $data['attributes']);

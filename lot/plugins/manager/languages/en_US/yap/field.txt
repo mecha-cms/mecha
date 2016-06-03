@@ -61,7 +61,3 @@ Group 2
 <pre><code class="php">echo $article-&gt;fields-&gt;your_custom_field_key;</code></pre>
 <h4>For Pages</h4>
 <pre><code class="php">echo $page-&gt;fields-&gt;your_custom_field_key;</code></pre>
-<p>You may need to convert your custom fields value into array if the value you want to get is known as an object with numeric keys (usually produced by custom fields with type of <code>options</code>):</p><pre><code class="php">$field = Mecha::A($article-&gt;fields-&gt;your_custom_field_key);
-
-echo $field[1]; // option
-echo $field[1][0]; // option group</code></pre>
