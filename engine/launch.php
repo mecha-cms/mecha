@@ -64,7 +64,7 @@ Route::accept(array($config->index->slug, $config->index->slug . '/(:num)'), fun
 
 Route::accept(array($config->archive->slug . '/(:any)', $config->archive->slug . '/(:any)/(:num)'), function($slug = "", $offset = 1) use($config, $speak, $excludes) {
     $s = Get::articles('DESC', 'time:' . $slug);
-    $months = (array) $speak->month_names;
+    $months = $speak->month_names;
     if($articles = Mecha::eat($s)->chunk($offset, $config->archive->per_page)->vomit()) {
         $articles = Mecha::walk($articles, function($path) use($excludes) {
             return Get::article($path, $excludes);

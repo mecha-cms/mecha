@@ -25,10 +25,10 @@
 
 Date::plug('extract', function($date, $output = null) {
     $speak = Config::speak();
-    $month_name = (array) $speak->month_names;
-    $day_name = (array) $speak->day_names;
-    $month_name_short = (array) $speak->month_names_short;
-    $day_name_short = (array) $speak->day_names_short;
+    $month_name = $speak->month_names;
+    $day_name = $speak->day_names;
+    $month_name_short = $speak->month_names_short;
+    $day_name_short = $speak->day_names_short;
     list(
         $year,
         $year_short,

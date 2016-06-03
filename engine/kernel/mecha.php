@@ -37,14 +37,25 @@ class Mecha extends __ {
         return $default;
     }
 
+    // Merge more variable data
+    public static function concat(&$default, $alternate) {
+        $default = array_merge_recursive($default, $alternate);
+        return $default;
+    }
+
     // Convert array to object
-    public static function O($a) {
-        return is_array($a) ? (object) array_map('self::O', $a) : $a;
+    public static function O($a, $int_x = true) {
+        return is_array($a) && ($int_x && ! empty($a) && self::is_assoc($a)) ? (object) array_map('self::O', $a) : $a;
     }
 
     // Convert object to array
     public static function A($o) {
         return is_object($o) ? array_map('self::A', (array) $o) : $o;
+    }
+
+    // http://stackoverflow.com/a/173479
+    protected static function is_assoc($a) {
+        return array_keys($a) !== range(0, count($a) - 1);
     }
 
     // Set array value recursively
@@ -99,7 +110,6 @@ class Mecha extends __ {
             foreach($array as $k => &$v) {
                 $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
             }
-            unset($v);
             return $array;
         }
         return self::eat($array);
@@ -269,7 +279,7 @@ class Mecha extends __ {
     // Get position by array key
     public function index($key, $fallback = false) {
         $key = array_search($key, array_keys($this->stomach));
-        return $key !== false ? $key : $fallback;
+        return $key ? $key : $fallback;
     }
 
     // Generate chunk(s) of array

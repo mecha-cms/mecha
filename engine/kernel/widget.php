@@ -29,7 +29,7 @@ class Widget extends __ {
         $config = Config::get();
         $speak = Config::speak();
         $query = $config->archive_query;
-        $month_names = (array) $speak->month_names;
+        $month_names = $speak->month_names;
         $archives = array();
         $html = O_BEGIN . '<div class="widget widget-archive widget-archive-' . $kin . '" id="widget-archive-' . $kin . '-' . $id . '">' . NL;
         if($files = call_user_func('Get::' . $p . 's', $sort)) {
@@ -350,7 +350,7 @@ class Widget extends __ {
         $id = Config::get('widget_related_' . $p . '_id', 0) + 1;
         $config = Config::get();
         $speak = Config::speak();
-        $k = isset($config->{$p}->kind) && ! empty($config->{$p}->kind) ? (array) $config->{$p}->kind : array(0);
+        $k = isset($config->{$p}->kind) && ! empty($config->{$p}->kind) ? $config->{$p}->kind : array(0);
         $html = O_BEGIN . '<div class="widget widget-related widget-related-post" id="widget-related-post-' . $id . '">' . NL;
         if($config->page_type !== $p) {
             return self::randomPost($total, "", $folder);
