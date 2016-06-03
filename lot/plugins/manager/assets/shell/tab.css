@@ -1,5 +1,5 @@
 .tab-button-area {
-  margin:0 0 1.3846153846153846em;
+  margin:-.38461538461538464em 0 1.3846153846153846em;
   min-height:2.4615384615384617em;
   line-height:2.3076923076923075em;
   font-weight:bold;
@@ -16,7 +16,7 @@
 .tab-button {
   display:block;
   float:left;
-  margin:0 0 0 .38461538461538464em;
+  margin:.38461538461538464em 0 0 .38461538461538464em;
   padding:0 .7692307692307693em;
   border:1px solid;
   color:inherit;
