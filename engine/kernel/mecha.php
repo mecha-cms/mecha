@@ -45,12 +45,24 @@ class Mecha extends __ {
 
     // Convert array to object
     public static function O($a, $int_x = true) {
-        return is_array($a) && ($int_x && ! empty($a) && self::is_assoc($a)) ? (object) array_map('self::O', $a) : $a;
+        if(is_array($a)) {
+            $a = $int_x && ! empty($a) && self::is_assoc($a) ? (object) $a : $a;
+            foreach($a as &$v) {
+                $v = self::O($v, $int_x);
+            }
+        }
+        return $a;
     }
 
     // Convert object to array
     public static function A($o) {
-        return is_object($o) ? array_map('self::A', (array) $o) : $o;
+        if(is_object($o)) {
+            $o = (array) $o;
+            foreach($o as &$v) {
+                $v = self::A($v);
+            }
+        }
+        return $o;
     }
 
     // http://stackoverflow.com/a/173479
