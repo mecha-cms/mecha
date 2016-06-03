@@ -138,9 +138,10 @@ class Package extends __ {
     protected $opens = null;
     protected $zip = null;
 
-    public function __construct($files) {
+    public function __construct($files, $fallback = false) {
         if( ! extension_loaded('zip')) {
-            Guardian::abort('<a href="http://www.php.net/manual/en/book.zip.php" title="PHP &ndash; Zip" rel="nofollow" target="_blank">PHP Zip</a> extension is not installed on your web server.');
+            // [PHP Zip](http://www.php.net/manual/en/book.zip.php "PHP &ndash; Zip") extension is not installed on your web server
+            return $fallback;
         }
         $this->open = $this->opens = null;
         $this->zip = new ZipArchive();
