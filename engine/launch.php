@@ -156,7 +156,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 $articles[] = $file;
                 $anchor = Get::articleAnchor($file);
                 $kw = str_replace('-', ' ', $keywords);
-                if(stripos($anchor->title, $kw) !== false || stripos(File::N($anchor->path), $kw) !== false) {
+                if(stripos(strip_tags($anchor->title), $kw) !== false || stripos(File::N($anchor->path), $kw) !== false) {
                     $articles[] = $file;
                 }
             }
@@ -169,7 +169,7 @@ Route::accept(array($config->search->slug . '/(:any)', $config->search->slug . '
                 foreach($files as $file) {
                     $articles[] = $file;
                     $anchor = Get::articleAnchor($file);
-                    if(stripos($anchor->title, $keyword) !== false || stripos(File::N($anchor->path), $keyword) !== false) {
+                    if(stripos(strip_tags($anchor->title), $keyword) !== false || stripos(File::N($anchor->path), $keyword) !== false) {
                         $articles[] = $file;
                     }
                 }
