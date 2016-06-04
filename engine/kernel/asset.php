@@ -33,6 +33,10 @@ class Asset extends __ {
         $config = Config::get();
         // External URL, nothing to check!
         if(strpos($path, '://') !== false || strpos($path, '//') === 0) {
+            // Fix condition where user(s) use `$config->protocol . '://example.com'` instead of `$config->scheme . '://example.com'`
+            $path = str_replace('://://', '://', $path);
+            // Fix condition where user(s) use `$config->protocol . '//example.com'` instead of `$config->protocol . 'example.com'`
+            $path = str_replace(':////', '://', $path);
             if(strpos($path, $config->url) !== 0) return $path;
         }
         $path = File::path($path);
@@ -64,7 +68,7 @@ class Asset extends __ {
 
     // Return the HTML stylesheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
-        $path = (array) $path;
+        $path = explode(' ', $path);
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }
@@ -89,7 +93,7 @@ class Asset extends __ {
 
     // Return the HTML javascript of asset
     public static function javascript($path, $addon = "", $merge = false) {
-        $path = (array) $path;
+        $path = explode(' ', $path);
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }
@@ -114,7 +118,7 @@ class Asset extends __ {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
-        $path = (array) $path;
+        $path = explode(' ', $path);
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }

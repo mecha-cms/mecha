@@ -19,15 +19,28 @@ Config::plug('load', function() {
     // Extract the configuration file
     $config = Get::state_config();
 
-    // Define some default variable(s)
-    $config['protocol'] = $config['url_protocol'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https://' : 'http://';
-    $config['host'] = $config['url_host'] = $_SERVER['HTTP_HOST'];
-    $config['base'] = $config['url_base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
-    $config['url'] = $config['url_url'] = rtrim($config['protocol'] . $config['host']  . '/' . $config['base'], '/');
-    $config['path'] = $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // kill tag(s) and query string(s) from URL
-    $config['current'] = $config['url_current'] = rtrim($config['url'] . '/' . $config['url_path'], '/');
-    $config['origin'] = $config['url_origin'] = Session::get('cookie:url_origin', false);
+    // Define some variable(s) related to URL
+    $config['url_scheme'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https' : 'http';
+    $config['url_protocol'] = $config['url_scheme'] . '://';
+    $config['url_host'] = $_SERVER['HTTP_HOST'];
+    $config['url_base'] trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
+    $config['url_url'] = rtrim($config['url_protocol'] . $config['url_host']  . '/' . $config['url_base'], '/');
+    $o = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
+    $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['url_base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $o;
+    $config['url_current'] = rtrim($config['url_url'] . '/' . $config['url_path'], '/');
+    $config['url_origin'] = Session::get('cookie:url_origin', false);
 
+    // Alias(es)
+    $config['scheme'] =& $config['url_scheme'];
+    $config['protocol'] =& $config['url_protocol'];
+    $config['host'] =& $config['url_host'];
+    $config['base'] =& $config['url_base'];
+    $config['url'] =& $config['url_url'];
+    $config['path'] =& $config['url_path'];
+    $config['current'] =& $config['url_current'];
+    $config['origin'] =& $config['url_origin'];
+
+    // Default(s)
     $config['page_title'] = $config['title'];
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
     $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;

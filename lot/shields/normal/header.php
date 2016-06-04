@@ -4,7 +4,7 @@
     <?php Weapon::fire('SHIPMENT_REGION_TOP'); ?>
     <?php Weapon::fire('shell_before'); ?>
     <?php echo Asset::stylesheet(array(
-        $config->protocol . ICON_LIBRARY_PATH,
+        $config->scheme . ':' . ICON_LIBRARY_PATH,
         'assets/shell/atom.css',
         'assets/shell/layout.css'
     )); ?>

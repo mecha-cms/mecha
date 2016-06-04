@@ -38,8 +38,8 @@ Route::over('(:any)', function($slug = "") use($config, $repair) {
 
 Weapon::add('meta', function() use($config, $speak, $segment) {
     echo O_BEGIN . '<script>!function(a){var b=a.className;a.className=/(^|\s)no-js(\s|$)/.test(b)?b.replace(/(^|\s)no-js(\s|$)/,"$1js$2"):b+" js"}(document.documentElement);</script>' . O_END;
-    if( ! Asset::loaded($config->protocol . JS_LIBRARY_PATH)) {
-        echo Asset::javascript($config->protocol . JS_LIBRARY_PATH);
+    if( ! Asset::loaded($config->scheme . ':' . JS_LIBRARY_PATH)) {
+        echo Asset::javascript($config->scheme . ':' . JS_LIBRARY_PATH);
     }
     $path = File::D(__DIR__) . DS . 'assets' . DS . 'sword' . DS;
     echo Asset::javascript(array(
@@ -61,6 +61,7 @@ Weapon::add('meta', function() use($config, $speak, $segment) {
         'file_extension_allow' => implode(',', File::$config['file_extension_allow']),
         'url' => array(
             'protocol' => $config->url_protocol,
+            'scheme' => $config->url_scheme,
             'base' => $config->url_base,
             'host' => $config->url_host,
             'url' => $config->url_url,
