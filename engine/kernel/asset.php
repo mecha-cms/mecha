@@ -84,7 +84,7 @@ class Asset extends __ {
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . substr(substr($html, strlen(TAB . TAB)), 0, -strlen(NL)) . O_END;
+        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
     }
 
     // Return the HTML javascript of asset
@@ -109,7 +109,7 @@ class Asset extends __ {
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . substr(substr($html, strlen(TAB . TAB)), 0, -strlen(NL)) . O_END;
+        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
     }
 
     // Return the HTML image of asset
@@ -134,7 +134,7 @@ class Asset extends __ {
                 $html .= '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . substr($html, -strlen(NL)) . O_END;
+        return O_BEGIN . rtrim($html, NL) . O_END;
     }
 
     // Merge multiple asset file(s) into a single file

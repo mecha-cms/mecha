@@ -121,10 +121,11 @@ class Converter extends __ {
             if(strlen($color) === 3) {
                 $color = preg_replace('#(.)#', '$1$1', $color);
             }
+            $s = str_split($color, 2);
             $colors = array(
-                'r' => (int) hexdec(substr($color, 0, 2)),
-                'g' => (int) hexdec(substr($color, 2, 2)),
-                'b' => (int) hexdec(substr($color, 4, 2)),
+                'r' => (int) hexdec($s[0]),
+                'g' => (int) hexdec($s[1]),
+                'b' => (int) hexdec($s[2]),
                 'a' => (float) 1
             );
             return ! is_null($output) ? $colors[$output] : $colors;
