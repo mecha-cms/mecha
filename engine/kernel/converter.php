@@ -232,6 +232,7 @@ class Converter extends __ {
             foreach($input as &$v) {
                 $v = self::str($v);
             }
+            unset($v);
             return $input;
         } else if($input === true) {
             return 'true';
@@ -289,6 +290,7 @@ class Converter extends __ {
             foreach($input as &$v) {
                 $v = self::strEval($v);
             }
+            unset($v);
         }
         return $input;
     }

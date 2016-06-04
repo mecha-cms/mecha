@@ -50,6 +50,7 @@ class Mecha extends __ {
             foreach($a as &$v) {
                 $v = self::O($v, $int_x);
             }
+            unset($v);
         }
         return $a;
     }
@@ -61,6 +62,7 @@ class Mecha extends __ {
             foreach($o as &$v) {
                 $v = self::A($v);
             }
+            unset($v);
         }
         return $o;
     }
@@ -123,6 +125,7 @@ class Mecha extends __ {
             foreach($array as $k => &$v) {
                 $v = is_array($v) ? array_merge($v, self::walk($v, $fn)) : call_user_func($fn, $v, $k);
             }
+            unset($v);
             return $array;
         }
         return self::eat($array);
