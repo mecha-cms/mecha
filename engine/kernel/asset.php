@@ -84,7 +84,7 @@ class Asset extends __ {
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
+        return O_BEGIN . substr(substr($html, strlen(TAB . TAB)), 0, -strlen(NL)) . O_END;
     }
 
     // Return the HTML javascript of asset
@@ -109,7 +109,7 @@ class Asset extends __ {
                 $html .= str_repeat(TAB, 2) . '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . rtrim(substr($html, strlen(TAB . TAB)), NL) . O_END;
+        return O_BEGIN . substr(substr($html, strlen(TAB . TAB)), 0, -strlen(NL)) . O_END;
     }
 
     // Return the HTML image of asset
@@ -134,22 +134,22 @@ class Asset extends __ {
                 $html .= '<!-- ' . $path[$i] . ' -->' . NL;
             }
         }
-        return O_BEGIN . rtrim($html, NL) . O_END;
+        return O_BEGIN . substr($html, -strlen(NL)) . O_END;
     }
 
     // Merge multiple asset file(s) into a single file
-    public static function merge($path, $name = null, $addon = "", $call = null) {
-        $the_path = strpos($name, ROOT) === 0 ? File::path($name) : ASSET . DS . File::path($name);
-        $the_log = CACHE . DS . 'asset.' . md5($the_path) . '.log';
+    public static function merge($path, $name = null, $addon = "", $fn = null) {
+        $cache = strpos($name, ROOT) === 0 ? File::path($name) : ASSET . DS . File::path($name);
+        $log = CACHE . DS . 'asset.' . md5($cache) . '.log';
         $is_valid = true;
-        if( ! file_exists($the_log)) {
+        if( ! file_exists($log)) {
             $is_valid = false;
         } else {
-            $the_time = explode("\n", file_get_contents($the_log));
-            if(count($the_time) !== count($path)) {
+            $time = file($log, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+            if(count($time) !== count($path)) {
                 $is_valid = false;
             } else {
-                foreach($the_time as $i => $u) {
+                foreach($time as $i => $u) {
                     if($p = Filter::colon('asset:path', self::path($path[$i], false))) {
                         if( ! file_exists($p) || (int) filemtime($p) !== (int) $u) {
                             $is_valid = false;
@@ -162,27 +162,33 @@ class Asset extends __ {
         $unix = "";
         $content = "";
         $e = File::E($name);
-        if( ! file_exists($the_path) || ! $is_valid) {
-            File::open($the_path)->delete(); // delete cache ...
+        if( ! $is_valid || ! file_exists($cache)) {
+            File::open($cache)->delete(); // delete cache ...
             if(Mecha::walk(array('gif', 'jpeg', 'jpg', 'png'))->has($e)) {
-                foreach($path as &$p) {
+                $images = array();
+                foreach($path as $p) {
                     $p = Filter::colon('asset:source', $p);
                     if( ! self::ignored($p) && $p = Filter::colon('asset:path', self::path($p, false))) {
+                        if( ! file_exists($p)) continue;
                         $unix .= filemtime($p) . "\n";
+                        $images[] = $p;
                     }
                 }
-                File::write(trim($unix))->saveTo($the_log);
-                Image::take($path)->merge()->saveTo($the_path);
+                if( ! empty($images)) {
+                    File::write(substr($unix, 0, -1))->saveTo($log);
+                    Image::take($images)->merge()->saveTo($cache);
+                }
             } else {
                 foreach($path as $p) {
                     $p = Filter::colon('asset:source', $p);
                     if( ! self::ignored($p) && $p = Filter::colon('asset:path', self::path($p, false))) {
+                        if( ! file_exists($p)) continue;
                         $unix .= filemtime($p) . "\n";
                         $c = Filter::apply('asset:input', file_get_contents($p) . "\n", $p);
                         if(strpos(File::B($p), '.min.') === false) {
-                            if(strpos(File::B($the_path) . '$', '.min.css$') !== false) {
+                            if(substr($cache, -8) === '.min.css') {
                                 $c = Converter::detractShell($c);
-                            } else if(strpos(File::B($the_path) . '$', '.min.js$') !== false) {
+                            } else if(substr($cache, -7) === '.min.js') {
                                 $c = Converter::detractSword($c);
                             } else {
                                 $c = $c . "\n";
@@ -193,12 +199,14 @@ class Asset extends __ {
                         }
                     }
                 }
-                File::write(trim($unix))->saveTo($the_log);
-                File::write(trim($content))->saveTo($the_path);
+                if($content = trim($content)) {
+                    File::write(substr($unix, 0, -1))->saveTo($log);
+                    File::write($content)->saveTo($cache);
+                }
             }
         }
-        if(is_null($call)) {
-            $call = Mecha::alter($e, array(
+        if(is_null($fn)) {
+            $fn = Mecha::alter($e, array(
                 'css' => 'stylesheet',
                 'js' => 'javascript',
                 'gif' => 'image',
@@ -207,7 +215,7 @@ class Asset extends __ {
                 'png' => 'image'
             ));
         }
-        return call_user_func('self::' . $call, $the_path, $addon);
+        return call_user_func('self::' . $fn, $cache, $addon);
     }
 
     // Check for loaded asset(s)
