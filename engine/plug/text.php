@@ -43,6 +43,11 @@ Text::parser('to_broken_entity', function($input) {
     return implode("", $chars);
 });
 
+// De-obfuscate text
+Text::parser('to_unite_entity', function($input) {
+    return is_string($input) ? html_entity_decode($input, ENT_QUOTES, 'UTF-8') : $input;
+});
+
 // Convert decoded URL to encoded URL
 Text::parser('to_encoded_url', function($input) {
     return is_string($input) ? urlencode($input) : $input;
@@ -54,13 +59,13 @@ Text::parser('to_decoded_url', function($input) {
 });
 
 // Convert decoded HTML to encoded HTML
-Text::parser('to_encoded_html', function($input, $a = ENT_QUOTES, $b = 'UTF-8') {
-    return is_string($input) ? htmlentities($input, $a, $b) : $input;
+Text::parser('to_encoded_html', function($input, $a = ENT_QUOTES) {
+    return is_string($input) ? htmlspecialchars($input, $a) : $input;
 });
 
 // Convert encoded HTML to decoded HTML
-Text::parser('to_decoded_html', function($input, $a = ENT_QUOTES, $b = 'UTF-8') {
-    return is_string($input) ? html_entity_decode($input, $a, $b) : $input;
+Text::parser('to_decoded_html', function($input, $a = ENT_QUOTES) {
+    return is_string($input) ? htmlspecialchars_decode($input, $a) : $input;
 });
 
 // Convert decoded JSON to encoded JSON
@@ -128,18 +133,21 @@ Text::parser('to_text', function($input, $tags = "", $no_break = true) {
     }
     // 1. Replace `+` to ` `
     // 2. Replace `-` to ` `
+    // 3. Replace `-----` to ` - `
     // 3. Replace `---` to `-`
     return preg_replace(
         array(
-            '#^(\.|_{2})#',
+            '#^(\.|_{2})#', // remove `.` and `__` prefix on file name
+            '#-{5}#',
             '#-{3}#',
             '#-#',
             '#\s+#',
-            '#``\.``#'
+            '#\x1A#'
         ),
         array(
             "",
-            '``.``',
+            " \x1A ",
+            "\x1A",
             ' ',
             ' ',
             '-'
@@ -156,27 +164,26 @@ Text::parser('to_array_key', function($input, $lower = false) {
 });
 
 // Convert plain text to HTML
-// Suppose that there aren't any HTML parser engine ...
 Text::parser('to_html', function($input) {
-    return $input;
-});
-
-// Convert `foo_bar_baz` to `fooBarBaz`
-Text::parser('to_camel_case', function($input, $join = '_\s') {
-    return is_string($input) ? preg_replace_callback('#([' . $join . '])([a-z])#i', function($matches) {
-        return strtoupper($matches[2]);
-    }, strtolower($input)) : $input;
+    return $input; // Suppose that there aren't any HTML parser engine ...
 });
 
 // Convert `foo_bar_baz` to `FooBarBaz`
-Text::parser('to_pascal_case', function($input, $join = '_\s') {
-    return is_string($input) ? ucfirst(Text::parse($input, '->camel_case', $join)) : $input;
+Text::parser('to_pascal_case', function($input, $join = '_ ') {
+    if( ! is_string($input)) return $input;
+    $input = ucwords(str_replace(str_split($join), ' ', $input));
+    return str_replace(' ', "", $input);
+});
+
+// Convert `foo_bar_baz` to `fooBarBaz`
+Text::parser('to_camel_case', function($input, $join = '_ ') {
+    return is_string($input) ? lcfirst(Text::parse($input, '->pascal_case', $join)) : $input;
 });
 
 // Convert `FooBarBaz` to `foo_bar_baz`
 Text::parser('to_snake_case', function($input, $join = '_', $lower = true) {
     if( ! is_string($input)) return $input;
-    $input = preg_replace('#([a-z0-9])([A-Z])#', '$1' . $join . '$2', $input);
+    $input = preg_replace('#([a-z0-9\x{00E0}-\x{00FC}])([A-Z\x{00E0}-\x{00FC}])#u', '$1' . $join . '$2', $input);
     return $lower ? strtolower($input) : $input;
 });
 

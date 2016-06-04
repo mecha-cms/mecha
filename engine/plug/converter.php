@@ -194,8 +194,8 @@ Converter::plug('detractSkeleton', function($input) {
             '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
             '#<(img|input)(>| .*?>)<\/\1\x1A>#s', // reset previous fix
             '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
-            // Force line-break with `&#10;` or `&#xa;`
-            '#&\#(?:10|xa);#i',
+            // Force line-break with `&#10;` or `&#xA;`
+            '#&\#(?:10|xA);#i',
             // Force white-space with `&#32;` or `&#x20;`
             '#&\#(?:32|x20);#i',
             // Remove HTML comment(s) except IE comment(s)

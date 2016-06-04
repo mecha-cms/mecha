@@ -93,7 +93,7 @@ function do_custom_field($results, $FP, $data) {
 
 // Decode the obfuscated `email` value
 function do_email_field_decode($email) {
-    return strpos($email, ';') !== false ? Text::parse($email, '->decoded_html') : $email;
+    return strpos($email, ';') !== false ? Text::parse($email, '->unite_entity') : $email;
 }
 
 // Set response, comment and user `status` as `pilot`, `passenger` and `intruder`

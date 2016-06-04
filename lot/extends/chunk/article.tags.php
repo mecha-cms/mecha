@@ -1,6 +1,6 @@
 <?php
 
-if(isset($article->tags)) {
+if( ! empty($article->tags)) {
     $tags = array();
     foreach($article->tags as $tag) {
         if($tag && $tag->id !== 0) {
