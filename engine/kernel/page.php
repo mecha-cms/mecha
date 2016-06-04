@@ -25,12 +25,12 @@ class Page extends __ {
     protected static $i = 0;
 
     // Remove `:` in field key
-    protected static function fix($key) {
+    protected static function _x($key) {
         return trim(str_replace(S, '_', $key));
     }
 
     // Reset the cached data
-    protected static function reset() {
+    protected static function _reset() {
         self::$open = null;
         self::$header = array();
         self::$content = array();
@@ -38,7 +38,7 @@ class Page extends __ {
     }
 
     // Create the page
-    protected static function create() {
+    protected static function _create() {
         $header = "";
         $_ = "\n\n" . SEPARATOR . "\n\n";
         foreach(self::$header as $k => $v) {
@@ -135,21 +135,32 @@ class Page extends __ {
 
     // Open the page file
     public static function open($path) {
-        self::reset();
+        self::_reset();
         self::$open = $path;
-        $_ = "\n" . SEPARATOR . "\n";
-        $text = file_get_contents($path);
-        $s = explode($_, Converter::RN($text) . "\n", 2);
-        $headers = explode("\n", trim($s[0]));
-        foreach($headers as $header) {
-            $field = explode(S, $header, 2);
-            self::$header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : false;
-        }
-        if(isset($s[1])) {
-            $contents = explode($_, trim($s[1]));
-            foreach($contents as $content) {
-                self::$content[] = trim($content);
+        $i = 0;
+        $results = array();
+        $lines = file($path, FILE_IGNORE_NEW_LINES);
+        foreach($lines as $k => $v) {
+            if($i === 0 && $v === "") {
+                continue;
             }
+            if($v === SEPARATOR) {
+                unset($lines[$k]);
+                $i++;
+                continue;
+            }
+            $results[$i][] = $v;
+        }
+        // has header data ...
+        if(isset($results[0])) {
+            foreach($results[0] as $v) {
+                $field = explode(S, $v, 2);
+                self::$header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : "";
+            }
+            unset($results[0]);
+        }
+        foreach(array_values($results) as $k => $v) {
+            self::$content[$k] = trim(implode("\n", $v));
         }
         return new static;
     }
@@ -157,10 +168,10 @@ class Page extends __ {
     // Add page header or update the existing page header data
     public static function header($data = array(), $value = "") {
         if( ! is_array($data)) {
-            $data = array(self::fix($data) => $value);
+            $data = array(self::_x($data) => $value);
         }
         foreach($data as $k => $v) {
-            $kk = self::fix($k);
+            $kk = self::_x($k);
             if($v === false) {
                 unset($data[$kk], self::$header[$kk]);
             } else {
@@ -191,8 +202,8 @@ class Page extends __ {
 
     // Show page data as plain text
     public static function put() {
-        $output = self::create();
-        self::reset();
+        $output = self::_create();
+        self::_reset();
         return $output;
     }
 
@@ -201,15 +212,15 @@ class Page extends __ {
         if($content === false) {
             self::$content = array();
         }
-        $results = self::text(self::create(), $content, $FP);
-        self::reset();
+        $results = self::text(self::_create(), $content, $FP);
+        self::_reset();
         return $results;
     }
 
     // Save the opened page
     public static function save($permission = 0600) {
-        File::write(self::create())->saveTo(self::$open, $permission);
-        self::reset();
+        File::write(self::_create())->saveTo(self::$open, $permission);
+        self::_reset();
     }
 
     // Save the generated page to ...

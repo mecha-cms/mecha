@@ -1258,7 +1258,7 @@ class Get extends __ {
     }
 
     // Handle custom field(s) ...
-    private static function _fields(&$results, $FP) {
+    protected static function _fields(&$results, $FP) {
         // Initialize custom field(s) with the default value(s) so that
         // user(s) don't have to write `isset()` function multiple time(s)
         // just to prevent error message(s) because of the object key(s)

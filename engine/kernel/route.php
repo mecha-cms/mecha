@@ -7,7 +7,7 @@ class Route extends __ {
     public static $routes_over = array();
 
     // Pattern as regular expression
-    protected static function fix($string) {
+    protected static function _x($string) {
         return str_replace(
             array('\(', '\)', '\|', '\:any', '\:num', '\:all', '#'),
             array('(', ')', '|', '[^/]+', '\d+', '.*?', '\#'),
@@ -15,7 +15,7 @@ class Route extends __ {
     }
 
     // Remove the root URL
-    protected static function path($pattern) {
+    protected static function _path($pattern) {
         return trim(str_replace(Config::get('url') . '/', "", $pattern), '/');
     }
 
@@ -149,12 +149,12 @@ class Route extends __ {
 
     public static function reject($pattern) {
         if( ! is_array($pattern)) {
-            $pattern = self::path($pattern);
+            $pattern = self::_path($pattern);
             self::$routes_x[$pattern] = isset(self::$routes[$pattern]) ? self::$routes[$pattern] : 1;
             unset(self::$routes[$pattern]);
         } else {
             foreach($pattern as $p) {
-                $p = self::path($p);
+                $p = self::_path($p);
                 self::$routes_x[$p] = isset(self::$routes[$p]) ? self::$routes[$p] : 1;
                 unset(self::$routes[$p]);
             }
@@ -195,7 +195,7 @@ class Route extends __ {
      */
 
     public static function over($pattern, $fn = null, $stack = null) {
-        $pattern = self::path($pattern);
+        $pattern = self::_path($pattern);
         $stack = ! is_null($stack) ? $stack : 10;
         if( ! isset(self::$routes_over[$pattern])) {
             self::$routes_over[$pattern] = array();
@@ -253,7 +253,7 @@ class Route extends __ {
      */
 
     public static function is($pattern, $fallback = false) {
-        $pattern = self::path($pattern);
+        $pattern = self::_path($pattern);
         $path = Config::get('url_path');
         if(strpos($pattern, '(') === false) {
             return $path === $pattern ? array(
@@ -262,7 +262,7 @@ class Route extends __ {
                 'lot' => array()
             ) : $fallback;
         }
-        if(preg_match('#^' . self::fix($pattern) . '$#', $path, $matches)) {
+        if(preg_match('#^' . self::_x($pattern) . '$#', $path, $matches)) {
             array_shift($matches);
             return array(
                 'pattern' => $pattern,
@@ -292,7 +292,7 @@ class Route extends __ {
 
     public static function execute($pattern = null, $arguments = array()) {
         if( ! is_null($pattern)) {
-            $pattern = self::path($pattern);
+            $pattern = self::_path($pattern);
             if(isset(self::$routes[$pattern])) {
                 call_user_func_array(self::$routes[$pattern]['fn'], $arguments);
             }

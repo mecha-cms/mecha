@@ -56,7 +56,7 @@ class Tree extends __ {
         )
     );
 
-    protected static function create($array, $indent = "", $FP = "", $i = 0) {
+    protected static function _create($array, $indent = "", $FP = "", $i = 0) {
         $c_url = Config::get('url');
         $c_url_current = Config::get('url_current');
         $c_element = self::$config;
@@ -102,7 +102,7 @@ class Tree extends __ {
                 $twig = '<' . $c_element['twig'] . ($c ? ' class="' . $c . '"' : "") . '>';
                 $twig .= NL . $indent . str_repeat(TAB, $i + 2);
                 $twig .= Filter::colon($FP . 'anchor', $_value !== null ? '<a href="' . $url . '">' . $_key . '</a>' : '<span class="a" tabindex="0">' . $_key . '</span>');
-                $twig .= NL . self::create($value, $indent, $FP, $i + 2);
+                $twig .= NL . self::_create($value, $indent, $FP, $i + 2);
                 $twig .= $indent . str_repeat(TAB, $i + 1);
                 $s = explode(' ', $c_element['twig']);
                 $s = $s[0];
@@ -115,7 +115,7 @@ class Tree extends __ {
     }
 
     public static function grow($array = null, $indent = "", $FP = 'tree:') {
-        return O_BEGIN . Filter::colon($FP . 'trunk', rtrim(self::create($array, $indent, $FP, 0), NL)) . O_END;
+        return O_BEGIN . Filter::colon($FP . 'trunk', rtrim(self::_create($array, $indent, $FP, 0), NL)) . O_END;
     }
 
 }

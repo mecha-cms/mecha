@@ -1,7 +1,5 @@
 <?php
 
-$SEPARATOR_x = Text::parse(SEPARATOR, '->ascii');
-
 class Converter extends __ {
 
     /**
@@ -402,14 +400,12 @@ class Converter extends __ {
 
     // Encode the bogus `SEPARATOR`s (internal only)
     public static function ES($text) {
-        global $SEPARATOR_x;
-        return str_replace(SEPARATOR, $SEPARATOR_x, $text);
+        return str_replace(SEPARATOR, Text::parse(SEPARATOR, '->ascii'), $text);
     }
 
     // Decode the encoded bogus `SEPARATOR`s (internal only)
     public static function DS($text) {
-        global $SEPARATOR_x;
-        return str_replace($SEPARATOR_x, SEPARATOR, $text);
+        return str_replace(Text::parse(SEPARATOR, '->ascii'), SEPARATOR, $text);
     }
 
     // Encode white-space(s) (internal only)

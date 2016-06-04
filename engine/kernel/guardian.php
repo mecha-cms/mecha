@@ -57,7 +57,7 @@ class Guardian extends __ {
     public static function ally($user = null, $fallback = false) {
         if($file = File::exist(LOG . DS . 'users.txt')) {
             $ally = array();
-            foreach(explode("\n", file_get_contents($file)) as $str) {
+            foreach(file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $str) {
                 $s = trim($str);
                 // serialized array
                 if(strpos($s, 'a:') === 0) {

@@ -48,9 +48,11 @@ class Image extends __ {
         return $this;
     }
 
-    public function __construct($files, $fallback = false) {
+    public function __construct($files, $fallback = null) {
         if( ! extension_loaded('gd')) {
-            // [PHP GD](http://www.php.net/manual/en/book.image.php "PHP &ndash; Image Processing and GD") extension is not installed on your web server
+            if(is_null($fallback)) {
+                Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');
+            }
             return $fallback;
         }
         if(is_array($files)) {
