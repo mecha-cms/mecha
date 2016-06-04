@@ -7,8 +7,9 @@
  * =================================================================
  */
 
-define('DS', DIRECTORY_SEPARATOR);
 define('MECHA_VERSION', '1.2.7');
+
+define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
 define('CARGO', ROOT . DS . 'lot');
 define('ENGINE', ROOT . DS . 'engine');
@@ -28,6 +29,7 @@ define('WORKER', CARGO . DS . 'workers');
 define('ARTICLE', POST . DS . 'article');
 define('PAGE', POST . DS . 'page');
 define('COMMENT', RESPONSE . DS . 'comment');
+
 define('CHUNK', EXTEND . DS . 'chunk');
 define('CUSTOM', EXTEND . DS . 'custom');
 define('SUBSTANCE', EXTEND . DS . 'substance');
@@ -42,7 +44,7 @@ define('O_END', PHP_EOL); // End HTML output
 
 // Librar(y|ies)
 define('CSS_LIBRARY_PATH', "");
-define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css');
+define('ICON_LIBRARY_PATH', 'maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css');
 define('JS_LIBRARY_PATH', 'cdnjs.cloudflare.com/ajax/libs/zepto/1.1.6/zepto.min.js');
 
 define('FONT_EXT', 'eot,otf,svg,ttf,woff,woff2');
