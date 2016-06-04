@@ -16,7 +16,7 @@
       return File::N($v);
   });
 
-  $types = Mecha::walk(glob($_ . 'fields[]' . DS . '*.php'), function($v) {
+  $types = Mecha::walk(glob($_ . 'fields[[][]]' . DS . '*.php'), function($v) {
       return File::N($v);
   });
 
