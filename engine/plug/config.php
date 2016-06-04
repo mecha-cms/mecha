@@ -23,7 +23,7 @@ Config::plug('load', function() {
     $config['url_scheme'] = ( ! empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443) ? 'https' : 'http';
     $config['url_protocol'] = $config['url_scheme'] . '://';
     $config['url_host'] = $_SERVER['HTTP_HOST'];
-    $config['url_base'] trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
+    $config['url_base'] = trim(File::url(File::D($_SERVER['SCRIPT_NAME'])), '/');
     $config['url_url'] = rtrim($config['url_protocol'] . $config['url_host']  . '/' . $config['url_base'], '/');
     $o = preg_replace('#[<>"]|[?&].*$#', "", trim($_SERVER['QUERY_STRING'], '/')); // Remove HTML tag(s) and query string(s) from URL
     $config['url_path'] = trim(str_replace('/?', '?', $_SERVER['REQUEST_URI']), '/') === $config['url_base'] . '?' . trim($_SERVER['QUERY_STRING'], '/') ? "" : $o;

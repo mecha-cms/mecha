@@ -68,7 +68,7 @@ class Asset extends __ {
 
     // Return the HTML stylesheet of asset
     public static function stylesheet($path, $addon = "", $merge = false) {
-        $path = explode(' ', $path);
+        $path = is_string($path) ? explode(' ', $path) : (array) $path;
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }
@@ -93,7 +93,7 @@ class Asset extends __ {
 
     // Return the HTML javascript of asset
     public static function javascript($path, $addon = "", $merge = false) {
-        $path = explode(' ', $path);
+        $path = is_string($path) ? explode(' ', $path) : (array) $path;
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }
@@ -118,7 +118,7 @@ class Asset extends __ {
 
     // Return the HTML image of asset
     public static function image($path, $addon = "", $merge = false) {
-        $path = explode(' ', $path);
+        $path = is_string($path) ? explode(' ', $path) : (array) $path;
         if($merge !== false) {
             return self::merge($path, $merge, $addon, __FUNCTION__);
         }
