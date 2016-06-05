@@ -1,7 +1,7 @@
 <p>For <code>file</code> field type, limit the allowed file extensions in the <strong>Value</strong> field:</p>
 <pre><code class="no-highlight">gif,bmp,jpeg,jpg,png</code></pre>
 <p>For <code>option</code> and <code>options</code> field type, write some lines of text in the <strong>Value</strong> field as a representation of each option:</p>
-<pre><code class="no-highlight">Option 1
+<pre><code class="yaml">Option 1
 Option 2
 Option 3</code></pre>
 <p>Result:</p>
@@ -14,7 +14,7 @@ Option 3</code></pre>
 &lt;input type="checkbox" value="Option 2"&gt; Option 2
 &lt;input type="checkbox" value="Option 3"&gt; Option 3</code></pre>
 <p>This also acceptable:</p>
-<pre><code class="no-highlight">value_1: Label 1
+<pre><code class="yaml">value_1: Label 1
 value_2: Label 2
 value_3: Label 3</code></pre>
 <p>Result:</p>
@@ -27,7 +27,7 @@ value_3: Label 3</code></pre>
 &lt;input type="checkbox" value="value_2"&gt; Label 2
 &lt;input type="checkbox" value="value_3"&gt; Label 3</code></pre>
 <p>Example as option group:</p>
-<pre><code class="no-highlight">Group 1:
+<pre><code class="yaml">Group 1:
   value_1_1: Label 1.1
   value_1_2: Label 1.2
   value_1_3: Label 1.3

@@ -48,7 +48,7 @@ class Image extends __ {
         return $this;
     }
 
-    public function __construct($files, $fallback = null) {
+    public function __construct($files, $fallback = false) {
         if( ! extension_loaded('gd')) {
             if(is_null($fallback)) {
                 Guardian::abort('<a href="http://www.php.net/manual/en/book.image.php" title="PHP &ndash; Image Processing and GD" rel="nofollow" target="_blank">PHP GD</a> extension is not installed on your web server.');

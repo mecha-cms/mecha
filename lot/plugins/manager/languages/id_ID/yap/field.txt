@@ -1,7 +1,7 @@
 <p>Untuk tipe bidang <code>file</code>, batasi ekstensi berkas yang diperbolehkan untuk diunggah pada bidang <strong>Nilai</strong>:</p>
 <pre><code class="no-highlight">gif,bmp,jpeg,jpg,png</code></pre>
 <p>Untuk tipe bidang <code>option</code> dan <code>options</code>, tulis beberapa baris teks pada bidang <strong>Nilai</strong> sebagai representasi dari setiap pilihan:</p>
-<pre><code class="no-highlight">Opsi 1
+<pre><code class="yaml">Opsi 1
 Opsi 2
 Opsi 3</code></pre>
 <p>Hasil:</p>
@@ -14,7 +14,7 @@ Opsi 3</code></pre>
 &lt;input type="checkbox" value="Opsi 2"&gt; Opsi 2
 &lt;input type="checkbox" value="Opsi 3"&gt; Opsi 3</code></pre>
 <p>Ini juga bisa diterima:</p>
-<pre><code class="no-highlight">nilai_1: Label 1
+<pre><code class="yaml">nilai_1: Label 1
 nilai_2: Label 2
 nilai_3: Label 3</code></pre>
 <p>Hasil:</p>
@@ -27,7 +27,7 @@ nilai_3: Label 3</code></pre>
 &lt;input type="checkbox" value="nilai_2"&gt; Label 2
 &lt;input type="checkbox" value="nilai_3"&gt; Label 3</code></pre>
 <p>Contoh sebagai grup pilihan:</p>
-<pre><code class="no-highlight">Grup 1:
+<pre><code class="yaml">Grup 1:
   nilai_1_1: Label 1.1
   nilai_1_2: Label 1.2
   nilai_1_3: Label 1.3

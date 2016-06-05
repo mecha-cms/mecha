@@ -1,16 +1,16 @@
 <h3>Membuat Menu Sederhana</h3>
-<pre><code class="no-highlight">Beranda: ""
+<pre><code class="yaml">Beranda: ""
 Tentang: tentang
 Kontak: kontak</code></pre>
 <p>Hasil:</p>
 <pre><code class="html">&lt;ul class="parent"&gt;
-  &lt;li&gt;&lt;a href="{{url.home}}"&gt;Beranda&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href="{{url}}tentang"&gt;Tentang&lt;/a&gt;&lt;/li&gt;
-  &lt;li&gt;&lt;a href="{{url}}kontak"&gt;Kontak&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="{{url}}"&gt;Beranda&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="{{url:tentang}}"&gt;Tentang&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;a href="{{url:kontak}}"&gt;Kontak&lt;/a&gt;&lt;/li&gt;
 &lt;/ul&gt;</code></pre>
 <h3>Menu Dropdown</h3>
 <p>Gunakan 4 spasi untuk indentasi.</p>
-<pre><code class="no-highlight">Menu:
+<pre><code class="yaml">Menu:
     Submenu 1: submenu-1
     Submenu 2: submenu-2
     Submenu 3:
@@ -20,19 +20,19 @@ Kontak: kontak</code></pre>
   &lt;li class="ul"&gt;
     &lt;a href="#"&gt;Menu&lt;/a&gt;
     &lt;ul class="child child-1"&gt;
-      &lt;li&gt;&lt;a href="{{url}}submenu-1"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href="{{url}}submenu-2"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url:submenu-1}}"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url:submenu-2}}"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
       &lt;li class="ul"&gt;
         &lt;a href="#"&gt;Submenu 3&lt;/a&gt;
         &lt;ul class="child child-2"&gt;
-          &lt;li&gt;&lt;a href="{{url}}submenu-3-1"&gt;Submenu 3.1&lt;/a&gt;&lt;/li&gt;
+          &lt;li&gt;&lt;a href="{{url:submenu-3-1}}"&gt;Submenu 3.1&lt;/a&gt;&lt;/li&gt;
         &lt;/ul&gt;
       &lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;</code></pre>
 <h3>Menu Induk Aktif</h3>
-<pre><code class="no-highlight">Menu (suatu-tempat):
+<pre><code class="yaml">Menu (suatu-tempat):
     Submenu 1: submenu-1
     Submenu 2: submenu-2</code></pre>
 <p>Hasil:</p>
@@ -40,13 +40,13 @@ Kontak: kontak</code></pre>
   &lt;li class="ul"&gt;
     &lt;a href="{{url}}suatu-tempat"&gt;Menu&lt;/a&gt;
     &lt;ul class="child child-1"&gt;
-      &lt;li&gt;&lt;a href="{{url}}submenu-1"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
-      &lt;li&gt;&lt;a href="{{url}}submenu-2"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url:submenu-1}}"&gt;Submenu 1&lt;/a&gt;&lt;/li&gt;
+      &lt;li&gt;&lt;a href="{{url:submenu-2}}"&gt;Submenu 2&lt;/a&gt;&lt;/li&gt;
     &lt;/ul&gt;
   &lt;/li&gt;
 &lt;/ul&gt;</code></pre>
 <h3>Tautan Eksternal</h3>
-<pre><code class="no-highlight">Menu: http://example.org</code></pre>
+<pre><code class="yaml">Menu: http://example.org</code></pre>
 <p>Hasil:</p>
 <pre><code class="html">&lt;ul class="parent"&gt;
   &lt;li&gt;&lt;a href="http://example.org"&gt;Menu&lt;/a&gt;&lt;/li&gt;

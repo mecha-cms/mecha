@@ -142,12 +142,12 @@ Text::parser('to_text', function($input, $tags = "", $no_break = true) {
             '#-{3}#',
             '#-#',
             '#\s+#',
-            '#\x1A#'
+            '#' . X . '#'
         ),
         array(
             "",
-            " \x1A ",
-            "\x1A",
+            ' ' . X . ' ',
+            X,
             ' ',
             ' ',
             '-'

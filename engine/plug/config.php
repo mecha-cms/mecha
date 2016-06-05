@@ -64,11 +64,11 @@ Config::plug('load', function() {
     $path = $config['url_path'];
     $s = explode('/', $path);
     if($path === "") $page = ""; // home page
-    if($path !== "" && strpos($path, '/') === false && strpos(implode("\x1A", $ss['page'][1]), '_' . $path . '.') !== false) $page = 'page';
+    if($path !== "" && strpos($path, '/') === false && strpos(implode(X, $ss['page'][1]), '_' . $path . '.') !== false) $page = 'page';
     if($path === $config['index']['slug']) $page = 'index';
     if($s[0] === $config['index']['slug'] && isset($s[1])) {
         if( ! is_numeric($s[1])) {
-            $page = strpos(implode("\x1A", $ss['article'][1]), '_' . $s[1] . '.') !== false ? 'article' : '404';
+            $page = strpos(implode(X, $ss['article'][1]), '_' . $s[1] . '.') !== false ? 'article' : '404';
         } else {
             $page = 'index';
         }

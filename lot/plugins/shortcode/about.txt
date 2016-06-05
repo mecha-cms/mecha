@@ -1,0 +1,34 @@
+Title: Shortcode
+Author: Taufik Nurrohman
+URL: http://mecha-cms.com
+Version: 1.0.0
+
+====
+
+> The default _shortcodes_.
+
+Stand–alone:
+
+ - ``{{url}}``
+ - ``{{url.current}}``
+ - ``{{url.index}}``
+ - ``{{url.article}}``
+ - ``{{url.page}}``
+ - ``{{url.tag}}``
+ - ``{{url.archive}}``
+ - ``{{url.search}}``
+ - ``{{url.manager}}``
+ - ``{{asset}}``
+
+With parameter:
+
+ - ``{{url:foo}}``
+ - ``{{url.current:foo}}``
+ - ``{{url.index:foo}}``
+ - ``{{url.article:foo}}``
+ - ``{{url.page:foo}}``
+ - ``{{url.tag:foo}}``
+ - ``{{url.archive:foo}}``
+ - ``{{url.search:foo}}``
+ - ``{{url.manager:foo}}``
+ - ``{{asset:foo.jpg}}``

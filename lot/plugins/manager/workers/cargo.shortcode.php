@@ -5,7 +5,7 @@
     <thead>
       <tr>
         <th class="th-icon"><?php echo Jot::icon('sort'); ?></th>
-        <th><?php echo $speak->key; ?></th>
+        <th><?php echo $speak->pattern; ?></th>
         <th><?php echo $speak->value; ?></th>
       </tr>
     </thead>
@@ -20,7 +20,7 @@
         )); ?>
         </td>
         <td class="align-middle">
-        <?php echo Form::text('value[]', Converter::toText($value), null, array(
+        <?php echo Form::text('value[]', $value, null, array(
             'class' => 'input-block'
         )); ?>
         </td>

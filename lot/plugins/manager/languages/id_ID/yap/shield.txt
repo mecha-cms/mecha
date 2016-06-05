@@ -7,4 +7,4 @@
     ├── file-4.txt
     └── …</code></pre>
 <p>Anda perlu menambahkan sebuah folder akar untuk membungkus berkas-berkas tameng Anda, dan kemudian Anda perlu menamai berkas <code>ZIP</code> tersebut dengan nama yang sama seperti nama folder tersebut.</p>
-<p>Setelah itu, Anda dapat mengaktifkan tameng melalui <a href="{{url.manager}}config" title="Konfigurasi">manajer konfigurasi</a> atau dengan menekan tombol <strong>Pasang</strong>.</p>
+<p>Setelah itu, Anda dapat mengaktifkan tameng melalui <a href="{{url.manager:config}}" title="Konfigurasi">manajer konfigurasi</a> atau dengan menekan tombol <strong>Pasang</strong>.</p>

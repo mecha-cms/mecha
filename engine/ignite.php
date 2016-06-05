@@ -279,11 +279,22 @@ foreach(Get::state_menu() as $key => $value) {
 function do_shortcode($content) {
     if(strpos($content, '{{') === false) return $content;
     foreach(Get::state_shortcode() as $key => $value) {
-        $key = preg_quote($key, '#');
-        // %[a,b,c]: option(s) ... accept `a`, `b`, or `c`
+        $fn = substr($value, 1);
+        $fn = strpos($value, '~') === 0 && function_exists($fn) ? $fn : false;
+        // No wildcard, be quick!
+        if(strpos($key, '%') === false) {
+            if($fn) {
+                $value = call_user_func($fn, array($key));
+            }
+            $content = str_replace($key, $value, $content);
+            continue;
+        }
+        $key = preg_quote(str_replace('\\%', '&#37;', $key), '#');
+        // %[a,b,c,d\,e]: option(s) ... accept `a`, `b`, `c` or `d,e`
         if(strpos($key, '%\\[') !== false) {
             $key = preg_replace_callback('#%\\\\\[(.*?)\\\\\]#', function($matches) {
-                return '(' . str_replace(array(',', '&\\#44;'), array('|', ','), $matches[1]) . ')';
+                $s = '&\\#44;';
+                return '(' . str_replace(array('\\,', ',', $s), array($s, '|', ','), $matches[1]) . ')';
             }, $key);
         }
         // %s: accept any value(s) without line break(s)
@@ -292,18 +303,28 @@ function do_shortcode($content) {
         // %f: accept float number(s)
         // %b: accept boolean value(s)
         $key = str_replace(
-            array('%s', '%m', '%i', '%f', '%b'),
-            array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b'),
+            array('%s', '%m', '%i', '%f', '%b', '&\\#37;'),
+            array('(.+?)', '([\s\S]+?)', '(\d+?)', '((?:\d*\.)?\d+?)', '\b(TRUE|FALSE|YES|NO|Y|N|ON|OFF|true|false|yes|no|y|n|on|off|1|0|\+|\-)\b', '%'),
         $key);
-        $content = preg_replace('#(?<!`)' . $key . '|' . $key . '(?!`)#', Converter::DW($value), $content);
+        if($fn) {
+            $content = preg_replace_callback('#' . $key . '#', $fn, $content);
+        } else {
+            $content = preg_replace('#' . $key . '#', $value, $content);
+        }
     }
     return $content;
 }
 
 function do_shortcode_x($content) {
     if(strpos($content, '`{{') === false) return $content;
-    return str_replace(array('`{{', '}}`'), array('{{', '}}'), $content);
+    return preg_replace('#`\{\{(.+?)\}\}`#', X . '&#123;&#123;$1&#125;&#125;' . X, $content);
+}
+
+function do_shortcode_v($content) {
+    if(strpos($content, X . '&#123;&#123;') === false) return $content;
+    return str_replace(array(X . '&#123;&#123;', '&#125;&#125;' . X), array('{{', '}}'), $content);
 }
 
 Filter::add('shortcode', 'do_shortcode', 20);
-Filter::add(array('content', 'message'), 'do_shortcode_x', 0);
+Filter::add('shortcode', 'do_shortcode_x', 0);
+Filter::add(array('content', 'message'), 'do_shortcode_v', 0);

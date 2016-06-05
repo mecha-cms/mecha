@@ -41,6 +41,7 @@ define('TAB', '  '); // Standard indentation on the page
 define('NL', PHP_EOL); // New line character of HTML output
 define('O_BEGIN', ""); // Begin HTML output
 define('O_END', PHP_EOL); // End HTML output
+define('X', "\x1A"); // Placeholder text (internal only)
 
 // Librar(y|ies)
 define('CSS_LIBRARY_PATH', "");

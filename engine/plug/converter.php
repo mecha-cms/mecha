@@ -90,7 +90,7 @@ Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n")
     // Normalize line-break
     $text = Converter::RN($input, $n);
     // Save `\:` as `\x1A`
-    $text = str_replace('\\' . $s, "\x1A", $text);
+    $text = str_replace('\\' . $s, X, $text);
     if(strpos($indent, "\t") === false) {
         // Force translate 1 tab to 4 space
         $text = Converter::TS($text);
@@ -133,7 +133,7 @@ Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n")
             }
         }
         // Restore `\x1A` as `:`
-        $data[$depth] = str_replace("\x1A", $s, trim($part[0]));
+        $data[$depth] = str_replace(X, $s, trim($part[0]));
         $parent =& $results;
         foreach($data as $k) {
             if( ! isset($parent[$k])) {
@@ -192,7 +192,7 @@ Converter::plug('detractSkeleton', function($input) {
             '#(<!--.*?-->)|(<[^\/]*?>)\s+(<[^\/]*?>)|(<\/.*?>)\s+(<\/.*?>)#s', // o+o || c+c
             '#(<!--.*?-->)|(<\/.*?>)\s+(\s)(?!\<)|(?<!\>)\s+(\s)(<[^\/]*?\/?>)|(<[^\/]*?\/?>)\s+(\s)(?!\<)#s', // c+t || t+o || o+t -- separated by long white-space(s)
             '#(<!--.*?-->)|(<[^\/]*?>)\s+(<\/.*?>)#s', // empty tag
-            '#<(img|input)(>| .*?>)<\/\1\x1A>#s', // reset previous fix
+            '#<(img|input)(>| .*?>)<\/\1' . X . '>#s', // reset previous fix
             '#(&nbsp;)&nbsp;(?![<\s])#', // clean up ...
             // Force line-break with `&#10;` or `&#xA;`
             '#&\#(?:10|xA);#i',
@@ -202,7 +202,7 @@ Converter::plug('detractSkeleton', function($input) {
             '#\s*<!--(?!\[if\s).*?-->\s*|(?<!\>)\n+(?=\<[^!])#s'
         ),
         array(
-            "<$1$2</$1\x1A>",
+            '<$1$2</$1' . X . '>',
             '$1$2$3',
             '$1$2$3',
             '$1$2$3$4$5',
@@ -245,7 +245,7 @@ Converter::plug('detractShell', function($input) {
     // Force white-space(s) in `calc()`
     if(strpos($input, 'calc(') !== false) {
         $input = preg_replace_callback('#(?<=[\s:])calc\(\s*(.*?)\s*\)#', function($matches) {
-            return 'calc(' . preg_replace('#\s+#', "\x1A", $matches[1]) . ')';
+            return 'calc(' . preg_replace('#\s+#', X, $matches[1]) . ')';
         }, $input);
     }
     return preg_replace(
@@ -271,7 +271,7 @@ Converter::plug('detractShell', function($input) {
             '#(?<=[\{;])(border|outline):none(?=[;\}\!])#',
             // Remove empty selector(s)
             '#(\/\*(?>.*?\*\/))|(^|[\{\}])(?:[^\s\{\}]+)\{\}#s',
-            '#\x1A#'
+            '#' . X . '#'
         ),
         array(
             '$1',
