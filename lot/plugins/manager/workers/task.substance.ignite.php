@@ -1,7 +1,5 @@
 <?php
 
-// Take file extension(s) data internally
-$field_d = Get::state_field(null, array(), true);
 if(isset($_FILES) && ! empty($_FILES)) {
     $accept = File::$config['file_extension_allow'];
     foreach($_FILES as $k => $v) {

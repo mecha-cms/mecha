@@ -102,7 +102,6 @@ Route::accept(array($config->manager->slug . '/(' . $response . ')/ignite', $con
         $url = isset($request['url']) && trim($request['url']) !== "" ? $request['url'] : false;
         $message = $request['message'];
         $field = Request::post('fields', array());
-        include __DIR__ . DS . 'task.substance.ignite.php';
         include __DIR__ . DS . 'task.fields.php';
         // Empty name field
         if(trim($name) === "") {
@@ -171,7 +170,9 @@ Route::accept($config->manager->slug . '/(' . $response . ')/kill/id:(:num)', fu
         File::open($response->path)->delete();
         $post_o = $post;
         $post = $response;
-        include __DIR__ . DS . 'task.substance.kill.php';
+        // Do not remove substance data on response destruct
+        // because different response(s) may refer to the same substance
+        // include __DIR__ . DS . 'task.substance.kill.php';
         $post = $post_o;
         File::write($config->{'__total_' . $segment . 's'} - 1)->saveTo(LOG . DS . $segment . 's.total.log', 0600);
         Notify::success(Config::speak('notify_success_deleted', $speak->{$segment}));

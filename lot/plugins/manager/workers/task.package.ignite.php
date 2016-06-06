@@ -1,8 +1,9 @@
 <?php
 
-$name = $_FILES['file']['name'];
-$mime = $_FILES['file']['type'];
-$extension = File::E($name);
+$name = $_FILES['file']['name']; // set `$name` variable
+$mime = $_FILES['file']['type']; // set `$mime` variable
+$extension = File::E($name); // set `$extension` variable
+$extension_accept = array('zip');
 $mime_accept = array(
     'application/download',
     'application/octet-stream',
@@ -11,8 +12,7 @@ $mime_accept = array(
     'application/zip',
     'multipart/x-zip'
 );
-$extension_accept = array('zip');
-$path = File::N($name);
+$path = File::N($name); // set `$path` variable
 if( ! empty($name)) {
     if(File::exist($destination . DS . $path)) {
         Notify::error(Config::speak('notify_folder_exist', '<code>' . $path . '</code>'));

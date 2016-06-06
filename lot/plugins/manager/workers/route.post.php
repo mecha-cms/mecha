@@ -173,7 +173,6 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
         $request['path'] = $_;
         $P = array('data' => $request);
         if( ! Notify::errors()) {
-            include __DIR__ . DS . 'task.substance.ignite.php';
             include __DIR__ . DS . 'task.fields.php';
             $header = array(
                 'Title' => $title,
@@ -261,7 +260,9 @@ Route::accept($config->manager->slug . '/(' . $post . ')/kill/id:(:num)', functi
             }
         }
         $P = array('data' => $request);
-        include __DIR__ . DS . 'task.substance.kill.php';
+        // Do not remove substance data on post destruct
+        // because different post(s) may refer to the same substance
+        // include __DIR__ . DS . 'task.substance.kill.php';
         // Deleting custom CSS and JavaScript file of post ...
         File::open(CUSTOM . DS . Date::slug($id) . '.txt')->delete();
         File::open(CUSTOM . DS . Date::slug($id) . '.draft')->delete();

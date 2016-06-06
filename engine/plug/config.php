@@ -31,14 +31,14 @@ Config::plug('load', function() {
     $config['url_origin'] = Session::get('cookie:url_origin', false);
 
     // Alias(es)
-    $config['scheme'] =& $config['url_scheme'];
-    $config['protocol'] =& $config['url_protocol'];
-    $config['host'] =& $config['url_host'];
-    $config['base'] =& $config['url_base'];
-    $config['url'] =& $config['url_url'];
-    $config['path'] =& $config['url_path'];
-    $config['current'] =& $config['url_current'];
-    $config['origin'] =& $config['url_origin'];
+    $config['scheme'] = $config['url_scheme'];
+    $config['protocol'] = $config['url_protocol'];
+    $config['host'] = $config['url_host'];
+    $config['base'] = $config['url_base'];
+    $config['url'] = $config['url_url'];
+    $config['path'] = $config['url_path'];
+    $config['current'] = $config['url_current'];
+    $config['origin'] = $config['url_origin'];
 
     // Default(s)
     $config['page_title'] = $config['title'];

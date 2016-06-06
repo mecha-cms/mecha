@@ -26,8 +26,14 @@ Route::accept(array($config->manager->slug . '/shield', $config->manager->slug .
             });
             $P = array('data' => $_FILES);
             Weapon::fire(array('on_shield_update', 'on_shield_construct'), array($P, $P));
-            $segment = 'shield/' . $path;
-            include __DIR__ . DS . 'task.package.php';
+            if($package = File::exist($destination . DS . $name)) {
+                if(is_file($package)) {
+                    Package::take($package)->extract(); // Extract the ZIP file
+                    File::open($package)->delete(); // Delete the ZIP file
+                    Config::load(); // Refresh the configuration data ...
+                    Guardian::kick($config->manager->slug . '/shield/' . $path);
+                }
+            }
         } else {
             $tab_id = 'tab-content-2';
             include __DIR__ . DS . 'task.js.tab.php';

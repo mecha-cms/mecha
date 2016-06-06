@@ -2,6 +2,7 @@
 
 // Take validation data internally
 $field_d = Get::state_field(null, array(), true);
+include __DIR__ . DS . 'task.substance.ignite.php';
 foreach($field as $k => $v) {
     // Force validate input with `parser` property
     if(isset($field_d[$k]['parser']) && is_callable($field_d[$k]['parser'])) {

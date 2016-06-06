@@ -33,12 +33,18 @@ class Asset extends __ {
         $config = Config::get();
         // External URL, nothing to check!
         if(strpos($path, '://') !== false || strpos($path, '//') === 0) {
-            // Fix condition where user(s) use `$config->protocol . '://example.com'` instead of `$config->scheme . '://example.com'`
+            // Fix broken external URL `http://://example.com`
             $path = str_replace('://://', '://', $path);
-            // Fix condition where user(s) use `$config->protocol . '//example.com'` instead of `$config->protocol . 'example.com'`
+            // Fix broken external URL `http:////example.com`
             $path = str_replace(':////', '://', $path);
+            // Fix broken external URL `http:example.com`
+            if(strpos($path, $config->scheme . ':') === 0 && strpos($path, $config->protocol) !== 0) {
+                $path = str_replace('^' . $config->scheme . ':', $config->protocol, '^' . $path);
+            }
+            // Check if URL very external ...
             if(strpos($path, $config->url) !== 0) return $path;
         }
+        // ... else, try parse it into private asset path
         $path = File::path($path);
         // Full path, be quick!
         if(strpos($path, ROOT) === 0) {
