@@ -6,7 +6,7 @@ include __DIR__ . DS . 'task.substance.ignite.php';
 foreach($field as $k => $v) {
     // Force validate input with `parser` property
     if(isset($field_d[$k]['parser']) && is_callable($field_d[$k]['parser'])) {
-        $v = call_user_func($field_d[$k]['parser'], $v);
+        $field[$k] = $v = call_user_func($field_d[$k]['parser'], $v);
     }
     // Backend validation support(s) for HTML5 `pattern` and `required` attribute
     $attrs = $field_d[$k]['attributes'];
@@ -18,7 +18,7 @@ foreach($field as $k => $v) {
         }
     } else {
         if( ! empty($attrs['pattern'])) {
-            $s = preg_replace('/(?<!\\\)#/', '\\#', $attrs['pattern']);
+            $s = preg_replace('%(?<!\\\)#%', '\\#', $attrs['pattern']);
             if( ! preg_match('#^' . $s . '$#', $v)) {
                 Notify::error(Config::speak('notify_invalid_format', array($tt, '<code>' . $s . '</code>')));
             }

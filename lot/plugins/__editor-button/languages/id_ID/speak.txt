@@ -10,7 +10,7 @@ MTE:
       0: Singkatan/Definisi
       1: ⌘+?
   placeholders:
-    table_text: <table border="1">\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Judul Tabel 1</th>\n\t\t\t<th>Judul Tabel 2</th>\n\t\t</tr>\n\t</thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 1.1</td>\n\t\t\t<td>Sel Tabel 1.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 2.1</td>\n\t\t\t<td>Sel Tabel 2.2</td>\n\t\t</tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 3.1</td>\n\t\t\t<td>Sel Tabel 3.2</td>\n\t\t</tr>\n\t</tbody>\n</table>
+    table_text: "<table border=\"1\">\n\t<thead>\n\t\t<tr>\n\t\t\t<th>Judul Tabel 1<\/th>\n\t\t\t<th>Judul Tabel 2<\/th>\n\t\t<\/tr>\n\t<\/thead>\n\t<tbody>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 1.1<\/td>\n\t\t\t<td>Sel Tabel 1.2<\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 2.1<\/td>\n\t\t\t<td>Sel Tabel 2.2<\/td>\n\t\t<\/tr>\n\t\t<tr>\n\t\t\t<td>Sel Tabel 3.1<\/td>\n\t\t\t<td>Sel Tabel 3.2<\/td>\n\t\t<\/tr>\n\t<\/tbody>\n<\/table>"
   prompts:
     abbr_title_title: Singkatan
     dfn_title_title: Definisi

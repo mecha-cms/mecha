@@ -12,10 +12,10 @@ if(isset($_FILES) && ! empty($_FILES)) {
             if($e = File::E($name, false)) {
                 $name = $e . DS . $name;
             }
-            // File already exists. Don't overwrite and don't show the error message
+            // File already exists. Don't over-write and don't show the error message
             if(file_exists(SUBSTANCE . DS . $name)) {
                 $field[$k] = File::url($name_o);
-                Notify::info(Config::speak('notify_file_exist', '<code>' . $name . '</code>'));
+                Notify::info(Config::speak('notify_file_exist', '<code>' . $name_o . '</code>'));
             // Upload new file
             } else {
                 File::upload($v, SUBSTANCE . DS . File::D($name));

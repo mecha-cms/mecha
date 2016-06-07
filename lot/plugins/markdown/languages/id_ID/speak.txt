@@ -9,7 +9,7 @@ __MTE:
     info:
       0: Singkatan
   placeholders:
-    table_text: Judul Tabel 1 | Judul Tabel 2\n------------- | -------------\nSel Tabel 1.1 | Sel Tabel 1.2\nSel Tabel 2.1 | Sel Tabel 2.2\nSel Tabel 3.1 | Sel Tabel 3.2
+    table_text: "Judul Tabel 1 | Judul Tabel 2\n------------- | -------------\nSel Tabel 1.1 | Sel Tabel 1.2\nSel Tabel 2.1 | Sel Tabel 2.2\nSel Tabel 3.1 | Sel Tabel 3.2"
   prompts:
     image_title: judul gambar di sini…
     image_title_title: Judul Gambar

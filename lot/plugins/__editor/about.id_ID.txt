@@ -1,7 +1,7 @@
 Title: Editor Teks
 Author: Taufik Nurrohman
 URL: http://mecha-cms.com
-Version: 1.0.3
+Version: 1.0.4
 
 ====
 

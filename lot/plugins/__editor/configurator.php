@@ -3,8 +3,8 @@
   <legend><?php echo $speak->plugin_editor->title->toolbars; ?></legend>
   <div class="p">
     <?php foreach($speak->MTE->buttons as $kk => $vv): ?>
-    <?php if(is_object($vv)) $vv = reset($vv); ?>
-    <div><?php echo Form::checkbox('buttons[' . $kk . ']', 1, ! isset($c_editor->buttons->{$kk}) || $c_editor->buttons->{$kk} === 1, sprintf($speak->plugin_editor->title->is__button_active, $vv)); ?></div>
+    <?php $vv = (array) $vv; ?>
+    <div><?php echo Form::checkbox('buttons[' . $kk . ']', 1, ! isset($c_editor->buttons->{$kk}) || $c_editor->buttons->{$kk} === 1, sprintf($speak->plugin_editor->title->is__button_active, $vv[0])); ?></div>
     <?php endforeach; ?>
   </div>
 </fieldset>
