@@ -126,6 +126,11 @@ class Image extends __ {
         return $this->saveTo(File::D($this->origin) . DS . sprintf($name, time()));
     }
 
+    // Save anyway ...
+    public function save() {
+        return $this->saveTo($this->origin);
+    }
+
     /**
      * ====================================================================
      *  OUTPUT THE MANIPULATED IMAGE INTO BROWSER
