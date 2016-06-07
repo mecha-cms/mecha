@@ -1226,8 +1226,10 @@ class Get extends __ {
         $results_v = array();
         foreach(array_unique($results) as $url) {
             $url = Converter::url($url);
+            // internal image(s)
             if(strpos($url, $config->url) === 0 && file_exists(File::path($url))) {
                 $results_v[] = $url;
+            // external image(s)
             } else if(strpos($url, '://') !== false) {
                 $results_v[] = $url;
             }

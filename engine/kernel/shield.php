@@ -4,6 +4,17 @@ class Shield extends __ {
 
     protected static $lot = array();
 
+    // Compare with current version
+    public static function version($info, $v = null) {
+        if(is_string($info)) {
+            $info = self::info($info)->version;
+        } else {
+            $info = (object) $info;
+            $info = $info->version;
+        }
+        return Mecha::version($v, $info);
+    }
+
     /**
      * Default Shortcut Variable(s)
      * ----------------------------
@@ -140,14 +151,13 @@ class Shield extends __ {
         if( ! $info = File::exist(SHIELD . DS . $folder . DS . 'about.' . $config->language . '.txt')) {
             $info = SHIELD . DS . $folder . DS . 'about.txt';
         }
-        $d = 'Title' . S . ' ' . Text::parse($folder, '->title') . "\n" .
-             'Author' . S . ' ' . $speak->anon . "\n" .
-             'URL' . S . ' #' . "\n" .
-             'Version' . S . ' 0.0.0' . "\n" .
-             "\n" . SEPARATOR . "\n" .
-             "\n" . Config::speak('notify_not_available', $speak->description);
-        $info = Page::text(File::open($info)->read($d), 'content', 'shield:', array(
-            'id' => self::exist($folder) ? $folder : false
+        $info = Page::text(File::open($info)->read(), 'content', 'shield:', array(
+            'id' => self::exist($folder) ? $folder : false,
+            'title' => Text::parse($folder, '->title'),
+            'author' => $speak->anon,
+            'url' => '#',
+            'version' => '0.0.0',
+            'content' => Config::speak('notify_not_available', $speak->description)
         ));
         return $array ? $info : Mecha::O($info);
     }

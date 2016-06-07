@@ -105,7 +105,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             $_ = $request['link'];
             // Allow relative URL protocol
             if(strpos($_, '//') === 0) {
-                $_ = str_replace('://', ':', $config->protocol) . $_;
+                $_ = $config->scheme . ':' . $_;
             }
             if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);
@@ -122,7 +122,7 @@ Route::accept(array($config->manager->slug . '/(' . $post . ')/ignite', $config-
             $slug = Text::parse($title, '->slug');
             // Allow relative URL protocol
             if(strpos($_, '//') === 0) {
-                $_ = str_replace('://', ':', $config->protocol) . $_;
+                $_ = $config->scheme . ':' . $_;
             }
             if( ! Guardian::check($_, '->url')) {
                 Notify::error($speak->notify_invalid_url);

@@ -4,21 +4,22 @@ function do_shortcode_url($data) {
     global $config;
     $s1 = isset($data[1]) ? $data[1] : "";
     $s1 = $s1 && (strpos($s1, '?') !== 0 && strpos($s1, '&') !== 0 && strpos($s1, '#') !== 0) ? '/' . ltrim($s1, '/') : $s1;
-    return $s1 === '/"' ? $config->url . '"' : $config->url . $s1;
+    $s = substr($s1, -2);
+    return strlen($s) === 2 && strpos('/\'/"/`', $s) !== false ? $config->url . $s[1] : $config->url . $s1;
 }
 
 function do_shortcode_url_($data) {
     global $config;
     $c = Get::state_config($data[1]);
+    $s1 = "";
     if(isset($data[1])) {
         $s1 = isset($c['slug']) ? $c['slug'] : $data[1];
-    } else {
-        $s1 = "";
     }
     $s2 = isset($data[2]) ? $data[2] : "";
     $s1 = $s1 ? '/' . ltrim($s1, '/') : "";
     $s2 = $s2 && (strpos($s2, '?') !== 0 && strpos($s2, '&') !== 0 && strpos($s2, '#') !== 0) ? '/' . ltrim($s2, '/') : $s2;
-    return $s2 === '/"' ? $config->url . $s1 . '"' : $config->url . $s1 . $s2;
+    $s = substr($s2, -2);
+    return strlen($s) === 2 && strpos('/\'/"/`', $s) !== false ? $config->url . $s1 . $s[1] : $config->url . $s1 . $s2;
 }
 
 function do_shortcode_url_article($data) {
@@ -35,7 +36,8 @@ function do_shortcode_url_current($data) {
     global $config;
     $s1 = isset($data[1]) ? $data[1] : "";
     $s1 = $s1 && (strpos($s1, '?') !== 0 && strpos($s1, '&') !== 0 && strpos($s1, '#') !== 0) ? '/' . ltrim($s1, '/') : $s1;
-    return $s1 === '/"' ? $config->url_current . '"' : $config->url_current . $s1;
+    $s = substr($s1, -2);
+    return strlen($s) === 2 && strpos('/\'/"/`', $s) !== false ? $config->url_current . $s[1] : $config->url_current . $s1;
 }
 
 function do_shortcode_asset($data) {

@@ -24,6 +24,14 @@ class Mecha extends __ {
         return $this;
     }
 
+    // Compare with current version
+    public static function version($v = null, $current = MECHA_VERSION) {
+        if(is_null($v)) return $current;
+        $v = explode(' ', $v);
+        if(count($v) === 1) array_unshift($v, '=');
+        return version_compare($current, $v[1], $v[0]);
+    }
+
     // Prevent `$e` exceeds the value of `$min` and `$max`
     public static function edge($e, $min = 0, $max = 9999) {
         if($e < $min) $e = $min;
@@ -309,7 +317,7 @@ class Mecha extends __ {
             $index = null;
         }
         $chunk = array_chunk($this->stomach, $count, true);
-        // `1`-based index with `chunk($index)`
+        // `1`-based index with `chunk($index, $size)`
         // `Mecha::eat($foo)->chunk(2, 25)->vomit()`
         if( ! is_null($index)) {
             $chunk = isset($chunk[$index - 1]) ? $chunk[$index - 1] : false;

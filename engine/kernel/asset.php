@@ -32,14 +32,14 @@ class Asset extends __ {
     public static function path($path, $fallback = false) {
         $config = Config::get();
         // External URL, nothing to check!
-        if(strpos($path, '://') !== false || strpos($path, '//') === 0) {
+        if(strpos($path, '://') !== false || strpos($path, '//') === 0 || strpos($path, ':') !== false) {
             // Fix broken external URL `http://://example.com`
             $path = str_replace('://://', '://', $path);
             // Fix broken external URL `http:////example.com`
             $path = str_replace(':////', '://', $path);
             // Fix broken external URL `http:example.com`
             if(strpos($path, $config->scheme . ':') === 0 && strpos($path, $config->protocol) !== 0) {
-                $path = str_replace('^' . $config->scheme . ':', $config->protocol, '^' . $path);
+                $path = str_replace(X . $config->scheme . ':', $config->protocol, X . $path);
             }
             // Check if URL very external ...
             if(strpos($path, $config->url) !== 0) return $path;
