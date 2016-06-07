@@ -30,6 +30,11 @@ Route::accept(array($config->manager->slug . '/asset', $config->manager->slug . 
         if(isset($request['folder'])) {
             if(trim($request['folder']) !== "") {
                 $folder = Text::parse(File::path($request['folder']), '->safe_path_name');
+                // Disallow path traversal
+                if(strpos(DS . $folder . DS, DS . '..' . DS) !== false) {
+                    $folder = trim(str_replace(DS . '..' . DS, DS, DS . $folder . DS), DS);
+                    Notify::error(Config::speak('notify_invalid_format', array($speak->folder, '<code>' . $folder . '</code>')));
+                }
                 if(File::exist($d . DS . $folder)) {
                     Notify::error(Config::speak('notify_folder_exist', '<code>' . $folder . '</code>'));
                 }
