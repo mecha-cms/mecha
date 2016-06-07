@@ -1,5 +1,21 @@
 <?php
 
+function make_directory($path, $permission) {
+    if( ! is_dir($path)) {
+        mkdir($path, $permission, true);
+    } else {
+        change_mode($path, $permission);
+    }
+}
+
+function change_mode($path, $permission) {
+    if(file_exists($path)) chmod($path, $permission);
+}
+
+function delete_file($path) {
+    unlink($path);
+}
+
 define('ROOT', rtrim(__DIR__, '\\/'));
 define('DS', DIRECTORY_SEPARATOR);
 
@@ -30,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
     if(trim($_POST['user']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
     if(trim($_POST['pass']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['user']) === "" ? ' too' : "") . '.</p>';
-    if(trim($_POST['user']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['user'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
-    if(trim($_POST['pass']) !== "" && preg_match('#[^a-z0-9\-\_]#i', $_POST['pass'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>-</code> and <code>_</code>.</p>';
+    if(trim($_POST['user']) !== "" && preg_match('#[^\w-]#i', $_POST['user'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
+    if(trim($_POST['pass']) !== "" && preg_match('#[^\w-]#i', $_POST['pass'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 
@@ -40,25 +56,25 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
         unset($_POST['token']);
         $_POST['status'] = 1;
         if( ! file_exists($user_file)) file_put_contents($user_file, json_encode($_POST));
-        $_SESSION['message'] = '<div class="messages p cl cf"><p class="message message-success cl cf"><i class="fa fa-thumbs-up"></i> You can start login now.</p><p class="message message-info cl cf code"><strong>Username:</strong> ' . $_POST['user'] . '<br><strong>Password:</strong> ' . $_POST['pass'] . '</p></div>';
+        $_SESSION['message'] = '<div class="messages p cl cf"><p class="message message-success cl cf"><i class="fa fa-thumbs-up"></i> You can start login now.</p><p class="message message-info cl cf code"><strong>User:</strong> ' . $_POST['user'] . '<br><strong>Pass:</strong> ' . $_POST['pass'] . '</p></div>';
         unset($_SESSION['meet_mecha']);
         unset($_SESSION['token']);
-        chmod(ROOT . DS . 'lot' . DS . 'assets', 0777);
-        chmod(ROOT . DS . 'lot' . DS . 'extends', 0766);
-        chmod(ROOT . DS . 'lot' . DS . 'extends' . DS . 'chunk', 0766);
-        mkdir(ROOT . DS . 'lot' . DS . 'extends' . DS . 'custom', 0766, true);
-        mkdir(ROOT . DS . 'lot' . DS . 'extends' . DS . 'substance', 0777, true);
-        chmod(ROOT . DS . 'lot' . DS . 'plugins', 0777);
-        mkdir(ROOT . DS . 'lot' . DS . 'posts' . DS . 'article', 0766, true);
-        mkdir(ROOT . DS . 'lot' . DS . 'posts' . DS . 'page', 0766, true);
-        mkdir(ROOT . DS . 'lot' . DS . 'responses' . DS . 'comment', 0766, true);
-        mkdir(ROOT . DS . 'lot' . DS . 'scraps', 0766, true);
-        chmod(ROOT . DS . 'lot' . DS . 'shields', 0777);
-        mkdir(ROOT . DS . 'lot' . DS . 'states', 0766, true);
-        chmod(ROOT . DS . 'lot' . DS . 'workers', 0766);
-        chmod(ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt', 0600);
-        unlink(ROOT . DS . 'engine' . DS . 'plug' . DS . '__.php');
-        unlink(__FILE__); // self destruct ...
+        make_directory(ROOT . DS . 'lot' . DS . 'assets', 0777);
+        make_directory(ROOT . DS . 'lot' . DS . 'extends', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'extends' . DS . 'chunk', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'extends' . DS . 'custom', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'extends' . DS . 'substance', 0777);
+        make_directory(ROOT . DS . 'lot' . DS . 'plugins', 0777);
+        make_directory(ROOT . DS . 'lot' . DS . 'posts' . DS . 'article', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'posts' . DS . 'page', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'responses' . DS . 'comment', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'scraps', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'shields', 0777);
+        make_directory(ROOT . DS . 'lot' . DS . 'states', 0766);
+        make_directory(ROOT . DS . 'lot' . DS . 'workers', 0766);
+        change_mode(ROOT . DS . 'engine' . DS . 'log' . DS . 'users.txt', 0600);
+        delete_file(ROOT . DS . 'engine' . DS . 'plug' . DS . '__.php');
+        delete_file(__FILE__); // self destruct ...
         $base = trim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'])), '\\/');
         header('Location: http://' . $_SERVER['HTTP_HOST'] . ( ! empty($base) ? '/' . $base . '/' : '/') . 'manager/login?kick=manager/config');
         exit;
@@ -78,7 +94,7 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
     <meta charset="utf-8">
     <title>Hi!</title>
     <link href="favicon.ico" rel="shortcut icon" type="image/x-icon">
-    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.2/css/font-awesome.min.css" rel="stylesheet">
+    <link href="//maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet">
     <style>
 * {
   margin:0;
@@ -155,6 +171,12 @@ button::-moz-focus-inner {
   border:none;
   outline:none;
 }
+input:invalid {
+  color:#FAA;
+  -webkit-box-shadow:none;
+  -moz-box-shadow:none;
+  box-shadow:none;
+}
 label,
 label + div {
   display:block;
@@ -187,19 +209,19 @@ h3 + div p code {opacity:.7}
       <?php $cache = isset($_SESSION['meet_mecha']) ? $_SESSION['meet_mecha'] : array('name' => "", 'user' => "", 'pass' => ""); echo ! empty($errors) ? '<div>' . implode("", $errors) . '</div>' : ""; ?>
       <label>
         <span>Name</span>
-        <span><input name="name" type="text" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" autofocus></span>
+        <span><input name="name" type="text" value="<?php echo isset($cache['name']) ? $cache['name'] : ""; ?>" pattern="[^<>]+" required autofocus></span>
       </label>
       <label>
         <span>Email</span>
-        <span><input name="email" type="email" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>"></span>
+        <span><input name="email" type="email" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>" pattern="[\w.-]+@[\w-]+(?:\.[a-z]+)?" required></span>
       </label>
       <label>
         <span>Username</span>
-        <span><input name="user" type="text" value="<?php echo isset($cache['user']) ? $cache['user'] : ""; ?>"></span>
+        <span><input name="user" type="text" value="<?php echo isset($cache['user']) ? $cache['user'] : ""; ?>" pattern="[\w-]+" required></span>
       </label>
       <label>
         <span>Password</span>
-        <span><input name="pass" type="password" value="<?php echo isset($cache['pass']) ? $cache['pass'] : ""; ?>"></span>
+        <span><input name="pass" type="password" value="<?php echo isset($cache['pass']) ? $cache['pass'] : ""; ?>" pattern="[\w-]+" required></span>
       </label>
       <div>
         <span></span>
