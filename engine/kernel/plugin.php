@@ -8,7 +8,7 @@ class Plugin extends __ {
             $info = self::info($info)->version;
         } else {
             $info = (object) $info;
-            $info = $info->version;
+            $info = isset($info->version) ? $info->version : '0.0.0';
         }
         return Mecha::version($v, $info);
     }

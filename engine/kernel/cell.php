@@ -90,6 +90,18 @@ class Cell extends __ {
         return Filter::apply($c . ':unit.' . $tag, $indent . '<' . $tag . self::bond($attr, $tag) . '>' . ( ! is_null($content) ? $content : "") . '</' . $tag . '>', $attr);
     }
 
+    // Alias for `Cell::unit()`
+    public static function unite() {
+        return call_user_func_array('self::unit', func_get_args());
+    }
+
+    // Inverse version of `Cell::unit()`
+    public static function apart($input, $q = '"') {
+        $tag = array('<', '>', ' ', '/', '[\w\-.:]+');
+        $attr = array($q, $q, '=', '[\w\-.:]+');
+        return Converter::attr(trim($input), $tag, $attr, true);
+    }
+
     // HTML comment
     public static function __($content = "", $indent = 0, $block = false) {
         $indent = $indent ? str_repeat(TAB, $indent) : "";
