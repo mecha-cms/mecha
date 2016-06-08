@@ -296,8 +296,8 @@ Weapon::add('shield_before', function() {
     } else {
         $posts = array();
         foreach(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $post) {
-            if(File::hidden($post)) continue;
             $post = File::B($post);
+            if(File::hidden($post)) continue;
             $s = isset($speak->{$post}) ? $speak->{$post} : Text::parse($post, '->title');
             $s = Config::speak('manager.title_new_', $s);
             $posts[] = Cell::a($config->manager->slug . '/' . $post . '/ignite', $s);
