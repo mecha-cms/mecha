@@ -44,10 +44,10 @@ if($_SERVER['REQUEST_METHOD'] === 'POST') {
             $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Invalid email address.</p>';
         }
     }
-    if(trim($_POST['user']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your username? Mecha need that.</p>';
-    if(trim($_POST['pass']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your password? Mecha need that' . (trim($_POST['user']) === "" ? ' too' : "") . '.</p>';
-    if(trim($_POST['user']) !== "" && preg_match('#[^\w-]#i', $_POST['user'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Username can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
-    if(trim($_POST['pass']) !== "" && preg_match('#[^\w-]#i', $_POST['pass'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Password can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
+    if(trim($_POST['user']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your user name? Mecha need that.</p>';
+    if(trim($_POST['pass']) === "") $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> What&rsquo;s your pass word? Mecha need that' . (trim($_POST['user']) === "" ? ' too' : "") . '.</p>';
+    if(trim($_POST['user']) !== "" && preg_match('#[^\w-]#i', $_POST['user'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> User name can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
+    if(trim($_POST['pass']) !== "" && preg_match('#[^\w-]#i', $_POST['pass'])) $errors[] = '<p><i class="fa fa-exclamation-triangle"></i> Pass word can only contain letters, numbers, <code>_</code> and <code>-</code>.</p>';
 
     $_SESSION['meet_mecha'] = $_POST;
 
@@ -216,11 +216,11 @@ h3 + div p code {opacity:.7}
         <span><input name="email" type="email" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>" pattern="[\w.-]+@[\w-]+(?:\.[a-z]+)?" required></span>
       </label>
       <label>
-        <span>Username</span>
+        <span>User</span>
         <span><input name="user" type="text" value="<?php echo isset($cache['user']) ? $cache['user'] : ""; ?>" pattern="[\w-]+" required></span>
       </label>
       <label>
-        <span>Password</span>
+        <span>Pass</span>
         <span><input name="pass" type="password" value="<?php echo isset($cache['pass']) ? $cache['pass'] : ""; ?>" pattern="[\w-]+" required></span>
       </label>
       <div>
