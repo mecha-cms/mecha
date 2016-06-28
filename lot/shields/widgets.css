@@ -207,6 +207,11 @@ table[border="1"] td {border:1px solid}
   height:100%;
 }
 
+.fluid-audio audio {
+  display:block;
+  width:100%;
+}
+
 .message {
   margin:0 0 2px;
   padding:.7692307692307693em .9230769230769231em;
