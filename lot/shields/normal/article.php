@@ -1,5 +1,5 @@
 <?php Shield::chunk('header'); ?>
-<div class="blog-main posts">
+<main class="blog-main posts">
   <article class="post" id="post-<?php echo $article->id; ?>">
     <?php Shield::chunk('article.header'); ?>
     <?php Shield::chunk('article.body'); ?>
@@ -7,5 +7,5 @@
   </article>
   <?php Shield::chunk('pager'); ?>
   <?php Shield::chunk('comments'); ?>
-</div>
+</main>
 <?php Shield::chunk('footer'); ?>

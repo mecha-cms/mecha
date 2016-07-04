@@ -1,5 +1,5 @@
 <?php Shield::chunk('header'); ?>
-<div class="blog-main posts">
+<main class="blog-main posts">
   <?php if($config->total_articles > 0): ?>
   <?php foreach($articles as $article): ?>
   <?php Shield::lot(array('article' => $article)); ?>
@@ -15,5 +15,5 @@
   </article>
   <?php endif; ?>
   <?php Shield::chunk('pager'); ?>
-</div>
+</main>
 <?php Shield::chunk('footer'); ?>
