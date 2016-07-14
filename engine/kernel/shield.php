@@ -26,16 +26,17 @@ class Shield extends __ {
         $results = array(
             'config' => $config,
             'speak' => $config->speak,
-            'articles' => $config->articles,
-            'article' => $config->article,
-            'pages' => $config->pages,
-            'page' => $config->page,
             'pager' => $config->pagination,
             'manager' => Guardian::happy(),
             'token' => $token,
             'messages' => Notify::read(false),
             'message' => Notify::read(false)
         );
+        foreach(glob(POST . DS . '*', GLOB_NOSORT | GLOB_ONLYDIR) as $v) {
+            $v = File::B($v);
+            $results[$v . 's'] = isset($config->{$v . 's'}) ? $config->{$v . 's'} : false;
+            $results[$v] = isset($config->{$v}) ? $config->{$v} : false;
+        }
         Session::set(Guardian::$token, $token);
         unset($config, $token);
         self::$lot = array_merge(self::$lot, $results);

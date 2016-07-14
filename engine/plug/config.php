@@ -43,7 +43,7 @@ Config::plug('load', function() {
     // Default(s)
     $config['page_title'] = $config['title'];
     $config['index_query'] = $config['tag_query'] = $config['archive_query'] = $config['search_query'] = "";
-    $config['articles'] = $config['article'] = $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;
+    $config['pages'] = $config['page'] = $config['pagination'] = $config['cargo'] = false;
 
     $ss = array();
     $folders = array_merge(
@@ -52,7 +52,7 @@ Config::plug('load', function() {
     );
     foreach($folders as $folder) {
         $s = File::B($folder);
-        $ss[$s][0] = glob($folder . DS . '*.*', GLOB_NOSORT);
+        $ss[$s][0] = glob($folder . DS . '*.{archive,draft,hold,txt}', GLOB_NOSORT | GLOB_BRACE);
         $ss[$s][1] = glob($folder . DS . '*.txt', GLOB_NOSORT);
         $config[$s . 's_path'] = $ss[$s][1];
         $config['__' . $s . 's_path'] = $ss[$s][0];
