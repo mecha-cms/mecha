@@ -62,7 +62,7 @@ Guardian::checker('is_boolean', function($input) {
 
 // Check for JSON format
 Guardian::checker('is_json', function($input) {
-    return (strpos($input, '{"') === 0 || strpos($input, '[') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input, true));
+    return ($input === '{}' || strpos($input, '{"') === 0 || strpos($input, '[') === 0 || strpos($input, '"') === 0) && ! is_null(json_decode($input));
 });
 
 // Check for serialize format
