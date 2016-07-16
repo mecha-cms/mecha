@@ -156,7 +156,6 @@ function do_meta_1() {
 function do_meta_2() {
     $config = Config::get();
     $html  = Cell::title(Text::parse($config->page_title, '->text'), array(), 2) . NL;
-    $html .= Cell::__('[if IE]>' . Cell::script($config->protocol . 'html5shiv.googlecode.com/svn/trunk/html5.js') . '<![endif]', 2, "") . NL;
     echo Filter::apply('meta', $html, 2);
 }
 
