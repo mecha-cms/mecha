@@ -183,8 +183,8 @@ function _do_detract_skeleton_cell($input) {
         if(isset($m[2])) {
             // Minify inline CSS declaration(s)
             if(stripos($m[2], ' style=') !== false) {
-                $m[2] = preg_replace_callback('# style=([\'"]?)(.*?)\1#', function($m) {
-                    return ' style=' . $m[1] . _do_detract_shell($m[2]) . $m[1];
+                $m[2] = preg_replace_callback('#( style=)([\'"]?)(.*?)\2#i', function($m) {
+                    return $m[1] . $m[2] . _do_detract_shell($m[3]) . $m[2];
                 }, $m[2]);
             }
             return '<' . $m[1] . preg_replace(
@@ -287,8 +287,8 @@ Converter::plug('detractSkeleton', '_do_detract_skeleton');
 function _do_detract_shell_punc($input) {
     // Keep important white-space(s) in `calc()`
     if(stripos($input, 'calc(') !== false) {
-        $input = preg_replace_callback('#\bcalc\(\s*(.*?)\s*\)#i', function($m) {
-            return 'calc(' . preg_replace('#\s+#', X . '\s', $m[1]) . ')';
+        $input = preg_replace_callback('#(\bcalc\()\s*(.*?)\s*\)#i', function($m) {
+            return $m[1] . preg_replace('#\s+#', X . '\s', $m[2]) . ')';
         }, $input);
     }
     // Minify ...
@@ -303,15 +303,15 @@ function _do_detract_shell_punc($input) {
             // Remove white-space(s) around punctuation(s) [^4]
             '#\s*([~!@*\(\)+=\{\}\[\]:;,>\/])\s*#',
             // Replace zero unit(s) with `0` [^5]
-            '#(?<=[\s=:,\(-])(0\.)?0([a-z]+\b|%)#',
+            '#(?<=[\s=:,\(-])(0\.)?0([a-z]+\b|%)#i',
             // Replace `0.6` with `.6`, but only when preceded by a white-space or `=`, `:`, `,`, `(`, `-` [^6]
             '#(?<=[\s=:,\(-])0+\.(\d+)#',
             // Replace `:0 0`, `:0 0 0` and `:0 0 0 0` with `:0` [^7]
             '#:(0\s+){0,3}0\b#',
             // Replace `background(?:-position)?:(0|none)` with `background$1:0 0` [^8]
-            '#(background(?:-position)?):(0|none)\b#',
+            '#(background(?:-position)?):(0|none)\b#i',
             // Replace `(border(?:-radius)?|outline):none` with `$1:0` [^9]
-            '#\b(border(?:-radius)?|outline):none\b#',
+            '#\b(border(?:-radius)?|outline):none\b#i',
             // Remove empty selector(s) [^10]
             '#(^|[\{\}])(?:[^\s\{\}]+)\{\}#',
             // Remove the last semi-colon and replace multiple semi-colon(s) with a semi-colon [^11]
