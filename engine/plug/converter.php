@@ -3,6 +3,11 @@
 
 // Helper function(s) ...
 
+$SS = '"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'';
+$CC = '\/\*[\s\S]*?\*\/';
+$CH = '<\!--[\s\S]*?-->';
+$TB = '<%1$s(?:>|\s[^<>]*?>)[\s\S]*?<\/%1$s>';
+
 function _do_detract_x($input) {
     return str_replace(array("\n", "\t", ' '), array(X . '\n', X . '\t', X . '\s'), $input);
 }
@@ -93,7 +98,7 @@ Converter::plug('toText', function($input, $s = S, $indent = '    ', $n = "\n", 
  *
  */
 
-Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n") {
+Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n") use($SS) {
     if( ! is_string($input)) return Mecha::A($input);
     if(trim($input) === "") return array();
     $i = 0;
@@ -136,7 +141,7 @@ Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n")
         // Remove inline comment(s) ...
         if($v && strpos($v, '#') !== false) {
             if($v[0] === '"' || $v[0] === "'") {
-                $vv = '#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\')|\s*\#.*#';
+                $vv = '#(' . $SS . ')|\s*\#.*#';
                 $v = preg_replace($vv, '$1', $v);
             } else {
                 $v = explode('#', $v, 2);
@@ -178,7 +183,7 @@ Converter::plug('toArray', function($input, $s = S, $indent = '    ', $n = "\n")
  *
  */
 
-function _do_detract_skeleton_cell($input) {
+function _do_detract_skeleton_a($input) {
     return preg_replace_callback('#<\s*([^\/\s]+)\s*(?:>|(\s[^<>]+?)\s*>)#', function($m) {
         if(isset($m[2])) {
             // Minify inline CSS declaration(s)
@@ -212,16 +217,15 @@ function _do_detract_skeleton_cell($input) {
 
 function _do_detract_skeleton($input) {
     if( ! $input = trim($input)) return $input;
+    global $CH, $TB;
     // Keep important white-space(s) after self-closing HTML tag(s)
     $input = preg_replace('#(<(?:img|input)(?:\s[^<>]*?)?\s*\/?>)\s+#i', '$1' . X . '\s', $input);
     // Create chunk(s) of HTML tag(s), ignored HTML group(s), HTML comment(s) and text
-    $s = '>|\s[^<>]*?>';
-    $t = '[\s\S]*?';
-    $input = preg_split('#(<!--' . $t . '-->|<pre(?:' . $s . ')' . $t . '<\/pre>|<code(?:' . $s . ')' . $t . '<\/code>|<script(?:' . $s . '>)' . $t . '<\/script>|<style(?:' . $s . ')' . $t . '<\/style>|<textarea(?:' . $s . ')' . $t . '<\/textarea>|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    $input = preg_split('#(' . $CH . '|' . sprintf($TB, 'pre') . '|' . sprintf($TB, 'code') . '|' . sprintf($TB, 'script') . '|' . sprintf($TB, 'style') . '|' . sprintf($TB, 'textarea') . '|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
     $o = false;
     foreach($input as $v) {
-        if(strlen($v) > 1 && trim($v) === "") continue;
+        if(trim($v) === "") continue;
         if($v[0] === '<' && substr($v, -1) === '>') {
             if($v[1] === '!' && substr($v, 0, 4) === '<!--') { // HTML comment ...
                 // Remove if not detected as IE comment(s) ...
@@ -230,7 +234,7 @@ function _do_detract_skeleton($input) {
                 $output .= $v;
             } else {
                 $o = $v[1] !== '/';
-                $output .= _do_detract_x(_do_detract_skeleton_cell($v));
+                $output .= _do_detract_x(_do_detract_skeleton_a($v));
             }
         } else {
             // Force line-break with `&#10;` or `&#xa;`
@@ -257,8 +261,7 @@ function _do_detract_skeleton($input) {
     $output);
     $output = _do_detract_v($output);
     // Remove white-space(s) after ignored tag-open and before ignored tag-close (except `<textarea>`)
-    $output = preg_replace('#<(code|pre|script|style)(' . $s . ')\s*(' . $t . ')\s*<\/\1>#i', '<$1$2$3</$1>', $output);
-    return $output;
+    return preg_replace('#<(code|pre|script|style)(>|\s[^<>]*?>)\s*([\s\S]*?)\s*<\/\1>#i', '<$1$2$3</$1>', $output);
 }
 
 Converter::plug('detractSkeleton', '_do_detract_skeleton');
@@ -284,32 +287,32 @@ Converter::plug('detractSkeleton', '_do_detract_skeleton');
  *
  */
 
-function _do_detract_shell_punc($input) {
+function _do_detract_shell_a($input) {
     // Keep important white-space(s) in `calc()`
     if(stripos($input, 'calc(') !== false) {
-        $input = preg_replace_callback('#(\bcalc\()\s*(.*?)\s*\)#i', function($m) {
+        $input = preg_replace_callback('#\b(calc\()\s*(.*?)\s*\)#i', function($m) {
             return $m[1] . preg_replace('#\s+#', X . '\s', $m[2]) . ')';
         }, $input);
     }
     // Minify ...
     return preg_replace(
         array(
-            // Fix case for `#foo [bar="baz"]`, `#foo :first-child` [^1]
-            '#\s+(\[|:\w)#',
-            // Fix case for `url(foo.jpg) no-repeat` [^2]
-            '#\)\s+(?=\w)#',
+            // Fix case for `#foo [bar="baz"]` and `#foo :first-child` [^1]
+            '#(?<![,\{\}])\s+(\[|:\w)#',
+            // Fix case for `[bar="baz"] .foo` and `url(foo.jpg) no-repeat` [^2]
+            '#\]\s+#', '#\)\s+\b#',
             // Minify HEX color code ... [^3]
             '#\#([\da-f])\1([\da-f])\2([\da-f])\3\b#i',
             // Remove white-space(s) around punctuation(s) [^4]
             '#\s*([~!@*\(\)+=\{\}\[\]:;,>\/])\s*#',
             // Replace zero unit(s) with `0` [^5]
-            '#(?<=[\s=:,\(-])(0\.)?0([a-z]+\b|%)#i',
-            // Replace `0.6` with `.6`, but only when preceded by a white-space or `=`, `:`, `,`, `(`, `-` [^6]
-            '#(?<=[\s=:,\(-])0+\.(\d+)#',
+            '#\b(?:0\.)?0([a-z]+\b|%)#i',
+            // Replace `0.6` with `.6` [^6]
+            '#\b0+\.(\d+)#',
             // Replace `:0 0`, `:0 0 0` and `:0 0 0 0` with `:0` [^7]
             '#:(0\s+){0,3}0\b#',
             // Replace `background(?:-position)?:(0|none)` with `background$1:0 0` [^8]
-            '#(background(?:-position)?):(0|none)\b#i',
+            '#\b(background(?:-position)?):(0|none)\b#i',
             // Replace `(border(?:-radius)?|outline):none` with `$1:0` [^9]
             '#\b(border(?:-radius)?|outline):none\b#i',
             // Remove empty selector(s) [^10]
@@ -323,7 +326,7 @@ function _do_detract_shell_punc($input) {
             // [^1]
             X . '\s$1',
             // [^2]
-            ')' . X . '\s',
+            ']' . X . '\s', ')' . X . '\s',
             // [^3]
             '#$1$2$3',
             // [^4]
@@ -350,11 +353,14 @@ function _do_detract_shell_punc($input) {
 
 function _do_detract_shell($input) {
     if( ! $input = trim($input)) return $input;
+    global $SS, $CC;
+    // Keep important white-space(s) between comment(s)
+    $input = preg_replace('#(' . $CC . ')\s+(' . $CC . ')#', '$1' . X . '\s$2', $input);
     // Create chunk(s) of string(s), comment(s) and text
-    $input = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*[\s\S]*?\*\/)#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    $input = preg_split('#(' . $SS . '|' . $CC . ')#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
     foreach($input as $v) {
-        if(strlen($v) > 1 && trim($v) === "") continue;
+        if(trim($v) === "") continue;
         if(
             ($v[0] === '"' && substr($v, -1) === '"') ||
             ($v[0] === "'" && substr($v, -1) === "'") ||
@@ -364,14 +370,14 @@ function _do_detract_shell($input) {
             if($v[0] === '/' && substr($v, 0, 3) !== '/*!') continue;
             $output .= $v; // String or comment ...
         } else {
-            $output .= _do_detract_shell_punc($v);
+            $output .= _do_detract_shell_a($v);
         }
     }
     // Remove quote(s) where possible ...
     $output = preg_replace(
         array(
-            '#(\/\*[\s\S]*?\*\/)|(?<!\bcontent\:)([\'"])([a-z_][-\w]*?)\2#i',
-            '#(\/\*[\s\S]*?\*\/)|(\burl\()([\'"])([^\s]+?)\3(\))#i'
+            '#(' . $CC . ')|(?<!\bcontent\:)([\'"])([a-z_][-\w]*?)\2#i',
+            '#(' . $CC . ')|\b(url\()([\'"])([^\s]+?)\3(\))#i'
         ),
         array(
             '$1$3',
@@ -404,21 +410,17 @@ Converter::plug('detractShell', '_do_detract_shell');
  *
  */
 
-function _do_detract_sword_punc($input) {
+function _do_detract_sword_a($input) {
     return preg_replace(
         array(
             // Remove inline comment(s) [^1]
             '#\s*\/\/.*$#m',
             // Remove white-space(s) around punctuation(s) [^2]
             '#\s*([!%&*\(\)\-=+\[\]\{\}|;:,.<>?\/])\s*#',
-            // Remove the last semi-colon [^3]
-            '#;\}#',
-            // Remove the last comma [^4]
-            '#,\]#',
-            // Replace `true` with `!0` [^5]
-            '#\btrue\b#',
-            // Replace `false` with `!1` [^6]
-            '#false\b#'
+            // Remove the last semi-colon and comma [^3]
+            '#[;,]([\]\}])#',
+            // Replace `true` with `!0` and `false` with `!1` [^4]
+            '#\btrue\b#', '#false\b#'
         ),
         array(
             // [^1]
@@ -426,24 +428,21 @@ function _do_detract_sword_punc($input) {
             // [^2]
             '$1',
             // [^3]
-            '}',
+            '$1',
             // [^4]
-            ']',
-            // [^5]
-            '!0',
-            // [^6]
-            '!1'
+            '!0', '!1'
         ),
     $input);
 }
 
 function _do_detract_sword($input) {
     if( ! $input = trim($input)) return $input;
-    // Create chunk(s) of string(s), comment(s), regex(es) and text
-    $input = preg_split('#("(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'|\/\*[\s\S]*?\*\/|\/[^\n]+?\/(?=[.,;]|[gimuy]|$))#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    // Create chunk(s) of string(s), comment(s), regex(es) and 
+    global $SS, $CC;
+    $input = preg_split('#(' . $SS . '|' . $CC . '|\/[^\n]+?\/(?=[.,;]|[gimuy]|$))#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
     foreach($input as $v) {
-        if(strlen($v) > 1 && trim($v) === "") continue;
+        if(trim($v) === "") continue;
         if(
             ($v[0] === '"' && substr($v, -1) === '"') ||
             ($v[0] === "'" && substr($v, -1) === "'") ||
@@ -453,24 +452,23 @@ function _do_detract_sword($input) {
             if(substr($v, 0, 2) === '//' || (substr($v, 0, 2) === '/*' && substr($v, 0, 3) !== '/*!' && substr($v, 0, 8) !== '/*@cc_on')) continue;
             $output .= $v; // String, comment or regex ...
         } else {
-            $output .= _do_detract_sword_punc($v);
+            $output .= _do_detract_sword_a($v);
         }
     }
-    $output = preg_replace(
+    return preg_replace(
         array(
             // Minify object attribute(s) except JSON attribute(s). From `{'foo':'bar'}` to `{foo:'bar'}` [^1]
-            '#([\{,])([\'])(\d+|[a-z_]\w*)\2(?=:)#i',
+            '#(' . $CC . ')|([\{,])([\'])(\d+|[a-z_]\w*)\3(?=:)#i',
             // From `foo['bar']` to `foo.bar` [^2]
             '#([\w\)\]])\[([\'"])([a-z_]\w*)\2\]#i'
         ),
         array(
             // [^1]
-            '$1$3',
+            '$1$2$4',
             // [^2]
             '$1.$3'
         ),
     $output);
-    return $output;
 }
 
 Converter::plug('detractSword', '_do_detract_sword');
