@@ -418,7 +418,7 @@ function _do_detract_sword_a($input) {
             // Remove the last semi-colon and comma [^3]
             '#[;,]([\]\}])#',
             // Replace `true` with `!0` and `false` with `!1` [^4]
-            '#\btrue\b#', '#false\b#'
+            '#\btrue\b#', '#false\b#', '#return\s+#'
         ),
         array(
             // [^1]
@@ -428,14 +428,14 @@ function _do_detract_sword_a($input) {
             // [^3]
             '$1',
             // [^4]
-            '!0', '!1'
+            '!0', '!1', 'return '
         ),
     $input);
 }
 
 function _do_detract_sword($input) {
     if( ! $input = trim($input)) return $input;
-    // Create chunk(s) of string(s), comment(s), regex(es) and 
+    // Create chunk(s) of string(s), comment(s), regex(es) and text
     global $SS, $CC;
     $input = preg_split('#(' . $SS . '|' . $CC . '|\/[^\n]+?\/(?=[.,;]|[gimuy]|$))#', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
