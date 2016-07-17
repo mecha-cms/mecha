@@ -418,7 +418,7 @@ function _do_detract_sword_a($input) {
             // Remove the last semi-colon and comma [^3]
             '#[;,]([\]\}])#',
             // Replace `true` with `!0` and `false` with `!1` [^4]
-            '#\btrue\b#', '#false\b#', '#return\s+#'
+            '#\btrue\b#', '#\bfalse\b#', '#\breturn\s+#'
         ),
         array(
             // [^1]
