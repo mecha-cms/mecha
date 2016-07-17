@@ -223,17 +223,14 @@ function _do_detract_skeleton($input) {
     // Create chunk(s) of HTML tag(s), ignored HTML group(s), HTML comment(s) and text
     $input = preg_split('#(' . $CH . '|' . sprintf($TB, 'pre') . '|' . sprintf($TB, 'code') . '|' . sprintf($TB, 'script') . '|' . sprintf($TB, 'style') . '|' . sprintf($TB, 'textarea') . '|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
-    $o = false;
     foreach($input as $v) {
-        if(trim($v) === "") continue;
+        if($v !== ' ' && trim($v) === "") continue;
         if($v[0] === '<' && substr($v, -1) === '>') {
             if($v[1] === '!' && substr($v, 0, 4) === '<!--') { // HTML comment ...
                 // Remove if not detected as IE comment(s) ...
                 if(substr($v, -12) !== '<![endif]-->') continue;
-                $o = false;
                 $output .= $v;
             } else {
-                $o = $v[1] !== '/';
                 $output .= _do_detract_x(_do_detract_skeleton_a($v));
             }
         } else {
@@ -241,7 +238,8 @@ function _do_detract_skeleton($input) {
             $v = str_replace(array('&#10;', '&#xA;', '&#xa;'), X . '\n', $v);
             // Force white-space with `&#32;` or `&#x20;`
             $v = str_replace(array('&#32;', '&#x20;'), X . '\s', $v);
-            $output .= preg_replace('#\s+#', ' ', $o ? ltrim($v) : $v);
+            // Replace multiple white-space(s) with a space
+            $output .= preg_replace('#\s+#', ' ', $v);
         }
     }
     // Clean up ...
@@ -310,7 +308,7 @@ function _do_detract_shell_a($input) {
             // Replace `0.6` with `.6` [^6]
             '#\b0+\.(\d+)#',
             // Replace `:0 0`, `:0 0 0` and `:0 0 0 0` with `:0` [^7]
-            '#:(0\s+){0,3}0\b#',
+            '#:(0\s+){0,3}0(?=[!,;\)\}]|$)#',
             // Replace `background(?:-position)?:(0|none)` with `background$1:0 0` [^8]
             '#\b(background(?:-position)?):(0|none)\b#i',
             // Replace `(border(?:-radius)?|outline):none` with `$1:0` [^9]
