@@ -226,7 +226,7 @@ function _do_detract_skeleton($input) {
     foreach($input as $v) {
         if($v !== ' ' && trim($v) === "") continue;
         if($v[0] === '<' && substr($v, -1) === '>') {
-            if($v[1] === '!' && substr($v, 0, 4) === '<!--') { // HTML comment ...
+            if($v[1] === '!' && strpos($v, '<!--') === 0) { // HTML comment ...
                 // Remove if not detected as IE comment(s) ...
                 if(substr($v, -12) !== '<![endif]-->') continue;
                 $output .= $v;
@@ -362,10 +362,10 @@ function _do_detract_shell($input) {
         if(
             ($v[0] === '"' && substr($v, -1) === '"') ||
             ($v[0] === "'" && substr($v, -1) === "'") ||
-            (substr($v, 0, 2) === '/*' && substr($v, -2) === '*/')
+            (strpos($v, '/*') === 0 && substr($v, -2) === '*/')
         ) {
             // Remove if not detected as important comment ...
-            if($v[0] === '/' && substr($v, 0, 3) !== '/*!') continue;
+            if($v[0] === '/' && strpos($v, '/*!') !== 0) continue;
             $output .= $v; // String or comment ...
         } else {
             $output .= _do_detract_shell_a($v);
@@ -447,7 +447,7 @@ function _do_detract_sword($input) {
             ($v[0] === '/' && substr($v, -1) === '/')
         ) {
             // Remove if not detected as important comment ...
-            if(substr($v, 0, 2) === '//' || (substr($v, 0, 2) === '/*' && substr($v, 0, 3) !== '/*!' && substr($v, 0, 8) !== '/*@cc_on')) continue;
+            if(strpos($v, '//') === 0 || (strpos($v, '/*') === 0 && strpos($v, '/*!') !== 0 && strpos($v, '/*@cc_on') !== 0)) continue;
             $output .= $v; // String, comment or regex ...
         } else {
             $output .= _do_detract_sword_a($v);
