@@ -374,7 +374,7 @@ function _do_detract_shell($input) {
     // Remove quote(s) where possible ...
     $output = preg_replace(
         array(
-            '#(' . $CC . ')|(?<!\bcontent\:)([\'"])([a-z_][-\w]*?)\2#i',
+            '#(' . $CC . ')|(?<!\bcontent\:|\b(?:format|local)\()([\'"])([a-z_][-\w]*?)\2#i',
             '#(' . $CC . ')|\b(url\()([\'"])([^\s]+?)\3(\))#i'
         ),
         array(
