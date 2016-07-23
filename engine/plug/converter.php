@@ -6,7 +6,6 @@
 $SS = '"(?:[^"\\\]++|\\\.)*+"|\'(?:[^\'\\\\]++|\\\.)*+\'';
 $CC = '\/\*[\s\S]*?\*\/';
 $CH = '<\!--[\s\S]*?-->';
-$TB = '<%1$s(?:>|\s[^<>]*?>)[\s\S]*?<\/%1$s>';
 
 function _do_detract_x($input) {
     return str_replace(array("\n", "\t", ' '), array(X . '\n', X . '\t', X . '\s'), $input);
@@ -217,11 +216,11 @@ function _do_detract_skeleton_a($input) {
 
 function _do_detract_skeleton($input) {
     if( ! $input = trim($input)) return $input;
-    global $CH, $TB;
+    global $CH;
     // Keep important white-space(s) after self-closing HTML tag(s)
     $input = preg_replace('#(<(?:img|input)(?:\s[^<>]*?)?\s*\/?>)\s+#i', '$1' . X . '\s', $input);
     // Create chunk(s) of HTML tag(s), ignored HTML group(s), HTML comment(s) and text
-    $input = preg_split('#(' . $CH . '|' . sprintf($TB, 'pre') . '|' . sprintf($TB, 'code') . '|' . sprintf($TB, 'script') . '|' . sprintf($TB, 'style') . '|' . sprintf($TB, 'textarea') . '|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+    $input = preg_split('#(' . $CH . '|<pre(?:>|\s[^<>]*?>)[\s\S]*?<\/pre>|<code(?:>|\s[^<>]*?>)[\s\S]*?<\/code>|<script(?:>|\s[^<>]*?>)[\s\S]*?<\/script>|<style(?:>|\s[^<>]*?>)[\s\S]*?<\/style>|<textarea(?:>|\s[^<>]*?>)[\s\S]*?<\/textarea>|<[^<>]+?>)#i', $input, -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
     $output = "";
     foreach($input as $v) {
         if($v !== ' ' && trim($v) === "") continue;
@@ -374,7 +373,7 @@ function _do_detract_shell($input) {
     // Remove quote(s) where possible ...
     $output = preg_replace(
         array(
-            '#(' . $CC . ')|(?<!\bcontent\:|\b(?:format|local)\()([\'"])([a-z_][-\w]*?)\2#i',
+            '#(' . $CC . ')|(?<!\bcontent\:|\bformat\(|\blocal\()([\'"])([a-z_][-\w]*?)\2#i',
             '#(' . $CC . ')|\b(url\()([\'"])([^\s]+?)\3(\))#i'
         ),
         array(
