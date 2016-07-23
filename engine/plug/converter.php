@@ -418,7 +418,9 @@ function _do_detract_sword_a($input) {
             // Remove the last semi-colon and comma [^3]
             '#[;,]([\]\}])#',
             // Replace `true` with `!0` and `false` with `!1` [^4]
-            '#\btrue\b#', '#\bfalse\b#', '#\breturn\s+#'
+            '#\btrue\b#', '#\bfalse\b#', '#\breturn\s+#',
+            // Replace `new Array(x)` with `[x]` ... [^5]
+            '#(?:\bnew\s+)?Array\((.*?)\)#', '#(?:\bnew\s+)?Object\((.*?)\)#'
         ),
         array(
             // [^1]
@@ -428,7 +430,9 @@ function _do_detract_sword_a($input) {
             // [^3]
             '$1',
             // [^4]
-            '!0', '!1', 'return '
+            '!0', '!1', 'return ',
+            // [^5]
+            '[$1]', '{$1}'
         ),
     $input);
 }
