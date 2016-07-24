@@ -313,7 +313,7 @@ function _do_detract_shell_a($input) {
             // Replace `(border(?:-radius)?|outline):none` with `$1:0` [^9]
             '#\b(border(?:-radius)?|outline):none\b#i',
             // Remove empty selector(s) [^10]
-            '#(^|[\{\}])(?:[^\s\{\}]+)\{\}#',
+            '#(^|[\{\}])(?:[^\{\}]+)\{\}#',
             // Remove the last semi-colon and replace multiple semi-colon(s) with a semi-colon [^11]
             '#;+([;\}])#',
             // Replace multiple white-space(s) with a space [^12]
