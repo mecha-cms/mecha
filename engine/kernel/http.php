@@ -124,7 +124,7 @@ class HTTP extends __ {
         $s = $key ? '%5D' : "";
         foreach($array as $k => $v) {
             if(is_array($v)) {
-                $results = array_merge($results, self::_query($v, $key . $k . $s . '%5B'));
+                $results = array_merge($results, self::__($v, $key . $k . $s . '%5B'));
             } else {
                 $results[$key . $k . $s] = $v;
             }

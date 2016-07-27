@@ -35,7 +35,7 @@ class Config extends __ {
 
     public static function set($key, $value = "") {
         if(is_object($key) || is_array($key)) $key = Mecha::A($key);
-        if(is_object($value) || is_array($key)) $value = Mecha::A($value);
+        if(is_object($value) || is_array($value)) $value = Mecha::A($value);
         $cargo = array();
         if( ! is_array($key)) {
             Mecha::SVR($cargo, $key, $value);
