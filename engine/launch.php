@@ -305,6 +305,8 @@ Route::accept(array('feed', 'feed/(:any)', 'feed/(:any)/(:num)'), function($slug
     $filter = Request::get('filter', "");
     $chunk = Request::get('chunk', 25);
     $scope = Request::get('scope', 'article');
+    Filter::remove($scope . ':output', 'do_comments_field');
+    Filter::remove($scope . ':output', 'do_custom_field');
     if( ! file_exists(SHIELD . DS . $slug . '.php') || ! Get::kin($scope . 's', false, true)) {
         Shield::abort('404-feed');
     }
@@ -313,7 +315,10 @@ Route::accept(array('feed', 'feed/(:any)', 'feed/(:any)/(:num)'), function($slug
         $posts = Mecha::walk($posts, function($path) use($scope) {
             $post = call_user_func('Get::' . $scope . 'Header', $path);
             // Hide sensitive data from public ...
-            unset($post->path, $post->date, $post->fields, $post->fields_raw);
+            foreach($post as $k => $v) {
+                if(substr($k, -4) === '_raw') unset($post->{$k});
+            }
+            unset($post->path, $post->date, $post->fields);
             return $post;
         });
     } else {
