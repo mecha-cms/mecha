@@ -296,8 +296,8 @@ function _do_detract_shell_a($input) {
         array(
             // Fix case for `#foo [bar="baz"]` and `#foo :first-child` [^1]
             '#(?<![,\{\}])\s+(\[|:\w)#',
-            // Fix case for `[bar="baz"] .foo` and `url(foo.jpg) no-repeat` [^2]
-            '#\]\s+#', '#\)\s+\b#',
+            // Fix case for `[bar="baz"] .foo` and `@media (foo: bar) and (baz: qux)` [^2]
+            '#\]\s+#', '#\b\s+\(#', '#\)\s+\b#',
             // Minify HEX color code ... [^3]
             '#\#([\da-f])\1([\da-f])\2([\da-f])\3\b#i',
             // Remove white-space(s) around punctuation(s) [^4]
@@ -323,7 +323,7 @@ function _do_detract_shell_a($input) {
             // [^1]
             X . '\s$1',
             // [^2]
-            ']' . X . '\s', ')' . X . '\s',
+            ']' . X . '\s', X . '\s(', ')' . X . '\s',
             // [^3]
             '#$1$2$3',
             // [^4]
