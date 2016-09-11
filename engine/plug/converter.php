@@ -419,7 +419,7 @@ function _do_detract_sword_a($input) {
             // Replace `true` with `!0` and `false` with `!1` [^4]
             '#\btrue\b#', '#\bfalse\b#', '#\breturn\s+#',
             // Replace `new Array(x)` with `[x]` ... [^5]
-            '#(?:\bnew\s+)?Array\((.*?)\)#', '#(?:\bnew\s+)?Object\((.*?)\)#'
+            '#\b(?:new\s+)?Array\((.*?)\)#', '#\b(?:new\s+)?Object\((.*?)\)#'
         ),
         array(
             // [^1]

@@ -3,7 +3,7 @@
 /**
  * =================================================================
  *  Mecha -- Content Management System (CMS)
- *  Copyright (c) 2014-2016 Taufik Nurrohman <http://mecha-cms.com>
+ *  Copyright (c) 2014-2016 Taufik Nurrohman
  * =================================================================
  */
 

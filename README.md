@@ -7,7 +7,7 @@ Mecha CMS
 
 ### Features
 
- 1. It is easy to write an article using [Markdown](http://mecha-cms.com/article/markdown-syntax "Markdown Formatting Guide").
+ 1. It is easy to write an article using [Markdown](#http://mecha-cms.com/article/markdown-syntax "Markdown Formatting Guide").
  2. Don’t forget the ability to turn the Markdown ON and OFF.
  3. Live preview Markdown to HTML.
  4. Lots of Widgets.
@@ -40,7 +40,7 @@ Mecha CMS
 
 ### Demo and Documentation
 
-http://mecha-cms.com
+~~http://mecha-cms.com~~
 
 ### How to Contribute?
 
