@@ -51,8 +51,8 @@ function do_remove_cache() {
         $path) . '.cache';
         if($cache = File::exist(CACHE . DS . $path)) {
             File::open($cache)->delete();
-        } else {
-            foreach(glob(CACHE . DS . $path, GLOB_NOSORT | GLOB_BRACE) as $cache) {
+        } else if($caches = glob(CACHE . DS . $path, GLOB_NOSORT | GLOB_BRACE)) {
+            foreach($caches as $cache) {
                 File::open($cache)->delete();
             }
         }
