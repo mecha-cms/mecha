@@ -213,7 +213,7 @@ h3 + div p code {opacity:.7}
       </label>
       <label>
         <span>Email</span>
-        <span><input name="email" type="email" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>" pattern="[\w.-]+@[\w-]+(?:\.[a-z]+)?" required></span>
+        <span><input name="email" type="email" value="<?php echo isset($cache['email']) ? $cache['email'] : ""; ?>" pattern="^.+@[^\.].*\.[a-z]{2,}$" required></span>
       </label>
       <label>
         <span>User</span>

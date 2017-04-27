@@ -115,7 +115,7 @@ class Converter extends __ {
     public static function HEX2RGB($hex, $output = null) {
         if(is_string($hex) && preg_match('#\#?([a-f0-9]{3,6})#i', $hex, $matches)) {
             $color = $matches[1];
-            if(strlen($color) !== 3 && strlen($color) !== 6){
+            if(strlen($color) !== 3 && strlen($color) !== 6) {
                 return false;
             }
             if(strlen($color) === 3) {

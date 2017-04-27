@@ -7,7 +7,7 @@
  * =================================================================
  */
 
-define('MECHA_VERSION', '1.2.8');
+define('MECHA_VERSION', '1.2.9');
 
 define('DS', DIRECTORY_SEPARATOR);
 define('ROOT', rtrim(__DIR__, DS));
