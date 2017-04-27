@@ -1,7 +1,7 @@
 Mecha CMS
 =========
 
-> This overview is for the [Genome](https://github.com/mecha-cms.com/genome) version. Check [0](https://github.com/mecha-cms/mecha/tree/0) branch for the current version.
+> This overview is for the [Genome](https://github.com/mecha-cms/genome) version. Check [0](https://github.com/mecha-cms/mecha/tree/0) branch for the current version.
 
 [![Download](https://cloud.githubusercontent.com/assets/1669261/25494257/3d373b0c-2ba3-11e7-8f88-13e36d1b5bd9.png)](http://mecha-cms.com) [![Learn](https://cloud.githubusercontent.com/assets/1669261/25494261/410de820-2ba3-11e7-86e4-bc7901ed403b.png)](http://mecha-cms.com/reference)
 
