@@ -1,1 +1,0 @@
-<div class="comment-body"><?php Shield::chunk('204.body', array('s' => $speak->comments)); ?></div>

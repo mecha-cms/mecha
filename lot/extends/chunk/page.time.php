@@ -1,1 +1,0 @@
-<p class="post-time"><time datetime="<?php echo $page->date->W3C; ?>"><?php echo $page->date->FORMAT_1; ?></time></p>

@@ -1,5 +1,0 @@
-plugin_cache:
-  description:
-    content: Add <abbr title="Uniform Resource Locator">URL</abbr> path of the page you want to cache in the text area provided
-  info:
-    content: Separate each <abbr title="Uniform Resource Locator">URL</abbr> path by a line break.

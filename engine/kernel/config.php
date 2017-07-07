@@ -1,177 +1,107 @@
 <?php
 
-class Config extends __ {
+class Config extends Genome {
 
-    protected static $bucket = array();
+    protected static $bucket = [];
 
-    /**
-     * =============================================================
-     *  SET CONFIGURATION DATA
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    Config::set('foo', 'bar');
-     *
-     * -------------------------------------------------------------
-     *
-     *    Config::set(array(
-     *        'a' => 1,
-     *        'b' => 2
-     *    ));
-     *
-     * -------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of data to be called
-     *  $key      | array  | Array of data's key and value
-     *  $value    | mixed  | The value of your data key
-     *  --------- | ------ | ---------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
+    public static function ignite(...$lot) {
+        return (self::$bucket = State::config());
+    }
 
-    public static function set($key, $value = "") {
-        if(is_object($key) || is_array($key)) $key = Mecha::A($key);
-        if(is_object($value) || is_array($value)) $value = Mecha::A($value);
-        $cargo = array();
-        if( ! is_array($key)) {
-            Mecha::SVR($cargo, $key, $value);
+    public static function set($key, $value = null) {
+        if (__is_anemon__($key)) $key = a($key);
+        if (__is_anemon__($value)) $value = a($value);
+        $cargo = [];
+        if (!is_array($key)) {
+            Anemon::set($cargo, $key, $value);
         } else {
-            foreach($key as $k => $v) {
-                Mecha::SVR($cargo, $k, $v);
+            foreach ($key as $k => $v) {
+                Anemon::set($cargo, $k, $v);
             }
         }
-        Mecha::extend(self::$bucket, $cargo);
+        Anemon::extend(self::$bucket, $cargo);
+        return new static;
     }
 
-    /**
-     * =============================================================
-     *  GET CONFIGURATION DATA BY ITS KEY
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    echo Config::get('url');
-     *
-     * -------------------------------------------------------------
-     *
-     *    echo Config::get('index')->slug;
-     *
-     * -------------------------------------------------------------
-     *
-     *    echo Config::get('index.slug');
-     *
-     * -------------------------------------------------------------
-     *
-     *    $config = Config::get();
-     *
-     *    echo $config->url;
-     *    echo $config->index->slug;
-     *
-     * -------------------------------------------------------------
-     *
-     *    $bucket = Config::get(array('foo', 'bar', 'baz'));
-     *
-     * -------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of data to be called
-     *  $fallback | mixed  | Fallback value if data does not exist
-     *  --------- | ------ | ---------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function get($key = null, $fallback = false) {
-        if(is_null($key)) {
-            return Mecha::O(self::$bucket);
+    public static function get($key = null, $fail = false) {
+        if (!isset($key)) {
+            return !empty(self::$bucket) ? o(self::$bucket) : $fail;
         }
-        if(is_array($key)) {
-            $results = array();
-            foreach($key as $k => $v) {
-                $f = is_array($fallback) && array_key_exists($k, $fallback) ? $fallback[$k] : $fallback;
-                $results[$v] = self::get($v, $f);
+        if (__is_anemon__($key)) {
+            $output = [];
+            foreach ($key as $k => $v) {
+                $output[$k] = self::get($k, $v);
             }
-            return (object) $results;
+            return o($output);
         }
-        if(is_string($key) && strpos($key, '.') !== false) {
-            $output = Mecha::GVR(self::$bucket, $key, $fallback);
-            return is_array($output) ? Mecha::O($output) : $output;
-        }
-        return array_key_exists($key, self::$bucket) ? Mecha::O(self::$bucket[$key]) : $fallback;
+        return o(Anemon::get(self::$bucket, $key, $fail));
     }
-
-    /**
-     * =============================================================
-     *  REMOVE CONFIGURATION DATA BY ITS KEY
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    Config::reset();
-     *
-     * -------------------------------------------------------------
-     *
-     *    Config::reset('foo');
-     *
-     * -------------------------------------------------------------
-     *
-     */
 
     public static function reset($key = null) {
-        if( ! is_null($key)) {
-            Mecha::UVR(self::$bucket, $key);
+        if (isset($key)) {
+            foreach ((array) $key as $value) {
+                Anemon::reset(self::$bucket, $value);
+            }
         } else {
-            self::$bucket = array();
+            self::$bucket = [];
         }
         return new static;
     }
 
-    /**
-     * =============================================================
-     *  MERGE MORE ARRAY TO SPECIFIC CONFIGURATION ITEM
-     * =============================================================
-     *
-     * -- CODE: ----------------------------------------------------
-     *
-     *    Config::merge('speak', array('cute' => 'manis'));
-     *
-     * -------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ---------------------------------------
-     *  $key      | string | Key of data to be infected
-     *  $array    | array  | The data you want to use to infect
-     *  --------- | ------ | ---------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function merge($key, $value = array()) {
-        self::set($key, $value);
+    public static function extend(...$lot) {
+        self::set(...$lot);
+        Anemon::extend(self::$bucket, State::config());
+        return new static;
     }
 
-    // Call the added method or use them as a shortcut for the default `get` method.
-    // Example: You can use `Config::foo()` as a shortcut for `Config::get('foo')` as
-    // long as `foo` is not defined yet by `Config::plug()`
-    // NOTE: `Config::plug()` and `Config::kin()` method(s) are inherited to `__`
-    public static function __callStatic($kin, $arguments = array()) {
-        $c = get_called_class();
-        if( ! isset(self::$_[$c][$kin])) {
-            $fallback = false;
-            if(count($arguments) > 0) {
-                $kin .= '.' . array_shift($arguments);
-                $fallback = array_shift($arguments);
+    public static function __callStatic($kin, $lot) {
+        if (!self::kin($kin)) {
+            $fail = false;
+            if (count($lot)) {
+                $kin .= '.' . array_shift($lot);
+                $fail = array_shift($lot);
+                $fail = $fail ? $fail : false;
             }
-            return self::get($kin, $fallback);
+            return self::get($kin, $fail);
         }
-        return parent::__callStatic($kin, $arguments);
+        return parent::__callStatic($kin, $lot);
+    }
+
+    public function __call($key, $lot) {
+        $fail = false;
+        if ($count = count($lot)) {
+            if ($count > 1) {
+                $key = $key . '.' . array_shift($lot);
+            }
+            $fail = array_shift($lot) ?: false;
+            $fail_alt = array_shift($lot) ?: false;
+        }
+        if (is_string($fail) && strpos($fail, '~') === 0) {
+            return call_user_func(substr($fail, 1), self::get($key, $fail_alt));
+        } else if ($fail instanceof \Closure) {
+            return call_user_func($fail, self::get($key, $fail_alt));
+        }
+        return self::get($key, $fail);
+    }
+
+    public function __set($key, $value = null) {
+        return self::set($key, $value);
+    }
+
+    public function __get($key) {
+        return self::get($key, null);
+    }
+
+    public function __unset($key) {
+        return self::reset($key);
+    }
+
+    public function __toString() {
+        return To::yaml(self::get());
+    }
+
+    public function __invoke($fail = []) {
+        return self::get(null, o($fail));
     }
 
 }

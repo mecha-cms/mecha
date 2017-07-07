@@ -1,0 +1,12 @@
+---
+type: YAML
+...
+
+page: Page
+pages: Pages
+
+
+#. Message
+#. -------
+
+message_info_kick: You have just redirected from %{0}%

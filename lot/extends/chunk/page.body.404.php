@@ -1,1 +1,0 @@
-<div class="post-body"><?php Shield::chunk('404.body', array('s' => $speak->page)); ?></div>

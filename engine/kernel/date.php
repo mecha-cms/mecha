@@ -1,155 +1,158 @@
 <?php
 
-class Date extends __ {
+class Date extends Genome {
 
-    /**
-     * ==========================================================
-     *  DATE FORMATTER
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    $input = '2014-05-30 09:22:42';
-     *
-     *    echo Date::format($input, 'Y/m/d');
-     *
-     * ----------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | ------------------------------------
-     *  $date     | mixed  | The date input
-     *  $format   | string | The date pattern
-     *  --------- | ------ | ------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
+    public static $zone = false;
+    public static $format = [];
 
-    public static function format($date, $format = 'Y-m-d H:i:s') {
-        if(is_numeric($date)) return date($format, $date);
-        if(substr_count($date, '-') === 5) {
-            $m = explode('-', $date);
-            $date = $m[0] . '-' . $m[1] . '-' . $m[2] . ' ' . $m[3] . ':' . $m[4] . ':' . $m[5];
+    public static function zone($zone = null) {
+        if (!isset($zone)) return self::$zone;
+        self::$zone = $zone;
+        return date_default_timezone_set($zone);
+    }
+
+    public static function set($key, $fn = null) {
+        self::$format[$key] = $fn;
+        return new static;
+    }
+
+    public static function get($key = null, $fail = false) {
+        if (isset($key)) {
+            return isset(self::$format[$key]) ? self::$format[$key] : $fail;
+        }
+        return !empty(self::$format) ? self::$format : $fail;
+    }
+
+    public static function reset($key = null) {
+        if (isset($key)) {
+            unset(self::$format[$key]);
+        } else {
+            self::$format = [];
+        }
+        return new static;
+    }
+
+    protected $date = "";
+
+    public function __construct($date = null) {
+        $this->date = isset($date) ? $date : (isset($_SERVER['REQUEST_TIME']) ? $_SERVER['REQUEST_TIME'] : time());
+        parent::__construct();
+    }
+
+    public function format($format = DATE_WISE) {
+        $date = $this->date;
+        if (is_numeric($date)) return date($format, $date);
+        if (substr_count($date, '-') === 5) {
+            return DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format($format);
         }
         return date($format, strtotime($date));
     }
 
-    // Convert time to slug
-    public static function slug($date) {
-        if(is_string($date) && substr_count($date, '-') === 5) {
-            return $date;
+    public function extract($key = null, $fail = false) {
+        global $language;
+        $months_long = $language->months_long;
+        $days_long = $language->days_long;
+        $months_short = $language->months_short;
+        $days_short = $language->days_short;
+        list(
+            $year,
+            $year_short,
+            $month,
+            $day,
+            $hour_24,
+            $hour_12,
+            $minute,
+            $second,
+            $AM_PM,
+            $d
+        ) = explode('.', $this->format('Y.y.m.d.H.h.i.s.A.w'));
+        $month_long = $months_long[(int) $month - 1];
+        $month_short = $months_short[(int) $month - 1];
+        $day_long = $days_long[(int) $d];
+        $day_short = $days_short[(int) $d];
+        $AM_PM = strtoupper($AM_PM);
+        $output = [
+            'W3C' => $this->format('c'),
+            'GMT' => $this->GMT(DATE_WISE),
+            'unix' => (int) $this->format('U'),
+            'slug' => $year . '-' . $month . '-' . $day . '-' . $hour_24 . '-' . $minute . '-' . $second,
+            'year' => $year,
+            'year_short' => $year_short,
+            'month' => $month,
+            'day' => $day,
+            'month_long' => $month_long,
+            'day_long' => $day_long,
+            'month_short' => $month_short,
+            'day_short' => $day_short,
+            'hour' => $hour_24,
+            'hour_12' => $hour_12,
+            'hour_24' => $hour_24, // alias for `hour`
+            'minute' => $minute,
+            'second' => $second,
+            'AM_PM' => $AM_PM,
+            'en_us' => $day_long . ', ' . $month_long . ' ' . $day . ', ' . $year,
+            'id_id' => $day_long . ', ' . $day . ' ' . $month_long . ' ' . $year,
+            'F1' => $year . '/' . $month . '/' . $day . ' ' . $hour_24 . ':' . $minute . ':' . $second,
+            'F2' => $year . '/' . $month . '/' . $day . ' ' . $hour_12 . ':' . $minute . ':' . $second . ' ' . $AM_PM,
+            'F3' => $hour_24 . ':' . $minute,
+            'F4' => $hour_12 . ':' . $minute . ' ' . $AM_PM
+        ];
+        if (!empty(self::$format)) {
+            foreach (self::$format as $k => $v) {
+                if (!is_callable($v)) continue;
+                $output[$k] = call_user_func($v, $output, $language);
+            }
         }
-        return self::format($date, 'Y-m-d-H-i-s');
+        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
     }
 
-    /**
-     * ==========================================================
-     *  DATE AGO CALCULATOR
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    $input = '2014-05-30 09:22:42';
-     *
-     *    var_dump(Date::ago($input));
-     *
-     * ----------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type    | Description
-     *  --------- | ------- | -----------------------------------
-     *  $input    | mixed   | The date input
-     *  $output   | string  | Optional to output single data
-     *  $compact  | boolean | Remove empty leading offset(s)?
-     *  --------- | ------- | -----------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function ago($input, $output = null, $compact = true) {
-        $speak = Config::speak();
-        $date = new DateTime();
-        $date->setTimestamp((int) self::format($input, 'U'));
-        $interval = $date->diff(new DateTime('now'));
+    public function ago($key = null, $fail = false, $compact = true) {
+        $date = new \DateTime();
+        $date->setTimestamp((int) $this->format('U'));
+        $interval = $date->diff(new \DateTime('now'));
         $time = $interval->format('%y.%m.%d.%h.%i.%s');
         $time = explode('.', $time);
-        $time = Converter::strEval($time);
-        $data = array(
+        $data = [
             'year' => $time[0],
             'month' => $time[1],
             'day' => $time[2],
             'hour' => $time[3],
             'minute' => $time[4],
             'second' => $time[5]
-        );
-        if($compact) {
-            foreach($data as $k => $v) {
-                if($v === 0) {
-                    unset($data[$k]);
-                } else {
-                    break;
-                }
-            }
-        }
-        $results = array();
-        foreach($data as $k => $v) {
-            $text = array($speak->{$k}, $speak->{$k . 's'});
-            $results[$k] = $v . ' ' . ($v === 1 ? $text[0] : $text[1]);
+        ];
+        $output = [];
+        foreach ($data as $k => $v) {
+            if ($compact && $v === '0') continue;
+            $output[$k] = e($v);
         }
         unset($data);
-        return ! is_null($output) ? $results[$output] : $results;
+        return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
     }
 
-    /**
-     * ==========================================================
-     *  GMT DATE FORMATTER
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    $input = '2014-05-30 09:22:42';
-     *
-     *    echo Date::GMT($input);
-     *
-     * ----------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type  | Description
-     *  --------- | ----- | -------------------------------------
-     *  $date     | mixed | The date input
-     *  --------- | ----- | -------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function GMT($date, $format = 'Y-m-d H:i:s') {
-        $date_GMT = new DateTime(self::format($date, 'c'));
-        $date_GMT->setTimeZone(new DateTimeZone('UTC'));
+    public function GMT($format = DATE_WISE) {
+        $date_GMT = new \DateTime($this->format('c'));
+        $date_GMT->setTimeZone(new \DateTimeZone('UTC'));
         return $date_GMT->format($format);
     }
 
-    /**
-     * ==========================================================
-     *  INITIALIZE DATE TIMEZONE
-     * ==========================================================
-     *
-     * -- CODE: -------------------------------------------------
-     *
-     *    Date::timezone('Asia/Jakarta');
-     *
-     * ----------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type   | Description
-     *  --------- | ------ | -------------------------------------
-     *  $zone     | string | The date timezone
-     *  --------- | ------ | -------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
+    public function __set($key, $value = null) {
+        return $this->set($key, $value);
+    }
 
-    public static function timezone($zone = 'Asia/Jakarta') {
-        date_default_timezone_set($zone);
+    public function __get($key) {
+        return $this->extract($key, null);
+    }
+
+    public function __unset($key) {
+        return $this->reset($key);
+    }
+
+    public function __toString() {
+        return $this->__invoke();
+    }
+
+    public function __invoke($format = DATE_WISE) {
+        return $this->format($format);
     }
 
 }

@@ -1,331 +1,149 @@
 <?php
 
-class Route extends __ {
+class Route extends Genome {
 
-    public static $routes = array();
-    public static $routes_x = array();
-    public static $routes_over = array();
+    public static $lot = [];
+    public static $lot_o = [];
 
-    // Pattern as regular expression
-    protected static function _x($string) {
-        return str_replace(
-            array('\(', '\)', '\|', '\:any', '\:num', '\:all', '#'),
-            array('(', ')', '|', '[^/]+', '\d+', '.*?', '\#'),
-        preg_quote($string, '/'));
-    }
-
-    // Remove the root URL
-    protected static function _path($pattern) {
-        return trim(str_replace(Config::get('url') . '/', "", $pattern), '/');
-    }
-
-    /**
-     * ===========================================================================
-     *  GLOBAL ROUTE PATTERN MATCH
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::accept('foo/bar', function() { ... });
-     *
-     * ---------------------------------------------------------------------------
-     *
-     *    Route::accept('foo/(:num)', function($o = 1) {
-     *        ...
-     *    });
-     *
-     * ---------------------------------------------------------------------------
-     *
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *  Parameter | Type     | Description
-     *  --------- | -------- | ---------------------------------------------------
-     *  $pattern  | string   | URL pattern to match
-     *  $fn       | function | Route function to be executed on URL pattern match
-     *  $stack    | float    | Route function priority
-     *  --------- | -------- | ---------------------------------------------------
-     * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-     *
-     */
-
-    public static function accept($pattern, $fn = null, $stack = null) {
-        $url = Config::get('url');
-        $stack = ! is_null($stack) ? $stack : 10;
-        if( ! is_array($pattern)) {
-            if( ! isset(self::$routes_x[$pattern])) {
-                self::$routes[$pattern] = array(
+    public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
+        $i = 0;
+        $id = (array) $id;
+        $stack = (array) $stack;
+        foreach ($id as $k => $v) {
+            $v = URL::short($v, false);
+            if (!isset(self::$lot[0][$v])) {
+                self::$lot[1][$v] = [
                     'fn' => $fn,
-                    'stack' => (float) $stack
-                );
-            }
-        } else {
-            $i = 0;
-            foreach($pattern as $p) {
-                if( ! isset(self::$routes_x[$p])) {
-                    self::$routes[$p] = array(
-                        'fn' => $fn,
-                        'stack' => (float) $stack + $i
-                    );
-                    $i += .1;
-                }
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
+                    'is' => ['pattern' => $pattern]
+                ];
+                $i += .1;
             }
         }
+        return true;
     }
 
-    /**
-     * ===========================================================================
-     *  CHECK FOR THE ACCEPTED ROUTE
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    $test = Route::accepted('foo/bar');
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function accepted($pattern = null, $fallback = false) {
-        if( ! is_null($pattern)) {
-            return isset(self::$routes[$pattern]) ? self::$routes[$pattern] : $fallback;
+    public static function reset($id) {
+        foreach ((array) $id as $v) {
+            $v = URL::short($v, false);
+            self::$lot[0][$v] = isset(self::$lot[1][$v]) ? self::$lot[1][$v] : 1;
+            unset($this->lot[1][$v]);
         }
-        return ! empty(self::$routes) ? self::$routes : $fallback;
+        return true;
     }
 
-    // alias for `Route::accepted()`
-    public static function exist($pattern = null, $fallback = false) {
-        return self::accepted($pattern, $fallback);
-    }
-
-    /**
-     * ===========================================================================
-     *  GET REQUEST ONLY
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::get('foo/bar', function() { ... });
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function get($pattern, $fn, $stack = null) {
-        if($_SERVER['REQUEST_METHOD'] === 'GET') {
-            self::accept($pattern, $fn, $stack);
-        }
-    }
-
-    /**
-     * ===========================================================================
-     *  POST REQUEST ONLY
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::post('foo/bar', function() { ... });
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function post($pattern, $fn, $stack = null) {
-        if($_SERVER['REQUEST_METHOD'] === 'POST') {
-            self::accept($pattern, $fn, $stack);
-        }
-    }
-
-    /**
-     * ===========================================================================
-     *  REJECT SPECIFIC ROUTE PATTERN
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::reject('foo/bar');
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function reject($pattern) {
-        if( ! is_array($pattern)) {
-            $pattern = self::_path($pattern);
-            self::$routes_x[$pattern] = isset(self::$routes[$pattern]) ? self::$routes[$pattern] : 1;
-            unset(self::$routes[$pattern]);
-        } else {
-            foreach($pattern as $p) {
-                $p = self::_path($p);
-                self::$routes_x[$p] = isset(self::$routes[$p]) ? self::$routes[$p] : 1;
-                unset(self::$routes[$p]);
+    public static function hook($id, $fn = null, $stack = null, $pattern = false) {
+        $i = 0;
+        $id = (array) $id;
+        $stack = (array) $stack;
+        foreach ($id as $k => $v) {
+            $v = URL::short($v, false);
+            if (!isset(self::$lot_o[0][$v])) {
+                self::$lot_o[1][$v][] = [
+                    'fn' => $fn,
+                    'stack' => (float) ((isset($stack[$k]) ? $stack[$k] : (end($stack) !== false ? end($stack) : 10)) + $i),
+                    'is' => ['pattern' => $pattern]
+                ];
+                $i += .1;
             }
         }
+        return true;
     }
 
-    /**
-     * ===========================================================================
-     *  CHECK FOR THE REJECTED ROUTE(S)
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    $test = Route::rejected('foo/bar');
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
+    public static function pattern($pattern, $fn = null, $stack = null) {
+        return self::set($pattern, $fn, $stack, true);
+    }
 
-    public static function rejected($pattern = null, $fallback = false) {
-        if( ! is_null($pattern)) {
-            return isset(self::$routes_x[$pattern]) ? self::$routes_x[$pattern] : $fallback;
+    public static function is($id, $fail = false, $pattern = false) {
+        $id = URL::short($id, false);
+        $path = URL::path();
+        if (strpos($id, '%') === false) {
+            return $path === $id ? [
+                'pattern' => $id,
+                'path' => $path,
+                'lot' => []
+            ] : $fail;
         }
-        return ! empty(self::$routes_x) ? self::$routes_x : $fallback;
-    }
-
-    /**
-     * ===========================================================================
-     *  DO SOMETHING BEFORE THE `$pattern` ACTION
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::over('foo/bar', function() { ... });
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function over($pattern, $fn = null, $stack = null) {
-        $pattern = self::_path($pattern);
-        $stack = ! is_null($stack) ? $stack : 10;
-        if( ! isset(self::$routes_over[$pattern])) {
-            self::$routes_over[$pattern] = array();
+        if (preg_match(!$pattern ? '#^' . __format__($id, '\/\n', '#', false) . '$#' : $id, $path, $m)) {
+            array_shift($m);
+            return [
+                'pattern' => $id,
+                'path' => $path,
+                'lot' => e($m)
+            ];
         }
-        self::$routes_over[$pattern][] = array(
-            'fn' => $fn,
-            'stack' => (float) $stack
-        );
+        return $fail;
     }
 
-    /**
-     * ===========================================================================
-     *  CHECK IF `$pattern` ALREADY OVERED
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    if(Route::overed('foo/bar')) { ... }
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
+    public static function get($id = null, $fail = false) {
+        if (isset($id)) {
+            return isset(self::$lot[1][$id]) ? self::$lot[1][$id] : $fail;
+        }
+        return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
+    }
 
-    public static function overed($pattern = null, $stack = null, $fallback = false) {
-        if( ! is_null($pattern)) {
-            if( ! is_null($stack)) {
-                $routes = array();
-                foreach(self::$routes_over[$pattern] as $route) {
-                    if(
-                        is_numeric($stack) && $route['stack'] === (float) $stack ||
-                        $route['fn'] === $stack
+    public static function hooked($id = null, $stack = null, $fail = false) {
+        if (isset($id)) {
+            if (isset($stack)) {
+                $routes = [];
+                foreach (self::$lot_o[1][$id] as $v) {
+                    if (
+                        $v['fn'] === $stack || // `$stack` as `$fn`
+                        is_numeric($stack) && $v['stack'] === (float) $stack
                     ) {
-                        $routes[] = $route;
+                        $routes[] = $v;
                     }
                 }
-                return ! empty($routes) ? $routes : $fallback;
+                return !empty($routes) ? $routes : $fail;
             } else {
-                return isset(self::$routes_over[$pattern]) ? self::$routes_over[$pattern] : $fallback;
+                return isset(self::$lot_o[1][$id]) ? self::$lot_o[1][$id] : $fail;
             }
         }
-        return ! empty(self::$routes_over) ? self::$routes_over : $fallback;
+        return !empty(self::$lot_o[1]) ? self::$lot_o[1] : $fail;
     }
 
-    /**
-     * ===========================================================================
-     *  CHECK FOR ROUTE PATTERN MATCH
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    if(Route::is('foo/bar')) { ... }
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function is($pattern, $fallback = false) {
-        $pattern = self::_path($pattern);
-        $path = Config::get('url_path');
-        if(strpos($pattern, '(') === false) {
-            return $path === $pattern ? array(
-                'pattern' => $pattern,
-                'path' => $path,
-                'lot' => array()
-            ) : $fallback;
-        }
-        if(preg_match('#^' . self::_x($pattern) . '$#', $path, $matches)) {
-            array_shift($matches);
-            return array(
-                'pattern' => $pattern,
-                'path' => $path,
-                'lot' => Converter::strEval($matches)
-            );
-        }
-        return $fallback;
-    }
-
-    /**
-     * ===========================================================================
-     *  EXECUTE THE ADDED ROUTE(S)
-     * ===========================================================================
-     *
-     * -- CODE: ------------------------------------------------------------------
-     *
-     *    Route::execute();
-     *
-     * ---------------------------------------------------------------------------
-     *
-     *    Route::execute('foo/(:num)', array(4)); // Re-execute `foo/(:num)`
-     *
-     * ---------------------------------------------------------------------------
-     *
-     */
-
-    public static function execute($pattern = null, $arguments = array()) {
-        if( ! is_null($pattern)) {
-            $pattern = self::_path($pattern);
-            if(isset(self::$routes[$pattern])) {
-                call_user_func_array(self::$routes[$pattern]['fn'], $arguments);
+    public static function fire($id = null, $lot = []) {
+        if (isset($id)) {
+            $id = URL::short($id, false);
+            if (isset(self::$lot[1][$id])) {
+                call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                return true;
             }
         } else {
-            $pattern = Config::get('url_path');
-            if(isset(self::$routes[$pattern])) {
-                // Loading cargo(s) ...
-                if(isset(self::$routes_over[$pattern])) {
-                    $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
-                    foreach($fn as $v) {
-                        call_user_func($v['fn']);
+            global $url;
+            $id = $url->path;
+            if (isset(self::$lot[1][$id])) {
+                // Loading cargo(s)…
+                if (isset(self::$lot_o[1][$id])) {
+                    $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack'])->vomit();
+                    foreach ($fn as $v) {
+                        call_user_func_array($v['fn'], $lot);
                     }
                 }
                 // Passed!
-                return call_user_func(self::$routes[$pattern]['fn']);
+                call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                return true;
             } else {
-                $routes = Mecha::eat(self::$routes)->order('ASC', 'stack', true)->vomit();
-                foreach($routes as $pattern => $cargo) {
-                    // If matched with the URL path
-                    if($route = self::is($pattern)) {
-                        // Loading cargo(s) ...
-                        if(isset(self::$routes_over[$pattern])) {
-                            $fn = Mecha::eat(self::$routes_over[$pattern])->order('ASC', 'stack')->vomit();
-                            foreach($fn as $v) {
-                                call_user_func_array($v['fn'], $route['lot']);
+                $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
+                foreach ($routes as $k => $v) {
+                    // If matched with the URL path, then …
+                    if ($route = self::is($k, false, $v['is']['pattern'])) {
+                        // Loading hook(s)…
+                        if (isset(self::$lot_o[1][$k])) {
+                            $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
+                            foreach ($fn as $f) {
+                                if (!is_callable($f['fn'])) continue;
+                                call_user_func_array($f['fn'], $route['lot']);
                             }
                         }
                         // Passed!
-                        return call_user_func_array($cargo['fn'], $route['lot']);
+                        call_user_func_array($v['fn'], $route['lot']);
+                        return true;
                     }
                 }
             }
         }
+        return null;
     }
 
 }

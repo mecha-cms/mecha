@@ -1,1 +1,0 @@
-<div class="post-body"><?php echo $article->content; ?></div>

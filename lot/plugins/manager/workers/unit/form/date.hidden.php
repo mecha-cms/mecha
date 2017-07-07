@@ -1,1 +1,0 @@
-<?php echo Form::hidden('date', Request::get('date', Guardian::wayback('date', $page->date->W3C))); ?>

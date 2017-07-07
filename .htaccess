@@ -18,28 +18,27 @@ AddDefaultCharset UTF-8
 
 # Force Internet Explorer to render pages in the highest available mode
 # in the various cases when it may not.
-# http://hsivonen.iki.fi/doctype/ie-mode.pdf
+# <http://hsivonen.iki.fi/doctype/ie-mode.pdf>
 <IfModule mod_headers.c>
     Header set X-UA-Compatible "IE=edge"
     # `mod_headers` cannot match based on the content-type, however, this
     # header should be send only for HTML pages and not for the other resources
-    <FilesMatch "\.(appcache|atom|crx|css|cur|eot|f4[abpv]|flv|gif|htc|ico|jpe?g|js|json(ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|tt[cf]|vcf|vtt|webapp|web[mp]|woff|xml|xpi)$">
+    <FilesMatch "\.(appcache|atom|crx|css|cur|eot|f4[abpv]|flv|gif|htc|ico|jpe?g|js(onp?|ld)?|m4[av]|manifest|map|mp4|oex|og[agv]|opus|otf|pdf|png|rdf|rss|safariextz|svgz?|swf|tt[cf]|vcf|vtt|webapp|web[mp]|woff2?|xml|xpi)$">
         Header unset X-UA-Compatible
     </FilesMatch>
 </IfModule>
 
-# Prevent viewing of .htaccess file
-<Files ~ "^\.ht">
-    Order allow,deny
-    Deny from all
-    Satisfy all
+# Prevent viewing of `.htaccess` file
+<Files .htaccess>
+	order allow,deny
+	deny from all
 </Files>
 
 # gzip
 <ifModule mod_gzip.c>
     mod_gzip_on Yes
     mod_gzip_dechunk Yes
-    mod_gzip_item_include file \.(archive|cache|css|eot|hold|html?|js|jsonp?|md|php|pl|ttf|txt|xml)$
+    mod_gzip_item_include file \.(archive|cache|css|data|draft|eot|html?|js(onp?|ld)?|otf|php|pl|page|ttf|txt|xml)$
     mod_gzip_item_include handler ^cgi-script$
     mod_gzip_item_include mime ^text/.*
     mod_gzip_item_include mime ^application/.*
@@ -105,6 +104,7 @@ AddDefaultCharset UTF-8
 
 </IfModule>
 
+# Rewrite `http://example.com/index.php?foo/bar` to `http://example.com/foo/bar`
 <IfModule mod_rewrite.c>
     RewriteEngine on
     RewriteCond %{REQUEST_FILENAME} !-f

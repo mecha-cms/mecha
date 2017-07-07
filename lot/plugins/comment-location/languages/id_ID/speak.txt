@@ -1,4 +1,0 @@
-plugin_comment_location:
-  title:
-    ip: <abbr title="Internet Protocol">IP</abbr>
-    ua: Agen Pengguna

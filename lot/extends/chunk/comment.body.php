@@ -1,1 +1,0 @@
-<div class="comment-body"><?php echo $comment->message; ?></div>

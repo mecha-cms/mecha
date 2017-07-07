@@ -1,48 +1,69 @@
 <?php
 
 // `<input type="hidden">`
-Form::add('hidden', function($name = null, $value = null, $attr = array(), $indent = 0) {
-    return Form::input('hidden', $name, $value, null, $attr, $indent);
+Form::plug('hidden', function($name = null, $value = null, $attr = [], $dent = 0) {
+    // Do not cache the request data of hidden form element(s)
+    Request::delete('post', $name);
+    return Form::input($name, 'hidden', $value, null, $attr, $dent);
 });
 
 // `<input type="file">`
-Form::add('file', function($name = null, $attr = array(), $indent = 0) {
-    return Form::input('file', $name, null, null, $attr, $indent);
+Form::plug('file', function($name = null, $attr = [], $dent = 0) {
+    return Form::input('file', $name, null, null, $attr, $dent);
 });
 
 // `<input type="checkbox">`
-Form::add('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = array(), $indent = 0) {
-    $attr_o = array('checked' => $check ? true : null);
-    $indent = $indent ? str_repeat(TAB, $indent) : "";
-    if($value === true) $value = 'true';
-    Mecha::extend($attr_o, $attr);
-    $text = $text ? '&nbsp;<span>' . Text::parse($text, '->text', WISE_CELL_I) . '</span>' : "";
-    return $indent . '<label>' . Form::input('checkbox', $name, $value, null, $attr_o) . $text . '</label>';
+Form::plug('checkbox', function($name = null, $value = null, $check = false, $text = "", $attr = [], $dent = 0) {
+    $attr_o = ['checked' => $check ? true : null];
+    if ($value === true) {
+        $value = 'true';
+    }
+    $text = $text ? '&#x0020;' . HTML::span($text) : "";
+    return Form::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, Anemon::extend($attr_o, $attr)) . $text);
 });
 
 // `<input type="radio">`
-Form::add('radio', function($name = null, $option = array(), $select = null, $attr = array(), $indent = 0) {
-    $output = array();
-    $indent = $indent ? str_repeat(TAB, $indent) : "";
+Form::plug('radio', function($name = null, $options = [], $select = null, $attr = [], $dent = 0) {
+    $output = [];
     $select = (string) $select;
-    foreach($option as $key => $value) {
-        $attr_o = array('disabled' => null);
-        if(strpos($key, '.') === 0) {
+    foreach ($options as $k => $v) {
+        $attr_o = ['disabled' => null];
+        if (strpos($k, '.') === 0) {
             $attr_o['disabled'] = true;
-            $key = substr($key, 1);
+            $k = substr($k, 1);
         }
-        $key = (string) $key;
-        $attr_o['checked'] = $select === $key || $select === '.' . $key ? true : null;
-        Mecha::extend($attr_o, $attr);
-        $value = $value ? '&nbsp;<span>' . Text::parse($value, '->text', WISE_CELL_I) . '</span>' : "";
-        $output[] = $indent . '<label>' . Form::input('radio', $name, $key, null, $attr_o) . $value . '</label>';
+        $k = (string) $k;
+        $attr_o['checked'] = $select === $k || $select === '.' . $k ? true : null;
+        $v = $v ? '&#x0020;' . HTML::span($v) : "";
+        $output[] = Form::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, Anemon::extend($attr_o, $attr)) . $v);
     }
-    return implode(' ', $output);
+    return implode(HTML::br(), $output);
 });
 
-// `<input type="(color|date|email|number|password|range|search|tel|text|url)">`
-foreach(array('color', 'date', 'email', 'number', 'password', 'range', 'search', 'tel', 'text', 'url') as $unit) {
-    Form::add($unit, function($name = null, $value = null, $placeholder = null, $attr = array(), $indent = 0) use($unit) {
-        return Form::input($unit, $name, $value, $placeholder, $attr, $indent);
+// `<button type="(reset|submit)">`
+foreach (['reset', 'submit'] as $unit) {
+    Form::plug($unit, function($name = null, $value = null, $text = "", $attr = [], $dent = 0) use($unit) {
+        $attr['type'] = $unit;
+        return Form::button($name, $value, $text, $attr, $dent);
     });
 }
+
+// `<input type="(color|date|email|number|password|search|tel|text|url)">`
+foreach (['color', 'date', 'email', 'number', 'password', 'search', 'tel', 'text', 'url'] as $unit) {
+    Form::plug($unit, function($name = null, $value = null, $placeholder = null, $attr = [], $dent = 0) use($unit) {
+        return Form::input($name, $unit, $value, $placeholder, $attr, $dent);
+    });
+}
+
+// `<input type="range">`
+Form::plug('range', function($name = null, $value = [0, 0, 1], $attr = [], $dent = 0) {
+    if (is_array($value)) {
+        if (!array_key_exists('min', $attr)) {
+            $attr['min'] = $value[0];
+        }
+        if (!array_key_exists('max', $attr)) {
+            $attr['max'] = $value[2];
+        }
+    }
+    return Form::input($name, 'range', is_array($value) ? $value[1] : $value, null, $attr, $dent);
+});

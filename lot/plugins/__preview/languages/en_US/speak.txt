@@ -1,4 +1,0 @@
-plugin_preview:
-  title:
-    css: <abbr title="Cascading Style Sheet">CSS</abbr>
-    js: <abbr title="JavaScript">JS</abbr>

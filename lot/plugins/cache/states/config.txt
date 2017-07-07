@@ -1,1 +1,0 @@
-a:1:{s:4:"path";a:7:{s:4:"feed";b:1;s:8:"feed/rss";b:1;s:15:"feed/rss/(:num)";b:1;s:9:"feed/json";b:1;s:16:"feed/json/(:num)";b:1;s:12:"feed/sitemap";b:1;s:7:"sitemap";b:1;}}

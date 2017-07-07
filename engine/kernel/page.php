@@ -1,232 +1,207 @@
 <?php
 
-/**
- * =============================================================
- *  PAGE
- * =============================================================
- *
- * -- CODE: ----------------------------------------------------
- *
- *    echo Page::header(array(
- *        'Title' => 'Test Page',
- *        'Content Type' => 'HTML'
- *    ))->content('<p>Test!</p>')->put();
- *
- * -------------------------------------------------------------
- *
- */
+class Page extends Genome {
 
-class Page extends __ {
+    public static $page = [];
 
-    public static $open = null;
-    public static $header = array();
-    public static $content = array();
+    protected $lot = [];
+    protected $lot_alt = [];
 
-    protected static $i = 0;
+    private $pref = "";
 
-    // Remove `:` in field key
-    protected static function _x($key) {
-        return trim(str_replace(S, '_', $key));
-    }
-
-    // Reset the cached data
-    protected static function _reset() {
-        self::$open = null;
-        self::$header = array();
-        self::$content = array();
-        self::$i = 0;
-    }
-
-    // Create the page
-    protected static function _create() {
-        $header = "";
-        $_ = "\n\n" . SEPARATOR . "\n\n";
-        foreach(self::$header as $k => $v) {
-            $header .= $k . S . ' ' . $v . "\n";
-        }
-        $content = implode($_, self::$content);
-        return trim(substr($header, 0, -1) . $_ . $content);
-    }
-
-    // Create from text
-    public static function text($text, $content = 'content', $FP = 'page:', $results = array(), $data = array()) {
-        $c = $content !== false ? $content : 'content';
-        $_ = SEPARATOR;
-        foreach($results as $k => $v) {
-            $results[$k . '_raw'] = Filter::colon($FP . $k . '_raw', $v, $data);
-            $results[$k] = Filter::colon($FP . $k, $v, $data);
-        }
-        if( ! $content) {
-            // By file path
-            if(strpos($text, ROOT) === 0 && ($text = File::open($text)->get($_)) !== false) {
-                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                Mecha::extend($results, self::_header($text, $FP, $data));
-            // By file content
-            } else {
-                $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-                if(strpos($text, $_) !== false) {
-                    $s = explode($_, $text, 2);
-                    Mecha::extend($results, self::_header(trim($s[0]), $FP, $data));
-                    if(isset($s[1]) && $s[1] !== "") {
-                        $results[$c . '_raw'] = trim($s[1]);
-                    }
-                }
-            }
+    public function __construct($input = null, $lot = [], $NS = 'page') {
+        $this->pref = $NS . '.';
+        $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
+        $id = md5($this->pref . $path);
+        if (isset(self::$page[$id])) {
+            $this->lot = self::$page[$id][1];
+            $this->lot_alt = self::$page[$id][0];
         } else {
-            // By file path
-            if(strpos($text, ROOT) === 0 && file_exists($text)) {
-                $text = file_get_contents($text);
-            }
-            $text = Filter::apply($FP . 'input', Converter::RN($text), $FP, $data);
-            // By file content
-            if($text === $_ || strpos($text, $_) === false) {
-                $results[$c . '_raw'] = Converter::DS(trim($text));
+            $t = File::T($path, time());
+            $date = date(DATE_WISE, $t);
+            $n = $path ? Path::N($path) : null;
+            $this->lot_alt = array_replace(a(Config::get('page', [])), [
+                'time' => $date,
+                'update' => $date,
+                'slug' => $n,
+                'title' => To::title($n), // fake `title` data from the page’s file name
+                'state' => Path::X($path),
+                'id' => (string) $t,
+                'url' => To::url($path)
+            ], $lot);
+            $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
+            // Set `time` value from the page’s file name
+            if (
+                $n &&
+                is_numeric($n[0]) &&
+                (
+                    // `2017-04-21.page`
+                    substr_count($n, '-') === 2 ||
+                    // `2017-04-21-14-25-00.page`
+                    substr_count($n, '-') === 5
+                ) &&
+                is_numeric(str_replace('-', "", $n)) &&
+                preg_match('#^\d{4,}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?$#', $n)
+            ) {
+                $t = new Date($n);
+                $this->lot['time'] = $t->format();
+                $this->lot['title'] = $t->F2;
+                $this->lot['id'] = $t->format('U');
+            // else, set `time` value by page’s file modification time
             } else {
-                $s = explode($_, $text, 2);
-                Mecha::extend($results, self::_header(trim($s[0]), $FP, $data));
-                if(isset($s[1]) && $s[1] !== "") {
-                    $results[$c . '_raw'] = trim($s[1]);
+                $t = new Date(File::open(Path::F($path) . DS . 'time.data')->read($date));
+                $this->lot['time'] = $t->format();
+                $this->lot['id'] = $t->format('U');
+            }
+            if (!array_key_exists('date', $this->lot)) {
+                $this->lot['date'] = new Date($this->lot['time']);
+            }
+            self::$page[$id] = [$this->lot_alt, $this->lot];
+        }
+        parent::__construct();
+    }
+
+    public function __call($key, $lot) {
+        $fail = array_shift($lot);
+        $fail_alt = array_shift($lot);
+        $x = $this->__get($key);
+        if (is_string($fail) && strpos($fail, '~') === 0) {
+            return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
+        } else if ($fail instanceof \Closure) {
+            return call_user_func($fail, $x !== null ? $x : $fail_alt);
+        }
+        return $x !== null ? $x : $fail;
+    }
+
+    public function __set($key, $value = null) {
+        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $this->lot[$key] = self::$page[$id][1][$key] = $value;
+    }
+
+    public function __get($key) {
+        $lot = $this->lot;
+        $lot_alt = $this->lot_alt;
+        if (!array_key_exists($key, $lot)) {
+            if (isset($lot['path'])) {
+                // Prioritize data from a file…
+                if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
+                    $lot[$key] = e($data);
+                } else if ($page = File::open($lot['path'])->read()) {
+                    $lot = array_replace($lot_alt, $lot, e(self::apart($page)));
                 }
             }
+            if (!array_key_exists($key, $lot)) {
+                $lot[$key] = array_key_exists($key, $lot_alt) ? e($lot_alt[$key]) : null;
+            }
         }
-        unset($results['__'], $results['___raw']);
-        Mecha::extend($data, $results);
-        if(isset($results[$c . '_raw'])) {
-            $content_x = explode($_, $results[$c . '_raw']);
-            if(count($content_x) > 1) {
-                $results[$c . '_raw'] = $results[$c] = array();
-                $i = 0;
-                foreach($content_x as $v) {
-                    $v = Converter::DS(trim($v));
-                    $v = Filter::colon($FP . $c . '_raw', $v, $data, $i + 1);
-                    $results[$c . '_raw'][$i] = $v;
-                    $v = Filter::colon($FP . 'shortcode', $v, $data, $i + 1);
-                    $v = Filter::colon($FP . $c, $v, $data, $i + 1);
-                    $results[$c][$i] = $v;
-                    $i++;
-                }
+        // Prioritize data from a file…
+        if (isset($lot['path']) && $data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
+            $lot[$key] = e($data);
+        }
+        $this->lot = $lot;
+        self::$page[md5($this->pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
+        // $this->lot_alt = $lot_alt;
+        return Hook::NS($this->pref . $key, [$lot[$key], $lot, $key, $this]);
+    }
+
+    public function __unset($key) {
+        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        unset($this->lot[$key], self::$page[$id][1][$key]);
+    }
+
+    public function __toString() {
+        return self::unite($this->lot);
+    }
+
+    public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
+    public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
+
+    public static function v($s) {
+        return str_replace(self::$x, self::$v, $s);
+    }
+
+    public static function x($s) {
+        return str_replace(self::$v, self::$x, $s);
+    }
+
+    public static function apart($input) {
+        $input = n($input);
+        $data = [];
+        if (strpos($input, self::$v[0]) !== 0) {
+            $data['content'] = self::v($input);
+        } else {
+            $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
+            $input = explode(self::$v[1] . N . N, $input, 2);
+            // Do data…
+            foreach (explode(self::$v[4], $input[0]) as $v) {
+                $v = explode(self::$v[2], $v, 2);
+                $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
+            }
+            // Do content…
+            $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
+        }
+        return $data;
+    }
+
+    public static function unite($input) {
+        $data = [];
+        $content = "";
+        if (isset($input['content'])) {
+            $content = $input['content'];
+            unset($input['content']);
+        }
+        foreach ($input as $k => $v) {
+            $v = is_array($v) ? json_encode($v) : self::x(s($v));
+            if ($v && strpos($v, "\n") !== false) {
+                $v = json_encode($v); // contains line–break
+            }
+            $data[] = self::x($k) . self::$v[2] . $v;
+        }
+        return ($data ? self::$v[0] . implode(N, $data) . self::$v[1] : "") . ($content ? N . N . $content : "");
+    }
+
+    protected static $data = [];
+
+    public static function open($path, $lot = [], $NS = 'page') {
+        self::$data = ['path' => $path];
+        return new static($path, $lot, $NS);
+    }
+
+    public static function data($input, $fn = null, $NS = 'page') {
+        if (!is_array($input)) {
+            if (is_callable($fn)) {
+                self::$data[$input] = call_user_func($fn, self::$data);
+                $input = [];
             } else {
-                $v = Converter::DS($results[$c . '_raw']);
-                $v = Filter::colon($FP . $c . '_raw', $v, $data, 1);
-                $results[$c . '_raw'] = $v;
-                $v = Filter::colon($FP . 'shortcode', $v, $data, 1);
-                $v = Filter::colon($FP . $c, $v, $data, 1);
-                $results[$c] = $v;
+                $input = ['content' => $input];
             }
         }
-        return Filter::apply($FP . 'output', $results, $FP, $data);
-    }
-
-    protected static function _header($text, $FP, $data) {
-        $results = array();
-        $headers = explode("\n", trim($text));
-        foreach($headers as $header) {
-            $field = explode(S, $header, 2);
-            if( ! isset($field[1])) $field[1] = 'false';
-            $key = Text::parse(trim($field[0]), '->array_key', true);
-            $value = Converter::DS(trim($field[1]));
-            $value = Filter::colon($FP . $key . '_raw', Converter::strEval($value), $data);
-            $results[$key . '_raw'] = $value;
-            $value = Filter::colon($FP . $key, $value, $data);
-            $results[$key] = $value;
+        self::$data = $data = array_replace(self::$data, $input);
+        foreach ($data as $k => $v) {
+            if ($v === false) unset(self::$data[$k], $data[$k]);
         }
-        return $results;
+        unset($data['path']);
+        return new static(null, $data, $NS);
     }
 
-    // Open the page file
-    public static function open($path) {
-        self::_reset();
-        self::$open = $path;
-        $i = 0;
-        $results = array();
-        $lines = file($path, FILE_IGNORE_NEW_LINES);
-        foreach($lines as $k => $v) {
-            if($i === 0 && $v === "") {
-                continue;
+    public function get($key, $fail = null, $NS = 'page') {
+        if (is_array($key)) {
+            $output = [];
+            foreach ($key as $k => $v) {
+                $output[$k] = $this->{$k}($v);
             }
-            if($v === SEPARATOR) {
-                unset($lines[$k]);
-                $i++;
-                continue;
-            }
-            $results[$i][] = $v;
+            return $output;
         }
-        // has header data ...
-        if(isset($results[0])) {
-            foreach($results[0] as $v) {
-                $field = explode(S, $v, 2);
-                self::$header[trim($field[0])] = isset($field[1]) ? trim($field[1]) : "";
-            }
-            unset($results[0]);
-        }
-        foreach(array_values($results) as $k => $v) {
-            self::$content[$k] = trim(implode("\n", $v));
-        }
-        return new static;
+        return $this->{$key}($fail);
     }
 
-    // Add page header or update the existing page header data
-    public static function header($data = array(), $value = "") {
-        if( ! is_array($data)) {
-            $data = array(self::_x($data) => $value);
-        }
-        foreach($data as $k => $v) {
-            $kk = self::_x($k);
-            if($v === false) {
-                unset($data[$kk], self::$header[$kk]);
-            } else {
-                // Restrict user(s) from inputting the `SEPARATOR` constant
-                // to prevent mistake(s) in parsing the file content
-                $data[$kk] = Converter::ES(trim($v));
-            }
-        }
-        Mecha::extend(self::$header, $data);
-        return new static;
+    public static function saveTo($path, $consent = 0600) {
+        unset(self::$data['path']);
+        File::write(self::unite(self::$data))->saveTo($path, $consent);
     }
 
-    // Add page content or update the existing page content
-    public static function content($data = "", $i = null) {
-        if($data === false) {
-            if( ! is_null($i)) {
-                unset(self::$content[$i]);
-            } else {
-                self::$content = array();
-            }
-        }
-        // Restrict user(s) from inputting the `SEPARATOR` constant
-        // to prevent mistake(s) in parsing the file content
-        self::$content[is_null($i) ? self::$i : $i] = Converter::ES(trim($data));
-        self::$i++;
-        return new static;
-    }
-
-    // Show page data as plain text
-    public static function put() {
-        $output = self::_create();
-        self::_reset();
-        return $output;
-    }
-
-    // Show page data as array
-    public static function read($content = 'content', $FP = 'page:') {
-        if($content === false) {
-            self::$content = array();
-        }
-        $results = self::text(self::_create(), $content, $FP);
-        self::_reset();
-        return $results;
-    }
-
-    // Save the opened page
-    public static function save($permission = 0600) {
-        File::write(self::_create())->saveTo(self::$open, $permission);
-        self::_reset();
-    }
-
-    // Save the generated page to ...
-    public static function saveTo($path, $permission = 0600) {
-        self::$open = $path;
-        return self::save($permission);
+    public static function save($consent = 0600) {
+        return self::saveTo(self::$data['path'], $consent);
     }
 
 }
