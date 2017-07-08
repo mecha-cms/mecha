@@ -4,7 +4,7 @@ class Guardian extends Genome {
 
     public static $config = [
         'session' => [
-            'token' => 'Mecha.Guardian.token'
+            'token' => 'mecha.guardian.token'
         ]
     ];
 

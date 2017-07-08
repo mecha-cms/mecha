@@ -2,36 +2,39 @@
 
 class Form extends HTML {
 
+    private static function _name(&$s, &$a) {
+        if ($s && strpos('.!*', $s[0]) !== false) {
+            $a[Anemon::alter($s[0], [
+                '.' => 'disabled',
+                '!' => 'readonly',
+                '*' => 'required'
+            ])] = true;
+            $s = substr($s, 1);
+        } else if (strlen($s) >= 2 && $s[0] === '\\' && strpos('.!*', $s[1]) !== false) { // escaped
+            $s = substr($s, 1);
+        }
+    }
+
     // `<button>`
     public static function button($name = null, $value = null, $text = "", $attr = [], $dent = 0) {
         if (!array_key_exists('type', $attr)) {
             $attr['type'] = 'button';
         }
-        $attr_o = [];
-        if (strpos($name, '.') === 0) {
-            $attr_o['disabled'] = true;
-            $name = substr($name, 1);
-        } else if (strpos($name, '\\.') === 0) { // escaped
-            $name = substr($name, 1);
-        }
+        $attr_o = ['value' => $value];
+        self::_name($name, $attr_o);
         $attr_o['name'] = $name;
-        $attr_o['value'] = $value;
         return self::unite('button', $text, Anemon::extend($attr_o, $attr), $dent);
     }
 
     // `<input>`
     public static function input($name = null, $type = 'text', $value = null, $placeholder = null, $attr = [], $dent = 0) {
-        $attr_o = [];
-        if (strpos($name, '.') === 0) {
-            $attr_o['disabled'] = true;
-            $name = substr($name, 1);
-        } else if (strpos($name, '\\.') === 0) { // escaped
-            $name = substr($name, 1);
-        }
+        $attr_o = [
+            'placeholder' => $placeholder,
+            'type' => $type
+        ];
+        self::_name($name, $attr_o);
         $attr_o['name'] = $name;
         $attr_o['value'] = Request::restore('post', $name, $value);
-        $attr_o['placeholder'] = $placeholder;
-        $attr_o['type'] = $type;
         return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
     }
 
@@ -39,12 +42,7 @@ class Form extends HTML {
     public static function select($name = null, $option = [], $select = null, $attr = [], $dent = 0) {
         $o = "";
         $attr_o = [];
-        if (strpos($name, '.') === 0) {
-            $attr_o['disabled'] = true;
-            $name = substr($name, 1);
-        } else if (strpos($name, '\\.') === 0) { // escaped
-            $name = substr($name, 1);
-        }
+        self::_name($name, $attr_o);
         $select = (string) Request::restore('post', $name, $select);
         $attr_o['name'] = $name;
         Anemon::extend($attr_o, $attr);
@@ -52,24 +50,15 @@ class Form extends HTML {
             // option list group
             if (is_array($value)) {
                 $s = [];
-                if (strpos($key, '.') === 0) {
-                    $s['disabled'] = true;
-                    $key = substr($key, 1);
-                } else if (strpos($key, '\\.') === 0) { // escaped
-                    $key = substr($key, 1);
-                }
+                $key = (string) $key;
+                self::_name($key, $s);
                 $s['label'] = $key;
                 $o .= N . self::begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
-                    if (strpos($k, '.') === 0) {
-                        $s['disabled'] = true;
-                        $k = substr($k, 1);
-                    } else if (strpos($k, '\\.') === 0) { // escaped
-                        $k = substr($k, 1);
-                    }
                     $k = (string) $k;
-                    if ($select === $k || $select === '.' . $k) {
+                    self::_name($k, $s);
+                    if ($select === $k) {
                         $s['selected'] = true;
                     }
                     $s['value'] = $k;
@@ -79,14 +68,9 @@ class Form extends HTML {
             // option list
             } else {
                 $s = [];
-                if (strpos($key, '.') === 0) {
-                    $s['disabled'] = true;
-                    $key = substr($key, 1);
-                } else if (strpos($key, '\\.') === 0) { // escaped
-                    $key = substr($key, 1);
-                }
                 $key = (string) $key;
-                if ($select === $key || $select === '.' . $key) {
+                self::_name($key, $s);
+                if ($select === $key) {
                     $s['selected'] = true;
                 }
                 $s['value'] = $key;
@@ -99,12 +83,7 @@ class Form extends HTML {
     // `<textarea>`
     public static function textarea($name = null, $value = "", $placeholder = null, $attr = [], $dent = 0) {
         $attr_o = [];
-        if (strpos($name, '.') === 0) {
-            $attr_o['disabled'] = true;
-            $name = substr($name, 1);
-        } else if (strpos($name, '\\.') === 0) { // escaped
-            $name = substr($name, 1);
-        }
+        self::_name($name, $attr_o);
         $attr_o['name'] = $name;
         // <https://www.w3.org/TR/html5/forms.html#the-placeholder-attribute>
         // The `placeholder` attribute represents a short hint (a word or short phrase) intended

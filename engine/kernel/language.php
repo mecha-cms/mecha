@@ -8,7 +8,7 @@ class Language extends Genome {
         $f = LANGUAGE . DS . $language . '.page';
         if (Cache::expire($f)) {
             $i18n = new Page($f, [], 'language');
-            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+            $fn = 'From::' . __c2f__($i18n->type, '_');
             $content = is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content;
             Cache::set($f, $content);
         } else {

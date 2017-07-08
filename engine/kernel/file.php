@@ -311,7 +311,7 @@ class File extends Genome {
         if (!Message::$x) {
             // Destination not found
             if (!file_exists($target)) Folder::set($target);
-            // Move the upload(ed) file to the destination folder
+            // Move the uploaded file to the destination folder
             if (!file_exists($target . DS . $file['name'])) {
                 move_uploaded_file($file['tmp_name'], $target . DS . $file['name']);
                 // Create public asset URL to be hooked on file uploaded

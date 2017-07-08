@@ -4,7 +4,7 @@ class Request extends Genome {
 
     public static $config = [
         'session' => [
-            'request' => 'Mecha.Request'
+            'request' => 'mecha.request'
         ]
     ];
 

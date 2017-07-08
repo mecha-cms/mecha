@@ -108,13 +108,14 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
 }
 
 // Convert class name to file name
-function __c2f__($x) {
-    return str_replace(['\\-', '_-'], ['.', '_'], h($x, '-', '_\\'));
+function __c2f__($x, $s = '-') {
+    return str_replace(['\\' . X, '_' . X, X], ['.', '_', $s], h($x, X, '_\\'));
 }
 
 // Convert file name to class name
-function __f2c__($x) {
-    return p(str_replace('.', '\\', pathinfo($x, PATHINFO_FILENAME)), "", '_\\');
+function __f2c__($x, $s = '-') {
+    $x = str_replace($s, X, pathinfo($x, PATHINFO_FILENAME));
+    return str_replace(X, $s, p(str_replace('.', '\\', $x), "", '_\\' . X));
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
@@ -820,8 +821,7 @@ function h($x, $s = '-', $X = "") {
 function i($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
-    }
-    if (!isset($fn[1])) {
+    } else if (!isset($fn[1])) {
         $fn[1] = null;
     }
     if (__is_anemon__($b)) {
@@ -899,8 +899,7 @@ function q($x, $deep = false) {
 function r($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
-    }
-    if (!isset($fn[1])) {
+    } else if (!isset($fn[1])) {
         $fn[1] = null;
     }
     if (__is_anemon__($b)) {
@@ -1021,11 +1020,11 @@ function z($a, $b = true, $safe = true) {
         if ($v[0] === '"' && substr($v, -1) === '"') {
             $v = json_decode($v);
             if ($safe) {
-                $v = str_replace(['<?php', '?>'], ['&lt;?php', '?&gt;'], $v);
+                $v = str_replace(['<?', '?>'], ['&lt;?', '?&gt;'], $v);
             }
             $s .= "'" . $v . "'";
         } else {
-            $s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
+            $s .= str_replace(['{', '}', ':', 'true', 'false'], [$b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
         }
     }
     return $s;

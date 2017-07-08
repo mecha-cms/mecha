@@ -2,7 +2,7 @@
 
 // `<input type="hidden">`
 Form::plug('hidden', function($name = null, $value = null, $attr = [], $dent = 0) {
-    // Do not cache the request data of hidden form element(s)
+    // Do not cache request data of hidden form element(s)
     Request::delete('post', $name);
     return Form::input($name, 'hidden', $value, null, $attr, $dent);
 });

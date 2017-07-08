@@ -62,7 +62,7 @@ class Union extends Genome {
         return is_numeric($i) ? str_repeat(DENT, (int) $i) : $i;
     }
 
-    // Encode all union's special character(s)
+    // Encode all union’s special character(s)
     public static function x($v) {
         if (!is_string($v)) return $v;
         return From::html($v);
@@ -90,7 +90,7 @@ class Union extends Genome {
                 break;
             }
         }
-        // Normal process …
+        // Normal process…
         foreach ($a as $k => $v) {
             if (!isset($v)) continue;
             if (__is_anemon__($v)) {
@@ -98,7 +98,7 @@ class Union extends Genome {
                 if ($k === 'classes') {
                     $k = 'class';
                     $v = implode(' ', array_filter(array_unique($v), function($v) {
-                        return $v !== null;
+                        return isset($v);
                     }));
                 // Inline CSS via `css` attribute
                 } else if ($k === 'css') {
@@ -146,9 +146,9 @@ class Union extends Genome {
         $d3 = isset($x_d[3]) ? $x_d[3] : x($d[3]); // ` `
         $input = trim($input);
         $output = [
-            0 => null, // `$.nodeName`
-            1 => null, // `$.innerHTML`
-            2 => []    // `$.attributes`
+            0 => null, // `Element.nodeName`
+            1 => null, // `Element.innerHTML`
+            2 => []    // `Element.attributes`
         ];
         $s = '/^' . $u0 . '(' . $u[3] . ')(' . $d3 . '.*?)?(?:' . $u2 . $u1 . '|' . $u1 . '(?:([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
         // must starts with `<` and ends with `>`
