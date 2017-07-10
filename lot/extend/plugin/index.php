@@ -34,7 +34,7 @@ call_user_func(function() {
         $content = [];
         foreach ($c as $k => $v) {
             $i18n = new Page($k, [], 'language');
-            $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+            $fn = 'From::' . __c2f__($i18n->type, '_');
             $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : (array) $i18n->content);
         }
         Cache::set(PLUGIN, $content, $id);

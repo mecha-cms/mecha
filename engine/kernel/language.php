@@ -3,7 +3,7 @@
 class Language extends Genome {
 
     public static function ignite(...$lot) {
-        $id = '_' . static::class;
+        $id = '_' . __c2f__(static::class, '_');
         $language = Config::get('language');
         $f = LANGUAGE . DS . $language . '.page';
         if (Cache::expire($f)) {
@@ -18,7 +18,7 @@ class Language extends Genome {
     }
 
     public static function set($key, $value = null) {
-        $id = '_' . static::class . '.';
+        $id = '_' . __c2f__(static::class, '_') . '.';
         if (!__is_anemon__($key)) {
             return Config::set($id . $key, $value);
         }
@@ -31,7 +31,7 @@ class Language extends Genome {
     public static function get($key = null, $vars = [], $preserve_case = false) {
         $vars = array_merge(s((array) $vars), [""]);
         $fail = $key;
-        $id = '_' . static::class;
+        $id = '_' . __c2f__(static::class, '_');
         if (!isset($key)) {
             return Config::get($id, $fail);
         }
@@ -65,19 +65,19 @@ class Language extends Genome {
     }
 
     public function __get($key) {
-        return Config::get('_' . static::class . '.' . $key, $key);
+        return Config::get('_' . __c2f__(static::class, '_') . '.' . $key, $key);
     }
 
     public function __unset($key) {
-        return Config::reset('_' . static::class . '.' . $key);
+        return Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
     }
 
     public function __toString() {
-        return To::yaml(Config::get('_' . static::class));
+        return To::yaml(Config::get('_' . __c2f__(static::class, '_')));
     }
 
     public function __invoke($fail = []) {
-        return Config::get('_' . static::class, o($fail));
+        return Config::get('_' . __c2f__(static::class, '_'), o($fail));
     }
 
 }

@@ -56,11 +56,11 @@ class Cookie extends Genome {
     }
 
     private static function x($input) {
-        return __c2f__(static::class) . ':' . base64_encode(json_encode($input));
+        return __c2f__(static::class, '_') . ':' . base64_encode(json_encode($input));
     }
 
     private static function v($input) {
-        if (strpos($input, __c2f__(static::class) . ':') === 0) {
+        if (strpos($input, __c2f__(static::class, '_') . ':') === 0) {
             return json_decode(base64_decode(explode(':', $input, 2)[1]), true);
         }
         return $input;

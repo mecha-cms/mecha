@@ -1,0 +1,6 @@
+---
+type: YAML
+...
+
+o_types:
+  Markdown: Markdown

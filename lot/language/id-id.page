@@ -1,0 +1,769 @@
+---
+title: Indonesia
+description: Bahasa nasional Indonesia.
+type: YAML
+version: 2.0.0
+...
+
+
+action: Aksi
+actions: Aksi
+
+anonymous: Anonim
+
+archive: Arsip
+archives: Arsip
+
+asset: Aset
+assets: Aset
+
+author: Penulis
+authors: Penulis
+
+boolean: Boolean
+booleans: Booleans
+
+cache: Tembolok
+caches: Tembolok
+
+char: Karakter
+chars: Karakter
+
+charset: Set Karakter
+charsets: Set Karakter
+
+char_set: Set Karakter
+char_sets: Set Karakter
+chars_set: Set Karakter
+chars_sets: Set Karakter
+
+child: Anak
+childs: Anak
+
+common: Umum
+commons: Umum
+
+composer: Komposer
+composers: Komposer
+
+config: Konfigurasi
+configs: Konfigurasi
+
+confirmation: Konfirmasi
+confirmations: Konfirmasi
+
+content: Konten
+contents: Konten
+
+data: Data
+datas: Data
+
+date: Tanggal
+dates: Tanggal
+
+day: Hari
+days: Hari
+
+days_long:
+  - Minggu
+  - Senin
+  - Selasa
+  - Rabu
+  - Kamis
+  - Jum’at
+  - Sabtu
+
+days_short:
+  - Min
+  - Sen
+  - Sel
+  - Rab
+  - Kam
+  - Jum
+  - Sab
+
+default: Default
+defaults: Default
+
+description: Deskripsi
+descriptions: Deskripsi
+
+detail: Detail
+details: Detail
+
+direction: Arah
+directions: Arah
+
+draft: Konsep
+drafts: Konsep
+
+editor: Editor
+editors: Editor
+
+email: Surel
+emails: Surel
+
+encoding: Enkoding
+encodings: Enkoding
+
+error: Kesalahan
+errors: Kesalahan
+
+extension: Pengaya
+extensions: Pengaya
+
+field: Bidang
+fields: Bidang
+
+file: Berkas
+files: Berkas
+
+folder: Folder
+folders: Folder
+
+format: Format
+formats: Format
+
+general: Umum
+generals: Umum
+
+hint: Petunjuk
+hints: Petunjuk
+
+home: Beranda
+
+hour: Jam
+hours: Jam
+
+id: ID
+ids: ID
+
+image: Gambar
+images: Gambar
+
+ip: IP
+ips: IP
+
+key: Kunci
+keys: Kunci
+
+keyword: Kata Kunci
+keywords: Kata Kunci
+
+key_word: Kata Kunci
+key_words: Kata Kunci
+
+kin: Kerabat
+kins: Kerabat
+
+kind: Jenis
+kinds: Jenis
+
+language: Bahasa
+languages: Bahasa
+
+less: Kurang
+
+link: Tautan
+links: Tautan
+
+locale: Lokalisasi
+locales: Lokalisasi
+
+media: Media
+medias: Media
+
+message: Pesan
+messages: Pesan
+
+millisecond: Milidetik
+milliseconds: Milidetik
+
+minute: Menit
+minutes: Menit
+
+month: Bulan
+months: Bulan
+
+months_long:
+  - Januari
+  - Februari
+  - Maret
+  - April
+  - Mei
+  - Juni
+  - Juli
+  - Agustus
+  - September
+  - Oktober
+  - November
+  - Desember
+
+months_short:
+  - Jan
+  - Feb
+  - Mar
+  - Apr
+  - Mei
+  - Jun
+  - Jul
+  - Agt
+  - Sep
+  - Okt
+  - Nov
+  - Des
+
+more: Lebih
+
+name: Nama
+names: Nama
+
+navigation: Navigasi
+navigations: Navigasi
+
+new: Baru
+newer: Lebih Baru
+newest: Paling Baru
+
+new__: %{0}% Baru
+
+object: Objek
+objects: Objek
+
+old: Lama
+older: Lebih Lama
+oldest: Paling Lama
+
+old__: %{0}% Lama
+
+only: Hanya
+
+option: Opsi
+options: Opsi
+
+order: Urutan
+orders: Urutan
+
+page: Halaman
+pages: Halaman
+
+parent: Induk
+parents: Induk
+
+pass: Kunci
+passs: Kunci
+
+pattern: Pola
+patterns: Pola
+
+pending: Ditangguhkan
+
+photo: Foto
+photos: Foto
+
+placeholder: Placeholder
+placeholders: Placeholder
+
+preview: Pratinjau
+previews: Pratinjau
+
+profile: Profil
+profiles: Profil
+
+property: Properti
+propertys: Properti
+
+query: Kueri
+querys: Kueri
+
+reply: Balasan
+replys: Balasan
+
+scope: Cakupan
+scopes: Cakupan
+
+second: Detik
+seconds: Detik
+
+setting: Pengaturan
+settings: Pengaturan
+
+shield: Tameng
+shields: Tameng
+
+sibling: Kerabat
+siblings: Kerabat
+
+site: Situs
+sites: Situs
+
+size: Ukuran
+sizes: Ukuran
+
+slogan: Slogan
+slogans: Slogan
+
+slug: Slug
+slugs: Slug
+
+sound: Suara
+sounds: Suara
+
+source: Sumber
+sources: Sumber
+
+spam: Sampah
+spams: Sampah
+
+specific: Spesifik
+specifics: Spesifik
+
+state: Pengaturan
+states: Pengaturan
+
+status: Status
+statuses: Status
+
+subject: Subjek
+subjects: Subjek
+
+summary: Ringkasan
+summarys: Ringkasan
+
+text: Teks
+texts: Teks
+
+time: Waktu
+times: Waktu
+
+time_zone: Zona Waktu
+time_zones: Zona Waktu
+times_zone: Zona Waktu
+times_zones: Zona Waktu
+
+title: Judul
+titles: Judul
+_title: Tanpa Judul
+
+total: Total
+
+type: Tipe
+types: Tipe
+
+unknown: Tak Diketahui
+
+url: URL
+urls: URL
+
+user: Pengguna
+users: Pengguna
+
+value: Nilai
+values: Nilai
+
+variable: Variabel
+variables: Variabel
+
+version: Versi
+versions: Versi
+
+video: Video
+videos: Video
+
+view: Tayangan
+views: Tayangan
+
+week: Minggu
+weeks: Minggu
+
+year: Tahun
+years: Tahun
+
+zone: Zona
+zones: Zona
+
+
+#. Label
+#. -----
+
+above: Di Atas
+ago: Yang Lalu
+ago__: %{0}% yang Lalu
+all: Semua
+all__: Semua %{0}%
+as: Sebagai
+begin: Awal
+both: Keduanya
+both__: Kedua %{0}%
+bottom: Bawah
+by: Berdasarkan
+by__: Oleh %{0}%
+current: Sekarang
+current__: %{0}% Sekarang
+end: Akhir
+finish: Selesai
+first: Pertama
+first__: %{0}% Pertama
+from: Dari
+in: Dalam
+last: Terakhir
+last__: %{0}% Terakhir
+left: Kiri
+next: Berikutnya
+next__: %{0}% Berikutnya
+none: Tidak Ada
+not: Bukan
+not__: Bukan %{0}%
+on: Nyala
+of: Oleh
+off: Mati
+previous: Sebelumnya
+previous__: %{0}% Sebelumnya
+right: Kanan
+start: Mulai
+to: Ke
+today: Hari Ini
+tomorrow: Besok
+tomorrow__: %{0}% Besok
+top: Atas
+under: Bawah
+yesterday: Kemarin
+yesterday__: %{0}% Kemarin
+
+
+abort: Batal
+aborting: Membatalkan
+aborted: Dibatalkan
+
+accept: Terima
+accepting: Menerima
+accepted: Diterima
+
+active: Aktif
+activate: Aktifkan
+activateing: Mengaktifkan
+activateed: Diaktifkan
+
+add: Tambah
+adding: Menambahkan
+added: Ditambahkan
+
+apply: Terapkan
+applying: Menerapkan
+applyed: Diterapkan
+
+approve: Setujui
+approveing: Menyetujui
+approveed: Disetujui
+
+archiveing: Mengarsipkan
+archiveed: Diarsipkan
+
+attach: Pasang
+attaching: Memasang
+attached: Dipasang
+
+block: Blok
+blocking: Mengeblok
+blocked: Diblok
+
+cancel: Batal
+canceling: Membatalkan
+canceled: Dibatalkan
+
+close: Tutup
+closeing: Menutup
+closeed: Ditutup
+
+create: Buat
+createing: Membuat
+createed: Dibuat
+
+compose: Tulis
+composeing: Menulis
+composeed: Ditulis
+
+confirm: Konfirmasi
+confirming: Mengonfirmasi
+confirmed: Dikonfirmasi
+
+copy: Salin
+copying: Menyalin
+copyed: Disalin
+
+decrease: Kurangi
+decreaseing: Mengurangi
+decreaseed: Dikurangi
+
+delete: Hapus
+deleteing: Menghapus
+deleteed: Dihapus
+
+disable: Nonaktifkan
+disableing: Menonaktifkan
+disableed: Dinonaktifkan
+
+do: Lakukan
+doing: Melakukan
+doed: Dilakukan
+
+download: Unduh
+downloading: Mengunduh
+downloaded: Diunduh
+
+drafting: Mengonsep
+drafted: Dikonsep
+
+edit: Sunting
+editing: Menyunting
+edited: Disunting
+
+eject: Lepas
+ejecting: Melepas
+ejected: Dilepas
+
+enable: Aktifkan
+enableing: Mengaktifkan
+enableed: Diaktifkan
+
+enter: Masuk
+entering: Memasukkan
+entered: Dimasukkan
+
+exit: Keluar
+exiting: Mengeluarkan
+exited: Dikeluarkan
+
+extend: Perkaya
+extending: Memperkaya
+extended: Diperkaya
+
+extract: Ekstrak
+extracting: Mengekstrak
+extracted: Diekstrak
+
+find: Cari
+finding: Mencari
+finded: Ditemukan
+
+help: Bantu
+helping: Membantu
+helped: Dibantu
+
+hide: Sembunyikan
+hideing: Menyembunyikan
+hideed: Disembunyikan
+hidden: Tersembunyi
+
+ignore: Abaikan
+ignoreing: Mengabaikan
+ignoreed: Diabaikan
+
+increase: Tambahkan
+increaseing: Menambahkan
+increaseed: Ditambahkan
+
+install: Pasang
+installing: Memasang
+installed: Dipasang
+
+load: Muat
+loading: Memuat
+loaded: Dimuat
+
+log_in: Masuk Log
+log_ining: Sedang Masuk
+log_ined: Berhasil Masuk
+
+log_out: Keluar Log
+log_outing: Sedang Keluar
+log_outed: Berhasil Keluar
+
+manage: Urus
+manageing: Mengurus
+manageed: Diurus
+
+move: Pindahkan
+moveing: Memindahkan
+moveed: Dipindahkan
+
+no: Tidak
+
+ok: OK
+okay: Oke
+
+open: Buka
+opening: Membuka
+opened: Dibuka
+
+pack: Pak
+packing: Mengepak
+packed: Dipak
+
+previewing: Mempratinjau
+previewed: Dipratinjau
+
+publish: Publikasikan
+publishing: Mempublikasikan
+published: Dipublikasikan
+
+read: Baca
+reading: Membaca
+readed: Dibaca
+
+redirect: Arahkan
+redirecting: Mengarahkan
+redirected: Diarahkan
+
+reject: Tolak
+rejecting: Menolak
+rejected: Ditolak
+
+remove: Singkirkan
+removeing: Menyingkirkan
+removeed: Disingkirkan
+
+rename: Ubah Nama
+renameing: Mengubah Nama
+renameed: Nama Berubah
+
+repair: Perbaiki
+repairing: Memperbaiki
+repaired: Diperbaiki
+
+replying: Membalas
+replyed: Dibalas
+
+request: Minta
+requesting: Meminta
+requested: Diminta
+
+require: Butuhkan
+requireing: Membutuhkan
+requireed: Dibutuhkan
+
+reset: Set Ulang
+reseting: Mengeset Ulang
+reseted: Diset Ulang
+
+restore: Kembalikan
+restoreing: Mengembalikan
+restoreed: Dikembalikan
+
+save: Simpan
+saveing: Menyimpan
+saveed: Disimpan
+
+search: Telusuri
+searching: Menelusuri
+searched: Ditelusuri
+
+select: Pilih
+selecting: Memilih
+selected: Dipilih
+
+send: Kirim
+sending: Mengirim
+sended: Dikirim
+
+set: Set
+seting: Mengeset
+seted: Diset
+
+show: Tampilkan
+showing: Menampilkan
+showed: Ditampilkan
+
+sign_in: Masuk
+sign_ining: Sedang Masuk
+sign_ined: Berhasil Masuk
+
+spaming: Menyampah
+spamed: Disampah
+
+submit: Kirim
+submiting: Mengirim
+submited: Dikirim
+
+transfer: Transfer
+transfering: Mentransfer
+transfered: Ditransfer
+
+update: Perbaharui
+updateing: Memperbaharui
+updateed: Diperbaharui
+
+upload: Unggah
+uploading: Mengunggah
+uploaded: Diunggah
+
+viewing: Menampilkan
+viewed: Ditampilkan
+
+visible: Tampak
+
+visit: Kunjungi
+visiting: Mengunjungi
+visited: Dikunjungi
+
+yes: Ya
+
+_active: Tidak Aktif
+_activate: Tidak Diaktifkan
+_activateing: Menidakaktifkan
+_activateed: Ditidakaktifkan
+
+_approve: Tidak Setuju
+_approveing: Menidaksetujukan
+_approveed: Ditidaksetujukan
+
+_finded: Tidak Ditemukan
+
+_install: Lepas
+_installing: Melepas
+_installed: Dilepas
+
+_load: Batal Memuat
+_loading: Membatalkan Muatan
+_loaded: Muatan Dibatalkan
+
+_publish: Batal Mempublikasikan
+_publishing: Membatalkan Publikasi
+_published: Publikasi Dibatalkan
+
+
+#. Message
+#. -------
+
+message_avail: %{0}% tersedia.
+message_exist: %{0}% already exists.
+
+message_error_file_exist: Berkas %{0}% sudah ada.
+message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
+message_error_file_size:
+  0: Harus lebih besar dari %{0}%.
+  1: Harus lebih kecil dari %{0}%.
+message_error_file_type: Tipe berkas %{0}% tidak diperbolehkan.
+message_error_search: Tidak ada temuan untuk %{0}%.
+
+message_info_are: %{0}% Anda adalah %{1}%.
+message_info_file_upload:
+  0: Tidak ada kesalahan, berkas berhasil diunggah dengan sukses.
+  1: Berkas yang diunggah melebihi direktif <code>upload_max_filesize</code> dalam <code>php.ini</code>.
+  2: Berkas yang diunggah melebihi direktif <code>MAX_FILE_SIZE</code> yang telah ditentukan dalam <abbr title="Hyper Text Markup Language">HTML</abbr> formulir.
+  3: Berkas yang diunggah hanya terunggah sebagian.
+  4: Tidak ada berkas yang diunggah.
+  5: ?
+  6: Folder sementara tidak ada.
+  7: Gagal menulis berkas ke disk.
+  8: Sebuah pengaya PHP telah menghentikan proses pengunggahan berkas.
+message_info_is: %{0}% Anda adalah %{1}%.
+message_info_search: Hasil penelusuran untuk %{0}%.
+message_info_void: Belum ada %{0}%.
+
+message_success_file_upload: %{0}% berhasil diunggah.
+
+# negation…
+_message_avail: %{0}% tidak tersedia.
+_message_exist: %{0}% tidak ada.
+_message_info_void: Berisi %{0}%.

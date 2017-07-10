@@ -1024,7 +1024,7 @@ function z($a, $b = true, $safe = true) {
             }
             $s .= "'" . $v . "'";
         } else {
-            $s .= str_replace(['{', '}', ':', 'true', 'false'], [$b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
+            $s .= str_replace(['[', ']', '{', '}', ':', 'true', 'false'], ['{', '}', $b ? '[' : 'array(', $b ? ']' : ')', '=>', '!0', '!1'], $v);
         }
     }
     return $s;

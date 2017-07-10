@@ -21,8 +21,9 @@ array_walk_recursive($vars, function(&$v) {
     $v = str_replace(["\r\n", "\r"], "\n", $v);
 });
 
-d(ENGINE . DS . 'kernel', function($w, $n) {
-    $f = ENGINE . DS . 'plug' . DS . $n . '.php';
+$f = ENGINE . DS;
+d($f . 'kernel', function($w, $n) use($f) {
+    $f .= 'plug' . DS . $n . '.php';
     if (file_exists($f)) {
         require $f;
     }
@@ -89,7 +90,7 @@ if (Cache::expire(EXTEND, $id)) {
     $content = [];
     foreach ($c as $k => $v) {
         $i18n = new Page($k, [], 'language');
-        $fn = 'From::' . str_replace('-', '_', __c2f__($i18n->type));
+        $fn = 'From::' . __c2f__($i18n->type, '_');
         $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : (array) $i18n->content);
     }
     Cache::set(EXTEND, $content, $id);

@@ -27,7 +27,7 @@ class Guardian extends Genome {
         }
         $long = URL::long($path, false);
         Session::set('url.previous', Hook::NS('url.previous', [$current, $path]));
-        Hook::fire(__c2f__(static::class) . '.kick.before', [$long, $path]);
+        Hook::fire(__c2f__(static::class, '_') . '.kick.before', [$long, $path]);
         header('Location: ' . Hook::NS('url.next', [$long, $path]));
         exit;
     }

@@ -2,9 +2,6 @@
 type: YAML
 ...
 
-page: Page
-pages: Pages
-
 
 #. Message
 #. -------

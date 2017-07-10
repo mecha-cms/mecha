@@ -46,7 +46,7 @@ class Union extends Genome {
 
     public function __construct($union = [], $NS = null) {
         if (!isset($NS)) {
-            $NS = __c2f__(static::class);
+            $NS = __c2f__(static::class, '_');
         }
         $NS .= '.';
         $this->union = Hook::NS($NS . 'union', [array_replace_recursive($this->union, $union)]);

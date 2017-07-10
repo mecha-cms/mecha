@@ -27,7 +27,7 @@ class Shield extends Genome {
     }
 
     public static function get($input, $fail = false, $buffer = true) {
-        $NS = __c2f__(static::class) . '.get.';
+        $NS = __c2f__(static::class, '_') . '.get.';
         if (is_array($fail)) {
             $lot_a__ = ['lot' => $fail];
             $fail = false;
@@ -64,7 +64,7 @@ class Shield extends Genome {
     }
 
     public static function attach($input, $fail = false, $buffer = true) {
-        $NS = __c2f__(static::class) . '.';
+        $NS = __c2f__(static::class, '_') . '.';
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail), $input])) {
             global $config;
             $G = ['source' => $input];
@@ -121,7 +121,7 @@ class Shield extends Genome {
             return is_array($key) ? $key : $fail;
         }
         $state = include $state;
-        $state = Hook::NS(__c2f__(static::class) . '.state.' . $id, [$state]);
+        $state = Hook::NS(__c2f__(static::class, '_') . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }

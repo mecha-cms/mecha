@@ -254,6 +254,9 @@ options: Options
 order: Order
 orders: Orders
 
+page: Page
+pages: Pages
+
 parent: Parent
 parents: Parents
 
@@ -756,12 +759,30 @@ _published: Unpublished
 message_avail: %{0}% is available.
 message_exist: %{0}% already exists.
 
+message_error_file_exist: File %{0}% already exists.
+message_error_file_x: Extension %{0}% is not allowed.
+message_error_file_size:
+  0: Must be greater than %{0}%.
+  1: Must be less than %{0}%.
+message_error_file_type: File type %{0}% is not allowed.
+message_error_search: No results for %{0}%.
+
 message_info_are: Your %{0}% are %{1}%.
+message_info_file_upload:
+  0: There is no error, the file uploaded with success.
+  1: The uploaded file exceeds the <code>upload_max_filesize</code> directive in <code>php.ini</code>.
+  2: The uploaded file exceeds the <code>MAX_FILE_SIZE</code> directive that was specified in the <abbr title="Hyper Text Markup Language">HTML</abbr> form.
+  3: The uploaded file was only partially uploaded.
+  4: No file was uploaded.
+  5: ?
+  6: Missing a temporary folder.
+  7: Failed to write file to disk.
+  8: A PHP extension stopped the file upload.
 message_info_is: Your %{0}% is %{1}%.
 message_info_search: Search results for %{0}%.
 message_info_void: No %{0}% yet.
 
-message_error_search: No results for %{0}%.
+message_success_file_upload: %{0}% uploaded.
 
 # negation…
 _message_avail: %{0}% is not available.

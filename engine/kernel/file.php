@@ -281,11 +281,11 @@ class File extends Genome {
 
     // Upload the file
     public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
-        $target = To::path($input);
+        $target = To::path($target);
         // Create a safe file name
         $file['name'] = To::file($file['name']);
         $x = Path::X($file['name']);
-        $e = Language::message_file_upload();
+        $e = Language::message_info_file_upload();
         // Something goes wrong
         if ($file['error'] > 0 && isset($e[$file['error']])) {
             Message::error($e[$file['error']]);
@@ -313,16 +313,19 @@ class File extends Genome {
             if (!file_exists($target)) Folder::set($target);
             // Move the uploaded file to the destination folder
             if (!file_exists($target . DS . $file['name'])) {
-                move_uploaded_file($file['tmp_name'], $target . DS . $file['name']);
+                // Create private asset URL to be hooked on file uploaded
+                $file['path'] = $target . DS . $file['name'];
+                // Move…
+                move_uploaded_file($file['tmp_name'], $file['path']);
                 // Create public asset URL to be hooked on file uploaded
                 $file['url'] = To::url($target) . '/' . $file['name'];
-                Message::success('file_upload', $file['name']);
+                Message::success('file_upload', '<code>' . $file['name'] . '</code>');
                 if (is_callable($fn)) {
                     return call_user_func($fn, $file);
                 }
                 return $target . DS . $file['name'];
             }
-            Message::error('file_exist', $file['name']);
+            Message::error('file_exist', '<code>' . $file['name'] . '</code>');
             return $fail;
         }
         return $fail;

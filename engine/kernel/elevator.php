@@ -14,7 +14,7 @@ class Elevator extends Genome {
     protected $NS = "";
 
     public function __construct($input, $chunk = 5, $index = 0, $path = true, $config = [], $NS = "") {
-        $key = __c2f__(static::class) . ($NS ? '.' . $NS : "");
+        $key = __c2f__(static::class, '_') . ($NS ? '.' . $NS : "");
         $c = [
             // -1: previous
             //  0: parent
@@ -105,7 +105,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        return Hook::NS(__c2f__(static::class) . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::NS(__c2f__(static::class, '_') . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

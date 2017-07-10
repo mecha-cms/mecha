@@ -1,0 +1,9 @@
+---
+type: YAML
+...
+
+
+#. Message
+#. -------
+
+message_info_kick: Anda telah diarahkan dari %{0}%

@@ -29,7 +29,7 @@ class Message extends Genome {
         $text = array_shift($lot);
         $s = array_shift($lot) ?: "";
         $k = array_shift($lot) ?: false;
-        $i = __c2f__(static::class) . '_' . $kin . '_' . $text;
+        $i = __c2f__(static::class, '_') . '_' . $kin . '_' . $text;
         $o = Language::get($i, $s, $k);
         $o = $o === $i ? $text : $o;
         if ($count === 1) {
@@ -74,7 +74,7 @@ class Message extends Genome {
         $lot .= 'Reply-To: ' . $from . N;
         $lot .= 'Return-Path: ' . $from . N;
         $lot .= 'X-Mailer: PHP/' . phpversion();
-        $s = __c2f__(static::class) . '.' . __FUNCTION__;
+        $s = __c2f__(static::class, '_') . '.' . __FUNCTION__;
         $lot = Hook::NS($s . '.data', [$lot]);
         $data = Hook::NS($s . '.content', [$message]);
         return mail($to, $subject, $data, $lot);
