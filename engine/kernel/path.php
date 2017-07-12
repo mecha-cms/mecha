@@ -41,17 +41,17 @@ class Path extends Genome {
         return $x ? strtolower($x) : $fail;
     }
 
-    public static function F($path, $root = null) {
+    public static function F($path, $root = null, $x = DS) {
         $f = pathinfo($path, PATHINFO_DIRNAME);
         $n = pathinfo($path, PATHINFO_FILENAME);
         if (isset($root)) {
-            $f = str_replace(['/', $root . DS, $root], [DS, "", ""], $f);
+            $f = str_replace(['/', $root . $x, $root], [$x, "", ""], $f);
         }
-        $s = ($f === '.' ? "" : $f) . DS . $n;
+        $s = ($f === '.' ? "" : $f) . $x . $n;
         if (isset($root)) {
-            $s = trim($s, DS);
+            $s = trim($s, $x);
         } else {
-            $s = rtrim($s, DS);
+            $s = rtrim($s, $x);
         }
         return $s;
     }

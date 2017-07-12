@@ -2,5 +2,5 @@
 type: YAML
 ...
 
-o_types:
+o_type:
   Markdown: Markdown

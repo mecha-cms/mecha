@@ -192,7 +192,7 @@ class File extends Genome {
         if (self::$path !== false) {
             $a = Path::B(self::$path);
             $b = Path::D(self::$path) . DS;
-            if ($name !== $a) {
+            if ($name !== $a && !file_exists($b . $name)) {
                 rename($b . $a, $b . $name);
             }
             self::$path = $b . $name;

@@ -59,12 +59,13 @@ $seeds = [
 Lot::set($seeds);
 
 $extends = [];
-foreach (g(EXTEND . DS . '*', '{index__,index}.php') as $v) {
+foreach (g(EXTEND . DS . '*', '{index__,index,__index}.php') as $v) {
     $extends[$v] = (float) File::open(Path::D($v) . DS . 'index.stack')->get(0, 10);
 }
 
 asort($extends);
 extract($seeds);
+Config::set('+extend', $extends);
 $c = [];
 foreach ($extends as $k => $v) {
     $f = Path::D($k) . DS;
@@ -75,14 +76,16 @@ foreach ($extends as $k => $v) {
     ])) {
         $c[$l] = filemtime($l);
     }
-    $f .= 'engine' . DS;
-    d($f . 'kernel', function($w, $n) use($f, $seeds) {
-        $f .= 'plug' . DS . $n . '.php';
-        if (file_exists($f)) {
-            extract($seeds);
-            require $f;
-        }
-    }, $seeds);
+    if (strpos(Path::B($k), '__') !== 0) {
+        $f .= 'engine' . DS;
+        d($f . 'kernel', function($w, $n) use($f, $seeds) {
+            $f .= 'plug' . DS . $n . '.php';
+            if (file_exists($f)) {
+                extract($seeds);
+                require $f;
+            }
+        }, $seeds);
+    }
 }
 
 $id = array_sum($c);
@@ -103,6 +106,9 @@ Language::set($content);
 
 // Load all extension(s)…
 foreach (array_keys($extends) as $v) {
+    if (strpos(Path::B($v), '__') === 0) {
+        continue;
+    }
     call_user_func(function() use($v) {
         extract(Lot::get(null, []));
         require $v;
@@ -125,9 +131,11 @@ if ($l = File::exist([
 if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
 if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
+// Load all route(s)…
 function do_fire() {
     Route::fire();
     Shield::abort();
 }
 
+// Set and trigger `fire` hook!
 Hook::set('fire', 'do_fire')->fire('fire');
