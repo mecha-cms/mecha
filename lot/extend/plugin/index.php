@@ -21,7 +21,7 @@ call_user_func(function() {
         ])) {
             $c[$l] = filemtime($l);
         }
-        if (strpos(Path::B($k), '__') !== 0) {
+        if (Path::B($k) !== '__index.php') {
             $f .= 'engine' . DS;
             d($f . 'kernel', function($w, $n) use($f, $seeds) {
                 $f .= 'plug' . DS . $n . '.php';
@@ -46,9 +46,8 @@ call_user_func(function() {
     }
     Language::set($content);
     foreach (array_keys($plugins) as $v) {
-        if (strpos(Path::B($v), '__') === 0) {
-            continue;
+        if (Path::B($v) !== '__index.php') {
+            require $v;
         }
-        require $v;
     }
 });

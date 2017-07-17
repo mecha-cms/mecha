@@ -120,9 +120,6 @@ class Union extends Genome {
 
     // Base union constructor
     public function unite($unit = 'html', $content = "", $data = [], $dent = 0) {
-        if (is_array($content)) {
-            $content = N . call_user_func_array([$this, __FUNCTION__], array_merge($content, $dent + 1)) . N;
-        }
         $dent = self::dent($dent);
         $c = $this->pref;
         $u = $this->union[1][0];

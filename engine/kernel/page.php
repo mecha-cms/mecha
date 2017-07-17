@@ -20,15 +20,17 @@ class Page extends Genome {
             $t = File::T($path, time());
             $date = date(DATE_WISE, $t);
             $n = $path ? Path::N($path) : null;
-            $this->lot_alt = array_replace(a(Config::get('page', [])), [
+            $x = Path::X($path);
+            $this->lot_alt = array_replace([
                 'time' => $date,
                 'update' => $date,
                 'slug' => $n,
                 'title' => To::title($n), // fake `title` data from the page’s file name
-                'state' => Path::X($path),
+                'type' => u($x), // fake `type` data from the page’s file extension
+                'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
-            ], $lot);
+            ], a(Config::get('page', [])), $lot);
             $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
             // Set `time` value from the page’s file name
             if (
@@ -110,7 +112,8 @@ class Page extends Genome {
     }
 
     public function __toString() {
-        return self::unite($this->lot);
+        $path = isset($this->lot['path']) ? $this->lot['path'] : null;
+        return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
     public static $v = ["---\n", "\n...", ': ', '- ', "\n"];

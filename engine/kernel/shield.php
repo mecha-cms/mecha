@@ -2,6 +2,8 @@
 
 class Shield extends Genome {
 
+    public static $shield = [];
+
     protected static function X($input) {
         $x = substr($input, -4) !== '.php' ? '.php' : "";
         return $input . $x;
@@ -120,8 +122,9 @@ class Shield extends Genome {
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }
-        $state = include $state;
-        $state = Hook::NS(__c2f__(static::class, '_') . '.state.' . $id, [$state]);
+        $c = __c2f__(static::class, '_');
+        $state = isset(self::$shield[$c][$id]) ? self::$shield[$c][$id] : include $state;
+        $state = Hook::NS($c . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }

@@ -7,12 +7,14 @@ class Cache extends Genome {
     public static function set($from, $content = null, $id = null) {
         $n = self::_n($from);
         $t = $id ? (string) $id : File::T($from, 0);
-        $x = File::open($n)->import([-1]);
-        if (is_string($t) && $t !== $x[0] || $t > $x[0]) {
-            $c = $content && is_file($from) ? file_get_contents($from) : "";
-            $content = isset($content) ? $content : (strpos($c, '<?php') === 0 ? require $from : $c);
-            File::export([$t, $content])->saveTo($n, 0600);
-            return $content;
+        if ($t || $content) {
+            $x = File::open($n)->import([-1]);
+            if ((is_string($t) && $t !== $x[0]) || $t > $x[0]) {
+                $c = $content && is_file($from) ? file_get_contents($from) : "";
+                $content = isset($content) ? $content : (strpos($c, '<?php') === 0 ? require $from : $c);
+                File::export([$t, $content])->saveTo($n, 0600);
+                return $content;
+            }
         }
         return false;
     }

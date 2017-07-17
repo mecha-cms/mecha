@@ -2,6 +2,8 @@
 
 class Extend extends Genome {
 
+    public static $extend = [];
+
     public static function exist($input, $fail = false) {
         return Folder::exist(EXTEND . DS . $input, $fail);
     }
@@ -15,8 +17,9 @@ class Extend extends Genome {
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }
-        $state = include $state;
-        $state = Hook::NS(__c2f__(static::class, '_') . '.state.' . $id, [$state]);
+        $c = __c2f__(static::class, '_');
+        $state = isset(self::$extend[$c][$id]) ? self::$extend[$c][$id] : include $state;
+        $state = Hook::NS($c . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }

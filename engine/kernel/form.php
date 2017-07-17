@@ -22,6 +22,7 @@ class Form extends HTML {
         }
         $attr_o = ['value' => $value];
         self::_name($name, $attr_o);
+        unset($attr_o['readonly'], $attr_o['required']);
         $attr_o['name'] = $name;
         return self::unite('button', $text, Anemon::extend($attr_o, $attr), $dent);
     }
@@ -43,6 +44,7 @@ class Form extends HTML {
         $o = "";
         $attr_o = [];
         self::_name($name, $attr_o);
+        unset($attr_o['required']);
         $select = (string) Request::restore('post', $name, $select);
         $attr_o['name'] = $name;
         Anemon::extend($attr_o, $attr);
@@ -52,17 +54,18 @@ class Form extends HTML {
                 $s = [];
                 $key = (string) $key;
                 self::_name($key, $s);
-                $s['label'] = $key;
+                $s['label'] = trim(strip_tags($key));
                 $o .= N . self::begin('optgroup', $s, $dent + 1);
                 foreach ($value as $k => $v) {
                     $s = [];
                     $k = (string) $k;
                     self::_name($k, $s);
+                    unset($s['readonly'], $s['required']);
                     if ($select === $k) {
                         $s['selected'] = true;
                     }
                     $s['value'] = $k;
-                    $o .= N . self::unite('option', $v, $s, $dent + 2);
+                    $o .= N . self::unite('option', trim(strip_tags($v)), $s, $dent + 2);
                 }
                 $o .= N . self::end();
             // option list
@@ -70,11 +73,12 @@ class Form extends HTML {
                 $s = [];
                 $key = (string) $key;
                 self::_name($key, $s);
+                unset($s['readonly'], $s['required']);
                 if ($select === $key) {
                     $s['selected'] = true;
                 }
                 $s['value'] = $key;
-                $o .= N . self::unite('option', $value, $s, $dent + 1);
+                $o .= N . self::unite('option', trim(strip_tags($value)), $s, $dent + 1);
             }
         }
         return self::unite('select', $o . N . self::dent($dent), $attr_o, $dent);

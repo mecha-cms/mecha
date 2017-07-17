@@ -47,7 +47,7 @@ class Message extends Genome {
     }
 
     public static function get($session_x = true) {
-        $output = Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : "";
+        $output = Hook::NS(__c2f__(static::class, '_') . '.get', [Session::get(self::$id, "") !== "" ? __replace__(call_user_func_array('HTML::unite', self::$config['messages']), Session::get(self::$id)) : ""]);
         if ($session_x) self::reset();
         return $output;
     }

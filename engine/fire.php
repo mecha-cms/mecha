@@ -76,7 +76,7 @@ foreach ($extends as $k => $v) {
     ])) {
         $c[$l] = filemtime($l);
     }
-    if (strpos(Path::B($k), '__') !== 0) {
+    if (Path::B($k) !== '__index.php') {
         $f .= 'engine' . DS;
         d($f . 'kernel', function($w, $n) use($f, $seeds) {
             $f .= 'plug' . DS . $n . '.php';
@@ -106,13 +106,12 @@ Language::set($content);
 
 // Load all extension(s)…
 foreach (array_keys($extends) as $v) {
-    if (strpos(Path::B($v), '__') === 0) {
-        continue;
+    if (Path::B($v) !== '__index.php') {
+        call_user_func(function() use($v) {
+            extract(Lot::get(null, []));
+            require $v;
+        });
     }
-    call_user_func(function() use($v) {
-        extract(Lot::get(null, []));
-        require $v;
-    });
 }
 
 // Load user language(s) from the current shield folder if any
@@ -132,10 +131,10 @@ if ($fn = File::exist($folder_shield . 'index.php')) require $fn;
 if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 // Load all route(s)…
-function do_fire() {
+function on_ready() {
     Route::fire();
     Shield::abort();
 }
 
-// Set and trigger `fire` hook!
-Hook::set('fire', 'do_fire')->fire('fire');
+// Set and trigger `on.ready` hook!
+Hook::set('on.ready', 'on_ready')->fire('on.ready');
