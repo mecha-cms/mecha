@@ -26,9 +26,10 @@ class File extends Genome {
             'size' => file_exists($path) ? self::size($path) : null,
             'is' => [
                 // Hidden file/folder only
-                'hidden' => strpos($n, '.') === 0 || strpos($n, '_') === 0,
+                'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
                 'file' => is_file($path),
-                'folder' => is_dir($path)
+                'files' => is_dir($path),
+                'folder' => is_dir($path) // alias for `is.files`
             ],
             '_update' => $update,
             '_size' => file_exists($path) ? filesize($path) : null
@@ -37,7 +38,7 @@ class File extends Genome {
     }
 
     // List all file(s) from a folder
-    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = false) {
+    public static function explore($folder = ROOT, $deep = false, $flat = false, $fail = []) {
         $folder = To::path($folder);
         $files = array_merge(
             glob($folder . DS . '*', GLOB_NOSORT),
@@ -204,11 +205,11 @@ class File extends Genome {
     public static function moveTo($target = ROOT) {
         if (self::$path !== false) {
             $target = To::path($target);
-            if (is_dir($target) && is_file(self::$path)) {
-                $target .= DS . Path::B(self::$path);
+            if (!file_exists($target)) {
+                mkdir($target, 0777, true);
             }
-            if (!file_exists(Path::D($target))) {
-                mkdir(Path::D($target), 0777, true);
+            if (is_file(self::$path)) {
+                $target .= DS . Path::B(self::$path);
             }
             rename(self::$path, $target);
             self::$path = $target;

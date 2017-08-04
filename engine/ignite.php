@@ -77,12 +77,12 @@ function __format__($s, $x = "\n", $d = '#', $r = true) {
         }, $s);
     }
     return str_replace([
-        '%s%', // any string excludes `\n`
+        '%s%', // any string excludes `$x`
         '%i%', // any string number(s)
         '%f%', // any string number(s) includes float(s)
         '%b%', // any string boolean(s)
-       '%\*%', // any string includes `\n`
-          X
+       '%\*%', // any string includes `$x`
+         X
     ], [
         '([^' . $x . ']+)' . $r,
         '(\-?\d+)' . $r,

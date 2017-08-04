@@ -2,7 +2,7 @@
 
 class From extends Genome {
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         if (!self::kin($kin) && (!defined('DEBUG') || !DEBUG)) {
             return $lot[0];
         }

@@ -70,7 +70,7 @@ class Asset extends Genome {
         return new static;
     }
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         $path = array_shift($lot);
         $attr = array_shift($lot) ?: [];
         $fn = static::class . '\\Union::' . $kin;

@@ -45,7 +45,7 @@ class Language extends Genome {
         return $s;
     }
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         return call_user_func_array([new static, $kin], $lot);
     }
 
@@ -56,7 +56,7 @@ class Language extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot) {
+    public function __call($key, $lot = []) {
         return self::get($key, array_shift($lot), array_shift($lot) ?: false);
     }
 

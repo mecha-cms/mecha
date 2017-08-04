@@ -79,8 +79,11 @@ class HTTP extends Genome {
     public static function query($query = null, $c = []) {
         $cc = ['?', '&amp;', '='];
         $cc = array_replace($cc, $c);
-        if (!isset($query)) return __url__('query');
-        $q = !empty($query) ? array_replace_recursive($_GET, $query) : $_GET;
+        if (!isset($query)) {
+            $query = __url__('query');
+            return str_replace(['?', '&', '='], $cc, $query);
+        }
+        $q = $query ? array_replace_recursive($_GET, (array) $query) : $_GET;
         $output = [];
         foreach (self::_q($q, "") as $k => $v) {
             if ($v === false) continue;

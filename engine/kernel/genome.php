@@ -50,7 +50,7 @@ abstract class Genome {
     }
 
     // Call the added method with `Genome::foo()`
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         $c = static::class;
         $k = $kin . self::$_suf;
         if (method_exists($c, $k)) {
@@ -60,7 +60,7 @@ abstract class Genome {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
             return false;
         }
-        return call_user_func_array(self::$_[1][$c][$k], $lot);
+        return call_user_func_array(self::$_[1][$c][$k], (array) $lot);
     }
 
 }

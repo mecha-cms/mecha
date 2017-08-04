@@ -7,12 +7,12 @@ class Page extends Genome {
     protected $lot = [];
     protected $lot_alt = [];
 
-    private $pref = "";
+    private $_pref = "";
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
-        $this->pref = $NS . '.';
+        $this->_pref = $NS . '.';
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = md5($this->pref . $path);
+        $id = md5($this->_pref . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id][1];
             $this->lot_alt = self::$page[$id][0];
@@ -63,7 +63,7 @@ class Page extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot) {
+    public function __call($key, $lot = []) {
         $fail = array_shift($lot);
         $fail_alt = array_shift($lot);
         $x = $this->__get($key);
@@ -76,7 +76,7 @@ class Page extends Genome {
     }
 
     public function __set($key, $value = null) {
-        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $id = md5($this->_pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
         $this->lot[$key] = self::$page[$id][1][$key] = $value;
     }
 
@@ -101,13 +101,13 @@ class Page extends Genome {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;
-        self::$page[md5($this->pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
+        self::$page[md5($this->_pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
         // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->pref . $key, [$lot[$key], $lot, $key, $this]);
+        return Hook::NS($this->_pref . $key, [$lot[$key], $lot, $key, $this]);
     }
 
     public function __unset($key) {
-        $id = md5($this->pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $id = md5($this->_pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
         unset($this->lot[$key], self::$page[$id][1][$key]);
     }
 

@@ -2,7 +2,7 @@
 
 class State extends Genome {
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         $s = STATE . DS . $kin . '.php';
         if ($state = File::open($s)->import()) {
             $state_alt = array_merge(['shield' => ""], isset($lot[0]) ? (array) $lot[0] : []);
@@ -23,7 +23,7 @@ class State extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot) {
+    public function __call($key, $lot = []) {
         $fail = array_shift($lot);
         $fail_alt = array_shift($lot);
         $x = $this->__get($key);

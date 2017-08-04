@@ -154,6 +154,9 @@ images: Images
 ip: IP
 ips: IPs
 
+item: Item
+items: Items
+
 key: Key
 keys: Keys
 
@@ -179,6 +182,9 @@ links: Links
 
 locale: Locale
 locales: Locales
+
+log: Log
+logs: Logs
 
 media: Media
 medias: Media
@@ -262,6 +268,9 @@ parents: Parents
 
 pass: Pass
 passs: Passes
+
+path: Path
+paths: Pathes
 
 pattern: Pattern
 patterns: Patterns
@@ -353,9 +362,11 @@ times_zones: Times Zones
 
 title: Title
 titles: Titles
-_title: Untitled
 
 total: Total
+
+trash: Trash
+trashs: Trashes
 
 type: Type
 types: Types
@@ -584,6 +595,10 @@ increase: Increase
 increaseing: Increasing
 increaseed: Increased
 
+insert: Insert
+inserting: Inserting
+inserted: Inserted
+
 install: Install
 installing: Installing
 installed: Installed
@@ -729,29 +744,6 @@ visited: Visited
 
 yes: Yes
 
-_active: Inactive
-_activate: Deactivate
-_activateing: Deactivating
-_activateed: Deactivated
-
-_approve: Unapprove
-_approveing: Unapproving
-_approveed: Unapproved
-
-_finded: Not Found
-
-_install: Uninstall
-_installing: Uninstalling
-_installed: Uninstalled
-
-_load: Unload
-_loading: Unloading
-_loaded: Unloaded
-
-_publish: Unpublish
-_publishing: Unpublishing
-_published: Unpublished
-
 
 #. Message
 #. -------
@@ -784,7 +776,35 @@ message_info_void: No %{0}% yet.
 
 message_success_file_upload: %{0}% uploaded.
 
-# negation…
+
+#. Negation…
+#. ---------
+
+_active: Inactive
+_activate: Deactivate
+_activateing: Deactivating
+_activateed: Deactivated
+
+_approve: Unapprove
+_approveing: Unapproving
+_approveed: Unapproved
+
+_finded: Not Found
+
+_install: Uninstall
+_installing: Uninstalling
+_installed: Uninstalled
+
+_load: Unload
+_loading: Unloading
+_loaded: Unloaded
+
 _message_avail: %{0}% is not available.
 _message_exist: %{0}% does not exist.
 _message_info_void: Contains some %{0}%.
+
+_publish: Unpublish
+_publishing: Unpublishing
+_published: Unpublished
+
+_title: Untitled

@@ -49,7 +49,7 @@ class URL extends Genome {
 
     protected $lot = [];
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         $a = __url__();
         if (!self::kin($kin)) {
             $fail = array_shift($lot) ?: false;

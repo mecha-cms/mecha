@@ -81,7 +81,7 @@ class Message extends Genome {
         return mail($to, $subject, $data, $lot);
     }
 
-    public static function __callStatic($kin, $lot) {
+    public static function __callStatic($kin, $lot = []) {
         if (!self::kin($kin)) {
             array_unshift($lot, $kin);
             return call_user_func_array('self::set', $lot);

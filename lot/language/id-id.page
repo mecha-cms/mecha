@@ -144,6 +144,9 @@ images: Gambar
 ip: IP
 ips: IP
 
+item: Item
+items: Item
+
 key: Kunci
 keys: Kunci
 
@@ -169,6 +172,9 @@ links: Tautan
 
 locale: Lokalisasi
 locales: Lokalisasi
+
+log: Catatan
+logs: Catatan
 
 media: Media
 medias: Media
@@ -252,6 +258,9 @@ parents: Induk
 
 pass: Kunci
 passs: Kunci
+
+path: Jalur
+paths: Jalur
 
 pattern: Pola
 patterns: Pola
@@ -343,9 +352,11 @@ times_zones: Zona Waktu
 
 title: Judul
 titles: Judul
-_title: Tanpa Judul
 
 total: Total
+
+trash: Sampah
+trashs: Sampah
 
 type: Tipe
 types: Tipe
@@ -382,9 +393,6 @@ years: Tahun
 zone: Zona
 zones: Zona
 
-
-#. Label
-#. -----
 
 above: Di Atas
 ago: Yang Lalu
@@ -563,6 +571,10 @@ increase: Tambahkan
 increaseing: Menambahkan
 increaseed: Ditambahkan
 
+insert: Sisipkan
+inserting: Menyisipkan
+inserted: Disisipkan
+
 install: Pasang
 installing: Memasang
 installed: Dipasang
@@ -708,32 +720,6 @@ visited: Dikunjungi
 
 yes: Ya
 
-_active: Tidak Aktif
-_activate: Tidak Diaktifkan
-_activateing: Menidakaktifkan
-_activateed: Ditidakaktifkan
-
-_approve: Tidak Setuju
-_approveing: Menidaksetujukan
-_approveed: Ditidaksetujukan
-
-_finded: Tidak Ditemukan
-
-_install: Lepas
-_installing: Melepas
-_installed: Dilepas
-
-_load: Batal Memuat
-_loading: Membatalkan Muatan
-_loaded: Muatan Dibatalkan
-
-_publish: Batal Mempublikasikan
-_publishing: Membatalkan Publikasi
-_published: Publikasi Dibatalkan
-
-
-#. Message
-#. -------
 
 message_avail: %{0}% tersedia.
 message_exist: %{0}% already exists.
@@ -763,7 +749,32 @@ message_info_void: Belum ada %{0}%.
 
 message_success_file_upload: %{0}% berhasil diunggah.
 
-# negation…
+
+_active: Tidak Aktif
+_activate: Tidak Diaktifkan
+_activateing: Menidakaktifkan
+_activateed: Ditidakaktifkan
+
+_approve: Tidak Setuju
+_approveing: Menidaksetujukan
+_approveed: Ditidaksetujukan
+
+_finded: Tidak Ditemukan
+
+_install: Lepas
+_installing: Melepas
+_installed: Dilepas
+
+_load: Batal Memuat
+_loading: Membatalkan Muatan
+_loaded: Muatan Dibatalkan
+
 _message_avail: %{0}% tidak tersedia.
 _message_exist: %{0}% tidak ada.
 _message_info_void: Berisi %{0}%.
+
+_publish: Batal Mempublikasikan
+_publishing: Membatalkan Publikasi
+_published: Publikasi Dibatalkan
+
+_title: Tanpa Judul

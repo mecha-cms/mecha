@@ -2,11 +2,10 @@
 
 HTML::plug('a', function($content = "", $href = null, $target = null, $attr = [], $dent = 0) {
     $attr_o = [
-        'href' => $href,
-        'target' => $target === true ? '_blank' : ($target === false ? null : $target)
+        'target' => $target === true ? '_new' : ($target === false ? null : $target)
     ];
     $attr = Anemon::extend($attr_o, $attr);
-    $attr['href'] = URL::long(str_replace('&amp;', '&', $attr['href']));
+    $attr['href'] = URL::long(str_replace('&amp;', '&', $href));
     return HTML::unite('a', $content, $attr, $dent);
 });
 
@@ -18,13 +17,12 @@ HTML::plug('img', function($src = null, $alt = null, $attr = [], $dent = 0) {
         $z = [null, null];
     }
     $attr_o = [
-        'src' => $src,
         'alt' => !isset($alt) ? "" : $alt,
         'width' => $z[0],
         'height' => $z[1]
     ];
     $attr = Anemon::extend($attr_o, $attr);
-    $attr['src'] = URL::long(str_replace('&amp;', '&', $attr['src']));
+    $attr['src'] = URL::long(str_replace('&amp;', '&', $src));
     return HTML::unite('img', false, $attr, $dent);
 });
 
