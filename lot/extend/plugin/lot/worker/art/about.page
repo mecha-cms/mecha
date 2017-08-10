@@ -4,6 +4,7 @@ description: Create unique design for each blog post by adding special CSS and J
 author: Taufik Nurrohman
 type: Markdown
 version: 1.0.1
+dependency: {"extension":["page"]}
 ...
 
 To enable this feature, add `css.data` and `js.data` files to a folder that is named with the same name as the page slug and stored in the same directory level:

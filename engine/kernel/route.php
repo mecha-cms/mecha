@@ -32,7 +32,7 @@ class Route extends Genome {
         return true;
     }
 
-    public static function hook($id, $fn = null, $stack = null, $pattern = false) {
+    public static function lot($id, $fn = null, $stack = null, $pattern = false) {
         $i = 0;
         $id = (array) $id;
         $stack = (array) $stack;
@@ -82,7 +82,7 @@ class Route extends Genome {
         return !empty(self::$lot[1]) ? self::$lot[1] : $fail;
     }
 
-    public static function hooked($id = null, $stack = null, $fail = false) {
+    public static function contain($id = null, $stack = null, $fail = false) {
         if (isset($id)) {
             if (isset($stack)) {
                 $routes = [];
@@ -103,6 +103,7 @@ class Route extends Genome {
     }
 
     public static function fire($id = null, $lot = []) {
+        $s = __c2f__(static::class, '_') . '.';
         if (isset($id)) {
             $id = URL::short($id, false);
             if (isset(self::$lot[1][$id])) {
@@ -115,13 +116,17 @@ class Route extends Genome {
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s)…
                 if (isset(self::$lot_o[1][$id])) {
+                    Hook::fire($s . 'lot.enter', [self::$lot_o[1][$id], self::$lot[1][$id]]);
                     $fn = Anemon::eat(self::$lot_o[1][$id])->sort([1, 'stack'])->vomit();
                     foreach ($fn as $v) {
                         call_user_func_array($v['fn'], $lot);
                     }
+                    Hook::fire($s . 'lot.exit', [self::$lot_o[1][$id], self::$lot[1][$id]]);
                 }
                 // Passed!
+                Hook::fire($s . 'enter', [self::$lot[1][$id], null]);
                 call_user_func_array(self::$lot[1][$id]['fn'], $lot);
+                Hook::fire($s . 'exit', [self::$lot[1][$id], null]);
                 return true;
             } else {
                 $routes = Anemon::eat(isset(self::$lot[1]) ? self::$lot[1] : [])->sort([1, 'stack'], true)->vomit();
@@ -130,14 +135,18 @@ class Route extends Genome {
                     if ($route = self::is($k, false, $v['is']['pattern'])) {
                         // Loading hook(s)…
                         if (isset(self::$lot_o[1][$k])) {
+                            Hook::fire($s . 'lot.enter', [self::$lot_o[1][$k], self::$lot[1][$k]]);
                             $fn = Anemon::eat(self::$lot_o[1][$k])->sort([1, 'stack'])->vomit();
                             foreach ($fn as $f) {
                                 if (!is_callable($f['fn'])) continue;
                                 call_user_func_array($f['fn'], $route['lot']);
                             }
+                            Hook::fire($s . 'lot.exit', [self::$lot_o[1][$k], self::$lot[1][$k]]);
                         }
                         // Passed!
+                        Hook::fire($s . 'enter', [self::$lot[1][$k], null]);
                         call_user_func_array($v['fn'], $route['lot']);
+                        Hook::fire($s . 'exit', [self::$lot[1][$k], null]);
                         return true;
                     }
                 }

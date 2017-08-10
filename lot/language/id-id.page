@@ -1,10 +1,9 @@
 ---
-title: Indonesia
+title: Bahasa Indonesia
 description: Bahasa nasional Republik Indonesia.
-type: YAML
 version: 2.0.0
+type: YAML
 ...
-
 
 action: Aksi
 actions: Aksi
@@ -39,6 +38,9 @@ chars_sets: Set Karakter
 
 child: Anak
 childs: Anak
+
+chunk: Bagian
+chunks: Bagian
 
 common: Umum
 commons: Umum
@@ -140,6 +142,9 @@ ids: ID
 
 image: Gambar
 images: Gambar
+
+info: Info
+infos: Info
 
 ip: IP
 ips: IP
@@ -250,6 +255,9 @@ options: Opsi
 order: Urutan
 orders: Urutan
 
+package: Paket
+packages: Paket
+
 page: Halaman
 pages: Halaman
 
@@ -293,6 +301,9 @@ scopes: Cakupan
 
 second: Detik
 seconds: Detik
+
+session: Sesi
+sessions: Sesi
 
 setting: Pengaturan
 settings: Pengaturan
@@ -438,7 +449,6 @@ under: Bawah
 yesterday: Kemarin
 yesterday__: %{0}% Kemarin
 
-
 abort: Batal
 aborting: Membatalkan
 aborted: Dibatalkan
@@ -478,6 +488,10 @@ blocked: Diblok
 cancel: Batal
 canceling: Membatalkan
 canceled: Dibatalkan
+
+clear: Bersihkan
+clearing: Membersihkan
+cleared: Dibersihkan
 
 close: Tutup
 closeing: Menutup
@@ -541,6 +555,10 @@ entered: Dimasukkan
 exit: Keluar
 exiting: Mengeluarkan
 exited: Dikeluarkan
+
+explore: Eksplorasi
+exploreing: Mengeksplorasi
+exploreed: Dieksplorasi
 
 extend: Perkaya
 extending: Memperkaya
@@ -720,7 +738,6 @@ visited: Dikunjungi
 
 yes: Ya
 
-
 message_avail: %{0}% tersedia.
 message_exist: %{0}% already exists.
 
@@ -748,7 +765,6 @@ message_info_search: Hasil penelusuran untuk %{0}%.
 message_info_void: Belum ada %{0}%.
 
 message_success_file_upload: %{0}% berhasil diunggah.
-
 
 _active: Tidak Aktif
 _activate: Tidak Diaktifkan

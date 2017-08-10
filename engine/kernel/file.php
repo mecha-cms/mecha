@@ -2,13 +2,21 @@
 
 class File extends Genome {
 
-    protected static $path = "";
-    protected static $content = "";
+    protected $path = "";
+    protected $content = "";
+    protected $c = [];
 
     public static $config = [
         'sizes' => [0, 2097152], // Range of allowed file size(s)
         'extensions' => [] // List of allowed file extension(s)
     ];
+
+    public function __construct($path, $config = []) {
+        $this->path = file_exists($path) ? $path : false;
+        $this->content = "";
+        $this->c = !empty($config) ? $config : self::$config;
+        parent::__construct();
+    }
 
     // Inspect file path
     public static function inspect($input, $key = null, $fail = false) {
@@ -79,42 +87,52 @@ class File extends Genome {
     }
 
     // Open a file
-    public static function open($input) {
-        self::$path = self::exist($input);
-        self::$content = "";
-        return new static;
+    public static function open(...$lot) {
+        return new self(...$lot);
     }
 
     // Append `$data` to the file content
-    public static function append($data) {
-        if (is_array(self::$content)) {
-            self::$content = array_merge(self::$content, $data);
-            return new static;
+    public function append($data) {
+        if ($this->path === false) {
+            return $this;
         }
-        self::$content = file_get_contents(self::$path) . $data;
-        return new static;
+        if (is_array($this->content)) {
+            $data = (array) $data;
+            $this->content = $this->content + $data;
+            return $this;
+        }
+        $this->content = file_get_contents($this->path) . $data;
+        return $this;
     }
 
     // Prepend `$data` to the file content
-    public static function prepend($data) {
-        if (is_array(self::$content)) {
-            self::$content = array_merge($data, self::$content);
-            return new static;
+    public function prepend($data) {
+        if ($this->path === false) {
+            return $this;
         }
-        self::$content = $data . file_get_contents(self::$path);
-        return new static;
+        if (is_array($this->content)) {
+            $data = (array) $data;
+            $this->content = $data + $this->content;
+            return $this;
+        }
+        $this->content = $data . file_get_contents($this->path);
+        return $this;
     }
 
     // Print the file content
-    public static function read($fail = null) {
-        return self::$path !== false ? file_get_contents(self::$path) : $fail;
+    public function read($fail = null) {
+        if ($this->path !== false) {
+            $content = file_get_contents($this->path);
+            return $content !== false ? $content : $fail;
+        }
+        return $fail;
     }
 
     // Print the file content line by line
-    public static function get($stop = null, $fail = false, $ch = 1024) {
+    public function get($stop = null, $fail = false, $ch = 1024) {
         $i = 0;
         $output = "";
-        if (self::$path !== false && ($hand = fopen(self::$path, 'r'))) {
+        if ($this->path !== false && ($hand = fopen($this->path, 'r'))) {
             while (($chunk = fgets($hand, $ch)) !== false) {
                 $output .= $chunk;
                 if (
@@ -133,32 +151,37 @@ class File extends Genome {
 
     // Write `$data` before save
     public static function write($data) {
-        self::$content = $data;
-        return new static;
+        $self = new self(__DIR__);
+        $self->content = $data;
+        return $self;
     }
 
     // Import the exported PHP file
-    public static function import($fail = []) {
-        if (self::$path === false) return $fail;
-        return include self::$path;
+    public function import($fail = []) {
+        if ($this->path === false) {
+            return $fail;
+        }
+        return include $this->path;
     }
 
     // Export value to a PHP file
     public static function export($data, $format = '<?php return %{0}%;') {
-        self::$content = __replace__($format, z($data));
-        return new static;
+        $self = new self(__DIR__);
+        $self->content = __replace__($format, z($data));
+        return $self;
     }
 
     // Serialize `$data` before save
     public static function serialize($data) {
-        self::$content = serialize($data);
-        return new static;
+        $self = new self(__DIR__);
+        $self->content = serialize($data);
+        return $self;
     }
 
     // Unserialize the serialized `$data` to output
-    public static function unserialize($fail = []) {
-        if (self::$path !== false) {
-            $data = file_get_contents(self::$path);
+    public function unserialize($fail = []) {
+        if ($this->path !== false) {
+            $data = file_get_contents($this->path);
             return __is_serialize__($data) ? unserialize($data) : $fail;
         }
         return $fail;
@@ -166,92 +189,98 @@ class File extends Genome {
 
     // Save the `$data`
     public static function save($consent = null) {
-        self::saveTo(self::$path, $consent);
-        return new static;
+        $this->saveTo($this->path, $consent);
+        return $this;
     }
 
     // Save the `$data` to …
-    public static function saveTo($input, $consent = null) {
-        $input = To::path($input);
-        if (!file_exists(Path::D($input))) {
-            mkdir(Path::D($input), 0777, true);
+    public function saveTo($path, $consent = null) {
+        $this->path = $path;
+        $path = To::path($path);
+        if (!file_exists($d = Path::D($path))) {
+            mkdir($d, 0777, true);
         }
-        $r = fopen($input, 'w');
-        if (file_exists($input) && $r !== false) {
-            fwrite($r, self::$content);
-            fclose($r);
-            if (isset($consent)) {
-                chmod($input, $consent);
-            }
-            self::$path = $input;
+        file_put_contents($path, $this->content);
+        if (isset($consent)) {
+            chmod($path, $consent);
         }
-        return new static;
+        return $this;
     }
 
     // Rename the file/folder
-    public static function renameTo($name) {
-        if (self::$path !== false) {
-            $a = Path::B(self::$path);
-            $b = Path::D(self::$path) . DS;
+    public function renameTo($name) {
+        if ($this->path !== false) {
+            $a = Path::B($this->path);
+            $b = Path::D($this->path) . DS;
             if ($name !== $a && !file_exists($b . $name)) {
                 rename($b . $a, $b . $name);
             }
-            self::$path = $b . $name;
+            $this->path = $b . $name;
         }
-        return new static;
+        return $this;
     }
 
     // Move the file/folder to …
-    public static function moveTo($target = ROOT) {
-        if (self::$path !== false) {
-            $target = To::path($target);
-            if (!file_exists($target)) {
-                mkdir($target, 0777, true);
+    public function moveTo($path = ROOT) {
+        if ($this->path !== false) {
+            $p = $this->path;
+            $path = To::path($path);
+            if (!file_exists($path)) {
+                mkdir($path, 0777, true);
             }
-            if (is_file(self::$path)) {
-                $target .= DS . Path::B(self::$path);
+            if (is_file($p)) {
+                $path .= DS . Path::B($p);
             }
-            rename(self::$path, $target);
-            self::$path = $target;
+            if ($p !== $path) {
+                self::open($path)->delete();
+                rename($p, $path);
+                $this->path = $path;
+            }
         }
-        return new static;
+        return $this;
     }
 
     // Copy the file/folder to …
-    public static function copyTo($target = ROOT, $s = '.%{0}%') {
+    public function copyTo($path = ROOT, $s = '.%{0}%') {
+        // TODO: make it possible to copy folder with its content(s)
         $i = 1;
-        if (self::$path !== false) {
-            foreach ((array) $target as $v) {
+        if ($this->path !== false) {
+            $b = DS . Path::B($this->path);
+            $o = [];
+            foreach ((array) $path as $v) {
                 $v = To::path($v);
                 if (is_dir($v)) {
                     if (!file_exists($v)) {
                         mkdir($v, 0777, true);
                     }
-                    $v .= DS . Path::B(self::$path);
+                    $v .= $b;
                 } else {
-                    if (!file_exists(Path::D($v))) {
-                        mkdir(Path::D($v), 0777, true);
+                    if (!file_exists($d = Path::D($v))) {
+                        mkdir($d, 0777, true);
                     }
                 }
                 if (!file_exists($v)) {
-                    copy(self::$path, $v);
+                    copy($this->path, $v);
                     $i = 1;
                 } else {
-                    $v = preg_replace('#\.[a-z\d]+$#', __replace__($s, $i) . '.$1', $v);
-                    copy(self::$path, $v);
+                    $v = preg_replace('#\.([a-z\d]+)$#', __replace__($s, $i) . '.$1', $v);
+                    copy($this->path, $v);
                     ++$i;
                 }
-                self::$path = $v;
+                $o[] = $v;
             }
+            // Return sring if singular and array if plural…
+            $this->path = count($o) === 1 ? $o[0] : $o;
         }
-        return new static;
+        return $this;
     }
 
     // Delete the file
-    public static function delete() {
-        if (self::$path !== false) {
-            if (is_dir(self::$path)) {
-                $a = new \RecursiveDirectoryIterator(self::$path, \FilesystemIterator::SKIP_DOTS);
+    public function delete() {
+        $path = $this->path;
+        if ($path !== false) {
+            if (is_dir($path)) {
+                $a = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
                 $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
                 foreach ($b as $o) {
                     if ($o->isFile()) {
@@ -260,9 +289,9 @@ class File extends Genome {
                         rmdir($o->getPathname());
                     }
                 }
-                rmdir(self::$path);
+                rmdir($path);
             } else {
-                unlink(self::$path);
+                unlink($path);
             }
         }
     }
@@ -273,60 +302,60 @@ class File extends Genome {
     }
 
     // Set file permission
-    public static function consent($consent) {
-        if (self::$path !== false) {
-            chmod(self::$path, $consent);
+    public function consent($consent) {
+        if ($this->path !== false) {
+            chmod($this->path, $consent);
         }
-        return new static;
+        return $this;
     }
 
     // Upload the file
-    public static function upload($file, $target = ROOT, $fn = null, $fail = false) {
-        $target = To::path($target);
-        // Create a safe file name
-        $file['name'] = To::file($file['name']);
-        $x = Path::X($file['name']);
+    public static function upload($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
+        $path = To::path($path);
+        $config = !empty($c) ? $c : self::$config;
+        // Sanitize file name
+        $f['name'] = To::file($f['name']);
+        $x = Path::X($f['name']);
         $e = Language::message_info_file_upload();
         // Something goes wrong
-        if ($file['error'] > 0 && isset($e[$file['error']])) {
-            Message::error($e[$file['error']]);
+        if ($f['error'] > 0 && isset($e[$f['error']])) {
+            Message::error($e[$f['error']]);
         } else {
             // Unknown file type
-            if (empty($file['type'])) {
+            if (empty($f['type'])) {
                 Message::error('file_type');
             }
             // Bad file extension
-            $x_ok = X . implode(X, self::$config['extensions']) . X;
-            if (strpos($x_ok, X . $x . X) === false) {
+            $xx = X . implode(X, $config['extensions']) . X;
+            if (strpos($xx, X . $x . X) === false) {
                 Message::error('file_x', '<em>' . $x . '</em>');
             }
             // Too small
-            if ($file['size'] < self::$config['sizes'][0]) {
-                Message::error('file_size.0', self::size($file['size']));
+            if ($f['size'] < $config['sizes'][0]) {
+                Message::error('file_size.0', self::size($f['size']));
             }
             // Too large
-            if ($file['size'] > self::$config['sizes'][1]) {
-                Message::error('file_size.1', self::size($file['size']));
+            if ($f['size'] > $config['sizes'][1]) {
+                Message::error('file_size.1', self::size($f['size']));
             }
         }
         if (!Message::$x) {
             // Destination not found
-            if (!file_exists($target)) Folder::set($target);
-            // Move the uploaded file to the destination folder
-            if (!file_exists($target . DS . $file['name'])) {
-                // Create private asset URL to be hooked on file uploaded
-                $file['path'] = $target . DS . $file['name'];
-                // Move…
-                move_uploaded_file($file['tmp_name'], $file['path']);
-                // Create public asset URL to be hooked on file uploaded
-                $file['url'] = To::url($target) . '/' . $file['name'];
-                Message::success('file_upload', '<code>' . $file['name'] . '</code>');
-                if (is_callable($fn)) {
-                    return call_user_func($fn, $file);
-                }
-                return $target . DS . $file['name'];
+            if (!file_exists($path)) {
+                Folder::set($path);
             }
-            Message::error('file_exist', '<code>' . $file['name'] . '</code>');
+            // Move the uploaded file to the destination folder
+            if (!file_exists($path . DS . $f['name'])) {
+                // Move…
+                $path .= DS . $f['name'];
+                move_uploaded_file($f['tmp_name'], $path);
+                Message::success('file_upload', '<code>' . $f['name'] . '</code>');
+                if (is_callable($fn)) {
+                    return call_user_func($fn, self::inspect($path));
+                }
+                return $path;
+            }
+            Message::error('file_exist', '<code>' . $f['name'] . '</code>');
             return $fail;
         }
         return $fail;

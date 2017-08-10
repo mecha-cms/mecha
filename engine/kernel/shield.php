@@ -30,8 +30,9 @@ class Shield extends Genome {
 
     public static function get($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class, '_') . '.get.';
+        $lot_a__ = ['lot' => []];
         if (is_array($fail)) {
-            $lot_a__ = ['lot' => $fail];
+            $lot_a__['lot'] = $fail;
             $fail = false;
         }
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail), $input])) {
@@ -42,13 +43,11 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
-            Hook::NS($NS . 'lot.before', [$out, $G]);
+            Hook::NS($NS . 'lot.enter', [$out, $G]);
             extract(Hook::NS($NS . 'lot', [$lot__, $G]));
-            if (!empty($lot_a__)) {
-                extract($lot_a__);
-            }
-            Hook::NS($NS . 'lot.after', [$out, $G]);
-            Hook::NS($NS . 'before', [$out, $G]);
+            extract($lot_a__);
+            Hook::NS($NS . 'lot.exit', [$out, $G]);
+            Hook::NS($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $G]);
@@ -61,7 +60,7 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield part
-            Hook::NS($NS . 'after', [$out, $G]);
+            Hook::NS($NS . 'exit', [$out, $G]);
         }
     }
 
@@ -75,13 +74,13 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield
-            Hook::NS($NS . 'lot.before', [$out, $G]);
+            Hook::NS($NS . 'lot.enter', [$out, $G]);
             extract(Hook::NS($NS . 'lot', [$lot__, $G]));
             if (is_array($fail)) {
                 extract($fail);
             }
-            Hook::NS($NS . 'lot.after', [$out, $G]);
-            Hook::NS($NS . 'before', [$out, $G]);
+            Hook::NS($NS . 'lot.exit', [$out, $G]);
+            Hook::NS($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
                     $content = Hook::NS($NS . 'input', [$content, $G]);
@@ -94,10 +93,11 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield
-            Hook::NS($NS . 'after', [$out, $G]);
+            Hook::NS($NS . 'exit', [$out, $G]);
             exit;
+        } else {
+            Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
-        Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
     }
 
     public static function abort($code = '404', $fail = false, $buffer = true) {

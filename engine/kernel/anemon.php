@@ -122,7 +122,7 @@ class Anemon extends Genome {
 
     public function not($fn) {
         $a = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
-        $b = array_diff($this->bucket, $a);
+        $b = array_diff_assoc($this->bucket, $a);
         $this->bucket = $b;
         unset($a);
         return $this;

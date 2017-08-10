@@ -97,6 +97,7 @@ class HTTP extends Genome {
         $output = [];
         $s = $k ? '%5D' : "";
         foreach ($a as $kk => $vv) {
+            $kk = urlencode($kk);
             if (is_array($vv)) {
                 $output = array_merge($output, self::_q($vv, $k . $kk . $s . '%5B'));
             } else {

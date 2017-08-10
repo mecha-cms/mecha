@@ -132,7 +132,9 @@ if ($fn = File::exist($folder_shield . 'index__.php')) require $fn;
 
 // Load all route(s)…
 function on_ready() {
+    // Matching the current route…
     Route::fire();
+    // No match, abort!
     Shield::abort();
 }
 

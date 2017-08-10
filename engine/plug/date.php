@@ -1,6 +1,6 @@
 <?php
 
-Hook::set('shield.before', function($out = "") {
+Hook::set('route.enter', function($out = "") {
     $key = str_replace('-', '_', Config::get('language'));
     if (!Date::get($key)) {
         Date::set($key, function($output) {
@@ -8,4 +8,4 @@ Hook::set('shield.before', function($out = "") {
         });
     }
     return $out;
-}, 20);
+}, 0);

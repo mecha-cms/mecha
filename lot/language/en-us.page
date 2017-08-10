@@ -1,10 +1,9 @@
 ---
 title: English
 description: American English, also called United States English or U.S. English, is the set of varieties of the English language native to the United States.
-type: YAML
 version: 2.0.0
+type: YAML
 ...
-
 
 #. Property
 #. --------
@@ -49,6 +48,9 @@ chars_sets: Characters Sets
 
 child: Child
 childs: Children
+
+chunk: Chunk
+chunks: Chunks
 
 common: Common
 commons: Commons
@@ -150,6 +152,9 @@ ids: IDs
 
 image: Image
 images: Images
+
+info: Info
+infos: Infos
 
 ip: IP
 ips: IPs
@@ -260,6 +265,9 @@ options: Options
 order: Order
 orders: Orders
 
+package: Package
+packages: Packages
+
 page: Page
 pages: Pages
 
@@ -303,6 +311,9 @@ scopes: Scopes
 
 second: Second
 seconds: Seconds
+
+session: Session
+sessions: Sessions
 
 setting: Setting
 settings: Settings
@@ -503,6 +514,10 @@ cancel: Cancel
 canceling: Cancelling
 canceled: Cancelled
 
+clear: Clear
+clearing: Clearing
+cleared: Cleared
+
 close: Close
 closeing: Closing
 closeed: Closed
@@ -565,6 +580,10 @@ entered: Entered
 exit: Exit
 exiting: Exit
 exited: Exit
+
+explore: Explore
+exploreing: Exploring
+exploreed: Explored
 
 extend: Extend
 extending: Extending

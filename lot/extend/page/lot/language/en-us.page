@@ -2,8 +2,4 @@
 type: YAML
 ...
 
-
-#. Message
-#. -------
-
 message_info_kick: You have just redirected from %{0}%
