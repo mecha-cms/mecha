@@ -5,7 +5,7 @@
       <h2>404 <?php echo $language->_finded; ?></h2>
     </header>
     <section>
-      <p>:(</p>
+      <p>&#x0CA0;&#x005F;&#x0CA0;</p>
     </section>
   </article>
 </main>

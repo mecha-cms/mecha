@@ -8,4 +8,19 @@ version: 1.0.8
 
 This extension enables basic features of a website by utilizing the structure of the page files placement in the `lot\page` folder. This extension also adds some useful properties to the global `$site` variable.
 
+### Properties 
+
+ - `$site->is` → Return an empty string on home page, `page` on item page and `pages` on index page. Default is 404.
+ - `$site->state` → Return the current page state. Default is `page`.
+ - `$site->step` → Return the current index page’s offset. Default is `1`.
+
+### Hooks 
+
+ - `elevator.page` → Will affect the configuration data of the item page’s pagination.
+ - `elevator.pages` → Will affect the configuration data of the index page’s pagination.
+ - `elevator.page.links` → Will affect the generated links of the item page’s pagination.
+ - `elevator.pages.links` → Will affect the generated links of the index page’s pagination.
+ - `elevator.page.unit` → Will affect the generated HTML of the item page’s pagination.
+ - `elevator.pages.unit` → Will affect the generated HTML of the index page’s pagination.
+
 <!-- block:donate -->

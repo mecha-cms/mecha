@@ -19,7 +19,7 @@ Form::plug('checkbox', function($name = null, $value = null, $check = false, $te
         $value = 'true';
     }
     $text = $text ? '&#x0020;' . HTML::span($text) : "";
-    return Form::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, Anemon::extend($attr_o, $attr)) . $text);
+    return Form::dent($dent) . HTML::label(Form::input($name, 'checkbox', $value, null, array_replace_recursive($attr_o, $attr)) . $text);
 });
 
 // `<input type="radio">`
@@ -35,7 +35,7 @@ Form::plug('radio', function($name = null, $options = [], $select = null, $attr 
         $k = (string) $k;
         $attr_o['checked'] = $select === $k || $select === '.' . $k ? true : null;
         $v = $v ? '&#x0020;' . HTML::span($v) : "";
-        $output[] = Form::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, Anemon::extend($attr_o, $attr)) . $v);
+        $output[] = Form::dent($dent) . HTML::label(Form::input($name, 'radio', $k, null, array_replace_recursive($attr_o, $attr)) . $v);
     }
     return implode(HTML::br(), $output);
 });

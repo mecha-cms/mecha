@@ -30,7 +30,7 @@ return [
     ],
     'links_external_attr' => [
         'rel' => 'nofollow',
-        'target' => '_blank'
+        'target' => '_new'
     ],
     'table_class' => 'table',
 	'table_align_class' => 'text-%s',

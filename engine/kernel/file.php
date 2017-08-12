@@ -8,13 +8,13 @@ class File extends Genome {
 
     public static $config = [
         'sizes' => [0, 2097152], // Range of allowed file size(s)
-        'extensions' => [] // List of allowed file extension(s)
+        'extensions' => ['txt'] // List of allowed file extension(s)
     ];
 
-    public function __construct($path, $config = []) {
+    public function __construct($path = true, $c = []) {
         $this->path = file_exists($path) ? $path : false;
         $this->content = "";
-        $this->c = !empty($config) ? $config : self::$config;
+        $this->c = !empty($c) ? $c : self::$config;
         parent::__construct();
     }
 
@@ -88,7 +88,7 @@ class File extends Genome {
 
     // Open a file
     public static function open(...$lot) {
-        return new self(...$lot);
+        return new static(...$lot);
     }
 
     // Append `$data` to the file content
@@ -151,7 +151,7 @@ class File extends Genome {
 
     // Write `$data` before save
     public static function write($data) {
-        $self = new self(__DIR__);
+        $self = new static;
         $self->content = $data;
         return $self;
     }
@@ -166,14 +166,14 @@ class File extends Genome {
 
     // Export value to a PHP file
     public static function export($data, $format = '<?php return %{0}%;') {
-        $self = new self(__DIR__);
+        $self = new static;
         $self->content = __replace__($format, z($data));
         return $self;
     }
 
     // Serialize `$data` before save
     public static function serialize($data) {
-        $self = new self(__DIR__);
+        $self = new static;
         $self->content = serialize($data);
         return $self;
     }
@@ -312,7 +312,7 @@ class File extends Genome {
     // Upload the file
     public static function upload($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
         $path = To::path($path);
-        $config = !empty($c) ? $c : self::$config;
+        $c = !empty($c) ? $c : self::$config;
         // Sanitize file name
         $f['name'] = To::file($f['name']);
         $x = Path::X($f['name']);
@@ -326,16 +326,16 @@ class File extends Genome {
                 Message::error('file_type');
             }
             // Bad file extension
-            $xx = X . implode(X, $config['extensions']) . X;
+            $xx = X . implode(X, $c['extensions']) . X;
             if (strpos($xx, X . $x . X) === false) {
                 Message::error('file_x', '<em>' . $x . '</em>');
             }
             // Too small
-            if ($f['size'] < $config['sizes'][0]) {
+            if ($f['size'] < $c['sizes'][0]) {
                 Message::error('file_size.0', self::size($f['size']));
             }
             // Too large
-            if ($f['size'] > $config['sizes'][1]) {
+            if ($f['size'] > $c['sizes'][1]) {
                 Message::error('file_size.1', self::size($f['size']));
             }
         }

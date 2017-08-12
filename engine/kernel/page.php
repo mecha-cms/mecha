@@ -127,8 +127,28 @@ class Page extends Genome {
         return str_replace(self::$v, self::$x, $s);
     }
 
-    public static function apart($input) {
+    public static function apart($input, $key = null, $fail = null) {
         $input = n($input);
+        $c = static::class;
+        $k = __FUNCTION__;
+        // Custom `apart` method by the `Genome` class…
+        if (isset(self::$_[1][$c][$k])) {
+            return call_user_func(self::$_[1][$c][$k], $input, $key, $fail);
+        }
+        // Get specific property…
+        if ($key === 'content') {
+            $input = explode(self::$v[1], $input, 2);
+            return trim(self::v(isset($input[1]) ? $input[1] : $input[0]), self::$v[4]);
+        } else if (isset($key)) {
+            $s = strpos($input, self::$v[2]);
+            $ss = strpos($input, $k = self::$v[4] . $key . self::$v[2]);
+            if ($s !== false && $ss !== false && $ss < $s) {
+                $input = substr($input, $ss + strlen($k)) . self::$v[4];
+                return self::v(substr($input, 0, strpos($input, self::$v[4])));
+            }
+            return $fail;
+        }
+        // Get all propert(y|ies) embedded…
         $data = [];
         if (strpos($input, self::$v[0]) !== 0) {
             $data['content'] = self::v($input);
@@ -138,10 +158,10 @@ class Page extends Genome {
             // Do data…
             foreach (explode(self::$v[4], $input[0]) as $v) {
                 $v = explode(self::$v[2], $v, 2);
-                $data[self::v($v[0])] = e(self::v(isset($v[1]) ? $v[1] : false));
+                $data[self::v($v[0])] = isset($v[1]) ? self::v($v[1]) : $fail;
             }
             // Do content…
-            $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
+            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::$v[4]);
         }
         return $data;
     }

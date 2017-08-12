@@ -76,7 +76,7 @@ class Request extends Genome {
         }
         $s = self::$config['session']['request'] . '.' . $id;
         $cache = Session::get($s, []);
-        Session::set($s, Anemon::extend($cache, $key));
+        Session::set($s, array_replace_recursive($cache, $key));
         return new static;
     }
 

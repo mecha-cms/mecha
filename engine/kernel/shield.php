@@ -66,6 +66,11 @@ class Shield extends Genome {
 
     public static function attach($input, $fail = false, $buffer = true) {
         $NS = __c2f__(static::class, '_') . '.';
+        $lot_a__ = ['lot' => []];
+        if (is_array($fail)) {
+            $lot_a__['lot'] = $fail;
+            $fail = false;
+        }
         if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail), $input])) {
             global $config;
             $G = ['source' => $input];
@@ -76,6 +81,7 @@ class Shield extends Genome {
             // Begin shield
             Hook::NS($NS . 'lot.enter', [$out, $G]);
             extract(Hook::NS($NS . 'lot', [$lot__, $G]));
+            extract($lot_a__);
             if (is_array($fail)) {
                 extract($fail);
             }

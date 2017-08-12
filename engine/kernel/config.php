@@ -19,7 +19,7 @@ class Config extends Genome {
                 Anemon::set($cargo, $k, $v);
             }
         }
-        Anemon::extend(self::$bucket, $cargo);
+        self::$bucket = array_replace_recursive(self::$bucket, $cargo);
         return new static;
     }
 
@@ -50,7 +50,7 @@ class Config extends Genome {
 
     public static function extend(...$lot) {
         self::set(...$lot);
-        Anemon::extend(self::$bucket, State::config());
+        self::$bucket = array_replace_recursive(self::$bucket, State::config());
         return new static;
     }
 

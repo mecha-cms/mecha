@@ -24,7 +24,7 @@ class Form extends HTML {
         self::_name($name, $attr_o);
         unset($attr_o['readonly'], $attr_o['required']);
         $attr_o['name'] = $name;
-        return self::unite('button', $text, Anemon::extend($attr_o, $attr), $dent);
+        return self::unite('button', $text, array_replace_recursive($attr_o, $attr), $dent);
     }
 
     // `<input>`
@@ -36,7 +36,7 @@ class Form extends HTML {
         self::_name($name, $attr_o);
         $attr_o['name'] = $name;
         $attr_o['value'] = Request::restore('post', $name, $value);
-        return self::unite('input', false, Anemon::extend($attr_o, $attr), $dent);
+        return self::unite('input', false, array_replace_recursive($attr_o, $attr), $dent);
     }
 
     // `<select>`
@@ -47,7 +47,7 @@ class Form extends HTML {
         unset($attr_o['required']);
         $select = (string) Request::restore('post', $name, $select);
         $attr_o['name'] = $name;
-        Anemon::extend($attr_o, $attr);
+        $attr_o = array_replace_recursive($attr_o, $attr);
         foreach ($option as $key => $value) {
             // option list group
             if (is_array($value)) {
@@ -98,7 +98,7 @@ class Form extends HTML {
             $placeholder = explode("\n", n($placeholder), 2)[0];
         }
         $attr_o['placeholder'] = $placeholder;
-        return self::unite('textarea', self::x(Request::restore('post', $name, $value)), Anemon::extend($attr_o, $attr), $dent);
+        return self::unite('textarea', self::x(Request::restore('post', $name, $value)), array_replace_recursive($attr_o, $attr), $dent);
     }
 
 }

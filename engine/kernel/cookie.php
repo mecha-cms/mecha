@@ -6,14 +6,13 @@ class Cookie extends Genome {
         if (is_numeric($config)) {
             $config = ['expire' => (int) $config];
         }
-        $cc = [
+        $cc = array_replace([
             'expire' => 1,
             'path' => '/',
             'domain' => "",
             'secure' => false,
             'http_only' => false
-        ];
-        Anemon::extend($cc, $config);
+        ], $config);
         $cc = array_values($cc);
         $cc[0] = time() + 60 * 60 * 24 * $cc[0]; // 1 day
         $key = '_' . md5($key);

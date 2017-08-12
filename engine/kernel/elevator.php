@@ -47,7 +47,7 @@ class Elevator extends Genome {
             'index' => $index,
             'path' => $path
         ];
-        $cc = Anemon::extend($c, $config);
+        $cc = array_replace_recursive($c, $config);
         $this->config = Hook::NS($key, [$cc, $c]);
         $d = $this->config['direction'];
         global $url;
