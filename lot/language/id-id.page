@@ -11,60 +11,60 @@ actions: Aksi
 anonymous: Anonim
 
 archive: Arsip
-archives: Arsip
+archives: %{$.archive}%
 
 asset: Aset
-assets: Aset
+assets: %{$.asset}%
 
 author: Penulis
-authors: Penulis
+authors: %{$.author}%
 
 boolean: Boolean
-booleans: Booleans
+booleans: %{$.boolean}%
 
 cache: Tembolok
-caches: Tembolok
+caches: %{$.cache}%
 
 char: Karakter
-chars: Karakter
+chars: %{$.char}%
 
-charset: Set Karakter
-charsets: Set Karakter
+charset: Set %{$.char}%
+charsets: %{$.charset}%
 
-char_set: Set Karakter
-char_sets: Set Karakter
-chars_set: Set Karakter
-chars_sets: Set Karakter
+char_set: %{$.charset}%
+char_sets: %{$.charset}%
+chars_set: %{$.charset}%
+chars_sets: %{$.charset}%
 
 child: Anak
-childs: Anak
+childs: %{$.child}%
 
 chunk: Bagian
-chunks: Bagian
+chunks: %{$.chunk}%
 
 common: Umum
-commons: Umum
+commons: %{$.common}%
 
 composer: Komposer
-composers: Komposer
+composers: %{$.composer}%
 
 config: Konfigurasi
-configs: Konfigurasi
+configs: %{$.config}%
 
 confirmation: Konfirmasi
-confirmations: Konfirmasi
+confirmations: %{$.confirmation}%
 
 content: Konten
-contents: Konten
+contents: %{$.content}%
 
 data: Data
-datas: Data
+datas: %{$.data}%
 
 date: Tanggal
-dates: Tanggal
+dates: %{$.date}%
 
 day: Hari
-days: Hari
+days: %{$.day}%
 
 days_long:
   - Minggu
@@ -85,116 +85,119 @@ days_short:
   - Sab
 
 default: Default
-defaults: Default
+defaults: %{$.default}%
 
 description: Deskripsi
-descriptions: Deskripsi
+descriptions: %{$.description}%
 
 detail: Detail
-details: Detail
+details: %{$.detail}%
 
 direction: Arah
-directions: Arah
+directions: %{$.direction}%
 
 draft: Konsep
-drafts: Konsep
+drafts: %{$.draft}%
 
 editor: Editor
-editors: Editor
+editors: %{$.editor}%
 
 email: Surel
-emails: Surel
+emails: %{$.email}%
 
 encoding: Enkoding
-encodings: Enkoding
+encodings: %{$.encoding}%
 
 error: Kesalahan
-errors: Kesalahan
+errors: %{$.error}%
 
 extension: Pengaya
-extensions: Pengaya
+extensions: %{$.extension}%
 
 field: Bidang
-fields: Bidang
+fields: %{$.field}%
 
 file: Berkas
-files: Berkas
+files: %{$.file}%
 
 folder: Folder
-folders: Folder
+folders: %{$.folder}%
 
 format: Format
-formats: Format
+formats: %{$.format}%
 
 general: Umum
-generals: Umum
+generals: %{$.general}%
+
+guest: Pengunjung
+guests: %{$.guest}%
 
 hint: Petunjuk
-hints: Petunjuk
+hints: %{$.hint}%
 
 home: Beranda
 
 hour: Jam
-hours: Jam
+hours: %{$.hour}%
 
 id: ID
-ids: ID
+ids: %{$.id}%
 
 image: Gambar
-images: Gambar
+images: %{$.image}%
 
 info: Info
-infos: Info
+infos: %{$.info}%
 
 ip: IP
-ips: IP
+ips: %{$.ip}%
 
 item: Item
-items: Item
+items: %{$.item}%
 
 key: Kunci
-keys: Kunci
+keys: %{$.key}%
 
 keyword: Kata Kunci
-keywords: Kata Kunci
+keywords: %{$.keyword}%
 
-key_word: Kata Kunci
-key_words: Kata Kunci
+key_word: %{$.keyword}%
+key_words: %{$.keyword}%
 
 kin: Kerabat
-kins: Kerabat
+kins: %{$.kin}%
 
 kind: Jenis
-kinds: Jenis
+kinds: %{$.kind}%
 
 language: Bahasa
-languages: Bahasa
+languages: %{$.language}%
 
 less: Kurang
 
 link: Tautan
-links: Tautan
+links: %{$.link}%
 
 locale: Lokalisasi
-locales: Lokalisasi
+locales: %{$.locale}%
 
 log: Catatan
-logs: Catatan
+logs: %{$.log}%
 
 media: Media
-medias: Media
+medias: %{$.media}%
 
 message: Pesan
-messages: Pesan
+messages: %{$.message}%
 
 millisecond: Milidetik
-milliseconds: Milidetik
+milliseconds: %{$.millisecond}%
 
 minute: Menit
-minutes: Menit
+minutes: %{$.minute}%
 
 month: Bulan
-months: Bulan
+months: %{$.month}%
 
 months_long:
   - Januari
@@ -227,189 +230,189 @@ months_short:
 more: Lebih
 
 name: Nama
-names: Nama
+names: %{$.name}%
 
 navigation: Navigasi
-navigations: Navigasi
+navigations: %{$.navigation}%
 
 new: Baru
-newer: Lebih Baru
-newest: Paling Baru
+newer: Lebih %{$.new}%
+newest: Paling %{$.new}%
 
-new__: %{0}% Baru
+new__: %{0}% %{$.new}%
 
 object: Objek
-objects: Objek
+objects: %{$.object}%
 
 old: Lama
-older: Lebih Lama
-oldest: Paling Lama
+older: Lebih %{$.old}%
+oldest: Paling %{$.old}%
 
-old__: %{0}% Lama
+old__: %{0}% %{$.old}%
 
 only: Hanya
 
 option: Opsi
-options: Opsi
+options: %{$.option}%
 
 order: Urutan
-orders: Urutan
+orders: %{$.order}%
 
 package: Paket
-packages: Paket
+packages: %{$.package}%
 
 page: Halaman
-pages: Halaman
+pages: %{$.page}%
 
 parent: Induk
-parents: Induk
+parents: %{$.parent}%
 
 pass: Kunci
-passs: Kunci
+passs: %{$.pass}%
 
 path: Jalur
-paths: Jalur
+paths: %{$.path}%
 
 pattern: Pola
-patterns: Pola
+patterns: %{$.pattern}%
 
 pending: Ditangguhkan
 
 photo: Foto
-photos: Foto
+photos: %{$.photo}%
 
 placeholder: Placeholder
-placeholders: Placeholder
+placeholders: %{$.placeholder}%
 
 preview: Pratinjau
-previews: Pratinjau
+previews: %{$.preview}%
 
 profile: Profil
-profiles: Profil
+profiles: %{$.profile}%
 
 property: Properti
-propertys: Properti
+propertys: %{$.property}%
 
 query: Kueri
-querys: Kueri
+querys: %{$.query}%
 
 reply: Balasan
-replys: Balasan
+replys: %{$.reply}%
 
 scope: Cakupan
-scopes: Cakupan
+scopes: %{$.scope}%
 
 second: Detik
-seconds: Detik
+seconds: %{$.second}%
 
 session: Sesi
-sessions: Sesi
+sessions: %{$.session}%
 
 setting: Pengaturan
-settings: Pengaturan
+settings: %{$.setting}%
 
 shield: Tameng
-shields: Tameng
+shields: %{$.shield}%
 
 sibling: Kerabat
-siblings: Kerabat
+siblings: %{$.sibling}%
 
 site: Situs
-sites: Situs
+sites: %{$.site}%
 
 size: Ukuran
-sizes: Ukuran
+sizes: %{$.size}%
 
 slogan: Slogan
-slogans: Slogan
+slogans: %{$.slogan}%
 
 slug: Slug
-slugs: Slug
+slugs: %{$.slug}%
 
 sound: Suara
-sounds: Suara
+sounds: %{$.sound}%
 
 source: Sumber
-sources: Sumber
+sources: %{$.source}%
 
 spam: Sampah
-spams: Sampah
+spams: %{$.spam}%
 
 specific: Spesifik
-specifics: Spesifik
+specifics: %{$.specific}%
 
 state: Pengaturan
-states: Pengaturan
+states: %{$.state}%
 
 status: Status
-statuses: Status
+statuses: %{$.status}%
 
 subject: Subjek
-subjects: Subjek
+subjects: %{$.subject}%
 
 summary: Ringkasan
-summarys: Ringkasan
+summarys: %{$.summary}%
 
 text: Teks
-texts: Teks
+texts: %{$.text}%
 
 time: Waktu
-times: Waktu
+times: %{$.time}%
 
-time_zone: Zona Waktu
-time_zones: Zona Waktu
-times_zone: Zona Waktu
-times_zones: Zona Waktu
+time_zone: %{$.zone}% %{$.time}%
+time_zones: %{$.time_zone}%
+times_zone: %{$.time_zone}%
+times_zones: %{$.time_zone}%
 
 title: Judul
-titles: Judul
+titles: %{$.title}%
 
 total: Total
 
 trash: Sampah
-trashs: Sampah
+trashs: %{$.trash}%
 
 type: Tipe
-types: Tipe
+types: %{$.type}%
 
 unknown: Tak Diketahui
 
 url: URL
-urls: URL
+urls: %{$.url}%
 
 user: Pengguna
-users: Pengguna
+users: %{$.user}%
 
 value: Nilai
-values: Nilai
+values: %{$.value}%
 
 variable: Variabel
-variables: Variabel
+variables: %{$.variable}%
 
 version: Versi
-versions: Versi
+versions: %{$.version}%
 
 video: Video
-videos: Video
+videos: %{$.video}%
 
 view: Tayangan
-views: Tayangan
+views: %{$.view}%
 
 week: Minggu
-weeks: Minggu
+weeks: %{$.week}%
 
 year: Tahun
-years: Tahun
+years: %{$.year}%
 
 zone: Zona
-zones: Zona
+zones: %{$.zone}%
 
 
 above: Di Atas
 ago: Yang Lalu
 ago__: %{0}% yang Lalu
 all: Semua
-all__: Semua %{0}%
+all__: %{$.all}% %{0}%
 as: Sebagai
 begin: Awal
 both: Keduanya
@@ -418,36 +421,36 @@ bottom: Bawah
 by: Berdasarkan
 by__: Oleh %{0}%
 current: Sekarang
-current__: %{0}% Sekarang
+current__: %{0}% %{$.current}%
 end: Akhir
 finish: Selesai
 first: Pertama
-first__: %{0}% Pertama
+first__: %{0}% %{$.first}%
 from: Dari
 in: Dalam
 last: Terakhir
-last__: %{0}% Terakhir
+last__: %{0}% %{$.last}%
 left: Kiri
 next: Berikutnya
-next__: %{0}% Berikutnya
+next__: %{0}% %{$.next}%
 none: Tidak Ada
 not: Bukan
-not__: Bukan %{0}%
+not__: %{$.not}% %{0}%
 on: Nyala
 of: Oleh
 off: Mati
 previous: Sebelumnya
-previous__: %{0}% Sebelumnya
+previous__: %{0}% %{$.previous}%
 right: Kanan
 start: Mulai
 to: Ke
 today: Hari Ini
 tomorrow: Besok
-tomorrow__: %{0}% Besok
+tomorrow__: %{0}% %{$.tomorrow}%
 top: Atas
 under: Bawah
 yesterday: Kemarin
-yesterday__: %{0}% Kemarin
+yesterday__: %{0}% %{$.yesterday}%
 
 abort: Batal
 aborting: Membatalkan
@@ -739,9 +742,9 @@ visited: Dikunjungi
 yes: Ya
 
 message_avail: %{0}% tersedia.
-message_exist: %{0}% already exists.
+message_exist: %{0}% sudah ada.
 
-message_error_file_exist: Berkas %{0}% sudah ada.
+message_error_file_exist: %{$.file}% %{0}% sudah ada.
 message_error_file_x: Ekstensi %{0}% tidak diperbolehkan.
 message_error_file_size:
   0: Harus lebih besar dari %{0}%.
@@ -793,4 +796,4 @@ _publish: Batal Mempublikasikan
 _publishing: Membatalkan Publikasi
 _published: Publikasi Dibatalkan
 
-_title: Tanpa Judul
+_title: Tanpa %{$.title}%

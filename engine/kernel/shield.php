@@ -35,7 +35,7 @@ class Shield extends Genome {
             $lot_a__['lot'] = $fail;
             $fail = false;
         }
-        if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail), $input])) {
+        if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
             global $config;
             $G = ['source' => $input];
             $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
@@ -43,15 +43,15 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield part
-            Hook::NS($NS . 'lot.enter', [$out, $G]);
-            extract(Hook::NS($NS . 'lot', [$lot__, $G]));
+            Hook::fire($NS . 'lot.enter', [$out, $G]);
+            extract(Hook::fire($NS . 'lot', [$lot__, $G]));
             extract($lot_a__);
-            Hook::NS($NS . 'lot.exit', [$out, $G]);
-            Hook::NS($NS . 'enter', [$out, $G]);
+            Hook::fire($NS . 'lot.exit', [$out, $G]);
+            Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
-                    $content = Hook::NS($NS . 'input', [$content, $G]);
-                    $out = Hook::NS($NS . 'output', [$content, $G]);
+                    $content = Hook::fire($NS . 'input', [$content, $G]);
+                    $out = Hook::fire($NS . 'output', [$content, $G]);
                     return $out;
                 });
                 require $path__;
@@ -60,7 +60,7 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield part
-            Hook::NS($NS . 'exit', [$out, $G]);
+            Hook::fire($NS . 'exit', [$out, $G]);
         }
     }
 
@@ -71,7 +71,7 @@ class Shield extends Genome {
             $lot_a__['lot'] = $fail;
             $fail = false;
         }
-        if ($path__ = Hook::NS($NS . 'path', [self::path($input, $fail), $input])) {
+        if ($path__ = Hook::fire($NS . 'path', [self::path($input, $fail), $input])) {
             global $config;
             $G = ['source' => $input];
             $lot__ = Lot::set('state', new State(self::state($config->shield, [])))->get(null, []);
@@ -79,18 +79,18 @@ class Shield extends Genome {
             $G['path'] = $path__;
             $out = "";
             // Begin shield
-            Hook::NS($NS . 'lot.enter', [$out, $G]);
-            extract(Hook::NS($NS . 'lot', [$lot__, $G]));
+            Hook::fire($NS . 'lot.enter', [$out, $G]);
+            extract(Hook::fire($NS . 'lot', [$lot__, $G]));
             extract($lot_a__);
             if (is_array($fail)) {
                 extract($fail);
             }
-            Hook::NS($NS . 'lot.exit', [$out, $G]);
-            Hook::NS($NS . 'enter', [$out, $G]);
+            Hook::fire($NS . 'lot.exit', [$out, $G]);
+            Hook::fire($NS . 'enter', [$out, $G]);
             if ($buffer) {
                 ob_start(function($content) use($G, $NS, &$out) {
-                    $content = Hook::NS($NS . 'input', [$content, $G]);
-                    $out = Hook::NS($NS . 'output', [$content, $G]);
+                    $content = Hook::fire($NS . 'input', [$content, $G]);
+                    $out = Hook::fire($NS . 'output', [$content, $G]);
                     return $out;
                 });
                 require $path__;
@@ -99,20 +99,20 @@ class Shield extends Genome {
                 require $path__;
             }
             // End shield
-            Hook::NS($NS . 'exit', [$out, $G]);
+            Hook::fire($NS . 'exit', [$out, $G]);
             exit;
         } else {
             Guardian::abort('<code>' . __METHOD__ . '(' . json_encode($input) . ')');
         }
     }
 
-    public static function abort($code = '404', $fail = false, $buffer = true) {
-        $path = self::path($code);
+    public static function abort($code = 404, $fail = false, $buffer = true) {
+        $path = self::path((string) $code);
         $s = explode('/', $path);
         $s = array_shift($s);
         $s = is_numeric($s) ? $s : '404';
         HTTP::status((int) $s);
-        self::attach($path, $fail, $buffer);
+        self::attach($code, $fail, $buffer);
     }
 
     public static function exist($input, $fail = false) {
@@ -120,7 +120,7 @@ class Shield extends Genome {
     }
 
     public static function state(...$lot) {
-        $id = basename(array_shift($lot));
+        $id = str_replace('.', '\\', basename(array_shift($lot)));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: SHIELD;
@@ -130,7 +130,7 @@ class Shield extends Genome {
         }
         $c = __c2f__(static::class, '_');
         $state = isset(self::$shield[$c][$id]) ? self::$shield[$c][$id] : include $state;
-        $state = Hook::NS($c . '.state.' . $id, [$state]);
+        $state = Hook::fire($c . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }

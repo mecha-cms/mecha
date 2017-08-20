@@ -2,7 +2,7 @@
 
 class Config extends Genome {
 
-    protected static $bucket = [];
+    public static $bucket = [];
 
     public static function ignite(...$lot) {
         return (self::$bucket = State::config());
@@ -68,20 +68,23 @@ class Config extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        $fail = false;
-        if ($count = count($lot)) {
-            if ($count > 1) {
-                $key = $key . '.' . array_shift($lot);
+        if (!self::kin($key)) {
+            $fail = false;
+            if ($count = count($lot)) {
+                if ($count > 1) {
+                    $key = $key . '.' . array_shift($lot);
+                }
+                $fail = array_shift($lot) ?: false;
+                $fail_alt = array_shift($lot) ?: false;
             }
-            $fail = array_shift($lot) ?: false;
-            $fail_alt = array_shift($lot) ?: false;
+            if (is_string($fail) && strpos($fail, '~') === 0) {
+                return call_user_func(substr($fail, 1), self::get($key, $fail_alt));
+            } else if ($fail instanceof \Closure) {
+                return call_user_func($fail, self::get($key, $fail_alt));
+            }
+            return self::get($key, $fail);
         }
-        if (is_string($fail) && strpos($fail, '~') === 0) {
-            return call_user_func(substr($fail, 1), self::get($key, $fail_alt));
-        } else if ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($key, $fail_alt));
-        }
-        return self::get($key, $fail);
+        return parent::__call($key, $lot);
     }
 
     public function __set($key, $value = null) {
@@ -92,8 +95,13 @@ class Config extends Genome {
         return self::get($key, null);
     }
 
+    // Fix case for `isset($config->key)` or `!empty($config->key)`
+    public function __isset($key) {
+        return !!self::get($key);
+    }
+
     public function __unset($key) {
-        return self::reset($key);
+        self::reset($key);
     }
 
     public function __toString() {

@@ -2,11 +2,13 @@
 
 class Request extends Genome {
 
-    public static $config = [
+    const config = [
         'session' => [
             'request' => 'mecha.request'
         ]
     ];
+
+    public static $config = self::config;
 
     public static function any($id, $key = null, $fail = null, $eval = true) {
         $data = $GLOBALS['_' . strtoupper($id)];

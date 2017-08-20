@@ -9,7 +9,11 @@ class Language extends Genome {
         if (Cache::expire($f)) {
             $i18n = new Page($f, [], 'language');
             $fn = 'From::' . __c2f__($i18n->type, '_');
-            $content = is_callable($fn) ? call_user_func($fn, $i18n->content) : $i18n->content;
+            $c = $i18n->content;
+            $content = is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
+            array_walk_recursive($content, function(&$v) use($content) {
+                $v = __replace__($v, ['$' => $content]);
+            });
             Cache::set($f, $content);
         } else {
             $content = Cache::get($f);
@@ -29,7 +33,10 @@ class Language extends Genome {
     }
 
     public static function get($key = null, $vars = [], $preserve_case = false) {
-        $vars = array_merge(s((array) $vars), [""]);
+        $vars = array_replace([
+            '0' => "",
+            '$' => new static // allow to embed variable like `%{$.key}%`
+        ], (array) $vars);
         $fail = $key;
         $id = '_' . __c2f__(static::class, '_');
         if (!isset($key)) {
@@ -57,7 +64,10 @@ class Language extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        return self::get($key, array_shift($lot), array_shift($lot) ?: false);
+        if (!self::kin($key)) {
+            return self::get($key, array_shift($lot), array_shift($lot) ?: false);
+        }
+        return parent::__call($kin, $lot);
     }
 
     public function __set($key, $value = null) {
@@ -65,11 +75,16 @@ class Language extends Genome {
     }
 
     public function __get($key) {
-        return Config::get('_' . __c2f__(static::class, '_') . '.' . $key, $key);
+        return self::get($key);
+    }
+
+    // Fix case for `isset($language->key)` or `!empty($language->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
     }
 
     public function __unset($key) {
-        return Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
+        Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
     }
 
     public function __toString() {

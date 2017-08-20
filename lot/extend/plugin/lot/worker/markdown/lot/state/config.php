@@ -34,5 +34,5 @@ return [
     ],
     'table_class' => 'table',
 	'table_align_class' => 'text-%s',
-    'footnote_class' => 'notes'
+    'footnote_class' => 'notes p'
 ];

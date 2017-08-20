@@ -3,7 +3,7 @@ title: Art Direction
 description: Create unique design for each blog post by adding special CSS and JavaScript files.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.1
+version: 1.0.2
 dependency: {"extension":["page"]}
 ...
 

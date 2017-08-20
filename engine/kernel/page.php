@@ -2,31 +2,33 @@
 
 class Page extends Genome {
 
-    public static $page = [];
+    const v = ["---\n", "\n...", ': ', '- ', "\n"];
+    const x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
 
     protected $lot = [];
-    protected $lot_alt = [];
+    protected $lot_c = [];
 
-    private $_pref = "";
+    private $NS = "";
+    private static $page = []; // Cache!
 
     public function __construct($input = null, $lot = [], $NS = 'page') {
-        $this->_pref = $NS . '.';
+        $this->NS = $NS . '.';
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = md5($this->_pref . $path);
+        $id = md5($this->NS . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id][1];
-            $this->lot_alt = self::$page[$id][0];
+            $this->lot_c = self::$page[$id][0];
         } else {
             $t = File::T($path, time());
             $date = date(DATE_WISE, $t);
             $n = $path ? Path::N($path) : null;
             $x = Path::X($path);
-            $this->lot_alt = array_replace([
+            $this->lot_c = array_replace([
                 'time' => $date,
                 'update' => $date,
                 'slug' => $n,
-                'title' => To::title($n), // fake `title` data from the page’s file name
-                'type' => u($x), // fake `type` data from the page’s file extension
+                'title' => To::title($n), // Fake `title` data from the page’s file name
+                'type' => u($x), // Fake `type` data from the page’s file extension
                 'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
@@ -58,42 +60,45 @@ class Page extends Genome {
             if (!array_key_exists('date', $this->lot)) {
                 $this->lot['date'] = new Date($this->lot['time']);
             }
-            self::$page[$id] = [$this->lot_alt, $this->lot];
+            self::$page[$id] = [$this->lot_c, $this->lot];
         }
         parent::__construct();
     }
 
     public function __call($key, $lot = []) {
-        $fail = array_shift($lot);
-        $fail_alt = array_shift($lot);
-        $x = $this->__get($key);
-        if (is_string($fail) && strpos($fail, '~') === 0) {
-            return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
-        } else if ($fail instanceof \Closure) {
-            return call_user_func($fail, $x !== null ? $x : $fail_alt);
+        if (!self::kin($key)) {
+            $fail = array_shift($lot);
+            $fail_alt = array_shift($lot);
+            $x = $this->__get($key);
+            if (is_string($fail) && strpos($fail, '~') === 0) {
+                return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
+            } else if ($fail instanceof \Closure) {
+                return call_user_func($fail, $x !== null ? $x : $fail_alt);
+            }
+            return $x !== null ? $x : $fail;
         }
-        return $x !== null ? $x : $fail;
+        return parent::__call($key, $lot);
     }
 
     public function __set($key, $value = null) {
-        $id = md5($this->_pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
         $this->lot[$key] = self::$page[$id][1][$key] = $value;
     }
 
     public function __get($key) {
         $lot = $this->lot;
-        $lot_alt = $this->lot_alt;
+        $lot_c = $this->lot_c;
         if (!array_key_exists($key, $lot)) {
-            if (isset($lot['path'])) {
+            if (isset($lot['path']) && is_file($lot['path'])) {
                 // Prioritize data from a file…
                 if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
                     $lot[$key] = e($data);
-                } else if ($page = File::open($lot['path'])->read()) {
-                    $lot = array_replace($lot_alt, $lot, e(self::apart($page)));
+                } else if ($page = file_get_contents($lot['path'])) {
+                    $lot = array_replace($lot_c, $lot, e(self::apart($page)));
                 }
             }
             if (!array_key_exists($key, $lot)) {
-                $lot[$key] = array_key_exists($key, $lot_alt) ? e($lot_alt[$key]) : null;
+                $lot[$key] = array_key_exists($key, $lot_c) ? e($lot_c[$key]) : null;
             }
         }
         // Prioritize data from a file…
@@ -101,13 +106,17 @@ class Page extends Genome {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;
-        self::$page[md5($this->_pref . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
-        // $this->lot_alt = $lot_alt;
-        return Hook::NS($this->_pref . $key, [$lot[$key], $lot, $key, $this]);
+        self::$page[md5($this->NS . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
+        return Hook::fire($this->NS . $key, [$lot[$key], $lot, $this, $key]);
+    }
+
+    // Fix case for `isset($page->key)` or `!empty($page->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
     }
 
     public function __unset($key) {
-        $id = md5($this->_pref . (isset($this->lot['path']) ? $this->lot['path'] : null));
+        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
         unset($this->lot[$key], self::$page[$id][1][$key]);
     }
 
@@ -116,52 +125,61 @@ class Page extends Genome {
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
-    public static $v = ["---\n", "\n...", ': ', '- ', "\n"];
-    public static $x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
-
-    public static function v($s) {
-        return str_replace(self::$x, self::$v, $s);
-    }
-
-    public static function x($s) {
-        return str_replace(self::$v, self::$x, $s);
-    }
-
     public static function apart($input, $key = null, $fail = null) {
         $input = n($input);
-        $c = static::class;
-        $k = __FUNCTION__;
         // Custom `apart` method by the `Genome` class…
-        if (isset(self::$_[1][$c][$k])) {
-            return call_user_func(self::$_[1][$c][$k], $input, $key, $fail);
+        if ($fn = self::kin(__METHOD__)) {
+            return call_user_func($fn, $input, $key, $fail);
         }
         // Get specific property…
         if ($key === 'content') {
-            $input = explode(self::$v[1], $input, 2);
-            return trim(self::v(isset($input[1]) ? $input[1] : $input[0]), self::$v[4]);
+            $input = explode(self::v[1], is_file($input) ? file_get_contents($input) : $input, 2);
+            return trim(isset($input[1]) ? $input[1] : $input[0], self::v[4]);
         } else if (isset($key)) {
-            $s = strpos($input, self::$v[2]);
-            $ss = strpos($input, $k = self::$v[4] . $key . self::$v[2]);
+            // By path… (faster)
+            if (is_file($input)) {
+                if ($o = fopen($input, 'r')) {
+                    $output = $fail;
+                    $end = trim(self::v[1]); // page header end
+                    while (($s = fgets($o, 1024)) !== false) {
+                        $s = trim($s);
+                        if ($s === $end) {
+                            break;
+                        }
+                        if (strpos($s, $key . self::v[2]) === 0) {
+                            $s = explode(self::v[2], $s, 2);
+                            $output = isset($s[1]) ? trim($s[1]) : $fail;
+                            break;
+                        }
+                    }
+                    fclose($o);
+                    return $output;
+                }
+                return $fail;
+            }
+            // By content…
+            $s = strpos($input, self::v[1]);
+            $ss = strpos($input, $k = self::v[4] . $key . self::v[2]);
             if ($s !== false && $ss !== false && $ss < $s) {
-                $input = substr($input, $ss + strlen($k)) . self::$v[4];
-                return self::v(substr($input, 0, strpos($input, self::$v[4])));
+                $input = substr($input, $ss + strlen($k)) . self::v[4];
+                return trim(substr($input, 0, strpos($input, self::v[4])));
             }
             return $fail;
         }
         // Get all propert(y|ies) embedded…
         $data = [];
-        if (strpos($input, self::$v[0]) !== 0) {
-            $data['content'] = self::v($input);
+        if (strpos($input, self::v[0]) !== 0) {
+            $data['content'] = $input;
         } else {
-            $input = str_replace([X . self::$v[0], X], "", X . $input . N . N);
-            $input = explode(self::$v[1] . N . N, $input, 2);
+            $input = str_replace([X . self::v[0], X], "", X . $input . N . N);
+            $input = explode(self::v[1] . N . N, $input, 2);
             // Do data…
-            foreach (explode(self::$v[4], $input[0]) as $v) {
-                $v = explode(self::$v[2], $v, 2);
-                $data[self::v($v[0])] = isset($v[1]) ? self::v($v[1]) : $fail;
+            foreach (explode(self::v[4], $input[0]) as $v) {
+                $v = explode(self::v[2], $v, 2);
+                $data[$v[0]] = isset($v[1]) ? trim($v[1]) : $fail;
             }
             // Do content…
-            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::$v[4]);
+            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::v[4]);
         }
         return $data;
     }
@@ -174,23 +192,23 @@ class Page extends Genome {
             unset($input['content']);
         }
         foreach ($input as $k => $v) {
-            $v = is_array($v) ? json_encode($v) : self::x(s($v));
+            $v = is_array($v) ? json_encode($v) : s($v);
             if ($v && strpos($v, "\n") !== false) {
-                $v = json_encode($v); // contains line–break
+                $v = json_encode($v); // Contains line–break
             }
-            $data[] = self::x($k) . self::$v[2] . $v;
+            $data[] = $k . self::v[2] . $v;
         }
-        return ($data ? self::$v[0] . implode(N, $data) . self::$v[1] : "") . ($content ? N . N . $content : "");
+        return ($data ? self::v[0] . implode(N, $data) . self::v[1] : "") . ($content ? N . N . $content : "");
     }
 
-    protected static $data = [];
+    private static $data = [];
 
     public static function open($path, $lot = [], $NS = 'page') {
         self::$data = ['path' => $path];
         return new static($path, $lot, $NS);
     }
 
-    public static function data($input, $fn = null, $NS = 'page') {
+    public static function data($input, $fn = null) {
         if (!is_array($input)) {
             if (is_callable($fn)) {
                 self::$data[$input] = call_user_func($fn, self::$data);
@@ -199,15 +217,14 @@ class Page extends Genome {
                 $input = ['content' => $input];
             }
         }
-        self::$data = $data = array_replace(self::$data, $input);
-        foreach ($data as $k => $v) {
-            if ($v === false) unset(self::$data[$k], $data[$k]);
+        self::$data = array_replace(self::$data, $input);
+        foreach (self::$data as $k => $v) {
+            if ($v === false) unset(self::$data[$k]);
         }
-        unset($data['path']);
-        return new static(null, $data, $NS);
+        return new static(isset(self::$data['path']) ? self::$data['path'] : null, $input);
     }
 
-    public function get($key, $fail = null, $NS = 'page') {
+    public function get($key, $fail = null) {
         if (is_array($key)) {
             $output = [];
             foreach ($key as $k => $v) {
@@ -218,12 +235,13 @@ class Page extends Genome {
         return $this->{$key}($fail);
     }
 
-    public static function saveTo($path, $consent = 0600) {
-        unset(self::$data['path']);
-        File::write(self::unite(self::$data))->saveTo($path, $consent);
+    public function saveTo($path, $consent = 0600) {
+        $data = self::$data;
+        unset($data['path']);
+        File::write(self::unite($data))->saveTo($path, $consent);
     }
 
-    public static function save($consent = 0600) {
+    public function save($consent = 0600) {
         return self::saveTo(self::$data['path'], $consent);
     }
 

@@ -9,7 +9,7 @@ class Extend extends Genome {
     }
 
     public static function state(...$lot) {
-        $id = basename(array_shift($lot));
+        $id = str_replace('.', '\\', basename(array_shift($lot)));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: EXTEND;
@@ -19,7 +19,7 @@ class Extend extends Genome {
         }
         $c = __c2f__(static::class, '_');
         $state = isset(self::$extend[$c][$id]) ? self::$extend[$c][$id] : include $state;
-        $state = Hook::NS($c . '.state.' . $id, [$state]);
+        $state = Hook::fire($c . '.state.' . $id, [$state]);
         if (is_array($key)) {
             return array_replace_recursive($key, $state);
         }

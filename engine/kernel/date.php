@@ -143,8 +143,13 @@ class Date extends Genome {
         return $this->extract($key, null);
     }
 
+    // Fix case for `isset($date->key)` or `!empty($date->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
     public function __unset($key) {
-        return $this->reset($key);
+        $this->reset($key);
     }
 
     public function __toString() {

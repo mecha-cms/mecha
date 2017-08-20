@@ -54,6 +54,7 @@ To::plug('hex', function($input, $z = false, $f = ['&#x', ';']) {
 });
 
 To::plug('html', 'htmlspecialchars_decode');
+
 To::plug('json', 'json_encode');
 
 To::plug('key', function($input, $low = true) {
@@ -127,7 +128,7 @@ To::plug('url', function($input, $raw = false) {
 });
 
 function __to_yaml__($input, $c = [], $in = '  ', $safe = false, $dent = 0) {
-    $s = array_replace(Page::$v, $c);
+    $s = array_replace(Page::v, $c);
     if (__is_anemon__($input)) {
         $t = "";
         $line = __is_anemon_0__($input) && !$safe;
@@ -168,7 +169,7 @@ To::plug('yaml', function(...$lot) {
     if (!__is_anemon__($lot[0])) {
         return s($lot[0]);
     }
-    if (Is::path($lot[0], true)) {
+    if (is_string($lot[0]) && Is::path($lot[0], true)) {
         $lot[0] = include $lot[0];
     }
     return call_user_func_array('__to_yaml__', $lot);

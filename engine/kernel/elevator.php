@@ -48,7 +48,7 @@ class Elevator extends Genome {
             'path' => $path
         ];
         $cc = array_replace_recursive($c, $config);
-        $this->config = Hook::NS($key, [$cc, $c]);
+        $this->config = Hook::fire($key, [$cc, $c]);
         $d = $this->config['direction'];
         global $url;
         if (isset($chunk)) {
@@ -70,8 +70,8 @@ class Elevator extends Genome {
             if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
             if ($d['1'] !== false) $this->bucket[$d['1']] = isset($input[$index + 1]) ? $path . '/' . ($index + 2) : null;
         }
-        $this->NS = $NS;
-        $this->bucket = Hook::NS($key . '.links', [$this->bucket, $cc, $c]);
+        $this->NS = $key;
+        $this->bucket = Hook::fire($key . '.links', [$this->bucket, $cc, $c]);
         parent::__construct();
     }
 
@@ -85,15 +85,27 @@ class Elevator extends Genome {
         return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
     }
 
+    // Fix case for `isset($elevator->key)` or `!empty($elevator->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
+    public function __unset($key) {
+        unset($this->bucket[$key]);
+    }
+
     public function __call($kin, $lot = []) {
-        $text = array_shift($lot);
-        $u = $this->config['union'];
-        $d = array_search($kin, $this->config['direction']);
-        if ($d !== false && ($text || $text === "")) {
-            if ($text !== true) $u[$d][1] = $text;
-            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+        if (!self::kin($kin)) {
+            $text = array_shift($lot);
+            $u = $this->config['union'];
+            $d = array_search($kin, $this->config['direction']);
+            if ($d !== false && ($text || $text === "")) {
+                if ($text !== true) $u[$d][1] = $text;
+                return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+            }
+            return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
         }
-        return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
+        return parent::__call($kin, $lot);
     }
 
     public function __toString() {
@@ -105,7 +117,7 @@ class Elevator extends Genome {
         if ($d['-1'] !== false) $html[] = $this->{$d['-1']}(true);
         if ($d['0'] !== false) $html[] = $this->{$d['0']}(true);
         if ($d['1'] !== false) $html[] = $this->{$d['1']}(true);
-        return Hook::NS(__c2f__(static::class, '_') . '.' . $this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
+        return Hook::fire($this->NS . '.unit', [implode(' ', $html), $language, $this->bucket]);
     }
 
 }

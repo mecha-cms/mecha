@@ -69,8 +69,8 @@ function __test__(...$a) {
 function __format__($s, $x = "\n", $d = '#', $r = true) {
     if (!$s || strpos($s, '%') === false) return $s;
     $r = $r ? "" : '?';
-    // group: `%{foo,bar,baz}%`
-    if (strpos($s, '%[') !== false && strpos($s, ']%') !== false) {
+    // group: `%[foo,bar,baz]%`
+    if (($i = strpos($s, '%[')) !== false && strpos($s, ']%') > $i) {
         $s = preg_replace_callback('#%\[([\s\S]+?)' . $r . '\]%#', function($m) {
             $m[1] = str_replace(['\,', ','], [X, '|'], $m[1]);
             return '(' . $m[1] . ')';
@@ -97,9 +97,52 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
     if (!$s || strpos($s, '%') === false) return $s;
     $a = (array) $a;
     foreach ($a as $k => $v) {
-        $v = s($v);
-        if (strpos($s, '%{' . $k . '}%') !== false) {
-            $s = str_replace('%{' . $k . '}%', $v, $s);
+        if (is_array($v) || is_object($v)) {
+            // `%{$.a.b.c}%`
+            if (strpos($s, '%{' . $k . '.') !== false) {
+                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)+\}\%#i', function($m) use($v) {
+                    $a = explode('.', $m[1]);
+                    $b = array_pop($a);
+                    if (is_object($v)) {
+                        if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                            return $m[0];
+                        }
+                        $v = $v->{$b};
+                    } else if (is_array($v)) {
+                        if (!isset($v[$b])) {
+                            return $m[0];
+                        }
+                        $v = $v[$b];
+                    }
+                    if ($a) {
+                        if (!is_array($v) && !is_object($v)) {
+                            return $v;
+                        }
+                        while ($b = array_pop($a)) {
+                            if (!is_array($v) && !is_object($v)) {
+                                return $v;
+                            }
+                            if (is_object($v)) {
+                                if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                                    return $m[0];
+                                }
+                                $v = $v->{$b};
+                            } else if (is_array($v)) {
+                                $v = isset($v[$b]) ? $v[$b] : $m[0];
+                            }
+                        }
+                        return $v;
+                    }
+                    return $v;
+                }, $s);
+            }
+            // `%{$}%`
+            if (is_object($v) && method_exists($v, '__toString')) {
+                $s = str_replace('%{' . $k . '}%', $v . "", $s);
+            }
+        // `%{a}%`
+        } else if (strpos($s, '%{' . $k . '}%') !== false) {
+            $s = str_replace('%{' . $k . '}%', s($v), $s);
             continue;
         }
         // TODO: replace pattern(s) as in `__format__` function

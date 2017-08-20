@@ -89,6 +89,11 @@ class URL extends Genome {
         return isset($this->lot[$key]) ? $this->lot[$key] : null;
     }
 
+    // Fix case for `isset($url->key)` or `!empty($url->key)`
+    public function __isset($key) {
+        return !!$this->__get($key);
+    }
+
     public function __unset($key) {
         unset($this->lot[$key]);
     }

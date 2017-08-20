@@ -38,7 +38,8 @@ call_user_func(function() {
         foreach ($c as $k => $v) {
             $i18n = new Page($k, [], 'language');
             $fn = 'From::' . __c2f__($i18n->type, '_');
-            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $i18n->content) : From::yaml($i18n->content));
+            $c = $i18n->content;
+            $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
         }
         Cache::set(PLUGIN, $content, $id);
     } else {

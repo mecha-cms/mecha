@@ -2,18 +2,25 @@
 
 class Guardian extends Genome {
 
-    public static $config = [
+    const config = [
         'session' => [
             'token' => 'mecha.guardian.token'
         ]
     ];
 
+    public static $config = self::config;
+
     public static function hash($salt = "") {
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
-    public static function token() {
-        $key = self::$config['session']['token'];
+    public static function check($token, $id = 0, $fail = false) {
+        $s = Session::get(self::$config['session']['token'] . '.' . $id);
+        return $s && $token && $s === $token ? $token : $fail;
+    }
+
+    public static function token($id = 0) {
+        $key = self::$config['session']['token'] . '.' . $id;
         $token = Session::get($key, self::hash());
         Session::set($key, $token);
         return $token;
@@ -26,10 +33,10 @@ class Guardian extends Genome {
             $path = $current;
         }
         $long = URL::long($path, false);
-        Session::set('url.previous', Hook::NS('url.previous', [$current, $path]));
+        Session::set('url.previous', Hook::fire('url.previous', [$current, $path]));
         $s = __c2f__(static::class, '_') . '.kick.';
         Hook::fire($s . 'before', [$long, $path]);
-        header('Location: ' . Hook::NS('url.next', [$long, $path]));
+        header('Location: ' . Hook::fire('url.next', [$long, $path]));
         Hook::fire($s . 'after', [$long, $path]);
         exit;
     }

@@ -3,7 +3,7 @@ title: Markdown
 description: Convert Markdown syntax to HTML.
 author: Taufik Nurrohman
 type: Markdown
-version: 2.0.5
+version: 2.0.6
 ...
 
 Markdown is two things: a plain text markup syntax, and a software tool that converts plain text markup to HTML for publishing on the web.

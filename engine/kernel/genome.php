@@ -10,9 +10,6 @@ abstract class Genome {
         self::$__instance__[] = $this;
     }
 
-    // Static method name’s suffix
-    public static $_suf = '_';
-
     // Method(s)…
     public static $_ = [];
 
@@ -20,7 +17,6 @@ abstract class Genome {
     public static function kin($kin = null, $fail = false, $origin = false) {
         $c = static::class;
         if (isset($kin)) {
-            $kin .= self::$_suf;
             if (!isset(self::$_[0][$c][$kin])) {
                 $output = isset(self::$_[1][$c][$kin]) ? self::$_[1][$c][$kin] : $fail;
                 return $origin && method_exists($c, $kin) ? 1 : $output;
@@ -32,7 +28,7 @@ abstract class Genome {
 
     // Add new method with `Genome::plug('foo')`
     public static function plug($kin, $fn) {
-        self::$_[1][static::class][$kin . self::$_suf] = $fn;
+        self::$_[1][static::class][$kin] = $fn;
         return true;
     }
 
@@ -40,7 +36,6 @@ abstract class Genome {
     public static function eject($kin = null) {
         if (isset($kin)) {
             $c = static::class;
-            $kin .= self::$_suf;
             self::$_[0][$c][$kin] = 1;
             unset(self::$_[1][$c][$kin]);
         } else {
@@ -49,18 +44,24 @@ abstract class Genome {
         return true;
     }
 
+    // Call the added method with `$instance->foo()`
+    public function __call($kin, $lot = []) {
+        $c = static::class;
+        if (!isset(self::$_[1][$c][$kin]) && defined('DEBUG') && DEBUG) {
+            echo '<p>Method <code>-&gt;' . $kin . '()</code> does not exist.</p>';
+            return false;
+        }
+        return call_user_func_array(Closure::bind(self::$_[1][$c][$kin], $this), $lot);
+    }
+
     // Call the added method with `Genome::foo()`
     public static function __callStatic($kin, $lot = []) {
         $c = static::class;
-        $k = $kin . self::$_suf;
-        if (method_exists($c, $k)) {
-            return call_user_func_array('self::' . $k, $lot);
-        }
-        if (!isset(self::$_[1][$c][$k]) && defined('DEBUG') && DEBUG) {
+        if (!isset(self::$_[1][$c][$kin]) && defined('DEBUG') && DEBUG) {
             echo '<p>Method <code>' . $c . '::' . $kin . '()</code> does not exist.</p>';
             return false;
         }
-        return call_user_func_array(self::$_[1][$c][$k], (array) $lot);
+        return call_user_func_array(self::$_[1][$c][$kin], (array) $lot);
     }
 
 }

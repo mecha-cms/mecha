@@ -1,6 +1,6 @@
 <?php
 
-function fn_art_css($content) {
+function fn_page_css($content) {
     $content = trim($content);
     if ($content && stripos($content, '</style>') === false && stripos($content, '<link ') === false) {
         return '<style media="screen">' . N . $content . N . '</style>';
@@ -8,7 +8,7 @@ function fn_art_css($content) {
     return $content;
 }
 
-function fn_art_js($content) {
+function fn_page_js($content) {
     $content = trim($content);
     if ($content && stripos($content, '</script>') === false && stripos($content, '<script ') === false) {
         return '<script>' . N . $content . N . '</script>';
@@ -16,7 +16,7 @@ function fn_art_js($content) {
     return $content;
 }
 
-function fn_art_replace($content) {
+function fn_art($content) {
     if (!$page = Lot::get('page')) {
         return $content;
     }
@@ -27,6 +27,6 @@ function fn_art_replace($content) {
     return $content;
 }
 
-Hook::set('page.css', 'fn_art_css');
-Hook::set('page.js', 'fn_art_js');
-Hook::set('shield.output', 'fn_art_replace', 1);
+Hook::set('page.css', 'fn_page_css');
+Hook::set('page.js', 'fn_page_js');
+Hook::set('shield.output', 'fn_art', 1);
