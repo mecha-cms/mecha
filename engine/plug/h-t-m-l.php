@@ -1,12 +1,12 @@
 <?php
 
-HTML::plug('a', function($content = "", $href = null, $target = null, $attr = [], $dent = 0) {
+HTML::plug('a', function($text = "", $href = null, $target = null, $attr = [], $dent = 0) {
     $attr_o = [
         'target' => $target === true ? '_new' : ($target === false ? null : $target)
     ];
     $attr = array_replace_recursive($attr_o, $attr);
     $attr['href'] = URL::long(str_replace('&amp;', '&', $href));
-    return HTML::unite('a', $content, $attr, $dent);
+    return HTML::unite('a', $text, $attr, $dent);
 });
 
 HTML::plug('img', function($src = null, $alt = null, $attr = [], $dent = 0) {

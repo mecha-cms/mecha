@@ -800,59 +800,47 @@ function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
 }
 
 // $s: directory path
-// $x: file extension or name pattern… `txt`, `log,txt`, `foo/`
+// $x: file extension or name pattern… `txt`, `log,txt`
 // $q: filter by query
 // $o: order?
 // $h: include hidden file(s)?
-function g($s = ROOT, $x = '*', $q = "", $o = true, $h = true) {
+function g($s = ROOT, $x = '*', $q = "", $o = false, $h = true) {
+    $s = rtrim($s, DS) . DS;
     $x = str_replace(' ', "", $x);
-    $F = GLOB_NOSORT;
+    $f = GLOB_BRACE | GLOB_NOSORT;
     if (strpos($s . $x, '{') !== false) {
-        $F = substr($x, -1) === '/' ? GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT : GLOB_BRACE | GLOB_NOSORT;
-    } else {
-        if (substr($x, -1) === '/') {
-            $x = substr($x, 1);
-            $F = GLOB_ONLYDIR | GLOB_NOSORT;
-            if (strpos($x, ',') !== false) {
-                $x = '{' . $x . '}';
-                $F = GLOB_ONLYDIR | GLOB_BRACE | GLOB_NOSORT;
-            }
-        } else {
-            if (strpos($x, ',') !== false) {
-                $x = strpos($x, '.') === false ? '*.{' . $x . '}' : '{' . $x . '}';
-                $F = GLOB_BRACE | GLOB_NOSORT;
-            } else if (strpos($x, '.') === false) {
-                $x = '*.' . $x;
-                $F = GLOB_BRACE | GLOB_NOSORT;
-            }
-        }
+        // ...
+    } else if (strpos($x, ',') !== false) {
+        $x = strpos($x, '.') === false ? '*.{' . $x . '}' : '{' . $x . '}';
+    } else if (strpos($x, '.') === false) {
+        $x = '*.' . $x;
     }
-    $g = glob(rtrim($s, DS) . DS . $x, $F);
+    $g = glob($s . $x, $f);
     if ($h) {
-        $g = array_merge(glob($s . '.' . $x, $F), $g);
+        $g = array_merge(glob($s . '.' . $x, $f), $g);
     }
     if (!$q) {
         if ($o) natsort($g);
         return $g;
     }
-    $O = [];
+    $r = [];
     if (is_callable($q)) {
         foreach ($g as $k => $v) {
-            if (call_user_func($q, $v, $k)) {
-                $O[] = $v;
+            if (call_user_func($q, $v, $k, $q)) {
+                $r[] = $v;
             }
         }
     } else {
         foreach ($g as $k => $v) {
             $s = pathinfo($v, PATHINFO_FILENAME);
             if (strpos($s, $q) !== false) {
-                $O[] = $v;
+                $r[] = $v;
             }
         }
     }
-    if ($o) natsort($O);
+    if ($o) natsort($r);
     unset($g);
-    return $O;
+    return $r;
 }
 
 function h($x, $s = '-', $X = "") {

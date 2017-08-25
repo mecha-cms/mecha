@@ -13,24 +13,8 @@ class Is extends Genome {
         return new static($input);
     }
 
-    // --ditto
-    public static function these($input) {
-        if ($input instanceof Anemon) {
-            $input = explode(X, $input->join(X));
-        }
-        return new static($input);
-    }
-
     // Check for empty string, array or object
     public static function void($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::void($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return (
             $x === "" ||
             is_string($x) && trim($x) === "" ||
@@ -41,14 +25,6 @@ class Is extends Genome {
 
     // Check for IP address
     public static function ip($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::ip($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return filter_var($x, FILTER_VALIDATE_IP);
     }
 
@@ -58,14 +34,6 @@ class Is extends Genome {
 
     // Check for URL address
     public static function url($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::url($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
@@ -75,28 +43,12 @@ class Is extends Genome {
 
     // Check for valid local path address (whether it is exists or not)
     public static function path($x, $e = false) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::path($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         if (!is_string($x)) return false;
         return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$e || file_exists($x));
     }
 
     // Check for email address
     public static function email($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::email($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
@@ -106,45 +58,21 @@ class Is extends Genome {
 
     // Check for valid boolean value
     public static function toggle($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::toggle($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
     // Is file
     public static function F($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::F($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return is_file($x);
     }
 
     // Is directory
     public static function D($x) {
-        if (is_array($x)) {
-            $i = 0;
-            $ii = count($x);
-            foreach ($x as $v) {
-                if (self::D($v)) ++$i;
-            }
-            return $i === $ii;
-        }
         return is_dir($x);
     }
 
-    // Check if `self::$bucket` contains `$s`
-    public function has($s, $all = false, $x = X) {
+    // Check if `$this->bucket` contains `$s`
+    public function contain($s, $all = false, $x = X) {
         $input = $x . implode($x, $this->bucket) . $x;
         if (is_array($s)) {
             if (!$all) {
@@ -183,12 +111,12 @@ class Is extends Genome {
     }
 
     // Is less than or equal to `$x`
-    public function lte($x) {
+    public function le($x) {
         return q($this->bucket) <= $x;
     }
 
     // Is greater than or equal to `$x`
-    public static function gte($x) {
+    public static function ge($x) {
         return q($this->bucket) >= $x;
     }
 

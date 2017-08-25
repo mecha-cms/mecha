@@ -151,9 +151,9 @@ class Union extends Genome {
             2 => []    // `Element.attributes`
         ];
         $s = '/^' . $u0 . '(' . $u[3] . ')(' . $d3 . '.*?)?(?:' . $u2 . $u1 . '|' . $u1 . '(?:([\s\S]*?)(' . $u0 . $u2 . '\1' . $u1 . '))?)$/s';
-        // must starts with `<` and ends with `>`
+        // Must starts with `<` and ends with `>`
         if ($u[0] && $u[1] && substr($input, 0, strlen($u[0])) === $u[0] && substr($input, -strlen($u[1])) === $u[1]) {
-            // does not match with pattern, abort!
+            // Does not match with pattern, abort!
             if (!preg_match($s, $input, $m)) {
                 return false;
             }

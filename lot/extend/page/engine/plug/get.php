@@ -28,7 +28,7 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
     $data = Path::F($path);
     if (is_dir($data)) {
         if ($for === null) {
-            foreach (g($data, '*.data', "", false) as $v) {
+            foreach (g($data, 'data') as $v) {
                 $n = Path::N($v);
                 $output[$n] = e(_fn_get_page_worker($v, $n));
             }
@@ -42,7 +42,7 @@ function fn_get_page($path, $key = null, $fail = false, $for = null) {
 function fn_get_pages($folder = PAGE, $state = 'page', $sort = [-1, 'time'], $key = null) {
     $output = [];
     $by = is_array($sort) && isset($sort[1]) ? $sort[1] : null;
-    if ($input = g($folder, $state, "", false)) {
+    if ($input = g($folder, $state)) {
         foreach ($input as $v) {
             $output[] = fn_get_page($v, null, false, $by);
         }
