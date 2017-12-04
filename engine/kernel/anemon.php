@@ -36,10 +36,10 @@ class Anemon extends Genome {
     }
 
     // Set array value recursively
-    public static function set(array &$input, $key, $value = null) {
-        $keys = explode('.', $key);
+    public static function set(array &$input, $key, $value = null, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
-            $key = array_shift($keys);
+            $key = str_replace(X, $NS, array_shift($keys));
             if (!array_key_exists($key, $input)) {
                 $input[$key] = [];
             }
@@ -49,9 +49,8 @@ class Anemon extends Genome {
     }
 
     // Get array value recursively
-    public static function get(array &$input, $key = null, $fail = false) {
-        if (!isset($key)) return $input;
-        $keys = explode('.', $key);
+    public static function get(array &$input, $key, $fail = false, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         foreach ($keys as $value) {
             if (!is_array($input) || !array_key_exists($value, $input)) {
                 return $fail;
@@ -62,13 +61,10 @@ class Anemon extends Genome {
     }
 
     // Remove array value recursively
-    public static function reset(array &$input, $key = null) {
-        if ($key === null) {
-            return ($input = []);
-        }
-        $keys = explode('.', $key);
+    public static function reset(array &$input, $key, $NS = '.') {
+        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
         while (count($keys) > 1) {
-            $key = array_shift($keys);
+            $key = str_replace(X, $NS, array_shift($keys));
             if (array_key_exists($key, $input)) {
                 $input =& $input[$key];
             }
@@ -81,22 +77,23 @@ class Anemon extends Genome {
 
     // Extend two or more array
     public static function extend(array &$input, ...$b) {
-        $input = array_replace_recursive((array) $input, ...$b);
-        return $input;
+        return ($input = array_replace_recursive($input, ...$b));
     }
 
     // Concatenate two or more array
     public static function concat(array &$input, ...$b) {
-        $input = array_merge_recursive((array) $input, ...$b);
-        return $input;
+        return ($input = array_merge_recursive($input, ...$b));
     }
 
-    public static function eat(array $array) {
-        return new static($array);
+    public static function eat(array $input) {
+        return new static($input);
     }
 
     public function vomit($key = null, $fail = false) {
-        return $this->get($this->bucket, $key, $fail);
+        if (isset($key)) {
+            return self::get($this->bucket, $key, $fail);
+        }
+        return $this->bucket;
     }
 
     // Randomize array order
@@ -173,11 +170,11 @@ class Anemon extends Genome {
         if (is_callable($fn)) {
             if ($deep) {
                 array_walk_recursive($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($v, $k, $a);
+                    call_user_func($fn, $v, $k, $a);
                 }, $array);
             } else {
                 array_walk($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($v, $k, $a);
+                    call_user_func($fn, $v, $k, $a);
                 }, $array);
             }
             return $array;
@@ -194,7 +191,7 @@ class Anemon extends Genome {
 
     // Move to next array index
     public function next($skip = 0) {
-        $this->i = $this->edge($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->i = self::edge($this->i + 1 + $skip, 0, $this->count() - 1);
         return $this;
     }
 

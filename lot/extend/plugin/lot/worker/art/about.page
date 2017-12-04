@@ -3,11 +3,14 @@ title: Art Direction
 description: Create unique design for each blog post by adding special CSS and JavaScript files.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.2
-dependency: {"extension":["page"]}
+version: 1.0.3
+
+dependency:
+  extension:
+    - page
 ...
 
-To enable this feature, add `css.data` and `js.data` files to a folder that is named with the same name as the page slug and stored in the same directory level:
+To enable this feature, add `css.data` and `js.data` files to a folder that has the same name as the page slug and is stored in the same directory level:
 
 ~~~ .txt
 lot\

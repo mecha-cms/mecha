@@ -7,25 +7,27 @@ class Hook extends Genome {
     public static function set($id = null, $fn = null, $stack = null) {
         $c = static::class;
         $stack = isset($stack) ? $stack : 10;
-        if (!is_array($id)) {
-            if (!isset(self::$lot[1][$c][$id])) {
-                self::$lot[1][$c][$id] = [];
+            if (!is_array($id)) {
+                if (!isset(self::$lot[0][$c][$id][$stack])) {
+                    if (!isset(self::$lot[1][$c][$id])) {
+                        self::$lot[1][$c][$id] = [];
+                    }
+                    self::$lot[1][$c][$id][] = [
+                        'fn' => $fn,
+                        'stack' => (float) $stack
+                    ];
+                }
+            } else {
+                foreach ($id as $v) {
+                    self::set($v, $fn, $stack);
+                }
             }
-            self::$lot[1][$c][$id][] = [
-                'fn' => $fn,
-                'stack' => (float) $stack
-            ];
-        } else {
-            foreach ($id as $v) {
-                self::set($v, $fn, $stack);
-            }
-        }
         return new static;
     }
 
     public static function reset($id = null, $stack = null) {
+        $c = static::class;
         if (!is_array($id)) {
-            $c = static::class;
             if (isset($id)) {
                 self::$lot[0][$c][$id][isset($stack) ? $stack : 10] = isset(self::$lot[1][$c][$id]) ? self::$lot[1][$c][$id] : 1;
                 if (isset(self::$lot[1][$c][$id])) {
@@ -63,7 +65,7 @@ class Hook extends Genome {
         return !empty(self::$lot[1][$c]) ? self::$lot[1][$c] : $fail;
     }
 
-    public static function fire($id, array $lot = [null]) {
+    public static function fire($id, array $lot = []) {
         $c = static::class;
         if (!array_key_exists(0, $lot)) {
             $lot = [null];
@@ -80,16 +82,14 @@ class Hook extends Genome {
                     $lot[0] = $s;
                 }
             }
-            return $lot[0];
         } else {
-            $end = null;
             foreach ($id as $v) {
                 if (($s = call_user_func('self::fire', $v, $lot)) !== null) {
-                    $end = $s;
+                    $lot[0] = $s;
                 }
             }
-            return $end;
         }
+        return $lot[0];
     }
 
     public static function NS(...$lot) {

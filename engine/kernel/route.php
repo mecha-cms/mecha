@@ -2,8 +2,8 @@
 
 class Route extends Genome {
 
-    public static $lot = [];
-    public static $lot_o = [];
+    protected static $lot = [];
+    protected static $lot_o = [];
 
     public static function set($id = null, $fn = null, $stack = null, $pattern = false) {
         $i = 0;
@@ -56,7 +56,7 @@ class Route extends Genome {
 
     public static function is($id, $fail = false, $pattern = false) {
         $id = URL::short($id, false);
-        $path = URL::path();
+        $path = $GLOBALS['URL']['path'];
         if (strpos($id, '%') === false) {
             return $path === $id ? [
                 'pattern' => $id,
@@ -111,8 +111,7 @@ class Route extends Genome {
                 return true;
             }
         } else {
-            global $url;
-            $id = $url->path;
+            $id = $GLOBALS['URL']['path'];
             if (isset(self::$lot[1][$id])) {
                 // Loading cargo(s)…
                 if (isset(self::$lot_o[1][$id])) {

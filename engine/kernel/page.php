@@ -2,19 +2,17 @@
 
 class Page extends Genome {
 
-    const v = ["---\n", "\n...", ': ', '- ', "\n"];
-    const x = ['&#45;&#45;&#45;&#10;', '&#10;&#46;&#46;&#46;', '&#58;&#32;', '&#45;&#32;', '&#10;'];
-
     protected $lot = [];
     protected $lot_c = [];
 
     private $NS = "";
+    private $hash = "";
     private static $page = []; // Cache!
 
-    public function __construct($input = null, $lot = [], $NS = 'page') {
-        $this->NS = $NS . '.';
+    public function __construct($input = null, $lot = [], $NS = ['*', 'page']) {
+        $this->NS = $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
-        $id = md5($this->NS . $path);
+        $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
             $this->lot = self::$page[$id][1];
             $this->lot_c = self::$page[$id][0];
@@ -32,7 +30,7 @@ class Page extends Genome {
                 'state' => $x,
                 'id' => (string) $t,
                 'url' => To::url($path)
-            ], a(Config::get('page', [])), $lot);
+            ], (array) a(Config::get('page', [])), $lot);
             $this->lot = is_array($input) ? $input : (isset($input) ? ['path' => $input] : []);
             // Set `time` value from the page’s file name
             if (
@@ -45,7 +43,7 @@ class Page extends Genome {
                     substr_count($n, '-') === 5
                 ) &&
                 is_numeric(str_replace('-', "", $n)) &&
-                preg_match('#^\d{4,}-\d{2}-\d{2}(?:-\d{2}-\d{2}-\d{2})?$#', $n)
+                preg_match('#^\d{4,}(?:-\d{2}){2}(?:(?:-\d{2}){3})?$#', $n)
             ) {
                 $t = new Date($n);
                 $this->lot['time'] = $t->format();
@@ -66,23 +64,20 @@ class Page extends Genome {
     }
 
     public function __call($key, $lot = []) {
-        if (!self::kin($key)) {
-            $fail = array_shift($lot);
-            $fail_alt = array_shift($lot);
-            $x = $this->__get($key);
-            if (is_string($fail) && strpos($fail, '~') === 0) {
-                return call_user_func(substr($fail, 1), $x !== null ? $x : $fail_alt);
-            } else if ($fail instanceof \Closure) {
-                return call_user_func($fail, $x !== null ? $x : $fail_alt);
-            }
-            return $x !== null ? $x : $fail;
+        if (self::_($key)) {
+            return parent::__call($key, $lot);
         }
-        return parent::__call($key, $lot);
+        $fail = array_shift($lot);
+        $fail_alt = array_shift($lot);
+        $x = $this->__get($key);
+        if ($fail instanceof \Closure) {
+            return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
+        }
+        return $x !== null ? $x : $fail;
     }
 
     public function __set($key, $value = null) {
-        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
-        $this->lot[$key] = self::$page[$id][1][$key] = $value;
+        $this->lot[$key] = self::$page[$this->hash][1][$key] = $value;
     }
 
     public function __get($key) {
@@ -94,7 +89,7 @@ class Page extends Genome {
                 if ($data = File::open(Path::F($lot['path']) . DS . $key . '.data')->get()) {
                     $lot[$key] = e($data);
                 } else if ($page = file_get_contents($lot['path'])) {
-                    $lot = array_replace($lot_c, $lot, e(self::apart($page)));
+                    $lot = array_replace($lot_c, $lot, e(self::apart($page), 'content'));
                 }
             }
             if (!array_key_exists($key, $lot)) {
@@ -106,8 +101,16 @@ class Page extends Genome {
             $lot[$key] = e($data);
         }
         $this->lot = $lot;
-        self::$page[md5($this->NS . (isset($lot['path']) ? $lot['path'] : null))][1] = $lot;
-        return Hook::fire($this->NS . $key, [$lot[$key], $lot, $this, $key]);
+        self::$page[$this->hash][1] = $lot;
+        if (is_array($this->NS)) {
+            $name = [];
+            foreach ($this->NS as $v) {
+                $name[] = $v . '.' . $key;
+            }
+        } else {
+            $name = $this->NS . '.' . $key;
+        }
+        return Hook::fire($name, [$lot[$key], $lot, $this, $key]);
     }
 
     // Fix case for `isset($page->key)` or `!empty($page->key)`
@@ -116,8 +119,7 @@ class Page extends Genome {
     }
 
     public function __unset($key) {
-        $id = md5($this->NS . (isset($this->lot['path']) ? $this->lot['path'] : null));
-        unset($this->lot[$key], self::$page[$id][1][$key]);
+        $this->__set($key, null);
     }
 
     public function __toString() {
@@ -125,85 +127,74 @@ class Page extends Genome {
         return $path && file_exists($path) ? file_get_contents($path) : "";
     }
 
-    public static function apart($input, $key = null, $fail = null) {
-        $input = n($input);
-        // Custom `apart` method by the `Genome` class…
-        if ($fn = self::kin(__METHOD__)) {
-            return call_user_func($fn, $input, $key, $fail);
-        }
+    public static function apart($input, $key = null, $fail = null, $eval = false) {
         // Get specific property…
         if ($key === 'content') {
-            $input = explode(self::v[1], is_file($input) ? file_get_contents($input) : $input, 2);
-            return trim(isset($input[1]) ? $input[1] : $input[0], self::v[4]);
+            $input = explode("\n...", n(is_file($input) ? file_get_contents($input) : $input), 2);
+            return trim(isset($input[1]) ? $input[1] : $input[0], "\n");
         } else if (isset($key)) {
             // By path… (faster)
             if (is_file($input)) {
                 if ($o = fopen($input, 'r')) {
                     $output = $fail;
-                    $end = trim(self::v[1]); // page header end
                     while (($s = fgets($o, 1024)) !== false) {
                         $s = trim($s);
-                        if ($s === $end) {
-                            break;
+                        if ($s === '...') {
+                            break; // Page header end!
                         }
-                        if (strpos($s, $key . self::v[2]) === 0) {
-                            $s = explode(self::v[2], $s, 2);
+                        if (strpos($s, $key . ': ') === 0) {
+                            $s = explode(': ', $s, 2);
                             $output = isset($s[1]) ? trim($s[1]) : $fail;
                             break;
                         }
                     }
                     fclose($o);
-                    return $output;
+                    return $eval ? e($output) : $output;
                 }
                 return $fail;
             }
             // By content…
-            $s = strpos($input, self::v[1]);
-            $ss = strpos($input, $k = self::v[4] . $key . self::v[2]);
+            $input = n($input);
+            $s = strpos($input, "\n...");
+            $ss = strpos($input, $k = "\n" . $key . ': ');
             if ($s !== false && $ss !== false && $ss < $s) {
-                $input = substr($input, $ss + strlen($k)) . self::v[4];
-                return trim(substr($input, 0, strpos($input, self::v[4])));
+                $input = substr($input, $ss + strlen($k)) . "\n";
+                $output = trim(substr($input, 0, strpos($input, "\n")));
+                return $eval ? e($output) : $output;
             }
             return $fail;
         }
         // Get all propert(y|ies) embedded…
         $data = [];
-        if (strpos($input, self::v[0]) !== 0) {
+        $input = n($input);
+        if (strpos($input, "---\n") !== 0) {
             $data['content'] = $input;
         } else {
-            $input = str_replace([X . self::v[0], X], "", X . $input . N . N);
-            $input = explode(self::v[1] . N . N, $input, 2);
+            $input = str_replace([X . "---\n", X], "", X . $input . "\n\n");
+            $input = explode("\n...\n\n", $input, 2);
             // Do data…
-            foreach (explode(self::v[4], $input[0]) as $v) {
-                $v = explode(self::v[2], $v, 2);
-                $data[$v[0]] = isset($v[1]) ? trim($v[1]) : $fail;
-            }
+            $data = From::yaml($input[0], '  ', [], $eval);
             // Do content…
-            $data['content'] = trim(isset($input[1]) ? $input[1] : "", self::v[4]);
+            if (!isset($data['content'])) {
+                $data['content'] = trim(isset($input[1]) ? $input[1] : "", "\n");
+            }
         }
         return $data;
     }
 
     public static function unite($input) {
-        $data = [];
         $content = "";
         if (isset($input['content'])) {
             $content = $input['content'];
             unset($input['content']);
         }
-        foreach ($input as $k => $v) {
-            $v = is_array($v) ? json_encode($v) : s($v);
-            if ($v && strpos($v, "\n") !== false) {
-                $v = json_encode($v); // Contains line–break
-            }
-            $data[] = $k . self::v[2] . $v;
-        }
-        return ($data ? self::v[0] . implode(N, $data) . self::v[1] : "") . ($content ? N . N . $content : "");
+        $header = To::yaml($input);
+        return ($header ? "---\n" . $header . "\n..." : "") . ($content ? "\n\n" . $content : "");
     }
 
     private static $data = [];
 
-    public static function open($path, $lot = [], $NS = 'page') {
+    public static function open($path, $lot = [], $NS = ['*', 'page']) {
         self::$data = ['path' => $path];
         return new static($path, $lot, $NS);
     }

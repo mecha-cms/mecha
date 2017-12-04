@@ -1,6 +1,9 @@
 ---
 title: English
-description: American English, also called United States English or U.S. English, is the set of varieties of the English language native to the United States.
+description: >
+  American English, also called United States English
+  or U.S. English, is the set of varieties of the English
+  language native to the United States.
 version: 2.0.0
 type: YAML
 ...
@@ -41,10 +44,10 @@ chars: Characters
 charset: Charset
 charsets: Charsets
 
-char_set: %{$.char}% Set
-char_sets: %{$.char}% Sets
-chars_set: %{$.chars}% Set
-chars_sets: %{$.chars}% Sets
+char_set: Character Set
+char_sets: Character Sets
+chars_set: Characters Set
+chars_sets: Characters Sets
 
 child: Child
 childs: Children
@@ -249,7 +252,7 @@ new: New
 newer: Newer
 newest: Newest
 
-new__: %{$.new}% %{0}%
+new__: New %{0}%
 
 object: Object
 objects: Objects
@@ -258,7 +261,7 @@ old: Old
 older: Older
 oldest: Oldest
 
-old__: %{$.old}% %{0}%
+old__: Old %{0}%
 
 only: Only
 
@@ -369,10 +372,10 @@ texts: Texts
 time: Time
 times: Times
 
-time_zone: %{$.time}% %{$.zone}%
-time_zones: %{$.time}% %{$.zones}%
-times_zone: %{$.times}% %{$.zone}%
-times_zones: %{$.times}% %{$.zones}%
+time_zone: Time Zone
+time_zones: Time Zones
+times_zone: Times Zone
+times_zones: Times Zones
 
 title: Title
 titles: Titles
@@ -423,47 +426,47 @@ zones: Zones
 
 above: Above
 ago: Ago
-ago__: %{0}% %{$.ago}%
+ago__: %{0}% Ago
 all: All
-all__: %{$.all}% %{0}%
+all__: All %{0}%
 as: As
 begin: Begin
 both: Both
-both__: %{$.both}% %{0}%
+both__: Both %{0}%
 bottom: Bottom
 by: By
-by__: %{$.by}% %{0}%
+by__: By %{0}%
 current: Current
-current__: %{$.current}% %{0}%
+current__: Current %{0}%
 end: End
 finish: Finish
 first: First
-first__: %{$.first}% %{0}%
+first__: First %{0}%
 from: From
 in: In
 last: Last
-last__: %{$.last}% %{0}%
+last__: Last %{0}%
 left: Left
 next: Next
-next__: %{$.next}% %{0}%
+next__: Next %{0}%
 none: None
 not: Not
-not__: %{$.not}% %{0}%
+not__: Not %{0}%
 on: "On"
 of: Of
 off: "Off"
 previous: Previous
-previous__: %{$.previous}% %{0}%
+previous__: Previous %{0}%
 right: Right
 start: Start
 to: To
 today: Today
 tomorrow: Tomorrow
-tomorrow__: %{$.tomorrow}% %{0}%
+tomorrow__: Tomorrow %{0}%
 top: Top
 under: Under
 yesterday: Yesterday
-yesterday__: %{$.yesterday}% %{0}%
+yesterday__: Yesterday %{0}%
 
 
 #. Action
@@ -473,9 +476,9 @@ yesterday__: %{$.yesterday}% %{0}%
 #.
 #. Example:
 #.
-#.  - `backup` → or `back_up`
-#.  - `backup(ing)` → should be `backing_up`
-#.  - `backup(ed)` → should be `backed_up`
+#.- `backup` → or `back_up`
+#.- `backup(ing)` → should be `backing_up`
+#.- `backup(ed)` → should be `backed_up`
 
 abort: Abort
 aborting: Aborting
@@ -773,12 +776,12 @@ yes: Yes
 message_avail: %{0}% is available.
 message_exist: %{0}% already exists.
 
-message_error_file_exist: %{$.file}% %{0}% already exists.
-message_error_file_x: %{$.extension}% %{0}% is not allowed.
+message_error_file_exist: File %{0}% already exists.
+message_error_file_x: Extension %{0}% is not allowed.
 message_error_file_size:
   0: Must be greater than %{0}%.
   1: Must be less than %{0}%.
-message_error_file_type: %{$.file}% type %{0}% is not allowed.
+message_error_file_type: File type %{0}% is not allowed.
 message_error_search: No results for %{0}%.
 
 message_info_are: Your %{0}% are %{1}%.
@@ -796,7 +799,7 @@ message_info_is: Your %{0}% is %{1}%.
 message_info_search: Search results for %{0}%.
 message_info_void: No %{0}% yet.
 
-message_success_file_upload: %{$.file}% %{0}% uploaded.
+message_success_file_upload: File %{0}% uploaded.
 
 
 #. Negation…

@@ -18,7 +18,7 @@ class File extends Genome {
     public static $config = self::config;
 
     public function __construct($path = true, $c = []) {
-        $this->path = file_exists($path) ? $path : false;
+        $this->path = file_exists($path) ? realpath($path) : false;
         $this->content = "";
         $this->c = !empty($c) ? $c : self::$config;
         parent::__construct();

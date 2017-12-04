@@ -10,7 +10,7 @@ class Message extends Genome {
             0 => 'p',
             1 => '%{1}%',
             2 => [
-                'classes' => ['container', 'block', 'message', 'message-%{0}%']
+                'class[]' => ['container', 'block', 'message', 'message-%{0}%']
             ],
             3 => 1 // dent
         ],
@@ -18,7 +18,7 @@ class Message extends Genome {
             0 => 'div',
             1 => '%{0}%',
             2 => [
-                'classes' => ['container', 'block', 'messages', 'p']
+                'class[]' => ['container', 'block', 'messages', 'p']
             ]
         ]
     ];
@@ -84,11 +84,11 @@ class Message extends Genome {
     }
 
     public static function __callStatic($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            array_unshift($lot, $kin);
-            return call_user_func_array('self::set', $lot);
+        if (self::_($kin)) {
+            return parent::__callStatic($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        array_unshift($lot, $kin);
+        return call_user_func_array('self::set', $lot);
     }
 
 }

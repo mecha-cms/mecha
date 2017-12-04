@@ -60,7 +60,7 @@ class Elevator extends Genome {
         $path = rtrim($path, '/');
         $parent = Path::D($path);
         if (!isset($chunk)) {
-            $i = array_search($index, $input);
+            $i = $input ? array_search($index, $input) : 0;
             $i = isset($i) ? $i : 0;
             if ($d['-1'] !== false) $this->bucket[$d['-1']] = isset($input[$i - 1]) ? $path . '/' . $input[$i - 1] : null;
             if ($d['0'] !== false) $this->bucket[$d['0']] = $url->path !== "" ? ($path !== $url->current ? $path : $parent) : null;
@@ -95,17 +95,17 @@ class Elevator extends Genome {
     }
 
     public function __call($kin, $lot = []) {
-        if (!self::kin($kin)) {
-            $text = array_shift($lot);
-            $u = $this->config['union'];
-            $d = array_search($kin, $this->config['direction']);
-            if ($d !== false && ($text || $text === "")) {
-                if ($text !== true) $u[$d][1] = $text;
-                return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
-            }
-            return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__call($kin, $lot);
+        $text = array_shift($lot);
+        $u = $this->config['union'];
+        $d = array_search($kin, $this->config['direction']);
+        if ($d !== false && ($text || $text === "")) {
+            if ($text !== true) $u[$d][1] = $text;
+            return isset($this->bucket[$kin]) ? $this->_unite(array_replace_recursive($u[$d], [2 => ['href' => $this->bucket[$kin]]])) : $this->_unite($u['-2'], $u[$d]);
+        }
+        return isset($this->bucket[$kin]) ? $this->bucket[$kin] : $text;
     }
 
     public function __toString() {

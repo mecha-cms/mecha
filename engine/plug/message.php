@@ -1,11 +1,8 @@
 <?php
 
-Message::plug('error', function($text, $vars = [], $preserve_case = false) {
-    ++Message::$x;
-    return Message::set('error', $text, $vars, $preserve_case);
-});
-
-Message::plug('warning', function($text, $vars = [], $preserve_case = false) {
-    ++Message::$x;
-    return Message::set('warning', $text, $vars, $preserve_case);
-});
+foreach (['error', 'warning'] as $kin) {
+    Message::_($kin, function($text, $vars = [], $preserve_case = false) use($kin) {
+        ++Message::$x;
+        return Message::set($kin, $text, $vars, $preserve_case);
+    });
+}

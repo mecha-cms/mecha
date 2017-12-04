@@ -7,7 +7,7 @@ class Asset extends Genome {
     public static function path($path, $fail = false) {
         global $config, $url;
         if (strpos($path, '://') !== false || strpos($path, '//') === 0) {
-            // External URL, nothing to check…
+            // External URL, nothing to check!
             if (strpos($path, '://' . $url->host) === false && strpos($path, '//' . $url->host) !== 0) {
                 return $fail;
             }
@@ -73,39 +73,33 @@ class Asset extends Genome {
     public static function __callStatic($kin, $lot = []) {
         $path = array_shift($lot);
         $attr = array_shift($lot) ?: [];
-        $fn = static::class . '\\Union::' . $kin;
-        if (is_callable($fn) && !isset(self::$lot[$kin][1])) {
-            self::$lot[$kin][1] = [];
-        }
-        if (isset($path)) {
-            if (!self::get($path)) {
-                self::set($path);
+        if ($fn = self::_('.' . $kin)) {
+            if (isset($path)) {
+                $s = self::get($path, [
+                    'path' => null,
+                    'url' => null,
+                    'id' => null,
+                    'stack' => null
+                ]);
+                return is_callable($fn) ? call_user_func($fn, $s, $path, $attr) : ($s['path'] ? file_get_contents($s['path']) : "");
             }
-            $s = self::get($path, [
-                'path' => null,
-                'url' => null,
-                'id' => null,
-                'stack' => null
-            ]);
-            $html = is_callable($fn) ? call_user_func($fn, $s, $path, $attr) : ($s['path'] ? file_get_contents($s['path']) : "");
-            self::reset($path);
-            return $html;
-        }
-        if (isset(self::$lot[$kin][1])) {
-            $assets = Anemon::eat(self::$lot[$kin][1])->sort([1, 'stack'], true)->vomit();
-            $html = "";
-            if (is_callable($fn)) {
-                foreach ($assets as $k => $v) {
-                    $html .= call_user_func($fn, $v, $k, $attr) . N;
-                }
-            } else {
-                foreach ($assets as $k => $v) {
-                    if ($v['path'] !== false) {
-                        $html .= file_get_contents($v['path']) . N;
+            if (isset(self::$lot[$kin][1])) {
+                $assets = Anemon::eat(self::$lot[$kin][1])->sort([1, 'stack'], true)->vomit();
+                $output = "";
+                if (is_callable($fn)) {
+                    foreach ($assets as $k => $v) {
+                        $output .= call_user_func($fn, $v, $k, $attr) . N;
+                    }
+                } else {
+                    foreach ($assets as $k => $v) {
+                        if ($v['path'] !== false) {
+                            $output .= file_get_contents($v['path']) . N;
+                        }
                     }
                 }
+                return strlen(N) ? substr($output, 0, -strlen(N)) : $output;
             }
-            return strlen(N) ? substr($html, 0, -strlen(N)) : $html;
+            return parent::__callStatic($kin, $lot);
         }
         return parent::__callStatic($kin, $lot);
     }

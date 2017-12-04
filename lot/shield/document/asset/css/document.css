@@ -91,7 +91,9 @@ article,aside,footer,header,main,nav,section {display:block}
   padding:0 .5em;
   text-align:left;
 }
-.input,.select,.textarea {
+.input,
+.select,
+.textarea {
   background:#eef;
   color:inherit;
 }
@@ -148,12 +150,12 @@ label .input + span {
   display:block;
   width:100%;
 }
-.inline,
-.inline-block {
+.span,
+.span-block {
   display:inline;
   width:auto;
 }
-.inline-block {display:inline-block}
+.span-block {display:inline-block}
 .align-left {
   float:left;
   margin-top:.5rem;
@@ -166,7 +168,10 @@ label .input + span {
   margin-bottom:.5rem;
   margin-left:1.5rem;
 }
-.align-center {
+.align-left img,
+.align-right img {display:block}
+.align-center,
+.align-center img {
   display:block;
   margin-right:auto;
   margin-left:auto;
@@ -266,7 +271,7 @@ body > footer,
 body > header,
 body > main,
 body > nav {
-  max-width:50em;
+  max-width:40em;
   margin-right:auto;
   margin-left:auto;
 }
@@ -283,7 +288,7 @@ article > header {
   margin-top:0;
   margin-bottom:0;
 }
-.page-page main nav {text-align:center}
+main nav {text-align:center}
 .page-page article > footer,
 .page-404 aricle > footer {margin-top:5%}
 .page-page article > header,

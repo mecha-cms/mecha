@@ -2,8 +2,8 @@
 
 class Date extends Genome {
 
-    public static $zone = false;
-    public static $format = [];
+    protected static $zone = false;
+    protected static $format = [];
 
     public static function zone($zone = null) {
         if (!isset($zone)) return self::$zone;
@@ -99,8 +99,7 @@ class Date extends Genome {
         ];
         if (!empty(self::$format)) {
             foreach (self::$format as $k => $v) {
-                if (!is_callable($v)) continue;
-                $output[$k] = call_user_func($v, $output, $language);
+                $output[$k] = is_callable($v) ? call_user_func($v, $output, $language) : $v;
             }
         }
         return isset($key) ? (array_key_exists($key, $output) ? $output[$key] : $fail) : $output;
@@ -136,7 +135,7 @@ class Date extends Genome {
     }
 
     public function __set($key, $value = null) {
-        return $this->set($key, $value);
+        return self::set($key, $value);
     }
 
     public function __get($key) {
@@ -149,7 +148,7 @@ class Date extends Genome {
     }
 
     public function __unset($key) {
-        $this->reset($key);
+        self::reset($key);
     }
 
     public function __toString() {

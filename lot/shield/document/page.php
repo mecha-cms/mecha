@@ -7,9 +7,6 @@
       <p><strong><?php echo $language->author; ?>:</strong> <?php echo $page->author; ?></p>
     </header>
     <section>
-      <?php if ($page->description): ?>
-      <blockquote><?php echo $page->description; ?></blockquote>
-      <?php endif; ?>
       <?php echo $page->content; ?>
       <?php if ($page->link): ?>
       <p><a href="<?php echo $page->link; ?>" rel="nofollow" target="_blank"><?php echo $language->link; ?> &#x21E2;</a></p>
@@ -17,7 +14,7 @@
     </section>
     <footer>
       <?php $update = new Date($page->update); ?>
-      <p><time datetime="<?php echo $update->W3C; ?>"><strong><?php echo $language->update; ?>:</strong> <?php echo $update->{str_replace('-', '_', $config->language)}; ?></time></p>
+      <p><strong><?php echo $language->updateed; ?>:</strong> <time datetime="<?php echo $update->W3C; ?>"><?php echo $update->{str_replace('-', '_', $config->language)}; ?></time></p>
     </footer>
   </article>
   <?php if (strpos($url->path, '/') !== false): ?>

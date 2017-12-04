@@ -1,9 +1,9 @@
 ---
-title: Plugins
+title: Plugin
 description: A lower priority extensions.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.2
+version: 1.0.3
 ...
 
 Plugin files are stored in the `lot\worker` folder.

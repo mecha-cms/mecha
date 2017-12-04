@@ -7,13 +7,10 @@ class Language extends Genome {
         $language = Config::get('language');
         $f = LANGUAGE . DS . $language . '.page';
         if (Cache::expire($f)) {
-            $i18n = new Page($f, [], 'language');
+            $i18n = new Page($f, [], ['*', 'language']);
             $fn = 'From::' . __c2f__($i18n->type, '_');
             $c = $i18n->content;
             $content = is_callable($fn) ? call_user_func($fn, $c) : (array) $c;
-            array_walk_recursive($content, function(&$v) use($content) {
-                $v = __replace__($v, ['$' => $content]);
-            });
             Cache::set($f, $content);
         } else {
             $content = Cache::get($f);
@@ -52,6 +49,15 @@ class Language extends Genome {
         return $s;
     }
 
+    public static function reset($key = null) {
+        $id = '_' . __c2f__(static::class, '_');
+        if (!isset($key)) {
+            Config::reset($id);
+        } else {
+            Config::reset($id . '.' . $key);
+        }
+    }
+
     public static function __callStatic($kin, $lot = []) {
         return call_user_func_array([new static, $kin], $lot);
     }
@@ -63,11 +69,11 @@ class Language extends Genome {
         parent::__construct();
     }
 
-    public function __call($key, $lot = []) {
-        if (!self::kin($key)) {
-            return self::get($key, array_shift($lot), array_shift($lot) ?: false);
+    public function __call($kin, $lot = []) {
+        if (self::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__call($kin, $lot);
+        return self::get($kin, array_shift($lot), array_shift($lot) ?: false);
     }
 
     public function __set($key, $value = null) {
@@ -84,7 +90,7 @@ class Language extends Genome {
     }
 
     public function __unset($key) {
-        Config::reset('_' . __c2f__(static::class, '_') . '.' . $key);
+        self::reset('_' . __c2f__(static::class, '_') . '.' . $key);
     }
 
     public function __toString() {

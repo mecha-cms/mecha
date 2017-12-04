@@ -3,14 +3,14 @@
 /**
  * Author: Taufik Nurrohman
  * URL: https://github.com/tovic
- * Version: 1.1.4
+ * Version: 1.1.5
  */
 
 // <https://github.com/tovic/parsedown-extra-plugin>
 class ParsedownExtraPlugin extends ParsedownExtra {
 
     // version
-    const version = '1.1.4';
+    const version = '1.1.5';
 
     // self-closing HTML tags
     public $element_suffix = ' />';
@@ -350,7 +350,15 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         $text = str_replace(array('#', '.'), array(' #', ' .'), $text);
         if (strpos($text, '="') !== false || strpos($text, '=\'') !== false) {
             $text = preg_replace_callback('#([-\w]+=)(["\'])([^\n]*?)\2#', function($m) {
-                $s = str_replace(array(' #', ' .', ' '), array('#', '.', "\n"), $m[3]);
+                $s = str_replace(array(
+                    ' #',
+                    ' .',
+                    ' '
+                ), array(
+                    '#',
+                    '.',
+                    "\x1A"
+                ), $m[3]);
                 return $m[1] . $m[2] . $s . $m[2];
             }, $text);
         }
@@ -372,7 +380,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
                 // `{foo="bar baz"}`
                 // `{foo='bar baz'}`
                 } else if ($vv[1][0] === '"' && substr($vv[1], -1) === '"' || $vv[1][0] === "'" && substr($vv[1], -1) === "'") {
-                    $attrs[$vv[0]] = str_replace("\n", ' ', substr(substr($vv[1], 1), 0, -1));
+                    $attrs[$vv[0]] = str_replace("\x1A", ' ', substr(substr($vv[1], 1), 0, -1));
                 // `{foo=bar}`
                 } else {
                     $attrs[$vv[0]] = $vv[1];
@@ -388,7 +396,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         return $attrs;
     }
 
-    protected $regexAttribute = '(?:[#.][-\w]+[ ]*|[-\w]+(?:=(?:["\'][^\n]*?["\']|[^\s]+)?)?[ ]*)';
+    protected $regexAttribute = '(?:[#.][-\w:\\\]+[ ]*|[-\w:\\\]+(?:=(?:["\'][^\n]*?["\']|[^\s]+)?)?[ ]*)';
 
     // Allow empty abbreviations ...
     protected function blockAbbreviation($line) {

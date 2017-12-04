@@ -3,6 +3,7 @@
 class Guardian extends Genome {
 
     const config = [
+        'message' => '<p style="background:#f00;color:#fff;margin:0;padding:.5em 1em;">%{message}%</p>',
         'session' => [
             'token' => 'mecha.guardian.token'
         ]
@@ -21,7 +22,7 @@ class Guardian extends Genome {
 
     public static function token($id = 0) {
         $key = self::$config['session']['token'] . '.' . $id;
-        $token = Session::get($key, self::hash());
+        $token = Session::get($key, self::hash($id));
         Session::set($key, $token);
         return $token;
     }
@@ -36,13 +37,13 @@ class Guardian extends Genome {
         Session::set('url.previous', Hook::fire('url.previous', [$current, $path]));
         $s = __c2f__(static::class, '_') . '.kick.';
         Hook::fire($s . 'before', [$long, $path]);
-        header('Location: ' . Hook::fire('url.next', [$long, $path]));
+        header('Location: ' . str_replace('&amp;', '&', Hook::fire('url.next', [$long, $path])));
         Hook::fire($s . 'after', [$long, $path]);
         exit;
     }
 
     public static function abort($message, $exit = true) {
-        echo '<p style="color:#f00;">' . $message . '</p>';
+        echo __replace__(self::$config['message'], ['message' => $message]);
         if ($exit) exit;
     }
 

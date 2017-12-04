@@ -15,7 +15,7 @@ if (defined('DEBUG')) {
     }
 }
 
-// Normalize line–break
+// Normalize line-break
 $vars = [&$_GET, &$_POST, &$_REQUEST, &$_COOKIE];
 array_walk_recursive($vars, function(&$v) {
     $v = str_replace(["\r\n", "\r"], "\n", $v);
@@ -93,7 +93,7 @@ $id = array_sum($c);
 if (Cache::expire(EXTEND, $id)) {
     $content = [];
     foreach ($c as $k => $v) {
-        $i18n = new Page($k, [], 'language');
+        $i18n = new Page($k, [], ['*', 'language']);
         $fn = 'From::' . __c2f__($i18n->type, '_');
         $c = $i18n->content;
         $content = array_replace_recursive($content, is_callable($fn) ? call_user_func($fn, $c) : (array) $c);
@@ -123,7 +123,7 @@ if ($l = File::exist([
     $i18n . $config->language . '.page',
     $i18n . 'en-us.page'
 ])) {
-    $i18n = new Page($l, [], 'language');
+    $i18n = new Page($l, [], ['*', 'language']);
     $fn = 'From::' . __c2f__($i18n->type, '_');
     $c = $i18n->content;
     Language::set(is_callable($fn) ? call_user_func($fn, $c) : (array) $c);

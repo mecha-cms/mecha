@@ -116,7 +116,7 @@ class Is extends Genome {
     }
 
     // Is greater than or equal to `$x`
-    public static function ge($x) {
+    public function ge($x) {
         return q($this->bucket) >= $x;
     }
 

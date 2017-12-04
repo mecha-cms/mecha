@@ -1,6 +1,6 @@
 {
     "name": "mecha-cms/mecha",
-    "description": "Mecha is a file–based CMS that survives on the principle that a database–less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary.",
+    "description": "Mecha is a file-based CMS that survives on the principle that a database–less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary.",
     "type": "cms",
     "keywords": ["cms", "mecha", "php"],
     "license": "GPL-3.0",

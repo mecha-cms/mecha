@@ -5,8 +5,6 @@
 // __is_json__: check for valid JSON string format
 // __is_serialize__: check for valid serialized string format
 
-$has_mb_string = extension_loaded('mbstring');
-
 function __is_anemon__($x) {
     return is_array($x) || is_object($x);
 }
@@ -99,41 +97,49 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
     foreach ($a as $k => $v) {
         if (is_array($v) || is_object($v)) {
             // `%{$.a.b.c}%`
-            if (strpos($s, '%{' . $k . '.') !== false) {
-                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)+\}\%#i', function($m) use($v) {
-                    $a = explode('.', $m[1]);
+            if (strpos($s, '%{' . $k . '.') !== false || strpos($s, '%{' . $k . '~') !== false) {
+                $s = preg_replace_callback('#\%\{' . x($k) . '(\.[a-z\d_]+)*(~\S+)?\}\%#i', function($m) use($v) {
+                    $a = explode('.', isset($m[1]) ? $m[1] : "");
                     $b = array_pop($a);
-                    if (is_object($v)) {
-                        if (!method_exists($v, '__get') && !isset($v->{$b})) {
-                            return $m[0];
-                        }
-                        $v = $v->{$b};
-                    } else if (is_array($v)) {
-                        if (!isset($v[$b])) {
-                            return $m[0];
-                        }
-                        $v = $v[$b];
+                    if (isset($m[2])) {
+                        $fn = substr($m[2], 1);
+                        $fn = is_callable($fn) ? $fn : false;
+                    } else {
+                        $fn = false;
                     }
-                    if ($a) {
-                        if (!is_array($v) && !is_object($v)) {
-                            return $v;
+                    if ($b) {
+                        if (is_object($v)) {
+                            if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                                return $m[0];
+                            }
+                            $v = $v->{$b};
+                        } else if (is_array($v)) {
+                            if (!isset($v[$b])) {
+                                return $m[0];
+                            }
+                            $v = $v[$b];
                         }
-                        while ($b = array_pop($a)) {
+                        if ($a) {
                             if (!is_array($v) && !is_object($v)) {
                                 return $v;
                             }
-                            if (is_object($v)) {
-                                if (!method_exists($v, '__get') && !isset($v->{$b})) {
-                                    return $m[0];
+                            while ($b = array_pop($a)) {
+                                if (!is_array($v) && !is_object($v)) {
+                                    return $v;
                                 }
-                                $v = $v->{$b};
-                            } else if (is_array($v)) {
-                                $v = isset($v[$b]) ? $v[$b] : $m[0];
+                                if (is_object($v)) {
+                                    if (!method_exists($v, '__get') && !isset($v->{$b})) {
+                                        return $m[0];
+                                    }
+                                    $v = $v->{$b};
+                                } else if (is_array($v)) {
+                                    $v = isset($v[$b]) ? $v[$b] : $m[0];
+                                }
                             }
+                            return $fn ? $fn($v) : $v;
                         }
-                        return $v;
                     }
-                    return $v;
+                    return $fn ? $fn($v) : $v;
                 }, $s);
             }
             // `%{$}%`
@@ -177,7 +183,7 @@ if ($path !== "") {
 $query = http_build_query($_GET);
 $current = rtrim($url . '/' . $path, '/');
 
-$__url__ = [
+$GLOBALS['URL'] = [
     'scheme' => $scheme,
     'protocol' => $protocol,
     'host' => $host,
@@ -194,11 +200,6 @@ $__url__ = [
     'hash' => isset($_COOKIE['url']['hash']) ? $_COOKIE['url']['hash'] : null
 ];
 
-function __url__($key = null, $fail = false) {
-    global $__url__;
-    return isset($key) ? (array_key_exists($key, $__url__) ? $__url__[$key] : $fail) : $__url__;
-}
-
 // a: convert object to array
 // b:
 // c: convert text to camel case
@@ -212,7 +213,7 @@ function __url__($key = null, $fail = false) {
 // k:
 // l: convert text to lower case
 // m:
-// n: normalize white–space in string
+// n: normalize white-space in string
 // o: convert array to object
 // p: convert text to pascal case
 // q: quantity (length of string, number or anemon)
@@ -220,7 +221,7 @@ function __url__($key = null, $fail = false) {
 // s: convert data type to their string format
 // t: trim string from specific prefix and suffix
 // u: convert text to upper case
-// v: un–escape
+// v: un-escape
 // w: convert any data to plain word(s)
 // x: escape
 // y: output/yield an echo-based function as normal return value
@@ -263,17 +264,17 @@ function d($f, $fn = null, $s__ = []) {
     });
 }
 
-function e($x) {
-    if (is_string($x)) {
-        if ($x === "") return $x;
-        if (is_numeric($x)) {
-            return strpos($x, '.') !== false ? (float) $x : (int) $x;
-        } else if (__is_json__($x) && $v = json_decode($x, true)) {
+function e($s, $x = []) {
+    if (is_string($s)) {
+        if ($s === "") return $s;
+        if (is_numeric($s)) {
+            return strpos($s, '.') !== false ? (float) $s : (int) $s;
+        } else if (__is_json__($s) && $v = json_decode($s)) {
             return $v;
-        } else if ($x[0] === '"' || $x[0] === "'") {
-            return t($x, $x[0]);
+        } else if ($s[0] === '"' || $s[0] === "'") {
+            return t($s, $s[0]);
         }
-        $xx = [
+        $a = [
             'TRUE' => true,
             'FALSE' => false,
             'NULL' => null,
@@ -289,14 +290,17 @@ function e($x) {
             'on' => true,
             'off' => false
         ];
-        return array_key_exists($x, $xx) ? $xx[$x] : $x;
-    } else if (__is_anemon__($x)) {
-        foreach ($x as &$v) {
-            $v = e($v);
+        return array_key_exists($s, $a) ? $a[$s] : $s;
+    } else if (__is_anemon__($s)) {
+        $x = X . implode(X, (array) $x) . X;
+        foreach ($s as $k => &$v) {
+            if (strpos($x, X . $k . X) === false) {
+                $v = e($v, $x);
+            }
         }
         unset($v);
     }
-    return $x;
+    return $s;
 }
 
 function f($x, $s = '-', $l = false, $X = 'a-zA-Z\d', $f = 1) {
@@ -849,6 +853,9 @@ function h($x, $s = '-', $X = "") {
     }, $x), $s, true, 'a-zA-Z\d' . x($X));
 }
 
+// If `$fn` is a function, the function will be executed after file include.
+// If `$fn` is array of function, the first function will be executed before
+// file include, and the rest will be executed after file include.
 function i($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
@@ -885,14 +892,13 @@ function j() {}
 function k() {}
 
 function l($x) {
-    global $has_mb_string;
-    return $has_mb_string ? mb_strtolower($x) : strtolower($x);
+    return extension_loaded('mbstring') ? mb_strtolower($x) : strtolower($x);
 }
 
 function m() {}
 
 function n($x, $t = '    ') {
-    // Tab to 4 space(s), line–break to `\n`
+    // Tab to 4 space(s), line-break to `\n`
     return str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
 }
 
@@ -916,17 +922,19 @@ function p($x, $s = "", $X = "") {
 }
 
 function q($x, $deep = false) {
-    global $has_mb_string;
     if (is_int($x) || is_float($x)) {
         return $x;
     } else if (is_string($x)) {
-        return $has_mb_string ? mb_strlen($x) : strlen($x);
+        return extension_loaded('mbstring') ? mb_strlen($x) : strlen($x);
     } else if (__is_anemon__($x)) {
         return count(a($x), $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
     }
     return count($x);
 }
 
+// If `$fn` is a function, the function will be executed after file require.
+// If `$fn` is array of function, the first function will be executed before
+// file require, and the rest will be executed after file require.
 function r($a, $b = [], $fn = [null, null], $s__ = []) {
     if (!is_array($fn)) {
         $fn = [null, $fn];
@@ -985,8 +993,7 @@ function t($x, $o = '"', $c = null) {
 }
 
 function u($x) {
-    global $has_mb_string;
-    return $has_mb_string ? mb_strtoupper($x) : strtoupper($x);
+    return extension_loaded('mbstring') ? mb_strtoupper($x) : strtoupper($x);
 }
 
 function v($x) {
@@ -994,10 +1001,10 @@ function v($x) {
 }
 
 // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
-// $n: @keep line–break in the output or replace them with a space? (default is !@keep)
+// $n: @keep line-break in the output or replace them with a space? (default is !@keep)
 function w($x, $c = [], $n = false) {
     // Should be a HTML input
-    if (strpos($x, '<') !== false || strpos($x, ' ') !== false) {
+    if (strpos($x, '<') !== false || strpos($x, ' ') !== false || strpos($x, "\n") !== false) {
         $c = '<' . implode('><', is_string($c) ? explode(',', $c) : (array) $c) . '>';
         return preg_replace($n ? '# +#' : '#\s+#', ' ', trim(strip_tags($x, $c)));
     }

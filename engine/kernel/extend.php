@@ -2,18 +2,19 @@
 
 class Extend extends Genome {
 
-    public static $extend = [];
+    protected static $extend = [];
 
     public static function exist($input, $fail = false) {
         return Folder::exist(EXTEND . DS . $input, $fail);
     }
 
     public static function state(...$lot) {
-        $id = str_replace('.', '\\', basename(array_shift($lot)));
+        $id = basename(array_shift($lot));
         $key = array_shift($lot);
         $fail = array_shift($lot) ?: false;
         $folder = (is_array($key) ? $fail : array_shift($lot)) ?: EXTEND;
         $state = $folder . DS . $id . DS . 'lot' . DS . 'state' . DS . 'config.php';
+        $id = str_replace('.', '\\', $id);
         if (!file_exists($state)) {
             return is_array($key) ? $key : $fail;
         }
