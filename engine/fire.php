@@ -29,7 +29,7 @@ d($f . 'kernel', function($w, $n) use($f) {
     }
 });
 
-$x = FONT_X . ',' . IMAGE_X . ',' . MEDIA_X . ',' . PACKAGE_X . ',' . TEXT_X;
+$x = BINARY_X . ',' . FONT_X . ',' . IMAGE_X . ',' . TEXT_X;
 File::$config['extensions'] = array_unique(explode(',', $x));
 
 Session::ignite();

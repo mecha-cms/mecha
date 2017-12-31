@@ -39,7 +39,7 @@ class Form extends HTML {
         $attr_o['name'] = $name;
         $attr_o = array_replace_recursive($attr_o, $attr);
         foreach ($option as $key => $value) {
-			$tag = new static;
+            $tag = new static;
             // option list group
             if (is_array($value)) {
                 $s = [];

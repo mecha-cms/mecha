@@ -7,7 +7,7 @@
     <meta name="description" content="<?php echo $s; ?>">
     <?php endif; ?>
     <?php if ($page->state === 'archive'): ?>
-    <!-- Prevent search engines from indexing a page with `archive` state -->
+    <!-- Prevent search engines from indexing pages with `archive` state -->
     <meta name="robots" content="noindex">
     <?php endif; ?>
     <meta name="author" content="<?php echo $page->author; ?>">
@@ -17,7 +17,7 @@
   <body>
     <header>
       <h1>
-        <?php if (!$url->path || $url->path === $site->slug): ?>
+        <?php if (!$url->path || $url->path === $site->path): ?>
         <span><?php echo $site->title; ?></span>
         <?php else: ?>
         <a href="<?php echo $url; ?>"><?php echo $site->title; ?></a>

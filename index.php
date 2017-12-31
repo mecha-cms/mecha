@@ -4,7 +4,7 @@
  * =========================================
  *  MECHA · CONTENT MANAGEMENT SYSTEM (CMS)
  * =========================================
- * © 2014 – 2017 Taufik Nurrohman
+ * © 2014 – 2018 Taufik Nurrohman
  * -----------------------------------------
  */
 
@@ -38,11 +38,13 @@ if (!defined('HTML_WISE')) define('HTML_WISE', HTML_WISE_I . ',' . HTML_WISE_B);
 if (!defined('DATE_WISE')) define('DATE_WISE', 'Y-m-d H:i:s');
 
 // Common file type(s) allowed to be uploaded by the file manager
+if (!defined('AUDIO_X')) define('AUDIO_X', 'mov,mp3,ogg,wav,wma');
 if (!defined('FONT_X')) define('FONT_X', 'eot,otf,svg,ttf,woff,woff2');
 if (!defined('IMAGE_X')) define('IMAGE_X', 'bmp,cur,gif,ico,jpeg,jpg,png,svg');
-if (!defined('MEDIA_X')) define('MEDIA_X', 'avi,flv,mkv,mov,mp3,mp4,m4a,m4v,ogg,swf,wav,webm,wma,3gp');
 if (!defined('PACKAGE_X')) define('PACKAGE_X', 'gz,iso,rar,tar,zip,zipx,7z');
 if (!defined('TEXT_X')) define('TEXT_X', 'archive,cache,css,data,draft,htaccess,html,js,json,log,page,php,stack,trash,txt,xml,yaml,yml');
+if (!defined('VIDEO_X')) define('VIDEO_X', 'avi,flv,mkv,mp4,m4a,m4v,ogv,webm,3gp');
+if (!defined('BINARY_X')) define('BINARY_X', AUDIO_X . ',' . PACKAGE_X . ',' . VIDEO_X . ',pdf,rtf,swf');
 
 require ENGINE . DS . 'ignite.php';
 require ENGINE . DS . 'fire.php';

@@ -115,6 +115,7 @@ article,aside,footer,header,main,nav,section {display:block}
 }
 .input[type="checkbox"],
 .input[type="color"],
+.input[type="file"],
 .input[type="radio"],
 .input[type="range"] {
   width:auto;
@@ -187,7 +188,6 @@ label .input + span {
 .notes hr {display:none}
 .notes ol {font-size:80%}
 .notes ol p {margin-top:.25em}
-.xmp {background:#fed}
 html {
   background:#fff;
   font:normal normal 18px/1.5 "Roboto Condensed",Roboto,Helmet,FreeSans,sans-serif;
@@ -237,7 +237,8 @@ blockquote {
 }
 pre code {
   display:block;
-  background:#def;
+  background:#000;
+  color:#fff;
   padding:1em;
   white-space:pre-wrap;
   word-wrap:break-word;
@@ -255,12 +256,15 @@ pre code {
   border:1px solid;
   padding:.25em .5em;
 }
+
 header {margin-bottom:5%}
 footer,
 nav {margin-top:5%}
+header + nav {margin-top:0}
 article:after,
 footer:after,
 header:after,
+main:after,
 nav:after,
 section:after {
   content:"";
@@ -283,16 +287,13 @@ nav ul {
 }
 nav li {display:inline-block}
 nav li + li {margin-left:1em}
-article > footer,
-article > header {
+main + nav {text-align:center}
+
+.page-pages article > footer,
+.page-pages article > header {
   margin-top:0;
   margin-bottom:0;
 }
-main nav {text-align:center}
-.page-page article > footer,
-.page-404 aricle > footer {margin-top:5%}
-.page-page article > header,
-.page-404 article > header {margin-bottom:5%}
 .message {
   background:#fea;
   padding:.5em 1em;

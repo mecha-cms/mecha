@@ -28,13 +28,6 @@ class Anemon extends Genome {
         return (array) $input;
     }
 
-    // Prevent `$x` exceeds the value of `$min` and `$max`
-    public static function edge($x, $min = null, $max = null) {
-        if (isset($min) && $x < $min) return $min;
-        if (isset($max) && $x > $max) return $max;
-        return $x;
-    }
-
     // Set array value recursively
     public static function set(array &$input, $key, $value = null, $NS = '.') {
         $keys = explode($NS, str_replace('\\' . $NS, X, $key));
@@ -191,13 +184,13 @@ class Anemon extends Genome {
 
     // Move to next array index
     public function next($skip = 0) {
-        $this->i = self::edge($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->i = b($this->i + 1 + $skip, 0, $this->count() - 1);
         return $this;
     }
 
     // Move to previous array index
     public function previous($skip = 0) {
-        $this->i = self::edge($this->i - 1 - $skip, 0, $this->count() - 1);
+        $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
         return $this;
     }
 
@@ -211,7 +204,7 @@ class Anemon extends Genome {
     public function before($value, $key = null) {
         $key = $key ?: $this->i;
         $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $value] + array_slice($this->bucket, $this->i, null, true);
-        $this->i = self::edge($this->i - 1, 0, $this->count() - 1);
+        $this->i = b($this->i - 1, 0, $this->count() - 1);
         return $this;
     }
 
@@ -219,7 +212,7 @@ class Anemon extends Genome {
     public function after($value, $key = null) {
         $key = $key ?: $this->i + 1;
         $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $value] + array_slice($this->bucket, $this->i + 1, null, true);
-        $this->i = self::edge($this->i + 1, 0, $this->count() - 1);
+        $this->i = b($this->i + 1, 0, $this->count() - 1);
         return $this;
     }
 

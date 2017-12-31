@@ -4,7 +4,7 @@ class Shield extends Genome {
 
     protected static $shield = [];
 
-    protected static function X($input) {
+    protected static function __($input) {
         $x = substr($input, -4) !== '.php' ? '.php' : "";
         return $input . $x;
     }
@@ -13,7 +13,7 @@ class Shield extends Genome {
         global $config;
         // Full path, be quick!
         if (is_string($input) && strpos($input, ROOT) === 0) {
-            return File::exist(self::X($input), $fail);
+            return File::exist(self::__($input), $fail);
         } else if (is_string($input)) {
             $input = str_replace(DS, '/', $input);
         }
@@ -23,7 +23,7 @@ class Shield extends Genome {
             // Full path, skip!
             if (strpos($v, ROOT) === 0) continue;
             $v = To::path($v);
-            $input[$k] = self::X(SHIELD . DS . $config->shield . DS . trim($v, DS));
+            $input[$k] = self::__(SHIELD . DS . $config->shield . DS . trim($v, DS));
         }
         return File::exist($input, $fail);
     }

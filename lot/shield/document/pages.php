@@ -12,10 +12,10 @@
         <?php endif; ?>
       </h3>
     </header>
-    <section><?php echo $page->description; ?></section>
+    <div><?php echo $page->description; ?></div>
     <footer></footer>
   </article>
   <?php endforeach; ?>
-  <nav><?php echo $pager; ?></nav>
 </main>
+<nav><?php echo $pager; ?></nav>
 <?php Shield::get('footer'); ?>

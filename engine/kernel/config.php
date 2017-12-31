@@ -79,7 +79,7 @@ class Config extends Genome {
             $fail_alt = array_shift($lot) ?: false;
         }
         if ($fail instanceof \Closure) {
-            return call_user_func($fail, self::get($kin, $fail_alt), $this);
+            return call_user_func(\Closure::bind($fail, $this), self::get($kin, $fail_alt));
         }
         return self::get($kin, $fail);
     }

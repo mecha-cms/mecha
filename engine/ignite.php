@@ -27,7 +27,7 @@ function __is_anemon_a__($x) {
 }
 
 function __is_json__($x) {
-    if (!is_string($x) || !trim($x)) return false;
+    if (!is_string($x) || trim($x) === "") return false;
     return (
         // Maybe an empty string, array or object
         $x === '""' ||
@@ -43,7 +43,7 @@ function __is_json__($x) {
 }
 
 function __is_serialize__($x) {
-    if (!is_string($x) || !trim($x)) {
+    if (!is_string($x) || trim($x) === "") {
         return false;
     } else if ($x === 'N;') {
         return true;
@@ -157,14 +157,13 @@ function __replace__($s, $a = [], $x = "\n", $r = true) {
 }
 
 // Convert class name to file name
-function __c2f__($x, $s = '-') {
-    return str_replace(['\\' . X, '_' . X, X], ['.', '_', $s], h($x, X, '_\\'));
+function __c2f__($x, $s = '-', $n = '.') {
+    return str_replace(['\\' . $s, '_' . $s], [$n, '_'], h($x, $s, '\\_'));
 }
 
 // Convert file name to class name
-function __f2c__($x, $s = '-') {
-    $x = str_replace($s, X, pathinfo($x, PATHINFO_FILENAME));
-    return str_replace(X, $s, p(str_replace('.', '\\', $x), "", '_\\' . X));
+function __f2c__($x, $s = '-', $n = '.') {
+    return str_replace([$n . $s, $s], ['\\', ""], p($x, $s, $n . '_'));
 }
 
 $scheme = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' || $_SERVER['SERVER_PORT'] === 443 ? 'https' : 'http';
@@ -201,7 +200,7 @@ $GLOBALS['URL'] = [
 ];
 
 // a: convert object to array
-// b:
+// b: keep value between `a` and `b`
 // c: convert text to camel case
 // d: declare class(es) with callback
 // e: evaluate string to their appropriate data type
@@ -242,7 +241,11 @@ function a($o, $safe = true) {
     return $o;
 }
 
-function b() {}
+function b($x, $a = 0, $b = null) {
+    if (isset($a) && $x < $a) return $x;
+    if (isset($b) && $x > $b) return $x;
+    return $x;
+}
 
 function c($x, $s = "", $X = "") {
     return f(preg_replace_callback('#(?<=[^\p{L}])([\p{Ll}\d])#u', function($m) use($s) {
@@ -1035,7 +1038,7 @@ function x($x, $c = "'", $d = '-+*/=:()[]{}<>^$.?!|\\') {
 
 function y($x, $a = []) {
     // By path
-    if (is_string($x) && file_exists($x)) {
+    if (is_string($x) && is_file($x)) {
         ob_start();
         extract($a);
         require $x;

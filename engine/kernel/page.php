@@ -9,8 +9,8 @@ class Page extends Genome {
     private $hash = "";
     private static $page = []; // Cache!
 
-    public function __construct($input = null, $lot = [], $NS = ['*', 'page']) {
-        $this->NS = $NS;
+    public function __construct($input = null, $lot = [], $NS = []) {
+        $this->NS = is_array($NS) ? array_replace(['*', __c2f__(static::class, '_', '\\')], $NS) : $NS;
         $path = is_array($input) ? (isset($input['path']) ? $input['path'] : null) : $input;
         $id = $this->hash = md5(serialize($NS) . $path);
         if (isset(self::$page[$id])) {
@@ -67,9 +67,12 @@ class Page extends Genome {
         if (self::_($key)) {
             return parent::__call($key, $lot);
         }
+        $x = $this->__get($key);
+        if (__is_instance__($x) && method_exists($x, '__invoke')) {
+            return call_user_func_array($x, $lot);
+        }
         $fail = array_shift($lot);
         $fail_alt = array_shift($lot);
-        $x = $this->__get($key);
         if ($fail instanceof \Closure) {
             return call_user_func($fail, $x !== null ? $x : $fail_alt, $this);
         }
@@ -194,7 +197,7 @@ class Page extends Genome {
 
     private static $data = [];
 
-    public static function open($path, $lot = [], $NS = ['*', 'page']) {
+    public static function open($path, $lot = [], $NS = []) {
         self::$data = ['path' => $path];
         return new static($path, $lot, $NS);
     }
