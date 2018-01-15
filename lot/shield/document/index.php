@@ -12,4 +12,4 @@ Hook::set('page.description', function($content) {
 Asset::set('css/document.min.css');
 
 // Add JS file to the `<body>` section…
-Asset::set('css/document.min.js');
+Asset::set('js/document.min.js');
