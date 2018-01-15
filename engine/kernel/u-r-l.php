@@ -18,7 +18,7 @@ class URL extends Genome {
             strpos($url, '#') !== 0 &&
             strpos($url, 'javascript:') !== 0
         ) {
-            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['url']) . '/' . self::__($url), '/');
+            return trim(($root && $b ? $a['protocol'] . $a['host'] : $a['$']) . '/' . self::__($url), '/');
         }
         return self::__($url);
     }
@@ -32,7 +32,7 @@ class URL extends Genome {
         if ($root) {
             return str_replace([X . $a['protocol'] . $a['host'], X . '//' . $a['host'], X], "", $url);
         }
-        return ltrim(str_replace([X . $a['url'], X . '//' . rtrim($a['host'] . '/' . $a['directory'], '/'), X], "", $url), '/');
+        return ltrim(str_replace([X . $a['$'], X . '//' . rtrim($a['host'] . '/' . $a['directory'], '/'), X], "", $url), '/');
     }
 
     // Initial URL (without the page offset)
@@ -99,7 +99,7 @@ class URL extends Genome {
     }
 
     public function __toString() {
-        return $this->lot['url'];
+        return $this->lot['$'];
     }
 
 }
