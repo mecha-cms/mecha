@@ -1,33 +1,37 @@
 <?php
 
-class Session extends Genome {
+final class Session extends Genome {
 
-    public static function ignite(...$lot) {
-        $path = array_shift($lot);
-        $path = $path ? $path : SESSION;
+    public static function get($key = null) {
+        return isset($key) ? get($_SESSION, $key) : ($_SESSION ?? []);
+    }
+
+    public static function let($key = null) {
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
+            }
+        } else if (isset($key) && true !== $key) {
+            let($_SESSION, $key);
+        } else {
+            $_SESSION = [];
+            if (true === $key) {
+                session_destroy();
+            }
+        }
+    }
+
+    public static function set(string $key, $value) {
+        set($_SESSION, $key, $value);
+    }
+
+    public static function start(...$lot) {
+        $path = $lot[0] ?? constant(u(static::class));
         if (isset($path)) {
-            Folder::set($path, 0600);
+            mkdir($path, 0755, true);
             session_save_path($path);
         }
         return !session_id() ? session_start() : true;
-    }
-
-    public static function set($key, $value = null) {
-        Anemon::set($_SESSION, $key, $value);
-    }
-
-    public static function get($key = null, $fail = null) {
-        if (!isset($key)) return $_SESSION;
-        return Anemon::get($_SESSION, $key, $fail);
-    }
-
-    public static function reset($key = null) {
-        if (!isset($key) || $key === true) {
-            $_SESSION = [];
-            if ($key === true) session_destroy();
-        } else {
-            Anemon::reset($_SESSION, $key);
-        }
     }
 
 }

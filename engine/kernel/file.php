@@ -1,423 +1,321 @@
 <?php
 
-class File extends Genome {
+class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    protected $path = "";
-    protected $content = "";
-    protected $c = [];
-
-    // Cache!
-    private static $inspect = [];
-    private static $explore = [];
-
-    const config = [
-        'sizes' => [0, 2097152], // Range of allowed file size(s)
-        'extensions' => ['txt'] // List of allowed file extension(s)
+    const state = [
+        // Range of allowed file size(s)
+        'size' => [0, 2097152],
+        // List of allowed file type(s)
+        'type' => [
+            'application/javascript' => 1,
+            'application/json' => 1,
+            'application/xml' => 1,
+            'image/gif' => 1,
+            'image/jpeg' => 1,
+            'image/png' => 1,
+            'inode/x-empty' => 1, // Empty file
+            'text/css' => 1,
+            'text/html' => 1,
+            'text/javascript' => 1,
+            'text/plain' => 1,
+            'text/xml' => 1
+        ],
+        // List of allowed file extension(s)
+        'x' => [
+            'css' => 1,
+            'gif' => 1,
+            'htm' => 1,
+            'html' => 1,
+            'jpe' => 1,
+            'jpg' => 1,
+            'jpeg' => 1,
+            'js' => 1,
+            'json' => 1,
+            'log' => 1,
+            'png' => 1,
+            'txt' => 1,
+            'xml' => 1
+        ]
     ];
 
-    public static $config = self::config;
+    public $exist;
+    public $path;
+    public $value;
 
-    public function __construct($path = true, $c = []) {
-        $this->path = file_exists($path) ? realpath($path) : false;
-        $this->content = "";
-        $this->c = !empty($c) ? $c : self::$config;
-        parent::__construct();
-    }
-
-    // Inspect file path
-    public static function inspect($input, $key = null, $fail = false) {
-        $id = json_encode(func_get_args());
-        if (isset(self::$inspect[$id])) {
-            $output = self::$inspect[$id];
-            return isset($key) ? Anemon::get($output, $key, $fail) : $output;
-        }
-        $path = To::path($input);
-        $n = Path::N($path);
-        $x = Path::X($path);
-        $update = self::T($path);
-        $update_date = isset($update) ? date(DATE_WISE, $update) : null;
-        $output = [
-            'path' => $path,
-            'name' => $n,
-            'url' => To::url($path),
-            'extension' => is_file($path) ? $x : null,
-            'update' => $update_date,
-            'size' => file_exists($path) ? self::size($path) : null,
-            'is' => [
-                // Hidden file/folder only
-                'hidden' => $n === "" || strpos($n, '.') === 0 || strpos($n, '_') === 0,
-                'file' => is_file($path),
-                'files' => is_dir($path),
-                'folder' => is_dir($path) // alias for `is.files`
-            ],
-            '_update' => $update,
-            '_size' => file_exists($path) ? filesize($path) : null
-        ];
-        self::$inspect[$id] = $output;
-        return isset($key) ? Anemon::get($output, $key, $fail) : $output;
-    }
-
-    // List all file(s) from a folder
-    public static function explore($folder = ROOT, $deep = false, $fail = []) {
-        $id = json_encode(func_get_args());
-        if (isset(self::$explore[$id])) {
-            $output = self::$explore[$id];
-            return !empty($output) ? $output : $fail;
-        }
-        $x = null;
-        if (is_array($folder)) {
-            $x = isset($folder[1]) ? $folder[1] : null;
-            $folder = $folder[0];
-        }
-        $folder = str_replace('/', DS, $folder);
-        $output = [];
-        if ($deep) {
-            $a = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
-            $b = $x === 1 || is_string($x) ? \RecursiveIteratorIterator::LEAVES_ONLY : \RecursiveIteratorIterator::SELF_FIRST;
-            $c = new \RecursiveIteratorIterator($a, $b);
-            foreach ($c as $v) {
-                $xx = $v->getExtension();
-                $vv = $v->getPathname();
-                if ($v->isDir()) {
-                    $output[$vv] = 0;
-                } else if ($x === null || $x === 1 || (is_string($x) && strpos(',' . $x . ',', ',' . $xx . ',') !== false)) {
-                    $output[$vv] = 1;
+    public function __construct($path = null) {
+        $this->value[0] = "";
+        if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
+            $path = strtr($path, '/', DS);
+            if (!is_file($path)) {
+                if (!is_dir($d = dirname($path))) {
+                    mkdir($d, 0775, true);
                 }
+                touch($path); // Create an empty file
             }
-        } else {
-            if ($x === 1 || is_string($x)) {
-                if ($x === 1) {
-                    $x = '*.*';
-                } else {
-                    $x = '*.{' . $x . '}';
-                }
-                $files = array_filter(array_merge(
-                    glob($folder . DS . $x, GLOB_BRACE | GLOB_NOSORT),
-                    glob($folder . DS . substr($x, 1), GLOB_BRACE | GLOB_NOSORT)
-                ), 'is_file');
-            } else if ($x === 0) {
-                $files = array_merge(
-                    glob($folder . DS . '*', GLOB_ONLYDIR | GLOB_NOSORT),
-                    glob($folder . DS . '.*', GLOB_ONLYDIR | GLOB_NOSORT)
-                );
+            $this->path = is_file($path) ? (realpath($path) ?: $path) : null;
+        }
+        $this->exist = !!$this->path;
+    }
+
+    public function __get(string $key) {
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
+        return null;
+    }
+
+    public function __toString() {
+        return $this->exist ? $this->path : "";
+    }
+
+    public function _seal() {
+        return $this->exist ? fileperms($this->path) : null;
+    }
+
+    public function _size() {
+        return $this->exist ? filesize($this->path) : null;
+    }
+
+    public function URL() {
+        return $this->exist ? To::URL($this->path) : null;
+    }
+
+    public function content() {
+        if ($this->exist) {
+            $content = file_get_contents($this->path);
+            return false !== $content ? $content : null;
+        }
+        return null;
+    }
+
+    public function copy(string $to) {
+        $out = [null];
+        if ($this->exist && $path = $this->path) {
+            $out[0] = $path;
+            if (is_file($v = $to . DS . basename($path))) {
+                // Return `false` if file already exists
+                $out[1] = false;
             } else {
-                $files = array_merge(
-                    glob($folder . DS . '*', GLOB_NOSORT),
-                    glob($folder . DS . '.*', GLOB_NOSORT)
-                );
-            }
-            foreach ($files as $file) {
-                $b = basename($file);
-                if ($b === '.' || $b === '..') {
-                    continue;
+                if (!is_dir($to)) {
+                    mkdir($to, 0775, true);
                 }
-                $output[$file] = is_file($file) ? 1 : 0;
+                // Return `$v` on success, `null` on error
+                $out[1] = copy($path, $v) ? $v : null;
             }
         }
-        self::$explore[$id] = $output;
-        return !empty($output) ? $output : $fail;
+        $this->value[1] = $out;
+        return $this;
     }
 
-    // Check if file/folder does exist
-    public static function exist($input, $fail = false) {
-        if (is_array($input)) {
-            foreach ($input as $v) {
-                $v = To::path($v);
-                if (file_exists($v)) {
+    public function count() {
+        return $this->exist ? 1 : 0;
+    }
+
+    public function get(...$lot) {
+        $i = $lot[0] ?? 0;
+        if ($this->exist) {
+            foreach ($this->stream() as $k => $v) {
+                if ($k === $i) {
                     return $v;
                 }
             }
-            return $fail;
         }
-        $input = To::path($input);
-        return file_exists($input) ? $input : $fail;
+        return null;
     }
 
-    // Open a file
-    public static function open(...$lot) {
-        return new static(...$lot);
+    public function getIterator() {
+        return $this->stream();
     }
 
-    // Append `$data` to the file content
-    public function append($data) {
-        if ($this->path === false) {
-            return $this;
-        }
-        if (is_array($this->content)) {
-            $data = (array) $data;
-            $this->content = $this->content + $data;
-            return $this;
-        }
-        $this->content = file_get_contents($this->path) . $data;
-        return $this;
+    public function jsonSerialize() {
+        return [$this->path => 1];
     }
 
-    // Prepend `$data` to the file content
-    public function prepend($data) {
-        if ($this->path === false) {
-            return $this;
-        }
-        if (is_array($this->content)) {
-            $data = (array) $data;
-            $this->content = $data + $this->content;
-            return $this;
-        }
-        $this->content = $data . file_get_contents($this->path);
-        return $this;
-    }
-
-    // Print the file content
-    public function read($fail = null) {
-        if ($this->path !== false) {
-            $content = file_get_contents($this->path);
-            return $content !== false ? $content : $fail;
-        }
-        return $fail;
-    }
-
-    // Print the file content line by line
-    public function get($stop = null, $fail = false, $ch = 1024) {
-        $i = 0;
-        $output = "";
-        if ($this->path !== false && ($hand = fopen($this->path, 'r'))) {
-            while (($chunk = fgets($hand, $ch)) !== false) {
-                $output .= $chunk;
-                if (
-                    is_int($stop) && $stop === $i ||
-                    is_string($stop) && strpos($chunk, $stop) !== false ||
-                    is_array($stop) && strpos($chunk, $stop[0]) === $stop[1] ||
-                    is_callable($stop) && call_user_func($stop, [$chunk, $i], $output)
-                ) break;
-                ++$i;
-            }
-            fclose($hand);
-            return rtrim($output);
-        }
-        return $fail;
-    }
-
-    // Write `$data` before save
-    public static function write($data) {
-        $self = new static;
-        $self->content = $data;
-        return $self;
-    }
-
-    // Import the exported PHP file
-    public function import($fail = []) {
-        if ($this->path === false) {
-            return $fail;
-        }
-        return include $this->path;
-    }
-
-    // Export value to a PHP file
-    public static function export($data, $format = '<?php return %{0}%;') {
-        $self = new static;
-        $self->content = __replace__($format, z($data));
-        return $self;
-    }
-
-    // Serialize `$data` before save
-    public static function serialize($data) {
-        $self = new static;
-        $self->content = serialize($data);
-        return $self;
-    }
-
-    // Unserialize the serialized `$data` to output
-    public function unserialize($fail = []) {
-        if ($this->path !== false) {
-            $data = file_get_contents($this->path);
-            return __is_serialize__($data) ? unserialize($data) : $fail;
-        }
-        return $fail;
-    }
-
-    // Save the `$data`
-    public static function save($consent = null) {
-        $this->saveTo($this->path, $consent);
-        return $this;
-    }
-
-    // Save the `$data` to …
-    public function saveTo($path, $consent = null) {
-        $this->path = $path;
-        $path = To::path($path);
-        if (!file_exists($d = Path::D($path))) {
-            mkdir($d, 0777, true);
-        }
-        file_put_contents($path, $this->content);
-        if (isset($consent)) {
-            chmod($path, $consent);
-        }
-        return $this;
-    }
-
-    // Rename the file/folder
-    public function renameTo($name) {
-        if ($this->path !== false) {
-            $a = Path::B($this->path);
-            $b = Path::D($this->path) . DS;
-            if ($name !== $a && !file_exists($b . $name)) {
-                rename($b . $a, $b . $name);
-            }
-            $this->path = $b . $name;
-        }
-        return $this;
-    }
-
-    // Move the file/folder to …
-    public function moveTo($path = ROOT) {
-        if ($this->path !== false) {
-            $p = $this->path;
-            $path = To::path($path);
-            if (!file_exists($path)) {
-                mkdir($path, 0777, true);
-            }
-            if (is_file($p)) {
-                $path .= DS . Path::B($p);
-            }
-            if ($p !== $path) {
-                self::open($path)->delete();
-                rename($p, $path);
-                $this->path = $path;
-            }
-        }
-        return $this;
-    }
-
-    // Copy the file/folder to …
-    public function copyTo($path = ROOT, $s = '.%{0}%') {
-        // TODO: make it possible to copy folder with its content(s)
-        $i = 1;
-        if ($this->path !== false) {
-            $b = DS . Path::B($this->path);
-            $o = [];
-            foreach ((array) $path as $v) {
-                $v = To::path($v);
-                if (is_dir($v)) {
-                    if (!file_exists($v)) {
-                        mkdir($v, 0777, true);
-                    }
-                    $v .= $b;
-                } else {
-                    if (!file_exists($d = Path::D($v))) {
-                        mkdir($d, 0777, true);
-                    }
-                }
-                if (!file_exists($v)) {
-                    copy($this->path, $v);
-                    $i = 1;
-                } else {
-                    $v = preg_replace('#\.([a-z\d]+)$#', __replace__($s, $i) . '.$1', $v);
-                    copy($this->path, $v);
-                    ++$i;
-                }
-                $o[] = $v;
-            }
-            // Return sring if singular and array if plural…
-            $this->path = count($o) === 1 ? $o[0] : $o;
-        }
-        return $this;
-    }
-
-    // Delete the file
-    public function delete() {
-        $path = $this->path;
-        if ($path !== false) {
-            if (is_dir($path)) {
-                $a = new \RecursiveDirectoryIterator($path, \FilesystemIterator::SKIP_DOTS);
-                $b = new \RecursiveIteratorIterator($a, \RecursiveIteratorIterator::CHILD_FIRST);
-                foreach ($b as $v) {
-                    if ($v->isFile()) {
-                        unlink($v->getPathname());
-                    } else {
-                        rmdir($v->getPathname());
-                    }
-                }
-                rmdir($path);
-            } else {
-                unlink($path);
-            }
-        }
-    }
-
-    // Get file modification time
-    public static function T($input, $fail = null) {
-        return file_exists($input) ? filemtime($input) : $fail;
-    }
-
-    // Set file permission
-    public function consent($consent) {
-        if ($this->path !== false) {
-            chmod($this->path, $consent);
-        }
-        return $this;
-    }
-
-    // Upload the file
-    public static function upload($f, $path = ROOT, $fn = null, $fail = false, $c = []) {
-        $path = To::path($path);
-        $c = !empty($c) ? $c : self::$config;
-        // Sanitize file name
-        $f['name'] = To::file($f['name']);
-        $x = Path::X($f['name']);
-        $e = Language::message_info_file_upload();
-        // Something goes wrong
-        if ($f['error'] > 0 && isset($e[$f['error']])) {
-            Message::error($e[$f['error']]);
+    public function let() {
+        if ($this->exist) {
+            // Return `$path` on success, `null` on error
+            $out = unlink($path = $this->path) ? $path : null;
         } else {
-            // Unknown file type
-            if (empty($f['type'])) {
-                Message::error('file_type');
-            }
-            // Bad file extension
-            $xx = X . implode(X, $c['extensions']) . X;
-            if (strpos($xx, X . $x . X) === false) {
-                Message::error('file_x', '<em>' . $x . '</em>');
-            }
-            // Too small
-            if ($f['size'] < $c['sizes'][0]) {
-                Message::error('file_size.0', self::size($f['size']));
-            }
-            // Too large
-            if ($f['size'] > $c['sizes'][1]) {
-                Message::error('file_size.1', self::size($f['size']));
-            }
+            // Return `false` if file does not exist
+            $out = false;
         }
-        if (!Message::$x) {
-            // Destination not found
-            if (!file_exists($path)) {
-                Folder::set($path);
-            }
-            // Move the uploaded file to the destination folder
-            if (!file_exists($path . DS . $f['name'])) {
-                // Move…
-                $path .= DS . $f['name'];
-                move_uploaded_file($f['tmp_name'], $path);
-                Message::success('file_upload', '<code>' . $f['name'] . '</code>');
-                if (is_callable($fn)) {
-                    return call_user_func($fn, self::inspect($path));
-                }
-                return $path;
-            }
-            Message::error('file_exist', '<code>' . $f['name'] . '</code>');
-            return $fail;
-        }
-        return $fail;
+        $this->value[1] = $out;
+        return $this;
     }
 
-    // Convert file size to …
-    public static function size($file, $unit = null, $prec = 2) {
-        $size = is_numeric($file) ? $file : filesize($file);
-        $size_base = log($size, 1024);
-        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
-        if (!$u = array_search((string) $unit, $x)) {
-            $u = $size > 0 ? floor($size_base) : 0;
+    public function move(string $to, string $as = null) {
+        $out = [null];
+        if ($this->exist && $path = $this->path) {
+            $out[0] = $path;
+            if (is_file($v = $to . DS . ($as ?? basename($path)))) {
+                // Return `false` if file already exists
+                $out[1] = false;
+            } else {
+                if (!is_dir($to)) {
+                    mkdir($to, 0775, true);
+                }
+                // Return `$v` on success, `null` on error
+                $out[1] = rename($path, $v) ? $v : null;
+            }
         }
-        $output = round($size / pow(1024, $u), $prec);
-        return $output < 0 ? Language::unknown() : trim($output . ' ' . $x[$u]);
+        $this->value[1] = $out;
+        return $this;
+    }
+
+    public function name($x = false) {
+        if ($this->exist && $path = $this->path) {
+            if (true === $x) {
+                return basename($path);
+            }
+            return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
+        }
+        return null;
+    }
+
+    public function offsetExists($i) {
+        return !!$this->offsetGet($i);
+    }
+
+    public function offsetGet($i) {
+        return $this->__get($i);
+    }
+
+    public function offsetSet($i, $value) {}
+    public function offsetUnset($i) {}
+
+    public function parent() {
+        if ($this->exist) {
+            $parent = dirname($this->path);
+            return '.' !== $parent ? $parent : null;
+        }
+        return null;
+    }
+
+    public function save($seal = null) {
+        $out = false; // Return `false` if `$this` is just a placeholder
+        if ($path = $this->path) {
+            if (isset($seal)) {
+                $this->seal($seal);
+            }
+            // Return `$path` on success, `null` on error
+            $out = file_put_contents($path, $this->value[0]) ? $path : null; 
+        } else if (defined('DEBUG') && DEBUG) {
+            $c = static::class;
+            throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
+        }
+        $this->value[1] = $out;
+        return $this;
+    }
+
+    public function seal($i = null) {
+        if (isset($i)) {
+            if ($this->exist) {
+                $i = is_string($i) ? octdec($i) : $i;
+                // Return `$i` on success, `null` on error
+                $this->value[1] = chmod($this->path, $i) ? $i : null;
+            } else {
+                // Return `false` if file does not exist
+                $this->value[1] = false;
+            }
+            return $this;
+        }
+        return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
+    }
+
+    public function set(...$lot) {
+        $this->value[0] = $lot[0] ?? "";
+        return $this;
+    }
+
+    public function size(string $unit = null, int $r = 2) {
+        if ($this->exist && is_file($path = $this->path)) {
+            return self::sizer(filesize($path), $unit, $r);
+        }
+        return null;
+    }
+
+    public function stream() {
+        return $this->exist ? stream($this->path) : yield from [];
+    }
+
+    public function time(string $format = null) {
+        if ($this->exist) {
+            $t = filectime($this->path);
+            return $format ? (new Time($t))($format) : $t;
+        }
+        return null;
+    }
+
+    public function type() {
+        return $this->exist ? mime_content_type($this->path) : null;
+    }
+
+    public function x() {
+        if ($this->exist) {
+            $path = $this->path;
+            if (false === strpos($path, '.')) {
+                return null;
+            }
+            $x = pathinfo($path, PATHINFO_EXTENSION);
+            return $x ? strtolower($x) : null;
+        }
+        return false; // Return `false` if file does not exist
+    }
+
+    public static $state = self::state;
+
+    public static function exist($path) {
+        if (is_array($path)) {
+            foreach ($path as $v) {
+                if ($v && is_file($v)) {
+                    return realpath($v);
+                }
+            }
+            return false;
+        }
+        return is_file($path) ? realpath($path) : false;
+    }
+
+    public static function pull($path, string $name = null) {
+        if (is_string($path) && is_file($path)) {
+            http_response_code(200);
+            header('Content-Description: File Transfer');
+            header('Content-Type: application/octet-stream');
+            header('Content-Disposition: attachment; filename="' . ($name ?? basename($path)) . '"');
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($path));
+            readfile($path);
+            exit;
+        }
+        http_response_code(404);
+        exit;
+    }
+
+    public static function push(array $blob, string $folder = ROOT) {
+        if (!empty($blob['error'])) {
+            return $blob['error']; // Return the error code
+        }
+        $folder = strtr($folder, '/', DS);
+        if (is_file($path = $folder . DS . $blob['name'])) {
+            return false; // Return `false` if file already exists
+        }
+        if (!is_dir($folder)) {
+            mkdir($folder, 0775, true);
+        }
+        if (move_uploaded_file($blob['tmp_name'], $path)) {
+            return $path; // Return `$path` on success
+        }
+        return null; // Return `null` on error
+    }
+
+    public static function sizer(float $size, string $unit = null, int $r = 2) {
+        $i = log($size, 1024);
+        $x = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor($i) : 0);
+        $out = round($size / pow(1024, $u), $r);
+        return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 
 }

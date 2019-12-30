@@ -1,104 +1,39 @@
 <?php
 
-class Request extends Genome {
+final class Request extends Genome {
 
-    const config = [
-        'session' => [
-            'request' => 'mecha.request'
-        ]
-    ];
-
-    public static $config = self::config;
-
-    public static function any($id, $key = null, $fail = null, $eval = true) {
-        $data = $GLOBALS['_' . strtoupper($id)];
-        $data = isset($data) ? $data : [];
-        if (isset($key)) {
-            $o = Anemon::get($data, $key, $fail);
-            $o = $eval ? e($o) : $o;
-            return $o === 0 || $o === '0' || !empty($o) ? $o : $fail;
-        }
-        return !empty($data) ? ($eval ? e($data) : $data) : $fail;
+    public static function get($key = null) {
+        return e(isset($key) ? get($_REQUEST, $key) : ($_REQUEST ?? []));
     }
 
-    public static function is($id = null, $key = null) {
-        $s = strtoupper($_SERVER['REQUEST_METHOD']);
-        if (isset($id)) {
-            $id = strtoupper($id);
+    public static function is(string $name = null, string $key = null) {
+        $r = strtoupper($_SERVER['REQUEST_METHOD']);
+        if (isset($name)) {
+            $name = strtoupper($name);
             if (isset($key)) {
-                return array_key_exists($key, $GLOBALS['_' . $id]);
+                $a = $GLOBALS['_' . $name] ?? [];
+                return null !== get($a, $key);
             }
-            return $id === $s;
+            return $name === $r;
         }
-        return $s;
+        return ucfirst(strtolower($r));
     }
 
-    // `GET` property
-    public static function get($key = null, $fail = null, $eval = true) {
-        return self::any('GET', $key, $fail, $eval);
-    }
-
-    // `POST` property
-    public static function post($key = null, $fail = null, $eval = true) {
-        return self::any('POST', $key, $fail, $eval);
-    }
-
-    // `SERVER` property
-    public static function server($key = null, $fail = null, $eval = true) {
-        return self::any('SERVER', $fail, $eval);
-    }
-
-    public static function set($id, $key, $value = null) {
-        Anemon::set($GLOBALS['_' . strtoupper($id)], $key, $value);
-        return new static;
-    }
-
-    public static function reset($id, $key = null) {
-        Anemon::reset($GLOBALS['_' . strtoupper($id)], $key);
-        return new static;
-    }
-
-    public static function extend($id, $keys = []) {
-        foreach ($keys as $k => $v) {
-            self::set($id, $k, $v);
-        }
-        return new static;
-    }
-
-    // Save state
-    public static function save($id, $key = null, $value = null) {
-        $id = strtoupper($id);
-        $data = self::any($id, null, []);
-        if (isset($key)) {
-            if (!is_array($key)) {
-                $key = [$key => $value];
+    public static function let($key = null) {
+        $k = strtoupper(static::class);
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
             }
+        } else if (isset($key)) {
+            let($_REQUEST, $key);
         } else {
-            $key = $data;
+            $_REQUEST = [];
         }
-        $s = self::$config['session']['request'] . '.' . $id;
-        $cache = Session::get($s, []);
-        Session::set($s, array_replace_recursive($cache, $key));
-        return new static;
     }
 
-    // Restore state
-    public static function restore($id, $key = null, $fail = null) {
-        $id = strtoupper($id);
-        $cache = Session::get(self::$config['session']['request'] . '.' . $id, []);
-        if (isset($key)) {
-            self::delete($id, $key);
-            return Anemon::get($cache, $key, $fail);
-        }
-        self::delete($id);
-        return $cache;
-    }
-
-    // Delete state
-    public static function delete($id, $key = null) {
-        $id = strtoupper($id);
-        Session::reset(self::$config['session']['request'] . '.' . $id . (isset($key) ? '.' . $key : ""));
-        return new static;
+    public static function set(string $key, $value) {
+        set($_REQUEST, $key, $value);
     }
 
 }

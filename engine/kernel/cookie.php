@@ -1,68 +1,67 @@
 <?php
 
-class Cookie extends Genome {
+final class Cookie extends Genome {
 
-    public static function set($key, $value = "", $config = []) {
-        if (is_numeric($config)) {
-            $config = ['expire' => (int) $config];
-        }
-        $cc = array_replace([
-            'expire' => 1,
-            'path' => '/',
-            'domain' => "",
-            'secure' => false,
-            'http_only' => false
-        ], $config);
-        $cc = array_values($cc);
-        $cc[0] = time() + 60 * 60 * 24 * $cc[0]; // 1 day
-        $key = '_' . md5($key);
-        $value = self::x($value);
-        $_COOKIE[$key] = $value;
-        array_unshift($cc, $key, $value);
-        call_user_func_array('setcookie', $cc);
-        return new static;
+    const state = [
+        'expires' => '1 day',
+        'path' => '/',
+        'domain' => "",
+        'secure' => false,
+        'httponly' => false
+    ];
+
+    public static $state = self::state;
+
+    private static function k($key) {
+        return '_' . dechex(crc32(static::class . ':' . $key));
     }
 
-    public static function get($key = null, $fail = null) {
-        $c = e($_COOKIE);
-        if (!isset($key)) {
-            $o = [];
+    private static function v($value) {
+        return json_decode(base64_decode($value), true);
+    }
+
+    private static function x($value) {
+        return base64_encode(json_encode($value));
+    }
+
+    public static function get(string $key = null) {
+        if (isset($key)) {
+            return self::v($_COOKIE[self::k($key)] ?? 'bnVsbA==');
+        }
+        $out = [];
+        foreach ($_COOKIE as $k => $v) {
+            $out[$k] = e(0 === strpos($k, '_') ? self::v($v) : $v);
+        }
+        return $out;
+    }
+
+    public static function let($key = null) {
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
+            }
+        } else if (isset($key)) {
+            $key = self::k($key);
+            setcookie($key, null, -1);
+            setcookie($key, null, -1, '/');
+        } else {
             foreach ($_COOKIE as $k => $v) {
-                $o[$k] = self::v($v);
+                setcookie($k, null, -1);
+                setcookie($k, null, -1, '/');
             }
-            return $o;
         }
-        $key = '_' . md5($key);
-        return isset($c[$key]) ? self::v($c[$key]) : $fail;
     }
 
-    public static function reset($key = null) {
-        if (!isset($key)) {
-            $_COOKIE = [];
-            foreach (explode(';', isset($_SERVER['HTTP_COOKIE']) ? $_SERVER['HTTP_COOKIE'] : "") as $v) {
-                $c = explode('=', $v, 2);
-                $n = trim($c[0]);
-                setcookie($n, null, -1);
-                setcookie($n, null, -1, '/');
-            }
-            return new static;
+    public static function set(string $key, $value = "", $expires = '1 day') {
+        if (!is_array($expires)) {
+            $expires = ['expires' => $expires];
         }
-        $key = '_' . md5($key);
-        unset($_COOKIE[$key]);
-        setcookie($key, null, -1);
-        setcookie($key, null, -1, '/');
-        return new static;
-    }
-
-    private static function x($input) {
-        return __c2f__(static::class, '_') . ':' . base64_encode(json_encode($input));
-    }
-
-    private static function v($input) {
-        if (strpos($input, __c2f__(static::class, '_') . ':') === 0) {
-            return json_decode(base64_decode(explode(':', $input, 2)[1]), true);
+        $c = array_values(array_replace(self::$state, $expires));
+        if (is_string($c[0])) {
+            $c[0] = (int) (strtotime($c[0], $t = time()) - $t);
         }
-        return $input;
+        $c[0] += time();
+        setcookie(self::k($key), self::x($value), ...$c);
     }
 
 }

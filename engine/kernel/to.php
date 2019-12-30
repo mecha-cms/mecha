@@ -1,12 +1,9 @@
 <?php
 
-class To extends Genome {
+final class To extends Genome {
 
-    public static function __callStatic($kin, $lot = []) {
-        if (!self::_($kin) && (!defined('DEBUG') || !DEBUG)) {
-            return $lot[0];
-        }
-        return parent::__callStatic($kin, $lot);
+    public static function __callStatic(string $kin, array $lot = []) {
+        return parent::_($kin) ? parent::__callStatic($kin, $lot) : $lot[0];
     }
 
 }

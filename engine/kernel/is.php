@@ -1,50 +1,19 @@
 <?php
 
-class Is extends Genome {
-
-    protected $bucket = [];
-
-    public function __construct($input) {
-        $this->bucket = $input;
-    }
-
-    // Initialize…
-    public static function this($input) {
-        return new static($input);
-    }
-
-    // Check for empty string, array or object
-    public static function void($x) {
-        return (
-            $x === "" ||
-            is_string($x) && trim($x) === "" ||
-            is_array($x) && empty($x) ||
-            is_object($x) && empty((array) $x)
-        );
-    }
+final class Is extends Genome {
 
     // Check for IP address
-    public static function ip($x) {
+    public static function IP($x) {
         return filter_var($x, FILTER_VALIDATE_IP);
     }
 
-    public static function i_p($x) {
-        return self::ip($x);
-    }
-
     // Check for URL address
-    public static function url($x) {
+    public static function URL($x) {
         return filter_var($x, FILTER_VALIDATE_URL);
     }
 
-    public static function u_r_l($x) {
-        return self::url($x);
-    }
-
-    // Check for valid local path address (whether it is exists or not)
-    public static function path($x, $e = false) {
-        if (!is_string($x)) return false;
-        return strpos($x, ROOT) === 0 && strpos($x, "\n") === false && (!$e || file_exists($x));
+    public static function __callStatic(string $kin, array $lot = []) {
+        return parent::_($kin) ? parent::__callStatic($kin, $lot) : null;
     }
 
     // Check for email address
@@ -52,8 +21,27 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_EMAIL);
     }
 
-    public static function e_mail($x) {
-        return self::email($x);
+    // Check for valid file name
+    public static function file($x) {
+        return is_string($x) && strlen($x) <= 260 && is_file($x);
+    }
+
+    // Check for valid folder name
+    public static function files($x) {
+        return is_string($x) && strlen($x) <= 260 && is_dir($x);
+    }
+
+    // Alias for `files`
+    public static function folder($x) {
+        return self::files($x);
+    }
+
+    // Check for valid local path address (whether it is exists or not)
+    public static function path($x, $exist = false) {
+        if (!is_string($x)) {
+            return false;
+        }
+        return 0 === strpos($x, ROOT) && false === strpos($x, "\n") && (!$exist || stream_resolve_include_path($x));
     }
 
     // Check for valid boolean value
@@ -61,63 +49,20 @@ class Is extends Genome {
         return filter_var($x, FILTER_VALIDATE_BOOLEAN);
     }
 
-    // Is file
-    public static function F($x) {
-        return is_file($x);
-    }
-
-    // Is directory
-    public static function D($x) {
-        return is_dir($x);
-    }
-
-    // Check if `$this->bucket` contains `$s`
-    public function contain($s, $all = false, $x = X) {
-        $input = $x . implode($x, $this->bucket) . $x;
-        if (is_array($s)) {
-            if (!$all) {
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        return true;
-                    }
-                }
-                return false;
-            } else {
-                $pass = 0;
-                foreach ($s as $v) {
-                    if (strpos($input, $x . $v . $x) !== false) {
-                        ++$pass;
-                    }
-                }
-                return $pass === count($s);
-            }
+    // Check for empty string, array or object
+    public static function void($x) {
+        if ($x instanceof \Traversable) {
+            return 0 === \iterator_count($x);
         }
-        return strpos($input, $x . $s . $x) !== false;
-    }
-
-    // Is equal to `$x`
-    public function eq($x) {
-        return q($this->bucket) === $x;
-    }
-
-    // Is less than `$x`
-    public function lt($x) {
-        return q($this->bucket) < $x;
-    }
-
-    // Is greater than `$x`
-    public function gt($x) {
-        return q($this->bucket) > $x;
-    }
-
-    // Is less than or equal to `$x`
-    public function le($x) {
-        return q($this->bucket) <= $x;
-    }
-
-    // Is greater than or equal to `$x`
-    public function ge($x) {
-        return q($this->bucket) >= $x;
+        // `0` integer and `0` string is not considered void
+        return (
+            "" === $x ||
+            false === $x ||
+            null === $x ||
+            is_string($x) && "" === trim($x) ||
+            is_array($x) && empty($x) ||
+            is_object($x) && empty((array) $x)
+        );
     }
 
 }

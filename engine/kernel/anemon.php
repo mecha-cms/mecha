@@ -1,227 +1,337 @@
 <?php
 
-class Anemon extends Genome {
+class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    protected $bucket = [];
-    protected $separator = "";
-    protected $i = 0;
+    public $i = 0;
+    public $lot = [];
+    public $parent = null;
+    public $join = "";
+    public $value = [];
 
-    // Create list of namespace step(s)
-    public static function step($input, $NS = '.', $dir = 1) {
-        if (is_string($input) && strpos($input, $NS) !== false) {
-            $input = explode($NS, trim($input, $NS));
-            $a = $dir === -1 ? array_pop($input) : array_shift($input);
-            $output = [$a];
-            if ($dir === -1) {
-                while ($b = array_pop($input)) {
-                    $a = $b . $NS . $a;
-                    array_unshift($output, $a);
-                }
-            } else {
-                while ($b = array_shift($input)) {
-                    $a .= $NS . $b;
-                    array_unshift($output, $a);
-                }
-            }
-            return $output;
+    public function __construct(iterable $array = [], string $join = ', ') {
+        if ($array instanceof \Traversable) {
+            $array = iterator_to_array($array);
         }
-        return (array) $input;
+        $this->lot = $this->value = $array;
+        $this->join = $join;
     }
 
-    // Set array value recursively
-    public static function set(array &$input, $key, $value = null, $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
-        while (count($keys) > 1) {
-            $key = str_replace(X, $NS, array_shift($keys));
-            if (!array_key_exists($key, $input)) {
-                $input[$key] = [];
-            }
-            $input =& $input[$key];
-        }
-        return ($input[array_shift($keys)] = $value);
-    }
-
-    // Get array value recursively
-    public static function get(array &$input, $key, $fail = false, $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
-        foreach ($keys as $value) {
-            if (!is_array($input) || !array_key_exists($value, $input)) {
-                return $fail;
-            }
-            $input =& $input[$value];
-        }
-        return $input;
-    }
-
-    // Remove array value recursively
-    public static function reset(array &$input, $key, $NS = '.') {
-        $keys = explode($NS, str_replace('\\' . $NS, X, $key));
-        while (count($keys) > 1) {
-            $key = str_replace(X, $NS, array_shift($keys));
-            if (array_key_exists($key, $input)) {
-                $input =& $input[$key];
+    public function __invoke(string $join = ', ', $filter = true) {
+        $value = $filter ? $this->is(function($v, $k) {
+            // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
+            return isset($v) && false !== $v && 0 !== strpos($k, '_');
+        })->value : $this->value;
+        foreach ($value as $k => $v) {
+            // Ignore value(s) that cannot be converted to string
+            if (is_array($v) || (is_object($v) && !method_exists($v, '__toString'))) {
+                unset($value[$k]);
             }
         }
-        if (is_array($input) && array_key_exists($value = array_shift($keys), $input)) {
-            unset($input[$value]);
-        }
-        return $input;
+        return implode($join, $value);
     }
 
-    // Extend two or more array
-    public static function extend(array &$input, ...$b) {
-        return ($input = array_replace_recursive($input, ...$b));
+    public function __toString() {
+        return (string) $this->__invoke($this->join);
     }
 
-    // Concatenate two or more array
-    public static function concat(array &$input, ...$b) {
-        return ($input = array_merge_recursive($input, ...$b));
+    // Insert `$value` after current element
+    public function after($value, $key = null) {
+        $i = b($this->i + 1, [0, $this->count()]);
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
+        return $this;
     }
 
-    public static function eat(array $input) {
-        return new static($input);
+    // @see `.\engine\ignite.php#fn:any`
+    public function any($fn = null) {
+        return any($this->value, $fn);
     }
 
-    public function vomit($key = null, $fail = false) {
+    // Insert `$value` to the end of array
+    public function append($value, $key = null) {
+        $this->i = count($v = $this->value) + 1;
         if (isset($key)) {
-            return self::get($this->bucket, $key, $fail);
-        }
-        return $this->bucket;
-    }
-
-    // Randomize array order
-    public function shake($preserve_key = true) {
-        if (is_callable($preserve_key)) {
-            // `$preserve_key` as `$fn`
-            $this->bucket = call_user_func($preserve_key, $this->bucket);
+            $v += [$key => $value];
         } else {
-            // <http://php.net/manual/en/function.shuffle.php#94697>
-            if ($preserve_key) {
-                $k = array_keys($this->bucket);
-                $v = [];
-                shuffle($k);
-                foreach ($k as $kk) {
-                    $v[$kk] = $this->bucket[$kk];
-                }
-                $this->bucket = $v;
-                unset($k, $v);
-            } else {
-                shuffle($this->bucket);
-            }
+            $v[] = $value;
         }
+        $this->value = $v;
         return $this;
     }
 
-    public function is($fn) {
-        $this->bucket = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
+    // Insert `$value` before current element
+    public function before($value, $key = null) {
+        $i = b($this->i, [0, $this->count()]);
+        $this->value = array_slice($this->value, 0, $i, true) + [$key ?? $i => $value] + array_slice($this->value, $i, null, true);
         return $this;
     }
 
-    public function not($fn) {
-        $a = array_filter($this->bucket, $fn, ARRAY_FILTER_USE_BOTH);
-        $b = array_diff_assoc($this->bucket, $a);
-        $this->bucket = $b;
-        unset($a);
+    // Generate chunk(s) of array
+    public function chunk(int $chunk = 5, int $i = -1, $preserve_key = false) {
+        $clone = $this->mitose();
+        $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
+        if (-1 !== $i) {
+            $clone->value = $clone->value[$clone->i = $i] ?? [];
+        }
+        return $clone;
+    }
+
+    public function count() {
+        return count($this->value);
+    }
+
+    // Get current array value
+    public function current() {
+        $current = array_values($this->value);
+        return $current[$this->i] ?? null;
+    }
+
+    // @see `.\engine\ignite.php#fn:find`
+    public function find(callable $fn = null) {
+        return find($this->value, $fn);
+    }
+
+    // Get first array value
+    public function first($take = false) {
+        return $take ? array_shift($this->value) : reset($this->value);
+    }
+
+    public function get(string $key = null) {
+        return isset($key) ? get($this->value, $key) : $this->value;
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator($this->value);
+    }
+
+    // @see `.\engine\ignite.php#fn:has`
+    public function has(string $value = "", string $join = P) {
+        return has($this->value, $value, $join);
+    }
+
+    // Get position by array key
+    public function index(string $key) {
+        $i = array_search($key, array_keys($this->value));
+        return false !== $i ? $search : null;
+    }
+
+    // @see `.\engine\ignite.php#fn:is`
+    public function is($fn = null) {
+        $clone = $this->mitose();
+        $clone->value = is($clone->value, $fn);
+        return $clone;
+    }
+
+    public function join(string $join = ', ') {
+        return implode($join, $this->value);
+    }
+
+    public function jsonSerialize() {
+        return $this->value;
+    }
+
+    // Get array key by position
+    public function key(int $i) {
+        $array = array_keys($this->value);
+        return array_key_exists($i, $array) ? $array[$i] : null;
+    }
+
+    // Get last array value
+    public function last($take = false) {
+        return $take ? array_pop($this->value) : end($this->value);
+    }
+
+    public function let(string $key) {
+        let($this->value, $key);
+        return $this;
+    }
+
+    public function lot(array $lot = [], $over = false) {
+        if ($lot) {
+            $this->lot = $over ? array_replace_recursive($this->lot, $lot) : $lot;
+        }
+        $this->value = $this->lot;
+        return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:map`
+    public function map(callable $fn) {
+        $clone = $this->mitose();
+        $clone->value = map($clone->value, $fn);
+        return $clone;
+    }
+
+    // Clone the current instance
+    public function mitose() {
+        $clone = new static($this->value, $this->join);
+        $clone->lot = $this->lot;
+        $clone->parent = $this;
+        return $clone;
+    }
+
+    // Move to next array index
+    public function next(int $skip = 0) {
+        $this->i = b($this->i + 1 + $skip, [0, $this->count() - 1]);
+        return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:not`
+    public function not($fn = null) {
+        $clone = $this->mitose();
+        $clone->value = not($clone->value, $fn);
+        return $clone;
+    }
+
+    public function offsetExists($i) {
+        return isset($this->value[$i]);
+    }
+
+    public function offsetGet($i) {
+        return $this->value[$i] ?? null;
+    }
+
+    public function offsetSet($i, $value) {
+        if (isset($i)) {
+            $this->value[$i] = $value;
+        } else {
+            $this->value[] = $value;
+        }
+    }
+
+    public function offsetUnset($i) {
+        unset($this->value[$i]);
+    }
+
+    // @see `.\engine\ignite.php#fn:pluck`
+    public function pluck(string $key, $or = null) {
+        $clone = $this->mitose();
+        $clone->value = pluck($clone->value, $key, $or);
+        return $clone;
+    }
+
+    // Insert `$value` to the start of array
+    public function prepend($value, $key = null) {
+        $this->i = 0;
+        $v = $this->value;
+        if (isset($key)) {
+            $v = [$key => $value] + $v;
+        } else {
+            array_unshift($v, $value);
+        }
+        $this->value = $v;
+        return $this;
+    }
+
+    // Move to previous array index
+    public function prev(int $skip = 0) {
+        $this->i = b($this->i - 1 - $skip, [0, $this->count() - 1]);
+        return $this;
+    }
+
+    public function reverse() {
+        $this->value = array_reverse($this->value);
+        return $this;
+    }
+
+    public function set(string $key, $value) {
+        set($this->value, $key, $value);
+        return $this;
+    }
+
+    // @see `.\engine\ignite.php#fn:shake`
+    public function shake($preserve_key = true) {
+        $this->value = shake($this->value, $preserve_key);
         return $this;
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $preserve_key = false) {
-        if (is_array($sort) && isset($sort[1])) {
-            $before = $after = [];
-            if (!empty($this->bucket)) {
-                foreach ($this->bucket as $k => $v) {
-                    $v = (array) $v;
-                    if (array_key_exists($sort[1], $v)) {
-                        $before[$k] = $v[$sort[1]];
-                    } else if (!is_bool($preserve_key)) {
-                        $before[$k] = (string) $preserve_key;
-                        $this->bucket[$k][$sort[1]] = (string) $preserve_key;
+        $value = $this->value;
+        if (is_callable($sort)) {
+            $preserve_key ? uasort($value, $sort) : usort($value, $sort);
+        } else if (is_array($sort)) {
+            $i = $sort[0];
+            if (isset($sort[1])) {
+                $key = $sort[1];
+                $fn = -1 === $i ? function($a, $b) use($key) {
+                    if (!is_array($a) || !is_array($b)) {
+                        return 0;
                     }
+                    if (!isset($a[$key]) && !isset($b[$key])) {
+                        return 0;
+                    }
+                    if (!isset($b[$key])) {
+                        return 1;
+                    }
+                    if (!isset($a[$key])) {
+                        return -1;
+                    }
+                    return $b[$key] <=> $a[$key];
+                } : function($a, $b) use($key) {
+                    if (!is_array($a) || !is_array($b)) {
+                        return 0;
+                    }
+                    if (!isset($a[$key]) && !isset($b[$key])) {
+                        return 0;
+                    }
+                    if (!isset($a[$key])) {
+                        return 1;
+                    }
+                    if (!isset($b[$key])) {
+                        return -1;
+                    }
+                    return $a[$key] <=> $b[$key];
+                };
+                if (array_key_exists(2, $sort)) {
+                    foreach ($value as &$v) {
+                        if (!isset($v[$key])) {
+                            $v[$key] = $sort[2];
+                        }
+                    }
+                    unset($v);
                 }
-                $sort[0] === -1 ? arsort($before) : asort($before);
-                foreach ($before as $k => $v) {
-                    $after[$k] = $this->bucket[$k];
-                }
-            }
-            $this->bucket = $after;
-            unset($before, $after);
-        } else {
-            if (is_array($sort)) {
-                $sort = $sort[0];
-            }
-            $this->bucket = (array) $this->bucket;
-            $sort === -1 ? arsort($this->bucket) : asort($this->bucket);
-        }
-        if ($preserve_key === false) {
-            $this->bucket = array_values($this->bucket);
-        }
-        return $this;
-    }
-
-    public static function walk(array $array, $fn = null, $deep = false) {
-        if (is_callable($fn)) {
-            if ($deep) {
-                array_walk_recursive($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($fn, $v, $k, $a);
-                }, $array);
+                $preserve_key ? uasort($value, $fn) : usort($value, $fn);
             } else {
-                array_walk($array, function(&$v, $k, $a) use($fn) {
-                    call_user_func($fn, $v, $k, $a);
-                }, $array);
+                if ($preserve_key) {
+                    -1 === $i ? arsort($value) : asort($value);
+                } else {
+                    -1 === $i ? rsort($value) : sort($value);
+                }
             }
-            return $array;
+        } else {
+            if ($preserve_key) {
+                -1 === $sort ? arsort($value) : asort($value);
+            } else {
+                -1 === $sort ? rsort($value) : sort($value);
+            }
         }
-        return self::eat($array);
-    }
-
-    public static function alter($input, array $replace = [], $fail = null) {
-        // return `$replace[$input]` value if exist
-        // or `$fail` value if `$replace[$input]` does not exist
-        // or `$input` value if `$fail` is `null`
-        return array_key_exists((string) $input, $replace) ? $replace[$input] : ($fail ?: $input);
-    }
-
-    // Move to next array index
-    public function next($skip = 0) {
-        $this->i = b($this->i + 1 + $skip, 0, $this->count() - 1);
+        $this->value = $value;
         return $this;
     }
 
-    // Move to previous array index
-    public function previous($skip = 0) {
-        $this->i = b($this->i - 1 - $skip, 0, $this->count() - 1);
+    // Move to `$i` array
+    public function to($i) {
+        $this->i = is_int($i) ? $i : ($this->index($i) ?? $i);
         return $this;
     }
 
-    // Move to `$index` array index
-    public function to($index) {
-        $this->i = is_int($index) ? $index : $this->index($index, $index);
+    // Move to the first array
+    public function toFirst() {
+        $this->i = 0;
         return $this;
     }
 
-    // Insert `$value` before current array index
-    public function before($value, $key = null) {
-        $key = $key ?: $this->i;
-        $this->bucket = array_slice($this->bucket, 0, $this->i, true) + [$key => $value] + array_slice($this->bucket, $this->i, null, true);
-        $this->i = b($this->i - 1, 0, $this->count() - 1);
+    // Move to the last array
+    public function toLast() {
+        $this->i = $this->count() - 1;
         return $this;
     }
 
-    // Insert `$value` after current array index
-    public function after($value, $key = null) {
-        $key = $key ?: $this->i + 1;
-        $this->bucket = array_slice($this->bucket, 0, $this->i + 1, true) + [$key => $value] + array_slice($this->bucket, $this->i + 1, null, true);
-        $this->i = b($this->i + 1, 0, $this->count() - 1);
-        return $this;
-    }
-
-    // Replace current array index value with `$value`
-    public function replace($value) {
+    // Set current element value as `$value`
+    public function value($value) {
         $i = 0;
-        foreach ($this->bucket as $k => $v) {
+        foreach ($this->value as $k => $v) {
             if ($i === $this->i) {
-                $this->bucket[$k] = $value;
+                $this->value[$k] = $value;
                 break;
             }
             ++$i;
@@ -229,105 +339,8 @@ class Anemon extends Genome {
         return $this;
     }
 
-    // Append `$value` to array
-    public function append($value, $key = null) {
-        $this->i = $this->count() - 1;
-        return $this->after($value, $key);
-    }
-
-    // Prepend `$value` to array
-    public function prepend($value, $key = null) {
-        $this->i = 0;
-        return $this->before($value, $key);
-    }
-
-    // Get first array value
-    public function first() {
-        $this->i = 0;
-        return reset($this->bucket);
-    }
-
-    // Get last array value
-    public function last() {
-        $this->i = $this->count() - 1;
-        return end($this->bucket);
-    }
-
-    // Get current array value
-    public function current($fail = false) {
-        $i = 0;
-        foreach ($this->bucket as $k => $v) {
-            if ($i === $this->i) {
-                return $this->bucket[$k];
-            }
-            ++$i;
-        }
-        return $fail;
-    }
-
-    // Get array length
-    public function count($deep = false) {
-        return count($this->bucket, $deep ? COUNT_RECURSIVE : COUNT_NORMAL);
-    }
-
-    // Get array key by position
-    public function key($index, $fail = false) {
-        $array = array_keys($this->bucket);
-        return array_key_exists($index, $array) ? $array[$index] : $fail;
-    }
-
-    // Get position by array key
-    public function index($key, $fail = false) {
-        $search = array_search($key, array_keys($this->bucket));
-        return $search !== false ? $search : $fail;
-    }
-
-    // Generate chunk(s) of array
-    public function chunk($chunk = 5, $index = null, $fail = [], $preserve_key = false) {
-        $chunks = array_chunk(__is_anemon__($this->bucket) ? (array) $this->bucket : [], $chunk, $preserve_key);
-        return !isset($index) ? $chunks : (array_key_exists($index, $chunks) ? $chunks[$index] : $fail);
-    }
-
-    public function swap($a, $b = null) {
-        return array_column($this->bucket, $a, $b);
-    }
-
-    public function join($s = ', ') {
-        return $this->__invoke($s);
-    }
-
-    public function __construct(array $array = [], $separator = ', ') {
-        $this->bucket = $array;
-        $this->separator = $separator;
-        parent::__construct();
-    }
-
-    public function __set($key, $value = null) {
-        $this->bucket[$key] = $value;
-    }
-
-    public function __get($key) {
-        return array_key_exists($key, $this->bucket) ? $this->bucket[$key] : null;
-    }
-
-    // Fix case for `isset($a->key)` or `!empty($a->key)`
-    public function __isset($key) {
-        return !!$this->__get($key);
-    }
-
-    public function __unset($key) {
-        unset($this->bucket[$key]);
-    }
-
-    public function __toString() {
-        return $this->__invoke($this->separator);
-    }
-
-    public function __invoke($s = ', ', $filter = true) {
-        return implode($s, $filter ? $this->is(function($v, $k) {
-            // Ignore `null` value and item with key prefixed by a `_`
-            return isset($v) && strpos($k, '_') !== 0;
-        })->vomit() : $this->bucket);
+    public static function from(...$lot) {
+        return new static(...$lot);
     }
 
 }

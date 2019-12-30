@@ -1,60 +1,53 @@
 <?php
 
-class Path extends Genome {
+final class Path extends Genome {
 
-    public static function B($path, $step = 1, $s = null) {
-        if (isset($s)) {
-            $path = str_replace($s, DS, $path);
-        } else {
-            if ($step === 1) {
-                return basename($path);
+    public static function B(string $path, int $step = 1, string $join = DS) {
+        if (DS === $join || '/' === $join) {
+            if (1 === $step) {
+                return "" !== $path ? basename($path) : null;
             }
-            $s = DS;
         }
-        $p = explode(DS, $path);
-        return implode($s, array_slice($p, $step * -1));
+        $path = str_replace([DS, '/'], $join, $path);
+        $path = rtrim(implode($join, array_slice(explode($join, $path), $step * -1)), $join);
+        return "" !== $path ? $path : null;
     }
 
-    public static function D($path, $step = 1, $s = null) {
-        if ($t = isset($s)) {
-            $path = str_replace([DS, $s], [X, DS], $path);
-        } else if ($step === 1) {
-            return dirname($path) === '.' ? "" : dirname($path);
+    public static function D(string $path, int $step = 1, string $join = DS) {
+        if (DS === $join || '/' === $join) {
+            $dir = rtrim(dirname($path, $step), $join);
+            return '.' !== $dir ? $dir : null;
         }
-        while ($step > 0) {
-            $path = dirname($path);
-            --$step;
-        }
-        if ($t) {
-            $path = str_replace([DS, X], [$s, DS], $path);
-        }
-        return $path === '.' ? "" : $path;
+        $path = str_replace([DS, '/'], $join, $path);
+        $a = explode($join, $path);
+        $path = rtrim(implode($join, array_slice($a, 0, count($a) - $step)), $join);
+        return "" !== $path ? $path : null;
     }
 
-    public static function N($path, $x = false) {
-        return pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
-    }
-
-    public static function X($path, $fail = false) {
-        if (strpos($path, '.') === false) return $fail;
-        $x = pathinfo($path, PATHINFO_EXTENSION);
-        return $x ? strtolower($x) : $fail;
-    }
-
-    public static function F($path, $root = null, $s = DS) {
+    public static function F(string $path, string $join = DS) {
         $f = pathinfo($path, PATHINFO_DIRNAME);
         $n = pathinfo($path, PATHINFO_FILENAME);
-        if (isset($root)) {
-            $root = str_replace([DS, '/'], $s, $root);
-            $f = str_replace([DS, '/', $root . $s, $root], [$s, $s, "", ""], $f);
+        if ("" === $n) {
+            $n = pathinfo($path, PATHINFO_BASENAME);
         }
-        $f = ($f === '.' ? "" : $f) . $s . $n;
-        if (isset($root)) {
-            $f = trim($f, $s);
-        } else {
-            $f = rtrim($f, $s);
+        return str_replace([DS, '/'], $join, '.' === $f ? $n : $f . DS . $n);
+    }
+
+    public static function N(string $path, $x = false) {
+        return (string) pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
+    }
+
+    public static function R(string $path, string $root = ROOT, string $join = DS) {
+        $root = str_replace([DS, '/'], $join, $root);
+        return str_replace([DS, '/', $root . $join, $root], [$join, $join, "", ""], $path);
+    }
+
+    public static function X(string $path) {
+        if (false === strpos($path, '.')) {
+            return null;
         }
-        return $f;
+        $x = pathinfo($path, PATHINFO_EXTENSION);
+        return $x ? strtolower($x) : null;
     }
 
 }

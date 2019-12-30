@@ -1,63 +1,150 @@
 <?php
 
-class State extends Genome {
+class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    public static function __callStatic($kin, $lot = []) {
-        $s = STATE . DS . $kin . '.php';
-        if ($state = File::open($s)->import()) {
-            $state_alt = array_merge(['shield' => ""], isset($lot[0]) ? (array) $lot[0] : []);
-            $state = array_replace_recursive($state_alt, $state);
-            $s = SHIELD . DS . $state['shield'] . DS . 'state' . DS . $kin . '.php';
-            if ($state_alt = File::open($s)->import()) {
-                $state = array_replace_recursive($state, $state_alt);
-            }
-            return $state;
+    protected static $a = [];
+    protected static $lot = [];
+
+    public function __call(string $kin, array $lot = []) {
+        if (parent::_($kin)) {
+            return parent::__call($kin, $lot);
         }
-        return parent::__callStatic($kin, $lot);
+        return self::__callStatic($kin, $lot);
     }
 
-    protected $lot = [];
-
-    public function __construct($input = [], $lot = []) {
-        $this->lot = array_replace($lot, $input);
-        parent::__construct();
+    public function __construct(array $lot = []) {
+        $c = static::class;
+        self::$lot[$c] = self::$a[$c] = $lot;
     }
 
-    public function __call($key, $lot = []) {
-        if (self::_($key)) {
-            return parent::__call($key, $lot);
+    public function __get(string $key) {
+        if (parent::_($key)) {
+            return $this->__call($key);
         }
-        $x = $this->__get($key);
-        if (__is_instance__($x) && method_exists($x, '__invoke')) {
-            return call_user_func_array($x, $lot);
-        }
-        $fail = array_shift($lot);
-        $fail_alt = array_shift($lot);
-        if ($fail instanceof \Closure) {
-            return call_user_func(\Closure::bind($fail, $this), $x !== null ? $x : $fail_alt);
-        }
-        return $x !== null ? $x : $fail;
+        return self::get(p2f($key));
     }
 
-    public function __set($key, $value = null) {
-        $this->lot[$key] = $value;
-    }
-
-    public function __get($key) {
-        return array_key_exists($key, $this->lot) ? $this->lot[$key] : null;
+    public function __invoke(...$v) {
+        return count($v) < 2 ? self::get(...$v) : self::set(...$v);
     }
 
     // Fix case for `isset($state->key)` or `!empty($state->key)`
-    public function __isset($key) {
+    public function __isset(string $key) {
         return !!$this->__get($key);
     }
 
-    public function __unset($key) {
-        unset($this->lot[$key]);
+    public function __set(string $key, $value = null) {
+        return self::set(p2f($key), $value);
     }
 
     public function __toString() {
-        return json_encode($this->lot);
+        return json_encode(self::get());
+    }
+
+    public function __unset(string $key) {
+        self::let(p2f($key));
+    }
+
+    public function count() {
+        return count(self::$lot[static::class] ?? []);
+    }
+
+    public function getIterator() {
+        return new \ArrayIterator(self::$lot[static::class] ?? []);
+    }
+
+    public function jsonSerialize() {
+        return self::$lot[static::class] ?? [];
+    }
+
+    public function offsetExists($i) {
+        return isset(self::$lot[static::class][$i]);
+    }
+
+    public function offsetGet($i) {
+        return self::$lot[static::class][$i] ?? null;
+    }
+
+    public function offsetSet($i, $value) {
+        $c = static::class;
+        if (isset($i)) {
+            self::$lot[$c][$i] = $value;
+        } else {
+            self::$lot[$c][] = $value;
+        }
+    }
+
+    public function offsetUnset($i) {
+        unset(self::$lot[static::class][$i]);
+    }
+
+    public static function __callStatic(string $kin, array $lot = []) {
+        if (parent::_($kin)) {
+            return parent::__callStatic($kin, $lot);
+        }
+        $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`
+        if ($lot) {
+            $out = self::get($kin);
+            // Asynchronous value with function closure
+            if ($out instanceof \Closure) {
+                return fire($out, $lot, null, static::class);
+            }
+            // Rich asynchronous value with class instance
+            if (is_callable($out) && !is_string($out)) {
+                return call_user_func($out, ...$lot);
+            }
+            // Else, static value
+            return self::get($kin . '.' . $lot[0], !empty($lot[1]));
+        }
+        return self::get($kin);
+    }
+
+    public static function get($key = null, $array = false) {
+        $c = static::class;
+        if (is_array($key)) {
+            $out = [];
+            foreach ($key as $k => $v) {
+                $out[$k] = self::get($k, $array) ?? $v;
+            }
+            return $array ? $out : o($out);
+        } else if (isset($key)) {
+            $out = self::$lot[$c] ?? [];
+            $out = get($out, $key);
+            return $array ? $out : o($out);
+        }
+        $out = self::$lot[$c] ?? [];
+        return $array ? $out : o($out);
+    }
+
+    public static function let($key = null) {
+        $c = static::class;
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
+            }
+        } else if (isset($key)) {
+            let(self::$lot[$c], $key);
+        } else {
+            self::$lot[$c] = [];
+        }
+    }
+
+    public static function over(...$lot) {
+        $c = static::class;
+        self::set(...$lot);
+        self::$lot[$c] = array_replace_recursive(self::$lot[$c], self::$a[$c]);
+    }
+
+    public static function set($key, $value = null) {
+        $c = static::class;
+        $in = [];
+        if (is_array($key)) {
+            $in = $key;
+        } else {
+            set($in, $key, $value);
+        }
+        $out = self::$lot[$c] ?? [];
+        self::$lot[$c] = array_replace_recursive($out, $in);
     }
 
 }

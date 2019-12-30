@@ -1,32 +1,30 @@
 <?php
 
-class Get extends Genome {
+final class Get extends Genome {
 
-    public static function ip($fail = false) {
-        $for = 'HTTP_X_FORWARDED_FOR';
-        if (array_key_exists($for, $_SERVER) && !empty($_SERVER[$for])) {
-            if (strpos($_SERVER[$for], ',') > 0) {
-                $ip = explode(',', $_SERVER[$for]);
-                $ip = trim($ip[0]);
-            } else {
-                $ip = $_SERVER[$for];
+    public function __construct() {
+        // This was added only to remove the deprecation message: Methods with the same name as their class will not be constructors in a future version of PHP.
+    }
+
+    public static function get($key = null) {
+        return e(isset($key) ? get($_GET, $key) : ($_GET ?? []));
+    }
+
+    public static function let($key = null) {
+        $k = strtoupper(static::class);
+        if (is_array($key)) {
+            foreach ($key as $v) {
+                self::let($v);
             }
+        } else if (isset($key)) {
+            let($_GET, $key);
         } else {
-            $ip = $_SERVER['REMOTE_ADDR'];
+            $_GET = [];
         }
-        return Is::ip($ip) ? $ip : $fail;
     }
 
-    public static function i_p($fail = false) {
-        return self::ip($fail);
-    }
-
-    public static function ua($fail = false) {
-        return !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : $fail;
-    }
-
-    public static function u_a($fail = false) {
-        return self::ua($fail);
+    public static function set(string $key, $value) {
+        set($_GET, $key, $value);
     }
 
 }
