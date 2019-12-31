@@ -3,7 +3,7 @@
 namespace _ {
     // Check for valid JSON string format
     function json($x, $r = false) {
-        if (!\is_string($x) || "" === \trim($x)) {
+        if (!\is_string($x) || "" === ($x = \trim($x))) {
             return false;
         }
         return (
