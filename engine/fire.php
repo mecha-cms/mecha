@@ -78,11 +78,11 @@ foreach (glob(LOT . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) 
         $n = basename($r = dirname($v));
         $uses[$v] = content($r . DS . $n) ?? $n;
         // Load state(s)…
-        state('x.' . ($k = strtr($n, ['.' => "\\."])), []);
+        State::over('x.' . ($k = strtr($n, ['.' => "\\."])), []);
         if (is_file($v = $r . DS . 'state.php')) {
             (function($k, $v) {
                 extract($GLOBALS, EXTR_SKIP);
-                state('x.' . $k, (array) require $v);
+                State::over('x.' . $k, (array) require $v);
             })($k, $v);
         }
     }
