@@ -114,11 +114,14 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function get(...$lot) {
         $i = $lot[0] ?? 0;
         if ($this->exist) {
+            $out = null;
             foreach ($this->stream() as $k => $v) {
                 if ($k === $i) {
-                    return $v;
+                    $out = $v;
+                    break;
                 }
             }
+            return $out;
         }
         return null;
     }
@@ -198,7 +201,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 $this->seal($seal);
             }
             // Return `$path` on success, `null` on error
-            $out = file_put_contents($path, $this->value[0]) ? $path : null; 
+            $out = file_put_contents($path, $this->value[0]) ? $path : null;
         } else if (defined('DEBUG') && DEBUG) {
             $c = static::class;
             throw new \Exception('Please provide a file path even if it does not exist. Example: `new ' . $c . '(\'' . ROOT . DS . c2f($c) . '.txt\')`');
