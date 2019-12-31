@@ -25,8 +25,9 @@ $GLOBALS['links'] = new Anemon((function($out, $state, $url) {
         $v = new Page($k);
         // Add active state
         $v->set('active', 0 === strpos($url->path . '/', '/' . $v->name . '/'));
-        $out[] = $v;
+        $out[$k] = $v;
     }
+    ksort($out);
     return $out;
 })([], $state, $url));
 
@@ -45,5 +46,3 @@ $GLOBALS['traces'] = new Pages((function($out, $state, $url) {
     }
     return $out;
 })([], $state, $url));
-
-

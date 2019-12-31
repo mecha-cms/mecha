@@ -683,4 +683,4 @@ class ParsedownExtra extends Parsedown
     #
 
     protected $regexAttribute = '(?:[#.][-\w]+[ ]*)';
-}
+}

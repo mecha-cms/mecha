@@ -1987,4 +1987,4 @@ class Parsedown
                    'var', 'span',
                    'wbr', 'time',
     );
-}
+}
