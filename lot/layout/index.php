@@ -16,7 +16,7 @@ Asset::set('css/log.min.css', 20);
 
 // Create site link data to be used in navigation
 $GLOBALS['links'] = new Anemon((function($out, $state, $url) {
-    $index = LOT . DS . 'page' . $state->path . '.page';
+    $index = LOT . DS . 'page' . strtr($state->path, '/', DS) . '.page';
     foreach (g(LOT . DS . 'page', 'page') as $k => $v) {
         // Exclude home page
         if ($k === $index) {
