@@ -3,7 +3,7 @@ title: Asset
 description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the layout files.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.9.5
+version: 1.9.6
 
 use:
   '.\lot\x\layout': 1

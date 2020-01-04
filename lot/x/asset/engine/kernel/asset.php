@@ -25,7 +25,7 @@ final class Asset extends Genome {
                 $out = [];
                 if (is_callable($fn)) {
                     foreach ($assets as $k => $v) {
-                        $out[] = call_user_func($fn, $v, $k);
+                        $out[] = fire($fn, [$v, $k], static::class);
                     }
                 } else {
                     foreach ($assets as $k => $v) {
