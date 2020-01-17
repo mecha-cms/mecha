@@ -18,5 +18,5 @@ register_shutdown_function(function() {
     }
     // Fire!
     Hook::fire('get');
-    Hook::fire('let');
+    Hook::fire('let'); // Will not work if there is an exit code declared in the previous hook(s)
 });

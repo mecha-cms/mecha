@@ -67,6 +67,10 @@ Preparations
 Release Notes
 -------------
 
+### 2.2.1
+
+ - Small bug fixes for the `let` hook.
+
 ### 2.2.0
 
 Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator becomes a must-have feature in this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
