@@ -276,14 +276,15 @@ namespace {
                 $to = \implode(', ', $to);
             }
         }
-        foreach (\array_filter(\array_replace([
+        $lot = \array_filter(\array_replace([
             'Content-Type' => 'text/html; charset=ISO-8859-1',
             'From' => $from,
             'MIME-Version' => '1.0',
-            'Reply-To' => $from,
+            'Reply-To' => $to,
             'Return-Path' => $from,
             'X-Mailer' => 'PHP/' . \PHP_VERSION
-        ], $lot)) as $k => &$v) {
+        ], $lot));
+        foreach ($lot as $k => &$v) {
             $v = $k . ': ' . $v;
         }
         // Line(s) shouldn’t be larger than 70 character(s)

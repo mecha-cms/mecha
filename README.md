@@ -70,6 +70,7 @@ Release Notes
 ### 2.2.1
 
  - Small bug fixes for the `let` hook.
+ - Fix `send` function not sending HTML email.
 
 ### 2.2.0
 
