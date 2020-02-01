@@ -96,21 +96,37 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
     }
 
-    public function copy(string $to) {
+    public function copy(string $to, string $as = null) {
         $out = [[]];
         if ($this->exist && $path = $this->path) {
+            $to .= DS . ($as ?? basename($path));
             if (!is_dir($to)) {
                 mkdir($to, 0775, true);
             }
             $out[1] = [];
             foreach (g($path, null, true) as $k => $v) {
                 $out[0][] = $k;
-                if (is_file($v = $to . str_replace($path, "", $k))) {
-                    // Return `false` if file already exists
-                    $out[1][] = false;
-                } else {
-                    // Return `$v` on success, `null` on error
-                    $out[1][] = copy($path, $v) ? $v : null;
+                if (1 === $v) {
+                    if (is_file($f = $to . strtr($k, [$path => ""]))) {
+                        // Return `false` if file already exists
+                        $out[1][] = false;
+                    } else {
+                        if (!is_dir($d = dirname($f))) {
+                            mkdir($d, 0775, true);
+                        }
+                        // Return `$f` on success, `null` on error
+                        $out[1][] = copy($k, $f) ? $f : null;
+                    }
+                } else if (0 === $v) {
+                    if (is_dir($f = $to . strtr($k, [$path => ""]))) {
+                        // Return `false` if folder already exists
+                        $out[1][] = false;
+                    } else {
+                        // Return `$f` on success, `null` on error
+                        // Use `mkdir()` instead of `copy()`
+                        // The first argument to `copy()` cannot be a directory
+                        $out[1][] = mkdir($f, 0775, true) ? $f : null;
+                    }
                 }
             }
         }
@@ -134,23 +150,41 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $out;
     }
 
-    public function move(string $to) {
+    public function move(string $to, string $as = null) {
         $out = [[]];
         if ($this->exist && $path = $this->path) {
+            $to .= DS . ($as ?? basename($path));
             if (!is_dir($to)) {
                 mkdir($to, 0775, true);
             }
             $out[1] = [];
             foreach (g($path, null, true) as $k => $v) {
                 $out[0][] = $k;
-                if (is_file($v = $to . str_replace($path, "", $k))) {
-                    // Return `false` if file already exists
-                    $out[1][] = false;
-                } else {
-                    // Return `$v` on success, `null` on error
-                    $out[1][] = rename($path, $v) ? $v : null;
+                if (1 === $v) {
+                    if (is_file($f = $to . strtr($k, [$path => ""]))) {
+                        // Return `false` if file already exists
+                        $out[1][] = false;
+                    } else {
+                        if (!is_dir($d = dirname($f))) {
+                            mkdir($d, 0775, true);
+                        }
+                        $out[1][] = rename($k, $f) ? $f : null;
+                    }
+                } else if (0 === $v) {
+                    if (is_dir($f = $to . strtr($k, [$path => ""]))) {
+                        // Return `false` if folder already exists
+                        $out[1][] = false;
+                    } else {
+                        $out[1][] = rename($k, $f) ? $f : null;
+                    }
+                    // Remove empty folder
+                    if (is_dir($k) && 0 === q(g($k))) {
+                        rmdir($k);
+                    }
                 }
             }
+            // Remove empty folder
+            rmdir($path);
         }
         $this->value[1] = $out;
         return $this;

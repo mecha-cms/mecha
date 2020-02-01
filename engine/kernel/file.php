@@ -88,19 +88,19 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null;
     }
 
-    public function copy(string $to) {
+    public function copy(string $to, string $as = null) {
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (is_file($v = $to . DS . basename($path))) {
+            if (is_file($f = $to . DS . ($as ?? basename($path)))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
-                if (!is_dir($to)) {
-                    mkdir($to, 0775, true);
+                if (!is_dir($d = dirname($f))) {
+                    mkdir($d, 0775, true);
                 }
-                // Return `$v` on success, `null` on error
-                $out[1] = copy($path, $v) ? $v : null;
+                // Return `$f` on success, `null` on error
+                $out[1] = copy($path, $f) ? $f : null;
             }
         }
         $this->value[1] = $out;
@@ -150,15 +150,15 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         $out = [null];
         if ($this->exist && $path = $this->path) {
             $out[0] = $path;
-            if (is_file($v = $to . DS . ($as ?? basename($path)))) {
+            if (is_file($f = $to . DS . ($as ?? basename($path)))) {
                 // Return `false` if file already exists
                 $out[1] = false;
             } else {
-                if (!is_dir($to)) {
-                    mkdir($to, 0775, true);
+                if (!is_dir($d = dirname($f))) {
+                    mkdir($d, 0775, true);
                 }
-                // Return `$v` on success, `null` on error
-                $out[1] = rename($path, $v) ? $v : null;
+                // Return `$f` on success, `null` on error
+                $out[1] = rename($path, $f) ? $f : null;
             }
         }
         $this->value[1] = $out;

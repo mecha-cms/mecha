@@ -41,7 +41,7 @@ class Folders extends Anemon {
     }
 
     public static function from(...$lot) {
-        return new static(array_keys(y(g($lot[0] ?? ROOT, $lot[1] ?? 1, $lot[2] ?? 0))));
+        return new static(array_keys(y(g($lot[0] ?? ROOT, $lot[1] ?? 0, $lot[2] ?? 0))));
     }
 
 }
