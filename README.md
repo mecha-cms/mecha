@@ -40,9 +40,9 @@ Features
  - Extensible as hell.
  - Create unique design for each blog post by adding special CSS and JavaScript files using the art extension.
  - Built-in commenting system using the comment extension.
- - Almost everything are optional.
- - RSS and Sitemap using the feed extension.
+ - RSS and Sitemap using the feed and sitemap extension.
  - Easy to use and well documented API.
+ - Almost everything are optional.
  - Control panel extension.
 
 Environments

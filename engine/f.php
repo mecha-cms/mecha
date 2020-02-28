@@ -1129,7 +1129,7 @@ namespace {
         }
         return \count($x);
     }
-    function r($a, $b, string $c) {
+    function r($a, $b, string $c = null) {
         if (\is_string($a) && \is_string($b)) {
             return 1 === \strlen($a) && 1 === \strlen($b) ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
         }

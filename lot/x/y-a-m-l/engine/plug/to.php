@@ -37,8 +37,8 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
                 if (is_string($v)) {
                     if (false !== strpos($v, "\n")) {
                         $v = "|\n" . $dent . str_replace(["\n", "\n" . $dent . "\n"], ["\n" . $dent, "\n\n"], $v);
-                    } else if (strlen($v) > 80) {
-                        $v = ">\n" . $dent . wordwrap($v, 80, "\n" . $dent);
+                    } else if (strlen($v) > 120) {
+                        $v = ">\n" . $dent . wordwrap($v, 120, "\n" . $dent);
                     } else if (is_numeric($v) || $v !== strtr($v, "!#%&*,-:<=>?@[\\]{|}", '-------------------')) {
                         $v = "'" . $v . "'";
                     }
