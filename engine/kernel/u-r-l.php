@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome implements \ArrayAccess {
+final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
 
     private $lot = [
         'clean' => null,
@@ -17,67 +17,66 @@ final class URL extends Genome implements \ArrayAccess {
         'root' => null
     ];
 
-    private function e($in) {
+    private function e($in, $t = '/') {
+        $in = strtr($in, DS, '/');
+        if ($t) {
+            $in = trim($in, $t);
+        }
         return "" !== $in ? $in : null;
     }
 
-    private function setClean($in) {
-        $this->lot['clean'] = $this->e(trim(strtr($in, DS, '/'), '/'));
+    private function t($in) {
+        return strtr($in, [
+            '/?' => '?',
+            '/&' => '?',
+            '/#' => '#'
+        ]);
     }
 
-    private function setCurrent($in) {
-        $this->lot['current'] = $this->e(trim(strtr($in, DS, '/'), '/'));
+    // Refresh clean URL result
+    private function fireClean() {
+        $this->fireRoot();
+        extract($this->lot);
+        $this->setClean($root . (isset($path) ? '/' . $path : ""));
     }
 
-    private function setD($in) {
-        $this->lot['d'] = $this->e(trim(strtr($in, DS, '/'), '/'));
+    // Refresh current URL result
+    private function fireCurrent() {
+        $this->fireClean();
+        extract($this->lot);
+        $this->setCurrent(
+            ($ground ?? "") .
+            (isset($port) ? ':' . $port : "") .
+            (isset($d) ? '/' . $d : "") .
+            (isset($path) ? '/' . $path : "") .
+            (isset($i) ? '/' . $i : "") .
+            (isset($query) ? '?' . $query : "") .
+            (isset($hash) ? '#' . $hash : "")
+        );
     }
 
-    private function setGround($in) {
-        $this->lot['ground'] = $this->e(trim(strtr($in, DS, '/'), '/'));
+    // Refresh ground URL result
+    private function fireGround() {
+        extract($this->lot);
+        $this->setGround((isset($protocol) ? $protocol . '://' : '//') . ($host ?? "") . (isset($port) ? ':' . $port : ""));
     }
 
-    private function setHash($in) {
-        $this->lot['hash'] = $this->e(ltrim($in, '#'));
+    // Refresh root URL result
+    private function fireRoot() {
+        $this->fireGround();
+        extract($this->lot);
+        $this->setRoot(($ground ?? "") . (isset($d) ? '/' . $d : ""));
     }
 
-    private function setHost($in) {
-        $this->lot['host'] = $this->e(trim(strtr($in, DS, '/'), '/'));
+    private function getClean() {
+        $out = $this->lot['clean'];
+        return false === strpos($out, '://') ? $this->t('/' . $out) : $out;
     }
 
-    private function setI($in) {
-        $i = trim(strtr($in, DS, '/'), '/');
-        $i = is_numeric($i) ? (int) $i : null;
-        $this->lot['i'] = $i <= 0 ? null : $i;
+    private function getCurrent() {
+        $out = $this->lot['current'];
+        return false === strpos($out, '://') ? $this->t('/' . $out) : $out;
     }
-
-    private function setPath($in) {
-        $this->lot['path'] = $this->e(trim(strtr($in, DS, '/'), '/'));
-    }
-
-    private function setPort($in) {
-        $this->lot['port'] = is_numeric($in) ? (int) $in : null;
-    }
-
-    private function setProtocol($in) {
-        $this->lot['protocol'] = $this->e(explode('://', strtr($in, DS, '/'))[0]);
-    }
-
-    private function setQuery($in) {
-        $this->lot['query'] = $this->e(ltrim(strtr($in, ['&amp;' => '&']), '?'));
-    }
-
-    private function setRoot($in) {
-        $this->lot['root'] = $this->e(trim(strtr($in, DS, '/'), '/'));
-    }
-
-    // private function getClean() {
-    //     return $this->lot['clean'];
-    // }
-
-    // private function getCurrent() {
-    //     return $this->lot['current'];
-    // }
 
     private function getD() {
         return null !== ($out = $this->lot['d']) ? '/' . $out : $out;
@@ -119,6 +118,56 @@ final class URL extends Genome implements \ArrayAccess {
     //     return $this->lot['root'];
     // }
 
+    private function setClean($in) {
+        $this->lot['clean'] = $this->e($in);
+    }
+
+    private function setCurrent($in) {
+        $this->lot['current'] = $this->e($this->t($in));
+    }
+
+    private function setD($in) {
+        $this->lot['d'] = $this->e($in);
+    }
+
+    private function setGround($in) {
+        $this->lot['ground'] = $this->e($in);
+    }
+
+    private function setHash($in) {
+        $this->lot['hash'] = $this->e(ltrim($in, '#'), false);
+    }
+
+    private function setHost($in) {
+        $this->lot['host'] = $this->e($in);
+    }
+
+    private function setI($in) {
+        $in = $this->e($in);
+        $this->lot['i'] = is_numeric($in) ? (int) $in : null;
+    }
+
+    private function setPath($in) {
+        $this->lot['path'] = $this->e($in);
+    }
+
+    private function setPort($in) {
+        $in = $this->e($in);
+        $this->lot['port'] = is_numeric($in) ? (int) $in : null;
+    }
+
+    private function setProtocol($in) {
+        $this->lot['protocol'] = $this->e(explode('://', strtr($in, DS, '/'))[0]);
+    }
+
+    private function setQuery($in) {
+        $this->lot['query'] = $this->e(ltrim(strtr($in, ['&amp;' => '&']), '?'), false);
+    }
+
+    private function setRoot($in) {
+        $this->lot['root'] = $this->e($in);
+    }
+
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin)) {
             return parent::__call($kin, $lot);
@@ -132,28 +181,28 @@ final class URL extends Genome implements \ArrayAccess {
         return null;
     }
 
-    public function __construct($in = null) {
-        if (is_string($in)) {
-            $out = array_replace($this->lot, parse_url($in));
-            $out['protocol'] = $this->e($out['scheme'] ?? "");
-            $out['path'] = $this->e($out['path'] ?? "");
-            $out['port'] = isset($out['port']) ? (int) $out['port'] : null;
-            $out['query'] = $this->e($out['query'] ?? "");
-            $out['hash'] = $this->e($out['fragment'] ?? "");
-            unset($out['fragment'], $out['scheme']);
-            $out['ground'] = $out['root'] = $out['protocol'] . '://' . $out['host'];
-            $out['clean'] = preg_split('/[?&#]/', $in)[0];
-            $out['current'] = $in;
-            $this->lot = $out;
-        } else if (is_array($in)) {
-            foreach ($in as $k => $v) {
-                if (method_exists($this, $set = 'set' . ucfirst($k))) {
-                    $this->{$set}($v);
-                } else {
-                    $this->lot[$k] = $this->e($v);
-                }
-            }
+    public function __construct(string $in = null, string $d = null, int $i = null) {
+        if ($in && 0 === strpos($in, '//')) {
+            $in = 'http:' . $in; // Force HTTP protocol
         }
+        $out = array_replace($this->lot, parse_url($in));
+        $path = $this->e($out['path'] ?? "");
+        $d = $this->e($d);
+        $i = $this->e((string) ($i > 0 ? $i : ""));
+        $this->setProtocol($out['scheme'] ?? "");
+        if (null !== $path && is_numeric(substr($path, -1)) && preg_match('/(.*?)\/([1-9][0-9]*)$/', $path, $m)) {
+            $path = $m[1];
+            $i = (int) ($i ?? $m[2]); // Set page offset from path
+        }
+        $path = $this->e(null !== $d && null !== $path && 0 === strpos($path . '/', $d . '/') ? substr($path, strlen($d)) : $path);
+        $this->setD($d);
+        $this->setHash($out['fragment'] ?? "");
+        $this->setHost($out['host']);
+        $this->setI($i);
+        $this->setPath($path);
+        $this->setPort($out['port'] ?? "");
+        $this->setQuery($out['query'] ?? "");
+        $this->fireCurrent(); // Refresh
     }
 
     public function __get(string $key) {
@@ -171,6 +220,7 @@ final class URL extends Genome implements \ArrayAccess {
         } else {
             $this->lot[$key] = $value;
         }
+        $this->fireCurrent(); // Refresh
     }
 
     public function __toString() {
@@ -179,6 +229,7 @@ final class URL extends Genome implements \ArrayAccess {
 
     public function __unset(string $key) {
         unset($this->lot[$key]);
+        $this->fireCurrent(); // Refresh
     }
 
     // `$url->d('.')`
@@ -199,6 +250,14 @@ final class URL extends Genome implements \ArrayAccess {
         return null !== $i ? $join . ($i + $j) : null;
     }
 
+    public function jsonSerialize() {
+        $out = [];
+        foreach ($this->lot as $k => $v) {
+            $out[$k] = $this->{$k}();
+        }
+        return $out;
+    }
+
     public function offsetExists($i) {
         return isset($this->lot[$i]);
     }
@@ -209,10 +268,12 @@ final class URL extends Genome implements \ArrayAccess {
 
     public function offsetSet($i, $value) {
         $this->lot[$i] = $value;
+        $this->fireCurrent(); // Refresh
     }
 
     public function offsetUnset($i) {
         unset($this->lot[$i]);
+        $this->fireCurrent();
     }
 
     // `$url->path('.')`

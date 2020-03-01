@@ -17,15 +17,7 @@ $path = strtr(trim($path, '/'), [
     '"' => '%22'
 ]);
 
-$a = explode('/', $path);
-if (is_numeric(end($a))) {
-    $i = '/' . array_pop($a);
-    $path = implode('/', $a);
-} else {
-    $i = null;
-}
-
-// Detect if user put this CMS in a sub-folder by checking the `directory` value
+// Detect if user put this CMS in a sub-folder by checking the `d` value
 $d = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(ROOT, [
     GROUND => "",
     DS => '/'
@@ -37,17 +29,4 @@ $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 $root = $protocol . $host . $d;
 
-$GLOBALS['url'] = $url = new URL([
-    'clean' => $root . $path,
-    'current' => $root . $path . $i . $query . $hash,
-    'd' => $d,
-    'ground' => $protocol . $host,
-    'hash' => $hash,
-    'host' => $host,
-    'i' => $i,
-    'path' => $path,
-    'port' => $port,
-    'protocol' => $protocol,
-    'query' => $query,
-    'root' => $root
-]);
+$GLOBALS['url'] = $url = new URL($root . $path . $query . $hash, $d);

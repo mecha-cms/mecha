@@ -38,13 +38,17 @@ URL::_('short', function(string $path, $root = true) {
     if (0 === strpos($path, '//') && 0 !== strpos($path, '//' . $url->host)) {
         return $path; // Ignore external URL
     }
-    return $root ? str_replace([
-        // `http://127.0.0.1`
-        P . $url->ground,
-        // `//127.0.0.1`
-        P . '//' . $url->host,
-        P
-    ], "", P . $path) : ltrim(str_replace([
+    if ($root) {
+        $out = str_replace([
+            // `http://127.0.0.1`
+            P . $url->ground,
+            // `//127.0.0.1`
+            P . '//' . $url->host,
+            P
+        ], "", P . $path);
+        return "" === $out ? '/' : $out;
+    }
+    return ltrim(str_replace([
         // `http://127.0.0.1/foo`
         P . $url->root,
         // `//127.0.0.1/foo`

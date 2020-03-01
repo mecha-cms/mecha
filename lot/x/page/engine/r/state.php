@@ -12,7 +12,6 @@ if ("" !== $i && File::exist([
 ])) {
     $path .= '/' . $i;
     $folder .= DS . $i;
-    $url->clean .= '/' . $i;
     $url->i = null;
     $url->path = '/' . $path;
     $i = "";
