@@ -6,7 +6,7 @@ final class Route extends Genome {
 
     public static function fire(string $id, array $lot = []) {
         if ($v = self::get($id)) {
-            fire($v['fn'], self::is($id)[2] ?? [], new static);
+            fire($v['fn'], array_replace(self::is($id)[2] ?? [], $lot), new static);
         }
     }
 
