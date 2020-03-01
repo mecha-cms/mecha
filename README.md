@@ -67,10 +67,15 @@ Preparations
 Release Notes
 -------------
 
+### 2.2.2
+
+ - Fixed `$lot` parameter applied to `Route::fire()` does not give any effect.
+ - Added optional `$d` and `$i` parameter to the `URL` class constructor.
+
 ### 2.2.1
 
  - Small bug fixes for the `let` hook.
- - Fix `send` function not sending HTML email.
+ - Fixed `send` function not sending HTML email.
  - Added `$as` parameter to `copy` and `move` methods of `File` and `Folder` class.
 
 ### 2.2.0
