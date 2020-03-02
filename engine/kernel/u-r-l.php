@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
+final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
     private $lot = [
         'clean' => null,
@@ -183,13 +183,12 @@ final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
 
     public function __construct(string $in = null, string $d = null, int $i = null) {
         if ($in && 0 === strpos($in, '//')) {
-            $in = 'http:' . $in; // Force HTTP protocol
+            $in = 'http:' . $in; // Force protocol
         }
         $out = array_replace($this->lot, parse_url($in));
-        $path = $this->e($out['path'] ?? "");
         $d = $this->e($d);
         $i = $this->e((string) ($i > 0 ? $i : ""));
-        $this->setProtocol($out['scheme'] ?? "");
+        $path = $this->e($out['path'] ?? "");
         if (null !== $path && is_numeric(substr($path, -1)) && preg_match('/(.*?)\/([1-9][0-9]*)$/', $path, $m)) {
             $path = $m[1];
             $i = (int) ($i ?? $m[2]); // Set page offset from path
@@ -201,6 +200,7 @@ final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
         $this->setI($i);
         $this->setPath($path);
         $this->setPort($out['port'] ?? "");
+        $this->setProtocol($out['scheme'] ?? "");
         $this->setQuery($out['query'] ?? "");
         $this->fireCurrent(); // Refresh
     }
@@ -232,10 +232,20 @@ final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
         $this->fireCurrent(); // Refresh
     }
 
+    public function count() {
+        return count($this->lot);
+    }
+
     // `$url->d('.')`
     public function d(string $join = '/') {
         $d = $this->lot['d'];
         return null !== $d ? $join . $d : null;
+    }
+
+    public function getIterator() {
+        foreach ($this->lot as $k => $v) {
+            yield $k => $this->{$k}();
+        }
     }
 
     // `$url->hash('#!')`
@@ -273,7 +283,7 @@ final class URL extends Genome implements \ArrayAccess, \JsonSerializable {
 
     public function offsetUnset($i) {
         unset($this->lot[$i]);
-        $this->fireCurrent();
+        $this->fireCurrent(); // Refresh
     }
 
     // `$url->path('.')`

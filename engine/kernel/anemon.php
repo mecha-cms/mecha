@@ -41,7 +41,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:any`
     public function any($fn = null) {
         return any($this->value, $fn);
     }
@@ -85,7 +84,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $current[$this->i] ?? null;
     }
 
-    // @see `.\engine\ignite.php#fn:find`
     public function find(callable $fn = null) {
         return find($this->value, $fn);
     }
@@ -103,7 +101,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return new \ArrayIterator($this->value);
     }
 
-    // @see `.\engine\ignite.php#fn:has`
     public function has(string $value = "", string $join = P) {
         return has($this->value, $value, $join);
     }
@@ -114,7 +111,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return false !== $i ? $search : null;
     }
 
-    // @see `.\engine\ignite.php#fn:is`
     public function is($fn = null) {
         $clone = $this->mitose();
         $clone->value = is($clone->value, $fn);
@@ -153,7 +149,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:map`
     public function map(callable $fn) {
         $clone = $this->mitose();
         $clone->value = map($clone->value, $fn);
@@ -174,7 +169,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:not`
     public function not($fn = null) {
         $clone = $this->mitose();
         $clone->value = not($clone->value, $fn);
@@ -201,7 +195,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         unset($this->value[$i]);
     }
 
-    // @see `.\engine\ignite.php#fn:pluck`
     public function pluck(string $key, $or = null) {
         $clone = $this->mitose();
         $clone->value = pluck($clone->value, $key, $or);
@@ -237,7 +230,6 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // @see `.\engine\ignite.php#fn:shake`
     public function shake($preserve_key = true) {
         $this->value = shake($this->value, $preserve_key);
         return $this;
