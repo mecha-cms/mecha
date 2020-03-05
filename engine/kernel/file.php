@@ -50,7 +50,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 if (!is_dir($d = dirname($path))) {
                     mkdir($d, 0775, true);
                 }
-                touch($path); // Create an empty file
+                @touch($path); // Create an empty file
             }
             $this->path = is_file($path) ? (realpath($path) ?: $path) : null;
         }
@@ -215,7 +215,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
             if ($this->exist) {
                 $i = is_string($i) ? octdec($i) : $i;
                 // Return `$i` on success, `null` on error
-                $this->value[1] = chmod($this->path, $i) ? $i : null;
+                $this->value[1] = @chmod($this->path, $i) ? $i : null;
             } else {
                 // Return `false` if file does not exist
                 $this->value[1] = false;

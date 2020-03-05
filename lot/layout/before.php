@@ -12,7 +12,7 @@
     <?php endif; ?>
     <meta content="<?= $page->author; ?>" name="author">
     <title><?= w($t->reverse); ?></title>
-    <link href="<?= $url; ?>/favicon.ico" rel="shortcut icon">
+    <link href="<?= $url; ?>/favicon.ico" rel="icon">
     <link href="<?= $url->clean; ?>" rel="canonical">
   </head>
   <body>

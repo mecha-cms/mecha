@@ -86,7 +86,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
             if ($this->exist) {
                 $i = is_string($i) ? octdec($i) : $i;
                 // Return `$i` on success, `null` on error
-                $this->value[1] = chmod($this->path, $i) ? $i : null;
+                $this->value[1] = @chmod($this->path, $i) ? $i : null;
             } else {
                 // Return `false` if file does not exist
                 $this->value[1] = false;

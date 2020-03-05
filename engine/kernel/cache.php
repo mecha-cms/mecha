@@ -69,7 +69,7 @@ final class Cache extends Genome {
             mkdir($d, 0775, true);
         }
         file_put_contents($f, '<?php return ' . z($r = call_user_func($fn, ...$lot)) . ';');
-        // chmod($f, 0600);
+        @chmod($f, 0600);
         return [$r, $f, filemtime($f)];
     }
 

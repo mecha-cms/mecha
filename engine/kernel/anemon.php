@@ -142,10 +142,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function lot(array $lot = [], $over = false) {
-        if ($lot) {
-            $this->lot = $over ? array_replace_recursive($this->lot, $lot) : $lot;
-        }
-        $this->value = $this->lot;
+        $this->value = $this->lot = $over ? array_replace_recursive($this->lot, $lot) : $lot;
         return $this;
     }
 

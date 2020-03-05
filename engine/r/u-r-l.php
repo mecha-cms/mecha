@@ -27,6 +27,5 @@ $d = "" !== $d ? '/' . $d : null;
 $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
-$root = $protocol . $host . $d;
 
-$GLOBALS['url'] = $url = new URL($root . $path . $query . $hash, $d);
+$GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
