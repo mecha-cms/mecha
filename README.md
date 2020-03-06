@@ -25,7 +25,7 @@ Colors and font types in the control panel preview above are generated from the 
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/71335845-2fb5c900-2577-11ea-85e8-f9b93f388202.png)
 
-Mecha is a file-based CMS that survives on principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
+Mecha survives on the principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
 
 Mecha is as simple as files and folders. Yet, that doesn’t mean that Mecha is weak. Mecha has fairly flexible set of API that you can use without having to make it bloated, keeping you happy focused on developing your own site, according to your personality.
 
@@ -68,6 +68,8 @@ Release Notes
 -------------
 
 ### 2.2.2
+
+This update focuses on stabilizing the `URL` class. In this version, you can use the class to parse all types of URLs, not only internal URLs but also external URLs. Mecha has its own specifications regarding URLs, and is a bit different from the native PHP `parse_url` function. One of them is the presence of `d` and `i` properties. You can learn more about this on the [URL reference page](https://mecha-cms.com/reference/class/u-r-l).
 
  - Fixed `$lot` parameter applied to `Route::fire()` does not give any effect.
  - Added optional `$d` and `$i` parameter to the `URL` class constructor.
