@@ -16,8 +16,12 @@ final class Guard extends Genome {
     }
 
     public static function check(string $token, $id = 0) {
-        $prev = $_SESSION['token'][$id] ?? "";
-        return $prev && $token && $prev === $token ? $token : false;
+        if (!isset($_SESSION['token'][$id])) {
+            return ($_SESSION['token'][$id] = self::hash($id));
+        }
+        $out = ($in = $_SESSION['token'][$id]) && $token && $in === $token ? $token : false;
+        $_SESSION['token'][$id] = self::hash($id); // Re-create token
+        return $out;
     }
 
     public static function hash(string $salt = "") {
@@ -31,7 +35,7 @@ final class Guard extends Genome {
     }
 
     public static function token($id = 0) {
-        return ($_SESSION['token'][$id] = self::hash($id));
+        return $_SESSION['token'][$id] ?? null;
     }
 
 }

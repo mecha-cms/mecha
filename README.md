@@ -67,6 +67,11 @@ Preparations
 Release Notes
 -------------
 
+### 2.2.*
+
+ - Improved hook remover. It is now possible to remove a hook function from closures as long as you store the function closure into a variable. You can then remove the hook function using the variable as a reference.
+ - Improved token mechanism. Every token will be refreshed only after the token checking process. Refreshing a page normally will not update the token value. This means that `Guard::token()` acts as a token getter only and `Guard::check()` acts as a token checker and also acts as a token refresher (after checking). Previously, this happened in reverse. Current changes will give possibilities for developers to enable static caches for pages, and so developers could listen to the form actions to delete or refresh the cache if necessary.
+
 ### 2.2.2
 
 This update focuses on stabilizing the `URL` class. In this version, you can use the class to parse all types of URLs, not only internal URLs but also external URLs. Mecha has its own specifications regarding URLs, and is a bit different from the native PHP `parse_url` function. One of them is the presence of `d` and `i` properties. You can learn more about this on the [URL reference page](https://mecha-cms.com/reference/class/u-r-l).

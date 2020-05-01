@@ -54,7 +54,9 @@ class Hook extends Genome {
                     self::$lot[0][$c][$id] = [];
                     foreach (self::$lot[1][$c][$id] as $k => $v) {
                         if ($v['fn'] === $name) {
-                            self::$lot[0][$c][$id][$name] = $v;
+                            if (is_string($name)) {
+                                self::$lot[0][$c][$id][$name] = $v;
+                            }
                             unset(self::$lot[1][$c][$id][$k]);
                         }
                     }
@@ -64,7 +66,9 @@ class Hook extends Genome {
                 }
             } else {
                 if (isset($name)) {
-                    self::$lot[0][$c][$id][$name] = 1;
+                    if (is_string($name)) {
+                        self::$lot[0][$c][$id][$name] = 1;
+                    }
                 } else {
                     self::$lot[0][$c][$id] = 1;
                 }
@@ -81,7 +85,7 @@ class Hook extends Genome {
                 self::set((string) $v, $fn, $stack);
             }
         } else {
-            if (is_string($fn) && !empty(self::$lot[0][$c][$id][$fn])) {
+            if (is_string($fn) && !empty(self::$lot[0][$c][$id][$fn]) || !empty(self::$lot[0][$c][$id])) {
                 // Skip!
             } else {
                 if (!isset(self::$lot[1][$c][$id])) {
