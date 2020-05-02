@@ -22,15 +22,15 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public function count() {
-        return count(self::get());
+        return count(self::get(null, false));
     }
 
     public function getIterator() {
-        return new \ArrayIterator(self::get() ?? []);
+        return new \ArrayIterator(self::get(null, false) ?? []);
     }
 
     public function jsonSerialize() {
-        return self::get();
+        return self::get(null, false);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -41,27 +41,33 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
         return self::set(...$lot);
     }
 
-    public static function get($kin = null) {
+    public static function get($kin = null, $x = true) {
         if (is_array($kin)) {
             $out = [];
             foreach ($kin as $v) {
                 if (isset($_SESSION['alert'][$v])) {
                     $out = array_merge($out, self::i($_SESSION['alert'][$v], $v));
-                    unset($_SESSION['alert'][$v]);
+                    if ($x) {
+                        unset($_SESSION['alert'][$v]);
+                    }
                 }
             }
             return $out;
         }
         if (isset($kin) && isset($_SESSION['alert'][$kin])) {
             $out = self::i($_SESSION['alert'][$kin], $kin);
-            unset($_SESSION['alert'][$kin]);
+            if ($x) {
+                unset($_SESSION['alert'][$kin]);
+            }
             return $out;
         }
         if (isset($_SESSION['alert'])) {
             $out = [];
             foreach ((array) $_SESSION['alert'] as $k => $v) {
                 $out = array_merge($out, self::i($v, $k));
-                unset($_SESSION['alert'][$k]);
+                if ($x) {
+                    unset($_SESSION['alert'][$k]);
+                }
             }
             return $out;
         }
