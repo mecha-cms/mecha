@@ -69,8 +69,10 @@ Release Notes
 
 ### 2.2.*
 
+This update focuses on improving the token feature so that it is not too strict. We need to give other extension opportunities to load the current page for certain purposes without having to change the current token.
+
  - Improved hook remover. It is now possible to remove a hook function from closures as long as you store the function closure into a variable. You can then remove the hook function using the variable as a reference.
- - Improved token mechanism. Every token will be refreshed only after the token checking process. Refreshing a page normally will not update the token value. This means that `Guard::token()` acts as a token getter only and `Guard::check()` acts as a token checker and also acts as a token refresher (after checking). Previously, this happened in reverse. Current changes will give possibilities for developers to enable static caches for pages, and so developers could listen to the form actions to delete or refresh the cache if necessary.
+ - Improved token mechanism. Added `$for` parameter for `Guard::token()` to set delay time for the token to refresh. The default value is one minute. Previously, every token will be refreshed on every page visits. This causes [several obstacles](https://github.com/mecha-cms/mecha/issues/82) if some extensions require to reload the page to build the cache (even if it is only to load the page in the background) or to prepare it to load the next page via the HTML5 prefetch feature.
 
 ### 2.2.2
 
