@@ -6,21 +6,19 @@ final class Cache extends Genome {
         return LOT . DS . 'cache' . DS . rtrim(chunk_split(md5($id), 2, DS), DS) . '.php';
     }
 
-    public static function live(string $id, callable $fn, $for = '1 day') {
-        return self::expire($id, $for) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
-    }
-
     private static function t($in, $t = null) {
-        $t = $t ?? time();
-        return is_string($in) ? strtotime($in, $t) - $t : $in;
+        return is_string($in) ? strtotime($in) - ($t ?? time()) : $in;
     }
 
     public static function expire(string $id, $for = '1 day') {
         if (is_file($f = self::f($id))) {
-            $t = time();
-            return $t - self::t($for, $t) > filemtime($f);
+            return time() + self::t($for) > filemtime($f);
         }
         return true;
+    }
+
+    public static function live(string $id, callable $fn, $for = '1 day') {
+        return self::expire($id, $for) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
     }
 
     public static function get(string $id) {
