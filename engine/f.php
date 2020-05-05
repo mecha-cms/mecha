@@ -172,7 +172,7 @@ namespace {
         return q($a) >= $b;
     }
     // Get array value recursively
-    function get(array &$a, string $k, string $s = '.') {
+    function get(array $a, string $k, string $s = '.') {
         $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
         foreach ($kk as $v) {
             $v = \strtr($v, [\P => $s]);
