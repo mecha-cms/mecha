@@ -25,7 +25,6 @@ function set($content) {
             } else {
                 $input['value'] = $value ?? $input['value'];
             }
-            \Session::let($name);
             return $input;
         }, $content);
     }
@@ -37,7 +36,7 @@ function set($content) {
             }
             $name = $keys($name);
             $value = \Session::get($name);
-            $select[1] = \preg_replace_callback('/<option(?:\s[^>]*)?>[\s\S]*?<\/option>/', function($m) use($name, $value) {
+            $select[1] = \preg_replace_callback('/<option(?:\s[^>]*)?>[\s\S]*?<\/option>/', function($m) use($value) {
                 $option = new \HTML($m[0]);
                 if (isset($value)) {
                     $option['selected'] = \s($value) === \s($option['value'] ?? $option[1]);
@@ -54,9 +53,8 @@ function set($content) {
                 return $m[0];
             }
             $name = $keys($name);
-            $value = \Session::get($name, false);
+            $value = \Session::get($name);
             $textarea[1] = \is_string($value) ? \htmlspecialchars($value) : $textarea[1];
-            \Session::let($name);
             return $textarea;
         }, $content);
     }
