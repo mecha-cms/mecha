@@ -52,12 +52,6 @@ HTML;
         return sha1(uniqid(mt_rand(), true) . $salt);
     }
 
-    public static function kick(string $path = null) {
-        $path = $path ?? $GLOBALS['url']->current;
-        header('Location: ' . URL::long($path, false));
-        exit;
-    }
-
     public static function token($id = 0, $for = '1 minute') {
         $prev = $_SESSION['token'][$id] ?? [0, ""];
         if ($prev[0] > time()) {
