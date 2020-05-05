@@ -22,7 +22,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public function count() {
-        return count(self::get(null, false));
+        return count((array) self::get(null, false));
     }
 
     public function getIterator() {
