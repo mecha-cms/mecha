@@ -75,6 +75,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Improved token mechanism. Added `$for` parameter for `Guard::token()` to set delay time for the token to refresh. The default value is one minute. Previously, every token will be refreshed on every page visits. This causes [several obstacles](https://github.com/mecha-cms/mecha/issues/82) if some extensions require to reload the page to build the cache (even if it is only to load pages in the background) or to prepare it to load the next page via the HTML5 prefetch feature.
  - Improved alert counter and serializer. Counting alert messages or converting them into a JSON string will not clear the alert session.
  - Fixed form extension bug that caused the comment duplicate checker to fails to work.
+ - Improved HTTP response headers API. They are now case-insensitive.
 
 ### 2.2.2
 

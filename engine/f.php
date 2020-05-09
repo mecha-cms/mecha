@@ -264,21 +264,21 @@ namespace {
         // There are no such email validation proccess here
         // We assume that you have set the correct email address(es)
         if (\is_array($to)) {
+            // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
             if (\array_keys($to) !== \range(0, \count($to) - 1)) {
-                // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
                 $s = "";
                 foreach ($to as $k => $v) {
                     $s .= ', ' . $v . ' <' . $k . '>';
                 }
                 $to = \substr($s, 2);
-                // ['foo@bar', 'baz@qux']
+            // ['foo@bar', 'baz@qux']
             } else {
                 $to = \implode(', ', $to);
             }
         }
         $lot = \array_filter(\array_replace([
             'Content-Type' => 'text/html; charset=ISO-8859-1',
-            'From' => $from,
+            // 'From' => $from,
             'MIME-Version' => '1.0',
             'Reply-To' => $to,
             'Return-Path' => $from,
