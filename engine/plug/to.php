@@ -30,7 +30,7 @@ foreach([
         }
         return $out;
     },
-    'excerpt' => function(string $in, $html = true, $x = 200) {
+    'excerpt' => function(string $in = null, $html = true, $x = 200) {
         $s = w($in, $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
         $utf8 = extension_loaded('mbstring');
         if (is_int($x)) {
@@ -94,9 +94,10 @@ foreach([
         }
         $out = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
         $t = $utf8 ? mb_strlen($s) : strlen($s);
-        return trim($out) . ($t > $x[0] ? $x[1] : "");
+        $out = trim($out) . ($t > $x[0] ? $x[1] : "");
+        return "" !== $out ? $out : null;
     },
-    'file' => function(string $in) {
+    'file' => function(string $in = null) {
         $in = preg_split('/\s*[\\/]\s*/', $in, null, PREG_SPLIT_NO_EMPTY);
         $n = preg_split('/\s*[.]\s*/', array_pop($in), null, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
@@ -105,16 +106,17 @@ foreach([
             $out .= h($v, '-', true, '_') . DS;
         }
         $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
-        return '.' === $out ? null : $out;
+        return '.' !== $out ? $out : null;
     },
-    'folder' => function(string $in) {
+    'folder' => function(string $in = null) {
         $in = preg_split('/\s*[\\/]\s*/', $in, null, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($in);
         $out = "";
         foreach ($in as $v) {
             $out .= h($v, '-', true, '_') . DS;
         }
-        return $out . h($n, '-', true, '_');
+        $out = $out . h($n, '-', true, '_');
+        return "" !== $out ? $out : null;
     },
     'hex' => function(string $in, $z = false, array $f = ['&#x', ';']) {
         $out = "";
@@ -182,11 +184,12 @@ foreach([
         return trim(h($in, '_', $a), '_');
     },
     'text' => "\\w",
-    'title' => function(string $in) {
+    'title' => function(string $in = null) {
         $in = w($in);
         $out = extension_loaded('mbstring') ? mb_convert_case($in, MB_CASE_TITLE) : ucwords($in);
         // Convert to abbreviation if all case(s) are in upper
-        return u($out) === $out ? str_replace(' ', "", $out) : $out;
+        $out = u($out) === $out ? str_replace(' ', "", $out) : $out;
+        return "" !== $out ? $out : null;
     },
     'upper' => "\\u"
 ] as $k => $v) {

@@ -11,7 +11,7 @@ foreach ([
     'base64' => "\\base64_decode",
     'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'query' => function(string $in) {
+    'query' => function(string $in = null) {
         $out = [];
         $q = function(array &$out, $k, $v) {
             $k = explode('[', str_replace(']', "", $k));
