@@ -108,7 +108,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     // Get position by array key
     public function index(string $key) {
         $i = array_search($key, array_keys($this->value));
-        return false !== $i ? $search : null;
+        return false !== $i ? $i : null;
     }
 
     public function is($fn = null) {
