@@ -18,7 +18,7 @@
 
 class ParsedownExtraPlugin extends ParsedownExtra {
 
-    const version = '1.2.0-beta-3';
+    const version = '1.3.0';
 
 
     # config
@@ -26,8 +26,6 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     public $abbreviationData = array();
 
     public $blockCodeAttributes = array();
-
-    public $blockCodeAttributesOnParent = false;
 
     public $blockCodeClassFormat = 'language-%s';
 
@@ -39,7 +37,13 @@ class ParsedownExtraPlugin extends ParsedownExtra {
 
     public $codeAttributes = array();
 
+    public $codeAttributesOnParent = false;
+
     public $codeHtml = null;
+
+    public $figureAttributes = array();
+
+    public $figuresEnabled = false;
 
     public $footnoteAttributes = array();
 
@@ -60,6 +64,8 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     public $headerText = null;
 
     public $imageAttributes = array();
+
+    public $imageAttributesOnParent = false;
 
     public $linkAttributes = array();
 
@@ -90,11 +96,12 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         if (version_compare(parent::version, '0.8.0-beta-1') < 0) {
             throw new Exception('ParsedownExtraPlugin requires a later version of Parsedown');
         }
+        $this->BlockTypes['!'][] = 'Image';
         parent::__construct();
     }
 
     protected function blockAbbreviation($Line) {
-        # Allow empty abbreviations
+        // Allow empty abbreviations
         if (preg_match('/^\*\[(.+?)\]:[ ]*$/', $Line['text'], $matches)) {
             $this->DefinitionData['Abbreviation'][$matches[1]] = null;
             return array('hidden' => true);
@@ -105,10 +112,18 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     protected function blockCodeComplete($Block) {
         $this->doSetAttributes($Block['element']['element'], $this->blockCodeAttributes);
         $this->doSetContent($Block['element']['element'], $this->blockCodeHtml, true);
-        # Put code attributes on parent tag
-        if ($this->blockCodeAttributesOnParent) {
-            $Block['element']['attributes'] = $Block['element']['element']['attributes'];
-            unset($Block['element']['element']['attributes']);
+        // Put code attributes on parent element
+        if ($this->codeAttributesOnParent) {
+            if ($this->codeAttributesOnParent === true) {
+                // $this->codeAttributesOnParent = array_keys($Block['element']['element']['attributes']);
+                $this->codeAttributesOnParent = array('class', 'id');
+            }
+            foreach ((array) $this->codeAttributesOnParent as $Name) {
+                if (isset($Block['element']['element']['attributes'][$Name])) {
+                    $Block['element']['attributes'][$Name] = $Block['element']['element']['attributes'][$Name];
+                    unset($Block['element']['element']['attributes'][$Name]);
+                }
+            }
         }
         $Block['element']['element']['rawHtml'] = $Block['element']['element']['text'];
         $Block['element']['element']['allowRawHtmlInSafeMode'] = true;
@@ -117,12 +132,12 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     }
 
     protected function blockFencedCode($Line) {
-        # Re-enable the multiple class name feature
+        // Re-enable the multiple class name feature
         $Line['text'] = strtr(trim($Line['text']), array(
             ' ' => "\x1A",
             '.' => "\x1A."
         ));
-        # Enable custom attribute syntax on code block
+        // Enable custom attribute syntax on code block
         $Attributes = array();
         if (strpos($Line['text'], '{') !== false && substr($Line['text'], -1) === '}') {
             $Parts = explode('{', $Line['text'], 2);
@@ -170,6 +185,86 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         $this->doSetAttributes($Block['element'], $this->headerAttributes, array($Level));
         $this->doSetContent($Block['element'], $this->headerText, false, 'argument', array($Level));
         return $Block;
+    }
+
+    protected function blockImage($Line, array $Block) {
+        if (!$this->figuresEnabled) {
+            return;
+        }
+        // Match exactly an image syntax in a paragraph (with optional custom attributes, and optional hard break marker)
+        if (preg_match('/^\!\[[^\n]*?\](\[[^\n]*?\]|\([^\n]*?\))(\s*\{' . $this->regexAttribute . '+?\})?([ ]{2})?$/', $Line['text'])) {
+            $Block = array(
+                'description' => "",
+                'element' => array(
+                    'name' => 'figure',
+                    'attributes' => array(),
+                    'elements' => array(
+                        $this->inlineImage($Line)
+                    )
+                )
+            );
+            $this->doSetAttributes($Block['element'], $this->figureAttributes);
+            return $Block;
+        }
+        return;
+    }
+
+    protected function blockImageComplete($Block) {
+        if (!empty($Block['description'])) {
+            $Description = $Block['description'];
+            $Block['element']['elements'][] = array(
+                'name' => 'figcaption',
+                'rawHtml' => $this->{strpos($Description, "\n\n") === false ? 'line' : 'text'}(trim($Description, "\n"))
+            );
+            // unset($Block['description']);
+        }
+        if ($this->imageAttributesOnParent) {
+            $Inline = $Block['element']['elements'][0];
+            if ($this->imageAttributesOnParent === true) {
+                $this->imageAttributesOnParent = array_keys($Inline['element']['attributes']);
+            }
+            foreach ((array) $this->imageAttributesOnParent as $Name) {
+                if (isset($Inline['element']['attributes'][$Name])) {
+                    // Merge class names
+                    if (
+                        $Name === 'class' &&
+                        isset($Block['element']['attributes'][$Name]) &&
+                        isset($Inline['element']['attributes'][$Name])
+                    ) {
+                        $Classes = array_merge(
+                            explode(' ', $Block['element']['attributes'][$Name]),
+                            explode(' ', $Inline['element']['attributes'][$Name])
+                        );
+                        sort($Classes);
+                        $Block['element']['attributes']['class'] = implode(' ', array_unique(array_filter($Classes)));
+                        unset($Block['element']['elements'][0]['element']['attributes'][$Name]);
+                        continue;
+                    }
+                    $Block['element']['attributes'][$Name] = $Inline['element']['attributes'][$Name];
+                    unset($Block['element']['elements'][0]['element']['attributes'][$Name]);
+                }
+            }
+        }
+        return $Block;
+    }
+
+    protected function blockImageContinue($Line, array $Block) {
+        if (isset($Block['complete'])) {
+            return;
+        }
+        if (isset($Block['interrupted'])) {
+            $Block['description'] .= "\n";
+            unset($Block['interrupted']);
+        }
+        if ($Line['indent'] === 0) {
+            $Block['complete'] = true;
+            return;
+        }
+        if ($Line['indent'] > 0 && $Line['indent'] < 4) {
+            $Block['description'] .= "\n" . $Line['text'];
+            return $Block;
+        }
+        return;
     }
 
     protected function blockQuoteComplete($Block) {
@@ -390,7 +485,9 @@ class ParsedownExtraPlugin extends ParsedownExtra {
             // `<a href="data:text/html,asdf">`
             strpos($Link, 'data:') === 0 ||
             // `<a href="javascript:;">`
-            strpos($Link, 'javascript:') === 0
+            strpos($Link, 'javascript:') === 0 ||
+            // `<a href="mailto:as@df">`
+            strpos($Link, 'mailto:') === 0
         ) {
             return true;
         }
@@ -418,7 +515,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     }
 
     protected function parseAttributeData($attributeString) {
-        # Allow compact attributes
+        // Allow compact attributes
         $attributeString = strtr($attributeString, array(
             '#' => ' #',
             '.' => ' .'
@@ -449,22 +546,38 @@ class ParsedownExtraPlugin extends ParsedownExtra {
                 $vv = explode('=', $v, 2);
                 // `{foo=}`
                 if ($vv[1] === "") {
+                    if ($vv[0] === 'class') {
+                        continue;
+                    }
                     $Attributes[$vv[0]] = "";
                 // `{foo="bar baz"}`
                 // `{foo='bar baz'}`
                 } else if ($vv[1][0] === '"' && substr($vv[1], -1) === '"' || $vv[1][0] === "'" && substr($vv[1], -1) === "'") {
-                    $Attributes[$vv[0]] = stripslashes(strtr(substr(substr($vv[1], 1), 0, -1), "\x1A", ' '));
+                    $values = stripslashes(strtr(substr(substr($vv[1], 1), 0, -1), "\x1A", ' '));
+                    if ($vv[0] === 'class' && isset($Attributes[$vv[0]])) {
+                        $values = explode(' ', $values);
+                        $Attributes[$vv[0]] = array_merge($Attributes[$vv[0]], $values);
+                    } else {
+                        $Attributes[$vv[0]] = $values;
+                    }
                 // `{foo=bar}`
                 } else {
-                    $Attributes[$vv[0]] = $vv[1];
+                    if ($vv[0] === 'class' && isset($Attributes[$vv[0]])) {
+                        $Attributes[$vv[0]] = array_merge($Attributes[$vv[0]], [$vv[1]]);
+                    } else {
+                        $Attributes[$vv[0]] = $vv[1];
+                    }
                 }
             // `{foo}`
             } else {
+                if ($v === 'class' && isset($Attributes[$v])) {
+                    continue;
+                }
                 $Attributes[$v] = $v;
             }
         }
         if (isset($Attributes['class'])) {
-            $Attributes['class'] = implode(' ', array_unique($Attributes['class']));
+            $Attributes['class'] = implode(' ', array_unique((array) $Attributes['class']));
         }
         return $Attributes;
     }

@@ -30,6 +30,8 @@ return [
         'WYSIWYG' => 'What You See is What You Get',
         'YAML' => 'YAML Ain’t Markup Language'
     ],
+    'figuresEnabled' => true,
+    'figureAttributes' => ['class' => 'figure'],
     'footnoteAttributes' => ['class' => 'notes p'],
     'footnoteLinkAttributes' => function($number, $attributes, &$element, $name) {
         return [

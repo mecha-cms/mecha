@@ -76,6 +76,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Improved alert counter and serializer. Counting alert messages or converting them into a JSON string will not clear the alert session.
  - Fixed form extension bug that caused the comment duplicate checker to fails to work.
  - Improved HTTP response headers API. They are now case-insensitive.
+ - Improved markdown extension. It is now possible to generate HTML `<figure>` element automatically from every image that appears alone in a paragraph.
 
 ### 2.2.2
 
