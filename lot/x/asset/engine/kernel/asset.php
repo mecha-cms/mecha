@@ -29,8 +29,8 @@ final class Asset extends Genome {
                     }
                 } else {
                     foreach ($assets as $k => $v) {
-                        if (isset($v[2]['path']) && is_file($v[2]['path'])) {
-                            $out[] = file_get_contents($v[2]['path']);
+                        if (isset($v['path']) && is_file($v['path'])) {
+                            $out[] = file_get_contents($v['path']);
                         }
                     }
                 }

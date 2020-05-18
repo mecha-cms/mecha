@@ -73,7 +73,7 @@ namespace _\lot\x\layout {
                     }
                     if ($path = \Asset::path($folder . 'asset' . \DS . $kk)) {
                         \Asset::let($kk);
-                        \Asset::set($path, $vv['stack']);
+                        \Asset::set($path, $vv['stack'], $vv[2]);
                     }
                 }
             }
