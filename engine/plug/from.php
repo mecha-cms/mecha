@@ -1,11 +1,13 @@
 <?php
 
 foreach ([
-    'HTML' => ["\\htmlspecialchars", [null, ENT_QUOTES | ENT_HTML5]],
-    'JSON' => function(string $in) {
+    'HTML' => function(string $in = null, $deep = false) {
+        return htmlspecialchars($in, ENT_COMPAT | ENT_HTML5, 'UTF-8', !!$deep);
+    },
+    'JSON' => function(string $in = null) {
         return json_decode($in);
     },
-    'URL' => function($in, $raw = false) {
+    'URL' => function($in = null, $raw = false) {
         return $raw ? rawurlencode($in) : urlencode($in);
     },
     'base64' => "\\base64_decode",

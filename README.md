@@ -79,6 +79,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Improved HTTP response headers API. They are now case-insensitive.
  - Improved markdown extension. It is now possible to generate HTML `<figure>` element automatically from every image that appears alone in a paragraph.
  - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
+ - Added `$deep` option for `From::HTML()` with default value set to `false` to prevent double encode HTML special characters.
 
 ### 2.2.2
 
