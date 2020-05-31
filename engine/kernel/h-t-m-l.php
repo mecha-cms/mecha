@@ -9,7 +9,7 @@ class HTML extends SGML {
         if (!empty($this->lot[2])) {
             foreach ($this->lot[2] as &$v) {
                 if (is_string($v)) {
-                    $v = htmlspecialchars_decode($v);
+                    $v = htmlspecialchars_decode($v, $this->strict ? ENT_COMPAT | ENT_XHTML : ENT_COMPAT | ENT_HTML5);
                 }
             }
         }
@@ -26,7 +26,7 @@ class HTML extends SGML {
                     unset($this->lot[2][$k]);
                     continue;
                 }
-                $v = htmlspecialchars(is_array($v) ? json_encode($v) : s($v));
+                $v = htmlspecialchars(is_array($v) ? json_encode($v) : s($v), $this->strict ? ENT_COMPAT | ENT_XHTML : ENT_COMPAT | ENT_HTML5, 'UTF-8', false);
             }
             unset($v);
         }

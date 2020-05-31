@@ -78,6 +78,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Fixed layout extension bug that does not capture the custom attributes added to the asset path that is relative to the layout folder.
  - Improved HTTP response headers API. They are now case-insensitive.
  - Improved markdown extension. It is now possible to generate HTML `<figure>` element automatically from every image that appears alone in a paragraph.
+ - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
 
 ### 2.2.2
 
