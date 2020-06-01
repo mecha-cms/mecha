@@ -9,7 +9,7 @@ Route::_('content', function(string $v, $exit = true) {
 });
 
 Route::_('lot', function(...$v) {
-    return count($v) > 1 || is_array($v[0]) ? Lot::set(...$v) : Lot::get(...$v);
+    return count($v) > 1 || isset($v[0]) && is_array($v[0]) ? Lot::set(...$v) : Lot::get(...$v);
 });
 
 Route::_('status', function(...$v) {
