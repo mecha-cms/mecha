@@ -17,6 +17,36 @@ final class Route extends Genome {
         return self::$r[1] ?? [];
     }
 
+    public static function hit($id, callable $fn = null, float $stack = 10) {
+        if (is_array($id)) {
+            if (!isset($fn)) {
+                $out = [];
+                foreach ($id as $v) {
+                    $out[$v] = self::hit($v);
+                }
+                return $out;
+            }
+            $i = 0;
+            foreach ($id as $v) {
+                self::hit($v, $fn, $stack + $i);
+                $i += .1;
+            }
+        } else {
+            if (!isset($fn)) {
+                return self::$r[2][$id] ?? null;
+            }
+            if (empty(self::$r[0][$id])) {
+                self::$r[2][$id][] = [
+                    '0' => null,
+                    '1' => "",
+                    '2' => [],
+                    'fn' => $fn,
+                    'stack' => (float) $stack
+                ];
+            }
+        }
+    }
+
     public static function is($id, string $path = null) {
         if (is_array($id)) {
             $out = [];
@@ -76,36 +106,6 @@ final class Route extends Genome {
             unset(self::$r[1][$id]);
         } else {
             self::$r[1] = [];
-        }
-    }
-
-    public static function over($id, callable $fn = null, float $stack = 10) {
-        if (is_array($id)) {
-            if (!isset($fn)) {
-                $out = [];
-                foreach ($id as $v) {
-                    $out[$v] = self::over($v);
-                }
-                return $out;
-            }
-            $i = 0;
-            foreach ($id as $v) {
-                self::over($v, $fn, $stack + $i);
-                $i += .1;
-            }
-        } else {
-            if (!isset($fn)) {
-                return self::$r[2][$id] ?? null;
-            }
-            if (empty(self::$r[0][$id])) {
-                self::$r[2][$id][] = [
-                    '0' => null,
-                    '1' => "",
-                    '2' => [],
-                    'fn' => $fn,
-                    'stack' => (float) $stack
-                ];
-            }
         }
     }
 

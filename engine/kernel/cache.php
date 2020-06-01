@@ -10,17 +10,6 @@ final class Cache extends Genome {
         return is_string($in) ? strtotime($in) - ($t ?? time()) : $in;
     }
 
-    public static function expire(string $id, $for = '1 day') {
-        if (is_file($f = self::f($id))) {
-            return time() + self::t($for) > filemtime($f);
-        }
-        return true;
-    }
-
-    public static function live(string $id, callable $fn, $for = '1 day') {
-        return self::expire($id, $for) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
-    }
-
     public static function get(string $id) {
         return is_file($f = self::f($id)) ? require $f : null;
     }
@@ -62,6 +51,10 @@ final class Cache extends Genome {
         return $out;
     }
 
+    public static function live(string $id, callable $fn, $for = '1 day') {
+        return self::stale($id, $for) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
+    }
+
     public static function set(string $id, callable $fn, array $lot = []): array {
         if (!is_dir($d = dirname($f = self::f($id)))) {
             mkdir($d, 0775, true);
@@ -69,6 +62,13 @@ final class Cache extends Genome {
         file_put_contents($f, '<?php return ' . z($r = call_user_func($fn, ...$lot)) . ';');
         @chmod($f, 0600);
         return [$r, $f, filemtime($f)];
+    }
+
+    public static function stale(string $id, $for = '1 day') {
+        if (is_file($f = self::f($id))) {
+            return time() + self::t($for) > filemtime($f);
+        }
+        return true;
     }
 
 }

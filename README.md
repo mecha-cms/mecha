@@ -67,7 +67,7 @@ Preparations
 Release Notes
 -------------
 
-### 2.2.x
+### 2.3.x
 
 This update focuses on improving the token feature so that it is not too strict. We need to give other extension opportunities to load the current page for certain purposes without having to change the current token.
 
@@ -78,8 +78,10 @@ This update focuses on improving the token feature so that it is not too strict.
  - Fixed layout extension bug that does not capture the custom attributes added to the asset path that is relative to the layout folder.
  - Improved HTTP response headers API. They are now case-insensitive.
  - Improved markdown extension. It is now possible to generate HTML `<figure>` element automatically from every image that appears alone in a paragraph.
- - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
  - Added `$deep` option for `From::HTML()` with default value set to `false` to prevent double encode HTML special characters.
+ - Renamed `Route::over()` to `Route::hit()` to make it in-line with `Cache::hit()` (#83)
+ - Renamed `Cache::expire()` to `Cache::stale()` for more semantic method naming (#84)
+ - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
  - Added `X-Requested-With` header field to `fetch()` with default value set to `CURL` to let the client to know that the request is not came from a normal web browser (#86)
 
 ### 2.2.2
