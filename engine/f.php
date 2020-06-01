@@ -99,31 +99,31 @@ namespace {
     }
     // Fetch remote URL
     function fetch(string $url, $lot = null, $type = 'GET') {
-        $o = [];
+        $headers = ['X-Requested-With' => 'X-Requested-With: CURL'];
         $chops = \explode('?', $url, 2);
         $type = \strtoupper($type);
-        // `fetch('/', ['Content-Type' => 'text/html'])`
+        // `fetch('/', ['X-Foo' => 'Bar'])`
         if (\is_array($lot)) {
             foreach ($lot as $k => $v) {
-                $o[$k] = $k . ': ' . $v;
+                $headers[$k] = $k . ': ' . $v;
             }
         } else if (\is_string($lot)) {
-            $o['User-Agent'] = 'User-Agent: ' . $lot;
+            $headers['User-Agent'] = 'User-Agent: ' . $lot;
         }
-        if (!isset($o['User-Agent'])) {
+        if (!isset($headers['User-Agent'])) {
             // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
             $port = (int) $_SERVER['SERVER_PORT'];
             $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
-            $o['User-Agent'] = 'User-Agent: ' . $v;
+            $headers['User-Agent'] = 'User-Agent: ' . $v;
         }
-        $u = 'GET' === $type ? $url : $chops[0];
+        $target = 'GET' === $type ? $url : $chops[0];
         if (\extension_loaded('curl')) {
-            $curl = \curl_init($u);
+            $curl = \curl_init($target);
             \curl_setopt_array($curl, [
                 \CURLOPT_FAILONERROR => true,
                 \CURLOPT_FOLLOWLOCATION => true,
                 \CURLOPT_CUSTOMREQUEST => $type,
-                \CURLOPT_HTTPHEADER => \array_values($o),
+                \CURLOPT_HTTPHEADER => \array_values($headers),
                 \CURLOPT_MAXREDIRS => 2,
                 \CURLOPT_RETURNTRANSFER => true,
                 \CURLOPT_SSL_VERIFYPEER => false,
@@ -133,18 +133,18 @@ namespace {
                 \curl_setopt($curl, \CURLOPT_POSTFIELDS, $chops[1] ?? "");
             }
             $out = \curl_exec($curl);
-            if (\defined("\\DEBUG") && 'curl' === \DEBUG && false === $out) {
+            if (\defined("\\DEBUG") && 'CURL' === \DEBUG && false === $out) {
                 throw new \UnexpectedValueException(\curl_error($curl));
             }
             \curl_close($curl);
         } else {
             $context = ['http' => ['method' => $type]];
             if ('POST' === $type) {
-                $o['Content-Type'] = 'Content-Type: application/x-www-form-urlencoded';
+                $headers['Content-Type'] = 'Content-Type: application/x-www-form-urlencoded';
                 $context['http']['content'] = $chops[1] ?? "";
             }
-            $context['http']['header'] = \implode("\r\n", \array_values($o));
-            $out = \file_get_contents($u, false, \stream_context_create($context));
+            $context['http']['header'] = \implode("\r\n", \array_values($headers));
+            $out = \file_get_contents($target, false, \stream_context_create($context));
         }
         return false !== $out ? $out : null;
     }
@@ -278,7 +278,7 @@ namespace {
         }
         $lot = \array_filter(\array_replace([
             'Content-Type' => 'text/html; charset=ISO-8859-1',
-            // 'From' => $from,
+            'From' => $from,
             'MIME-Version' => '1.0',
             'Reply-To' => $to,
             'Return-Path' => $from,
