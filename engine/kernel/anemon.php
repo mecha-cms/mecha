@@ -272,7 +272,7 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
                 };
                 if (array_key_exists(2, $sort)) {
                     foreach ($value as &$v) {
-                        if (!isset($v[$key])) {
+                        if (is_array($v) && !isset($v[$key])) {
                             $v[$key] = $sort[2];
                         }
                     }
