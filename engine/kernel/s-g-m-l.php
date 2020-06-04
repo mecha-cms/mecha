@@ -36,13 +36,13 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                 $attr = x(implode("", $c[1]));
                 $attr_open = x($c[1][2] . $c[1][0]);
                 $attr_close = x($c[1][1]);
-                if (preg_match('/' . $tag_open . '([^' . $tag . $attr . '\s]+)(\s[^' . $tag_close . ']*)?(?:' . $tag_close . '([\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . ')|(?:' . $tag_end . ')' . ($this->strict ? "" : '?') . $tag_close . ')/', n($in), $m)) {
+                if (preg_match('/^' . $tag_open . '([^' . $tag . $attr . '\s]+)(\s[^' . $tag_close . ']*)?(?:' . $tag_close . '((?:(?R)|[\s\S])*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . ')|(?:' . $tag_end . ')' . ($this->strict ? "" : '?') . $tag_close . ')$/', n($in), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
-                    $this->strict = substr($in, -strlen($end = $tag_end . $tag_close)) === $end;
+                    $this->strict = substr($in, -strlen($end = $c[0][2] . $c[0][1])) === $end;
                     if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
