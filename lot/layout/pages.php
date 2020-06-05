@@ -13,7 +13,7 @@
       </a>
       <?php endif; ?>
     </h3>
-    <?= $page->description; ?>
+    <p><?= $page->description; ?></p>
   </article>
   <?php endforeach; ?>
 </main>

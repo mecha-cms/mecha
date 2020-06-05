@@ -1,7 +1,7 @@
 <?php
 
 namespace _\lot\x\markdown {
-    function title($content) {
+    function inline($content) { // Inline tag(s) only
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
@@ -16,8 +16,9 @@ namespace _\lot\x\markdown {
         return $parser->line($content ?? "");
     }
     \Hook::set([
-        'page.title' // Inline tag(s) only
-    ], __NAMESPACE__ . "\\title", 2);
+        'page.title',
+        'page.description'
+    ], __NAMESPACE__ . "\\inline", 2);
 }
 
 namespace _\lot\x {
@@ -39,7 +40,6 @@ namespace _\lot\x {
     \File::$state['x']['md'] = 1; // Alias
     \File::$state['x']['mkd'] = 1; // Alias
     \Hook::set([
-        'page.content',
-        'page.description'
+        'page.content'
     ], __NAMESPACE__ . "\\markdown", 2);
 }
