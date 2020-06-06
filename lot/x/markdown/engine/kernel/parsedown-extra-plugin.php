@@ -18,7 +18,7 @@
 
 class ParsedownExtraPlugin extends ParsedownExtra {
 
-    const version = '1.3.0';
+    const version = '1.3.1';
 
 
     # config
@@ -187,7 +187,7 @@ class ParsedownExtraPlugin extends ParsedownExtra {
         return $Block;
     }
 
-    protected function blockImage($Line, array $Block) {
+    protected function blockImage($Line) {
         if (!$this->figuresEnabled) {
             return;
         }

@@ -73,7 +73,7 @@ Contributors
 Release Notes
 -------------
 
-### 2.3.x
+### 2.3.0
 
 This update focuses on improving the token feature so that it is not too strict. We need to give other extension opportunities to load the current page for certain purposes without having to change the current token.
 
@@ -89,6 +89,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Renamed `Cache::expire()` to `Cache::stale()` for more semantic method naming (#84)
  - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
  - Added `X-Requested-With` header field to `fetch()` with default value set to `CURL` to let the client to know that the request is not came from a normal web browser (#86)
+ - Removed automatic paragraph tags in page description data for consistency with other page data such as the title data. If I had to be consistent, when the description data is required to be wrapped in paragraph tags, then the title data should also be wrapped in heading tags. But it doesn’t (#87)
 
 ### 2.2.2
 
