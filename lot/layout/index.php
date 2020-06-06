@@ -1,16 +1,5 @@
 <?php
 
-// Wrap description data with paragraph tag(s) if needed
-Hook::set('page.description', function($description) {
-    if ($description && false === strpos($description, '</p>')) {
-        return '<p>' . strtr(trim(n($description)), [
-            "\n\n" => '</p><p>',
-            "\n" => '<br>'
-        ]) . '</p>';
-    }
-    return $description;
-});
-
 // Add CSS file to the `<head>` section…
 Asset::set('css/log.min.css', 20);
 
