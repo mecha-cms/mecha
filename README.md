@@ -67,8 +67,8 @@ Preparations
 Contributors
 ------------
 
-- @taufik-nurrohman (lead)
-- @igoynawamreh (member)
+- [@taufik-nurrohman](https://github.com/taufik-nurrohman) (lead)
+- [@igoynawamreh](https://github.com/igoynawamreh) (member)
 
 Release Notes
 -------------
