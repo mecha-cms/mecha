@@ -16,8 +16,8 @@ namespace _\lot\x\markdown {
         return $parser->line($content ?? "");
     }
     \Hook::set([
-        'page.title',
-        'page.description'
+        'page.description',
+        'page.title'
     ], __NAMESPACE__ . "\\inline", 2);
 }
 
