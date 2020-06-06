@@ -64,6 +64,12 @@ Preparations
 
 ---
 
+Contributors
+------------
+
+- @taufik-nurrohman (lead)
+- @igoynawamreh (member)
+
 Release Notes
 -------------
 
