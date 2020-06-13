@@ -2,7 +2,6 @@
 
 class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    protected static $a = [];
     protected static $lot = [];
 
     public function __call(string $kin, array $lot = []) {
@@ -13,8 +12,7 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
     }
 
     public function __construct(array $lot = []) {
-        $c = static::class;
-        self::$lot[$c] = self::$a[$c] = $lot;
+        self::$lot[static::class] = $lot;
     }
 
     public function __get(string $key) {
@@ -127,12 +125,6 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         } else {
             self::$lot[$c] = [];
         }
-    }
-
-    public static function over(...$lot) {
-        $c = static::class;
-        self::set(...$lot);
-        self::$lot[$c] = array_replace_recursive(self::$lot[$c], self::$a[$c]);
     }
 
     public static function set($key, $value = null) {

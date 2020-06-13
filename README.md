@@ -87,6 +87,7 @@ This update focuses on improving the token feature so that it is not too strict.
  - Added `$deep` option for `From::HTML()` with default value set to `false` to prevent double encode HTML special characters.
  - Renamed `Route::over()` to `Route::hit()` to make it in-line with `Cache::hit()` (#83)
  - Renamed `Cache::expire()` to `Cache::stale()` for more semantic method naming (#84)
+ - Removed `State::over()` method.
  - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
  - Added `X-Requested-With` header field to `fetch()` with default value set to `CURL` to let the client to know that the request is not came from a normal web browser (#86)
  - Removed automatic paragraph tags in page description data for consistency with other page data such as the title data. If I had to be consistent, when the description data is required to be wrapped in paragraph tags, then the title data should also be wrapped in heading tags. But it doesn’t (#87)
