@@ -99,7 +99,7 @@ namespace {
     }
     // Fetch remote URL
     function fetch(string $url, $lot = null, $type = 'GET') {
-        $headers = ['X-Requested-With' => 'X-Requested-With: CURL'];
+        $headers = ['x-requested-with' => 'x-requested-with: CURL'];
         $chops = \explode('?', $url, 2);
         $type = \strtoupper($type);
         // `fetch('/', ['X-Foo' => 'Bar'])`
@@ -108,13 +108,13 @@ namespace {
                 $headers[$k] = $k . ': ' . $v;
             }
         } else if (\is_string($lot)) {
-            $headers['User-Agent'] = 'User-Agent: ' . $lot;
+            $headers['user-agent'] = 'user-agent: ' . $lot;
         }
-        if (!isset($headers['User-Agent'])) {
+        if (!isset($headers['user-agent'])) {
             // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
             $port = (int) $_SERVER['SERVER_PORT'];
             $v = 'Mecha/' . \VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
-            $headers['User-Agent'] = 'User-Agent: ' . $v;
+            $headers['user-agent'] = 'user-agent: ' . $v;
         }
         $target = 'GET' === $type ? $url : $chops[0];
         if (\extension_loaded('curl')) {
@@ -140,7 +140,7 @@ namespace {
         } else {
             $context = ['http' => ['method' => $type]];
             if ('POST' === $type) {
-                $headers['Content-Type'] = 'Content-Type: application/x-www-form-urlencoded';
+                $headers['content-type'] = 'content-type: application/x-www-form-urlencoded';
                 $context['http']['content'] = $chops[1] ?? "";
             }
             $context['http']['header'] = \implode("\r\n", \array_values($headers));
@@ -277,12 +277,12 @@ namespace {
             }
         }
         $lot = \array_filter(\array_replace([
-            'Content-Type' => 'text/html; charset=ISO-8859-1',
-            'From' => $from,
-            'MIME-Version' => '1.0',
-            'Reply-To' => $to,
-            'Return-Path' => $from,
-            'X-Mailer' => 'PHP/' . \PHP_VERSION
+            'content-type' => 'text/html; charset=ISO-8859-1',
+            'from' => $from,
+            'mime-version' => '1.0',
+            'reply-to' => $to,
+            'return-path' => $from,
+            'x-mailer' => 'PHP/' . \PHP_VERSION
         ], $lot));
         foreach ($lot as $k => &$v) {
             $v = $k . ': ' . $v;

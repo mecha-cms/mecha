@@ -77,12 +77,12 @@ final class Lot extends Genome {
 
     public static function type(string $type = null, array $lot = []) {
         if (!isset($type)) {
-            return self::get('Content-Type');
+            return self::get('content-type');
         }
         foreach ($lot as $k => $v) {
             $type .= '; ' . $k . '=' . $v;
         }
-        self::set('Content-Type', $type);
+        self::set('content-type', $type);
     }
 
 }
