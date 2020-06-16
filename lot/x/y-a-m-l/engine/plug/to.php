@@ -6,7 +6,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
     */
     $yaml = function(array $data, string $dent = '  ') use(&$yaml) {
         $out = [];
-        $yaml_list = function(array $data) use(&$yaml) {
+        $yaml_list = function(array $data) use(&$dent, &$yaml) {
             $out = [];
             foreach ($data as $v) {
                 if (is_array($v)) {
