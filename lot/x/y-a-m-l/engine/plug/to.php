@@ -10,7 +10,11 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
             $out = [];
             foreach ($data as $v) {
                 if (is_array($v)) {
-                    $out[] = '- ' . str_replace("\n", "\n  ", $yaml($v, $dent));
+                    if (!empty($v)) {
+                        $out[] = '- ' . strtr($yaml($v, $dent), ["\n" => "\n  "]);
+                    } else {
+                        $out[] = '- []'; // Empty array
+                    }
                 } else {
                     $out[] = '- ' . s($v, ['null' => '~']);
                 }
@@ -21,7 +25,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
             // Check for safe key pattern, otherwise, wrap it with quote
             if ("" !== $k && (is_numeric($k) || (ctype_alnum($k) && !is_numeric($k[0])) || preg_match('/^[a-z][a-z\d]*(?:[_-]+[a-z\d]+)*$/i', $k))) {
             } else {
-                $k = "'" . str_replace("'", "\\\'", $k) . "'";
+                $k = "'" . strtr($k, ["'" => "\\\'"]) . "'";
             }
             return $k . $m . s($v, ['null' => '~']);
         };
@@ -31,12 +35,15 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
                 if (array_keys($v) === range(0, count($v) - 1)) {
                     $out[] = $yaml_set($k, ":\n", $yaml_list($v));
                 } else {
-                    $out[] = $yaml_set($k, ":\n", $dent . str_replace("\n", "\n" . $dent, $yaml($v, $dent)));
+                    $out[] = $yaml_set($k, ":\n", $dent . strtr($yaml($v, $dent), ["\n" => "\n" . $dent]));
                 }
             } else {
                 if (is_string($v)) {
                     if (false !== strpos($v, "\n")) {
-                        $v = "|\n" . $dent . str_replace(["\n", "\n" . $dent . "\n"], ["\n" . $dent, "\n\n"], $v);
+                        $v = "|\n" . $dent . strtr($v, [
+                            "\n" => "\n" . $dent,
+                            "\n" . $dent . "\n" => "\n\n"
+                        ]);
                     } else if (strlen($v) > 120) {
                         $v = ">\n" . $dent . wordwrap($v, 120, "\n" . $dent);
                     } else if (is_numeric($v) || $v !== strtr($v, "!#%&*,-:<=>?@[\\]{|}", '-------------------')) {

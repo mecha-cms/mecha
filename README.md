@@ -73,6 +73,11 @@ Contributors
 Release Notes
 -------------
 
+### 2.3.1
+
+ - Prefers HTTP/2 header style for both request and response (#89)
+ - Bug fixes and improvements for the YAML extension.
+
 ### 2.3.0
 
 This update focuses on improving the token feature so that it is not too strict. We need to give other extension opportunities to load the current page for certain purposes without having to change the current token.
