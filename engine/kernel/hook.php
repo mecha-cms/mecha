@@ -85,7 +85,7 @@ class Hook extends Genome {
                 self::set((string) $v, $fn, $stack);
             }
         } else {
-            if (is_string($fn) && !empty(self::$lot[0][$c][$id][$fn]) || !empty(self::$lot[0][$c][$id])) {
+            if (is_string($fn) && !empty(self::$lot[0][$c][$id][$fn])) {
                 // Skip!
             } else {
                 if (!isset(self::$lot[1][$c][$id])) {
