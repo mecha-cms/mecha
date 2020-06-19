@@ -73,6 +73,10 @@ Contributors
 Release Notes
 -------------
 
+### master
+
+ - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.1.
+
 ### 2.3.1
 
  - Prefers HTTP/2 header style for both request and response (#89)
