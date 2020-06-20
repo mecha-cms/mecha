@@ -75,7 +75,7 @@ Release Notes
 
 ### master
 
- - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.1.
+ - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.0.
 
 ### 2.3.1
 
