@@ -10,7 +10,7 @@ Mecha CMS
 Front-End
 ---------
 
-This layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
+The default layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
 ![Front-End](https://user-images.githubusercontent.com/1669261/71335843-2f1d3280-2577-11ea-940e-7777eda2a5d1.png)
 
@@ -76,6 +76,7 @@ Release Notes
 ### master
 
  - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.0.
+ - Improved `Path` methods to allow `null` values.
 
 ### 2.3.1
 
