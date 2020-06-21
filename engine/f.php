@@ -443,6 +443,27 @@ namespace {
             }
         });
     }
+    function drop(iterable $a, callable $fn = null) {
+        $n = null === $fn; // Use default filter?
+        foreach ($a as $k => $v) {
+            if (\is_array($v) && !empty($v)) {
+                if ($v = drop($v, $fn)) {
+                    $a[$k] = $v;
+                } else {
+                    unset($a[$k]); // Drop!
+                }
+            } else if ($n) {
+                if ("" === $v || null === $v || [] === $v) {
+                    unset($a[$k]); // Drop!
+                }
+            } else {
+                if (\call_user_func($fn, $v, $k)) {
+                    unset($a[$k]); // Drop!
+                }
+            }
+        }
+        return [] !== $a ? $a : null;
+    }
     function e($x, array $a = []) {
         if (\is_string($x)) {
             if ("" === $x) {

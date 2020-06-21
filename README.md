@@ -73,10 +73,11 @@ Contributors
 Release Notes
 -------------
 
-### master
+### 2.3.2
 
  - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.0.
  - Improved `Path` methods to allow `null` values.
+ - Added `drop` helper function.
 
 ### 2.3.1
 
