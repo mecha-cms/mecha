@@ -16,7 +16,7 @@ foreach ([
     'query' => function(string $in = null) {
         $out = [];
         $q = function(array &$out, $k, $v) {
-            $k = explode('[', str_replace(']', "", $k));
+            $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
                 $kk = array_shift($k);
                 if (!array_key_exists($kk, $out)) {

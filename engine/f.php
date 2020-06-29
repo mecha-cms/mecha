@@ -1209,19 +1209,22 @@ namespace {
         // Should be a HTML input
         if (false !== \strpos($x, '<') || false !== \strpos($x, ' ') || false !== \strpos($x, "\n")) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
-            return \preg_replace($n ? '# +#' : '#\s+#', ' ', \trim(\strip_tags($x, $c)));
+            // Make sure to add line-break at the end of the block tag(s) to remove
+            $b = 'article|blockquote|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader)|li|main|p(?:re)?|section|t[dh]';
+            $x = \preg_replace('/(<\/(?:' . $b . ')>)/', "$1\n", $x);
+            return \preg_replace($n ? '/ +/' : '/\s+/', ' ', \trim(\strip_tags($x, $c)));
         }
         // [1]. Replace `+` with ` `
         // [2]. Replace `-` with ` `
         // [3]. Replace `---` with ` - `
         // [4]. Replace `--` with `-`
         return \preg_replace([
-            '#^[._]+|[._]+$#', // remove `.` and `__` prefix/suffix of file name
-            '#---#',
-            '#--#',
-            '#-#',
-            '#\s+#',
-            '#' . \P . '#'
+            '/^[._]+|[._]+$/', // remove `.` and `__` prefix/suffix of file name
+            '/---/',
+            '/--/',
+            '/-/',
+            '/\s+/',
+            '/[' . \P . ']/'
         ], [
             "",
             ' ' . \P . ' ',

@@ -13,10 +13,13 @@ foreach([
         return json_encode($in, $i);
     },
     'URL' => function(string $in = null, $raw = false) {
-        $url = $GLOBALS['url'];
-        $x = strtr(ROOT, DS, '/');
+        $url = $GLOBALS['url'] . "";
         $in = realpath($in) ?: $in;
-        $in = str_replace([ROOT, DS, $x], [$url, '/', $url], $in);
+        $in = strtr($in, [
+            ROOT => $url,
+            strtr(ROOT, DS, '/') => $url,
+            DS => '/'
+        ]);
         return $raw ? rawurldecode($in) : urldecode($in);
     },
     'base64' => "\\base64_encode",
@@ -33,8 +36,7 @@ foreach([
         return $out;
     },
     'excerpt' => function(string $in = null, $html = true, $x = 200) {
-        $s = w($in, $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
-        $utf8 = extension_loaded('mbstring');
+        $s = w('<div>' . $in . '</div>', $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
         }
@@ -89,7 +91,7 @@ foreach([
             while ($close = array_pop($tags)) {
                 $out .= '</' . $close . '>';
             }
-            $out = trim(str_replace('<br>', ' ', $out));
+            $out = trim(preg_replace('/<br(\s[^>]*)?>/', ' ', $out));
             $s = trim(strip_tags($s));
             $t = $utf8 ? mb_strlen($s) : strlen($s);
             $out = trim($out) . ($t > $x[0] ? $x[1] : "");
@@ -142,9 +144,12 @@ foreach([
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => function(string $in = null) {
-        $url = $GLOBALS['url'];
-        $x = strtr($url, '/', DS);
-        $in = str_replace([$url, '/', $x], [ROOT, DS, ROOT], $in);
+        $url = $GLOBALS['url'] . "";
+        $in = strtr($in, [
+            $url => ROOT,
+            strtr($url, '/', DS) => ROOT,
+            '/' => DS
+        ]);
         return realpath($in) ?: $in;
     },
     'query' => function(array $in = null) {
@@ -191,7 +196,7 @@ foreach([
         $in = w($in);
         $out = extension_loaded('mbstring') ? mb_convert_case($in, MB_CASE_TITLE) : ucwords($in);
         // Convert to abbreviation if all case(s) are in upper
-        $out = u($out) === $out ? str_replace(' ', "", $out) : $out;
+        $out = u($out) === $out ? strtr($out, [' ' => ""]) : $out;
         return "" !== $out ? $out : null;
     },
     'upper' => "\\u"
