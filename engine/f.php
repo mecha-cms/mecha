@@ -1209,9 +1209,6 @@ namespace {
         // Should be a HTML input
         if (false !== \strpos($x, '<') || false !== \strpos($x, ' ') || false !== \strpos($x, "\n")) {
             $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
-            // Make sure to add line-break at the end of the block tag(s) to remove
-            $b = 'article|blockquote|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader)|li|main|p(?:re)?|section|t[dh]';
-            $x = \preg_replace('/(<\/(?:' . $b . ')>)/', "$1\n", $x);
             return \preg_replace($n ? '/ +/' : '/\s+/', ' ', \trim(\strip_tags($x, $c)));
         }
         // [1]. Replace `+` with ` `

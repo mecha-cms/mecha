@@ -36,7 +36,17 @@ foreach([
         return $out;
     },
     'excerpt' => function(string $in = null, $html = true, $x = 200) {
-        $s = w('<div>' . $in . '</div>', $html ? 'a,abbr,b,br,cite,code,del,dfn,em,i,ins,kbd,mark,q,span,strong,sub,sup,time,u,var' : []);
+        // Make sure to add a space at the end of the block tag(s) to remove
+        // To make `<p>asdf.</p><p>asdf</p>` becomes `asdf. asdf` and not `asdf.asdf`
+        $blocks = 'address|article|blockquote|details|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader|r)|li|main|nav|p(?:re)?|section|summary|t[dh]';
+        $s = preg_replace([
+            '/\s+/',
+            '/\s*(<\/(?:' . $blocks . ')>)\s*/'
+        ], [
+            ' ',
+            '$1 '
+        ], $in);
+        $s = strip_tags($s, $html ? '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><span><strong><sub><sup><time><u><var>' : "");
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
         }
@@ -91,7 +101,7 @@ foreach([
             while ($close = array_pop($tags)) {
                 $out .= '</' . $close . '>';
             }
-            $out = trim(preg_replace('/<br(\s[^>]*)?>/', ' ', $out));
+            $out = trim(preg_replace('/\s*<br(\s[^>]*)?>\s*/', ' ', $out));
             $s = trim(strip_tags($s));
             $t = $utf8 ? mb_strlen($s) : strlen($s);
             $out = trim($out) . ($t > $x[0] ? $x[1] : "");
