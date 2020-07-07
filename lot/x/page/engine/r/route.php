@@ -26,6 +26,13 @@ function route($any = "") {
         $sort = $page['sort'] ?? [1, 'path'];
         $parent_path = \Path::D($path);
         $parent_folder = \Path::D($folder);
+        $GLOBALS['page'] = $page;
+        $GLOBALS['t'][] = $page->title;
+        \State::set([
+            'chunk' => $chunk, // Inherit current page’s `chunk` property
+            'deep' => $deep, // Inherit current page’s `deep` property
+            'sort' => $sort // Inherit current page’s `sort` property
+        ]);
         if ($parent_file = \File::exist([
             $parent_folder . '.page', // `.\lot\page\parent-name.page`
             $parent_folder . '.archive', // `.\lot\page\parent-name.archive`
@@ -35,39 +42,33 @@ function route($any = "") {
             $parent_page = new \Page($parent_file);
             $parent_deep = $parent_page['deep'] ?? 0;
             $parent_sort = $parent_page['sort'] ?? [1, 'path'];
-            $parent_pages = \map(\Pages::from($parent_folder, 'page', $parent_deep)->sort($parent_sort), function($v) use($parent_folder) {
-                return \substr(\str_replace($parent_folder . \DS, "", $v->path), 0, -5);
-            });
+            $parent_pages = \Pages::from($parent_folder, 'page', $parent_deep)->sort($parent_sort);
+            $pager = new \Pager\Page($parent_pages->get(), $page->path, $parent_page->path);
+            $GLOBALS['pager'] = $pager;
+            $GLOBALS['pages'] = $parent_pages;
+            $GLOBALS['parent'] = $parent_page;
+            \State::set([
+                'has' => [
+                    'next' => !!$pager->next,
+                    'page' => true,
+                    'pages' => false,
+                    'parent' => !!$pager->parent,
+                    'prev' => !!$pager->prev
+                ],
+                'is' => [
+                    'page' => true,
+                    'pages' => false
+                ]
+            ]);
         }
-        $pager = new \Pager\Page($parent_pages ?? [], $page->name, $url . $parent_path);
-        $GLOBALS['page'] = $page;
-        $GLOBALS['pager'] = $pager;
-        $GLOBALS['parent'] = $parent_page ?? new \Page;
-        $GLOBALS['t'][] = $page->title;
-        \State::set([
-            'chunk' => $chunk, // Inherit current page’s `chunk` property
-            'deep' => $deep, // Inherit current page’s `deep` property
-            'has' => [
-                'next' => !!$pager->next,
-                'page' => true,
-                'pages' => false,
-                'parent' => !!$pager->parent,
-                'prev' => !!$pager->prev
-            ],
-            'is' => [
-                'page' => true,
-                'pages' => false
-            ],
-            'sort' => $sort // Inherit current page’s `sort` property
-        ]);
-        $pages = \Pages::from($folder, 'page', $deep)->sort($sort);
+        $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
         // No page(s) means “page” mode
         if (0 === $pages->count() || \is_file($folder . \DS . '.' . $page->x)) {
             $this->view('page' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
-        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $url . $p);
-        $pages = $pages->chunk($chunk, $i);
+        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $page->path);
+        $pages = $pages->chunk($chunk, $i); // (chunked)
         if ($pages->count() > 0) {
             \State::set([
                 'has' => [
