@@ -8,7 +8,7 @@
  * -----------------------------------------
  */
 
-define('VERSION', '2.3.2'); // Current version
+define('VERSION', '2.4.0'); // Current version
 define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 define('PS', PATH_SEPARATOR); // Default path separator
 

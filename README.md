@@ -73,7 +73,7 @@ Contributors
 Release Notes
 -------------
 
-### master
+### 2.4.0
 
 This update focuses on improving the pagination feature of page extension. `$pager->next`, `$pager->parent` and `$pager->prev` will now return a `Page` instance or `null`. This allows us to get richer data easily from the previous and next page property such as to retrieve title, description and image thumbnail to be displayed in the previous and next page navigation HTML.
 
