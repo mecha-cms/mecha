@@ -10,7 +10,7 @@ class Pages extends \Pager {
         parent::__construct();
         $data = \array_chunk($data, $chunk[0] ?? 5);
         $i = $chunk[1] ?? 0;
-        $url = \is_file($parent) ? $this->page($parent)->url : null;
+        $url = \is_file($parent) ? $this->page($parent)->url : $parent;
         if (isset($data[$i + 1])) {
             $next = $this->page();
             $next->link = $this->link($url, $i + 2);
