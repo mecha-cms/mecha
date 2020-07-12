@@ -230,6 +230,8 @@ namespace {
         }
         return $out;
     }
+    // Reserved
+    function mecha() {}
     // A not equal to B
     function ne($a, $b) {
         return q($a) !== $b;
@@ -1104,8 +1106,6 @@ namespace {
         // <https://stackoverflow.com/a/14224813/1163000>
         return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
-    // Reserved
-    function mecha() {}
     function n(string $x = null, string $t = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
         $x = \str_replace("\xEF\xBB\xBF", "", $x);

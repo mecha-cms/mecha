@@ -2,24 +2,35 @@
 
 class Page extends \Pager {
 
-    public function __construct(array $data = [], string $current = null, string $parent = null) {
+    protected function page(string $path = null) {
+        return new \Page($path);
+    }
+
+    public function __construct(array $data = [], $current = null, $parent = null) {
         parent::__construct();
         $data = \array_values($data);
         $count = \count($data);
         if (false !== ($i = \array_search($current, $data, true))) {
-            $this->next = $i + 1 < $count && \is_file($data[$i + 1]) ? $this->page($data[$i + 1]) : null;
-            $this->prev = $i - 1 > -1 && \is_file($data[$i - 1]) ? $this->page($data[$i - 1]) : null;
+            if ($i + 1 < $count) {
+                if (\is_object($data[$i + 1])) {
+                    $this->next = $data[$i + 1];
+                } else if (\is_file($data[$i + 1])) {
+                    $this->next = $this->page($data[$i + 1]);
+                }
+            }
+            if ($i - 1 > -1) {
+                if (\is_object($data[$i - 1])) {
+                    $this->prev = $data[$i - 1];
+                } else if (\is_file($data[$i - 1])) {
+                    $this->prev = $this->page($data[$i - 1]);
+                }
+            }
         }
-        $p = \trim(\State::get('path') ?? 'index', '/');
-        $index = \File::exist([
-            \LOT . \DS . 'page' . \DS . $p . '.archive',
-            \LOT . \DS . 'page' . \DS . $p . '.page'
-        ]);
-        $this->parent = $parent && $parent !== $index && \is_file($parent) ? $this->page($parent) : null;
-    }
-
-    public function page(string $path = null) {
-        return new \Page($path);
+        if (\is_object($parent)) {
+            $this->parent = $parent;
+        } else if (\is_file($parent)) {
+            $this->parent = $this->page($parent);
+        }
     }
 
 }

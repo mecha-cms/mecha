@@ -21,12 +21,16 @@ function route($any = "") {
         $folder . '.archive'
     ])) {
         $page = new \Page($file);
+        $pager = new \Pager\Page([], null, (object) [
+            'link' => $any ? $url . "" : null
+        ]);
         $chunk = $page['chunk'] ?? 5;
         $deep = $page['deep'] ?? 0;
         $sort = $page['sort'] ?? [1, 'path'];
         $parent_path = \Path::D($path);
         $parent_folder = \Path::D($folder);
         $GLOBALS['page'] = $page;
+        $GLOBALS['pager'] = $pager;
         $GLOBALS['t'][] = $page->title;
         \State::set([
             'chunk' => $chunk, // Inherit current page’s `chunk` property
@@ -43,7 +47,7 @@ function route($any = "") {
             $parent_deep = $parent_page['deep'] ?? 0;
             $parent_sort = $parent_page['sort'] ?? [1, 'path'];
             $parent_pages = \Pages::from($parent_folder, 'page', $parent_deep)->sort($parent_sort);
-            $pager = new \Pager\Page($parent_pages->get(), $page->path, $parent_page->path);
+            $pager = new \Pager\Page($parent_pages->get(), $page->path, $parent_page);
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $parent_pages;
             $GLOBALS['parent'] = $parent_page;
@@ -67,7 +71,13 @@ function route($any = "") {
             $this->view('page' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
-        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], $page->path);
+        $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
+            'link' => false !== \strpos($any, '/') ? \dirname($url . $p) : $url . $p
+        ]);
+        // Disable parent link in root page
+        if (!$any) {
+            $pager->parent = null;
+        }
         $pages = $pages->chunk($chunk, $i); // (chunked)
         if ($pages->count() > 0) {
             \State::set([
