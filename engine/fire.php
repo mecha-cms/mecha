@@ -54,7 +54,7 @@ d(($f = ENGINE . DS) . 'kernel', function($v, $n) use($f) {
 });
 
 // Set default state(s)…
-$state = is_file($f = ROOT . DS . 'state.php') ? require $f : [];
+$state = $set = is_file($f = ROOT . DS . 'state.php') ? require $f : [];
 $GLOBALS['state'] = $state = new State($state);
 
 // Boot…
@@ -72,18 +72,17 @@ require __DIR__ . DS . 'r' . DS . 'time.php';
 require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
 
 $uses = [];
-$uses_x = $GLOBALS['X'][0] ?? [];
 foreach (glob(LOT . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
-    if (empty($uses_x[$v])) {
+    if (empty($GLOBALS['X'][0][$v])) {
         $n = basename($r = dirname($v));
         $uses[$v] = content($r . DS . $n) ?? $n;
         // Load state(s)…
         State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
         if (is_file($v = $r . DS . 'state.php')) {
-            (function($k, $v) {
+            (function($k, $v, $a) {
                 extract($GLOBALS, EXTR_SKIP);
-                State::set('x.' . $k, (array) require $v);
-            })($k, $v);
+                State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
+            })($k, $v, $set['x'][$n] ?? []);
         }
     }
 }
