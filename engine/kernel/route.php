@@ -58,7 +58,11 @@ final class Route extends Genome {
         $id = trim($id, '/');
         $path = trim($path ?? $GLOBALS['url']['path'], '/');
         // Plain pattern, be quick!
-        if (false === strpos('/' . $id, '/:') && false === strpos('/' . $id, '/*')) {
+        if (
+            false === strpos('/' . $id, '/:') &&
+            false === strpos('/' . $id, '/?') &&
+            false === strpos('/' . $id, '/*')
+        ) {
             $id = strtr($id, ["\\:" => ':']);
             return $id === $path ? [
                 '0' => null,
@@ -70,14 +74,18 @@ final class Route extends Genome {
         }
         $chops = explode('/', $id);
         foreach ($chops as &$v) {
-            if (0 === strpos($v, ':') && strlen($v) > 1) {
-                if ('{' === $v[1] && '}' === substr($v, -1)) {
-                    $v = '(' . substr(substr($v, 2), 0, -1) . ')';
-                } else {
-                    $v = '([^/]+)';
-                }
-            } else if ('*' === $v) {
+            // `Route::is('foo/bar/*')`
+            if ('*' === $v) {
                 $v = '(.+)';
+            // `Route::is('foo/bar/?')`
+            } else if ('?' === $v) {
+                $v = '([^/]+)';
+            // `Route::is('foo/bar/:baz')`
+            } else if (0 === strpos($v, ':') && strlen($v) > 1) {
+                $v = '([^/]+)';
+            // `Route::is('foo/bar/{\d+}')`
+            } else if ($v && '{' === $v[0] && '}' === substr($v, -1)) {
+                $v = '(' . substr($v, 1, -1) . ')';
             } else {
                 $v = preg_quote($v);
             }
