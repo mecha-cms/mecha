@@ -188,8 +188,16 @@ namespace {
         return q($a) > $b;
     }
     // Check if an element exists in array
-    function has(array $a, string $s = "", string $x = \P) {
-        return false !== \strpos($x . \implode($x, $a) . $x, $x . $s . $x);
+    function has(iterable $a, $v = "", string $x = \P) {
+        if (!\is_string($v)) {
+            foreach ($a as $vv) {
+                if ($v === $vv) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false !== \strpos($x . \implode($x, $a) . $x, $x . $v . $x);
     }
     // Filter out element(s) that pass the function test
     function is(iterable $a, $fn = null) {
@@ -248,10 +256,12 @@ namespace {
         }, \ARRAY_FILTER_USE_BOTH);
     }
     // Generate new array contains value from the key
-    function pluck(iterable $a, string $k, $alt = null) {
-        return \array_filter(\array_map(function($v) use($alt, $k) {
-            return $v[$k] ?? $alt;
-        }, $a));
+    function pluck(iterable $a, string $k, $or = null) {
+        $out = [];
+        foreach ($a as $v) {
+            $out[] = $v[$k] ?? $or;
+        }
+        return $out;
     }
     // Convert class property name to file name
     function p2f(string $s, string $h = '-', string $n = '.') {
@@ -1235,7 +1245,7 @@ namespace {
         return \addcslashes($x, $d . $c);
     }
     function y(iterable $a) {
-        if (\is_object($a) && $a instanceof \Traversable) {
+        if ($a instanceof \Traversable) {
             return \iterator_to_array($a);
         }
         return (array) $a;

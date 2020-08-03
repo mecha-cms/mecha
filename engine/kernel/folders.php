@@ -27,7 +27,7 @@ class Folders extends Anemon {
                 }
             }
             -1 === $sort[0] ? arsort($value) : asort($value);
-            $this->value = array_keys($value);
+            $value = array_keys($value);
         } else {
             $value = $this->value;
             if ($preserve_key) {
@@ -35,8 +35,8 @@ class Folders extends Anemon {
             } else {
                 -1 === $sort ? rsort($value) : sort($value);
             }
-            $this->value = $value;
         }
+        $this->value = $value;
         return $this;
     }
 
