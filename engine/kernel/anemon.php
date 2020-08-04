@@ -16,6 +16,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         $this->join = $join;
     }
 
+    public function __destruct() {
+        $this->lot = $this->value = [];
+        unset($this->parent);
+    }
+
     public function __invoke(string $join = ', ', $filter = true) {
         $value = $filter ? $this->is(function($v, $k) {
             // Ignore `null` and `false` value and all item(s) with key prefixed by a `_`
