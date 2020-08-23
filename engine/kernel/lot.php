@@ -7,35 +7,22 @@ final class Lot extends Genome {
             $key = strtoupper($key);
             $v = $_SERVER['HTTP_' . strtr($key, '-', '_')] ?? null;
             if (null === $v) {
-                if (function_exists('apache_response_headers')) {
-                    $v = array_change_key_case(apache_response_headers(), CASE_UPPER)[$key] ?? null;
-                }
-                if (null === $v) {
-                    foreach (headers_list() as $h) {
-                        if (0 === stripos($h, $key . ': ')) {
-                            $h = explode(':', $h, 2);
-                            $v = isset($h[1]) && "" !== $h[1] ? e(trim($h[1])) : null;
-                            break;
-                        }
-                    }
+                if (function_exists('apache_request_headers')) {
+                    $v = array_change_key_case(apache_request_headers(), CASE_UPPER)[$key] ?? null;
                 }
             }
             return e($v);
         }
         $out = [];
+        if (function_exists('apache_request_headers')) {
+            $out = e(array_change_key_case((array) apache_request_headers(), CASE_LOWER));
+        }
         foreach ($_SERVER as $k => $v) {
             if (0 === strpos($k, 'HTTP_')) {
-                $out[strtr(substr($k, 5), '_', '-')] = e($v);
+                $out[strtolower(strtr(substr($k, 5), '_', '-'))] = e($v);
             }
         }
-        if (function_exists('apache_response_headers')) {
-            $out = array_replace($out, e(apache_response_headers()));
-        }
-        foreach (headers_list() as $v) {
-            $v = explode(':', $v, 2);
-            $out[$v[0]] = isset($v[1]) && "" !== $v[1] ? e(trim($v[1])) : null;
-        }
-        return array_change_key_case($out, CASE_LOWER);
+        return $out;
     }
 
     public static function let($key = null) {
@@ -58,7 +45,23 @@ final class Lot extends Genome {
         }
     }
 
-    public static function set($key, $value = null) {
+    public static function set($key = null, $value = null) {
+        if (!isset($key)) {
+            $out = [];
+            if (function_exists('apache_response_headers')) {
+                $out = e(array_change_key_case((array) apache_response_headers(), CASE_LOWER));
+            }
+            foreach (headers_list() as $v) {
+                $v = explode(':', $v, 2);
+                if (isset($v[1])) {
+                    $out[strtolower($v[0])] = e(trim($v[1]));
+                }
+            }
+            return $out;
+        }
+        if (is_string($key) && !isset($value)) {
+            return self::set()[strtolower($key)] ?? null;
+        }
         if (is_array($key)) {
             foreach ($key as $k => $v) {
                 header($k . ': ' . $v);
