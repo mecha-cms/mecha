@@ -1,7 +1,9 @@
 <?php
 
-Route::_('content', function(string $v, $exit = true) {
-    echo ($v = Hook::fire('content', [$v], $this)); // The response body
+Route::_('content', function(string $content, $exit = true) {
+    ob_start('ob_gzhandler');
+    echo $content; // The response body
+    echo Hook::fire('content', [ob_get_clean()], $this);
     if ($exit) {
         Hook::fire('let');
         exit;
