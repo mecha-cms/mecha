@@ -64,10 +64,10 @@ final class Lot extends Genome {
         }
         if (is_array($key)) {
             foreach ($key as $k => $v) {
-                header($k . ': ' . $v);
+                header($k . ': ' . $v, true);
             }
         } else {
-            header($key . ': ' . $value);
+            header($key . ': ' . $value, true);
         }
     }
 

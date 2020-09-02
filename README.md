@@ -76,6 +76,7 @@ Release Notes
 ### master
 
  - Added `?` symbol for `Route` as alias of `:key` pattern. So, `foo/bar/:baz` will be equal to `foo/bar/?`.
+ - Added `$status` parameter to `Guard::kick()` with default value set to `301`.
 
 ### 2.4.0
 
