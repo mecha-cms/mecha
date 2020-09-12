@@ -77,6 +77,8 @@ Release Notes
 
  - Added `?` symbol for `Route` as alias of `:key` pattern. So, `foo/bar/:baz` will be equal to `foo/bar/?`.
  - Added `$status` parameter to `Guard::kick()` with default value set to `301`.
+ - Added ability to set response status automatically based on the first numeric layout path.
+ - Renamed `$route->view()` method to `$route->layout()` for consistency.
 
 ### 2.4.0
 

@@ -1,5 +1,6 @@
 <?php namespace _\lot\x\page;
 
+// Initialize layout variable(s)
 $GLOBALS['page'] = new \Page;
 $GLOBALS['pager'] = new \Pager\Pages;
 $GLOBALS['pages'] = new \Pages;
@@ -68,7 +69,7 @@ function route($any = "") {
         $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
         // No page(s) means “page” mode
         if (0 === $pages->count() || \is_file($folder . \DS . '.' . $page->x)) {
-            $this->view('page' . $p . '/' . ($i + 1));
+            $this->layout('page' . $p . '/' . ($i + 1));
         }
         // Create pager for “pages” mode
         $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
@@ -96,7 +97,7 @@ function route($any = "") {
             $GLOBALS['page'] = $page;
             $GLOBALS['pager'] = $pager;
             $GLOBALS['pages'] = $pages;
-            $this->view('pages' . $p . '/' . ($i + 1));
+            $this->layout('pages' . $p . '/' . ($i + 1));
         }
     }
     \State::set([
@@ -111,8 +112,7 @@ function route($any = "") {
         'is' => ['error' => 404]
     ]);
     $GLOBALS['t'][] = i('Error');
-    $this->status(404);
-    $this->view('404' . $p . '/' . ($i + 1));
+    $this->layout('404' . $p . '/' . ($i + 1));
 }
 
 \Route::set(['*', ""], __NAMESPACE__ . "\\route", 20);
