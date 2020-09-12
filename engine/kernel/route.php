@@ -59,9 +59,10 @@ final class Route extends Genome {
         $path = trim($path ?? $GLOBALS['url']['path'], '/');
         // Plain pattern, be quick!
         if (
+            false === strpos('/' . $id, '/*') &&
             false === strpos('/' . $id, '/:') &&
             false === strpos('/' . $id, '/?') &&
-            false === strpos('/' . $id, '/*')
+            false === strpos('/' . $id, '/{')
         ) {
             $id = strtr($id, ["\\:" => ':']);
             return $id === $path ? [
