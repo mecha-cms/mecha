@@ -17,13 +17,13 @@ namespace _\lot\x\art {
     }
     function get() {
         global $state, $url;
-        $folder = \LOT . \DS . 'page' . ($url->path ?? \State::get('x.page.path'));
+        $folder = \LOT . \DS . 'page' . ($url->path ?? $state->path);
         $i = $url['i'] ?? 1;
         if ($path = \File::exist([
-            $folder . \DS . $i . '.page',
             $folder . \DS . $i . '.archive',
-            $folder . '.page',
-            $folder . '.archive'
+            $folder . \DS . $i . '.page',
+            $folder . '.archive',
+            $folder . '.page'
         ])) {
             $page = new \Page($path);
             $css = $page['css'];
@@ -48,13 +48,13 @@ namespace _\lot\x\art {
 
 namespace _\lot\x {
     function art($content) {
-        if (empty($GLOBALS['page'])) {
+        extract($GLOBALS, \EXTR_SKIP);
+        if (empty($page)) {
             return $content;
         }
-        $page = $GLOBALS['page'];
-        // Append custom CSS before `</head>`…
+        // Append custom CSS before `</head>`
         $content = \str_replace('</head>', $page->css . '</head>', $content);
-        // Append custom JS before `</body>`…
+        // Append custom JS before `</body>`
         $content = \str_replace('</body>', $page->js . '</body>', $content);
         return $content;
     }

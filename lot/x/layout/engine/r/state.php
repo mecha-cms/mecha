@@ -10,6 +10,6 @@ $GLOBALS['site'] = $site = $state;
 $GLOBALS['t'] = $t = new Anemon([$state->title], ' &#x00B7; ');
 
 // Extend layout state(s) to the global state(s)
-if (is_file($state = Layout::$state['path'] . DS . 'state.php')) {
-    State::set(require $state);
+if (is_file($f = Layout::$state['path'] . DS . 'state.php')) {
+    State::set(require $f);
 }
