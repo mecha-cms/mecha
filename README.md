@@ -73,6 +73,10 @@ Contributors
 Release Notes
 -------------
 
+### master
+
+ - Added `YAML\SOH`, `YAML\ETB`, and `YAML\EOT` constant in the YAML extension (#94)
+
 ### 2.5.0
 
  - Added `?` symbol for `Route` as alias of `:key` pattern. So, `foo/bar/:baz` will be equal to `foo/bar/?`.
