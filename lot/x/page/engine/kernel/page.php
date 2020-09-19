@@ -128,10 +128,10 @@ class Page extends File {
             // Stream page file content and make sure that property is exists before parsing
             $exist = 'content' === $i;
             foreach (stream($path = $this->path) as $k => $v) {
-                if (0 === $k && "---\n" !== $v) {
+                if (0 === $k && YAML\SOH . "\n" !== $v) {
                     break;
                 }
-                if ("...\n" === $v) {
+                if (YAML\EOT . "\n" === $v) {
                     break;
                 }
                 if (
