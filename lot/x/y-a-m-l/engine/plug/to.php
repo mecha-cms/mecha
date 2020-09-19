@@ -63,10 +63,10 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         }
         for ($i = 0, $count = count($data); $i < $count; ++$i) {
             $v = $yaml($data[$i], $dent);
-            $out .= "---\n" . ("" !== $v ? $v . "\n" : "");
+            $out .= (0 === $i ? YAML\SOH : YAML\ETB) . "\n" . ("" !== $v ? $v . "\n" : "");
         }
         $c = trim($c, "\n");
-        return $out . '...' . ($c ? "\n\n" . $c : "");
+        return $out . YAML\EOT . ($c ? "\n\n" . $c : "");
     };
     return $docs ? $yaml_docs($in, $dent, true === $docs ? "\t" : $docs) : $yaml($in, $dent);
 });

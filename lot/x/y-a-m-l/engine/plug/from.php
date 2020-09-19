@@ -209,10 +209,10 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
         // Normalize line-break
         $in = trim(n($in));
         // Remove the first separator
-        $in = 0 === strpos($in, '---') && '-' !== substr($in, 3, 1) ? preg_replace('#^-{3}\s*#', "", $in) : $in;
+        $in = 0 === strpos($in, YAML\SOH) && '-' !== substr($in, 3, 1) ? preg_replace('#^' . x(YAML\SOH) . '\s*#', "", $in) : $in;
         // Skip any string after `...`
-        $parts = explode("\n...\n", trim($in) . "\n", 2);
-        foreach (explode("\n---", $parts[0]) as $v) {
+        $parts = explode("\n" . YAML\EOT . "\n", trim($in) . "\n", 2);
+        foreach (explode("\n" . YAML\ETB, $parts[0]) as $v) {
             $docs[] = $yaml(trim($v), $dent, $e);
         }
         // Take the rest of the YAML stream just in case you need it!
