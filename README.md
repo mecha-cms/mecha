@@ -73,7 +73,7 @@ Contributors
 Release Notes
 -------------
 
-### master
+### 2.5.1
 
  - Added `YAML\SOH`, `YAML\ETB`, and `YAML\EOT` constant in the YAML extension (#94)
 
