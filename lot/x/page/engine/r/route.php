@@ -84,7 +84,7 @@ function route($any = "") {
             \State::set([
                 'has' => [
                     'next' => !!$pager->next,
-                    // 'page' => true,
+                    'page' => true,
                     'pages' => true,
                     'parent' => !!$pager->parent,
                     'prev' => !!$pager->prev
@@ -109,7 +109,11 @@ function route($any = "") {
             'parent' => false,
             'prev' => false
         ],
-        'is' => ['error' => 404]
+        'is' => [
+            'error' => 404,
+            'page' => true,
+            'pages' => false
+        ]
     ]);
     $GLOBALS['t'][] = i('Error');
     $this->layout('404' . $p . '/' . ($i + 1));
