@@ -67,22 +67,40 @@ Alternatives
 
 ### Install Through Command Line
 
-This assumes that your site’s public directory is in `/var/www`. Don’t forget to add a dot at the end of the main command. It will make sure that your files will be stored in the current directory and not in a new folder named `./mecha`.
-
-#### Using [Composer](https://packagist.org/packages/mecha-cms/mecha)
-
-~~~ .sh
-$ cd /var/www
-$ composer create-project mecha-cms/mecha .
-$ rm -r vendor
-~~~
+This assumes that your site’s public directory is in `/var/www`.
 
 #### Using Git
+
+##### Core Installation
 
 ~~~ .sh
 $ cd /var/www
 $ git clone https://github.com/mecha-cms/mecha.git .
-$ rm composer.json LICENSE README.md
+$ rm LICENSE README.md
+$ rm -r .git
+~~~
+
+##### Extension Installation
+
+Below is an example of the [user](https://github.com/mecha-cms/x.user) extension installation process.
+
+~~~ .sh
+$ cd /var/www/lot/x
+$ git clone https://github.com/mecha-cms/x.user.git
+$ mv x.user/* .
+$ rm LICENSE README.md
+$ rm -r x.user
+~~~
+
+##### Layout Installation
+
+Below is an example of the [normal](https://github.com/mecha-cms/layout.normal) layout installation process.
+
+~~~ .sh
+$ cd /var/www/lot/layout
+$ rm -r *
+$ git clone https://github.com/mecha-cms/layout.normal.git .
+$ rm LICENSE README.md
 $ rm -r .git
 ~~~
 
