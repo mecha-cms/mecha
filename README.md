@@ -62,6 +62,34 @@ Preparations
  6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/lot "GitHub").
  7. Install the panel extension if you are stuck by doing everything manually. You always have the full control to remove this extension without having to worry that your site will stop running after doing so.
 
+Alternatives
+------------
+
+### Install Through Command Line
+
+This assumes that your site’s public directory is in `/var/www`. Don’t forget to add a dot at the end of the main command. It will make sure that your files will be stored in the current directory and not in a new folder named `./mecha`.
+
+#### Using [Composer](https://packagist.org/packages/mecha-cms/mecha)
+
+~~~ .sh
+$ cd /var/www
+$ composer create-project mecha-cms/mecha .
+$ rm -r vendor
+~~~
+
+#### Using Git
+
+~~~ .sh
+$ cd /var/www
+$ git clone https://github.com/mecha-cms/mecha.git .
+$ rm composer.json LICENSE README.md
+$ rm -r .git
+~~~
+
+### Install Through Web Browser
+
+Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
+
 ---
 
 Contributors

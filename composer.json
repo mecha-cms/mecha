@@ -19,6 +19,7 @@
     }
   ],
   "config": {
+    "lock": false,
     "platform": {
       "php": "7.1.0"
     }
