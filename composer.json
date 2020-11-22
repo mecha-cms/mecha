@@ -1,0 +1,24 @@
+{
+  "name": "@mecha-cms/mecha",
+  "description": "",
+  "keywords": [
+    "cms",
+    "file",
+    "flat",
+    "minimalist",
+    "php"
+  ],
+  "type": "project",
+  "homepage": "https://mecha-cms.com",
+  "license": "GPL",
+  "authors": [
+    {
+      "name": "Taufik Nurrohman",
+      "homepage": "https://github.com/taufik-nurrohman",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": ">=7.1"
+  }
+}
