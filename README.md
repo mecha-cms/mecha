@@ -65,7 +65,7 @@ Preparations
 Alternatives
 ------------
 
-### Install Through Command Line
+### Installation Through Command Line
 
 This assumes that your site’s public directory is in `/var/www`.
 
@@ -73,7 +73,7 @@ This assumes that your site’s public directory is in `/var/www`.
 
 ##### Core Installation
 
-~~~ .sh
+~~~ .txt
 $ cd /var/www
 $ git clone https://github.com/mecha-cms/mecha.git .
 $ rm LICENSE README.md
@@ -84,7 +84,7 @@ $ rm -r .git
 
 Below is an example of the [user](https://github.com/mecha-cms/x.user) extension installation process.
 
-~~~ .sh
+~~~ .txt
 $ cd /var/www/lot/x
 $ git clone https://github.com/mecha-cms/x.user.git
 $ mv x.user/* .
@@ -96,7 +96,7 @@ $ rm -r x.user
 
 Below is an example of the [normal](https://github.com/mecha-cms/layout.normal) layout installation process.
 
-~~~ .sh
+~~~ .txt
 $ cd /var/www/lot/layout
 $ rm -r *
 $ git clone https://github.com/mecha-cms/layout.normal.git .
@@ -104,7 +104,7 @@ $ rm LICENSE README.md
 $ rm -r .git
 ~~~
 
-### Install Through Web Browser
+### Installation Through Web Browser
 
 Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
 
