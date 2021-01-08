@@ -11,7 +11,7 @@ header_register_callback(function() {
 register_shutdown_function(function() {
     // Run task(s) if any…
     if (is_file($f = ROOT . DS . 'task.php')) {
-        (function($f) {
+        (static function($f) {
             extract($GLOBALS, EXTR_SKIP);
             require $f;
         })($f);

@@ -79,7 +79,7 @@ foreach (glob(LOT . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) 
         // Load state(s)…
         State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
         if (is_file($v = $r . DS . 'state.php')) {
-            (function($k, $v, $a) {
+            (static function($k, $v, $a) {
                 extract($GLOBALS, EXTR_SKIP);
                 State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
             })($k, $v, $set['x'][$n] ?? []);
@@ -104,10 +104,10 @@ foreach ($uses as $v) {
 
 // Load extension(s)…
 foreach ($uses as $v) {
-    (function($v) {
+    (static function($v) {
         // Load task(s)…
         if (is_file($k = dirname($v) . DS . 'task.php')) {
-            (function($k) {
+            (static function($k) {
                 extract($GLOBALS, EXTR_SKIP);
                 require $k;
             })($k);

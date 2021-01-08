@@ -4,11 +4,11 @@
  * =========================================
  *  MECHA · CONTENT MANAGEMENT SYSTEM (CMS)
  * =========================================
- * © 2014 – 2020 · Taufik Nurrohman
+ * © 2014 – 2021 · Taufik Nurrohman
  * -----------------------------------------
  */
 
-define('VERSION', '2.5.1'); // Current version
+define('VERSION', '2.5.2'); // Current version
 define('DS', DIRECTORY_SEPARATOR); // Default directory separator
 define('PS', PATH_SEPARATOR); // Default path separator
 

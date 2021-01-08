@@ -69,9 +69,14 @@ Alternatives
 
 This assumes that your site’s public directory is in `/var/www`.
 
-#### Using Git
+#### Using Composer
 
-##### Core Installation
+~~~ .txt
+$ cd /var/www
+$ composer create-project mecha-cms/mecha .
+~~~
+
+#### Using Git
 
 ~~~ .txt
 $ cd /var/www
@@ -80,31 +85,7 @@ $ rm LICENSE README.md
 $ rm -r .git
 ~~~
 
-##### Extension Installation
-
-Below is an example of the [user](https://github.com/mecha-cms/x.user) extension installation process.
-
-~~~ .txt
-$ cd /var/www/lot/x
-$ git clone https://github.com/mecha-cms/x.user.git
-$ mv x.user/* .
-$ rm LICENSE README.md
-$ rm -r x.user
-~~~
-
-##### Layout Installation
-
-Below is an example of the [normal](https://github.com/mecha-cms/layout.normal) layout installation process.
-
-~~~ .txt
-$ cd /var/www/lot/layout
-$ rm -r *
-$ git clone https://github.com/mecha-cms/layout.normal.git .
-$ rm LICENSE README.md
-$ rm -r .git
-~~~
-
-### Installation Through Web Browser
+### Using Web Browser
 
 Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
 
@@ -118,6 +99,10 @@ Contributors
 
 Release Notes
 -------------
+
+### master
+
+ - [x] Removed cache optimization stuff from the `.htaccess` file. The main `.htaccess` file should focus only to the rewrite module.
 
 ### 2.5.1
 

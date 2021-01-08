@@ -3,7 +3,7 @@ title: Form
 description: Persistent form data after submission.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.7
+version: 1.0.8
 
 use:
   '.\lot\x\layout': 1

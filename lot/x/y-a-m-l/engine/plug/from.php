@@ -11,9 +11,9 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
         return $docs ? $out : ($out[0] ?? []);
     }
     */
-    $yaml = function(string $in, string $dent = '  ', $e = true) use(&$yaml) {
+    $yaml = static function(string $in, string $dent = '  ', $e = true) use(&$yaml) {
         // Break into structure(s)
-        $yaml_select = function(string $in) {
+        $yaml_select = static function(string $in) {
             $out = [];
             $s = $n = null;
             foreach (explode("\n", $in) as $v) {
@@ -33,9 +33,9 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
             $out[] = rtrim($s);
             return $out;
         };
-        $yaml_set = function(&$out, string $in, string $dent, $e) use(&$yaml) {
+        $yaml_set = static function(&$out, string $in, string $dent, $e) use(&$yaml) {
             // Folded-style string
-            $yaml_block = function(string $in) {
+            $yaml_block = static function(string $in) {
                 $out = "";
                 $e = false; // Previous is empty
                 $x = false; // Has back-slash at the end of string
@@ -64,7 +64,7 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                 return trim($out);
             };
             // Get key and value pair(s)
-            $yaml_brk = function(string $in) {
+            $yaml_brk = static function(string $in) {
                 $in = trim($in, "\n");
                 if (0 === strpos($in, '"') || 0 === strpos($in, "'")) {
                     $q = $in[0];
@@ -90,7 +90,7 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                 $out = strstr($in, '#', true);
                 return [false, false, trim(false !== $out ? $out : $in)];
             };
-            $yaml_list = function(string $in, string $dent, $e) use(
+            $yaml_list = static function(string $in, string $dent, $e) use(
                 &$yaml,
                 &$yaml_brk,
                 &$yaml_pull,
@@ -111,14 +111,14 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                 return $out;
             };
             // Dedent from `$dent`
-            $yaml_pull = function(string $in, string $dent) {
+            $yaml_pull = static function(string $in, string $dent) {
                 if (0 === strpos($in, $dent)) {
                     return str_replace("\n" . $dent, "\n", substr($in, strlen($dent)));
                 }
                 return $in;
             };
             // Parse flow-style collection(s)
-            $yaml_span = function(string $in, $e) {
+            $yaml_span = static function(string $in, $e) {
                 $out = "";
                 // Validate to JSON
                 foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $in, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
@@ -128,7 +128,7 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
                 return $e ? e($out, ['~' => null]) : $out;
             };
             // Remove comment(s)
-            $yaml_value = function(string $in) {
+            $yaml_value = static function(string $in) {
                 $in = trim($in);
                 if (0 === strpos($in, '"') || 0 === strpos($in, "'")) {
                     $q = $in[0];
@@ -204,7 +204,7 @@ From::_('YAML', $fn = function(string $in, string $dent = '  ', $docs = false, $
         }
         return $out;
     };
-    $yaml_docs = function(string $in, string $dent = '  ', $e = true, $content = "\t") use(&$yaml) {
+    $yaml_docs = static function(string $in, string $dent = '  ', $e = true, $content = "\t") use(&$yaml) {
         $docs = [];
         // Normalize line-break
         $in = trim(n($in));

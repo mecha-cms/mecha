@@ -1,7 +1,12 @@
 <?php
 
 // Add CSS file to the `<head>` section…
-Asset::set('css/log.min.css', 20);
+if (defined('DEBUG') && DEBUG) {
+    Asset::set('css/index.css', 20);
+} else {
+    // Serve the minified version if `DEBUG` mode is off
+    Asset::set('css/index.min.css', 20);
+}
 
 // Create site link data to be used in navigation
 $GLOBALS['links'] = new Anemon((function($out, $state, $url) {
@@ -27,8 +32,8 @@ $GLOBALS['traces'] = new Pages((function($out, $state, $url) {
     while ($chop = array_shift($chops)) {
         $v .= '/' . $chop;
         if ($file = File::exist([
-            $v . '.page',
-            $v . '.archive'
+            $v . '.archive',
+            $v . '.page'
         ])) {
             $out[] = $file;
         }

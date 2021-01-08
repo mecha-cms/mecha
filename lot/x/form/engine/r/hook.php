@@ -2,7 +2,7 @@
 
 function set($content) {
     // Convert `foo[bar][baz]` to `form.foo.bar.baz`
-    $keys = function(string $in) {
+    $keys = static function(string $in) {
         return 'form.' . \str_replace(['.', '[', ']', \P], [\P, '.', "", "\\."], $in);
     };
     if (false !== \strpos($content, '<input ')) {

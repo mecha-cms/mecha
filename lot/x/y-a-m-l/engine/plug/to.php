@@ -4,9 +4,9 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
     /*
     if (extension_loaded('yaml')) {}
     */
-    $yaml = function(array $data, string $dent = '  ') use(&$yaml) {
+    $yaml = static function(array $data, string $dent = '  ') use(&$yaml) {
         $out = [];
-        $yaml_list = function(array $data) use(&$dent, &$yaml) {
+        $yaml_list = static function(array $data) use(&$dent, &$yaml) {
             $out = [];
             foreach ($data as $v) {
                 if (is_array($v)) {
@@ -21,7 +21,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
             }
             return implode("\n", $out);
         };
-        $yaml_set = function(string $k, string $m, $v) {
+        $yaml_set = static function(string $k, string $m, $v) {
             // Check for safe key pattern, otherwise, wrap it with quote
             if ("" !== $k && (is_numeric($k) || (ctype_alnum($k) && !is_numeric($k[0])) || preg_match('/^[a-z][a-z\d]*(?:[_-]+[a-z\d]+)*$/i', $k))) {
             } else {
@@ -55,7 +55,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         }
         return implode("\n", $out);
     };
-    $yaml_docs = function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
+    $yaml_docs = static function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
         $out = $c = "";
         if (array_key_exists($content, $data)) {
             $c = $data[$content];
