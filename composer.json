@@ -1,0 +1,36 @@
+{
+  "authors": [
+    {
+      "name": "Taufik Nurrohman",
+      "homepage": "https://github.com/taufik-nurrohman",
+      "role": "Developer"
+    },
+    {
+      "name": "Igoy Nawamreh",
+      "homepage": "https://github.com/igoynawamreh",
+      "role": "Developer"
+    }
+  ],
+  "description": "Mecha is a flat-file content management system that carries the concept of minimalism.",
+  "funding": [
+    {
+      "type": "other",
+      "url": "https://paypal.me/tatautaufik"
+    }
+  ],
+  "homepage": "https://mecha-cms.com",
+  "license": "GPL-3.0-or-later",
+  "name": "mecha-cms/mecha",
+  "require": {
+    "ext-dom": "*",
+    "ext-json": "*",
+    "ext-mbstring": "*",
+    "php": ">=7.1.0"
+  },
+  "support": {
+    "docs": "https://mecha-cms.com/reference",
+    "forum": "https://github.com/mecha-cms/mecha/discussions",
+    "issues": "https://github.com/mecha-cms/mecha/issues"
+  },
+  "type": "project"
+}
