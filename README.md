@@ -85,7 +85,7 @@ $ rm LICENSE README.md
 $ rm -r .git
 ~~~
 
-### Using Web Browser
+### Installation Through Web Browser
 
 Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
 
@@ -102,7 +102,7 @@ Release Notes
 
 ### master
 
- - [x] Removed cache optimization stuff from the `.htaccess` file. The main `.htaccess` file should focus only to the rewrite module.
+ - [x] Removed cache optimization stuff from `.htaccess`. The main `.htaccess` file should focus only to the rewrite module.
 
 ### 2.5.1
 
