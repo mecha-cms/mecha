@@ -103,6 +103,7 @@ Release Notes
 ### master
 
  - [x] Removed cache optimization stuff from `.htaccess`. The main `.htaccess` file should focus only to the rewrite module.
+ - [x] Removed all image asset methods.
 
 ### 2.5.1
 
@@ -110,8 +111,8 @@ Release Notes
 
 ### 2.5.0
 
- - Added `?` symbol for `Route` as alias of `:key` pattern. So, `foo/bar/:baz` will be equal to `foo/bar/?`.
  - Added `$status` parameter to `Guard::kick()` with default value set to `301`.
+ - Added `?` symbol for `Route` as alias of `:key` pattern. So, `foo/bar/:baz` will be equal to `foo/bar/?`.
  - Added ability to set response status automatically based on the first numeric layout path.
  - Renamed `$route->view()` method to `$route->layout()` for consistency.
 
@@ -124,76 +125,76 @@ This update focuses on improving the pagination feature of page extension. `$pag
 
 ### 2.3.2
 
- - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.0.
- - Improved `Path` methods to allow `null` values.
  - Added `drop` helper function.
+ - Improved `Path` methods to allow `null` values.
+ - Updated [Parsedown Extra](https://github.com/erusev/parsedown-extra) to version 0.8.0.
 
 ### 2.3.1
 
- - Prefers HTTP/2 header style for both request and response (#89)
  - Bug fixes and improvements for the YAML extension.
+ - Prefers HTTP/2 header style for both request and response (#89)
 
 ### 2.3.0
 
 This update focuses on improving the token feature so that it is not too strict. We need to give other extension opportunities to load the current page for certain purposes without having to change the current token.
 
- - Improved hook remover. It is now possible to remove a hook function from closures as long as you store the function closure into a variable. You can then remove the hook function using the variable as a reference.
- - Improved token mechanism. Added `$for` parameter for `Guard::token()` to set delay time for the token to refresh. The default value is one minute. Previously, every token will be refreshed on every page visits. This causes [several obstacles](https://github.com/mecha-cms/mecha/issues/82) if some extensions require to reload the page to build the cache (even if it is only to load pages in the background) or to prepare it to load the next page via the HTML5 prefetch feature.
- - Improved alert counter and serializer. Counting alert messages or converting them into a JSON string will not clear the alert session.
+ - Added `$deep` option for `From::HTML()` with default value set to `false` to prevent double encode HTML special characters.
+ - Added `X-Requested-With` header field to `fetch()` with default value set to `CURL` to let the client to know that the request is not came from a normal web browser (#86)
+ - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
  - Fixed form extension bug that caused the comment duplicate checker to fails to work.
  - Fixed layout extension bug that does not capture the custom attributes added to the asset path that is relative to the layout folder.
+ - Improved alert counter and serializer. Counting alert messages or converting them into a JSON string will not clear the alert session.
+ - Improved hook remover. It is now possible to remove a hook function from closures as long as you store the function closure into a variable. You can then remove the hook function using the variable as a reference.
  - Improved HTTP response headers API. They are now case-insensitive.
  - Improved markdown extension. It is now possible to generate HTML `<figure>` element automatically from every image that appears alone in a paragraph.
- - Added `$deep` option for `From::HTML()` with default value set to `false` to prevent double encode HTML special characters.
- - Renamed `Route::over()` to `Route::hit()` to make it in-line with `Cache::hit()` (#83)
- - Renamed `Cache::expire()` to `Cache::stale()` for more semantic method naming (#84)
+ - Improved token mechanism. Added `$for` parameter for `Guard::token()` to set delay time for the token to refresh. The default value is one minute. Previously, every token will be refreshed on every page visits. This causes [several obstacles](https://github.com/mecha-cms/mecha/issues/82) if some extensions require to reload the page to build the cache (even if it is only to load pages in the background) or to prepare it to load the next page via the HTML5 prefetch feature.
  - Removed `State::over()` method.
- - Fixed double encode on HTML attribute’s value caused by the `HTML` class (#85)
- - Added `X-Requested-With` header field to `fetch()` with default value set to `CURL` to let the client to know that the request is not came from a normal web browser (#86)
  - Removed automatic paragraph tags in page description data for consistency with other page data such as the title data. If I had to be consistent, when the description data is required to be wrapped in paragraph tags, then the title data should also be wrapped in heading tags. But it doesn’t (#87)
+ - Renamed `Cache::expire()` to `Cache::stale()` for more semantic method naming (#84)
+ - Renamed `Route::over()` to `Route::hit()` to make it in-line with `Cache::hit()` (#83)
 
 ### 2.2.2
 
 This update focuses on stabilizing the `URL` class. In this version, you can use the class to parse all types of URLs, not only internal URLs but also external URLs. Mecha has its own specifications regarding URLs, and is a bit different from the native PHP `parse_url` function. One of them is the presence of `d` and `i` properties. You can learn more about this on the [URL reference page](https://mecha-cms.com/reference/class/u-r-l).
 
- - Fixed `$lot` parameter applied to `Route::fire()` does not give any effect.
  - Added optional `$d` and `$i` parameter to the `URL` class constructor.
+ - Fixed `$lot` parameter applied to `Route::fire()` does not give any effect.
 
 ### 2.2.1
 
- - Small bug fixes for the `let` hook.
- - Fixed `send` function not sending HTML email.
  - Added `$as` parameter to `copy` and `move` methods of `File` and `Folder` class.
+ - Fixed `send` function not sending HTML email.
+ - Small bug fixes for the `let` hook.
 
 ### 2.2.0
 
 Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator becomes a must-have feature in this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
 
+ - Added ability to read special file named `task.php`.
+ - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
  - Added more static functions: `abort`, `alert`, `anemon`, `any`, `c2f`, `cache`, `check`, `concat`, `content`, `cookie`, `eq`, `exist`, `extend`, `f2c`, `f2p`, `fetch`, `find`, `fire`, `ge`, `get`, `gt`, `has`, `hook`, `is`, `kick`, `le`, `let`, `lt`, `map`, `mecha`, `ne`, `not`, `open`, `p2f`, `page`, `pages`, `pluck`, `route`, `send`, `session`, `set`, `shake`, `state`, `step`, `stream`, `test`, `token`.
  - Added page conditional statement features.
+ - Moved YAML parser feature to a separate _YAML_ extension.
+ - Moved class `Page` and `Pager` to a separate _Page_ extension.
+ - Moved configuration file from `.\lot\extend\:extension\state\config.php` to `.\lot\x\:extension\state.php`.
+ - Moved configuration file from `.\lot\shield\:layout\state\config.php` to `.\lot\layout\state.php`.
+ - Moved configuration file from `.\lot\state\config.php` to `.\state.php`.
+ - Moved search functionality to a separate _Search_ extension.
+ - Now you can call page properties via `$this` property inside the hook function, either as a named function or as an anonymous function.
+ - Removed ability to read special file named `__index.php` and `index__.php`. Only `index.php` file that will be read automatically.
  - Removed automatic constant creation for every folder name in the `.\lot` directory.
  - Removed classes: `Extend` `Elevator`, `Form`, `Mecha`, `Plugin`, `Shield`, `Union`.
- - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
+ - Removed language and layout switcher features. Now we no longer have the ability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha.
+ - Removed plugin feature. There are no such thing called “plugin” in this version. They are now simply called “extension”.
+ - Renamed `.\lot\extend` directory address to `.\lot\x`.
  - Renamed class `Config` to `State`.
  - Renamed class `Date` to `Time`.
  - Renamed class `Guardian` to `Guard`.
  - Renamed class `Message` to `Alert`.
- - Renamed `.\lot\extend` directory address to `.\lot\x`.
  - Renamed the `X` constant to `P`. “P” stands for “Placeholder”.
- - Moved configuration file from `.\lot\state\config.php` to `.\state.php`.
- - Moved configuration file from `.\lot\extend\:extension\state\config.php` to `.\lot\x\:extension\state.php`.
- - Moved configuration file from `.\lot\shield\:layout\state\config.php` to `.\lot\layout\state.php`.
- - Moved class `Page` and `Pager` to a separate _Page_ extension.
- - Moved YAML parser feature to a separate _YAML_ extension.
- - Moved search functionality to a separate _Search_ extension.
  - The “Set, Get and Reset” method naming standard has now been changed to “Set, Get and Let”.
- - Now you can call page properties via `$this` property inside the hook function, either as a named function or as an anonymous function.
  - Use `null` value everywhere as the default value for all inaccessible data. From now on, use the `??` operator to determine alternative value.
  - `$pages` variable is now a generator. Every page data in it will be loaded only if you iterate over the generator.
- - Removed plugin feature. There are no such thing called “plugin” in this version. They are now simply called “extension”.
- - Removed language and layout switcher features. Now we no longer have the ability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha.
- - Added ability to read special file named `task.php`.
- - Removed ability to read special file named `__index.php` and `index__.php`. Only `index.php` file that will be read automatically.
 
 ### 2.0.0
 
