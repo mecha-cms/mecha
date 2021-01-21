@@ -91,7 +91,6 @@ final class Asset extends Genome {
                     '1' => "",
                     '2' => $data,
                     'path' => self::path($path),
-                    'link' => null,
                     'url' => self::URL($path),
                     'stack' => (float) $stack
                 ];

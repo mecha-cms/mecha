@@ -3,7 +3,7 @@
 foreach ([
     '.css' => function($value, $key) {
         $path = $value['path'];
-        $url = $value['link'] ?? $value['url'];
+        $url = $value['url'];
         $x = false !== strpos($url, '://') || 0 === strpos($url, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';
@@ -18,12 +18,12 @@ foreach ([
         $value[0] = 'link';
         $value[1] = false;
         $value[2]['rel'] = 'stylesheet';
-        unset($value['link'], $value['path'], $value['stack'], $value['url']);
+        unset($value['path'], $value['stack'], $value['url']);
         return new HTML($value);
     },
     '.js' => function($value, $key) {
         $path = $value['path'];
-        $url = $value['link'] ?? $value['url'];
+        $url = $value['url'];
         $x = false !== strpos($url, '://') || 0 === strpos($url, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';
@@ -36,7 +36,7 @@ foreach ([
             $value[2]['src'] = $u;
         }
         $value[0] = 'script';
-        unset($value['link'], $value['path'], $value['stack'], $value['url']);
+        unset($value['path'], $value['stack'], $value['url']);
         return new HTML($value);
     }
 ] as $k => $v) {
@@ -52,7 +52,6 @@ foreach (['script', 'style', 'template'] as $v) {
                 '1' => n(trim($content)),
                 '2' => $data,
                 'path' => null,
-                'link' => null,
                 'url' => null,
                 'stack' => (float) $stack
             ];

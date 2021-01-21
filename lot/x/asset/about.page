@@ -34,10 +34,37 @@ To append CSS assets to the `<head>` section, write this code in an `index.php` 
 Asset::set('path/to/file.css');
 ~~~
 
+To append inline CSS assets to the `<head>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::style(
+<<<CSS
+:root {
+  --background: #fff;
+  --color: #000;
+}
+body {
+  background: var(--background);
+  color: var(--color);
+}
+CSS
+);
+~~~
+
 To append JavaScript assets to the `<body>` section, write this code in an `index.php` file:
 
 ~~~ .php
 Asset::set('path/to/file.js');
+~~~
+
+To append inline JavaScript assets to the `<body>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::script(
+<<<JS
+document.documentElement.classList.add('js');
+JS
+);
 ~~~
 
 Shortly after being added, this extension will process the file path and then it will be rendered as `<link>` tags for CSS files and `<script>` tags for JavaScript files.
