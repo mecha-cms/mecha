@@ -100,10 +100,11 @@ Contributors
 Release Notes
 -------------
 
-### master
+### 2.5.2
 
- - [x] Removed cache optimization stuff from `.htaccess`. The main `.htaccess` file should focus only to the rewrite module.
- - [x] Removed all image asset methods.
+ - Added `path` helper function.
+ - Removed cache optimization stuff from `.htaccess`. The main `.htaccess` file should focus only to the rewrite module.
+ - Removed all image asset methods.
 
 ### 2.5.1
 

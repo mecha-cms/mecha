@@ -255,6 +255,10 @@ namespace {
             return !\call_user_func($fn, $v, $k);
         }, \ARRAY_FILTER_USE_BOTH);
     }
+    // Resolve relative file/folder path
+    function path(string $x = null) {
+        return \stream_resolve_include_path($x) ?: null;
+    }
     // Generate new array contains value from the key
     function pluck(iterable $a, string $k, $or = null) {
         $out = [];
