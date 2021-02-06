@@ -100,6 +100,10 @@ Contributors
 Release Notes
 -------------
 
+### 2.5.3
+
+ - Bug fixes.
+
 ### 2.5.2
 
  - Added `path` helper function.
