@@ -7,15 +7,21 @@ namespace _ {
             return false;
         }
         return (
-            // Maybe an empty string, array or object
+            // Maybe boolean
+            'false' === $x ||
+            'null' === $x ||
+            'true' === $x ||
+            // Maybe empty string, array or object
             '""' === $x ||
             '[]' === $x ||
             '{}' === $x ||
-            // Maybe an encoded JSON string
+            // Maybe number
+            \is_numeric($x) ||
+            // Maybe encoded JSON string
             '"' === $x[0] && '"' === \substr($x, -1) ||
-            // Maybe a numeric array
+            // Maybe numeric array
             '[' === $x[0] && ']' === \substr($x, -1) ||
-            // Maybe an associative array
+            // Maybe associative array
             '{' === $x[0] && '}' === \substr($x, -1)
         ) && (null !== ($x = \json_decode($x))) ? ($r ? $x : true) : false;
     }
@@ -54,6 +60,28 @@ namespace {
         // `concat([…], […], […])`
         return \array_merge_recursive($a, ...$b);
     }
+    // Remove empty array, empty string and `null` value from array
+    function drop(iterable $a, callable $fn = null) {
+        $n = null === $fn; // Use default filter?
+        foreach ($a as $k => $v) {
+            if (\is_array($v) && !empty($v)) {
+                if ($v = drop($v, $fn)) {
+                    $a[$k] = $v;
+                } else {
+                    unset($a[$k]); // Drop!
+                }
+            } else if ($n) {
+                if ("" === $v || null === $v || [] === $v) {
+                    unset($a[$k]); // Drop!
+                }
+            } else {
+                if (\call_user_func($fn, $v, $k)) {
+                    unset($a[$k]); // Drop!
+                }
+            }
+        }
+        return [] !== $a ? $a : null;
+    }
     // A equal to B
     function eq($a, $b) {
         return $b === q($a);
@@ -87,7 +115,7 @@ namespace {
             '_' => '_' . $h
         ]), false, $n . '_'), [$n => "\\"]);
     }
-    // Convert file name to class property name
+    // Convert file name to property name
     function f2p(string $s, string $h = '-', string $n = '.') {
         if (0 === \strpos($s, $n)) {
             $s = '__' . \substr($s, 1);
@@ -267,14 +295,14 @@ namespace {
         }
         return $out;
     }
-    // Convert class property name to file name
+    // Convert property name to file name
     function p2f(string $s, string $h = '-', string $n = '.') {
         if (0 === \strpos($s, '__')) {
             $s = $n . \substr($s, 2);
         }
         return \strtr(h($s, $h, false, $n . "\\\\_"), ["\\" => $n]);
     }
-    // Send HTML email
+    // Send email as HTML
     function send($from, $to, string $title, string $content, array $lot = []) {
         // This function was intended to be used as a quick way to send HTML email
         // There are no such email validation proccess here
@@ -320,7 +348,7 @@ namespace {
         $a[\strtr(\array_shift($kk), [\P => $s])] = $v;
         return $a;
     }
-    // Shake array
+    // Shake array value
     function shake(array $a, $preserve_key = true) {
         if (\is_callable($preserve_key)) {
             // `$preserve_key` as `$fn`
@@ -342,6 +370,7 @@ namespace {
         }
         return $a;
     }
+    // Break dot-notation sequence into step(s)
     function step(string $a, string $s = '.', int $dir = 1) {
         $a = \strtr($a, ["\\" . $s => \P]);
         if (false !== \strpos($a, $s)) {
@@ -458,27 +487,6 @@ namespace {
                 }
             }
         });
-    }
-    function drop(iterable $a, callable $fn = null) {
-        $n = null === $fn; // Use default filter?
-        foreach ($a as $k => $v) {
-            if (\is_array($v) && !empty($v)) {
-                if ($v = drop($v, $fn)) {
-                    $a[$k] = $v;
-                } else {
-                    unset($a[$k]); // Drop!
-                }
-            } else if ($n) {
-                if ("" === $v || null === $v || [] === $v) {
-                    unset($a[$k]); // Drop!
-                }
-            } else {
-                if (\call_user_func($fn, $v, $k)) {
-                    unset($a[$k]); // Drop!
-                }
-            }
-        }
-        return [] !== $a ? $a : null;
     }
     function e($x, array $a = []) {
         if (\is_string($x)) {

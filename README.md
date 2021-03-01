@@ -100,6 +100,10 @@ Contributors
 Release Notes
 -------------
 
+### main
+
+ - [x] Improved internal JSON validator.
+
 ### 2.5.3
 
  - Bug fixes.
