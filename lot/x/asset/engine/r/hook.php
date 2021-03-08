@@ -1,4 +1,4 @@
-<?php namespace _\lot\x;
+<?php namespace x;
 
 function asset($content) {
     $content = \str_replace('</head>', \Hook::fire('asset:head', [""], null, \Asset::class) . '</head>', $content);

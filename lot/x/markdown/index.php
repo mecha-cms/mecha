@@ -1,6 +1,6 @@
 <?php
 
-namespace _\lot\x\markdown {
+namespace x\markdown {
     function inline($content) { // Inline tag(s) only
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
@@ -21,7 +21,7 @@ namespace _\lot\x\markdown {
     ], __NAMESPACE__ . "\\inline", 2);
 }
 
-namespace _\lot\x {
+namespace x {
     function markdown($content) {
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {

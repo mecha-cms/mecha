@@ -1,6 +1,6 @@
 <?php
 
-namespace _\lot\x\layout {
+namespace x\layout {
     function alert($content) {
         if (false !== \strpos($content, '</alert>')) {
             return \preg_replace_callback('#(?:\s*<alert(?:\s[^>]+)?>[\s\S]*?<\/alert>\s*)+#', function($m) {
@@ -89,7 +89,7 @@ namespace _\lot\x\layout {
     \Hook::set('get', __NAMESPACE__ . "\\get", 0);
 }
 
-namespace _\lot\x {
+namespace x {
     // Generate HTML class(es)
     function layout($content) {
         $root = 'html';

@@ -1,4 +1,4 @@
-<?php namespace _\lot\x\form;
+<?php namespace x\form;
 
 function set($content) {
     // Convert `foo[bar][baz]` to `form.foo.bar.baz`

@@ -1,4 +1,4 @@
-<?php namespace _\lot\x\page;
+<?php namespace x\page;
 
 // Initialize layout variable(s)
 $GLOBALS['page'] = new \Page;

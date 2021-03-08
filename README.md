@@ -65,7 +65,7 @@ Preparations
 Alternatives
 ------------
 
-### Installation Through Command Line
+### Command Line
 
 This assumes that your site’s public directory is in `/var/www`.
 
@@ -85,7 +85,7 @@ $ rm LICENSE README.md
 $ rm -r .git
 ~~~
 
-### Installation Through Web Browser
+### Web Browser
 
 Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
 
@@ -103,6 +103,7 @@ Release Notes
 ### main
 
  - [x] Improved internal JSON validator.
+ - [x] Improved class auto-loader. `\` now will be converted into `/`, and `__` will be converted into `.` (#96)
 
 ### 2.5.3
 

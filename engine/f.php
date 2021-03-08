@@ -43,8 +43,13 @@ namespace {
         return false;
     }
     // Convert class name to file name
-    function c2f(string $s, string $h = '-', string $n = '.') {
-        return \ltrim(\str_replace(['\\', $n . $h, '_' . $h], [$n, $n, '_'], h($s, $h, false, '_\\\\')), $h);
+    function c2f(string $x = null, $a = false) {
+        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+            return \ltrim(\strtr(h($v, '-', $a, '_'), [
+                '__-' => '.',
+                '__' => '.'
+            ]), '-');
+        }));
     }
     // Get file content
     function content(string $f) {
@@ -109,21 +114,20 @@ namespace {
         return \array_replace_recursive($a, ...$b);
     }
     // Convert file name to class name
-    function f2c(string $s, string $h = '-', string $n = '.') {
-        return \strtr(p(\strtr($s, [
-            $n => $n . $h,
-            '_' => '_' . $h
-        ]), false, $n . '_'), [$n => "\\"]);
+    function f2c(string $x = null, $a = false) {
+        return \implode("\\", map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+            return p(\strtr($v, [
+                '.' => '__'
+            ]), $a, '_');
+        }));
     }
     // Convert file name to property name
-    function f2p(string $s, string $h = '-', string $n = '.') {
-        if (0 === \strpos($s, $n)) {
-            $s = '__' . \substr($s, 1);
-        }
-        return \strtr(c(\strtr($s, [
-            $n => $h . $n,
-            '_' => $h . '_'
-        ]), false, $n . '_'), [$n => "\\"]);
+    function f2p(string $x = null, $a = false) {
+        return \implode("\\", map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+            return c(\strtr($v, [
+                '.' => '__'
+            ]), $a, '_');
+        }));
     }
     // Fetch remote URL
     function fetch(string $url, $lot = null, $type = 'GET') {
@@ -266,8 +270,6 @@ namespace {
         }
         return $out;
     }
-    // Reserved
-    function mecha() {}
     // A not equal to B
     function ne($a, $b) {
         return q($a) !== $b;
@@ -296,11 +298,12 @@ namespace {
         return $out;
     }
     // Convert property name to file name
-    function p2f(string $s, string $h = '-', string $n = '.') {
-        if (0 === \strpos($s, '__')) {
-            $s = $n . \substr($s, 2);
-        }
-        return \strtr(h($s, $h, false, $n . "\\\\_"), ["\\" => $n]);
+    function p2f(string $x = null, $a = false) {
+        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+            return \strtr(h($v, '-', $a, '_'), [
+                '__' => '.'
+            ]);
+        }));
     }
     // Send email as HTML
     function send($from, $to, string $title, string $content, array $lot = []) {
@@ -411,8 +414,13 @@ namespace {
         echo '<p style="border:2px solid #000;border-bottom-width:1px;">';
         foreach ($a as $b) {
             $s = \var_export($b, true);
-            $s = \str_replace(["\n", "\r"], "", \highlight_string("<?php\n\n" . $s . "\n\n?>", true));
-            $s = \str_replace('<code>', '<code style="display:block;word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:0;border-bottom:1px solid #000;padding:.5em;border-radius:0;box-shadow:none;text-shadow:none;">', $s);
+            $s = \strtr(\highlight_string("<?php\n\n" . $s . "\n\n?>", true), [
+                "\n" => "",
+                "\r" => ""
+            ]);
+            $s = \strtr($s, [
+                '<code>' => '<code style="display:block;word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:0;border-bottom:1px solid #000;padding:.5em;border-radius:0;box-shadow:none;text-shadow:none;">'
+            ]);
             echo $s;
         }
         echo '</p>';
@@ -471,9 +479,10 @@ namespace {
         return $x;
     }
     function c(string $x = null, $a = false, string $i = "") {
-        return \str_replace(' ', "", \preg_replace_callback('#([ ' . $i . '])([\p{L}\p{N}' . $i . '])#u', function($m) {
+        $i = x($i);
+        return \strtr(\preg_replace_callback('/([ ' . $i . '])([\p{L}\p{N}' . $i . '])/u', function($m) {
             return $m[1] . u($m[2]);
-        }, f($x, $a, $i)));
+        }, f($x, $a, $i)), [' ' => ""]);
     }
     function d(string $f, $fn = null) {
         \spl_autoload_register(function($c) use($f, $fn) {
@@ -520,7 +529,7 @@ namespace {
                     $b + 1 === $a &&
                     \preg_match('/^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$/', $x)
                 ) {
-                    return \str_replace("\\" . $x[0], $x[0], $v);
+                    return \strtr($v, ["\\" . $x[0] => $x[0]]);
                 }
                 return $v;
             }
@@ -1022,13 +1031,14 @@ namespace {
     // $i: character(s) to keep
     function f(string $x = null, $a = true, string $i = "") {
         // this function does not trim white-space at the start and end of the string
+        $i = x($i);
         $x = \preg_replace([
             // remove HTML tag(s) and character(s) reference
-            '#<[^>]+?>|&(?:[a-z\d]+|\#\d+|\#x[a-f\d]+);#i',
+            '/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i',
             // remove anything except character(s) white-list
-            '#[^\p{L}\p{N}\s' . $i . ']#u',
+            '/[^\p{L}\p{N}\s' . $i . ']/u',
             // convert multiple white-space to single space
-            '#\s+#'
+            '/\s+/'
         ], ' ', $x);
         return $a && !empty($GLOBALS['F']) ? \strtr($x, $GLOBALS['F']) : $x;
     }
@@ -1064,10 +1074,13 @@ namespace {
         }
         return yield from [];
     }
-    function h(string $x = null, string $h = '-', $a = false, $i = "") {
-        return \str_replace([' ', $h . $h], $h, \preg_replace_callback('#\p{Lu}#', function($m) use($h) {
+    function h(string $x = null, string $h = '-', $a = false, string $i = "") {
+        return \strtr(\preg_replace_callback('/\p{Lu}/', function($m) use($h) {
             return $h . l($m[0]);
-        }, f($x, $a, x($h) . $i)));
+        }, f($x, $a, $h . $i)), [
+            ' ' => $h,
+            $h . $h => $h
+        ]);
     }
     function i($x = null, $a = [], $f = null) {
         if (null === $x) {
@@ -1130,9 +1143,13 @@ namespace {
     }
     function n(string $x = null, string $t = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
-        $x = \str_replace("\xEF\xBB\xBF", "", $x);
+        $x = \strtr($x, ["\xEF\xBB\xBF" => ""]);
         // Tab to 4 space(s), line-break to `\n`
-        return \str_replace(["\t", "\r\n", "\r"], [$t, "\n", "\n"], $x);
+        return \strtr($x, [
+            "\t" => $t,
+            "\r\n" => "\n",
+            "\r" => "\n"
+        ]);
     }
     function o($a, $safe = true) {
         if (\is_array($a)) {
@@ -1148,8 +1165,8 @@ namespace {
         }
         return $a;
     }
-    function p(string $x = null, $a = false, $i = "") {
-        return \ltrim(c(' ' . $x, $a, $i), ' ');
+    function p(string $x = null, $a = false, string $i = "") {
+        return c(' ' . $x, $a, $i);
     }
     function q($x) {
         if (true === $x) {
@@ -1220,7 +1237,7 @@ namespace {
     }
     function v(string $x = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
         $r = [];
-        foreach (\array_merge((array) $c, \str_split($d, 1)) as $v) {
+        foreach (\str_split($c . $d, 1) as $v) {
             $r["\\" . $v] = $v;
         }
         return \strtr($x, $r);
