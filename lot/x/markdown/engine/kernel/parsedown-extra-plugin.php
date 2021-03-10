@@ -18,10 +18,7 @@
 
 class ParsedownExtraPlugin extends ParsedownExtra {
 
-    const version = '1.3.1';
-
-
-    # config
+    const version = '1.3.5';
 
     public $abbreviationData = array();
 
@@ -76,9 +73,6 @@ class ParsedownExtraPlugin extends ParsedownExtra {
     public $tableColumnAttributes = array();
 
     public $voidElementSuffix = ' />';
-
-    # config
-
 
     protected $regexAttribute = '(?:[#.][-\w:\\\]+[ ]*|[-\w:\\\]+(?:=(?:["\'][^\n]*?["\']|[^\s]+)?)?[ ]*)';
 

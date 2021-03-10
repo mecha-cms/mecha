@@ -1,6 +1,6 @@
 <?php namespace x\form;
 
-function set($content) {
+function content($content) {
     // Convert `foo[bar][baz]` to `form.foo.bar.baz`
     $keys = static function(string $in) {
         return 'form.' . \str_replace(['.', '[', ']', \P], [\P, '.', "", "\\."], $in);
@@ -65,5 +65,5 @@ function let() {
     \Session::let('form');
 }
 
-\Hook::set('content', __NAMESPACE__ . "\\set", 0);
+\Hook::set('content', __NAMESPACE__ . "\\content", 0);
 \Hook::set('let', __NAMESPACE__ . "\\let", 20);

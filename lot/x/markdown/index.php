@@ -1,7 +1,7 @@
 <?php
 
 namespace x\markdown {
-    function inline($content) { // Inline tag(s) only
+    function span($content) { // Inline tag(s) only
         $type = $this->type;
         if ('Markdown' !== $type && 'text/markdown' !== $type) {
             return $content;
@@ -18,7 +18,7 @@ namespace x\markdown {
     \Hook::set([
         'page.description',
         'page.title'
-    ], __NAMESPACE__ . "\\inline", 2);
+    ], __NAMESPACE__ . "\\span", 2);
 }
 
 namespace x {
