@@ -102,8 +102,10 @@ Release Notes
 
 ### main
 
- - [x] Improved internal JSON validator.
+ - [x] Added second parameter to the `content` function to allow user to use this function to create or delete a file.
  - [x] Improved class auto-loader. `\` now will be converted into `/`, and `__` will be converted into `.` (#96)
+ - [x] Improved internal JSON validator.
+ - [x] Removed function `mecha`.
 
 ### 2.5.3
 

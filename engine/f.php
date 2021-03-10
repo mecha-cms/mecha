@@ -51,8 +51,20 @@ namespace {
             ]), '-');
         }));
     }
-    // Get file content
-    function content(string $f) {
+    // Get or set file content, or delete file
+    function content(string $f, $v = null) {
+        if (null !== $v) {
+            if (false === $v) {
+                return \unlink($v);
+            }
+            if (\is_file($f) && !\is_writable($f)) {
+                return false;
+            }
+            if (!\is_dir($d = \dirname($f))) {
+                \mkdir($d, 0775, true);
+            }
+            return \is_int(\file_put_contents($f, (string) $v));
+        }
         return \is_file($f) ? \file_get_contents($f) : null;
     }
     // Merge array value(s)
