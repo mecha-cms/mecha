@@ -43,7 +43,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                         2 => []
                     ];
                     $this->strict = substr($in, -strlen($end = $c[0][2] . $c[0][1])) === $end;
-                    if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
+                    if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]+|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
                                 $this->lot[2][$v] = "" === $mm[2][$k] ? true : strtr($mm[3][$k], [
