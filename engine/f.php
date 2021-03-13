@@ -51,13 +51,10 @@ namespace {
             ]), '-');
         }));
     }
-    // Get or set file content, or delete file
+    // Get or set file content
     function content(string $f, $v = null) {
         if (null !== $v) {
-            if (false === $v) {
-                return \unlink($v);
-            }
-            if (\is_file($f) && !\is_writable($f)) {
+            if (\is_dir($f) || (\is_file($f) && !\is_writable($f))) {
                 return false;
             }
             if (!\is_dir($d = \dirname($f))) {
@@ -65,7 +62,7 @@ namespace {
             }
             return \is_int(\file_put_contents($f, (string) $v));
         }
-        return \is_file($f) ? \file_get_contents($f) : null;
+        return \is_file($f) && \is_readable($f) ? \file_get_contents($f) : null;
     }
     // Merge array value(s)
     function concat(array $a, ...$b) {
@@ -389,18 +386,18 @@ namespace {
     function step(string $a, string $s = '.', int $dir = 1) {
         $a = \strtr($a, ["\\" . $s => \P]);
         if (false !== \strpos($a, $s)) {
-            $a = \explode($s, \trim($a, $s));
+            $a = \explode($s, $a);
             $v = -1 === $dir ? \array_pop($a) : \array_shift($a);
             $k = \strtr(\implode($s, $a), [\P => $s]);
             $c = [$k => \strtr($v, [\P => $s])];
             if (-1 === $dir) {
-                while ($b = \array_pop($a)) {
+                while (null !== ($b = \array_pop($a))) {
                     $v = \strtr($b . $s . $v, [\P => $s]);
                     $k = \strtr(\implode($s, $a), [\P => $s]);
                     $c += [$k => $v];
                 }
             } else {
-                while ($b = \array_shift($a)) {
+                while (null !== ($b = \array_shift($a))) {
                     $v .= \strtr($s . $b, [\P => $s]);
                     $k = \strtr(\implode($s, $a), [\P => $s]);
                     $c = [$k => $v] + $c;
