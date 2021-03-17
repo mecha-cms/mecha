@@ -289,7 +289,7 @@ h1,
 h2,
 h3,
 h4 {
-  line-height: 1;
+  line-height: normal;
 }
 h2 + p > time {
   font-size: 120%;
