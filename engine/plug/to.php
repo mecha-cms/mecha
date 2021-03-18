@@ -46,7 +46,7 @@ foreach([
             ' ',
             '$1 '
         ], $in);
-        $s = strip_tags($s, $html ? '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><span><strong><sub><sup><time><u><var>' : "");
+        $s = strip_tags($s, $html ? '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><small><span><strong><sub><sup><time><u><var>' : "");
         if (is_int($x)) {
             $x = [$x, '&#x2026;'];
         }
