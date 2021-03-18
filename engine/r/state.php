@@ -1,9 +1,9 @@
 <?php
 
-function state(...$v) {
-    if (count($v) < 2) {
-        $v[] = true; // Force to array
-        return State::get(...$v);
+function state(...$lot) {
+    if (count($lot) < 2) {
+        $lot[] = true; // Force to array
+        return State::get(...$lot);
     }
-    return State::set(...$v);
+    return State::set(...$lot);
 }

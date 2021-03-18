@@ -2,55 +2,70 @@
 
 final class Path extends Genome {
 
-    public static function B(string $path = null, int $step = 1, string $join = DS) {
+    public static function B(string $value = null, int $step = 1, string $join = DS) {
         if (DS === $join || '/' === $join) {
             if (1 === $step) {
-                return null !== $path && "" !== $path ? basename($path) : null;
+                return null !== $value && "" !== $value ? basename($value) : null;
             }
         }
-        $path = strtr($path, [DS => $join, '/' => $join]);
-        $path = rtrim(implode($join, array_slice(explode($join, $path), $step * -1)), $join);
-        return "" !== $path ? $path : null;
+        $value = strtr($value, [
+            DS => $join,
+            '/' => $join
+        ]);
+        $value = rtrim(implode($join, array_slice(explode($join, $value), $step * -1)), $join);
+        return "" !== $value ? $value : null;
     }
 
-    public static function D(string $path = null, int $step = 1, string $join = DS) {
+    public static function D(string $value = null, int $step = 1, string $join = DS) {
         if (DS === $join || '/' === $join) {
-            $dir = rtrim(dirname($path, $step), $join);
+            $dir = rtrim(dirname($value, $step), $join);
             return '.' !== $dir ? $dir : null;
         }
-        $path = strtr($path, [DS => $join, '/' => $join]);
-        $a = explode($join, $path);
-        $path = rtrim(implode($join, array_slice($a, 0, count($a) - $step)), $join);
-        return "" !== $path ? $path : null;
+        $value = strtr($value, [
+            DS => $join,
+            '/' => $join
+        ]);
+        $a = explode($join, $value);
+        $value = rtrim(implode($join, array_slice($a, 0, count($a) - $step)), $join);
+        return "" !== $value ? $value : null;
     }
 
-    public static function F(string $path = null, string $join = DS) {
-        $f = pathinfo($path, PATHINFO_DIRNAME);
-        $n = pathinfo($path, PATHINFO_FILENAME);
+    public static function F(string $value = null, string $join = DS) {
+        $f = pathinfo($value, PATHINFO_DIRNAME);
+        $n = pathinfo($value, PATHINFO_FILENAME);
         if ("" === $n) {
-            $n = pathinfo($path, PATHINFO_BASENAME);
+            $n = pathinfo($value, PATHINFO_BASENAME);
         }
-        return strtr('.' !== $f ? $f . DS . $n : $n, [DS => $join, '/' => $join]);
-    }
-
-    public static function N(string $path = null, $x = false) {
-        $n = pathinfo($path, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
-        return "" !== $n ? $n : null;
-    }
-
-    public static function R(string $path = null, string $root = ROOT, string $join = DS) {
-        $root = strtr($root, [DS => $join, '/' => $join]);
-        return strtr(strtr($path, [DS => $join, '/' => $join]), [
-            $root . $join => "",
-            $root => ""
+        return strtr('.' !== $f ? $f . DS . $n : $n, [
+            DS => $join,
+            '/' => $join
         ]);
     }
 
-    public static function X(string $path = null) {
-        if (false === strpos($path, '.')) {
+    public static function N(string $value = null, $x = false) {
+        $n = pathinfo($value, $x ? PATHINFO_BASENAME : PATHINFO_FILENAME);
+        return "" !== $n ? $n : null;
+    }
+
+    public static function R(string $value = null, string $folder = ROOT, string $join = DS) {
+        $folder = strtr($folder, [
+            DS => $join,
+            '/' => $join
+        ]);
+        return strtr(strtr($value, [
+            DS => $join,
+            '/' => $join
+        ]), [
+            $folder . $join => "",
+            $folder => ""
+        ]);
+    }
+
+    public static function X(string $value = null) {
+        if (false === strpos($value, '.')) {
             return null;
         }
-        $x = pathinfo($path, PATHINFO_EXTENSION);
+        $x = pathinfo($value, PATHINFO_EXTENSION);
         return $x ? strtolower($x) : null;
     }
 

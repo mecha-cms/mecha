@@ -44,13 +44,13 @@ foreach ([
 }
 
 foreach (['script', 'style', 'template'] as $v) {
-    Asset::_($v, function(string $content, float $stack = 10, array $data = []) use($v) {
-        $id = !empty($data['id']) ? $data['id'] : $v . ':' . sprintf('%u', crc32($content));
+    Asset::_($v, function(string $content, float $stack = 10, array $lot = []) use($v) {
+        $id = !empty($lot['id']) ? $lot['id'] : $v . ':' . sprintf('%u', crc32($content));
         if (!isset(static::$lot[0][$v][$id])) {
             static::$lot[1][$v][$id] = [
                 '0' => $v,
                 '1' => n(trim($content)),
-                '2' => $data,
+                '2' => $lot,
                 'path' => null,
                 'url' => null,
                 'stack' => (float) $stack

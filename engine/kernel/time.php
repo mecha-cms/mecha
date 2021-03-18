@@ -21,13 +21,13 @@ final class Time extends Genome {
         return parent::__call($kin, $lot);
     }
 
-    public function __construct($date) {
-        if (is_numeric($date)) {
-            $this->source = date('Y-m-d H:i:s', $date);
-        } else if (strlen($date) >= 19 && 5 === substr_count($date, '-')) {
-            $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $date)->format('Y-m-d H:i:s');
+    public function __construct($value) {
+        if (is_numeric($value)) {
+            $this->source = date('Y-m-d H:i:s', $value);
+        } else if (strlen($value) >= 19 && 5 === substr_count($value, '-')) {
+            $this->source = \DateTime::createFromFormat('Y-m-d-H-i-s', $value)->format('Y-m-d H:i:s');
         } else {
-            $this->source = date('Y-m-d H:i:s', strtotime($date));
+            $this->source = date('Y-m-d H:i:s', strtotime($value));
         }
     }
 
@@ -110,8 +110,8 @@ final class Time extends Genome {
         return $this->format('Y');
     }
 
-    public static function from($in) {
-        return new static($in);
+    public static function from($value) {
+        return new static($value);
     }
 
     public static function zone(string $zone = null) {

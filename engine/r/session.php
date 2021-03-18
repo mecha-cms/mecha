@@ -2,6 +2,6 @@
 
 Session::start();
 
-function session(...$v) {
-    return count($v) < 2 ? Session::get(...$v) : Session::set(...$v);
+function session(...$lot) {
+    return count($lot) < 2 ? Session::get(...$lot) : Session::set(...$lot);
 }

@@ -1,7 +1,7 @@
 <?php
 
-function alert(...$v) {
-    Alert::info(...$v);
+function alert(...$lot) {
+    Alert::info(...$lot);
 }
 
 $GLOBALS['alert'] = $alert = new Alert;

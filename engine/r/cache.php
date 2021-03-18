@@ -1,5 +1,5 @@
 <?php
 
-function cache(...$v) {
-    return Cache::hit(...$v);
+function cache(...$lot) {
+    return Cache::hit(...$lot);
 }

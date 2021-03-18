@@ -1,7 +1,7 @@
 <?php
 
-function hook(...$v) {
-    return count($v) < 2 ? Hook::get(...$v) : Hook::set(...$v);
+function hook(...$lot) {
+    return count($lot) < 2 ? Hook::get(...$lot) : Hook::set(...$lot);
 }
 
 header_register_callback(function() {

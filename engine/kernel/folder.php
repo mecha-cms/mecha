@@ -6,7 +6,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public $path;
     public $value;
 
-    public function __construct($path = null) {
+    public function __construct(string $path = null) {
         $this->value[0] = null;
         if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
@@ -54,8 +54,8 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function content(string $path) {
-        if (is_file($file = $this->path . DS . ltrim(strtr($path, '/', DS), DS))) {
-            $content = file_get_contents($file);
+        if ($this->exist && ($path = $this->path . DS . ltrim(strtr($path, '/', DS), DS))) {
+            $content = file_get_contents($path);
             return false !== $content ? $content : null;
         }
         return null;
@@ -70,30 +70,30 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this->stream(null, true, true);
     }
 
-    public function offsetExists($i) {
-        return !!$this->offsetGet($i);
+    public function offsetExists($key) {
+        return !!$this->offsetGet($key);
     }
 
-    public function offsetGet($i) {
-        return $this->__get($i);
+    public function offsetGet($key) {
+        return $this->__get($key);
     }
 
-    public function offsetSet($i, $value) {}
-    public function offsetUnset($i) {}
+    public function offsetSet($key, $value) {}
+    public function offsetUnset($key) {}
 
-    public function seal($i = null) {
-        if (isset($i)) {
+    public function seal($mode = null) {
+        if (isset($mode)) {
             if ($this->exist) {
-                $i = is_string($i) ? octdec($i) : $i;
+                $mode = is_string($mode) ? octdec($mode) : $mode;
                 // Return `$i` on success, `null` on error
-                $this->value[1] = @chmod($this->path, $i) ? $i : null;
+                $this->value[1] = chmod($this->path, $mode) ? $mode : null;
             } else {
                 // Return `false` if file does not exist
                 $this->value[1] = false;
             }
             return $this;
         }
-        return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
+        return null !== ($mode = $this->_seal()) ? substr(sprintf('%o', $mode), -4) : null;
     }
 
     public function copy(string $to, string $as = null) {

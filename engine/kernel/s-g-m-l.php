@@ -18,17 +18,17 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
 
     public static $state = self::state;
 
-    public function __construct($in = []) {
+    public function __construct($lot = []) {
         $this->c = $c = array_replace_recursive(self::state, static::$state);
-        if (is_array($in)) {
-            $this->lot = array_replace_recursive($this->lot, $in);
-        } else if (is_object($in) && $in instanceof self) {
-            $this->lot[0] = $in[0];
-            $this->lot[1] = $in[1];
-            $this->lot[2] = $in[2];
-        } else if (is_string($in)) {
+        if (is_array($lot)) {
+            $this->lot = array_replace_recursive($this->lot, $lot);
+        } else if (is_object($lot) && $lot instanceof self) {
+            $this->lot[0] = $lot[0];
+            $this->lot[1] = $lot[1];
+            $this->lot[2] = $lot[2];
+        } else if (is_string($lot)) {
             // Must starts with `<` and ends with `>`
-            if (0 === strpos($in, $c[0][0]) && $c[0][1] === substr($in, -strlen($c[0][1]))) {
+            if (0 === strpos($lot, $c[0][0]) && $c[0][1] === substr($lot, -strlen($c[0][1]))) {
                 $tag = x(implode("", $c[0]));
                 $tag_open = x($c[0][0]); // `<`
                 $tag_close = x($c[0][1]); // `>`
@@ -36,13 +36,13 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                 $attr = x(implode("", $c[1]));
                 $attr_open = x($c[1][2] . $c[1][0]);
                 $attr_close = x($c[1][1]);
-                if (preg_match('/' . $tag_open . '([^' . $tag . $attr . '\s]+)(\s[^' . $tag_close . ']*)?(?:' . $tag_close . '((?R)|[\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . ')|(?:' . $tag_end . ')' . ($this->strict ? "" : '?') . $tag_close . ')/', n($in), $m)) {
+                if (preg_match('/' . $tag_open . '([^' . $tag . $attr . '\s]+)(\s[^' . $tag_close . ']*)?(?:' . $tag_close . '((?R)|[\s\S]*?)(?:' . $tag_open . $tag_end . '(\1)' . $tag_close . ')|(?:' . $tag_end . ')' . ($this->strict ? "" : '?') . $tag_close . ')/', n($lot), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
-                    $this->strict = substr($in, -strlen($end = $c[0][2] . $c[0][1])) === $end;
+                    $this->strict = substr($lot, -strlen($end = $c[0][2] . $c[0][1])) === $end;
                     if (isset($m[2]) && preg_match_all('/\s+([^' . $attr . '\s]+)(' . $attr_open . '((?:[^' . x($c[1][0] . $c[1][1]) . '\\\]+|\\\.)*)' . $attr_close . ')?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
@@ -54,10 +54,10 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                         }
                     }
                 } else {
-                    throw new \ParseError(static::class . ' parsing error: ' . $in);
+                    throw new \ParseError(static::class . ' parsing error: ' . $lot);
                 }
             } else {
-                throw new \ParseError(static::class . ' parsing error: ' . $in);
+                throw new \ParseError(static::class . ' parsing error: ' . $lot);
             }
         }
     }
@@ -98,37 +98,37 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         return $this->lot;
     }
 
-    public function offsetExists($i) {
-        if (is_numeric($i)) {
-            return isset($this->lot[$i]);
+    public function offsetExists($key) {
+        if (is_numeric($key)) {
+            return isset($this->lot[$key]);
         }
-        return isset($this->lot[2][$i]);
+        return isset($this->lot[2][$key]);
     }
 
-    public function offsetGet($i) {
-        if (is_numeric($i)) {
-            return $this->lot[$i] ?? null;
+    public function offsetGet($key) {
+        if (is_numeric($key)) {
+            return $this->lot[$key] ?? null;
         }
-        return $this->lot[2][$i] ?? null;
+        return $this->lot[2][$key] ?? null;
     }
 
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            if (is_numeric($i)) {
-                $this->lot[$i] = $value;
+    public function offsetSet($key, $value) {
+        if (isset($key)) {
+            if (is_numeric($key)) {
+                $this->lot[$key] = $value;
             } else {
-                $this->lot[2][$i] = $value;
+                $this->lot[2][$key] = $value;
             }
         } else {
             $this->lot[] = $value;
         }
     }
 
-    public function offsetUnset($i) {
-        if (is_numeric($i)) {
-            unset($this->lot[$i]);
+    public function offsetUnset($key) {
+        if (is_numeric($key)) {
+            unset($this->lot[$key]);
         } else {
-            unset($this->lot[2][$i]);
+            unset($this->lot[2][$key]);
         }
     }
 

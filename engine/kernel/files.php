@@ -13,8 +13,8 @@ class Files extends Anemon {
         return new File($path);
     }
 
-    public function offsetGet($i) {
-        return $this->file($this->value[$i] ?? null);
+    public function offsetGet($key) {
+        return $this->file($this->value[$key] ?? null);
     }
 
     public function sort($sort = 1, $preserve_key = false) {

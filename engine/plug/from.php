@@ -1,19 +1,19 @@
 <?php
 
 foreach ([
-    'HTML' => function(string $in = null, $deep = false) {
-        return htmlspecialchars($in, ENT_COMPAT | ENT_HTML5, 'UTF-8', !!$deep);
+    'HTML' => function(string $value = null, $deep = false) {
+        return htmlspecialchars($value, ENT_COMPAT | ENT_HTML5, 'UTF-8', !!$deep);
     },
-    'JSON' => function(string $in = null) {
-        return json_decode($in);
+    'JSON' => function(string $value = null) {
+        return json_decode($value);
     },
-    'URL' => function($in = null, $raw = false) {
-        return $raw ? rawurlencode($in) : urlencode($in);
+    'URL' => function($value = null, $raw = false) {
+        return $raw ? rawurlencode($value) : urlencode($value);
     },
     'base64' => "\\base64_decode",
     'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'query' => function(string $in = null) {
+    'query' => function(string $value = null) {
         $out = [];
         $q = function(array &$out, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
@@ -26,10 +26,10 @@ foreach ([
             }
             $out[array_shift($k)] = $v;
         };
-        if (isset($in[0]) && '?' === $in[0]) {
-            $in = substr($in, 1);
+        if (isset($value[0]) && '?' === $value[0]) {
+            $value = substr($value, 1);
         }
-        foreach (explode('&', $in) as $v) {
+        foreach (explode('&', $value) as $v) {
             $v = explode('=', $v, 2);
             $q($out, urldecode($v[0]), isset($v[1]) ? e(urldecode($v[1])) : true);
         }

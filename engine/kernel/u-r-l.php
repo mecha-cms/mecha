@@ -37,7 +37,10 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     private function fireClean() {
         $this->fireRoot();
         extract($this->lot);
-        $this->setClean($root . (isset($path) ? '/' . $path : ""));
+        $this->setClean(
+            ($root ?? "") .
+            (isset($path) ? '/' . $path : "")
+        );
     }
 
     // Refresh current URL result
@@ -58,14 +61,21 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     // Refresh ground URL result
     private function fireGround() {
         extract($this->lot);
-        $this->setGround((isset($protocol) ? $protocol . '://' : '//') . ($host ?? "") . (isset($port) ? ':' . $port : ""));
+        $this->setGround(
+            (isset($protocol) ? $protocol . '://' : '//') .
+            ($host ?? "") .
+            (isset($port) ? ':' . $port : "")
+        );
     }
 
     // Refresh root URL result
     private function fireRoot() {
         $this->fireGround();
         extract($this->lot);
-        $this->setRoot(($ground ?? "") . (isset($d) ? '/' . $d : ""));
+        $this->setRoot(
+            ($ground ?? "") .
+            (isset($d) ? '/' . $d : "")
+        );
     }
 
     private function getClean() {
@@ -181,11 +191,11 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return null;
     }
 
-    public function __construct(string $in = null, string $d = null, int $i = null) {
-        if ($in && 0 === strpos($in, '//')) {
-            $in = 'http:' . $in; // Force protocol
+    public function __construct(string $value = null, string $d = null, int $i = null) {
+        if ($value && 0 === strpos($value, '//')) {
+            $value = 'http:' . $value; // Force protocol
         }
-        $out = array_replace($this->lot, parse_url($in));
+        $out = array_replace($this->lot, parse_url($value));
         $d = $this->e($d);
         $i = $this->e((string) ($i > 0 ? $i : ""));
         $path = $this->e($out['path'] ?? "");
@@ -255,9 +265,9 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     // `$url->i('.', 4)`
-    public function i(string $join = '/', int $j = 0) {
+    public function i(string $join = '/', int $skip = 0) {
         $i = $this->lot['i'];
-        return null !== $i ? $join . ($i + $j) : null;
+        return null !== $i ? $join . ($i + $skip) : null;
     }
 
     public function jsonSerialize() {
@@ -268,45 +278,51 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return $out;
     }
 
-    public function offsetExists($i) {
-        return isset($this->lot[$i]);
+    public function offsetExists($key) {
+        return isset($this->lot[$key]);
     }
 
-    public function offsetGet($i) {
-        return $this->lot[$i];
+    public function offsetGet($key) {
+        return $this->lot[$key];
     }
 
-    public function offsetSet($i, $value) {
-        $this->lot[$i] = $value;
+    public function offsetSet($key, $value) {
+        $this->lot[$key] = $value;
         $this->fireCurrent(); // Refresh
     }
 
-    public function offsetUnset($i) {
-        unset($this->lot[$i]);
+    public function offsetUnset($key) {
+        unset($this->lot[$key]);
         $this->fireCurrent(); // Refresh
     }
 
     // `$url->path('.')`
-    public function path(string $join = '/', array $p = []) {
+    public function path(string $join = '/', array $lot = []) {
         $path = $this->lot['path'];
-        if (!empty($p)) {
-            $path = array_replace(explode('/', $path), $p);
+        if (!empty($lot)) {
+            $path = array_replace(explode('/', $path), $lot);
             $path = implode($join, $path);
         } else {
-            $path = strtr($path, ['/' => $join]);
+            $path = strtr($path, [
+                '/' => $join
+            ]);
         }
         return "" !== $path ? $join . $path : null;
     }
 
     // `$url->query('&amp;')`
-    public function query(string $join = '&', array $q = []) {
+    public function query(string $join = '&', array $lot = []) {
         $query = $this->lot['query'] . "";
-        if (!empty($q)) {
+        if (!empty($lot)) {
             $query = From::query($query);
-            $query = array_replace_recursive($query, $q);
-            return strtr(To::query($query), ['&' => $join]);
+            $query = array_replace_recursive($query, $lot);
+            return strtr(To::query($query), [
+                '&' => $join
+            ]);
         }
-        return "" !== $query ? '?' . strtr($query, ['&' => $join]) : null;
+        return "" !== $query ? '?' . strtr($query, [
+            '&' => $join
+        ]) : null;
     }
 
 }

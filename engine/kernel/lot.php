@@ -71,9 +71,9 @@ final class Lot extends Genome {
         }
     }
 
-    public static function status(int $i = null) {
-        if (isset($i)) {
-            http_response_code($i);
+    public static function status(int $value = null) {
+        if (isset($value)) {
+            http_response_code($value);
         }
         return http_response_code();
     }

@@ -15,25 +15,25 @@ class Pages extends \Pager {
         return $this->page();
     }
 
-    public function __construct(array $data = [], $chunk = [5, 0], $parent = null) {
+    public function __construct(array $value = [], $chunk = [5, 0], $parent = null) {
         parent::__construct();
         if (\is_object($parent)) {
             $this->parent = $parent;
         } else if (\is_file($parent)) {
             $this->parent = $parent = $this->page($parent);
         }
-        $data = \array_chunk($data, $chunk[0] ?? 5);
+        $value = \array_chunk($value, $chunk[0] ?? 5);
         $i = $chunk[1] ?? 0;
-        if (isset($data[$i + 1])) {
-            if (\is_object($data[$i + 1])) {
-                $this->next = $data[$i + 1];
+        if (isset($value[$i + 1])) {
+            if (\is_object($value[$i + 1])) {
+                $this->next = $value[$i + 1];
             } else {
                 $this->next = $this->to($parent, $i + 2);
             }
         }
-        if (isset($data[$i - 1])) {
-            if (\is_object($data[$i - 1])) {
-                $this->prev = $data[$i - 1];
+        if (isset($value[$i - 1])) {
+            if (\is_object($value[$i - 1])) {
+                $this->prev = $value[$i - 1];
             } else {
                 $this->prev = $this->to($parent, $i);
             }

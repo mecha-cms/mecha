@@ -1,9 +1,9 @@
 <?php
 
-function page(...$v) {
-    return new Page(...$v);
+function page(...$lot) {
+    return new Page(...$lot);
 }
 
-function pages(...$v) {
-    return Pages::from(...$v);
+function pages(...$lot) {
+    return Pages::from(...$lot);
 }

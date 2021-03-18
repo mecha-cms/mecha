@@ -1,7 +1,7 @@
 <?php
 
-function route(...$v) {
-    return count($v) < 2 ? Route::get(...$v) : Route::set(...$v);
+function route(...$lot) {
+    return count($lot) < 2 ? Route::get(...$lot) : Route::set(...$lot);
 }
 
 // Load all route(s)…

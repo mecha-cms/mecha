@@ -1,9 +1,9 @@
 <?php
 
-Route::_('content', function(string $v, $exit = true) {
-    $v = Hook::fire('content', [$v], $this);
+Route::_('content', function(string $value, $exit = true) {
+    $value = Hook::fire('content', [$value], $this);
     ob_start('ob_gzhandler');
-    echo $v; // The response body
+    echo $value; // The response body
     echo ob_get_clean();
     if ($exit) {
         Hook::fire('let');
@@ -11,30 +11,30 @@ Route::_('content', function(string $v, $exit = true) {
     }
 });
 
-Route::_('layout', function(string $layout, array $lot = []) {
-    $layout = Hook::fire('layout', [$layout, $lot]);
-    $a = explode('/', strtr($layout, DS, '/'), 2);
+Route::_('layout', function(string $id, array $lot = []) {
+    $id = Hook::fire('layout', [$id, $lot]);
+    $chops = explode('/', strtr($id, DS, '/'), 2);
     // Automatic response status based on the first layout path
-    if (is_numeric($a[0])) {
-        $this->status((int) $a[0]);
+    if (is_numeric($chops[0])) {
+        $this->status((int) $chops[0]);
     }
-    if (null !== ($content = Layout::get($layout, $lot))) {
+    if (null !== ($content = Layout::get($id, $lot))) {
         $this->content($content, false);
         Hook::fire('let');
         exit;
     } else if (defined('DEBUG') && DEBUG) {
-        Guard::abort('Layout <code>' . $layout . '</code> does not exist.');
+        Guard::abort('Layout <code>' . $id . '</code> does not exist.');
     }
 });
 
-Route::_('lot', function(...$v) {
-    return count($v) > 1 || isset($v[0]) && is_array($v[0]) ? Lot::set(...$v) : Lot::get(...$v);
+Route::_('lot', function(...$lot) {
+    return count($lot) > 1 || isset($lot[0]) && is_array($lot[0]) ? Lot::set(...$lot) : Lot::get(...$lot);
 });
 
-Route::_('status', function(...$v) {
-    return Lot::status(...$v);
+Route::_('status', function(...$lot) {
+    return Lot::status(...$lot);
 });
 
-Route::_('type', function(...$v) {
-    return Lot::type(...$v);
+Route::_('type', function(...$lot) {
+    return Lot::type(...$lot);
 });

@@ -13,8 +13,8 @@ class Folders extends Anemon {
         return new Folder($path);
     }
 
-    public function offsetGet($i) {
-        return $this->folder($this->value[$i] ?? null);
+    public function offsetGet($key) {
+        return $this->folder($this->value[$key] ?? null);
     }
 
     public function sort($sort = 1, $preserve_key = false) {

@@ -8,11 +8,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public $join = "";
     public $value = [];
 
-    public function __construct(iterable $array = [], string $join = ', ') {
-        if ($array instanceof \Traversable) {
-            $array = iterator_to_array($array);
+    public function __construct(iterable $value = [], string $join = ', ') {
+        if ($value instanceof \Traversable) {
+            $value = iterator_to_array($value);
         }
-        $this->lot = $this->value = $array;
+        $this->lot = $this->value = $value;
         $this->join = $join;
     }
 
@@ -70,11 +70,11 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // Generate chunk(s) of array
-    public function chunk(int $chunk = 5, int $i = -1, $preserve_key = false) {
+    public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
         $clone = $this->mitose();
         $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
-        if (-1 !== $i) {
-            $clone->value = $clone->value[$clone->i = $i] ?? [];
+        if (-1 !== $index) {
+            $clone->value = $clone->value[$clone->i = $index] ?? [];
         }
         return $clone;
     }
@@ -112,8 +112,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     // Get position by array key
     public function index(string $key) {
-        $i = array_search($key, array_keys($this->value));
-        return false !== $i ? $i : null;
+        $index = array_search($key, array_keys($this->value));
+        return false !== $index ? $index : null;
     }
 
     public function is($fn = null) {
@@ -131,9 +131,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     // Get array key by position
-    public function key(int $i) {
+    public function key(int $index) {
         $array = array_keys($this->value);
-        return array_key_exists($i, $array) ? $array[$i] : null;
+        return array_key_exists($index, $array) ? $array[$index] : null;
     }
 
     // Get last array value
@@ -146,8 +146,8 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    public function lot(array $lot = [], $over = false) {
-        $this->value = $this->lot = $over ? array_replace_recursive($this->lot, $lot) : $lot;
+    public function lot(array $value = [], $over = false) {
+        $this->value = $this->lot = $over ? array_replace_recursive($this->lot, $value) : $value;
         return $this;
     }
 
@@ -177,29 +177,29 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $clone;
     }
 
-    public function offsetExists($i) {
-        return isset($this->value[$i]);
+    public function offsetExists($key) {
+        return isset($this->value[$key]);
     }
 
-    public function offsetGet($i) {
-        return $this->value[$i] ?? null;
+    public function offsetGet($key) {
+        return $this->value[$key] ?? null;
     }
 
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            $this->value[$i] = $value;
+    public function offsetSet($key, $value) {
+        if (isset($key)) {
+            $this->value[$key] = $value;
         } else {
             $this->value[] = $value;
         }
     }
 
-    public function offsetUnset($i) {
-        unset($this->value[$i]);
+    public function offsetUnset($key) {
+        unset($this->value[$key]);
     }
 
-    public function pluck(string $key, $or = null) {
+    public function pluck(string $key, $value = null) {
         $clone = $this->mitose();
-        $clone->value = pluck($clone->value, $key, $or);
+        $clone->value = pluck($clone->value, $key, $value);
         return $clone;
     }
 
@@ -302,9 +302,9 @@ class Anemon extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this;
     }
 
-    // Move to `$i` array
-    public function to($i) {
-        $this->i = is_int($i) ? $i : ($this->index($i) ?? $i);
+    // Move to `$index` array
+    public function to($index) {
+        $this->i = is_int($index) ? $index : ($this->index($index) ?? $index);
         return $this;
     }
 

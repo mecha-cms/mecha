@@ -42,7 +42,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public $path;
     public $value;
 
-    public function __construct($path = null) {
+    public function __construct(string $path = null) {
         $this->value[0] = "";
         if ($path && is_string($path) && 0 === strpos($path, ROOT)) {
             $path = strtr($path, '/', DS);
@@ -50,7 +50,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
                 if (!is_dir($d = dirname($path))) {
                     mkdir($d, 0775, true);
                 }
-                @touch($path); // Create an empty file
+                touch($path); // Create an empty file
             }
             $this->path = is_file($path) ? (realpath($path) ?: $path) : null;
         }
@@ -175,16 +175,16 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null;
     }
 
-    public function offsetExists($i) {
-        return !!$this->offsetGet($i);
+    public function offsetExists($key) {
+        return !!$this->offsetGet($key);
     }
 
-    public function offsetGet($i) {
-        return $this->__get($i);
+    public function offsetGet($key) {
+        return $this->__get($key);
     }
 
-    public function offsetSet($i, $value) {}
-    public function offsetUnset($i) {}
+    public function offsetSet($key, $value) {}
+    public function offsetUnset($key) {}
 
     public function parent() {
         if ($this->exist) {
@@ -210,19 +210,19 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public function seal($i = null) {
-        if (isset($i)) {
+    public function seal($mode = null) {
+        if (isset($mode)) {
             if ($this->exist) {
-                $i = is_string($i) ? octdec($i) : $i;
-                // Return `$i` on success, `null` on error
-                $this->value[1] = @chmod($this->path, $i) ? $i : null;
+                $mode = is_string($mode) ? octdec($mode) : $mode;
+                // Return `$mode` on success, `null` on error
+                $this->value[1] = chmod($this->path, $mode) ? $mode : null;
             } else {
                 // Return `false` if file does not exist
                 $this->value[1] = false;
             }
             return $this;
         }
-        return null !== ($i = $this->_seal()) ? substr(sprintf('%o', $i), -4) : null;
+        return null !== ($mode = $this->_seal()) ? substr(sprintf('%o', $mode), -4) : null;
     }
 
     public function set(...$lot) {
@@ -230,9 +230,9 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this;
     }
 
-    public function size(string $unit = null, int $r = 2) {
+    public function size(string $unit = null, int $round = 2) {
         if ($this->exist && is_file($path = $this->path)) {
-            return self::sizer(filesize($path), $unit, $r);
+            return self::sizer(filesize($path), $unit, $round);
         }
         return null;
     }
@@ -279,16 +279,16 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return is_file($path) ? realpath($path) : false;
     }
 
-    public static function pull($path, string $name = null) {
+    public static function pull(string $path = null, string $as = null) {
         if (is_string($path) && is_file($path)) {
             http_response_code(200);
-            header('Content-Description: File Transfer');
-            header('Content-Type: application/octet-stream');
-            header('Content-Disposition: attachment; filename="' . ($name ?? basename($path)) . '"');
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . filesize($path));
+            header('cache-control: must-revalidate');
+            header('content-description: File Transfer');
+            header('content-disposition: attachment; filename="' . ($as ?? basename($path)) . '"');
+            header('content-length: ' . filesize($path));
+            header('content-type: application/octet-stream');
+            header('expires: 0');
+            header('pragma: public');
             readfile($path);
             exit;
         }
@@ -313,11 +313,11 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null; // Return `null` on error
     }
 
-    public static function sizer(float $size, string $unit = null, int $r = 2) {
+    public static function sizer(float $size, string $unit = null, int $round = 2) {
         $i = log($size, 1024);
         $x = ['B', 'KB', 'MB', 'GB', 'TB'];
         $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor($i) : 0);
-        $out = round($size / pow(1024, $u), $r);
+        $out = round($size / pow(1024, $u), $round);
         return $out < 0 ? null : trim($out . ' ' . $x[$u]);
     }
 

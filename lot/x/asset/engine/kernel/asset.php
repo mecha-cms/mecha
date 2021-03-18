@@ -75,11 +75,11 @@ final class Asset extends Genome {
         }
     }
 
-    public static function set($path, float $stack = 10, array $data = []) {
+    public static function set($path, float $stack = 10, array $lot = []) {
         if (is_array($path)) {
             $i = 0;
             foreach ($path as $v) {
-                self::set($v, $stack + $i, $data);
+                self::set($v, $stack + $i, $lot);
                 $i += .1;
             }
         } else {
@@ -89,7 +89,7 @@ final class Asset extends Genome {
                 self::$lot[1][$x][$path] = [
                     '0' => null,
                     '1' => "",
-                    '2' => $data,
+                    '2' => $lot,
                     'path' => self::path($path),
                     'url' => self::URL($path),
                     'stack' => (float) $stack

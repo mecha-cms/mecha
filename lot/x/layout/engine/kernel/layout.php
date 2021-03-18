@@ -28,8 +28,8 @@ class Layout extends Genome {
         return self::get($kin, ...$lot);
     }
 
-    public static function get($in, array $lot = []) {
-        if ($path = self::path($in)) {
+    public static function get($id, array $lot = []) {
+        if ($path = self::path($id)) {
             extract(array_replace($GLOBALS, $lot), EXTR_SKIP);
             ob_start();
             require $path;
@@ -38,17 +38,17 @@ class Layout extends Genome {
         return null;
     }
 
-    public static function path($in) {
+    public static function path($value) {
         $out = [];
         $c = static::class;
         $path = static::$state['path'];
         $x = static::$state['x'];
-        if (is_string($in)) {
+        if (is_string($value)) {
             // Full path, be quick!
-            if (0 === strpos($in, ROOT) && is_file($in)) {
-                return $in;
+            if (0 === strpos($value, ROOT) && is_file($value)) {
+                return $value;
             }
-            $id = strtr($in, DS, '/');
+            $id = strtr($value, DS, '/');
             // Added by the `Layout::get()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
                 return File::exist(self::$lot[$c][1][$id]) ?: null;
@@ -58,7 +58,7 @@ class Layout extends Genome {
             array_unshift($out, strtr($out[0], '/', '.'));
             $out = array_unique($out);
         } else {
-            $out = $in;
+            $out = $value;
         }
         $any = [];
         foreach ((array) $out as $v) {

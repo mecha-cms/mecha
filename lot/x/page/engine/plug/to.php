@@ -1,11 +1,11 @@
 <?php
 
-To::_('page', function(array $in) {
-    $content = $in['content'] ?? null;
-    unset($in['content']);
-    $in = [
-        0 => $in,
+To::_('page', function(array $value) {
+    $content = $value['content'] ?? null;
+    unset($value['content']);
+    $value = [
+        0 => $value,
         "\t" => $content
     ];
-    return static::YAML($in, '  ', true);
+    return static::YAML($value, '  ', true);
 });

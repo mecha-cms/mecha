@@ -1,5 +1,5 @@
 <?php
 
-function asset(...$v) {
-    Asset::set(...$v);
+function asset(...$lot) {
+    return count($lot) < 2 ? Asset::get(...$lot) : Asset::set(...$lot);
 }

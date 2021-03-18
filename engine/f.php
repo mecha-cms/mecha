@@ -2,40 +2,40 @@
 
 namespace _ {
     // Check for valid JSON string format
-    function json($x, $r = false) {
-        if (!\is_string($x) || "" === ($x = \trim($x))) {
+    function json($value, $r = false) {
+        if (!\is_string($value) || "" === ($value = \trim($value))) {
             return false;
         }
         return (
             // Maybe boolean
-            'false' === $x ||
-            'null' === $x ||
-            'true' === $x ||
+            'false' === $value ||
+            'null' === $value ||
+            'true' === $value ||
             // Maybe empty string, array or object
-            '""' === $x ||
-            '[]' === $x ||
-            '{}' === $x ||
+            '""' === $value ||
+            '[]' === $value ||
+            '{}' === $value ||
             // Maybe number
-            \is_numeric($x) ||
+            \is_numeric($value) ||
             // Maybe encoded JSON string
-            '"' === $x[0] && '"' === \substr($x, -1) ||
+            '"' === $value[0] && '"' === \substr($value, -1) ||
             // Maybe numeric array
-            '[' === $x[0] && ']' === \substr($x, -1) ||
+            '[' === $value[0] && ']' === \substr($value, -1) ||
             // Maybe associative array
-            '{' === $x[0] && '}' === \substr($x, -1)
-        ) && (null !== ($x = \json_decode($x))) ? ($r ? $x : true) : false;
+            '{' === $value[0] && '}' === \substr($value, -1)
+        ) && (null !== ($value = \json_decode($value))) ? ($r ? $value : true) : false;
     }
 }
 
 namespace {
     // Check if array contains …
-    function any(iterable $a, $fn = null) {
+    function any(iterable $value, $fn = null) {
         if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
         }
-        foreach ($a as $k => $v) {
+        foreach ($value as $k => $v) {
             if (\call_user_func($fn, $v, $k)) {
                 return true;
             }
@@ -43,99 +43,99 @@ namespace {
         return false;
     }
     // Convert class name to file name
-    function c2f(string $x = null, $a = false) {
-        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
-            return \ltrim(\strtr(h($v, '-', $a, '_'), [
+    function c2f(string $value = null, $accent = false) {
+        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $value), function($v) use($accent) {
+            return \ltrim(\strtr(h($v, '-', $accent, '_'), [
                 '__-' => '.',
                 '__' => '.'
             ]), '-');
         }));
     }
     // Get or set file content
-    function content(string $f, $v = null) {
-        if (null !== $v) {
-            if (\is_dir($f) || (\is_file($f) && !\is_writable($f))) {
+    function content(string $path, $value = null) {
+        if (null !== $value) {
+            if (\is_dir($path) || (\is_file($path) && !\is_writable($path))) {
                 return false;
             }
-            if (!\is_dir($d = \dirname($f))) {
-                \mkdir($d, 0775, true);
+            if (!\is_dir($parent = \dirname($path))) {
+                \mkdir($parent, 0775, true);
             }
-            return \is_int(\file_put_contents($f, (string) $v));
+            return \is_int(\file_put_contents($path, (string) $value));
         }
-        return \is_file($f) && \is_readable($f) ? \file_get_contents($f) : null;
+        return \is_file($path) && \is_readable($path) ? \file_get_contents($path) : null;
     }
     // Merge array value(s)
-    function concat(array $a, ...$b) {
+    function concat(array $value, ...$lot) {
         // `concat([…], […], […], false)`
-        if (\count($b) > 1 && false === \end($b)) {
-            \array_pop($b);
-            return \array_merge($a, ...$b);
+        if (\count($lot) > 1 && false === \end($lot)) {
+            \array_pop($lot);
+            return \array_merge($value, ...$lot);
         }
         // `concat([…], […], […])`
-        return \array_merge_recursive($a, ...$b);
+        return \array_merge_recursive($value, ...$lot);
     }
     // Remove empty array, empty string and `null` value from array
-    function drop(iterable $a, callable $fn = null) {
+    function drop(iterable $value, callable $fn = null) {
         $n = null === $fn; // Use default filter?
-        foreach ($a as $k => $v) {
+        foreach ($value as $k => $v) {
             if (\is_array($v) && !empty($v)) {
                 if ($v = drop($v, $fn)) {
-                    $a[$k] = $v;
+                    $value[$k] = $v;
                 } else {
-                    unset($a[$k]); // Drop!
+                    unset($value[$k]); // Drop!
                 }
             } else if ($n) {
                 if ("" === $v || null === $v || [] === $v) {
-                    unset($a[$k]); // Drop!
+                    unset($value[$k]); // Drop!
                 }
             } else {
                 if (\call_user_func($fn, $v, $k)) {
-                    unset($a[$k]); // Drop!
+                    unset($value[$k]); // Drop!
                 }
             }
         }
-        return [] !== $a ? $a : null;
+        return [] !== $value ? $value : null;
     }
     // A equal to B
     function eq($a, $b) {
         return $b === q($a);
     }
     // Check if file/folder does exist
-    function exist($f) {
-        if (\is_array($f)) {
-            foreach ($f as $v) {
+    function exist($path) {
+        if (\is_array($path)) {
+            foreach ($path as $v) {
                 if ($v && $v = \stream_resolve_include_path($v)) {
                     return $v;
                 }
             }
             return false;
         }
-        return \stream_resolve_include_path($f);
+        return \stream_resolve_include_path($path);
     }
     // Extend array value(s)
-    function extend(array $a, ...$b) {
+    function extend(array $value, ...$lot) {
         // `extend([…], […], […], false)`
-        if (\count($b) > 1 && false === \end($b)) {
-            \array_pop($b);
-            return \array_replace($a, ...$b);
+        if (\count($lot) > 1 && false === \end($lot)) {
+            \array_pop($lot);
+            return \array_replace($value, ...$lot);
         }
         // `extend([…], […], […])`
-        return \array_replace_recursive($a, ...$b);
+        return \array_replace_recursive($value, ...$lot);
     }
     // Convert file name to class name
-    function f2c(string $x = null, $a = false) {
-        return \implode("\\", map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+    function f2c(string $value = null, $accent = false) {
+        return \implode("\\", map(\preg_split('/[\\\\\/]/', $value), function($v) use($accent) {
             return p(\strtr($v, [
                 '.' => '__'
-            ]), $a, '_');
+            ]), $accent, '_');
         }));
     }
     // Convert file name to property name
-    function f2p(string $x = null, $a = false) {
-        return \implode("\\", map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
+    function f2p(string $value = null, $accent = false) {
+        return \implode("\\", map(\preg_split('/[\\\\\/]/', $value), function($v) use($accent) {
             return c(\strtr($v, [
                 '.' => '__'
-            ]), $a, '_');
+            ]), $accent, '_');
         }));
     }
     // Fetch remote URL
@@ -190,8 +190,8 @@ namespace {
         return false !== $out ? $out : null;
     }
     // Return the first element found in array that passed the function test
-    function find(iterable $a, callable $fn) {
-        foreach ($a as $k => $v) {
+    function find(iterable $value, callable $fn) {
+        foreach ($value as $k => $v) {
             if (\call_user_func($fn, $v, $k)) {
                 return $v;
             }
@@ -199,82 +199,90 @@ namespace {
         return null;
     }
     // Call function with parameter(s) and optional scope
-    function fire(callable $fn, array $a = [], $that = null, string $scope = null) {
+    function fire(callable $fn, array $lot = [], $that = null, string $scope = null) {
         $fn = $fn instanceof \Closure ? $fn : \Closure::fromCallable($fn);
         // `fire($fn, [], Foo::class)`
         if (\is_string($that)) {
             $scope = $that;
             $that = null;
         }
-        return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$a);
+        return \call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$lot);
     }
     // A greater than or equal to B
     function ge($a, $b) {
         return q($a) >= $b;
     }
     // Get array value recursively
-    function get(array $a, string $k, string $s = '.') {
-        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
-        foreach ($kk as $v) {
-            $v = \strtr($v, [\P => $s]);
-            if (!\is_array($a) || !\array_key_exists($v, $a)) {
+    function get(array $value, string $key, string $join = '.') {
+        $keys = \explode($join, \strtr($key, [
+            "\\" . $join => \P
+        ]));
+        foreach ($keys as $k) {
+            $k = \strtr($k, [
+                \P => $join
+            ]);
+            if (!\is_array($value) || !\array_key_exists($k, $value)) {
                 return null;
             }
-            $a =& $a[$v];
+            $value =& $value[$k];
         }
-        return $a;
+        return $value;
     }
     // A greater than B
     function gt($a, $b) {
         return q($a) > $b;
     }
     // Check if an element exists in array
-    function has(iterable $a, $v = "", string $x = \P) {
-        if (!\is_string($v)) {
-            foreach ($a as $vv) {
-                if ($v === $vv) {
+    function has(iterable $value, $has = "", string $x = \P) {
+        if (!\is_string($has)) {
+            foreach ($value as $v) {
+                if ($has === $v) {
                     return true;
                 }
             }
             return false;
         }
-        return false !== \strpos($x . \implode($x, $a) . $x, $x . $v . $x);
+        return false !== \strpos($x . \implode($x, $value) . $x, $x . $has . $x);
     }
     // Filter out element(s) that pass the function test
-    function is(iterable $a, $fn = null) {
+    function is(iterable $value, $fn = null) {
         if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
         }
-        return $fn ? \array_filter($a, $fn, \ARRAY_FILTER_USE_BOTH) : \array_filter($a);
+        return $fn ? \array_filter($value, $fn, \ARRAY_FILTER_USE_BOTH) : \array_filter($value);
     }
     // A less than or equal to B
     function le($a, $b) {
         return q($a) <= $b;
     }
     // Remove array value
-    function let(array &$a, string $k, string $s = '.') {
-        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
-        while (\count($kk) > 1) {
-            $k = \strtr(\array_shift($kk), [\P => $s]);
-            if (\is_array($a) && \array_key_exists($k, $a)) {
-                $a =& $a[$k];
+    function let(array &$value, string $key, string $join = '.') {
+        $keys = \explode($join, \strtr($key, [
+            "\\" . $join => \P
+        ]));
+        while (\count($keys) > 1) {
+            $k = \strtr(\array_shift($keys), [
+                \P => $join
+            ]);
+            if (\is_array($value) && \array_key_exists($k, $value)) {
+                $value =& $value[$k];
             }
         }
-        if (\is_array($a) && \array_key_exists($v = \array_shift($kk), $a)) {
-            unset($a[$v]);
+        if (\is_array($value) && \array_key_exists($k = \array_shift($keys), $value)) {
+            unset($value[$k]);
         }
-        return $a;
+        return $value;
     }
     // A less than B
     function lt($a, $b) {
         return q($a) < $b;
     }
     // Manipulate array value(s)
-    function map(iterable $a, callable $fn) {
+    function map(iterable $value, callable $fn) {
         $out = [];
-        foreach ($a as $k => $v) {
+        foreach ($value as $k => $v) {
             $out[$k] = \call_user_func($fn, $v, $k);
         }
         return $out;
@@ -284,32 +292,32 @@ namespace {
         return q($a) !== $b;
     }
     // Filter out element(s) that does not pass the function test
-    function not(iterable $a, $fn = null) {
+    function not(iterable $value, $fn = null) {
         if (!\is_callable($fn) && null !== $fn) {
             $fn = function($v) use($fn) {
                 return $v === $fn;
             };
         }
-        return \array_filter($a, function($v, $k) use($fn) {
+        return \array_filter($value, function($v, $k) use($fn) {
             return !\call_user_func($fn, $v, $k);
         }, \ARRAY_FILTER_USE_BOTH);
     }
     // Resolve relative file/folder path
-    function path(string $x = null) {
-        return \stream_resolve_include_path($x) ?: null;
+    function path(string $value = null) {
+        return \stream_resolve_include_path($value) ?: null;
     }
     // Generate new array contains value from the key
-    function pluck(iterable $a, string $k, $or = null) {
+    function pluck(iterable $values, string $key, $value = null) {
         $out = [];
-        foreach ($a as $v) {
-            $out[] = $v[$k] ?? $or;
+        foreach ($values as $v) {
+            $out[] = $v[$key] ?? $value;
         }
         return $out;
     }
     // Convert property name to file name
-    function p2f(string $x = null, $a = false) {
-        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $x), function($v) use($a) {
-            return \strtr(h($v, '-', $a, '_'), [
+    function p2f(string $value = null, $accent = false) {
+        return \implode(\DS, map(\preg_split('/[\\\\\/]/', $value), function($v) use($accent) {
+            return \strtr(h($v, '-', $accent, '_'), [
                 '__' => '.'
             ]);
         }));
@@ -348,89 +356,112 @@ namespace {
         return \mail($to, $title, $content, \implode("\r\n", $lot));
     }
     // Set array value
-    function set(array &$a, string $k, $v = null, string $s = '.') {
-        $kk = \explode($s, \strtr($k, ["\\" . $s => \P]));
-        while (\count($kk) > 1) {
-            $k = \strtr(\array_shift($kk), [\P => $s]);
-            if (!\array_key_exists($k, $a)) {
-                $a[$k] = [];
+    function set(array &$out, string $key, $value = null, string $join = '.') {
+        $keys = \explode($join, \strtr($key, [
+            "\\" . $join => \P
+        ]));
+        while (\count($keys) > 1) {
+            $k = \strtr(\array_shift($keys), [
+                \P => $join
+            ]);
+            if (!\array_key_exists($k, $out)) {
+                $out[$k] = [];
             }
-            $a =& $a[$k];
+            $out =& $out[$k];
         }
-        $a[\strtr(\array_shift($kk), [\P => $s])] = $v;
-        return $a;
+        $out[\strtr(\array_shift($keys), [
+            \P => $join
+        ])] = $value;
+        return $out;
     }
     // Shake array value
-    function shake(array $a, $preserve_key = true) {
+    function shake(array $value, $preserve_key = true) {
         if (\is_callable($preserve_key)) {
             // `$preserve_key` as `$fn`
-            $a = \call_user_func($preserve_key, $a);
+            $value = \call_user_func($preserve_key, $value);
         } else {
             // <http://php.net/manual/en/function.shuffle.php#94697>
             if ($preserve_key) {
-                $k = \array_keys($a);
-                $v = [];
-                \shuffle($k);
-                foreach ($k as $kk) {
-                    $v[$kk] = $a[$kk];
+                $keys = \array_keys($value);
+                $values = [];
+                \shuffle($keys);
+                foreach ($keys as $key) {
+                    $values[$key] = $value[$key];
                 }
-                $a = $v;
-                unset($k, $v);
+                $value = $values;
+                unset($keys, $values);
             } else {
-                \shuffle($a);
+                \shuffle($value);
             }
         }
-        return $a;
+        return $value;
     }
     // Break dot-notation sequence into step(s)
-    function step(string $a, string $s = '.', int $dir = 1) {
-        $a = \strtr($a, ["\\" . $s => \P]);
-        if (false !== \strpos($a, $s)) {
-            $a = \explode($s, $a);
-            $v = -1 === $dir ? \array_pop($a) : \array_shift($a);
-            $k = \strtr(\implode($s, $a), [\P => $s]);
-            $c = [$k => \strtr($v, [\P => $s])];
-            if (-1 === $dir) {
-                while (null !== ($b = \array_pop($a))) {
-                    $v = \strtr($b . $s . $v, [\P => $s]);
-                    $k = \strtr(\implode($s, $a), [\P => $s]);
+    function step(string $value, string $join = '.', int $direction = 1) {
+        $value = \strtr($value, [
+            "\\" . $join => \P
+        ]);
+        if (false !== \strpos($value, $join)) {
+            $values = \explode($join, $value);
+            $v = -1 === $direction ? \array_pop($values) : \array_shift($values);
+            $k = \strtr(\implode($join, $values), [
+                \P => $join
+            ]);
+            $c = [$k => \strtr($v, [
+                \P => $join
+            ])];
+            if (-1 === $direction) {
+                while (null !== ($value = \array_pop($values))) {
+                    $v = \strtr($value . $join . $v, [
+                        \P => $join
+                    ]);
+                    $k = \strtr(\implode($join, $values), [
+                        \P => $join
+                    ]);
                     $c += [$k => $v];
                 }
             } else {
-                while (null !== ($b = \array_shift($a))) {
-                    $v .= \strtr($s . $b, [\P => $s]);
-                    $k = \strtr(\implode($s, $a), [\P => $s]);
+                while (null !== ($value = \array_shift($values))) {
+                    $v .= \strtr($join . $value, [
+                        \P => $join
+                    ]);
+                    $k = \strtr(\implode($join, $values), [
+                        \P => $join
+                    ]);
                     $c = [$k => $v] + $c;
                 }
             }
             return $c;
         }
-        return (array) $a;
+        return (array) $value;
     }
     // Get file content line by line
-    function stream(string $f, int $c = 1024) {
-        if (\is_file($f) && $h = \fopen($f, 'r')) {
-            $c += 1;
-            while (false !== ($v = \fgets($h, $c))) {
-                yield \strtr($v, ["\r\n" => "\n", "\r" => "\n"]);
+    function stream(string $path, int $max = 1024) {
+        if (\is_file($path) && $h = \fopen($path, 'r')) {
+            $max += 1;
+            while (false !== ($v = \fgets($h, $max))) {
+                yield \strtr($v, [
+                    "\r\n" => "\n",
+                    "\r" => "\n"
+                ]);
             }
             \fclose($h);
         }
         yield from [];
     }
     // Dump PHP code
-    function test(...$a) {
+    function test(...$lot) {
         echo '<p style="border:2px solid #000;border-bottom-width:1px;">';
-        foreach ($a as $b) {
-            $s = \var_export($b, true);
-            $s = \strtr(\highlight_string("<?php\n\n" . $s . "\n\n?>", true), [
+        foreach ($lot as $v) {
+            $v = \var_export($v, true);
+            $v = \strtr(\highlight_string("<?php\n\n" . $v . "\n\n?>", true), [
                 "\n" => "",
                 "\r" => ""
             ]);
-            $s = \strtr($s, [
+            $v = \strtr($v, [
                 '<code>' => '<code style="display:block;word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:0;border-bottom:1px solid #000;padding:.5em;border-radius:0;box-shadow:none;text-shadow:none;">'
             ]);
-            echo $s;
+            echo $v;
         }
         echo '</p>';
     }
@@ -464,92 +495,97 @@ namespace {
 // z: Export array/object into a compact PHP file
 
 namespace {
-    function a($o, $safe = true) {
-        if (\is_object($o)) {
+    function a($value, $safe = true) {
+        if (\is_object($value)) {
             if ($safe) {
-                return ($v = \get_class($o)) && 'stdClass' !== $v ? $o : (array) $o;
+                return ($v = \get_class($value)) && 'stdClass' !== $v ? $value : (array) $value;
             } else {
-                $o = (array) $o;
+                $value = (array) $value;
             }
-            foreach ($o as &$oo) {
-                $oo = a($oo, $safe);
+            foreach ($value as &$v) {
+                $v = a($v, $safe);
             }
-            unset($oo);
+            unset($v);
         }
-        return $o;
+        return $value;
     }
-    function b($x, array $a = [0]) {
-        if (isset($a[0]) && $x < $a[0]) {
-            return $a[0];
+    function b($value, array $range = [0]) {
+        if (isset($range[0]) && $value < $range[0]) {
+            return $range[0];
         }
-        if (isset($a[1]) && $x > $a[1]) {
-            return $a[1];
+        if (isset($range[1]) && $value > $range[1]) {
+            return $range[1];
         }
-        return $x;
+        return $value;
     }
-    function c(string $x = null, $a = false, string $i = "") {
-        $i = x($i);
-        return \strtr(\preg_replace_callback('/([ ' . $i . '])([\p{L}\p{N}' . $i . '])/u', function($m) {
+    function c(string $value = null, $accent = false, string $preserve = "") {
+        $preserve = x($preserve);
+        return \strtr(\preg_replace_callback('/([ ' . $preserve . '])([\p{L}\p{N}' . $preserve . '])/u', function($m) {
             return $m[1] . u($m[2]);
-        }, f($x, $a, $i)), [' ' => ""]);
+        }, f($value, $accent, $preserve)), [
+            ' ' => ""
+        ]);
     }
-    function d(string $f, $fn = null) {
-        \spl_autoload_register(function($c) use($f, $fn) {
-            $n = c2f($c);
-            $f .= \DS . $n . '.php';
-            if (\is_file($f)) {
+    function d(string $folder, $fn = null) {
+        \spl_autoload_register(function($name) use($folder, $fn) {
+            $n = c2f($name);
+            $file = $folder . \DS . $n . '.php';
+            if (\is_file($file)) {
                 extract($GLOBALS, \EXTR_SKIP);
-                require $f;
+                require $file;
                 if (\is_callable($fn)) {
-                    \call_user_func($fn, $c, $n);
+                    \call_user_func($fn, $name, $n);
                 }
             }
         });
     }
-    function e($x, array $a = []) {
-        if (\is_string($x)) {
-            if ("" === $x) {
-                return $x;
+    function e($value, array $lot = []) {
+        if (\is_string($value)) {
+            if ("" === $value) {
+                return $value;
             }
-            if (\array_key_exists($x, $a = \array_replace([
+            if (\array_key_exists($value, $lot = \array_replace([
                 'TRUE' => true,
                 'FALSE' => false,
                 'NULL' => null,
                 'true' => true,
                 'false' => false,
                 'null' => null
-            ], $a))) {
-                return $a[$x];
+            ], $lot))) {
+                return $lot[$value];
             }
-            if (\is_numeric($x)) {
-                return false !== \strpos($x, '.') ? (float) $x : (int) $x;
+            if (\is_numeric($value)) {
+                return false !== \strpos($value, '.') ? (float) $value : (int) $value;
             }
-            if (false !== ($v = \_\json($x, true))) {
+            if (false !== ($v = \_\json($value, true))) {
                 return $v;
             }
             // `"abcdef"` or `'abcdef'`
-            if ('"' === $x[0] && '"' === \substr($x, -1) || "'" === $x[0] && "'" === \substr($x, -1)) {
-                $v = \substr(\substr($x, 1), 0, -1);
-                $a = \strpos($v, $x[0]);
+            if ('"' === $value[0] && '"' === \substr($value, -1) || "'" === $value[0] && "'" === \substr($value, -1)) {
+                $v = \substr(\substr($value, 1), 0, -1);
+                $a = \strpos($v, $value[0]);
                 $b = \strpos($v, "\\");
                 // `'ab\'cd\'ef'`
                 if (
                     false !== $a &&
                     $b + 1 === $a &&
-                    \preg_match('/^' . $x[0] . '(?:[^' . $x[0] . '\\\]|\\\.)*' . $x[0] . '$/', $x)
+                    \preg_match('/^' . $value[0] . '(?:[^' . $value[0] . '\\\]|\\\.)*' . $value[0] . '$/', $value)
                 ) {
-                    return \strtr($v, ["\\" . $x[0] => $x[0]]);
+                    return \strtr($v, [
+                        "\\" . $value[0] => $value[0]
+                    ]);
                 }
                 return $v;
             }
-            return $x;
-        } else if (\is_array($x)) {
-            foreach ($x as $k => &$v) {
-                $v = e($v, $a);
+            return $value;
+        }
+        if (\is_array($value)) {
+            foreach ($value as &$v) {
+                $v = e($v, $lot);
             }
             unset($v);
         }
-        return $x;
+        return $value;
     }
     $GLOBALS['F'] = [
         '¹' => '1',
@@ -1035,28 +1071,25 @@ namespace {
         'Ỷ' => 'Y',
         'Ỹ' => 'Y'
     ];
-    // $x: the string input
-    // $a: replace multi-byte string into their accent
-    // $i: character(s) to keep
-    function f(string $x = null, $a = true, string $i = "") {
-        // this function does not trim white-space at the start and end of the string
-        $i = x($i);
-        $x = \preg_replace([
-            // remove HTML tag(s) and character(s) reference
+    function f(string $value = null, $accent = true, string $preserve = "") {
+        // This function does not trim white-space at the start and end of the string
+        $preserve = x($preserve);
+        $value = \preg_replace([
+            // Remove HTML tag(s) and character(s) reference
             '/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i',
-            // remove anything except character(s) white-list
-            '/[^\p{L}\p{N}\s' . $i . ']/u',
-            // convert multiple white-space to single space
+            // Remove anything except character(s) white-list
+            '/[^\p{L}\p{N}\s' . $preserve . ']/u',
+            // Convert multiple white-space to single space
             '/\s+/'
-        ], ' ', $x);
-        return $a && !empty($GLOBALS['F']) ? \strtr($x, $GLOBALS['F']) : $x;
+        ], ' ', $value);
+        return $accent && !empty($GLOBALS['F']) ? \strtr($value, $GLOBALS['F']) : $value;
     }
     // Advance glob function
-    function g(string $f, $x = null, $r = 0) {
-        if (\is_dir($f)) {
-            $g = new \RecursiveDirectoryIterator($f, \FilesystemIterator::SKIP_DOTS);
-            $g = new \RecursiveCallbackFilterIterator($g, function($v, $k, $a) use($r, $x) {
-                if ($r > 0 && $a->hasChildren()) {
+    function g(string $folder, $x = null, $deep = 0) {
+        if (\is_dir($folder)) {
+            $it = new \RecursiveDirectoryIterator($folder, \FilesystemIterator::SKIP_DOTS);
+            $it = new \RecursiveCallbackFilterIterator($it, function($v, $k, $a) use($deep, $x) {
+                if ($deep > 0 && $a->hasChildren()) {
                     return true;
                 }
                 // Filter by type (`0` for folder and `1` for file)
@@ -1075,36 +1108,36 @@ namespace {
                 // No filter
                 return true;
             });
-            $g = new \RecursiveIteratorIterator($g, !isset($x) || 0 === $x ? \RecursiveIteratorIterator::CHILD_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
-            $g->setMaxDepth(true === $r ? -1 : (\is_int($r) ? $r : 0));
-            foreach ($g as $k => $v) {
+            $it = new \RecursiveIteratorIterator($it, null === $x || 0 === $x ? \RecursiveIteratorIterator::CHILD_FIRST : \RecursiveIteratorIterator::LEAVES_ONLY);
+            $it->setMaxDepth(true === $deep ? -1 : (\is_int($deep) ? $deep : 0));
+            foreach ($it as $k => $v) {
                 yield $k => $v->isDir() ? 0 : 1;
             }
         }
         return yield from [];
     }
-    function h(string $x = null, string $h = '-', $a = false, string $i = "") {
-        return \strtr(\preg_replace_callback('/\p{Lu}/', function($m) use($h) {
-            return $h . l($m[0]);
-        }, f($x, $a, $h . $i)), [
-            ' ' => $h,
-            ' ' . $h => $h,
-            $h . $h => $h
+    function h(string $value = null, string $join = '-', $accent = false, string $preserve = "") {
+        return \strtr(\preg_replace_callback('/\p{Lu}/', function($m) use($join) {
+            return $join . l($m[0]);
+        }, f($value, $accent, $join . $preserve)), [
+            ' ' => $join,
+            ' ' . $join => $join,
+            $join . $join => $join
         ]);
     }
-    function i($x = null, $a = [], $f = null) {
-        if (null === $x) {
+    function i($value = null, $lot = [], $or = null) {
+        if (null === $value) {
             return;
         }
-        $a = (array) $a;
-        if ($a) {
+        $lot = (array) $lot;
+        if ($lot) {
             // Also translate the argument(s)
-            foreach ($a as &$v) {
+            foreach ($lot as &$v) {
                 $v = i($v);
             }
         }
-        $x = $GLOBALS['I'][$x] ?? $f ?? $x;
-        return \is_string($x) && $a ? \vsprintf($x, $a) : $x;
+        $value = $GLOBALS['I'][$value] ?? $or ?? $value;
+        return \is_string($value) && $lot ? \vsprintf($value, $lot) : $value;
     }
     function j(array $a, array $b) {
         $f = [];
@@ -1124,19 +1157,19 @@ namespace {
         }
         return $f;
     }
-    function k(string $f, $x = null, $r = 0, $q = [], $c = false) {
-        foreach (g($f, $x, $r) as $k => $v) {
-            foreach ($q as $n) {
-                if ("" === $n) {
+    function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) {
+        foreach (g($folder, $x, $deep) as $k => $v) {
+            foreach ((array) $query as $q) {
+                if ("" === $q) {
                     continue;
                 }
                 // Find by query in file name…
-                if (false !== \stripos($k, $n)) {
+                if (false !== \stripos($k, $q)) {
                     yield $k => $v;
                 // Find by query in file content…
-                } else if ($c && 1 === $v) {
+                } else if ($content && 1 === $v) {
                     foreach (stream($k) as $vv) {
-                        if (false !== \stripos($vv, $n)) {
+                        if (false !== \stripos($vv, $q)) {
                             yield $k => 1;
                         }
                     }
@@ -1144,128 +1177,130 @@ namespace {
             }
         }
     }
-    function l(string $x = null) {
-        return \extension_loaded('mbstring') ? \mb_strtolower($x) : \strtolower($x);
+    function l(string $value = null) {
+        return \extension_loaded('mbstring') ? \mb_strtolower($value) : \strtolower($value);
     }
-    function m($x, array $a, array $b) {
+    function m($value, array $a, array $b) {
         // <https://stackoverflow.com/a/14224813/1163000>
-        return ($x - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
+        return ($value - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
     }
-    function n(string $x = null, string $t = '    ') {
+    function n(string $value = null, string $tab = '    ') {
         // <https://stackoverflow.com/a/18870840/1163000>
-        $x = \strtr($x, ["\xEF\xBB\xBF" => ""]);
+        $value = \strtr($value, [
+            "\xEF\xBB\xBF" => ""
+        ]);
         // Tab to 4 space(s), line-break to `\n`
-        return \strtr($x, [
-            "\t" => $t,
+        return \strtr($value, [
             "\r\n" => "\n",
-            "\r" => "\n"
+            "\r" => "\n",
+            "\t" => $tab
         ]);
     }
-    function o($a, $safe = true) {
-        if (\is_array($a)) {
+    function o($value, $safe = true) {
+        if (\is_array($value)) {
             if ($safe) {
-                $a = array_keys($a) !== range(0, count($a) - 1) ? (object) $a : $a;
+                $value = array_keys($value) !== range(0, count($value) - 1) ? (object) $value : $value;
             } else {
-                $a = (object) $a;
+                $value = (object) $value;
             }
-            foreach ($a as &$aa) {
-                $aa = o($aa, $safe);
-            }
-            unset($aa);
-        }
-        return $a;
-    }
-    function p(string $x = null, $a = false, string $i = "") {
-        return c(' ' . $x, $a, $i);
-    }
-    function q($x) {
-        if (true === $x) {
-            return 1;
-        }
-        if (false === $x || null === $x) {
-            return 0;
-        }
-        if (\is_int($x) || \is_float($x)) {
-            return $x;
-        }
-        if (\is_string($x)) {
-            return \extension_loaded('mbstring') ? \mb_strlen($x) : \strlen($x);
-        }
-        if ($x instanceof \Traversable) {
-            return \iterator_count($x);
-        }
-        if ($x instanceof \stdClass) {
-            return \count((array) $x);
-        }
-        return \count($x);
-    }
-    function r($a, $b, string $c = null) {
-        if (\is_string($a) && \is_string($b)) {
-            return 1 === \strlen($a) && 1 === \strlen($b) ? \strtr($c, $a, $b) : \strtr($c, [$a => $b]);
-        }
-        return \strtr($c, \array_combine($a, $b));
-    }
-    function s($x, array $a = []) {
-        if (\is_array($x)) {
-            foreach ($x as &$v) {
-                $v = s($v, $a);
+            foreach ($value as &$v) {
+                $v = o($v, $safe);
             }
             unset($v);
-            return $x;
         }
-        if (true === $x) {
-            return $a['true'] ?? 'true';
-        }
-        if (false === $x) {
-            return $a['false'] ?? 'false';
-        }
-        if (null === $x) {
-            return $a['null'] ?? 'null';
-        }
-        if (\is_object($x)) {
-            return \json_encode($x);
-        }
-        if (\is_string($x)) {
-            return $a[$x = (string) $x] ?? $x;
-        }
-        return (string) $x;
+        return $value;
     }
-    function t(string $x = null, string $o = '"', string $c = null) {
-        if ($x) {
-            if ("" !== $o && 0 === \strpos($x, $o)) {
-                $x = \substr($x, \strlen($o));
+    function p(string $value = null, $accent = false, string $preserve = "") {
+        return c(' ' . $value, $accent, $preserve);
+    }
+    function q($value) {
+        if (true === $value) {
+            return 1;
+        }
+        if (false === $value || null === $value) {
+            return 0;
+        }
+        if (\is_int($value) || \is_float($value)) {
+            return $value;
+        }
+        if (\is_string($value)) {
+            return \extension_loaded('mbstring') ? \mb_strlen($value) : \strlen($value);
+        }
+        if ($value instanceof \Traversable) {
+            return \iterator_count($value);
+        }
+        if ($value instanceof \stdClass) {
+            return \count((array) $value);
+        }
+        return \count($value);
+    }
+    function r($from, $to, string $value = null) {
+        if (\is_string($from) && \is_string($to)) {
+            return 1 === \strlen($from) && 1 === \strlen($to) ? \strtr($value, $from, $to) : \strtr($value, [
+                $from => $to
+            ]);
+        }
+        return \strtr($value, \array_combine($from, $to));
+    }
+    function s($value, array $lot = []) {
+        if (\is_array($value)) {
+            foreach ($value as &$v) {
+                $v = s($v, $lot);
             }
-            $c = $c ?? $o;
-            if ("" !== $c && $c === \substr($x, $e = -\strlen($c))) {
-                $x = \substr($x, 0, $e);
+            unset($v);
+            return $value;
+        }
+        if (true === $value) {
+            return $lot['true'] ?? 'true';
+        }
+        if (false === $value) {
+            return $lot['false'] ?? 'false';
+        }
+        if (null === $value) {
+            return $lot['null'] ?? 'null';
+        }
+        if (\is_object($value)) {
+            return \json_encode($value);
+        }
+        if (\is_string($value)) {
+            return $lot[$value = (string) $value] ?? $value;
+        }
+        return (string) $value;
+    }
+    function t(string $value = null, string $open = '"', string $close = null) {
+        if ($value) {
+            if ("" !== $open && 0 === \strpos($value, $open)) {
+                $value = \substr($value, \strlen($open));
+            }
+            $close = $close ?? $open;
+            if ("" !== $close && $close === \substr($value, $end = -\strlen($close))) {
+                $value = \substr($value, 0, $end);
             }
         }
-        return $x;
+        return $value;
     }
-    function u(string $x = null) {
-        return \extension_loaded('mbstring') ? \mb_strtoupper($x) : \strtoupper($x);
+    function u(string $value = null) {
+        return \extension_loaded('mbstring') ? \mb_strtoupper($value) : \strtoupper($value);
     }
-    function v(string $x = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
-        $r = [];
+    function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+        $lot = [];
         foreach (\str_split($c . $d, 1) as $v) {
-            $r["\\" . $v] = $v;
+            $lot["\\" . $v] = $v;
         }
-        return \strtr($x, $r);
+        return \strtr($value, $lot);
     }
-    // $c: list of HTML tag name(s) to be excluded from `strip_tags()`
-    // $n: @keep line-break in the output or replace them with a space? (default is !@keep)
-    function w(string $x = null, $c = [], $n = false) {
+    function w(string $value = null, $preserve_tags = [], $preserve_break = false) {
         // Should be a HTML input
-        if (false !== \strpos($x, '<') || false !== \strpos($x, ' ') || false !== \strpos($x, "\n")) {
-            $c = '<' . \implode('><', \is_string($c) ? \explode(',', $c) : (array) $c) . '>';
-            return \preg_replace($n ? '/ +/' : '/\s+/', ' ', \trim(\strip_tags($x, $c)));
+        if (false !== \strpos($value, '<') || false !== \strpos($value, ' ') || false !== \strpos($value, "\n")) {
+            $preserve_tags = '<' . \implode('><', \is_string($preserve_tags) ? \explode(',', $preserve_tags) : (array) $preserve_tags) . '>';
+            return \preg_replace($preserve_break ? '/ +/' : '/\s+/', ' ', \trim(\strip_tags($value, $preserve_tags)));
         }
         // [1]. Replace `+` with ` `
         // [2]. Replace `-` with ` `
         // [3]. Replace `---` with ` - `
         // [4]. Replace `--` with `-`
         return \preg_replace([
-            '/^[._]+|[._]+$/', // remove `.` and `__` prefix/suffix of file name
+            '/^[._]+|[._]+$/', // remove `.` and `__` prefix/suffix in file name
             '/---/',
             '/--/',
             '/-/',
@@ -1278,25 +1313,24 @@ namespace {
             ' ',
             ' ',
             '-'
-        ], \urldecode($x));
+        ], \urldecode($value));
     }
-    function x(string $x = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
-        return \addcslashes($x, $d . $c);
+    function x(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+        return \addcslashes($value, $c . $d);
     }
-    function y(iterable $a) {
-        if ($a instanceof \Traversable) {
-            return \iterator_to_array($a);
+    function y(iterable $value) {
+        if ($value instanceof \Traversable) {
+            return \iterator_to_array($value);
         }
-        return (array) $a;
+        return (array) $value;
     }
-    // $b: use `[]` or `array()` syntax?
-    function z($a, $b = true) {
-        if (\is_array($a)) {
-            $o = [];
-            foreach ($a as $k => $v) {
-                $o[] = \var_export($k, true) . '=>' . z($v, $b);
+    function z($value, $short = true) {
+        if (\is_array($value)) {
+            $out = [];
+            foreach ($value as $k => $v) {
+                $out[] = \var_export($k, true) . '=>' . z($v, $short);
             }
-            return ($b ? '[' : 'array(') . \implode(',', $o) . ($b ? ']' : ')');
+            return ($short ? '[' : 'array(') . \implode(',', $out) . ($short ? ']' : ')');
         }
         return \var_export($a, true);
     }

@@ -3,13 +3,13 @@
 final class Is extends Genome {
 
     // Check for IP address
-    public static function IP($x) {
-        return filter_var($x, FILTER_VALIDATE_IP);
+    public static function IP($value) {
+        return filter_var($value, FILTER_VALIDATE_IP);
     }
 
     // Check for URL address
-    public static function URL($x) {
-        return filter_var($x, FILTER_VALIDATE_URL);
+    public static function URL($value) {
+        return filter_var($value, FILTER_VALIDATE_URL);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -17,51 +17,51 @@ final class Is extends Genome {
     }
 
     // Check for email address
-    public static function email($x) {
-        return filter_var($x, FILTER_VALIDATE_EMAIL);
+    public static function email($value) {
+        return filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 
     // Check for valid file name
-    public static function file($x) {
-        return is_string($x) && strlen($x) <= 260 && is_file($x);
+    public static function file($value) {
+        return is_string($value) && strlen($value) <= 260 && is_file($value);
     }
 
     // Check for valid folder name
-    public static function files($x) {
-        return is_string($x) && strlen($x) <= 260 && is_dir($x);
+    public static function files($value) {
+        return is_string($value) && strlen($value) <= 260 && is_dir($value);
     }
 
     // Alias for `files`
-    public static function folder($x) {
-        return self::files($x);
+    public static function folder($value) {
+        return self::files($value);
     }
 
     // Check for valid local path address (whether it is exists or not)
-    public static function path($x, $exist = false) {
-        if (!is_string($x)) {
+    public static function path($value, $exist = false) {
+        if (!is_string($value)) {
             return false;
         }
-        return 0 === strpos($x, ROOT) && false === strpos($x, "\n") && (!$exist || stream_resolve_include_path($x));
+        return 0 === strpos($value, ROOT) && false === strpos($value, "\n") && (!$exist || stream_resolve_include_path($value));
     }
 
     // Check for valid boolean value
-    public static function toggle($x) {
-        return filter_var($x, FILTER_VALIDATE_BOOLEAN);
+    public static function toggle($value) {
+        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
     }
 
     // Check for empty string, array or object
-    public static function void($x) {
-        if ($x instanceof \Traversable) {
-            return 0 === \iterator_count($x);
+    public static function void($value) {
+        if ($value instanceof \Traversable) {
+            return 0 === \iterator_count($value);
         }
         // `0` integer and `0` string is not considered void
         return (
-            "" === $x ||
-            false === $x ||
-            null === $x ||
-            is_string($x) && "" === trim($x) ||
-            is_array($x) && empty($x) ||
-            is_object($x) && empty((array) $x)
+            "" === $value ||
+            false === $value ||
+            null === $value ||
+            is_string($value) && "" === trim($value) ||
+            is_array($value) && empty($value) ||
+            is_object($value) && empty((array) $value)
         );
     }
 

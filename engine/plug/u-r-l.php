@@ -1,48 +1,48 @@
 <?php
 
-URL::_('long', function(string $path, $ground = true) {
+URL::_('long', function(string $value, $ground = true) {
     extract($GLOBALS, EXTR_SKIP);
     $d = $url->{$ground ? 'ground' : 'root'};
     // `URL::long('//example.com')`
-    if (0 === strpos($path, '//')) {
-        return rtrim($url['protocol'] . ':' . $path, '/');
+    if (0 === strpos($value, '//')) {
+        return rtrim($url['protocol'] . ':' . $value, '/');
     }
     // `URL::long('/foo/bar/baz/qux')`
-    if (0 === strpos($path, '/')) {
-        if (false !== strpos('?#', $path[1] ?? P)) {
-            $path = substr($path, 1);
-        } else if (1 === strpos($path, '&')) {
-            $path = '?' . substr($path, 2);
+    if (0 === strpos($value, '/')) {
+        if (false !== strpos('?#', $value[1] ?? P)) {
+            $value = substr($value, 1);
+        } else if (1 === strpos($value, '&')) {
+            $value = '?' . substr($value, 2);
         }
-        return rtrim($d . $path, '/');
+        return rtrim($d . $value, '/');
     }
     // `URL::long('?foo=bar&baz=qux')`
     if (
-        false === strpos($path, '://') &&
-        0 !== strpos($path, 'data:') &&
-        0 !== strpos($path, 'javascript:')
+        false === strpos($value, '://') &&
+        0 !== strpos($value, 'data:') &&
+        0 !== strpos($value, 'javascript:')
     ) {
-        return strtr(rtrim($d . '/' . trim($path, '/'), '/'), [
+        return strtr(rtrim($d . '/' . trim($value, '/'), '/'), [
             '/?' => '?',
             '/&' => '?',
             '/#' => '#'
         ]);
     }
-    return $path;
+    return $value;
 });
 
-URL::_('short', function(string $path, $ground = true) {
+URL::_('short', function(string $value, $ground = true) {
     extract($GLOBALS, EXTR_SKIP);
     $d = $url->{$ground ? 'ground' : 'root'};
-    if (0 === strpos($path, '//')) {
-        if (0 !== strpos($path, '//' . $url->host)) {
-            return $path; // Ignore external URL
+    if (0 === strpos($value, '//')) {
+        if (0 !== strpos($value, '//' . $url->host)) {
+            return $value; // Ignore external URL
         }
-        $path = $url->protocol . substr($path, 2);
+        $value = $url->protocol . substr($value, 2);
     } else {
-        if (0 !== strpos($path, $url . "")) {
-            return $path; // Ignore external URL
+        if (0 !== strpos($value, $url . "")) {
+            return $value; // Ignore external URL
         }
     }
-    return rtrim(substr($path, strlen($d)), '/');
+    return rtrim(substr($value, strlen($d)), '/');
 });

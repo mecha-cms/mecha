@@ -1,5 +1,5 @@
 <?php
 
-function anemon(...$v) {
-    return new Anemon(...$v);
+function anemon(...$lot) {
+    return new Anemon(...$lot);
 }

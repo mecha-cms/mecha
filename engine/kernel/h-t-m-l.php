@@ -4,8 +4,8 @@ class HTML extends SGML {
 
     public $strict = false;
 
-    public function __construct($in = []) {
-        parent::__construct($in);
+    public function __construct($value = []) {
+        parent::__construct($value);
         if (!empty($this->lot[2])) {
             foreach ($this->lot[2] as &$v) {
                 if (is_string($v)) {
@@ -22,7 +22,7 @@ class HTML extends SGML {
                 if (true === $v) {
                     continue;
                 }
-                if (!isset($v) || false === $v) {
+                if (null === $v || false === $v) {
                     unset($this->lot[2][$k]);
                     continue;
                 }

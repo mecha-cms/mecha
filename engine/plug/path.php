@@ -1,19 +1,19 @@
 <?php
 
-Path::_('long', function(string $path, $ground = true) {
-    $path = strtr($path, '/', DS);
+Path::_('long', function(string $value, $ground = true) {
+    $value = strtr($value, '/', DS);
     $d = $ground ? GROUND : ROOT;
-    if (0 === strpos($path, $d)) {
-        return $path;
+    if (0 === strpos($value, $d)) {
+        return $value;
     }
-    return rtrim($d . DS . trim($path, DS), DS);
+    return rtrim($d . DS . trim($value, DS), DS);
 });
 
-Path::_('short', function(string $path, $ground = true) {
-    $path = strtr($path, '/', DS);
+Path::_('short', function(string $value, $ground = true) {
+    $value = strtr($value, '/', DS);
     $d = $ground ? GROUND : ROOT;
-    if (0 !== strpos($path, $d)) {
-        return $path;
+    if (0 !== strpos($value, $d)) {
+        return $value;
     }
-    return rtrim(substr($path, strlen($d)), DS);
+    return rtrim(substr($value, strlen($d)), DS);
 });

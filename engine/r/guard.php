@@ -1,17 +1,17 @@
 <?php
 
-function abort(...$v) {
-    Guard::abort(...$v);
+function abort(...$lot) {
+    Guard::abort(...$lot);
 }
 
-function check(...$v) {
-    return Guard::check(...$v);
+function check(...$lot) {
+    return Guard::check(...$lot);
 }
 
-function kick(...$v) {
-    Guard::kick(...$v);
+function kick(...$lot) {
+    Guard::kick(...$lot);
 }
 
-function token(...$v) {
-    return Guard::token(...$v);
+function token(...$lot) {
+    return Guard::token(...$lot);
 }

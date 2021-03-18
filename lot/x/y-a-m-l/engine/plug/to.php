@@ -1,6 +1,6 @@
 <?php
 
-To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
+To::_('YAML', $fn = function(array $value, string $dent = '  ', $docs = false) {
     /*
     if (extension_loaded('yaml')) {}
     */
@@ -68,7 +68,7 @@ To::_('YAML', $fn = function(array $in, string $dent = '  ', $docs = false) {
         $c = trim($c, "\n");
         return $out . YAML\EOT . ($c ? "\n\n" . $c : "");
     };
-    return $docs ? $yaml_docs($in, $dent, true === $docs ? "\t" : $docs) : $yaml($in, $dent);
+    return $docs ? $yaml_docs($value, $dent, true === $docs ? "\t" : $docs) : $yaml($value, $dent);
 });
 
 // Alias

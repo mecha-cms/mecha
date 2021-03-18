@@ -11,8 +11,8 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return self::__callStatic($kin, $lot);
     }
 
-    public function __construct(array $lot = []) {
-        self::$lot[static::class] = $lot;
+    public function __construct(array $value = []) {
+        self::$lot[static::class] = $value;
     }
 
     public function __get(string $key) {
@@ -22,8 +22,8 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return self::get(p2f($key));
     }
 
-    public function __invoke(...$v) {
-        return count($v) < 2 ? self::get(...$v) : self::set(...$v);
+    public function __invoke(...$lot) {
+        return count($lot) < 2 ? self::get(...$lot) : self::set(...$lot);
     }
 
     // Fix case for `isset($state->key)` or `!empty($state->key)`
@@ -55,25 +55,25 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return self::$lot[static::class] ?? [];
     }
 
-    public function offsetExists($i) {
-        return isset(self::$lot[static::class][$i]);
+    public function offsetExists($key) {
+        return isset(self::$lot[static::class][$key]);
     }
 
-    public function offsetGet($i) {
-        return self::$lot[static::class][$i] ?? null;
+    public function offsetGet($key) {
+        return self::$lot[static::class][$key] ?? null;
     }
 
-    public function offsetSet($i, $value) {
+    public function offsetSet($key, $value) {
         $c = static::class;
-        if (isset($i)) {
-            self::$lot[$c][$i] = $value;
+        if (isset($key)) {
+            self::$lot[$c][$key] = $value;
         } else {
             self::$lot[$c][] = $value;
         }
     }
 
-    public function offsetUnset($i) {
-        unset(self::$lot[static::class][$i]);
+    public function offsetUnset($key) {
+        unset(self::$lot[static::class][$key]);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -82,14 +82,14 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         }
         $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`
         if ($lot) {
-            $out = self::get($kin);
+            $value = self::get($kin);
             // Asynchronous value with function closure
-            if ($out instanceof \Closure) {
-                return fire($out, $lot, null, static::class);
+            if ($value instanceof \Closure) {
+                return fire($value, $lot, null, static::class);
             }
             // Rich asynchronous value with class instance
-            if (is_callable($out) && !is_string($out)) {
-                return call_user_func($out, ...$lot);
+            if (is_callable($value) && !is_string($value)) {
+                return call_user_func($value, ...$lot);
             }
             // Else, static value
             return self::get($kin . '.' . $lot[0], !empty($lot[1]));

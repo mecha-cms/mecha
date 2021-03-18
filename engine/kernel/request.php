@@ -6,15 +6,15 @@ final class Request extends Genome {
         return e(isset($key) ? get($_REQUEST, $key) : ($_REQUEST ?? []));
     }
 
-    public static function is(string $name = null, string $key = null) {
+    public static function is(string $type = null, string $key = null) {
         $r = strtoupper($_SERVER['REQUEST_METHOD']);
-        if (isset($name)) {
-            $name = strtoupper($name);
+        if (isset($type)) {
+            $type = strtoupper($type);
             if (isset($key)) {
-                $a = $GLOBALS['_' . $name] ?? [];
+                $a = $GLOBALS['_' . $type] ?? [];
                 return null !== get($a, $key);
             }
-            return $name === $r;
+            return $type === $r;
         }
         return ucfirst(strtolower($r));
     }

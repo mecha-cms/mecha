@@ -8,7 +8,6 @@ final class Guard extends Genome {
         $trace = explode("\n", n(ob_get_clean()), 2);
         array_shift($trace);
         $trace = trim(str_replace(ROOT, '.', implode("\n", $trace)), "\n");
-
         echo <<<HTML
 <details style="
   margin: 0;
@@ -39,7 +38,6 @@ final class Guard extends Genome {
   ">$trace</code></pre>
 </details>
 HTML;
-
         $exit && exit;
     }
 

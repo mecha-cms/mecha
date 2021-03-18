@@ -117,16 +117,16 @@ class Page extends File {
     }
 
     // Inherit to `File::offsetGet()`
-    public function offsetGet($i) {
+    public function offsetGet($key) {
         // Read once!
-        if ($this->exist && empty($this->read[$i])) {
+        if ($this->exist && empty($this->read[$key])) {
             // Prioritize data from a file…
-            if (is_file($f = Path::F($this->path) . DS . $i . '.data')) {
-                $this->read[$i] = 1; // Done read
-                return ($this->lot[$i] = a(e(file_get_contents($f))));
+            if (is_file($f = Path::F($this->path) . DS . $key . '.data')) {
+                $this->read[$key] = 1; // Done read
+                return ($this->lot[$key] = a(e(file_get_contents($f))));
             }
             // Stream page file content and make sure that property is exists before parsing
-            $exist = 'content' === $i;
+            $exist = 'content' === $key;
             foreach (stream($path = $this->path) as $k => $v) {
                 if (0 === $k && YAML\SOH . "\n" !== $v) {
                     break;
@@ -135,9 +135,9 @@ class Page extends File {
                     break;
                 }
                 if (
-                    0 === strpos($v, $i . ':') ||
-                    0 === strpos($v, '"' . strtr($i, ['"' => "\\\""]) . '":') ||
-                    0 === strpos($v, "'" . strtr($i, ["'" => "\\'"]) . "':")
+                    0 === strpos($v, $key . ':') ||
+                    0 === strpos($v, '"' . strtr($key, ['"' => "\\\""]) . '":') ||
+                    0 === strpos($v, "'" . strtr($key, ["'" => "\\'"]) . "':")
                 ) {
                     $exist = true;
                     break;
@@ -152,27 +152,27 @@ class Page extends File {
             }
             $this->lot = array_replace_recursive($this->a ?? [], $this->lot ?? []);
         }
-        return $this->lot[$i] ?? null;
+        return $this->lot[$key] ?? null;
     }
 
     // Inherit to `File::offsetSet()`
-    public function offsetSet($i, $value) {
-        if (isset($i)) {
-            $this->lot[$i] = $value;
+    public function offsetSet($key, $value) {
+        if (isset($key)) {
+            $this->lot[$key] = $value;
         } else {
             $this->lot[] = $value;
         }
     }
 
     // Inherit to `File::offsetUnset()`
-    public function offsetUnset($i) {
-        unset($this->lot[$i]);
+    public function offsetUnset($key) {
+        unset($this->lot[$key]);
     }
 
     public function save($seal = null) {
-        $data = $this->lot ?? [];
-        $data = j($data, $this->a);
-        $this->value[0] = To::page($data);
+        $lot = $this->lot ?? [];
+        $lot = j($lot, $this->a);
+        $this->value[0] = To::page($lot);
         return parent::save($seal);
     }
 
