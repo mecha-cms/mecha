@@ -7,37 +7,10 @@ final class Guard extends Genome {
         debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
         $trace = explode("\n", n(ob_get_clean()), 2);
         array_shift($trace);
-        $trace = trim(str_replace(ROOT, '.', implode("\n", $trace)), "\n");
-        echo <<<HTML
-<details style="
-  margin: 0;
-  padding: 0;
-  background: #f00;
-  font: normal normal 100%/1.5 sans-serif;
-  color: #fff;
-  selection: none;
-">
-  <summary style="
-    margin: 0;
-    padding: .5em 1rem;
-    display: block;
-    cursor: pointer;
-  ">$alert</summary>
-  <pre style="
-    margin: 0;
-    padding: 0;
-    background: #000;
-    font: normal normal 100%/1.25 monospace;
-    white-space: pre;
-    overflow: auto;
-  "><code style="
-    margin: 0;
-    padding: .5em 1rem;
-    display: block;
-    font: inherit;
-  ">$trace</code></pre>
-</details>
-HTML;
+        $trace = trim(strtr(implode("\n", $trace), [
+            ROOT => '.'
+        ]), "\n");
+        echo '<details style="margin:0;padding:0;background:#f00;font:normal normal 100%/1.5 sans-serif;color:#fff;selection:none;"><summary style="margin:0;padding:.5em 1rem;display:block;cursor:pointer;">' . $alert . '</summary><pre style="margin:0;padding:0;background:#000;font:normal normal 100%/1.25 monospace;white-space:pre;overflow:auto;"><code style="margin:0;padding:.5em 1rem;display:block;font:inherit;">' . $trace . '</code></pre></details>';
         $exit && exit;
     }
 

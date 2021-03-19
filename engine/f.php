@@ -1332,6 +1332,6 @@ namespace {
             }
             return ($short ? '[' : 'array(') . \implode(',', $out) . ($short ? ']' : ')');
         }
-        return \var_export($a, true);
+        return \var_export($value, true);
     }
 }

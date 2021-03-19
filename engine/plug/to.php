@@ -179,7 +179,7 @@ foreach([
         };
         foreach ($q($value, "") as $k => $v) {
             // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
-            if (!isset($v) || false === $v) {
+            if (null === $v || false === $v) {
                 continue;
             }
             // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
