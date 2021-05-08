@@ -13,7 +13,5 @@
   <p>
     <?= $site->description; ?>
   </p>
-  <nav>
-    <?= self::nav(); ?>
-  </nav>
+  <?= self::nav(); ?>
 </header>

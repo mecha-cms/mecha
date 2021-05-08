@@ -1,26 +1,28 @@
-<ul>
-  <li>
-    <?php if ($site->is('home')): ?>
-      <span>
-        <?= i('Home'); ?>
-      </span>
-    <?php else: ?>
-      <a href="<?= $url; ?>">
-        <?= i('Home'); ?>
-      </a>
-    <?php endif; ?>
-  </li>
-  <?php foreach ($links as $link): ?>
+<nav>
+  <ul>
     <li>
-      <?php if ($link->active): ?>
+      <?php if ($site->is('home')): ?>
         <span>
-          <?= $link->title; ?>
+          <?= i('Home'); ?>
         </span>
       <?php else: ?>
-        <a href="<?= $link->link ?: $link->url; ?>">
-          <?= $link->title; ?>
+        <a href="<?= $url; ?>">
+          <?= i('Home'); ?>
         </a>
       <?php endif; ?>
     </li>
-  <?php endforeach; ?>
-</ul>
+    <?php foreach ($links as $link): ?>
+      <li>
+        <?php if ($link->active): ?>
+          <span>
+            <?= $link->title; ?>
+          </span>
+        <?php else: ?>
+          <a href="<?= $link->link ?: $link->url; ?>">
+            <?= $link->title; ?>
+          </a>
+        <?php endif; ?>
+      </li>
+    <?php endforeach; ?>
+  </ul>
+</nav>
