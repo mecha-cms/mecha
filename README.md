@@ -108,6 +108,7 @@ Release Notes
  - [x] Improved class auto-loader. `\` now will be converted into `/`, and `__` will be converted into `.` (#96)
  - [x] Improved internal JSON validator.
  - [x] Removed function `mecha`.
+ - [x] Renamed `$link->active` to `$link->current` in layout navigation.
  - [x] Updated function and method parameter names. Make them to be more semantic for better support with the new named parameter feature in PHP 8.x.
 
 ### 2.5.3

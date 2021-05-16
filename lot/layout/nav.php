@@ -13,7 +13,7 @@
     </li>
     <?php foreach ($links as $link): ?>
       <li>
-        <?php if ($link->active): ?>
+        <?php if ($link->current): ?>
           <span>
             <?= $link->title; ?>
           </span>
