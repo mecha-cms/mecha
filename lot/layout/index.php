@@ -9,9 +9,9 @@ if (defined('DEBUG') && DEBUG) {
 }
 
 // Create site link data to be used in navigation
-$GLOBALS['links'] = new Anemon((function($out, $state, $url) {
+$GLOBALS['links'] = new Anemon((function($links, $state, $url) {
     $index = LOT . DS . 'page' . strtr($state->path, '/', DS) . '.page';
-    $path = $url->path;
+    $path = $url->path . '/';
     foreach (g(LOT . DS . 'page', 'page') as $k => $v) {
         // Exclude home page
         if ($k === $index) {
@@ -19,15 +19,15 @@ $GLOBALS['links'] = new Anemon((function($out, $state, $url) {
         }
         $v = new Page($k);
         // Add current state
-        $v->set('current', 0 === strpos($path . '/', '/' . $v->name . '/'));
-        $out[$k] = $v;
+        $v->current = 0 === strpos($path, '/' . $v->name . '/');
+        $links[$k] = $v;
     }
-    ksort($out);
-    return $out;
+    ksort($links);
+    return $links;
 })([], $state, $url));
 
 // Create site trace data to be used in navigation
-$GLOBALS['traces'] = new Pages((function($out, $state, $url) {
+$GLOBALS['traces'] = new Pages((function($traces, $state, $url) {
     $chops = explode('/', trim($url->path, '/'));
     $v = LOT . DS . 'page';
     while ($chop = array_shift($chops)) {
@@ -36,8 +36,8 @@ $GLOBALS['traces'] = new Pages((function($out, $state, $url) {
             $v . '.archive',
             $v . '.page'
         ])) {
-            $out[] = $file;
+            $traces[] = $file;
         }
     }
-    return $out;
+    return $traces;
 })([], $state, $url));
