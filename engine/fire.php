@@ -2,7 +2,7 @@
 
 // Enable/disable debug mode (default is `null`)
 if (defined('DEBUG')) {
-    if (!is_dir($d = ENGINE . DS . 'log')) {
+    if (!is_dir($d = __DIR__ . DS . 'log')) {
         mkdir($d, 0775, true);
     }
     ini_set('error_log', $d . DS . 'error');
@@ -45,7 +45,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 }
 
 // Load class(es)…
-d(($f = ENGINE . DS) . 'kernel', function($v, $n) use($f) {
+d(($f = __DIR__ . DS) . 'kernel', function($v, $n) use($f) {
     $f .= 'plug' . DS . $n . '.php';
     if (is_file($f)) {
         extract($GLOBALS, EXTR_SKIP);
@@ -54,10 +54,9 @@ d(($f = ENGINE . DS) . 'kernel', function($v, $n) use($f) {
 });
 
 // Set default state(s)…
-$state = $set = is_file($f = ROOT . DS . 'state.php') ? require $f : [];
+$state = $set = is_file($f = __DIR__ . DS . '..' . DS . 'state.php') ? require $f : [];
 $GLOBALS['state'] = $state = new State($state);
 
-// Boot…
 require __DIR__ . DS . 'r' . DS . 'anemon.php';
 require __DIR__ . DS . 'r' . DS . 'cache.php';
 require __DIR__ . DS . 'r' . DS . 'cookie.php';
@@ -72,7 +71,7 @@ require __DIR__ . DS . 'r' . DS . 'time.php';
 require __DIR__ . DS . 'r' . DS . 'u-r-l.php';
 
 $uses = [];
-foreach (glob(LOT . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
+foreach (glob(__DIR__ . DS . '..' . DS . 'lot' . DS . 'x' . DS . '*' . DS . 'index.php', GLOB_NOSORT) as $v) {
     if (empty($GLOBALS['X'][0][$v])) {
         $n = basename($r = dirname($v));
         $uses[$v] = content($r . DS . $n) ?? $n;

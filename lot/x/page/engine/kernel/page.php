@@ -184,7 +184,7 @@ class Page extends File {
         if (isset($lot[0])) {
             if (is_array($lot[0])) {
                 foreach ($lot[0] as $k => $v) {
-                    if (!isset($v) || false === $v) {
+                    if (null === $v || false === $v) {
                         unset($this->lot[$k]);
                         continue;
                     }

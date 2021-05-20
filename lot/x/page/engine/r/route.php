@@ -76,7 +76,7 @@ function route($any = "") {
             'link' => false !== \strpos($any, '/') ? \dirname($url . $p) : $url . $p
         ]);
         // Disable parent link in root page
-        if (!$any) {
+        if (!$any || false === \strpos($any, '/') && !$url['i']) {
             $pager->parent = null;
         }
         $pages = $pages->chunk($chunk, $i); // (chunked)
