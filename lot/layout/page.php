@@ -4,7 +4,7 @@
     <h2>
       <?= $page->title; ?>
     </h2>
-    <?php if ($site->has('parent')): ?>
+    <?php if ($site->has('page') && $site->has('parent')): ?>
       <p>
         <time datetime="<?= $page->time->ISO8601; ?>">
           <?= $page->time->{r('-', '_', $site->language)}; ?>
