@@ -29,10 +29,30 @@ class Layout extends Genome {
     }
 
     public static function get($id, array $lot = []) {
-        if ($path = self::path($id)) {
-            extract(array_replace($GLOBALS, $lot), EXTR_SKIP);
+        $vars = [];
+        foreach (array_replace($GLOBALS, $lot) as $k => $v) {
+            // Validate array key
+            $k = strtr($k, '-', '_');
+            $k = preg_replace('/\W/', "", $k);
+            if ("" === $k) {
+                continue;
+            }
+            if (is_numeric($k[0])) {
+                $k = '_' . $k;
+            }
+            $vars[$k] = $v;
+        }
+        unset($k, $v);
+        // Need to use special variable name to prevent `extract()` from
+        // changing this variable value into something else before it is
+        // required out immediately after the output buffer starts.
+        if (${__FILE__} = self::path($id)) {
+            extract($vars, EXTR_SKIP);
             ob_start();
-            require $path;
+            if (array_key_exists('vars', $lot)) {
+                $vars = $lot['vars'];
+            }
+            require ${__FILE__};
             return ob_get_clean();
         }
         return null;
