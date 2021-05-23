@@ -102,6 +102,7 @@ Release Notes
 
 ### main
 
+ - [x] Added `$engine` property to `Layout` class to define custom template engine function to render the layout.
  - [x] Added `Path::long()` and `Path::short()` method.
  - [x] Added second parameter to the `content` function to allow user to use this function to create a file.
  - [x] Fixed bug of `SGML` class when parsing attributes contain Base64 image URL.

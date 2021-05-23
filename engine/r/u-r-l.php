@@ -29,3 +29,5 @@ $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
 $GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
+
+unset($d, $hash, $host, $path, $protocol, $query);
