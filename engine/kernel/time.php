@@ -28,7 +28,7 @@ final class Time extends Genome {
                 return $this->i($v);
             }
         }
-        return null;
+        return method_exists($this, $key) ? $this->{$key}() : null;
     }
 
     public function __invoke(string $pattern = '%Y-%m-%d %T') {
