@@ -9,6 +9,7 @@ class Layout extends Genome {
         'x' => ['html', 'php']
     ];
 
+    public static $engine = null;
     public static $state = self::state;
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -29,28 +30,19 @@ class Layout extends Genome {
     }
 
     public static function get($id, array $lot = []) {
-        $vars = [];
+        $data = [];
         foreach (array_replace($GLOBALS, $lot) as $k => $v) {
-            // Validate array key
-            $k = strtr($k, '-', '_');
-            $k = preg_replace('/\W/', "", $k);
-            if ("" === $k) {
-                continue;
-            }
-            if (is_numeric($k[0])) {
-                $k = '_' . $k;
-            }
-            $vars[$k] = $v;
+            // Sanitize array key
+            $k = preg_replace('/\W/', "", strtr($k, '-', '_'));
+            $data[$k] = $v;
         }
         unset($k, $v);
-        // Need to use special variable name to prevent `extract()` from
-        // changing this variable value into something else before it is
-        // required out immediately after the output buffer starts.
+        // Need to use special variable name here!
         if (${__FILE__} = self::path($id)) {
-            extract($vars, EXTR_SKIP);
+            extract($data, EXTR_SKIP);
             ob_start();
-            if (array_key_exists('vars', $lot)) {
-                $vars = $lot['vars'];
+            if (isset($lot['data'])) {
+                $data = $lot['data'];
             }
             require ${__FILE__};
             return ob_get_clean();

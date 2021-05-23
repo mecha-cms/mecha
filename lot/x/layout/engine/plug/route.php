@@ -13,6 +13,14 @@ Route::_('content', function(string $value, $exit = true) {
 
 Route::_('layout', function(string $id, array $lot = []) {
     $id = Hook::fire('layout', [$id, $lot]);
+    // Use layout engine if available
+    if (is_callable($fn = Layout::$engine)) {
+        if (null !== ($content = call_user_func($fn, $id, $lot))) {
+            $this->content($content, false);
+            Hook::fire('let');
+            exit;
+        }
+    }
     $chops = explode('/', strtr($id, DS, '/'), 2);
     // Automatic response status based on the first layout path
     if (is_numeric($chops[0])) {
