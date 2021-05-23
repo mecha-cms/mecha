@@ -12,15 +12,6 @@ final class Time extends Genome {
         return $this->format('c');
     }
 
-    public function __call(string $kin, array $lot = []) {
-        if ($v = parent::_($kin)) {
-            if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
-                return $this->i($v);
-            }
-        }
-        return parent::__call($kin, $lot);
-    }
-
     public function __construct($value) {
         if (is_numeric($value)) {
             $this->source = date('Y-m-d H:i:s', $value);
@@ -29,6 +20,15 @@ final class Time extends Genome {
         } else {
             $this->source = date('Y-m-d H:i:s', strtotime($value));
         }
+    }
+
+    public function __get(string $key) {
+        if ($v = parent::_($key)) {
+            if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
+                return $this->i($v);
+            }
+        }
+        return null;
     }
 
     public function __invoke(string $pattern = '%Y-%m-%d %T') {

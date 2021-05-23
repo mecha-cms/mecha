@@ -106,6 +106,7 @@ Release Notes
  - [x] Added `Path::long()` and `Path::short()` method.
  - [x] Added second parameter to the `content` function to allow user to use this function to create a file.
  - [x] Fixed bug of `SGML` class when parsing attributes contain Base64 image URL.
+ - [x] Fixed bug of default date format not applied to the output (#117)
  - [x] Improved class auto-loader. `\` now will be converted into `/`, and `__` will be converted into `.` (#96)
  - [x] Improved internal JSON validator.
  - [x] Removed function `mecha`.
