@@ -9,7 +9,6 @@ class Layout extends Genome {
         'x' => ['html', 'php']
     ];
 
-    public static $engine = null;
     public static $state = self::state;
 
     public static function __callStatic(string $kin, array $lot = []) {
