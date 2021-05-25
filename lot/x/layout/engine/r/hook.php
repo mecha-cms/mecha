@@ -3,7 +3,7 @@
 namespace x\layout {
     function alert($content) {
         if (false !== \strpos($content, '</alert>')) {
-            return \preg_replace_callback('#(?:\s*<alert(?:\s[^>]+)?>[\s\S]*?<\/alert>\s*)+#', function($m) {
+            return \preg_replace_callback('/(?:\s*<alert(?:\s[^>]+)?>[\s\S]*?<\/alert>\s*)+/', function($m) {
                 return '<div class="alert p">' . \str_replace([
                     '<alert type="',
                     '</alert>'
@@ -94,7 +94,7 @@ namespace x {
     function layout($content) {
         $root = 'html';
         if (false !== \strpos($content, '<' . $root . ' ')) {
-            return \preg_replace_callback('#<' . \x($root) . '(?:\s[^>]*)?>#', function($m) {
+            return \preg_replace_callback('/<' . \x($root) . '(?:\s[^>]*)?>/', function($m) {
                 if (
                     false !== \strpos($m[0], ' class="') ||
                     false !== \strpos($m[0], ' class ') ||
