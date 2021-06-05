@@ -1,8 +1,8 @@
 <?php
 
-URL::_('long', function(string $value, $root = true, URL $url = null) {
+URL::_('long', function(string $value, $ground = true, URL $url = null) {
     $url = $url ?? $GLOBALS['url'];
-    $d = is_string($root) ? $root : $url->{$root ? 'ground' : 'root'};
+    $d = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
     // `URL::long('//example.com')`
     if (0 === strpos($value, '//')) {
         return rtrim(substr($url->protocol, 0, -2) . $value, '/');
@@ -27,7 +27,7 @@ URL::_('long', function(string $value, $root = true, URL $url = null) {
         0 !== strpos($value, 'data:') &&
         0 !== strpos($value, 'javascript:') &&
         0 !== strpos($value, 'mailto:') &&
-        !is_string($root)
+        !is_string($ground)
     ) {
         $d = preg_split('/[?&#]/', $url->current, 2)[0];
         if (0 !== ($count = substr_count($value . '/', '../'))) {
@@ -45,9 +45,9 @@ URL::_('long', function(string $value, $root = true, URL $url = null) {
     return $value;
 });
 
-URL::_('short', function(string $value, $root = true, URL $url = null) {
+URL::_('short', function(string $value, $ground = true, URL $url = null) {
     $url = $url ?? $GLOBALS['url'];
-    $d = is_string($root) ? $root : $url->{$root ? 'ground' : 'root'};
+    $d = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
     if (0 === strpos($value, '//')) {
         if (0 !== strpos($value, '//' . $url->host)) {
             return $value; // Ignore external URL
@@ -58,5 +58,6 @@ URL::_('short', function(string $value, $root = true, URL $url = null) {
             return $value; // Ignore external URL
         }
     }
-    return rtrim(substr($value, strlen($d)), '/');
+    $value = substr($value, strlen(rtrim($d, '/')));
+    return !is_string($ground) && $ground && "" === $value ? '/' : $value;
 });
