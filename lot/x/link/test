@@ -1,0 +1,22 @@
+<a href="">1</a>
+<a href="/">2</a>
+<a href=".">3</a>
+<a href="./">4</a>
+<a href="..">5</a>
+<a href="../">6</a>
+<a href="a">7</a>
+<a href="/a">8</a>
+<a href="//a">9</a>
+<a href="?a">10</a>
+<a href="&a">11</a>
+<a href="#a">12</a>
+<a href="blob:a">13</a>
+<a href="data:a">14</a>
+<a href="javascript:a">15</a>
+<a href="mailto:a">16</a>
+<a href="../a">17</a>
+<a href="../../a">18</a>
+<a href="http://a">19</a>
+
+<img src="a" srcset="a 1x, b 2x,c 3x,
+d/e 4x,  f?g=200 200w">
