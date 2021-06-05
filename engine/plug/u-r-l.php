@@ -1,13 +1,17 @@
 <?php
 
-URL::_('long', function(string $value, $ground = true) {
-    extract($GLOBALS, EXTR_SKIP);
-    $d = $url->{$ground ? 'ground' : 'root'};
+URL::_('long', function(string $value, $root = true, URL $url = null) {
+    $url = $url ?? $GLOBALS['url'];
+    $d = is_string($root) ? $root : $url->{$root ? 'ground' : 'root'};
     // `URL::long('//example.com')`
     if (0 === strpos($value, '//')) {
-        return rtrim($url['protocol'] . ':' . $value, '/');
+        return rtrim(substr($url->protocol, 0, -2) . $value, '/');
     }
-    // `URL::long('/foo/bar/baz/qux')`
+    // `URL::long('./foo/bar/baz')`
+    if ('.' === $value || 0 === strpos($value, './')) {
+        $value = substr($value, 1);
+    }
+    // `URL::long('/foo/bar/baz')`
     if (0 === strpos($value, '/')) {
         if (false !== strpos('?#', $value[1] ?? P)) {
             $value = substr($value, 1);
@@ -19,9 +23,19 @@ URL::_('long', function(string $value, $ground = true) {
     // `URL::long('?foo=bar&baz=qux')`
     if (
         false === strpos($value, '://') &&
+        0 !== strpos($value, 'blob:') &&
         0 !== strpos($value, 'data:') &&
-        0 !== strpos($value, 'javascript:')
+        0 !== strpos($value, 'javascript:') &&
+        0 !== strpos($value, 'mailto:') &&
+        !is_string($root)
     ) {
+        $d = preg_split('/[?&#]/', $url->current, 2)[0];
+        if (0 !== ($count = substr_count($value . '/', '../'))) {
+            $d = dirname($d, $count);
+            $value = strtr($value . '/', [
+                '../' => ""
+            ]);
+        }
         return strtr(rtrim($d . '/' . trim($value, '/'), '/'), [
             '/?' => '?',
             '/&' => '?',
@@ -31,9 +45,9 @@ URL::_('long', function(string $value, $ground = true) {
     return $value;
 });
 
-URL::_('short', function(string $value, $ground = true) {
-    extract($GLOBALS, EXTR_SKIP);
-    $d = $url->{$ground ? 'ground' : 'root'};
+URL::_('short', function(string $value, $root = true, URL $url = null) {
+    $url = $url ?? $GLOBALS['url'];
+    $d = is_string($root) ? $root : $url->{$root ? 'ground' : 'root'};
     if (0 === strpos($value, '//')) {
         if (0 !== strpos($value, '//' . $url->host)) {
             return $value; // Ignore external URL
