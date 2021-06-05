@@ -101,11 +101,13 @@ Release Notes
 ### 2.6.0
 
  - Added `Path::long()` and `Path::short()` method.
+ - Added `link` to the core extensions.
  - Added second parameter to the `content` function to allow user to use this function to create a file.
  - Fixed bug of `SGML` class when parsing attributes contain Base64 image URL.
  - Fixed bug of default date format not applied to the output (#117)
  - Improved class auto-loader. `\` now will be converted into `/`, and `__` will be converted into `.` (#96)
  - Improved internal JSON validator.
+ - Improved path and URL resolver.
  - Removed function `mecha`.
  - Renamed `$link->active` to `$link->current` in layout navigation.
  - Updated function and method parameter names. Make them to be more semantic for better support with the new named parameter feature in PHP 8.x.
