@@ -30,6 +30,9 @@ URL::_('long', function(string $value, $ground = true, URL $url = null) {
         !is_string($ground)
     ) {
         $d = preg_split('/[?&#]/', $url->current, 2)[0];
+        if ($value && false === strpos('.?&#', $value[0])) {
+            $d = dirname($d);
+        }
         if (0 !== ($count = substr_count($value . '/', '../'))) {
             $d = dirname($d, $count);
             $value = strtr($value . '/', [
