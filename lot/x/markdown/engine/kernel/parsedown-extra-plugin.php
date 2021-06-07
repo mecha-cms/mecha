@@ -3,7 +3,7 @@
 #
 #
 # Parsedown Extra Plugin
-# https://github.com/tovic/parsedown-extra-plugin
+# https://github.com/taufik-nurrohman/parsedown-extra-plugin
 #
 # (c) Emanuil Rusev
 # http://erusev.com
