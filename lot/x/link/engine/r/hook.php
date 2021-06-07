@@ -10,7 +10,7 @@ function content($content) {
             if (false === \strpos($content, '</' . $k . '>') && false === \strpos($content, '<' . $k . ' ')) {
                 continue;
             }
-            $content = \preg_replace_callback('/<' . $k . '(\s[^>]*?)>/', function($m) use($v) {
+            $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', function($m) use($v) {
                 if (false === \strpos($m[1], '=')) {
                     return $m[0];
                 }
@@ -19,10 +19,11 @@ function content($content) {
                     if (\is_string($n[$kk])) {
                         $vvv = $n[$kk];
                         if (\is_callable($vv)) {
-                            $n[$kk] = \call_user_func($vv, $vvv, $n);
+                            $vvv = \call_user_func($vv, $vvv, $n);
                         } else if (\is_string($vvv)) {
-                            $n[$kk] = \URL::long($vvv, false);
+                            $vvv = \URL::long($vvv, false);
                         }
+                        $n[$kk] = \Hook::fire('link', [$vvv, $kk], $n);
                     }
                 }
                 return (string) $n;

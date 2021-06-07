@@ -1,7 +1,7 @@
-<?php namespace x\link\r;
+<?php namespace x\link\f;
 
 function image_source_set($value, \HTML $lot) {
-    return \x\link\r\source_set($value, $lot);
+    return \x\link\f\source_set($value, $lot);
 }
 
 function source_set($value, \HTML $lot) {
