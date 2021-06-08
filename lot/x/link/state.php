@@ -20,7 +20,7 @@ return [
         'iframe' => ['src' => 1],
         'img' => [
             'src' => 1,
-            'srcset' => "\\x\\link\\r\\source_set"
+            'srcset' => "\\x\\link\\f\\source_set"
         ],
         'input' => [
             'formaction' => 1,
@@ -28,15 +28,15 @@ return [
         ],
         'link' => [
             'href' => 1,
-            'imagesrcset' => "\\x\\link\\r\\image_source_set"
+            'imagesrcset' => "\\x\\link\\f\\image_source_set"
         ],
         'object' => ['data' => 1],
         'param' => ['value' => 1],
-        'picture' => ['srcset' => "\\x\\link\\r\\source_set"],
+        'picture' => ['srcset' => "\\x\\link\\f\\source_set"],
         'script' => ['src' => 1],
         'source' => [
             'src' => 1,
-            'srcset' => "\\x\\link\\r\\source_set"
+            'srcset' => "\\x\\link\\f\\source_set"
         ],
         'track' => ['src' => 1],
         'video' => [
