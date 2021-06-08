@@ -1103,7 +1103,7 @@ namespace {
                 }
                 // Filter by function
                 if (\is_callable($x)) {
-                    return fire($x, [], $v);
+                    return fire($x, [$k, $v->isDir() ? 0 : 1], $v);
                 }
                 // No filter
                 return true;
