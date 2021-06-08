@@ -42,7 +42,6 @@ URL::_('long', function(string $value, $ground = true, URL $url = null) {
         }
         return strtr(rtrim($d . '/' . trim($value, '/'), '/'), [
             '/?' => '?',
-            '/&' => '?',
             '/#' => '#'
         ]);
     }

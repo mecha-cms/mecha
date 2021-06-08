@@ -1,10 +1,10 @@
 <?php namespace x\link\f;
 
-function image_source_set($value, \HTML $lot) {
-    return \x\link\f\source_set($value, $lot);
+function image_source_set($value, $key, $name) {
+    return \fire("\\x\\link\\f\\source_set", [$value, $key, $name], $this);
 }
 
-function source_set($value, \HTML $lot) {
+function source_set($value, $key, $name) {
     if (!$value) {
         return $value;
     }

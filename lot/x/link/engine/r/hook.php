@@ -5,32 +5,43 @@ function content($content) {
         return $content;
     }
     extract($GLOBALS, \EXTR_SKIP);
-    if (!empty($state->x->link->alter)) {
-        foreach ($state->x->link->alter as $k => $v) {
+    $alter = $state->x->link->alter ?? [];
+    if (!empty($alter)) {
+        foreach ($alter as $k => $v) {
             if (false === \strpos($content, '</' . $k . '>') && false === \strpos($content, '<' . $k . ' ')) {
                 continue;
             }
-            $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', function($m) use($v) {
+            $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', function($m) use($k, $v) {
                 if (false === \strpos($m[1], '=')) {
                     return $m[0];
                 }
-                $n = new \HTML($m[0]);
+                $that = new \HTML($m[0]);
                 foreach ($v as $kk => $vv) {
-                    if (\is_string($n[$kk])) {
-                        $vvv = $n[$kk];
-                        if (\is_callable($vv)) {
-                            $vvv = \call_user_func($vv, $vvv, $n);
-                        } else if (\is_string($vvv)) {
-                            $vvv = \URL::long($vvv, false);
-                        }
-                        $n[$kk] = \Hook::fire('link', [$vvv, $kk], $n);
+                    if (!isset($that[$kk])) {
+                        continue;
                     }
+                    $that[$kk] = \Hook::fire('link', [$that[$kk], $kk, $k], $that);
                 }
-                return (string) $n;
+                return (string) $that;
             }, $content);
         }
     }
     return $content;
 }
 
+function link($value, $key, $name = null) {
+    if (!$name || !\is_string($value)) {
+        return $value;
+    }
+    extract($GLOBALS, \EXTR_SKIP);
+    $v = $state->x->link->alter->{$name}->{$key} ?? 0;
+    if (\is_callable($v)) {
+        $value = \fire($v, [$value, $key, $name], $this);
+    } else if ($v) {
+        $value = \URL::long($value, false);
+    }
+    return $value;
+}
+
 \Hook::set('content', __NAMESPACE__ . "\\content", 0);
+\Hook::set('link', __NAMESPACE__ . "\\link", 2);
