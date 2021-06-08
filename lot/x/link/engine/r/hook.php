@@ -17,10 +17,16 @@ function content($content) {
                 }
                 $that = new \HTML($m[0]);
                 foreach ($v as $kk => $vv) {
-                    if (!isset($that[$kk])) {
+                    if (!$vv || !isset($that[$kk])) {
                         continue;
                     }
-                    $that[$kk] = \Hook::fire('link', [$that[$kk], $kk, $k], $that);
+                    $vvv = $that[$kk];
+                    if (\is_callable($vv)) {
+                        $vvv = \fire($vv, [$vvv, $kk, $k], $that);
+                    } else {
+                        $vvv = \URL::long($vvv, false);
+                    }
+                    $that[$kk] = $vvv;
                 }
                 return (string) $that;
             }, $content);
@@ -29,21 +35,4 @@ function content($content) {
     return $content;
 }
 
-function link($value, $key, $name = null) {
-    if (!$name || !\is_string($value)) {
-        return $value;
-    }
-    extract($GLOBALS, \EXTR_SKIP);
-    if (!$v = $state->x->link->alter->{$name}->{$key} ?? 0) {
-        return $value;
-    }
-    if (\is_callable($v)) {
-        $value = \fire($v, [$value, $key, $name], $this);
-    } else {
-        $value = \URL::long($value, false);
-    }
-    return $value;
-}
-
 \Hook::set('content', __NAMESPACE__ . "\\content", 0);
-\Hook::set('link', __NAMESPACE__ . "\\link", 2);

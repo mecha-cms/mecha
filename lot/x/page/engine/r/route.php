@@ -12,7 +12,7 @@ function route($any = "") {
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
     $path = '/' . \str_replace('../', "", $any);
     if ($i < 1 && $path === $state->path && !$url->query) {
-        \Guard::kick(""); // Redirect to home page
+        \Guard::kick('/'); // Redirect to home page
     }
     // Default home page path
     $p = '/' === $path ? $state->path : $path;
