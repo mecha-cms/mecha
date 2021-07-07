@@ -29,7 +29,7 @@ URL::_('long', function(string $value, $ground = true, URL $url = null) {
         0 !== strpos($value, 'mailto:') &&
         !is_string($ground)
     ) {
-        $d = preg_split('/[?&#]/', $url->current, 2)[0];
+        $d = strtok($url->current, '?&#');
         // `URL::long('foo/bar/baz')`
         if ($value && false === strpos('.?&#', $value[0])) {
             $d = dirname($d);
