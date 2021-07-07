@@ -8,7 +8,13 @@ function content($content) {
     $alter = $state->x->link->alter ?? [];
     if (!empty($alter)) {
         foreach ($alter as $k => $v) {
-            if (false === \strpos($content, '</' . $k . '>') && false === \strpos($content, '<' . $k . ' ')) {
+
+            if (
+                false === \strpos($content, '</' . $k . '>') &&
+                false === \strpos($content, '<' . $k . ' ') &&
+                false === \strpos($content, '<' . $k . "\n") &&
+                false === \strpos($content, '<' . $k . "\t")
+            ) {
                 continue;
             }
             $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', function($m) use($k, $v) {
