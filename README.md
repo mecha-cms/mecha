@@ -65,20 +65,20 @@ Alternatives
 
 ### Command Line
 
-This assumes that your site’s public directory is in `/var/www`.
+This assumes that your site’s public directory is in `/srv/http`.
 
 #### Using Composer
 
 ~~~ .txt
-$ cd /var/www
+$ cd /srv/http
 $ composer create-project mecha-cms/mecha .
 ~~~
 
 #### Using Git
 
 ~~~ .txt
-$ cd /var/www
-$ git clone https://github.com/mecha-cms/mecha.git .
+$ cd /srv/http
+$ git clone https://github.com/mecha-cms/mecha.git --depth 1 .
 $ rm LICENSE README.md
 $ rm -r .git
 ~~~
