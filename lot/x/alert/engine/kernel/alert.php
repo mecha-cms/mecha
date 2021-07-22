@@ -2,6 +2,8 @@
 
 final class Alert extends Genome implements \Countable, \IteratorAggregate, \JsonSerializable {
 
+    public static $alert = null;
+
     private static function i(array $lot, string $kin) {
         $out = [];
         foreach ($lot as $v) {
@@ -42,11 +44,14 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public static function get($kin = null, $clear = true) {
+        if (!isset(self::$alert)) {
+            self::$alert = $_SESSION['alert'] ?? [];
+        }
         if (is_array($kin)) {
             $out = [];
             foreach ($kin as $v) {
-                if (isset($_SESSION['alert'][$v])) {
-                    $out = array_merge($out, self::i($_SESSION['alert'][$v], $v));
+                if (isset(self::$alert[$v])) {
+                    $out = array_merge($out, self::i(self::$alert[$v], $v));
                     if ($clear) {
                         unset($_SESSION['alert'][$v]);
                     }
@@ -54,16 +59,16 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
             }
             return $out;
         }
-        if (isset($kin) && isset($_SESSION['alert'][$kin])) {
-            $out = self::i($_SESSION['alert'][$kin], $kin);
+        if (isset($kin) && isset(self::$alert[$kin])) {
+            $out = self::i(self::$alert[$kin], $kin);
             if ($clear) {
                 unset($_SESSION['alert'][$kin]);
             }
             return $out;
         }
-        if (isset($_SESSION['alert'])) {
+        if (isset(self::$alert)) {
             $out = [];
-            foreach ((array) $_SESSION['alert'] as $k => $v) {
+            foreach ((array) self::$alert as $k => $v) {
                 $out = array_merge($out, self::i($v, $k));
                 if ($clear) {
                     unset($_SESSION['alert'][$k]);
@@ -75,17 +80,19 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     }
 
     public static function set(...$lot) {
-        $_SESSION['alert'][array_shift($lot)][] = $lot;
+        $v = array_shift($lot);
+        self::$alert[$v] = $_SESSION['alert'][$v][] = $lot;
     }
 
     public static function let($kin = null) {
         if (is_array($kin)) {
             foreach ($kin as $v) {
-                unset($_SESSION['alert'][$v]);
+                unset(self::$alert[$v], $_SESSION['alert'][$v]);
             }
         } else if (isset($kin)) {
-            unset($_SESSION['alert'][$kin]);
+            unset(self::$alert[$kin], $_SESSION['alert'][$kin]);
         } else {
+            self::$alert = null;
             unset($_SESSION['alert']);
         }
     }
