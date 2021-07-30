@@ -81,7 +81,7 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
 
     public static function set(...$lot) {
         $v = array_shift($lot);
-        self::$alert[$v] = $_SESSION['alert'][$v][] = $lot;
+        self::$alert[$v][] = $_SESSION['alert'][$v][] = $lot;
     }
 
     public static function let($kin = null) {
