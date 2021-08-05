@@ -54,7 +54,8 @@ class Page extends File {
     }
 
     public function ID(...$lot) {
-        return $this->_get('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
+        $id = $this->_get('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
+        return is_string($id) && is_numeric($id) ? (int) $id : $id;
     }
 
     // Inherit to `File::URL()`
