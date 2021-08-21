@@ -98,7 +98,7 @@ Contributors
 Release Notes
 -------------
 
-### 2.6.0
+### 2.6.1
 
  - Added `Path::long()` and `Path::short()` method.
  - Added `link` to the core extensions.

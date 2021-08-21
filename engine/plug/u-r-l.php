@@ -13,10 +13,11 @@ URL::_('long', function(string $value, $ground = true, URL $url = null) {
     }
     // `URL::long('/foo/bar/baz')`
     if (0 === strpos($value, '/')) {
-        if (false !== strpos('?#', $value[1] ?? P)) {
+        if (false !== strpos('?&#', $value[1] ?? P)) {
             $value = substr($value, 1);
-        } else if (1 === strpos($value, '&')) {
-            $value = '?' . substr($value, 2);
+        }
+        if (0 === strpos($value, '&')) {
+            $value = '?' . substr($value, 1);
         }
         return rtrim($d . $value, '/');
     }
@@ -42,6 +43,7 @@ URL::_('long', function(string $value, $ground = true, URL $url = null) {
         }
         return strtr(rtrim($d . '/' . trim($value, '/'), '/'), [
             '/?' => '?',
+            '/&' => '?',
             '/#' => '#'
         ]);
     }
