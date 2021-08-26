@@ -9,7 +9,7 @@ if (defined('DEBUG') && DEBUG) {
 }
 
 // Create site link data to be used in navigation
-$GLOBALS['links'] = new Anemon((function($links, $state, $url) {
+$GLOBALS['links'] = new Anemon((static function($links, $state, $url) {
     $index = LOT . DS . 'page' . strtr($state->path, '/', DS) . '.page';
     $path = $url->path . '/';
     foreach (g(LOT . DS . 'page', 'page') as $k => $v) {
@@ -27,7 +27,7 @@ $GLOBALS['links'] = new Anemon((function($links, $state, $url) {
 })([], $state, $url));
 
 // Create site trace data to be used in navigation
-$GLOBALS['traces'] = new Pages((function($traces, $state, $url) {
+$GLOBALS['traces'] = new Pages((static function($traces, $state, $url) {
     $chops = explode('/', trim($url->path, '/'));
     $v = LOT . DS . 'page';
     while ($chop = array_shift($chops)) {
