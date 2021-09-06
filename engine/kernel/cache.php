@@ -67,7 +67,7 @@ final class Cache extends Genome {
 
     public static function stale(string $id, $for = '1 day') {
         if (is_file($f = self::f($id))) {
-            return time() + self::t($for) > filemtime($f);
+            return !(filemtime($f) > time() - self::t($for));
         }
         return true;
     }
