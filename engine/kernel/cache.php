@@ -59,6 +59,7 @@ final class Cache extends Genome {
         if (!is_dir($d = dirname($f = self::f($id)))) {
             mkdir($d, 0775, true);
         }
+        array_unshift($lot, $f);
         file_put_contents($f, '<?php return ' . z($r = call_user_func($fn, ...$lot)) . ';');
         chmod($f, 0600);
         return [$r, $f, filemtime($f)];
