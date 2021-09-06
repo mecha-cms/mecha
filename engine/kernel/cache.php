@@ -27,10 +27,10 @@ final class Cache extends Genome {
                 }
             }
             $f = self::f($id = json_encode($files));
-            return !is_file($f) || $i > filemtime($f) ? self::set($id, $fn, [$files, $f])[0] : self::get($id);
+            return !is_file($f) || $i > filemtime($f) ? self::set($id, $fn, [$files])[0] : self::get($id);
         }
         $f = self::f($file);
-        return !is_file($f) || filemtime($file) > filemtime($f) ? self::set($file, $fn, [$file, $f])[0] : self::get($file);
+        return !is_file($f) || filemtime($file) > filemtime($f) ? self::set($file, $fn, [$file])[0] : self::get($file);
     }
 
     public static function let($id = null): array {
@@ -52,7 +52,7 @@ final class Cache extends Genome {
     }
 
     public static function live(string $id, callable $fn, $for = '1 day') {
-        return self::stale($id, $for) ? self::set($id, $fn, [$id, self::f($id)])[0] : self::get($id);
+        return self::stale($id, $for) ? self::set($id, $fn)[0] : self::get($id);
     }
 
     public static function set(string $id, callable $fn, array $lot = []): array {
