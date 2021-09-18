@@ -3,7 +3,7 @@ title: Layout
 description: Common automation function used to speed up site development.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.11.2
+version: 1.12.0
 ...
 
 Mecha does not have the capability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha. As with the site’s interface language, themes are one of the things that website owners rarely change within a daily or monthly period. So, Mecha decided to remove such features.

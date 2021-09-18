@@ -2,8 +2,12 @@
 
 Route::_('content', function(string $value, $exit = true) {
     $value = Hook::fire('content', [$value], $this);
+    ob_start();
     ob_start('ob_gzhandler');
     echo $value; // The response body
+    ob_end_flush();
+    // <https://www.php.net/manual/en/function.ob-get-length.php#59294>
+    $this->lot('content-length', ob_get_length());
     echo ob_get_clean();
     if ($exit) {
         Hook::fire('let');

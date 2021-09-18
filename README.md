@@ -98,9 +98,10 @@ Contributors
 Release Notes
 -------------
 
-### 2.6.2
+### 2.6.3
 
  - Added `Path::long()` and `Path::short()` method.
+ - Added `content-length` header to facilitate AJAX-based applications with progress bars.
  - Added `link` to the core extensions.
  - Added second parameter to the `content` function to allow user to use this function to create a file.
  - Fixed bug of `SGML` class when parsing attributes contain Base64 image URL.
