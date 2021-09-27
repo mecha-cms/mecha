@@ -7,10 +7,10 @@ $GLOBALS['pages'] = new \Pages;
 $GLOBALS['parent'] = new \Page;
 
 function route($any = "") {
-    global $state, $url;
+    extract($GLOBALS, \EXTR_SKIP);
     $i = ($url['i'] ?? 1) - 1;
     // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-    $path = '/' . \str_replace('../', "", $any);
+    $path = '/' . \strtr($any, ['../' => ""]);
     if ($i < 1 && $path === $state->path && !$url->query) {
         \Guard::kick('/'); // Redirect to home page
     }
@@ -18,8 +18,8 @@ function route($any = "") {
     $p = '/' === $path ? $state->path : $path;
     $folder = \rtrim(\LOT . \DS . 'page' . \strtr($p, '/', \DS), \DS);
     if ($file = \File::exist([
-        $folder . '.page',
-        $folder . '.archive'
+        $folder . '.archive',
+        $folder . '.page'
     ])) {
         $page = new \Page($file);
         $pager = new \Pager\Page([], null, (object) [
@@ -39,10 +39,10 @@ function route($any = "") {
             'sort' => $sort // Inherit current page’s `sort` property
         ]);
         if ($parent_file = \File::exist([
-            $parent_folder . '.page', // `.\lot\page\parent-name.page`
             $parent_folder . '.archive', // `.\lot\page\parent-name.archive`
-            $parent_folder . \DS . '.page', // `.\lot\page\parent-name\.page`
-            $parent_folder . \DS . '.archive' // `.\lot\page\parent-name\.archive`
+            $parent_folder . '.page', // `.\lot\page\parent-name.page`
+            $parent_folder . \DS . '.archive', // `.\lot\page\parent-name\.archive`
+            $parent_folder . \DS . '.page' // `.\lot\page\parent-name\.page`
         ])) {
             $parent_page = new \Page($parent_file);
             $parent_deep = $parent_page['deep'] ?? 0;

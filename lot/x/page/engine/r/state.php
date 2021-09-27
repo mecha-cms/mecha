@@ -7,8 +7,8 @@ $folder = LOT . DS . 'page' . DS . $path;
 
 // Set proper `i` value in `$url` if we have some page with numeric file/folder name
 if ("" !== $i && File::exist([
-    $folder . DS . $i . '.page',
-    $folder . DS . $i . '.archive'
+    $folder . DS . $i . '.archive',
+    $folder . DS . $i . '.page'
 ])) {
     $path .= '/' . $i;
     $folder .= DS . $i;
@@ -20,21 +20,21 @@ if ("" !== $i && File::exist([
 $if_0 = "" === $i && ("" === $path || $path === $p);
 
 $if_1 = File::exist([
-    // `.\lot\page\home-name.{page,archive}`
-    LOT . DS . 'page' . DS . $p . '.page',
-    LOT . DS . 'page' . DS . $p . '.archive'
+    // `.\lot\page\home-name.{archive,page}`
+    LOT . DS . 'page' . DS . $p . '.archive',
+    LOT . DS . 'page' . DS . $p . '.page'
 ]);
 
 $if_2 = File::exist([
-    // `.\lot\page\page-name\.{page,archive}`
-    $folder . DS . '.page',
-    $folder . DS . '.archive'
+    // `.\lot\page\page-name\.{archive,page}`
+    $folder . DS . '.archive',
+    $folder . DS . '.page'
 ]);
 
 $if_3 = File::exist([
-    // `.\lot\page\page-name.{page,archive}`
-    $folder . '.page',
-    $folder . '.archive'
+    // `.\lot\page\page-name.{archive,page}`
+    $folder . '.archive',
+    $folder . '.page'
 ]);
 
 $if_4 = glob(LOT . DS . 'page' . DS . $p . DS . '*.page', GLOB_NOSORT);
@@ -42,11 +42,11 @@ $if_5 = glob($folder . DS . '*.page', GLOB_NOSORT);
 
 $folder = dirname($folder);
 $if_6 = File::exist([
-    // `.\lot\page\parent-name.{page,archive}`
-    $folder . '.page',
+    // `.\lot\page\parent-name.{archive,page}`
     $folder . '.archive',
-    $folder . DS . '.page',
-    $folder . DS . '.archive'
+    $folder . '.page',
+    $folder . DS . '.archive',
+    $folder . DS . '.page'
 ]);
 
 State::set('is', [

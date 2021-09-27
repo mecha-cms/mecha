@@ -8,7 +8,6 @@ function content($content) {
     $alter = $state->x->link->alter ?? [];
     if (!empty($alter)) {
         foreach ($alter as $k => $v) {
-
             if (
                 false === \strpos($content, '</' . $k . '>') &&
                 false === \strpos($content, '<' . $k . ' ') &&

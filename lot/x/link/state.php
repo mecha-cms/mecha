@@ -12,9 +12,7 @@ return [
         ],
         'audio' => ['src' => 1],
         'base' => ['href' => 1],
-        'button' => [
-            'formaction' => 1
-        ],
+        'button' => ['formaction' => 1],
         'embed' => ['src' => 1],
         'form' => ['action' => 1],
         'iframe' => ['src' => 1],
