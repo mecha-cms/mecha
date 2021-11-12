@@ -17,11 +17,11 @@ Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 
 To be able to activate the back-end feature requires you to install our [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can choose to use this feature in the local version only, and get rid of it in the public version as the most basic security measure if you want.
 
-![Back-End](https://user-images.githubusercontent.com/1669261/104103529-31af0f00-52d5-11eb-8e08-fe2c4f2d3b4c.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/141484343-0568ef0d-f7c5-4991-a8ee-7773379415b2.png)
 
 Colors and font types in the control panel preview above are generated from the default layout files. Without them, the display will look like the preview below:
 
-![Back-End](https://user-images.githubusercontent.com/1669261/104103532-3378d280-52d5-11eb-9667-0056264cbdc2.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/141484323-d97a403f-5706-4e84-b5ab-78ebd9eb6bd9.png)
 
 Mecha survives on the principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
 
