@@ -10,7 +10,7 @@ Front-End
 
 The default layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
-![Front-End](https://user-images.githubusercontent.com/1669261/71335843-2f1d3280-2577-11ea-940e-7777eda2a5d1.png)
+![Front-End](https://user-images.githubusercontent.com/1669261/141647070-e994e220-8061-4cd6-bdf7-45ef9ad8ea56.png)
 
 Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 -----------------------------------------------------------------------------
@@ -98,7 +98,7 @@ Contributors
 Release Notes
 -------------
 
-### 2.6.3
+### 2.6.4
 
  - Added `Path::long()` and `Path::short()` method.
  - Added `content-length` header to facilitate AJAX-based applications with progress bars.
@@ -113,6 +113,7 @@ Release Notes
  - Removed function `mecha`.
  - Renamed `$link->active` to `$link->current` in layout navigation.
  - Updated function and method parameter names. Make them to be more semantic for better support with the new named parameter feature in PHP 8.x.
+ - Updated the default layout.
 
 ### 2.5.3
 
