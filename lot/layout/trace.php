@@ -1,1 +1,0 @@
-<?php if ($site->is('home')): ?><span><?= i('Home'); ?></span><?php else: ?><a href="<?= $url; ?>"><?= i('Home'); ?></a><?php endif; ?><?php if ($i = count($traces)): ?> / <?php endif; ?><?php foreach ($traces as $k => $v): ?><?php if ($k < $i - 1): ?><a href="<?= $v->url; ?>"><?= $v->title; ?></a> / <?php else: ?><span><?= $v->title; ?></span><?php endif; ?><?php endforeach; ?>

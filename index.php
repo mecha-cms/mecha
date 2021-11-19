@@ -8,21 +8,17 @@
  * -----------------------------------------
  */
 
-define('VERSION', '2.6.4'); // Current version
-define('DS', DIRECTORY_SEPARATOR); // Default directory separator
-define('PS', PATH_SEPARATOR); // Default path separator
+define('VERSION', '3.0.0'); // Current version
 
+define('D', DIRECTORY_SEPARATOR); // Directory separator character
 define('N', PHP_EOL); // Line break
 define('P', "\u{001A}"); // Placeholder character
 define('S', "\u{200C}"); // Invisible character
 
-define('GROUND', rtrim(strtr($_SERVER['CONTEXT_DOCUMENT_ROOT'] ?? $_SERVER['DOCUMENT_ROOT'], '/', DS), DS));
-define('ROOT', __DIR__);
-define('ENGINE', ROOT . DS . 'engine');
-define('LOT', ROOT . DS . 'lot');
+define('PATH', __DIR__);
+define('ENGINE', PATH . D . 'engine');
+define('LOT', PATH . D . 'lot');
 
-define('SESSION', null); // Change to a folder path to define `session_save_path`
-define('DEBUG', false); // Change to `true` to enable debug mode
+define('TEST', false); // Change to `true` to enable test mode
 
-require ENGINE . DS . 'f.php';
-require ENGINE . DS . 'fire.php';
+require ENGINE . D . 'use.php';
