@@ -1,6 +1,5 @@
-<?php
+<?php !session_id() && session_start();
 
-// Enable/disable test mode (default is `null`)
 if (defined('TEST')) {
     if (!is_dir($folder = __DIR__ . D . 'log')) {
         mkdir($folder, 0775, true);
@@ -19,7 +18,6 @@ if (defined('TEST')) {
     }
 }
 
-// Check for valid JSON string format
 function is_json($value, $out = false) {
     if (!is_string($value) || "" === ($value = trim($value))) {
         return false;
@@ -44,7 +42,16 @@ function is_json($value, $out = false) {
     ) && (null !== ($value = json_decode($value))) ? ($out ? $value : true) : false;
 }
 
-// Check if array contains…
+function abort(string $alert, $exit = true) {
+    ob_start();
+    debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+    $trace = explode("\n", n(ob_get_clean()), 2);
+    array_shift($trace);
+    $trace = trim(strtr(implode("\n", $trace), [PATH => '.']), "\n");
+    echo '<details style="background:#f00;color:#fff;font:normal normal 100%/1.5 sans-serif;margin:0;padding:0;selection:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em 1rem;">' . $alert . '</summary><pre style="background:#000;font:normal normal 100%/1.25 monospace;margin:0;overflow:auto;padding:0;white-space:pre;"><code style="display:block;font:inherit;margin:0;padding:.5em 1rem;">' . $trace . '</code></pre></details>';
+    $exit && exit;
+}
+
 function any(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function($v) use($fn) {
@@ -69,12 +76,15 @@ function c2f(string $value = null, $accent = false) {
     }));
 }
 
-// Get file content
+function check(string $token, $id = 0) {
+    $prev = $_SESSION['token'][$id] ?? [0, ""];
+    return $prev[1] && $token && $prev[1] === $token ? $token : false;
+}
+
 function content(string $path) {
     return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
 
-// Merge array value(s)
 function concat(array $value, ...$lot) {
     // `concat([…], […], […], false)`
     if (count($lot) > 1 && false === end($lot)) {
@@ -85,7 +95,47 @@ function concat(array $value, ...$lot) {
     return array_merge_recursive($value, ...$lot);
 }
 
-// Delete file or folder with its contents
+function cookie(...$lot) {
+    if (0 === count($lot)) {
+        $cookie = [];
+        foreach ($_COOKIE as $k => $v) {
+            if (0 === strpos($k, '*')) {
+                $cookie[$k] = json_decode(base64_decode($v));
+            } else {
+                $cookie[$k] = $v;
+            }
+        }
+        return $cookie;
+    }
+    $key = array_shift($lot);
+    if (1 === count($lot)) {
+        if (isset($_COOKIE[$k = '*' . crc32($key)])) {
+            return json_decode(base64_decode($_COOKIE[$k]), true);
+        }
+        return $_COOKIE[$key] ?? null;
+    }
+    $value = array_shift($lot);
+    $expires = array_shift($lot) ?? '1 day';
+    if (!is_array($expires)) {
+        $expires = ['expires' => $expires];
+    }
+    // Use indexed parameter style to support PHP < 7.3
+    $state = array_values(array_replace([
+        'expires' => '1 day',
+        'path' => '/',
+        'domain' => "",
+        'secure' => false,
+        'httponly' => false,
+        'samesite' => 'None'
+    ], $expires));
+    if (is_string($state[0])) {
+        $state[0] = (int) (strtotime($state[0], $time = time()) - $time);
+    }
+    $state[0] += time();
+    // <https://stackoverflow.com/a/1969339/1163000>
+    setcookie('*' . crc32($key), base64_encode(json_encode($value)), ...$state);
+}
+
 function delete(string $path, $purge = true) {
     if (is_file($path)) {
         // Remove parent folder if empty
@@ -132,12 +182,10 @@ function drop(iterable $value, callable $fn = null) {
     return [] !== $value ? $value : null;
 }
 
-// A equal to B
 function eq($a, $b) {
     return $b === q($a);
 }
 
-// Check if file or folder exist
 function exist($path) {
     if (is_array($path)) {
         foreach ($path as $v) {
@@ -150,7 +198,6 @@ function exist($path) {
     return stream_resolve_include_path($path);
 }
 
-// Extend array value(s)
 function extend(array $value, ...$lot) {
     // `extend([…], […], […], false)`
     if (count($lot) > 1 && false === end($lot)) {
@@ -175,7 +222,6 @@ function f2p(string $value = null, $accent = false) {
     }));
 }
 
-// Fetch remote URL
 function fetch(string $url, $lot = null, $type = 'GET') {
     $headers = ['x-requested-with' => 'x-requested-with: CURL'];
     $chops = explode('?', $url, 2);
@@ -227,7 +273,6 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     return false !== $out ? $out : null;
 }
 
-// Return the first element found in array that passed the function test
 function find(iterable $value, callable $fn) {
     foreach ($value as $k => $v) {
         if (call_user_func($fn, $v, $k)) {
@@ -237,7 +282,6 @@ function find(iterable $value, callable $fn) {
     return null;
 }
 
-// Call function with parameter(s) and optional scope
 function fire(callable $fn, array $lot = [], $that = null, string $scope = null) {
     $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
     // `fire($fn, [], Foo::class)`
@@ -248,12 +292,10 @@ function fire(callable $fn, array $lot = [], $that = null, string $scope = null)
     return call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$lot);
 }
 
-// A greater than or equal to B
 function ge($a, $b) {
     return q($a) >= $b;
 }
 
-// Get array value recursively
 function get(array $value, string $key, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     foreach ($keys as $k) {
@@ -266,12 +308,10 @@ function get(array $value, string $key, string $join = '.') {
     return $value;
 }
 
-// A greater than B
 function gt($a, $b) {
     return q($a) > $b;
 }
 
-// Check if an element exist in array
 function has(iterable $value, $has = "", string $x = P) {
     if (!is_string($has)) {
         foreach ($value as $v) {
@@ -284,7 +324,6 @@ function has(iterable $value, $has = "", string $x = P) {
     return false !== strpos($x . implode($x, $value) . $x, $x . $has . $x);
 }
 
-// Filter out element(s) that pass the function test
 function is(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function($v) use($fn) {
@@ -294,12 +333,10 @@ function is(iterable $value, $fn = null) {
     return $fn ? array_filter($value, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($value);
 }
 
-// A less than or equal to B
 function le($a, $b) {
     return q($a) <= $b;
 }
 
-// Remove array value
 function let(array &$value, string $key, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     while (count($keys) > 1) {
@@ -314,12 +351,10 @@ function let(array &$value, string $key, string $join = '.') {
     return $value;
 }
 
-// A less than B
 function lt($a, $b) {
     return q($a) < $b;
 }
 
-// Manipulate array value(s)
 function map(iterable $value, callable $fn) {
     $out = [];
     foreach ($value as $k => $v) {
@@ -328,7 +363,6 @@ function map(iterable $value, callable $fn) {
     return $out;
 }
 
-// Move file or folder with its contents
 function move(string $path, string $to, string $as = null) {
     $out = [];
     if (!is_dir($path) && !is_file($path)) {
@@ -350,12 +384,10 @@ function move(string $path, string $to, string $as = null) {
     // TODO: Move folder with its contents
 }
 
-// A not equal to B
 function ne($a, $b) {
     return q($a) !== $b;
 }
 
-// Filter out element(s) that does not pass the function test
 function not(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function($v) use($fn) {
@@ -374,7 +406,6 @@ function p2f(string $value = null, $accent = false) {
     }));
 }
 
-// Resolve relative path
 function path(string $value = null) {
     return stream_resolve_include_path($value) ?: null;
 }
@@ -427,7 +458,6 @@ function push(string $path, string $from, $seal = null) {
     return copy($from, $path) ? path($from) : null;
 }
 
-// Save file
 function save(string $path, $value = "", $seal = null) {
     if (is_dir($path)) {
         // Error
@@ -449,7 +479,6 @@ function save(string $path, $value = "", $seal = null) {
     return null;
 }
 
-// Set file or folder permission
 function seal(string $path, $seal = null) {
     if (!is_dir($path) && !is_file($path)) {
         // Skip
@@ -494,7 +523,6 @@ function send($from, $to, string $title, string $content, array $lot = []) {
     return mail($to, $title, $content, implode("\r\n", $lot));
 }
 
-// Set array value
 function set(array &$out, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     while (count($keys) > 1) {
@@ -508,7 +536,6 @@ function set(array &$out, string $key, $value = null, string $join = '.') {
     return $out;
 }
 
-// Shake array value
 function shake(array $value, $preserve_key = true) {
     if (is_callable($preserve_key)) {
         // `$preserve_key` as `$fn`
@@ -540,6 +567,48 @@ function size(float $size, string $unit = null, int $round = 2) {
     return $out < 0 ? null : trim($out . ' ' . $x[$u]);
 }
 
+function status(...$lot) {
+    if (0 === count($lot)) {
+        $out = [http_response_code(), [], []];
+        if (function_exists('apache_request_headers')) {
+            $out[1] = e(array_change_key_case((array) apache_request_headers(), CASE_LOWER));
+        }
+        foreach ($_SERVER as $k => $v) {
+            if (0 === strpos($k, 'HTTP_')) {
+                $out[1][strtolower(strtr(substr($k, 5), '_', '-'))] = e($v);
+            }
+        }
+        if (function_exists('apache_response_headers')) {
+            $out[2] = e(array_change_key_case((array) apache_response_headers(), CASE_LOWER));
+        }
+        foreach (headers_list() as $v) {
+            $v = explode(':', $v, 2);
+            if (isset($v[1])) {
+                $out[2][strtolower($v[0])] = e(trim($v[1]));
+            }
+        }
+        return $out;
+    }
+    $code = array_shift($lot);
+    $values = (array) array_shift($lot);
+    // `status(['content-type' => 'text/plain'])`
+    if (is_array($code)) {
+        $values = $code;
+        $code = null;
+    }
+    // `status(200, ['content-type' => 'text/plain'])`
+    if (is_int($code)) {
+        http_response_code($code);
+    }
+    foreach ($values as $k => $v) {
+        if (false === $v || null === $v) {
+            header_remove($k);
+            continue;
+        }
+        header($k . ': ' . s($v), true);
+    }
+}
+
 // Break dot-notation sequence into step(s)
 function step(string $value, string $join = '.', int $direction = 1) {
     $value = strtr($value, ["\\" . $join => P]);
@@ -566,7 +635,6 @@ function step(string $value, string $join = '.', int $direction = 1) {
     return (array) $value;
 }
 
-// Store blob to server
 function store(string $path, array $blob, string $as = null) {
     if (!empty($blob['error'])) {
         // Error
@@ -614,6 +682,35 @@ function test(...$lot) {
     }
     echo '</p>';
 }
+
+function token($id = 0, $for = '1 minute') {
+    $prev = $_SESSION['token'][$id] ?? [0, ""];
+    if ($prev[0] > time()) {
+        return $prev[1];
+    }
+    $t = is_string($for) ? strtotime($for) : time() + $for;
+    $_SESSION['token'][$id] = $v = [$t, sha1(uniqid(mt_rand(), true) . $id)];
+    return $v[1];
+}
+
+function type(string $type = null) {
+    if (!isset($type)) {
+        $type = status()[1]['content-type'] ?? null;
+        if (is_string($type)) {
+            return explode(';', $type, 2)[0];
+        }
+        return null;
+    }
+    status(['content-type' => $type]);
+}
+
+function zone(string $zone = null) {
+    if (!isset($zone)) {
+        return date_default_timezone_get();
+    }
+    return date_default_timezone_set($zone);
+}
+
 
 // a: Convert object to array
 // b: Keep value between `a` and `b`
@@ -1574,3 +1671,79 @@ foreach ($uses as $v) {
 }
 
 $GLOBALS['X'][1] = $uses = array_keys($uses);
+
+Hook::set('get', function() {
+    $key = strtr(State::get('language') ?? "", '-', '_');
+    // Fix for missing language key → default to `en`
+    if (!Time::_($key)) {
+        Time::_($key, Time::_('en'));
+    }
+}, 20);
+
+// Set default response status and header(s)
+status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
+
+// Set default response type
+type('text/html');
+
+// Set default time zone and locale
+zone($state->zone);
+
+$GLOBALS['time'] = $time = new Time($_SERVER['REQUEST_TIME'] ?? time());
+
+class_alias('Time', 'Date');
+
+$GLOBALS['date'] = $date = $time;
+
+$port = (int) $_SERVER['SERVER_PORT'];
+$scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
+$protocol = $scheme . '://';
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
+$path = ltrim($_GET['_'] ?? "", '/');
+$query = explode('&', $_SERVER['QUERY_STRING'], 2)[1] ?? "";
+
+unset($_GET['_']);
+
+// Prevent XSS attack
+$path = strtr(trim($path, '/'), [
+    '<' => '%3C',
+    '>' => '%3E',
+    '&' => '%26',
+    '"' => '%22'
+]);
+
+// Detect if user put this system in a sub-folder by checking the `d` value
+$root = rtrim(strtr($_SERVER['CONTEXT_DOCUMENT_ROOT'] ?? $_SERVER['DOCUMENT_ROOT'], '/', D), D);
+$d = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(PATH, [
+    $root => "",
+    D => '/'
+]), '/');
+
+$d = "" !== $d ? '/' . $d : null;
+$path = "" !== $path ? '/' . $path : null;
+$query = "" !== $query ? '?' . $query : null;
+$hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
+
+$GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
+
+unset($d, $date, $hash, $host, $path, $protocol, $query, $time, $uses);
+
+header_register_callback(static function() {
+    Hook::fire('set', status());
+});
+
+register_shutdown_function(static function() {
+    // Run task(s) if any…
+    if (is_file($f = PATH . D . 'task.php')) {
+        (static function($f) {
+            extract($GLOBALS, EXTR_SKIP);
+            require $f;
+        })($f);
+    }
+    // Ideally, a response body should be stated in this hook.
+    Hook::fire('get');
+    // This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`,
+    // when the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute
+    // this hook before every `exit` command on every response body you make in the hook above.
+    Hook::fire('let');
+});

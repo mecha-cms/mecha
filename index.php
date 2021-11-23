@@ -10,7 +10,7 @@
 
 define('VERSION', '3.0.0'); // Current version
 
-define('D', DIRECTORY_SEPARATOR); // Directory separator character
+define('D', DIRECTORY_SEPARATOR); // Directory separator
 define('N', PHP_EOL); // Line break
 define('P', "\u{001A}"); // Placeholder character
 define('S', "\u{200C}"); // Invisible character

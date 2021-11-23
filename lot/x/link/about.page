@@ -1,0 +1,12 @@
+---
+title: Link
+description: Resolve relative links in content.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.0.1
+
+use:
+  '.\lot\x\layout': 1
+...
+
+This extension will convert relative links in anchors and images (and some attributes on other elements that have been registered in the `.\lot\x\link\state.php` file) into full links.

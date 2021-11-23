@@ -1,0 +1,72 @@
+---
+title: Asset
+description: Add, remove, append, prepend and replace asset files from/to the HTML output without touching the layout files.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.11.1
+
+use:
+  '.\lot\x\layout': 1
+...
+
+This extension works by finding two special places in the HTML document, i.e. right before the `</head>` and `</body>` tag, and then process all assets that have been added to the storage to be rendered as HTML tags in both places.
+
+~~~ .html
+<!DOCTYPE html>
+<html dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Lorem Ipsum</title>
+  •</head>
+  <body>
+    <p>Lorem ipsum dolor sit amet.</p>
+  •</body>
+</html>
+~~~
+
+The first place is generally used to insert CSS assets, and the second place is used to insert JavaScript assets.
+
+### Usage
+
+To append CSS assets to the `<head>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::set('path/to/file.css');
+~~~
+
+To append inline CSS assets to the `<head>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::style(
+<<<CSS
+:root {
+  --background: #fff;
+  --color: #000;
+}
+body {
+  background: var(--background);
+  color: var(--color);
+}
+CSS
+);
+~~~
+
+To append JavaScript assets to the `<body>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::set('path/to/file.js');
+~~~
+
+To append inline JavaScript assets to the `<body>` section, write this code in an `index.php` file:
+
+~~~ .php
+Asset::script(
+<<<JS
+document.documentElement.classList.add('js');
+JS
+);
+~~~
+
+Shortly after being added, this extension will process the file path and then it will be rendered as `<link>` tags for CSS files and `<script>` tags for JavaScript files.
+
+> **Note:** This extension will ignore files that don’t exist.

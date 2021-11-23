@@ -114,11 +114,6 @@ final class Time extends Genome {
         return new static($value);
     }
 
-    public static function zone(string $zone = null) {
-        if (!isset($zone)) {
-            return self::$zone ?? date_default_timezone_get();
-        }
-        return date_default_timezone_set(self::$zone = $zone ?? date_default_timezone_get());
-    }
-
 }
+
+Time::_('en', '%A, %B %d, %Y');

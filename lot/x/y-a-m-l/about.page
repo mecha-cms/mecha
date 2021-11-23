@@ -1,0 +1,45 @@
+---
+title: YAML
+description: Simple YAML parser that converts YAML string into key-value pairs and array input into YAML string.
+author: Taufik Nurrohman
+type: Markdown
+version: 1.1.2
+...
+
+### Usage
+
+Convert YAML string to array:
+
+~~~ .php
+$content = <<<YAML
+a: b
+c:
+  d: e
+  f: g
+h: 1
+i: [j, k, l]
+m:
+  - n
+  - o
+  - p
+YAML;
+
+echo From::YAML($content)['c']['d'];
+~~~
+
+Convert array to YAML string:
+
+~~~ .php
+$data = [
+    'a' => 'b',
+    'c' => [
+        'd' => 'e',
+        'f' => 'g'
+    ],
+    'h' => 1,
+    'i' => ['j', 'k', 'l'],
+    'm' => ['n', 'o', 'p']
+];
+
+echo To::YAML($data);
+~~~

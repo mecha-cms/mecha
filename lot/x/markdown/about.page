@@ -1,0 +1,27 @@
+---
+title: Markdown
+description: Convert Markdown syntax to HTML.
+author: Taufik Nurrohman
+type: Markdown
+version: 2.6.0
+
+use:
+  '.\lot\x\page': 1
+...
+
+Markdown is two things: a plain text markup syntax, and a software tool that converts plain text markup to HTML for publishing on the web. The Markdown syntax allows you to write text naturally and format it without using HTML tags. More importantly: in Markdown format, your text stays enjoyable to read for a human being, and this is true enough that it makes a Markdown document publishable as-is, as plain text. If you are using text-formatted email, you already know some part of the syntax.
+
+### Usage
+
+In your page header, add `type` property with value set to `Markdown` or `text/markdown`:
+
+~~~ .yaml
+---
+title: Page Title
+description: Page description.
+author: Taufik Nurrohman
+type: Markdown
+...
+
+This is a **bold** text.
+~~~

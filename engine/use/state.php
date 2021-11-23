@@ -26,7 +26,6 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return count($lot) < 2 ? self::get(...$lot) : self::set(...$lot);
     }
 
-    // Fix case for `isset($state->key)` or `!empty($state->key)`
     public function __isset(string $key) {
         return !!$this->__get($key);
     }
@@ -83,11 +82,11 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`
         if ($lot) {
             $value = self::get($kin);
-            // Asynchronous value with function closure
+            // Asynchronous value with closure
             if ($value instanceof \Closure) {
                 return fire($value, $lot, null, static::class);
             }
-            // Rich asynchronous value with class instance
+            // Asynchronous value with class instance
             if (is_callable($value) && !is_string($value)) {
                 return call_user_func($value, ...$lot);
             }
@@ -139,4 +138,12 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         self::$lot[$c] = array_replace_recursive($out, $in);
     }
 
+}
+
+function state(...$lot) {
+    if (count($lot) < 2) {
+        $lot[] = true; // Force to array
+        return State::get(...$lot);
+    }
+    return State::set(...$lot);
 }

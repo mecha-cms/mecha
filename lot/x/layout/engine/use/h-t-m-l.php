@@ -4,7 +4,7 @@ class HTML extends SGML {
 
     public $strict = false;
 
-    public function __construct($value = []) {
+    public function __construct($value = [], array $state = []) {
         parent::__construct($value);
         if (!empty($this->lot[2])) {
             foreach ($this->lot[2] as &$v) {
@@ -17,7 +17,6 @@ class HTML extends SGML {
 
     public function __toString() {
         if (!empty($this->lot[2])) {
-            $c = $this->c;
             foreach ($this->lot[2] as $k => &$v) {
                 if (true === $v) {
                     continue;

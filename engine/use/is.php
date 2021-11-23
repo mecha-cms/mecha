@@ -7,6 +7,11 @@ final class Is extends Genome {
         return filter_var($value, FILTER_VALIDATE_IP);
     }
 
+    // Check for JSON pattern
+    public static function JSON($value) {
+        return is_json($value);
+    }
+
     // Check for URL address
     public static function URL($value) {
         return filter_var($value, FILTER_VALIDATE_URL);
