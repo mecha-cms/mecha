@@ -1672,14 +1672,6 @@ foreach ($uses as $v) {
 
 $GLOBALS['X'][1] = $uses = array_keys($uses);
 
-Hook::set('get', function() {
-    $key = strtr(State::get('language') ?? "", '-', '_');
-    // Fix for missing language key → default to `en`
-    if (!Time::_($key)) {
-        Time::_($key, Time::_('en'));
-    }
-}, 20);
-
 // Set default response status and header(s)
 status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
 
@@ -1688,12 +1680,6 @@ type('text/html');
 
 // Set default time zone and locale
 zone($state->zone);
-
-$GLOBALS['time'] = $time = new Time($_SERVER['REQUEST_TIME'] ?? time());
-
-class_alias('Time', 'Date');
-
-$GLOBALS['date'] = $date = $time;
 
 $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
@@ -1726,19 +1712,84 @@ $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
 $GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
 
+function long(string $value, $ground = true, URL $url = null) {
+    $url = $url ?? $GLOBALS['url'];
+    $parent = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
+    // `long('//example.com')`
+    if (0 === strpos($value, '//')) {
+        return rtrim(substr($url->protocol, 0, -2) . $value, '/');
+    }
+    // `long('./foo/bar/baz')`
+    if ('.' === $value || 0 === strpos($value, './')) {
+        $value = substr($value, 1);
+    }
+    // `long('/foo/bar/baz')`
+    if (0 === strpos($value, '/')) {
+        if (false !== strpos('?&#', $value[1] ?? P)) {
+            $value = substr($value, 1);
+        }
+        if (0 === strpos($value, '&')) {
+            $value = '?' . substr($value, 1);
+        }
+        return rtrim($parent . $value, '/');
+    }
+    // `long('?foo=bar&baz=qux')`
+    if (
+        false === strpos($value, '://') &&
+        0 !== strpos($value, 'blob:') &&
+        0 !== strpos($value, 'data:') &&
+        0 !== strpos($value, 'javascript:') &&
+        0 !== strpos($value, 'mailto:') &&
+        !is_string($ground)
+    ) {
+        $parent = strtok($url->current, '?&#');
+        // `long('foo/bar/baz')`
+        if ($value && false === strpos('.?&#', $value[0])) {
+            $parent = dirname($parent);
+        }
+        if (0 !== ($count = substr_count($value . '/', '../'))) {
+            $parent = dirname($parent, $count);
+            $value = strtr($value . '/', ['../' => ""]);
+        }
+        return strtr(rtrim($parent . '/' . trim($value, '/'), '/'), [
+            '/?' => '?',
+            '/&' => '?',
+            '/#' => '#'
+        ]);
+    }
+    return $value;
+}
+
+function short(string $value, $ground = true, URL $url = null) {
+    $url = $url ?? $GLOBALS['url'];
+    $parent = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
+    if (0 === strpos($value, '//')) {
+        if (0 !== strpos($value, '//' . $url->host)) {
+            return $value; // Ignore external URL
+        }
+        $value = $url->protocol . substr($value, 2);
+    } else {
+        if (0 !== strpos($value, $url . "")) {
+            return $value; // Ignore external URL
+        }
+    }
+    $value = substr($value, strlen(rtrim($parent, '/')));
+    return !is_string($ground) && $ground && "" === $value ? '/' : $value;
+}
+
 unset($d, $date, $hash, $host, $path, $protocol, $query, $time, $uses);
 
 header_register_callback(static function() {
-    Hook::fire('set', status());
+    Hook::fire('set');
 });
 
 register_shutdown_function(static function() {
     // Run task(s) if any…
-    if (is_file($f = PATH . D . 'task.php')) {
+    if (is_file($task = PATH . D . 'task.php')) {
         (static function($f) {
             extract($GLOBALS, EXTR_SKIP);
             require $f;
-        })($f);
+        })($task);
     }
     // Ideally, a response body should be stated in this hook.
     Hook::fire('get');

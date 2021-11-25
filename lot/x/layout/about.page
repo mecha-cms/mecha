@@ -1,0 +1,26 @@
+---
+title: Layout
+description: Common automation function used to speed up site development.
+author: Taufik Nurrohman
+type: Markdown
+version: 2.0.0
+...
+
+Mecha does not have the capability to change themes through configuration files, and therefore there will only be one theme on every website built with Mecha. As with the site’s interface language, themes are one of the things that website owners rarely change within a daily or monthly period. So, Mecha decided to remove such features.
+
+Layout files are stored in the `.\lot\layout` folder. To change the default theme with another theme, remove all files from that folder and then put your custom theme files there.
+
+~~~ .txt
+.\
+└── lot\
+    └── layout\
+        ├── 404.php
+        ├── page.php
+        └── pages.php
+~~~
+
+### Features
+
+ - Detect asset path relative to the `.\lot\asset` and `.\lot\layout\asset` folder.
+ - Detect layout path relative to the `.\lot\layout` folder.
+ - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.

@@ -4,13 +4,6 @@ class Layout extends Genome {
 
     protected static $lot;
 
-    const state = [
-        'path' => LOT . DS . 'layout',
-        'x' => ['html', 'php']
-    ];
-
-    public static $state = self::state;
-
     public static function __callStatic(string $kin, array $lot = []) {
         if (parent::_($kin)) {
             return parent::__callStatic($kin, $lot);
@@ -52,17 +45,16 @@ class Layout extends Genome {
     public static function path($value) {
         $out = [];
         $c = static::class;
-        $path = static::$state['path'];
-        $x = static::$state['x'];
+        $path = LOT . D . 'layout';
         if (is_string($value)) {
             // Full path, be quick!
-            if (0 === strpos($value, ROOT) && is_file($value)) {
+            if (0 === strpos($value, PATH) && is_file($value)) {
                 return $value;
             }
-            $id = strtr($value, DS, '/');
+            $id = strtr($value, D, '/');
             // Added by the `Layout::get()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
-                return File::exist(self::$lot[$c][1][$id]) ?: null;
+                return exist(self::$lot[$c][1][$id]) ?: null;
             }
             // Guessing…
             $out = array_values(step($id, '/'));
@@ -73,17 +65,10 @@ class Layout extends Genome {
         }
         $any = [];
         foreach ((array) $out as $v) {
-            $v = strtr($v, '/', DS);
-            if (0 !== strpos($v, $path)) {
-                $vv = pathinfo($v, PATHINFO_EXTENSION);
-                foreach ($x as $xx) {
-                    $any[] = $path . DS . $v . (!$vv || $xx !== $vv ? '.' . $xx : "");
-                }
-            } else {
-                $any[] = $v;
-            }
+            $v = strtr($v, '/', D);
+            $any[] = 0 !== strpos($v, $path) ? $path . D . $v . '.php' : $v;
         }
-        return File::exist($any) ?: null;
+        return exist($any) ?: null;
     }
 
     public static function let($id = null) {
@@ -92,7 +77,7 @@ class Layout extends Genome {
                 self::let($v);
             }
         } else if (isset($id)) {
-            $id = strtr($id, DS, '/');
+            $id = strtr($id, D, '/');
             $c = static::class;
             self::$lot[$c][0][$id] = 1;
             unset(self::$lot[$c][1][$id]);
@@ -109,7 +94,7 @@ class Layout extends Genome {
         } else {
             $c = static::class;
             if (!isset(self::$lot[$c][0][$id])) {
-                $id = strtr($id, DS, '/');
+                $id = strtr($id, D, '/');
                 self::$lot[$c][1][$id] = $path;
             }
         }

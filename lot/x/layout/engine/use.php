@@ -22,7 +22,7 @@ foreach([
             $out = "";
             $done = $i = 0;
             $tags = [];
-            while ($done < $x[0] && preg_match('/<\/?([a-z\d:.-]+)(?:\s[^>]*)?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
+            while ($done < $x[0] && preg_match('/<\/([a-z\d:.-]+)>|<([a-z\d:.-]+)(?:\s[^>]*)?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
                 $tag = $m[0][0];
                 $pos = $m[0][1];
                 $str = substr($s, $i, $pos - $i);

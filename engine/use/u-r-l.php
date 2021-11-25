@@ -18,7 +18,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     ];
 
     private function e($in, $t = '/') {
-        $in = strtr($in, DS, '/');
+        $in = strtr($in, D, '/');
         if ($t) {
             $in = trim($in, $t);
         }
@@ -167,7 +167,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     private function setProtocol($in) {
-        $this->lot['protocol'] = $this->e(explode('://', strtr($in, DS, '/'))[0]);
+        $this->lot['protocol'] = $this->e(explode('://', strtr($in, D, '/'))[0]);
     }
 
     private function setQuery($in) {
@@ -199,7 +199,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         $d = $this->e($d);
         $i = $this->e((string) ($i > 0 ? $i : ""));
         $path = $this->e($out['path'] ?? "");
-        if (null !== $path && is_numeric(substr($path, -1)) && preg_match('/(.*?)\/([1-9][0-9]*)$/', $path, $m)) {
+        if (null !== $path && is_numeric(substr($path, -1)) && preg_match('/^(.*?)\/(\d+)$/', $path, $m)) {
             $path = $m[1];
             $i = (int) ($i ?? $m[2]); // Set page offset from path
         }
@@ -326,70 +326,3 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
 }
-
-URL::_('long', function(string $value, $ground = true, URL $url = null) {
-    $url = $url ?? $GLOBALS['url'];
-    $d = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
-    // `URL::long('//example.com')`
-    if (0 === strpos($value, '//')) {
-        return rtrim(substr($url->protocol, 0, -2) . $value, '/');
-    }
-    // `URL::long('./foo/bar/baz')`
-    if ('.' === $value || 0 === strpos($value, './')) {
-        $value = substr($value, 1);
-    }
-    // `URL::long('/foo/bar/baz')`
-    if (0 === strpos($value, '/')) {
-        if (false !== strpos('?&#', $value[1] ?? P)) {
-            $value = substr($value, 1);
-        }
-        if (0 === strpos($value, '&')) {
-            $value = '?' . substr($value, 1);
-        }
-        return rtrim($d . $value, '/');
-    }
-    // `URL::long('?foo=bar&baz=qux')`
-    if (
-        false === strpos($value, '://') &&
-        0 !== strpos($value, 'blob:') &&
-        0 !== strpos($value, 'data:') &&
-        0 !== strpos($value, 'javascript:') &&
-        0 !== strpos($value, 'mailto:') &&
-        !is_string($ground)
-    ) {
-        $d = strtok($url->current, '?&#');
-        // `URL::long('foo/bar/baz')`
-        if ($value && false === strpos('.?&#', $value[0])) {
-            $d = dirname($d);
-        }
-        if (0 !== ($count = substr_count($value . '/', '../'))) {
-            $d = dirname($d, $count);
-            $value = strtr($value . '/', [
-                '../' => ""
-            ]);
-        }
-        return strtr(rtrim($d . '/' . trim($value, '/'), '/'), [
-            '/?' => '?',
-            '/&' => '?',
-            '/#' => '#'
-        ]);
-    }
-    return $value;
-});
-
-URL::_('short', function(string $value, $ground = true, URL $url = null) {
-    $url = $url ?? $GLOBALS['url'];
-    $d = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
-    if (0 === strpos($value, '//')) {
-        if (0 !== strpos($value, '//' . $url->host)) {
-            return $value; // Ignore external URL
-        }
-        $value = $url->protocol . substr($value, 2);
-    } else {
-        if (0 !== strpos($value, $url . "")) {
-            return $value; // Ignore external URL
-        }
-    }
-    $value = substr($value, strlen(rtrim($d, '/')));
-    return !is_string($ground) && $ground && "" === $value ? '/' : $value;
-});

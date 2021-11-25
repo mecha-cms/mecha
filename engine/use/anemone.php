@@ -178,14 +178,16 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $preserve_key = false) {
-        $value = $this->value;
+        if (count($value = $this->value) <= 1) {
+            return $this;
+        }
         if (is_callable($sort)) {
             $preserve_key ? uasort($value, $sort) : usort($value, $sort);
         } else if (is_array($sort)) {
             $i = $sort[0];
             if (isset($sort[1])) {
                 $key = $sort[1];
-                $fn = -1 === $i ? function($a, $b) use($key) {
+                $fn = -1 === $i ? static function($a, $b) use($key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }
@@ -199,7 +201,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
                         return -1;
                     }
                     return $b[$key] <=> $a[$key];
-                } : function($a, $b) use($key) {
+                } : static function($a, $b) use($key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }

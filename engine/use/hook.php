@@ -19,10 +19,7 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0] ?? null;
             }
-            $any = self::$lot[1][$c][$id];
-            if (count($any) > 1) {
-                $any = (new Anemone($any))->sort([1, 'stack']);
-            }
+            $any = (new Anemone(self::$lot[1][$c][$id]))->sort([1, 'stack']);
             foreach ($any as $v) {
                 if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
                     $lot[0] = $r;
@@ -91,7 +88,7 @@ class Hook extends Genome {
                     self::$lot[1][$c][$id] = [];
                 }
                 self::$lot[1][$c][$id][] = [
-                    '0' => null,
+                    '0' => c2f($c),
                     '1' => "",
                     '2' => [],
                     'fn' => $fn,
