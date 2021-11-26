@@ -186,10 +186,16 @@ function eq($a, $b) {
     return $b === q($a);
 }
 
-function exist($path) {
+function exist($path, $type = null) {
     if (is_array($path)) {
         foreach ($path as $v) {
             if ($v && $v = stream_resolve_include_path($v)) {
+                if (0 === $type) {
+                    return is_dir($v) ? $v : false;
+                }
+                if (1 === $type) {
+                    return is_file($v) ? $v : false;
+                }
                 return $v;
             }
         }

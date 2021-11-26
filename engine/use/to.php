@@ -82,8 +82,6 @@ foreach([
         $out = trim(h($value, '_', $accent), '_');
         return $out && is_numeric($out[0]) ? '_' . $out : $out;
     },
-    'lower' => "\\l",
-    'pascal' => "\\p",
     'path' => function(string $value = null) {
         $url = $GLOBALS['url'] . "";
         $value = strtr($value, [
@@ -124,8 +122,7 @@ foreach([
     'serial' => "\\serialize",
     'snake' => function(string $value = null, $a = true) {
         return trim(h($value, '_', $a), '_');
-    },
-    'upper' => "\\u"
+    }
 ] as $k => $v) {
     To::_($k, $v);
 }

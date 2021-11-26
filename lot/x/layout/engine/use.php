@@ -78,6 +78,8 @@ foreach([
         $out = trim($out) . ($t > $x[0] ? $x[1] : "");
         return "" !== $out ? $out : null;
     },
+    'lower' => "\\l",
+    'pascal' => "\\p",
     'sentence' => function(string $value = null, string $tail = '.') {
         $value = trim($value);
         if (extension_loaded('mbstring')) {
@@ -92,7 +94,28 @@ foreach([
         // Convert to abbreviation if all case(s) are in upper
         $out = u($out) === $out ? strtr($out, [' ' => ""]) : $out;
         return "" !== $out ? $out : null;
-    }
+    },
+    'upper' => "\\u"
 ] as $k => $v) {
     To::_($k, $v);
+}
+
+$GLOBALS['date'] = $GLOBALS['time'] = new Time($_SERVER['REQUEST_TIME'] ?? time());
+
+class_alias('Time', 'Date');
+
+Time::_('en', '%A, %B %d, %Y');
+
+// Alias for `State`
+class_alias('State', 'Site');
+
+// Alias for `$state`
+$GLOBALS['site'] = $site = $state;
+
+// Default title for the layout
+$GLOBALS['t'] = $t = new Anemone([$state->title], ' &#x00B7; ');
+
+// Merge layout state to the global state
+if (is_file($file = LOT . D . 'layout' . D . 'state.php')) {
+    State::set(require $file);
 }

@@ -235,3 +235,7 @@ class Page extends File {
     }
 
 }
+
+function page(...$lot) {
+    return new Page(...$lot);
+}

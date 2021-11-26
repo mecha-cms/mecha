@@ -1,0 +1,15 @@
+---
+title: Alert
+description: Display alert messages throughout the page.
+author: Taufik Nurrohman
+type: Markdown
+version: 2.0.0
+...
+
+### Usage
+
+~~~ .php
+Alert::error('This is an error message.');
+Alert::info('This is an info message.');
+Alert::success('This is a success message.');
+~~~

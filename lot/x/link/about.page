@@ -3,7 +3,7 @@ title: Link
 description: Resolve relative links in content.
 author: Taufik Nurrohman
 type: Markdown
-version: 1.0.1
+version: 2.0.0
 
 use:
   '.\lot\x\layout': 1

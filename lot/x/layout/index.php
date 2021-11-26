@@ -37,9 +37,6 @@ namespace x\layout {
 }
 
 namespace x {
-    $GLOBALS['date'] = $GLOBALS['time'] = new \Time($_SERVER['REQUEST_TIME'] ?? \time());
-    \class_alias("\\Time", "\\Date");
-    \Time::_('en', '%A, %B %d, %Y');
     function content($content) {
         $root = 'html';
         if (false !== \strpos($content, '<' . $root . ' ')) {

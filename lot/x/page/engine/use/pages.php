@@ -1,17 +1,17 @@
 <?php
 
-class Pages extends Files {
+class Pages extends Anemone {
 
-    // Inherit to `Files::file()`
-    public function file(string $path): \ArrayAccess {
-        return $this->page($path);
+    public function getIterator() {
+        foreach ($this->value as $k => $v) {
+            yield $k => $this->page($v);
+        }
     }
 
     public function page(string $path) {
         return new Page($path);
     }
 
-    // Inherit to `Files::from()`
     public static function from(...$lot) {
         $pages = [];
         foreach (g($lot[0] ?? LOT . DS . 'page', $lot[1] ?? 'page', $lot[2] ?? 0) as $k => $v) {
@@ -23,4 +23,8 @@ class Pages extends Files {
         return new static($pages);
     }
 
+}
+
+function pages(...$lot) {
+    return Pages::from(...$lot);
 }
