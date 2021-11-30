@@ -98,6 +98,16 @@ Contributors
 Release Notes
 -------------
 
+### main
+
+ - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `pull`, `push`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
+ - [x] Moved `To::{lower,pascal,sentence,text,title,upper}` methods to `layout` extension.
+ - [x] Moved classes `HTML`, `SGML` to `layout` extension.
+ - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
+ - [x] Renamed `To::excerpt` to `To::description`.
+ - [x] Renamed class `Anemon` to `Anemone`.
+ - [x] Renamed function `anemon` to `anemone`.
+
 ### 2.6.4
 
  - Added `Path::long()` and `Path::short()` method.

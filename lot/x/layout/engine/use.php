@@ -1,7 +1,7 @@
 <?php
 
 foreach([
-    'excerpt' => function(string $value = null, $html = true, $x = 200) {
+    'description' => function(string $value = null, $html = true, $x = 200) {
         // Make sure to add space at the end of the block tag(s) that will be removed
         // To make `<p>asdf.</p><p>asdf</p>` becomes `asdf. asdf` and not `asdf.asdf`
         $blocks = 'address|article|blockquote|details|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader|r)|li|main|nav|p(?:re)?|section|summary|t[dh]';
