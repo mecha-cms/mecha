@@ -18,8 +18,8 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
 
     public function __destruct() {
         $this->lot = $this->value = [];
-        while ($parent = $this->parent) {
-            unset($parent);
+        if ($this->parent) {
+            unset($this->parent);
         }
     }
 
@@ -179,6 +179,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     // Sort array value: `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $preserve_key = false) {
         if (count($value = $this->value) <= 1) {
+            if (!$preserve_key) {
+                $this->value = array_values($this->value);
+            }
             return $this;
         }
         if (is_callable($sort)) {

@@ -7,7 +7,11 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
     private static function i(array $lot, string $kin) {
         $out = [];
         foreach ($lot as $v) {
-            $out[] = ['alert', i(...((array) $v)), ['type' => $kin]];
+            $out[] = [
+                0 => 'alert',
+                1 => i(...((array) $v)),
+                2 => ['type' => $kin]
+            ];
         }
         return $out;
     }

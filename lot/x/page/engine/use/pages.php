@@ -14,7 +14,7 @@ class Pages extends Anemone {
 
     public static function from(...$lot) {
         $pages = [];
-        foreach (g($lot[0] ?? LOT . DS . 'page', $lot[1] ?? 'page', $lot[2] ?? 0) as $k => $v) {
+        foreach (g($lot[0] ?? LOT . D . 'page', $lot[1] ?? 'page', $lot[2] ?? 0) as $k => $v) {
             if ("" === pathinfo($k, PATHINFO_FILENAME)) {
                 continue; // Ignore placeholder page(s)
             }

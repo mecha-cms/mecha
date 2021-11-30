@@ -64,7 +64,9 @@ final class Time extends Genome {
         ) {
             // Make the date translation system to work without PHP `intl` extension
             // Assume every word(s) in the formatted date as a translate-able string
-            $out = preg_replace_callback('/[a-z]\w+/i', "\\i", $out);
+            $out = preg_replace_callback('/[a-z]\w+/i', static function($m) {
+                return i($m[0]);
+            }, $out);
         }
         return $out;
     }

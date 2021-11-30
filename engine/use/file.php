@@ -46,7 +46,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function exist() {
-        return !!$this->path;
+        return $this->path ?? false;
     }
 
     public function getIterator() {
@@ -58,7 +58,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function name($x = false) {
-        if ($this->exist()) {
+        if ($path = $this->exist()) {
             if (true === $x) {
                 return basename($path);
             }

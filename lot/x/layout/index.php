@@ -111,7 +111,7 @@ namespace x {
             \http_response_code((int) $status);
         }
         if (null !== ($content = \Layout::get($path, $lot))) {
-            $content = \Hook::fire('content', [$content], $this);
+            $content = \Hook::fire('content', [$content]);
             \ob_start();
             \ob_start("\\ob_gzhandler");
             echo $content; // The response body

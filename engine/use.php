@@ -1638,46 +1638,6 @@ d(__DIR__ . D . 'use');
 $state = is_file($f = __DIR__ . D . '..' . D . 'state.php') ? require $f : [];
 $GLOBALS['state'] = $state = new State($state);
 
-$uses = [];
-foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
-    if (empty($GLOBALS['X'][0][$v])) {
-        $n = basename($d = dirname($v));
-        $uses[$v] = content($d . D . $n) ?? $n;
-        // Load state(s)…
-        State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
-        if (is_file($v = $d . D . 'state.php')) {
-            (static function($k, $v, $a) {
-                extract($GLOBALS, EXTR_SKIP);
-                State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
-            })($k, $v, $state['x'][$n] ?? []);
-        }
-    }
-}
-
-natsort($uses);
-
-// Load class(es)…
-foreach ($uses as $v) {
-    d(dirname($v) . D . 'engine' . D . 'use');
-}
-
-// Load extension(s)…
-foreach ($uses as $v) {
-    (static function($v) {
-        // Load task(s)…
-        if (is_file($k = dirname($v) . D . 'task.php')) {
-            (static function($k) {
-                extract($GLOBALS, EXTR_SKIP);
-                require $k;
-            })($k);
-        }
-        extract($GLOBALS, EXTR_SKIP);
-        require $v;
-    })($v);
-}
-
-$GLOBALS['X'][1] = $uses = array_keys($uses);
-
 // Set default response status and header(s)
 status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
 
@@ -1717,6 +1677,12 @@ $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
 $GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
+
+function kick(string $path = null, int $status = null) {
+    $path = $path ?? $GLOBALS['url']->current;
+    header('location: ' . long($path, false), true, $status ?? 301);
+    exit;
+}
 
 function long(string $value, $ground = true, URL $url = null) {
     $url = $url ?? $GLOBALS['url'];
@@ -1783,7 +1749,57 @@ function short(string $value, $ground = true, URL $url = null) {
     return !is_string($ground) && $ground && "" === $value ? '/' : $value;
 }
 
+Hook::set('get', function() use($url) {
+    $path = $url['path'];
+    $i = $url['i'];
+    $query = $url['query'];
+    $hash = $url['hash'];
+    // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
+    $path = strtr($path, ['../' => ""]);
+    Hook::fire('route', [$path, $i, $query, $hash]);
+}, 10);
+
 unset($d, $date, $hash, $host, $path, $protocol, $query, $time, $uses);
+
+$uses = [];
+foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
+    if (empty($GLOBALS['X'][0][$v])) {
+        $n = basename($d = dirname($v));
+        $uses[$v] = content($d . D . $n) ?? $n;
+        // Load state(s)…
+        State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
+        if (is_file($v = $d . D . 'state.php')) {
+            (static function($k, $v, $a) {
+                extract($GLOBALS, EXTR_SKIP);
+                State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
+            })($k, $v, $state['x'][$n] ?? []);
+        }
+    }
+}
+
+natsort($uses);
+
+$GLOBALS['X'][1] = $uses = array_keys($uses);
+
+// Load class(es)…
+foreach ($uses as $v) {
+    d(dirname($v) . D . 'engine' . D . 'use');
+}
+
+// Load extension(s)…
+foreach ($uses as $v) {
+    (static function($v) {
+        // Load task(s)…
+        if (is_file($k = dirname($v) . D . 'task.php')) {
+            (static function($k) {
+                extract($GLOBALS, EXTR_SKIP);
+                require $k;
+            })($k);
+        }
+        extract($GLOBALS, EXTR_SKIP);
+        require $v;
+    })($v);
+}
 
 header_register_callback(static function() {
     Hook::fire('set');

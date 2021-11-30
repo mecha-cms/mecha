@@ -60,8 +60,9 @@ class Page extends File {
 
     // Inherit to `File::URL()`
     public function URL(...$lot) {
-        if ($this->exist) {
-            return $this->_get('url', $lot) ?? trim($GLOBALS['url'] . '/' . Path::R(Path::F($this->path), LOT . DS . 'page', '/'), '/');
+        if ($path = $this->exist()) {
+            $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
+            return $this->_get('url', $lot) ?? trim($GLOBALS['url'] . '/' . strtr(strtr($folder, [LOT . D . 'page' . D => ""]), D, '/'), '/');
         }
         return null;
     }
@@ -103,9 +104,10 @@ class Page extends File {
     // Inherit to `File::getIterator()`
     public function getIterator() {
         $out = [];
-        if ($this->exist) {
+        if ($this->exist()) {
             $out = From::page(file_get_contents($path = $this->path), true);
-            foreach (g(Path::F($path), 'data') as $k => $v) {
+            $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
+            foreach (g($folder, 'data') as $k => $v) {
                 $out[basename($k, '.data')] = e(file_get_contents($k));
             }
         }
@@ -114,15 +116,16 @@ class Page extends File {
 
     // Inherit to `File::jsonSerialize()`
     public function jsonSerialize() {
-        return $this->exist ? From::page(file_get_contents($this->path), true) : [];
+        return $this->exist() ? From::page(file_get_contents($this->path), true) : [];
     }
 
     // Inherit to `File::offsetGet()`
     public function offsetGet($key) {
         // Read once!
-        if ($this->exist && empty($this->read[$key])) {
+        if (($path = $this->exist()) && empty($this->read[$key])) {
             // Prioritize data from a file…
-            if (is_file($f = Path::F($this->path) . DS . $key . '.data')) {
+            $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
+            if (is_file($f = $folder . D . $key . '.data')) {
                 $this->read[$key] = 1; // Done read
                 return ($this->lot[$key] = a(e(file_get_contents($f))));
             }
@@ -179,7 +182,7 @@ class Page extends File {
 
     // Inherit to `File::set()`
     public function set(...$lot) {
-        if (!$this->exist) {
+        if (!$this->exist()) {
             $this->lot = [];
         }
         if (isset($lot[0])) {
