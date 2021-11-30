@@ -1759,8 +1759,6 @@ Hook::set('get', function() use($url) {
     Hook::fire('route', [$path, $i, $query, $hash]);
 }, 10);
 
-unset($d, $date, $hash, $host, $path, $protocol, $query, $time, $uses);
-
 $uses = [];
 foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
     if (empty($GLOBALS['X'][0][$v])) {
@@ -1800,6 +1798,8 @@ foreach ($uses as $v) {
         require $v;
     })($v);
 }
+
+unset($d, $hash, $host, $path, $protocol, $query, $uses);
 
 header_register_callback(static function() {
     Hook::fire('set');
