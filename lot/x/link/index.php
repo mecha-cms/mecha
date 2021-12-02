@@ -8,6 +8,10 @@ namespace x\link {
         extract($GLOBALS, \EXTR_SKIP);
         $alter = $state->x->link->alter ?? [];
         if (!empty($alter)) {
+            // Get folder path relative to the server’s root
+            $d = \trim(\strtr(\PATH . \D, [$_SERVER['DOCUMENT_ROOT'] . \D => ""]), \D);
+            // Set correct base URL
+            $base = ($host = $_SERVER['HTTP_HOST']) . ($d ? '/' . $d : "");
             foreach ($alter as $k => $v) {
                 if (
                     false === \strpos($content, '</' . $k . '>') &&
@@ -17,7 +21,7 @@ namespace x\link {
                 ) {
                     continue;
                 }
-                $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', static function($m) use($k, $v) {
+                $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', static function($m) use($base, $host, $k, $v) {
                     if (false === \strpos($m[1], '=')) {
                         return $m[0];
                     }
@@ -30,7 +34,7 @@ namespace x\link {
                         if (\is_callable($vv)) {
                             $vvv = \fire($vv, [$vvv, $kk, $k], $that);
                         } else {
-                            $vvv = \long($vvv, false);
+                            $vvv = \strtr(\long($vvv), ['://' . $host => '://' . $base]);
                         }
                         $that[$kk] = $vvv;
                     }
@@ -52,12 +56,16 @@ namespace x\link\f {
             return $value;
         }
         $out = "";
+        // Get folder path relative to the server’s root
+        $d = \trim(\strtr(\PATH . \D, [$_SERVER['DOCUMENT_ROOT'] . \D => ""]), \D);
+        // Set correct base URL
+        $base = ($host = $_SERVER['HTTP_HOST']) . ($d ? '/' . $d : "");
         foreach (\preg_split('/(\s*,\s*)(?!,)/', $value, null, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $v) {
             if (',' === \trim($v)) {
                 $out .= $v;
                 continue;
             }
-            $out .= \long(\rtrim($v, ','), false);
+            $out .= \strtr(\long(\rtrim($v, ',')), ['://' . $host => '://' . $base]);
         }
         return $out;
     }

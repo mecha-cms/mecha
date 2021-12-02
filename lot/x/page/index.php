@@ -18,61 +18,42 @@ namespace {
         ];
         return static::YAML($value, '  ', true);
     });
-    $path = $url['path'] ?? "";
-    $i = $url['i'] ?? "";
+    // Define page’s condition data as early as possible, so that other
+    // extension(s) can use it without having to enter the `route` hook
     $p = \trim($state->path ?? "", '/');
-    $folder = \LOT . \D . 'page' . \D . $path;
-    // Set proper `i` value in `$url` if we have some page with numeric file/folder name
-    if ("" !== $i && \exist([
-        $folder . \D . $i . '.archive',
-        $folder . \D . $i . '.page'
-    ], 1)) {
-        $path .= '/' . $i;
-        $folder .= \D . $i;
-        $url->i = null;
-        $url->path = '/' . $path;
-        $i = "";
-    }
-    $if_0 = "" === $i && ("" === $path || $path === $p);
-    $if_1 = \exist([
-        // `.\lot\page\home-name.{archive,page}`
-        \LOT . \D . 'page' . \D . $p . '.archive',
-        \LOT . \D . 'page' . \D . $p . '.page'
+    $path = \trim($url->path ?? "", '/');
+    $folder = \LOT . \D . 'page' . \D . ($path ?: $p);
+    $parent = \dirname($folder);
+    $has_pages = \q(\g($folder, 'page'));
+    $has_parent = \exist([
+        $parent . '.archive',
+        $parent . '.page',
+        $parent . \D . '.archive',
+        $parent . \D . '.page'
     ], 1);
-    $if_2 = \exist([
-        // `.\lot\page\page-name\.{archive,page}`
-        $folder . \D . '.archive',
-        $folder . \D . '.page'
-    ], 1);
-    $if_3 = \exist([
-        // `.\lot\page\page-name.{archive,page}`
+    $is_home = "" === $path || $p === $path ? \exist([
+        $folder . '.archive',
+        $folder . '.page'
+    ], 1) : false;
+    $is_page = \exist([
         $folder . '.archive',
         $folder . '.page'
     ], 1);
-    $if_4 = \glob(\LOT . \D . 'page' . \D . $p . \D . '*.page', \GLOB_NOSORT);
-    $if_5 = \glob($folder . \D . '*.page', \GLOB_NOSORT);
-    $folder = \dirname($folder);
-    $if_6 = \exist([
-        // `.\lot\page\parent-name.{archive,page}`
-        $folder . '.archive',
-        $folder . '.page',
+    // Check if `pages` mode is disabled by a file like `.\lot\page\about\.page`
+    $not_pages = \exist([
         $folder . \D . '.archive',
         $folder . \D . '.page'
     ], 1);
     \State::set('is', [
-        'error' => $is_error = "" === $path && !$if_1 || "" !== $path && !$if_3 ? 404 : false,
-        'home' => $is_home = $if_0,
-        'page' => $is_page = "" === $path && $if_1 || "" !== $path && ($if_2 || $if_3 && !$if_5),
-        'pages' => $is_pages = "" !== $i || "" === $path && $if_4 || "" !== $path && !$if_2 && $if_5
+        'error' => $is_error = ("" === $path && !$is_home || "" !== $path && !$is_page) ? 404 : false,
+        'home' => !!$is_home,
+        'page' => $is_home || ($is_page && ($not_pages || !$has_pages)),
+        'pages' => $has_pages && !$not_pages
     ]);
-    $count = \count("" === $path ? $if_4 : $if_5);
     \State::set('has', [
-        'next' => $is_pages && ($count > (($i ?: 1) * ($state->chunk ?? 5))),
-        'page' => "" === $path && $if_1 || $if_3,
-        'pages' => $count > 0,
-        'parent' => false !== \strpos($path, '/'), // `foo/bar`
-        'prev' => $is_pages && $i > 1,
-        'i' => $is_pages && "" !== $i
+        'page' => $is_home || $is_page,
+        'pages' => !!$has_pages,
+        'parent' => $has_parent && false !== \strpos($path, '/')
     ]);
     \State::set([
         'are' => [],
@@ -87,23 +68,25 @@ namespace x\page {
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
     $GLOBALS['parent'] = new \Page;
-    function route($route, $index, $query, $hash) {
+    function route($path, $query, $hash) {
         extract($GLOBALS, \EXTR_SKIP);
-        $i = ($index ?? 1) - 1;
-        $path = '/' . $route;
-        if ($i < 1 && $path === $state->path && !$query) {
+        if ($path && \preg_match('/^\/*(.*?)\/([1-9]\d*)\/*$/', $path, $m)) {
+            [$any, $path, $i] = $m;
+        }
+        $i = ((int) ($i ?? 1)) - 1;
+        $p = \trim($state->path ?? "", '/');
+        $path = \trim($path ?? "", '/');
+        if ($i < 1 && $p === $path && !$query) {
             \kick('/'); // Redirect to home page
         }
-        // Default home page path
-        $p = '/' === $path ? $state->path : $path;
-        $folder = \rtrim(\LOT . \D . 'page' . \strtr($p, '/', \D), \D);
+        $folder = \rtrim(\LOT . \D . 'page' . \D . \strtr($path ?: $p, '/', \D), \D);
         if ($file = \exist([
             $folder . '.archive',
             $folder . '.page'
         ], 1)) {
             $page = new \Page($file);
             $pager = new \Pager\Page([], null, (object) [
-                'link' => $route ? $url . "" : null
+                'link' => $path ? $url . "" : null
             ]);
             $chunk = $page['chunk'] ?? 5;
             $deep = $page['deep'] ?? 0;
@@ -149,14 +132,14 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                \Hook::fire('layout', ['page' . $p . '/' . ($i + 1)]);
+                \Hook::fire('layout', [$page->layout ?? 'page/' . ($path ?: $p) . '/' . ($i + 1)]);
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
-                'link' => false !== \strpos($route, '/') ? \dirname($url . $p) : $url . $p
+                'link' => !$path || false === \strpos($path, '/') ? \dirname($url . '/' . $path) : $url . '/' . $path
             ]);
             // Disable parent link in root page
-            if (!$route || false === \strpos($route, '/') && !$index) {
+            if (!$path || false === \strpos($path, '/') && $i < 0) {
                 $pager->parent = null;
             }
             $pages = $pages->chunk($chunk, $i); // (chunked)
@@ -177,7 +160,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                \Hook::fire('layout', ['pages' . $p . '/' . ($i + 1)]);
+                \Hook::fire('layout', [$page->layout ?? 'pages/' . ($path ?: $p) . '/' . ($i + 1)]);
             }
         }
         \State::set([
@@ -196,7 +179,7 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        \Hook::fire('layout', ['404' . $p . '/' . ($i + 1)]);
+        \Hook::fire('layout', ['404/' . ($path ?: $p) . '/' . ($i + 1)]);
     }
     \Hook::set('route.page', __NAMESPACE__ . "\\route", 10);
     \Hook::set('route', function(...$lot) {

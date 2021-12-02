@@ -1656,7 +1656,7 @@ $query = explode('&', $_SERVER['QUERY_STRING'], 2)[1] ?? "";
 
 unset($_GET['_']);
 
-// Prevent XSS attack
+// Prevent cross-site script attack
 $path = strtr(trim($path, '/'), [
     '<' => '%3C',
     '>' => '%3E',
@@ -1664,29 +1664,23 @@ $path = strtr(trim($path, '/'), [
     '"' => '%22'
 ]);
 
-// Detect if user put this system in a sub-folder by checking the `d` value
-$root = rtrim(strtr($_SERVER['CONTEXT_DOCUMENT_ROOT'] ?? $_SERVER['DOCUMENT_ROOT'], '/', D), D);
-$d = trim(($_SERVER['CONTEXT_PREFIX'] ?? "") . strtr(PATH, [
-    $root => "",
-    D => '/'
-]), '/');
+// Prevent directory traversal attack
+$path = strtr($path, ['../' => ""]);
 
-$d = "" !== $d ? '/' . $d : null;
 $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
-$GLOBALS['url'] = $url = new URL($protocol . $host . $d . $path . $query . $hash, $d);
+$GLOBALS['url'] = $url = new URL($protocol . $host . $path . $query . $hash);
 
 function kick(string $path = null, int $status = null) {
-    $path = $path ?? $GLOBALS['url']->current;
-    header('location: ' . long($path, false), true, $status ?? 301);
+    $path = $path ?? $GLOBALS['url']->current();
+    header('location: ' . long($path), true, $status ?? 301);
     exit;
 }
 
-function long(string $value, $ground = true, URL $url = null) {
-    $url = $url ?? $GLOBALS['url'];
-    $parent = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
+function long(string $value) {
+    $url = $GLOBALS['url'];
     // `long('//example.com')`
     if (0 === strpos($value, '//')) {
         return rtrim(substr($url->protocol, 0, -2) . $value, '/');
@@ -1711,8 +1705,7 @@ function long(string $value, $ground = true, URL $url = null) {
         0 !== strpos($value, 'blob:') &&
         0 !== strpos($value, 'data:') &&
         0 !== strpos($value, 'javascript:') &&
-        0 !== strpos($value, 'mailto:') &&
-        !is_string($ground)
+        0 !== strpos($value, 'mailto:')
     ) {
         $parent = strtok($url->current, '?&#');
         // `long('foo/bar/baz')`
@@ -1732,9 +1725,8 @@ function long(string $value, $ground = true, URL $url = null) {
     return $value;
 }
 
-function short(string $value, $ground = true, URL $url = null) {
-    $url = $url ?? $GLOBALS['url'];
-    $parent = is_string($ground) ? $ground : $url->{$ground ? 'ground' : 'root'};
+function short(string $value) {
+    $url = $GLOBALS['url'];
     if (0 === strpos($value, '//')) {
         if (0 !== strpos($value, '//' . $url->host)) {
             return $value; // Ignore external URL
@@ -1746,17 +1738,14 @@ function short(string $value, $ground = true, URL $url = null) {
         }
     }
     $value = substr($value, strlen(rtrim($parent, '/')));
-    return !is_string($ground) && $ground && "" === $value ? '/' : $value;
+    return "" === $value ? '/' : $value;
 }
 
 Hook::set('get', function() use($url) {
     $path = $url['path'];
-    $i = $url['i'];
     $query = $url['query'];
     $hash = $url['hash'];
-    // Prevent directory traversal attack <https://en.wikipedia.org/wiki/Directory_traversal_attack>
-    $path = strtr($path, ['../' => ""]);
-    Hook::fire('route', [$path, $i, $query, $hash]);
+    Hook::fire('route', [$path, $query, $hash]);
 }, 10);
 
 $uses = [];
