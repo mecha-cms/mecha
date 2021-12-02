@@ -425,45 +425,6 @@ function pluck(iterable $values, string $key, $value = null) {
     return $out;
 }
 
-// Force save dialog
-function pull(string $path, string $as = null) {
-    if (is_file($path)) {
-        http_response_code(200);
-        header('cache-control: must-revalidate');
-        header('content-description: File Transfer');
-        header('content-disposition: attachment; filename="' . ($as ?? basename($path)) . '"');
-        header('content-length: ' . filesize($path));
-        header('content-type: application/octet-stream');
-        header('expires: 0');
-        header('pragma: public');
-        readfile($path);
-        exit;
-    }
-    http_response_code(404);
-    exit;
-}
-
-// Store URL to server, or copy path
-function push(string $path, string $from, $seal = null) {
-    if (false !== strpos('://', $from)) {
-        if (null !== ($blob = fetch($from))) {
-            // Pass to `save`
-            return save($path, $blob, $seal);
-        }
-        // Error
-        return null;
-    }
-    if (is_dir($path) || is_file($path) || !is_file($from)) {
-        // Skip
-        return false;
-    }
-    if (!is_dir($folder = dirname($from))) {
-        mkdir($folder, 0775, true);
-    }
-    // Success?
-    return copy($from, $path) ? path($from) : null;
-}
-
 function save(string $path, $value = "", $seal = null) {
     if (is_dir($path)) {
         // Error

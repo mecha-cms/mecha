@@ -100,9 +100,12 @@ Release Notes
 
 ### main
 
- - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `pull`, `push`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
+ - [ ] Added ability to set custom layout via `layout` property in a page file.
+ - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
+ - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{lower,pascal,sentence,text,title,upper}` methods to `layout` extension.
  - [x] Moved classes `HTML`, `SGML` to `layout` extension.
+ - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
  - [x] Renamed `To::excerpt` to `To::description`.
  - [x] Renamed class `Anemon` to `Anemone`.
