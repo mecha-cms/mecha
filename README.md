@@ -101,10 +101,12 @@ Release Notes
 ### main
 
  - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
+ - [x] Changed `content` function; is now read-only. To create a file, use `save` function.
  - [x] Changed `path` property to `route`.
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{lower,pascal,sentence,text,title,upper}` methods to `layout` extension.
  - [x] Moved classes `HTML`, `SGML` to `layout` extension.
+ - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
  - [x] Renamed `To::excerpt` to `To::description`.
