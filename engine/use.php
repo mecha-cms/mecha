@@ -1688,24 +1688,25 @@ function long(string $value) {
 
 function short(string $value) {
     $url = $GLOBALS['url'];
+    $parent = $url . "";
     if (0 === strpos($value, '//')) {
         if (0 !== strpos($value, '//' . $url->host)) {
             return $value; // Ignore external URL
         }
         $value = $url->protocol . substr($value, 2);
     } else {
-        if (0 !== strpos($value, $url . "")) {
+        if (0 !== strpos($value, $parent)) {
             return $value; // Ignore external URL
         }
     }
-    $value = substr($value, strlen($url . ""));
+    $value = substr($value, strlen($parent));
     return "" === $value ? '/' : $value;
 }
 
 Hook::set('get', function() use($url) {
+    $hash = $url['hash'];
     $path = $url['path'];
     $query = $url['query'];
-    $hash = $url['hash'];
     Hook::fire('route', [$path, $query, $hash]);
 }, 10);
 
@@ -1713,7 +1714,7 @@ $uses = [];
 foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
     if (empty($GLOBALS['X'][0][$v])) {
         $n = basename($d = dirname($v));
-        $uses[$v] = content($d . D . $n) ?? $n;
+        $uses[path($v)] = content($d . D . $n) ?? $n;
         // Load state(s)…
         State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
         if (is_file($v = $d . D . 'state.php')) {
@@ -1749,7 +1750,7 @@ foreach ($uses as $v) {
     })($v);
 }
 
-unset($d, $hash, $host, $path, $protocol, $query, $uses);
+unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $uses, $v);
 
 header_register_callback(static function() {
     Hook::fire('set');

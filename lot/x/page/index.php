@@ -67,21 +67,21 @@ namespace x\page {
     $GLOBALS['page'] = new \Page;
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
-    $GLOBALS['parent'] = new \Page;
     function route($path, $query, $hash) {
         extract($GLOBALS, \EXTR_SKIP);
         $path = \trim($path ?? "", '/');
         $route = \trim($state->route ?? "", '/');
-        $folder = \rtrim(\LOT . \D . 'page' . \D . \strtr($path ?: $route, '/', \D), \D);
+        $folder = \LOT . \D . 'page' . \D . \strtr($path ?: $route, '/', \D);
         if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
             [$any, $path, $i] = $m;
             if (\exist([
-                $folder . \D . $i . '.archive',
-                $folder . \D . $i . '.page'
+                $folder . '.archive',
+                $folder . '.page'
             ], 1)) {
-                $folder .= \D . $i;
                 $path .= '/' . $i;
                 unset($i);
+            } else {
+                $folder = \dirname($folder);
             }
         }
         $i = ((int) ($i ?? 1)) - 1;
@@ -122,7 +122,6 @@ namespace x\page {
                 $pager = new \Pager\Page($parent_pages->get(), $page->path, $parent_page);
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $parent_pages;
-                $GLOBALS['parent'] = $parent_page;
                 \State::set([
                     'has' => [
                         'next' => !!$pager->next,
@@ -144,10 +143,10 @@ namespace x\page {
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
-                'link' => !$path || false === \strpos($path, '/') ? \dirname($url . '/' . $path) : $url . '/' . $path
+                'link' => $url . '/' . $path
             ]);
             // Disable parent link in root page
-            if (!$path || false === \strpos($path, '/') && $i < 0) {
+            if (!$path || false === \strpos($path, '/') && $i < 1) {
                 $pager->parent = null;
             }
             $pages = $pages->chunk($chunk, $i); // (chunked)
@@ -173,7 +172,6 @@ namespace x\page {
         }
         \State::set([
             'has' => [
-                'i' => false,
                 'next' => false,
                 'page' => false,
                 'pages' => false,

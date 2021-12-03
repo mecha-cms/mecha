@@ -1,7 +1,7 @@
 <?php
 
 // Add CSS file to the `<head>` section…
-if (defined('DEBUG') && DEBUG) {
+if (defined('TEST') && TEST) {
     Asset::set('css/index.css', 20);
 } else {
     // Serve the minified version if `DEBUG` mode is off
@@ -10,7 +10,7 @@ if (defined('DEBUG') && DEBUG) {
 
 // Create site link data to be used in navigation
 $GLOBALS['links'] = new Anemone((static function($links, $state, $url) {
-    $index = LOT . D . 'page' . strtr($state->path, '/', D) . '.page';
+    $index = LOT . D . 'page' . D . trim(strtr($state->route, '/', D), D) . '.page';
     $path = $url->path . '/';
     foreach (g(LOT . D . 'page', 'page') as $k => $v) {
         // Exclude home page

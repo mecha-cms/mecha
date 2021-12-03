@@ -22,11 +22,10 @@ foreach([
             $out = "";
             $done = $i = 0;
             $tags = [];
-            while ($done < $x[0] && preg_match('/<(\/[a-z\d:.-]+|[a-z\d:.-]+(?:\s[^>]*)?)>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
+            while ($done < $x[0] && preg_match('/<(?:\/[a-z\d:.-]+|[a-z\d:.-]+(?:\s[^>]*)?)>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
                 $tag = $m[0][0];
                 $pos = $m[0][1];
                 $str = substr($s, $i, $pos - $i);
-                test($tag); // TODO
                 if ($done + strlen($str) > $x[0]) {
                     $out .= substr($str, 0, $x[0] - $done);
                     $done = $x[0];
@@ -42,7 +41,7 @@ foreach([
                     ++$done;
                 } else {
                     // `tag`
-                    $n = $m[1][0];
+                    $n = trim(strtok($m[0][0], "\n\r\t "), '<>/');
                     // `</tag>`
                     if ('/' === $tag[1]) {
                         $open = array_pop($tags);
