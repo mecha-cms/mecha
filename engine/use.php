@@ -1658,7 +1658,7 @@ function long(string $value) {
         if (0 === strpos($value, '&')) {
             $value = '?' . substr($value, 1);
         }
-        return rtrim($parent . $value, '/');
+        return rtrim($url . $value, '/');
     }
     // `long('?foo=bar&baz=qux')`
     if (
@@ -1698,7 +1698,7 @@ function short(string $value) {
             return $value; // Ignore external URL
         }
     }
-    $value = substr($value, strlen(rtrim($parent, '/')));
+    $value = substr($value, strlen($url . ""));
     return "" === $value ? '/' : $value;
 }
 

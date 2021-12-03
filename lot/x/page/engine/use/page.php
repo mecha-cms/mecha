@@ -62,7 +62,7 @@ class Page extends File {
     public function URL(...$lot) {
         if ($path = $this->exist()) {
             $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
-            return $this->_get('url', $lot) ?? trim($GLOBALS['url'] . '/' . strtr(strtr($folder, [LOT . D . 'page' . D => ""]), D, '/'), '/');
+            return $this->_get('url', $lot) ?? long(strtr(strtr($folder, [LOT . D . 'page' . D => '/']), D, '/'));
         }
         return null;
     }

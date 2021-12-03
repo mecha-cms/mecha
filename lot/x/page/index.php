@@ -20,9 +20,9 @@ namespace {
     });
     // Define page’s condition data as early as possible, so that other
     // extension(s) can use it without having to enter the `route` hook
-    $p = \trim($state->path ?? "", '/');
     $path = \trim($url->path ?? "", '/');
-    $folder = \LOT . \D . 'page' . \D . ($path ?: $p);
+    $route = \trim($state->route ?? "", '/');
+    $folder = \LOT . \D . 'page' . \D . ($path ?: $route);
     $parent = \dirname($folder);
     $has_pages = \q(\g($folder, 'page'));
     $has_parent = \exist([
@@ -31,7 +31,7 @@ namespace {
         $parent . \D . '.archive',
         $parent . \D . '.page'
     ], 1);
-    $is_home = "" === $path || $p === $path ? \exist([
+    $is_home = "" === $path || $route === $path ? \exist([
         $folder . '.archive',
         $folder . '.page'
     ], 1) : false;
@@ -70,16 +70,24 @@ namespace x\page {
     $GLOBALS['parent'] = new \Page;
     function route($path, $query, $hash) {
         extract($GLOBALS, \EXTR_SKIP);
-        if ($path && \preg_match('/^\/*(.*?)\/([1-9]\d*)\/*$/', $path, $m)) {
+        $path = \trim($path ?? "", '/');
+        $route = \trim($state->route ?? "", '/');
+        $folder = \rtrim(\LOT . \D . 'page' . \D . \strtr($path ?: $route, '/', \D), \D);
+        if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
             [$any, $path, $i] = $m;
+            if (\exist([
+                $folder . \D . $i . '.archive',
+                $folder . \D . $i . '.page'
+            ], 1)) {
+                $folder .= \D . $i;
+                $path .= '/' . $i;
+                unset($i);
+            }
         }
         $i = ((int) ($i ?? 1)) - 1;
-        $p = \trim($state->path ?? "", '/');
-        $path = \trim($path ?? "", '/');
-        if ($i < 1 && $p === $path && !$query) {
+        if ($i < 1 && $route === $path && !$query) {
             \kick('/'); // Redirect to home page
         }
-        $folder = \rtrim(\LOT . \D . 'page' . \D . \strtr($path ?: $p, '/', \D), \D);
         if ($file = \exist([
             $folder . '.archive',
             $folder . '.page'
@@ -132,7 +140,7 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                \Hook::fire('layout', [$page->layout ?? 'page/' . ($path ?: $p) . '/' . ($i + 1)]);
+                \Hook::fire('layout', ['page/' . ($path ?: $route) . '/' . ($i + 1)]);
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
@@ -160,7 +168,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                \Hook::fire('layout', [$page->layout ?? 'pages/' . ($path ?: $p) . '/' . ($i + 1)]);
+                \Hook::fire('layout', ['pages/' . ($path ?: $route) . '/' . ($i + 1)]);
             }
         }
         \State::set([
@@ -179,7 +187,7 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        \Hook::fire('layout', ['404/' . ($path ?: $p) . '/' . ($i + 1)]);
+        \Hook::fire('layout', ['404/' . ($path ?: $route) . '/' . ($i + 1)]);
     }
     \Hook::set('route.page', __NAMESPACE__ . "\\route", 10);
     \Hook::set('route', function(...$lot) {
