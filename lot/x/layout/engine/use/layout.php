@@ -54,7 +54,7 @@ class Layout extends Genome {
             $id = strtr($value, D, '/');
             // Added by the `Layout::get()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
-                return exist(self::$lot[$c][1][$id]) ?: null;
+                return exist(self::$lot[$c][1][$id], 1) ?: null;
             }
             // Guessing…
             $out = array_values(step($id, '/'));

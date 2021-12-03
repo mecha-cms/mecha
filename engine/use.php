@@ -201,7 +201,14 @@ function exist($path, $type = null) {
         }
         return false;
     }
-    return stream_resolve_include_path($path);
+    $path = stream_resolve_include_path($path);
+    if (0 === $type) {
+        return is_dir($path) ? $path : false;
+    }
+    if (1 === $type) {
+        return is_file($path) ? $path : false;
+    }
+    return $path;
 }
 
 function extend(array $value, ...$lot) {

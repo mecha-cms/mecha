@@ -69,7 +69,6 @@ namespace x\page {
     $GLOBALS['pages'] = new \Pages;
     function route($path, $query, $hash) {
         extract($GLOBALS, \EXTR_SKIP);
-        $path = \trim($path ?? "", '/');
         $route = \trim($state->route ?? "", '/');
         $folder = \LOT . \D . 'page' . \D . \strtr($path ?: $route, '/', \D);
         if ($path && \preg_match('/^(.*?)\/([1-9]\d*)$/', $path, $m)) {
@@ -187,7 +186,7 @@ namespace x\page {
         $GLOBALS['t'][] = i('Error');
         \Hook::fire('layout', ['404/' . ($path ?: $route) . '/' . ($i + 1)]);
     }
-    \Hook::set('route.page', __NAMESPACE__ . "\\route", 10);
+    \Hook::set('route.page', __NAMESPACE__ . "\\route", 20);
     \Hook::set('route', function(...$lot) {
         \Hook::fire('route.page', $lot);
     }, 20);
