@@ -100,8 +100,8 @@ Release Notes
 
 ### main
 
- - [ ] Added ability to set custom layout via `layout` property in a page file.
  - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
+ - [x] Changed `path` property to `route`.
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{lower,pascal,sentence,text,title,upper}` methods to `layout` extension.
  - [x] Moved classes `HTML`, `SGML` to `layout` extension.
