@@ -90,8 +90,8 @@ final class Asset extends Genome {
                     '0' => c2f(static::class),
                     '1' => "",
                     '2' => $lot,
+                    'link' => self::URL($path),
                     'path' => self::path($path),
-                    'url' => self::URL($path),
                     'stack' => (float) $stack
                 ];
             }
@@ -102,13 +102,13 @@ final class Asset extends Genome {
 
 foreach ([
     '.css' => function($value, $key) {
+        $link = $value['link'];
         $path = $value['path'];
-        $url = $value['url'];
-        $x = false !== strpos($url, '://') || 0 === strpos($url, '//');
+        $x = false !== strpos($link, '://') || 0 === strpos($link, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $u = $path ? $url . '?v=' . (is_file($path) ? filemtime($path) : 0) : $url;
+        $u = $path ? $link . '?v=' . (is_file($path) ? filemtime($path) : 0) : $link;
         extract($value[2], EXTR_SKIP);
         if (isset($href) && is_callable($href)) {
             $value[2]['href'] = fire($href, [$u, $value, $key], null, Asset::class);
@@ -118,17 +118,17 @@ foreach ([
         $value[0] = 'link';
         $value[1] = false;
         $value[2]['rel'] = 'stylesheet';
-        unset($value['path'], $value['stack'], $value['url']);
+        unset($value['link'], $value['path'], $value['stack']);
         return new HTML($value);
     },
     '.js' => function($value, $key) {
+        $link = $value['link'];
         $path = $value['path'];
-        $url = $value['url'];
-        $x = false !== strpos($url, '://') || 0 === strpos($url, '//');
+        $x = false !== strpos($link, '://') || 0 === strpos($link, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';
         }
-        $u = $path ? $url . '?v=' . (is_file($path) ? filemtime($path) : 0) : $url;
+        $u = $path ? $link . '?v=' . (is_file($path) ? filemtime($path) : 0) : $link;
         extract($value[2], EXTR_SKIP);
         if (isset($src) && is_callable($src)) {
             $value[2]['src'] = fire($src, [$u, $value, $key], null, Asset::class);
@@ -136,7 +136,7 @@ foreach ([
             $value[2]['src'] = $u;
         }
         $value[0] = 'script';
-        unset($value['path'], $value['stack'], $value['url']);
+        unset($value['link'], $value['path'], $value['stack']);
         return new HTML($value);
     }
 ] as $k => $v) {
@@ -151,8 +151,8 @@ foreach (['script', 'style', 'template'] as $v) {
                 '0' => $v,
                 '1' => n(trim($content)),
                 '2' => $lot,
+                'link' => null,
                 'path' => null,
-                'url' => null,
                 'stack' => (float) $stack
             ];
         }

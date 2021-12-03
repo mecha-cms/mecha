@@ -1,39 +1,33 @@
 <?php
 
 foreach([
-    'description' => function(string $value = null, $html = true, $x = 200) {
+    'description' => function(string $value = null, $max = 200) {
         // Make sure to add space at the end of the block tag(s) that will be removed
         // To make `<p>asdf.</p><p>asdf</p>` becomes `asdf. asdf` and not `asdf.asdf`
-        $blocks = 'address|article|blockquote|details|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader|r)|li|main|nav|p(?:re)?|section|summary|t[dh]';
-        $s = preg_replace([
-            '/\s+/',
-            '/\s*(<\/(?:' . $blocks . ')>)\s*/'
-        ], [
-            ' ',
-            '$1 '
-        ], $value);
-        $s = strip_tags($s, $html ? '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><small><span><strong><sub><sup><time><u><var>' : "");
-        if (is_int($x)) {
-            $x = [$x, '&#x2026;'];
+        $r = 'address|article|blockquote|details|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader|r)|li|main|nav|p(?:re)?|section|summary|t[dh]';
+        $value = preg_replace(['/\s+/', '/\s*(<\/(?:' . $r . ')>)\s*/i'], [' ', '$1 '], $value);
+        $value = strip_tags($value, '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><small><span><strong><sub><sup><time><u><var>');
+        if (is_int($max)) {
+            $max = [$max, '&#x2026;'];
         }
         $utf8 = extension_loaded('mbstring');
         // <https://stackoverflow.com/a/1193598/1163000>
-        if ($html && (false !== strpos($s, '<') || false !== strpos($s, '&'))) {
+        if (false !== strpos($value, '<') || false !== strpos($value, '&')) {
             $out = "";
             $done = $i = 0;
             $tags = [];
-            while ($done < $x[0] && preg_match('/<(?:\/[a-z\d:.-]+|[a-z\d:.-]+(?:\s[^>]*)?)>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $s, $m, PREG_OFFSET_CAPTURE, $i)) {
+            while ($done < $max[0] && preg_match('/<(?:\/[a-z\d:.-]+|[a-z\d:.-]+(?:\s[^>]*)?)>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);|[\x80-\xFF][\x80-\xBF]*/i', $value, $m, PREG_OFFSET_CAPTURE, $i)) {
                 $tag = $m[0][0];
                 $pos = $m[0][1];
-                $str = substr($s, $i, $pos - $i);
-                if ($done + strlen($str) > $x[0]) {
-                    $out .= substr($str, 0, $x[0] - $done);
-                    $done = $x[0];
+                $str = substr($value, $i, $pos - $i);
+                if ($done + strlen($str) > $max[0]) {
+                    $out .= substr($str, 0, $max[0] - $done);
+                    $done = $max[0];
                     break;
                 }
                 $out .= $str;
                 $done += strlen($str);
-                if ($done >= $x[0]) {
+                if ($done >= $max[0]) {
                     break;
                 }
                 if ('&' === $tag[0] || ord($tag) >= 0x80) {
@@ -48,7 +42,7 @@ foreach([
                         assert($open === $n); // Check that tag(s) are properly nested!
                         $out .= $tag;
                     // `<tag/>`
-                    } else if ('/>' === substr($tag, -2) || preg_match('/<(?:area|base|br|col|command|embed|hr|img|input|link|meta|param|source)(?:\s[^>]*)?>/i', $tag)) {
+                    } else if ('/>' === substr($tag, -2) || preg_match('/^<(?:area|base|br|col|command|embed|hr|img|input|link|meta|param|source)(?=[\s>])/i', $tag)) {
                         $out .= $tag;
                     // `<tag>`
                     } else {
@@ -60,22 +54,22 @@ foreach([
                 $i = $pos + strlen($tag);
             }
             // Print rest of the text…
-            if ($done < $x[0] && $i < strlen($s)) {
-                $out .= substr($s, $i, $x[0] - $done);
+            if ($done < $max[0] && $i < strlen($value)) {
+                $out .= substr($value, $i, $max[0] - $done);
             }
             // Close any open tag(s)…
             while ($close = array_pop($tags)) {
                 $out .= '</' . $close . '>';
             }
             $out = trim(preg_replace('/\s*<br(\s[^>]*)?>\s*/', ' ', $out));
-            $s = trim(strip_tags($s));
-            $t = $utf8 ? mb_strlen($s) : strlen($s);
-            $out = trim($out) . ($t > $x[0] ? $x[1] : "");
+            $value = trim(strip_tags($value));
+            $count = $utf8 ? mb_strlen($value) : strlen($value);
+            $out = trim($out) . ($count > $max[0] ? $max[1] : "");
             return "" !== $out ? $out : null;
         }
-        $out = $utf8 ? mb_substr($s, 0, $x[0]) : substr($s, 0, $x[0]);
-        $t = $utf8 ? mb_strlen($s) : strlen($s);
-        $out = trim($out) . ($t > $x[0] ? $x[1] : "");
+        $out = $utf8 ? mb_substr($value, 0, $max[0]) : substr($value, 0, $max[0]);
+        $count = $utf8 ? mb_strlen($value) : strlen($value);
+        $out = trim($out) . ($count > $max[0] ? $max[1] : "");
         return "" !== $out ? $out : null;
     },
     'lower' => "\\l",

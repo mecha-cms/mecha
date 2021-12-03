@@ -14,7 +14,7 @@ function asset($content) {
     if (!empty($lot['style'])) {
         foreach ((new \Anemone($lot['style']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v[1])) {
-                unset($v['path'], $v['stack'], $v['url']);
+                unset($v['link'], $v['path'], $v['stack']);
                 $style .= new \HTML($v);
             }
         }
@@ -30,7 +30,7 @@ function asset($content) {
     if (!empty($lot['script'])) {
         foreach ((new \Anemone($lot['script']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v[1])) {
-                unset($v['path'], $v['stack'], $v['url']);
+                unset($v['link'], $v['path'], $v['stack']);
                 $script .= new \HTML($v);
             }
         }
@@ -38,7 +38,7 @@ function asset($content) {
     if (!empty($lot['template'])) {
         foreach ((new \Anemone($lot['template']))->sort([1, 'stack'], true) as $k => $v) {
             if (!empty($v[1])) {
-                unset($v['path'], $v['stack'], $v['url']);
+                unset($v['link'], $v['path'], $v['stack']);
                 $template .= new \HTML($v);
             }
         }
