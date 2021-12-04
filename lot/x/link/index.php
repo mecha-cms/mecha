@@ -9,7 +9,8 @@ namespace x\link {
         $alter = $state->x->link->alter ?? [];
         if (!empty($alter)) {
             // Get folder path relative to the server’s root
-            $d = \trim(\strtr(\PATH . \D, [$_SERVER['DOCUMENT_ROOT'] . \D => ""]), \D);
+            $d = \rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', D), \D) . \D;
+            $d = \trim(\strtr(\PATH . \D, [$d => ""]), \D);
             // Set correct base URL
             $base = ($host = $_SERVER['HTTP_HOST']) . ($d ? '/' . $d : "");
             foreach ($alter as $k => $v) {
@@ -57,7 +58,8 @@ namespace x\link\f {
         }
         $out = "";
         // Get folder path relative to the server’s root
-        $d = \trim(\strtr(\PATH . \D, [$_SERVER['DOCUMENT_ROOT'] . \D => ""]), \D);
+        $d = \rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', D), \D) . \D;
+        $d = \trim(\strtr(\PATH . \D, [$d => ""]), \D);
         // Set correct base URL
         $base = ($host = $_SERVER['HTTP_HOST']) . ($d ? '/' . $d : "");
         foreach (\preg_split('/(\s*,\s*)(?!,)/', $value, null, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $v) {
