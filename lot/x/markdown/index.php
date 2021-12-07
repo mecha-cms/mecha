@@ -1,5 +1,22 @@
 <?php
 
+namespace x {
+    function markdown($content) {
+        $type = $this->type;
+        if ('Markdown' !== $type && 'text/markdown' !== $type) {
+            return $content;
+        }
+        $parser = new \ParsedownExtraPlugin;
+        foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
+            $parser->{$k} = $v;
+        }
+        return $parser->text($content ?? "");
+    }
+    \Hook::set([
+        'page.content'
+    ], __NAMESPACE__ . "\\markdown", 2);
+}
+
 namespace x\markdown {
     function span($content) { // Inline tag(s) only
         $type = $this->type;
@@ -19,21 +36,4 @@ namespace x\markdown {
         'page.description',
         'page.title'
     ], __NAMESPACE__ . "\\span", 2);
-}
-
-namespace x {
-    function markdown($content) {
-        $type = $this->type;
-        if ('Markdown' !== $type && 'text/markdown' !== $type) {
-            return $content;
-        }
-        $parser = new \ParsedownExtraPlugin;
-        foreach (\State::get('x.markdown', true) ?? [] as $k => $v) {
-            $parser->{$k} = $v;
-        }
-        return $parser->text($content ?? "");
-    }
-    \Hook::set([
-        'page.content'
-    ], __NAMESPACE__ . "\\markdown", 2);
 }

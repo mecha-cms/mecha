@@ -251,7 +251,3 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
 }
-
-function anemone(...$lot) {
-    return new Anemone(...$lot);
-}

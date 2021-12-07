@@ -26,7 +26,7 @@ abstract class Pager extends Genome {
             $next .= $url->query . $url->hash;
         }
         if (isset($text)) {
-            return null !== $next ? '<a href="' . strtr($next, ['&' => '&amp;']) . '" rel="next">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return null !== $next ? '<a href="' . htmlspecialchars($next) . '" rel="next">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $next;
     }
@@ -37,7 +37,7 @@ abstract class Pager extends Genome {
             $parent .= $url->query . $url->hash;
         }
         if (isset($text)) {
-            return null !== $parent ? '<a href="' . strtr($parent, ['&' => '&amp;']) . '">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return null !== $parent ? '<a href="' . htmlspecialchars($parent) . '">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $parent;
     }
@@ -48,7 +48,7 @@ abstract class Pager extends Genome {
             $prev .= $url->query . $url->hash;
         }
         if (isset($text)) {
-            return null !== $prev ? '<a href="' . strtr($prev, ['&' => '&amp;']) . '" rel="prev">' . $text . '</a>' : '<span>' . $text . '</span>';
+            return null !== $prev ? '<a href="' . htmlspecialchars($prev) . '" rel="prev">' . $text . '</a>' : '<span>' . $text . '</span>';
         }
         return $prev;
     }

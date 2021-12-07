@@ -24,7 +24,3 @@ class Pages extends Anemone {
     }
 
 }
-
-function pages(...$lot) {
-    return Pages::from(...$lot);
-}

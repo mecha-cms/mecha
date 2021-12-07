@@ -138,12 +138,19 @@ function cookie(...$lot) {
 
 function delete(string $path, $purge = true) {
     if (is_file($path)) {
+        // Success?
+        $out = unlink($path) ? path($path) : null;
         // Remove parent folder if empty
         if ($purge) {
-            // TODO
+            $folder = dirname($path);
+            while (0 === q(g($folder))) {
+                if (!rmdir($folder)) {
+                    break;
+                }
+                $folder = dirname($folder);
+            }
         }
-        // Success?
-        return unlink($path) ? path($path) : null;
+        return $out;
     }
     $out = [];
     $it = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
@@ -1601,6 +1608,22 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 
 // Load class(es)…
 d(__DIR__ . D . 'use');
+
+function anemone(...$lot) {
+    return new Anemone(...$lot);
+}
+
+function hook(...$lot) {
+    return count($lot) < 2 ? Hook::get(...$lot) : Hook::set(...$lot);
+}
+
+function state(...$lot) {
+    if (count($lot) < 2) {
+        $lot[] = true; // Force to array
+        return State::get(...$lot);
+    }
+    return State::set(...$lot);
+}
 
 // Set default state(s)…
 $state = is_file($f = __DIR__ . D . '..' . D . 'state.php') ? require $f : [];

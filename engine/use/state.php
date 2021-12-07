@@ -139,11 +139,3 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
     }
 
 }
-
-function state(...$lot) {
-    if (count($lot) < 2) {
-        $lot[] = true; // Force to array
-        return State::get(...$lot);
-    }
-    return State::set(...$lot);
-}
