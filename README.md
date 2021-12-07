@@ -103,7 +103,6 @@ Release Notes
  - [ ] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [ ] Optimized hook sorting mechanism (#156).
  - [ ] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166).
- - [ ] The `e` function will no longer evaluate string in the form of JSON pattern (#167).
  - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
  - [x] Changed `content` function; is now read-only. To create a file, use `save` function.
  - [x] Changed `path` property to `route`.
@@ -122,6 +121,7 @@ Release Notes
  - [x] Renamed constant `DS` to `D`.
  - [x] Renamed constant `ROOT` to `PATH`.
  - [x] Renamed function `anemon` to `anemone`.
+ - [x] The `e` function will no longer evaluate string in the form of JSON pattern (#167).
 
 ### 2.6.4
 

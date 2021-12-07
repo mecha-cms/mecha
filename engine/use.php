@@ -18,30 +18,6 @@ if (defined('TEST')) {
     }
 }
 
-function is_json($value, $out = false) {
-    if (!is_string($value) || "" === ($value = trim($value))) {
-        return false;
-    }
-    return (
-        // Maybe boolean
-        'false' === $value ||
-        'null' === $value ||
-        'true' === $value ||
-        // Maybe empty string, array or object
-        '""' === $value ||
-        '[]' === $value ||
-        '{}' === $value ||
-        // Maybe number
-        is_numeric($value) ||
-        // Maybe string
-        '"' === $value[0] && '"' === substr($value, -1) ||
-        // Maybe array
-        '[' === $value[0] && ']' === substr($value, -1) ||
-        // Maybe object
-        '{' === $value[0] && '}' === substr($value, -1)
-    ) && (null !== ($value = json_decode($value))) ? ($out ? $value : true) : false;
-}
-
 function abort(string $alert, $exit = true) {
     ob_start();
     debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -770,36 +746,18 @@ function e($value, array $lot = []) {
         if ("" === $value) {
             return $value;
         }
-        if (array_key_exists($value, $lot = array_replace([
-            'TRUE' => true,
-            'FALSE' => false,
-            'NULL' => null,
-            'true' => true,
-            'false' => false,
-            'null' => null
-        ], $lot))) {
-            return $lot[$value];
-        }
         if (is_numeric($value)) {
             return false !== strpos($value, '.') ? (float) $value : (int) $value;
         }
-        if (false !== ($v = is_json($value, true))) {
-            return $v;
-        }
-        // `"abcdef"` or `'abcdef'`
-        if ('"' === $value[0] && '"' === substr($value, -1) || "'" === $value[0] && "'" === substr($value, -1)) {
-            $v = substr(substr($value, 1), 0, -1);
-            $a = strpos($v, $value[0]);
-            $b = strpos($v, "\\");
-            // `'ab\'cd\'ef'`
-            if (
-                false !== $a &&
-                $b + 1 === $a &&
-                preg_match('/^' . $value[0] . '(?:[^' . $value[0] . '\\\]|\\\.)*' . $value[0] . '$/', $value)
-            ) {
-                return strtr($v, ["\\" . $value[0] => $value[0]]);
-            }
-            return $v;
+        if (array_key_exists($value, $lot = array_replace([
+            'FALSE' => false,
+            'NULL' => null,
+            'TRUE' => true,
+            'false' => false,
+            'null' => null,
+            'true' => true
+        ], $lot))) {
+            return $lot[$value];
         }
         return $value;
     }
@@ -1495,11 +1453,14 @@ function s($value, array $lot = []) {
     if (null === $value) {
         return $lot['null'] ?? 'null';
     }
-    if (is_object($value)) {
-        return json_encode($value);
-    }
     if (is_string($value)) {
-        return $lot[$value = (string) $value] ?? $value;
+        return $lot[$value] ?? $value;
+    }
+    if (is_object($value)) {
+        if (method_exists($value, '__toString')) {
+            return $value->__toString();
+        }
+        return json_encode($value);
     }
     return (string) $value;
 }
@@ -1583,9 +1544,8 @@ $any = [&$_GET, &$_POST, &$_REQUEST];
 array_walk_recursive($any, static function(&$v) {
     // Trim white-space and normalize line-break
     $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
-    // Replace all empty value with `null`
-    // Evaluate other(s), but keep the JSON value as-is
-    $v = "" === $v ? null : (is_json($v) ? $v : e($v));
+    // Replace all empty value with `null` and evaluate other(s)
+    $v = "" === $v ? null : e($v);
 });
 
 // Normalize `$_FILES` value to `$_POST`

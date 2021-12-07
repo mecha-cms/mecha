@@ -9,7 +9,27 @@ final class Is extends Genome {
 
     // Check for JSON pattern
     public static function JSON($value) {
-        return is_json($value);
+        if (!is_string($value) || "" === ($value = trim($value))) {
+            return false;
+        }
+        return (
+            // Maybe boolean
+            'false' === $value ||
+            'null' === $value ||
+            'true' === $value ||
+            // Maybe empty string, array or object
+            '""' === $value ||
+            '[]' === $value ||
+            '{}' === $value ||
+            // Maybe number
+            is_numeric($value) ||
+            // Maybe string
+            '"' === $value[0] && '"' === substr($value, -1) ||
+            // Maybe array
+            '[' === $value[0] && ']' === substr($value, -1) ||
+            // Maybe object
+            '{' === $value[0] && '}' === substr($value, -1)
+        ) && null !== json_decode($value);
     }
 
     // Check for URL address
