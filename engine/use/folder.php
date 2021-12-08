@@ -17,6 +17,10 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return null;
     }
 
+    public function __isset(string $key) {
+        return null !== $this->__get($key);
+    }
+
     public function __toString() {
         return $this->exist() ? $this->path : "";
     }

@@ -120,8 +120,11 @@ function delete(string $path, $purge = true) {
         if ($purge) {
             $folder = dirname($path);
             while (0 === q(g($folder))) {
+                if (PATH === stream_resolve_include_path($folder)) {
+                    break; // Stop once we are in the root!
+                }
                 if (!rmdir($folder)) {
-                    break;
+                    break; // Error?
                 }
                 $folder = dirname($folder);
             }

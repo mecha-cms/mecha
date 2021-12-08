@@ -164,7 +164,6 @@ And so on…
 
 These page conditional statements are available to quickly determine the type of page we are currently in:
 
- - `$site->has('i')` → Return `true` if page URL contains page offset.
  - `$site->has('next')` → Return `true` if it is possible to go to the next page.
  - `$site->has('page')` → Return `true` if there is a page to load.
  - `$site->has('pages')` → Return `true` if there are pages to load.

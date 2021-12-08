@@ -2,44 +2,34 @@
 
 class Page extends File {
 
-    protected $a;
-    protected $h;
+    protected $cache;
+    protected $hook;
     protected $lot;
-    protected $read;
-
-    protected function _get(string $kin, array $lot = []) {
-        $v = $this->offsetGet($kin) ?? $this->a[$kin] ?? null;
-        if (empty($this->read[$kin]) || 2 !== $this->read[$kin]) {
-            // Do the hook once!
-            $v = Hook::fire(map($this->h, function($v) use($kin) {
-                return $v .= '.' . $kin;
-            }), [$v, $lot], $this);
-            if ($lot && is_callable($v) && !is_string($v)) {
-                $v = call_user_func($v, ...$lot);
-            }
-            // Done hook
-            $this->read[$kin] = 2;
-            // Set again to be used later…
-            $this->lot[$kin] = $v;
-        }
-        return $v;
-    }
 
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin = p2f($kin))) {
             return parent::__call($kin, $lot);
         }
-        return $this->_get($kin, $lot);
+        if (array_key_exists($kin, $this->cache)) {
+            return $this->cache[$kin];
+        }
+        $v = $this->offsetGet($kin) ?? $this->lot[$kin] ?? null;
+        $v = Hook::fire(map($this->hook, static function($v) use($kin) {
+            return $v .= '.' . $kin;
+        }), [$v, $lot], $this);
+        if ($lot && is_callable($v) && !is_string($v)) {
+            $v = call_user_func($v, ...$lot);
+        }
+        return ($this->cache[$kin] = $v);
     }
 
     public function __construct(string $path = null, array $lot = []) {
-        $this->h = [$c = c2f(self::class)];
-        // Set pre-defined page property
-        $this->a = array_replace_recursive((array) State::get('x.' . $c . '.page', true), $lot);
         parent::__construct($path);
+        $this->cache = [];
+        $this->hook = [$c = c2f(self::class)];
+        $this->lot = array_replace_recursive((array) State::get('x.' . $c . '.page', true), $lot);
     }
 
-    // Inherit to `File::__get()`
     public function __get(string $key) {
         return parent::__get($key) ?? $this->__call($key);
     }
@@ -48,90 +38,67 @@ class Page extends File {
         $this->offsetSet(p2f($key), $value);
     }
 
-    // Inherit to `File::__toString()`
     public function __toString() {
         return To::page($this->lot ?? []);
     }
 
+    public function __unset(string $key) {
+        $this->offsetUnset(p2f($key));
+    }
+
     public function ID(...$lot) {
-        $id = $this->_get('id', $lot) ?? (($t = $this->time()->format('U')) ? sprintf('%u', $t) : null);
+        $t = $this->time()->format('U');
+        $id = $this->__call('id', $lot) ?? ($t ? sprintf('%u', $t) : null);
         return is_string($id) && is_numeric($id) ? (int) $id : $id;
     }
 
-    // Inherit to `File::URL()`
     public function URL(...$lot) {
         if ($path = $this->exist()) {
             $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
-            return $this->_get('url', $lot) ?? long(strtr(strtr($folder, [LOT . D . 'page' . D => '/']), D, '/'));
+            return $this->__call('url', $lot) ?? long(strtr(strtr($folder, [LOT . D . 'page' . D => '/']), D, '/'));
         }
         return null;
     }
 
     public function content(...$lot) {
-        return $this->_get('content', $lot);
+        return $this->__call('content', $lot);
     }
 
-    // Inherit to `File::get()`
-    public function get(...$lot) {
-        if (isset($lot[0]) && is_array($lot[0])) {
-            $out = [];
-            foreach ($lot[0] as $k => $v) {
-                // `$page->get(['foo.bar' => 0])`
-                if (false !== strpos($k, '.')) {
-                    $kk = explode('.', $k, 2);
-                    if (is_array($vv = $this->_get($kk[0]))) {
-                        $out[$k] = get($vv, $kk[1]) ?? $v;
-                        continue;
-                    }
-                }
-                $out[$k] = $this->_get($k) ?? $v;
-            }
-            return $out;
-        }
-        // `$page->get('foo.bar')`
-        if (isset($lot[0]) && is_string($lot[0])) {
-            if (false !== strpos($lot[0], '.')) {
-                $k = explode('.', $lot[0], 2);
-                if (is_array($v = $this->_get($k[0]))) {
-                    return get($v, $k[1]);
-                }
-            }
-            return $this->_get($lot[0]);
-        }
-        return null;
-    }
-
-    // Inherit to `File::getIterator()`
     public function getIterator() {
         $out = [];
         if ($this->exist()) {
             $out = From::page(file_get_contents($path = $this->path), true);
             $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
             foreach (g($folder, 'data') as $k => $v) {
-                $out[basename($k, '.data')] = e(file_get_contents($k));
+                $v = e(file_get_contents($k));
+                if (is_string($v) && Is::JSON($v)) {
+                    $v = json_decode($v, true);
+                }
+                $out[basename($k, '.data')] = $v;
             }
         }
         return new \ArrayIterator($out);
     }
 
-    // Inherit to `File::jsonSerialize()`
     public function jsonSerialize() {
         return $this->exist() ? From::page(file_get_contents($this->path), true) : [];
     }
 
-    // Inherit to `File::offsetGet()`
     public function offsetGet($key) {
-        // Read once!
-        if (($path = $this->exist()) && empty($this->read[$key])) {
+        if ($this->exist()) {
+            $path = $this->path;
             // Prioritize data from a file…
             $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
             if (is_file($f = $folder . D . $key . '.data')) {
-                $this->read[$key] = 1; // Done read
-                return ($this->lot[$key] = a(e(file_get_contents($f))));
+                $v = e(file_get_contents($f));
+                if (is_string($v) && Is::JSON($v)) {
+                    $v = json_decode($v, true);
+                }
+                return ($this->lot[$key] = $v);
             }
             // Stream page file content and make sure that property is exists before parsing
             $exist = 'content' === $key;
-            foreach (stream($path = $this->path) as $k => $v) {
+            foreach (stream($path) as $k => $v) {
                 if (0 === $k && YAML\SOH . "\n" !== $v) {
                     break;
                 }
@@ -140,7 +107,7 @@ class Page extends File {
                 }
                 if (
                     0 === strpos($v, $key . ':') ||
-                    0 === strpos($v, '"' . strtr($key, ['"' => "\\\""]) . '":') ||
+                    0 === strpos($v, '"' . strtr($key, ['"' => '\\"']) . '":') ||
                     0 === strpos($v, "'" . strtr($key, ["'" => "\\'"]) . "':")
                 ) {
                     $exist = true;
@@ -148,18 +115,13 @@ class Page extends File {
                 }
             }
             if ($exist) {
-                $any = From::page(file_get_contents($path), true);
-                foreach ($any as $k => $v) {
-                    $this->read[$k] = 1; // Done read
-                }
-                $this->lot = array_replace_recursive($this->lot ?? [], $any);
+                $lot = From::page(file_get_contents($path), true);
+                $this->lot = array_replace_recursive($this->lot ?? [], $lot);
             }
-            $this->lot = array_replace_recursive($this->a ?? [], $this->lot ?? []);
         }
         return $this->lot[$key] ?? null;
     }
 
-    // Inherit to `File::offsetSet()`
     public function offsetSet($key, $value) {
         if (isset($key)) {
             $this->lot[$key] = $value;
@@ -168,63 +130,24 @@ class Page extends File {
         }
     }
 
-    // Inherit to `File::offsetUnset()`
     public function offsetUnset($key) {
-        unset($this->lot[$key]);
+        unset($this->cache[$key], $this->lot[$key]);
     }
 
-    public function save($seal = null) {
-        $lot = $this->lot ?? [];
-        $lot = j($lot, $this->a);
-        $this->value[0] = To::page($lot);
-        return parent::save($seal);
-    }
-
-    // Inherit to `File::set()`
-    public function set(...$lot) {
-        if (!$this->exist()) {
-            $this->lot = [];
-        }
-        if (isset($lot[0])) {
-            if (is_array($lot[0])) {
-                foreach ($lot[0] as $k => $v) {
-                    if (null === $v || false === $v) {
-                        unset($this->lot[$k]);
-                        continue;
-                    }
-                    $this->lot[$k] = $v;
-                }
-            } else if (array_key_exists(1, $lot)) {
-                if (!isset($lot[1]) || false === $lot[1]) {
-                    unset($this->lot[$lot[0]]);
-                } else {
-                    $this->lot[$lot[0]] = $lot[1];
-                }
-            } else {
-                // `$page->set('<p>abcdef</p>')`
-                $this->lot['content'] = $lot[0];
-            }
-        } else if (!isset($lot[0]) || false === $lot[0]) {
-            unset($this->lot['content']);
-        }
-        return $this;
-    }
-
-    // Inherit to `File::time()`
     public function time(string $format = null) {
-        $n = parent::name();
+        $name = parent::name();
         // Set `time` value from the page’s file name
         if (
-            is_string($n) && (
+            is_string($name) && (
                 // `2017-04-21.page`
-                2 === substr_count($n, '-') ||
+                2 === substr_count($name, '-') ||
                 // `2017-04-21-14-25-00.page`
-                5 === substr_count($n, '-')
+                5 === substr_count($name, '-')
             ) &&
-            is_numeric(str_replace('-', "", $n)) &&
-            preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $n)
+            is_numeric(str_replace('-', "", $name)) &&
+            preg_match('/^[1-9]\d{3,}-(0\d|1[0-2])-(0\d|[1-2]\d|3[0-1])(-([0-1]\d|2[0-4])(-([0-5]\d|60)){2})?$/', $name)
         ) {
-            $time = new Time($n);
+            $time = new Time($name);
         // Else…
         } else {
             $time = new Time($this->offsetGet('time') ?? parent::time());
@@ -232,9 +155,8 @@ class Page extends File {
         return $format ? $time($format) : $time;
     }
 
-    // Inherit to `File::type()`
     public function type(...$lot) {
-        return $this->_get('type', $lot) ?? 'text/html';
+        return $this->__call('type', $lot) ?? 'HTML';
     }
 
 }

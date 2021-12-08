@@ -17,6 +17,10 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null;
     }
 
+    public function __isset(string $key) {
+        return null !== $this->__get($key);
+    }
+
     public function __toString() {
         return $this->exist() ? $this->path : "";
     }
