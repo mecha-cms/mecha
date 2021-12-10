@@ -1629,6 +1629,7 @@ $GLOBALS['url'] = $url = new URL($protocol . $host . $path . $query . $hash);
 
 function kick(string $path = null, int $status = null) {
     $path = $path ?? $GLOBALS['url']->current();
+    // TODO: Allow `link` extension to modify this value!
     header('location: ' . long($path), true, $status ?? 301);
     exit;
 }
@@ -1696,10 +1697,7 @@ function short(string $value) {
     return "" === $value ? '/' : $value;
 }
 
-Hook::set('get', function() use($url) {
-    $hash = $url['hash'];
-    $path = $url['path'];
-    $query = $url['query'];
+Hook::set('get', function() use($hash, $path, $query) {
     Hook::fire('route', [$path, $query, $hash]);
 }, 10);
 
