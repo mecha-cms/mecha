@@ -68,14 +68,33 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
                 }
                 return trim($out);
             };
+            $yaml_eval = static function($value) use(&$yaml_eval) {
+                if (is_array($value)) {
+                    foreach ($value as &$v) {
+                        $v = $yaml_eval($v);
+                    }
+                    unset($v);
+                    return $value;
+                }
+                if ($value && ('"' === $value[0] && '"' === substr($value, -1) || "'" === $value[0] && "'" === substr($value, -1))) {
+                    return substr(strtr($value, [
+                        "\\\"" => '"',
+                        "\\'" => "'"
+                    ]), 1, -1);
+                }
+                return e($value, ['~' => null]);
+            };
             // Get key and value pair(s)
-            $yaml_break = static function(string $value) {
+            $yaml_break = static function(string $value) use(&$yaml_eval) {
                 $value = trim($value, "\n");
                 if (0 === strpos($value, '"') || 0 === strpos($value, "'")) {
                     $q = $value[0];
                     if (preg_match('/^(' . $q . '(?:[^' . $q . '\\\]|\\\.)*' . $q . ')\s*(:[ \n])([\s\S]*)$/', $value, $m)) {
                         array_shift($m);
-                        $m[0] = e($m[0]);
+                        $m[0] = substr(strtr($m[0], [
+                            "\\\"" => '"',
+                            "\\'" => "'"
+                        ]), 1, -1);
                         return $m;
                     }
                 } else if (
@@ -95,20 +114,15 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
                 $out = strstr($value, '#', true);
                 return [false, false, trim(false !== $out ? $out : $value)];
             };
-            $yaml_list = static function(string $value, string $dent, $eval) use(
-                &$yaml,
-                &$yaml_break,
-                &$yaml_pull,
-                &$yaml_value
-            ) {
+            $yaml_list = static function(string $value, string $dent, $eval) use(&$yaml, &$yaml_break, &$yaml_eval, &$yaml_pull, &$yaml_value) {
                 $out = [];
                 $value = $yaml_pull($value, '  ' /* hard-coded */);
                 foreach (explode("\n- ", substr($value, 2)) as $v) {
-                    $v = str_replace("\n  ", "\n", $v);
+                    $v = strtr($v, ["\n  " => "\n"]);
                     list($k, $m) = $yaml_break($v);
                     if (false === $m) {
                         $v = $yaml_value($v);
-                        $out[] = $eval ? e($v, ['~' => null]) : $v;
+                        $out[] = $eval ? $yaml_eval($v) : $v;
                     } else {
                         $out[] = $yaml($v, $dent, $eval);
                     }
@@ -118,19 +132,19 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
             // Dedent from `$dent`
             $yaml_pull = static function(string $value, string $dent) {
                 if (0 === strpos($value, $dent)) {
-                    return str_replace("\n" . $dent, "\n", substr($value, strlen($dent)));
+                    return strtr(substr($value, strlen($dent)), ["\n" . $dent => "\n"]);
                 }
                 return $value;
             };
             // Parse flow-style collection(s)
-            $yaml_span = static function(string $value, $eval) {
+            $yaml_span = static function(string $value, $eval) use(&$yaml_eval) {
                 $out = "";
                 // Validate to JSON
                 foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $value, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                     $out .= false !== strpos('[]{}:,', $v) ? $v : json_encode($v);
                 }
                 $out = json_decode($out, true) ?? $value;
-                return $eval ? e($out, ['~' => null]) : $out;
+                return $eval ? $yaml_eval($out) : $out;
             };
             // Remove comment(s)
             $yaml_value = static function(string $value) {
@@ -193,7 +207,7 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
                     // Use native JSON parser where possible
                     $vv = json_decode($vv, true) ?? $yaml_span($vv, $eval);
                 } else if ($eval) {
-                    $vv = e($vv, ['~' => null]);
+                    $vv = $yaml_eval($vv);
                 }
                 $out[$k] = $vv;
             }
