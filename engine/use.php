@@ -1628,9 +1628,8 @@ $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 $GLOBALS['url'] = $url = new URL($protocol . $host . $path . $query . $hash);
 
 function kick(string $path = null, int $status = null) {
-    $path = $path ?? $GLOBALS['url']->current();
-    // TODO: Allow `link` extension to modify this value!
-    header('location: ' . long($path), true, $status ?? 301);
+    $path = Hook::fire('kick', [$path, $status]);
+    header('location: ' . $path, true, $status ?? 301);
     exit;
 }
 
