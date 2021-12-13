@@ -247,4 +247,3 @@ namespace x\layout {
     \Hook::set('content', __NAMESPACE__ . "\\is", 0);
     \Hook::set('content', __NAMESPACE__ . "\\not", 0);
 }
-

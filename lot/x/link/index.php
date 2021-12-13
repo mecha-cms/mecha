@@ -5,7 +5,7 @@ namespace x\link {
     $folder = \trim(\strtr(\PATH . \D, [\rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', \D), \D) . \D => ""]), \D);
     // Set correct base URL
     \define(__NAMESPACE__ . "\\host", $_SERVER['HTTP_HOST']);
-    \define(__NAMESPACE__ . "\\index", \x\link\host . ($folder ? '/' . $folder : ""));
+    \define(__NAMESPACE__ . "\\route", \x\link\host . ($folder ? '/' . $folder : ""));
     function content($content) {
         if (!$content || false === \strpos($content, '<')) {
             return $content;
@@ -35,7 +35,7 @@ namespace x\link {
                         if (\is_callable($vv)) {
                             $vvv = \fire($vv, [$vvv, $kk, $k], $that);
                         } else {
-                            $vvv = \strtr(\long($vvv), ['://' . \x\link\host => '://' . \x\link\index]);
+                            $vvv = \Hook::fire('link', [$vvv]);
                         }
                         $that[$kk] = $vvv;
                     }
@@ -46,11 +46,14 @@ namespace x\link {
         return $content;
     }
     function kick($path) {
-        $path = \long($path ?? $GLOBALS['url']->current());
-        return \strtr($path, ['://' . \x\link\host => '://' . \x\link\index]);
+        return \x\link\link($path ?? $GLOBALS['url']->current());
+    }
+    function link($path) {
+        return \strtr(\long($path), ['://' . \x\link\host => '://' . \x\link\route]);
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 0);
     \Hook::set('kick', __NAMESPACE__ . "\\kick", 0);
+    \Hook::set('link', __NAMESPACE__ . "\\link", 0);
 }
 
 namespace x\link\f {
@@ -67,7 +70,7 @@ namespace x\link\f {
                 $out .= $v;
                 continue;
             }
-            $out .= \strtr(\long(\rtrim($v, ',')), ['://' . \x\link\host => '://' . \x\link\index]);
+            $out .= \Hook::fire('link', [\rtrim($v, ',')]);
         }
         return $out;
     }

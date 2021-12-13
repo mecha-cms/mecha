@@ -1697,6 +1697,10 @@ function short(string $value) {
 }
 
 Hook::set('get', function() use($hash, $path, $query) {
+    if (Hook::get('route')) {
+        // All site page status is initially forbidden. If there are some route hook available, we will assume that we has a page but is not found.
+        status(404);
+    }
     Hook::fire('route', [$path, $query, $hash]);
 }, 10);
 
