@@ -185,11 +185,6 @@ namespace x {
             // Missing `.\lot\layout\index.php` file :(
             return null;
         }
-        // Automatic response status based on the first layout path
-        $status = \strtok(\strtr($path, \D, '/'), '/');
-        if (3 === \strlen($status) && \is_numeric($status)) {
-            \http_response_code((int) $status);
-        }
         if (null !== ($content = \Layout::get($path, $lot))) {
             $content = \Hook::fire('content', [$content]);
             \ob_start();
