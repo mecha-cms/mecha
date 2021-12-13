@@ -89,7 +89,7 @@ foreach([
     },
     'query' => function(array $value = null) {
         $out = [];
-        $q = function(array $value, $enter) use(&$q) {
+        $q = static function(array $value, $enter) use(&$q) {
             $a = [];
             $exit = $enter ? ']' : "";
             foreach ($value as $k => $v) {

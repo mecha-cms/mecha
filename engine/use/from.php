@@ -23,7 +23,7 @@ foreach ([
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'query' => function(string $value = null) {
         $out = [];
-        $q = function(array &$out, $k, $v) {
+        $q = static function(array &$out, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
                 $kk = array_shift($k);

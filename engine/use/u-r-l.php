@@ -181,7 +181,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     public function query(array $lot = []) {
         $query = $this->lot['query'] . "";
         if ($lot) {
-            $query = array_replace_recursive(From::query($query), $lot);
+            return To::query(array_replace_recursive(From::query($query), $lot));
         }
         return "" !== $query ? '?' . $query : null;
     }
