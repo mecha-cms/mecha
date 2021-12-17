@@ -1635,6 +1635,9 @@ function kick(string $path = null, int $status = null) {
 
 function long(string $value) {
     $url = $GLOBALS['url'];
+    if ("" === $value) {
+        return $url->current;
+    }
     // `long('//example.com')`
     if (0 === strpos($value, '//')) {
         return rtrim(substr($url->protocol, 0, -2) . $value, '/');

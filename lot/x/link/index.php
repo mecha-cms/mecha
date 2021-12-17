@@ -11,9 +11,20 @@ namespace x\link {
             return $content;
         }
         extract($GLOBALS, \EXTR_SKIP);
-        $alter = $state->x->link->alter ?? [];
-        if (!empty($alter)) {
-            foreach ($alter as $k => $v) {
+        $alter = $state->x->link ?? [];
+        if (!empty($alter->content)) {
+            foreach ($alter->content as $k => $v) {
+                if (!$v || false === \strpos($content, '</' . $k . '>')) {
+                    continue;
+                }
+                $content = \preg_replace_callback('/(<' . \x($k) . '(?:\s(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^>])*?)?>)([\s\S]*?)(<\/' . \x($k) . '>)/', static function($m) use($v) {
+                    $m[2] = \is_callable($v) ? \fire($v, [$m[2]]) : \x\link\link($m[2]);
+                    return $m[1] . $m[2] . $m[3];
+                }, $content);
+            }
+        }
+        if (!empty($alter->data)) {
+            foreach ($alter->data as $k => $v) {
                 if (
                     false === \strpos($content, '</' . $k . '>') &&
                     false === \strpos($content, '<' . $k . ' ') &&
@@ -22,7 +33,7 @@ namespace x\link {
                 ) {
                     continue;
                 }
-                $content = \preg_replace_callback('/<' . \x($k) . '(\s[^>]*?)>/', static function($m) use($k, $v) {
+                $content = \preg_replace_callback('/<' . \x($k) . '(\s(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^>])*?)>/', static function($m) use($k, $v) {
                     if (false === \strpos($m[1], '=')) {
                         return $m[0];
                     }
@@ -35,7 +46,7 @@ namespace x\link {
                         if (\is_callable($vv)) {
                             $vvv = \fire($vv, [$vvv, $kk, $k], $that);
                         } else {
-                            $vvv = \Hook::fire('link', [$vvv]);
+                            $vvv = \x\link\link($vvv);
                         }
                         $that[$kk] = $vvv;
                     }
@@ -46,20 +57,49 @@ namespace x\link {
         return $content;
     }
     function kick($path) {
-        return \x\link\link($path ?? $GLOBALS['url']->current());
+        return \x\link\link($path ?? $GLOBALS['url']->current);
     }
     function link($path) {
-        return \strtr(\long($path), ['://' . \x\link\host => '://' . \x\link\route]);
+        return null !== $path ? \strtr(\long($path), ['://' . \x\link\host => '://' . \x\link\route]) : null;
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 0);
     \Hook::set('kick', __NAMESPACE__ . "\\kick", 0);
     \Hook::set('link', __NAMESPACE__ . "\\link", 0);
 }
 
-namespace x\link\f {
-    function image_source_set($value, $key, $name) {
-        return \fire("\\x\\link\\f\\source_set", [$value, $key, $name], $this);
+namespace x\link\content {
+    function script($content) {
+        if (false === \strpos($content, '://')) {
+            return $content;
+        }
+        $content = \preg_replace_callback('/\b(?:https?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/)))/i', static function($m) {
+            return \x\link\link($m[0]);
+        }, $content);
+        return $content;
     }
+    function style($content) {
+        if (false !== \strpos($content, 'url(')) {
+            $content = \preg_replace_callback('/\burl\(([^()]+)\)/', static function($m) {
+                if ('"' === $m[1][0] && '"' === \substr($m[1], -1)) {
+                    return 'url("' . \long(\substr($m[1], 1, -1)) . '")';
+                }
+                if ("'" === $m[1][0] && "'" === \substr($m[1], -1)) {
+                    return "url('" . \long(\substr($m[1], 1, -1)) . "')";
+                }
+                return 'url(' . \long($m[1]) . ')';
+            }, $content);
+        }
+        if (false === \strpos($content, '://')) {
+            return $content;
+        }
+        $content = \preg_replace_callback('/\b(?:https?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/)))/i', static function($m) {
+            return \x\link\link($m[0]);
+        }, $content);
+        return $content;
+    }
+}
+
+namespace x\link\data {
     function source_set($value, $key, $name) {
         if (!$value) {
             return $value;
@@ -70,7 +110,7 @@ namespace x\link\f {
                 $out .= $v;
                 continue;
             }
-            $out .= \Hook::fire('link', [\rtrim($v, ',')]);
+            $out .= \x\link\link(\rtrim($v, ','));
         }
         return $out;
     }

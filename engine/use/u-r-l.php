@@ -110,6 +110,9 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     public function __get(string $key) {
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
         return $this->__call($key);
     }
 

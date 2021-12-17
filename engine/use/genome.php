@@ -31,13 +31,6 @@ abstract class Genome {
         }
     }
 
-    public function __get(string $kin) {
-        if (method_exists($this, $kin) && (new \ReflectionMethod($this, $kin))->isPublic()) {
-            return $this->{$kin}();
-        }
-        return $this->__call($kin);
-    }
-
     public static function _(...$lot) {
         $c = static::class;
         // Get

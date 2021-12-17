@@ -23,6 +23,13 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         }
     }
 
+    public function __get(string $key) {
+        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
+        return $this->__call($key);
+    }
+
     public function __invoke(string $join = ', ', $filter = true) {
         $value = $filter ? $this->is(function($v, $k) {
             // Ignore `null`, `false` and item with key prefixed by a `_`
