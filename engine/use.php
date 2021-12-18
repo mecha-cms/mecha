@@ -1596,7 +1596,7 @@ $GLOBALS['state'] = $state = new State($state);
 status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
 
 // Set default response type
-type('text/html');
+type('text/' . (error_get_last() ? 'plain' : 'html'));
 
 // Set default time zone and locale
 zone($state->zone);
@@ -1754,6 +1754,9 @@ header_register_callback(static function() {
 });
 
 register_shutdown_function(static function() {
+    if (error_get_last()) {
+        return;
+    }
     // Run task(s) if any…
     if (is_file($task = PATH . D . 'task.php')) {
         (static function($f) {
