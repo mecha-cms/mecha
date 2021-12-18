@@ -82,7 +82,8 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
             $query = substr($query, 1);
         }
         $query = strtr($query, [
-            '#' => '%23'
+            '#' => '%23',
+            '?' => '%3F'
         ]);
         $this->lot['query'] = "" !== $query ? $query : null;
     }
@@ -141,10 +142,30 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     public function current($query = [], $hash = true) {
-        $base = $this->__toString();
-        $hash = $hash ? (is_string($hash) ? '#' . $hash : $this->getHash()) : "";
-        $query = false !== $query ? (is_array($query) ? $this->query($query) : '?' . $query) : "";
-        return $base . $this->getPath() . $query . $hash;
+        if (true === $hash) {
+            $hash = $this->getHash();
+        } else if (is_string($hash)) {
+            $hash = '#' . strtr($hash, [
+                '#' => '%23',
+                '&' => '%26',
+                '?' => '%3F'
+            ]);
+        } else {
+            $hash = "";
+        }
+        if (true === $query) {
+            $query = $this->query();
+        } else if (is_array($query)) {
+            $query = $this->query($query);
+        } else if (is_string($query)) {
+            $query = '?' . strtr($query, [
+                '#' => '%23',
+                '?' => '%3F'
+            ]);
+        } else {
+            $query = "";
+        }
+        return $this->__toString() . $this->getPath() . $query . $hash;
     }
 
     public function getIterator() {
