@@ -1,14 +1,6 @@
 <?php
 
-final class To extends Genome {
-
-    public static function __callStatic(string $kin, array $lot = []) {
-        return parent::_($kin) ? parent::__callStatic($kin, $lot) : $lot[0];
-    }
-
-}
-
-foreach([
+foreach ([
     'HTML' => function(string $value = null) {
         return htmlspecialchars_decode($value, ENT_COMPAT | ENT_HTML5);
     },
@@ -104,7 +96,7 @@ foreach([
         };
         foreach ($q($value, "") as $k => $v) {
             // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
-            if (null === $v || false === $v) {
+            if (false === $v || null === $v) {
                 continue;
             }
             // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`

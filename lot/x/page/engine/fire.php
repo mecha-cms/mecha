@@ -1,23 +1,6 @@
 <?php
 
 namespace {
-    \From::_('page', function(string $value, $eval = false) {
-        if (0 !== \strpos($value = \n($value), \YAML\SOH . "\n")) {
-            // Add empty header
-            $value = \YAML\SOH . "\n" . \YAML\EOT . "\n\n" . $value;
-        }
-        $v = static::YAML($value, '  ', true, $eval);
-        return $v[0] + ['content' => $v["\t"] ?? null];
-    });
-    \To::_('page', function(array $value) {
-        $content = $value['content'] ?? null;
-        unset($value['content']);
-        $value = [
-            0 => $value,
-            "\t" => $content
-        ];
-        return static::YAML($value, '  ', true);
-    });
     // Define page’s condition data as early as possible, so that other
     // extension(s) can use it without having to enter the `route` hook
     $path = \trim($url->path ?? "", '/');
@@ -69,7 +52,7 @@ namespace x\page {
     $GLOBALS['pages'] = new \Pages;
     function route($path, $query, $hash) {
         \status(200);
-        extract($GLOBALS, \EXTR_SKIP);
+        \extract($GLOBALS, \EXTR_SKIP);
         $path = \trim($path ?? "", '/');
         $route = \trim($state->route ?? "", '/');
         $folder = \LOT . \D . 'page' . \D . \strtr($path ?: $route, '/', \D);

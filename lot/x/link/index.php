@@ -1,11 +1,11 @@
 <?php
 
 namespace x\link {
-    // Get folder path relative to the server’s root
-    $folder = \trim(\strtr(\PATH . \D, [\rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', \D), \D) . \D => ""]), \D);
+    // Get sub-folder path relative to the server’s root
+    $sub = \trim(\strtr(\PATH . \D, [\rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', \D), \D) . \D => ""]), \D);
     // Set correct base URL
     \define(__NAMESPACE__ . "\\host", $_SERVER['HTTP_HOST']);
-    \define(__NAMESPACE__ . "\\route", \x\link\host . ($folder ? '/' . $folder : ""));
+    \define(__NAMESPACE__ . "\\route", \x\link\host . ($sub ? '/' . $sub : ""));
     function content($content) {
         if (!$content || false === \strpos($content, '<')) {
             return $content;

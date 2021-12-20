@@ -21,4 +21,5 @@ define('LOT', PATH . D . 'lot');
 
 define('TEST', true); // Change to `true` to enable test mode
 
-require ENGINE . D . 'use.php';
+require ENGINE . D . 'f.php';
+require ENGINE . D . 'fire.php';
