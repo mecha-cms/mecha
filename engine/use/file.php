@@ -129,4 +129,8 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return false; // Return `false` if file does not exist
     }
 
+    public static function from(...$lot) {
+        return new static(...$lot);
+    }
+
 }
