@@ -102,7 +102,7 @@ function cookie(...$lot) {
         'domain' => "",
         'secure' => false,
         'httponly' => false,
-        'samesite' => 'None'
+        // 'samesite' => 'None'
     ], $expires));
     if (is_string($state[0])) {
         $state[0] = (int) (strtotime($state[0], $time = time()) - $time);
