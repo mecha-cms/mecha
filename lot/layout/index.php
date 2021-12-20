@@ -2,10 +2,10 @@
 
 // Add CSS file to the `<head>` section…
 if (defined('TEST') && TEST) {
-    Asset::set('css/index.css', 20);
+    Asset::set('index.css', 20);
 } else {
-    // Serve the minified version if `DEBUG` mode is off
-    Asset::set('css/index.min.css', 20);
+    // Serve the minified version if `TEST` mode is off
+    Asset::set('index.min.css', 20);
 }
 
 // Create site link data to be used in navigation
