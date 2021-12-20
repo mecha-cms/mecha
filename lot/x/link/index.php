@@ -10,7 +10,7 @@ namespace x\link {
         if (!$content || false === \strpos($content, '<')) {
             return $content;
         }
-        extract($GLOBALS, \EXTR_SKIP);
+        \extract($GLOBALS, \EXTR_SKIP);
         $alter = $state->x->link ?? [];
         if (!empty($alter->content)) {
             foreach ($alter->content as $k => $v) {

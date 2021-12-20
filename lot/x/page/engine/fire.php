@@ -51,7 +51,6 @@ namespace x\page {
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
     function route($path, $query, $hash) {
-        \status(200);
         \extract($GLOBALS, \EXTR_SKIP);
         $path = \trim($path ?? "", '/');
         $route = \trim($state->route ?? "", '/');
@@ -123,6 +122,7 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
+                \status(200);
                 \Hook::fire('layout', ['page/' . ($path ?: $route) . '/' . ($i + 1)]);
             }
             // Create pager for “pages” mode
@@ -151,6 +151,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
+                \status(200);
                 \Hook::fire('layout', ['pages/' . ($path ?: $route) . '/' . ($i + 1)]);
             }
         }
