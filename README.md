@@ -101,10 +101,9 @@ Release Notes
 ### main
 
  - [ ] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
- - [ ] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
  - [x] Changed `content` function; is now read-only. To create a file, use `save` function.
- - [x] Changed `path` property to `route`.
+ - [x] Changed `path` state property to `route`.
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{camel,kebab,lower,pascal,sentence,snake,text,title,upper}` methods to `layout` extension.
  - [x] Moved classes `HTML`, `SGML` to `layout` extension.
@@ -112,6 +111,7 @@ Release Notes
  - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `$parent` variable (#165)
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
+ - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
  - [x] Removed constant `GROUND`, `PS`.
  - [x] Removed separator options from URL functions and methods (#164)

@@ -710,9 +710,7 @@ foreach ($uses as $v) {
 
 unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $uses, $v);
 
-header_register_callback(static function() {
-    Hook::fire('set');
-});
+Hook::fire('set');
 
 register_shutdown_function(static function() {
     if (error_get_last()) {

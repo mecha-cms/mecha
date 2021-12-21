@@ -66,7 +66,7 @@ function cookie(...$lot) {
         return $cookie;
     }
     $key = array_shift($lot);
-    if (1 === count($lot)) {
+    if (0 === count($lot)) {
         if (isset($_COOKIE[$k = '*' . crc32($key)])) {
             return json_decode(base64_decode($_COOKIE[$k]), true);
         }
@@ -77,21 +77,20 @@ function cookie(...$lot) {
     if (!is_array($expires)) {
         $expires = ['expires' => $expires];
     }
-    // Use indexed parameter style to support PHP < 7.3
-    $state = array_values(array_replace([
-        'expires' => '1 day',
-        'path' => '/',
+    $state = array_replace([
         'domain' => "",
-        'secure' => false,
-        'httponly' => false,
-        // 'samesite' => 'None'
-    ], $expires));
-    if (is_string($state[0])) {
-        $state[0] = (int) (strtotime($state[0], $time = time()) - $time);
+        'expires' => '1 day',
+        'httponly' => true, // Safe by default
+        'path' => '/',
+        'samesite' => 'None',
+        'secure' => false
+    ], $expires);
+    if (is_string($state['expires'])) {
+        $state['expires'] = (int) (strtotime($state['expires'], $time = time()) - $time);
     }
-    $state[0] += time();
+    $state['expires'] += time();
     // <https://stackoverflow.com/a/1969339/1163000>
-    setcookie('*' . crc32($key), base64_encode(json_encode($value)), ...$state);
+    setcookie('*' . crc32($key), base64_encode(json_encode($value)), $state);
 }
 
 function delete(string $path, $purge = true) {
@@ -100,9 +99,9 @@ function delete(string $path, $purge = true) {
         $out = unlink($path) ? path($path) : null;
         // Remove parent folder if empty
         if ($purge) {
-            $folder = dirname($path);
+            $folder = path(dirname($path));
             while (0 === q(g($folder))) {
-                if (PATH === stream_resolve_include_path($folder)) {
+                if (PATH === $folder) {
                     break; // Stop once we are in the root!
                 }
                 if (!rmdir($folder)) {

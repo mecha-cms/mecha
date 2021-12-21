@@ -8,6 +8,10 @@ class Pages extends Anemone {
         }
     }
 
+    public function offsetGet($key) {
+        return $this->page(parent::offsetGet($key));
+    }
+
     public function page(string $path) {
         return new Page($path);
     }
