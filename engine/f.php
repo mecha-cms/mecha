@@ -6,7 +6,7 @@ function abort(string $alert, $exit = true) {
     $trace = explode("\n", n(ob_get_clean()), 2);
     array_shift($trace);
     $trace = trim(strtr(implode("\n", $trace), [PATH => '.']), "\n");
-    echo '<details style="background:#f00;color:#fff;font:normal normal 100%/1.5 sans-serif;margin:0;padding:0;selection:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em 1rem;">' . $alert . '</summary><pre style="background:#000;font:normal normal 100%/1.25 monospace;margin:0;overflow:auto;padding:0;white-space:pre;"><code style="display:block;font:inherit;margin:0;padding:.5em 1rem;">' . $trace . '</code></pre></details>';
+    echo '<details' . ($exit ? ' open' : "") . ' style="background:#f00;color:#fff;font:normal normal 100%/1.5 sans-serif;margin:0;padding:0;selection:none;text-shadow:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em 1rem;text-shadow:none;">' . $alert . '</summary><pre style="background:#000;font:normal normal 100%/1.25 monospace;margin:0;overflow:auto;padding:0;text-shadow:none;white-space:pre;"><code style="color:inherit;display:block;font:inherit;margin:0;padding:.5em 1rem;text-shadow:none;">' . $trace . '</code></pre></details>';
     $exit && exit;
 }
 
@@ -58,7 +58,7 @@ function cookie(...$lot) {
         $cookie = [];
         foreach ($_COOKIE as $k => $v) {
             if (0 === strpos($k, '*')) {
-                $cookie[$k] = json_decode(base64_decode($v));
+                $cookie[$k] = json_decode(base64_decode($v), true);
             } else {
                 $cookie[$k] = $v;
             }
@@ -82,7 +82,7 @@ function cookie(...$lot) {
         'expires' => '1 day',
         'httponly' => true, // Safe by default
         'path' => '/',
-        'samesite' => 'None',
+        'samesite' => 'Strict', // Safe by default
         'secure' => false
     ], $expires);
     if (is_string($state['expires'])) {
