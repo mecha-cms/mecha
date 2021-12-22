@@ -1,20 +1,16 @@
-# Set default charset to UTF-8.
 AddDefaultCharset UTF-8
 
-# Block access to directory without a default document.
 <IfModule mod_autoindex.c>
   Options -Indexes
 </IfModule>
 
-# Block access to `.htaccess` file.
 <Files .htaccess>
   deny from all
 </Files>
 
-# Rewrite `/foo/bar?baz=qux` to `/index.php?_=/foo/bar&baz=qux`
 <IfModule mod_rewrite.c>
   RewriteEngine on
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^\/*(.*)\/*$ index.php?_=/$1 [L,QSA]
+  RewriteRule . index.php [L,QSA]
 </IfModule>

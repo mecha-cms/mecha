@@ -1,7 +1,7 @@
 <?php
 
 namespace {
-    // Define page’s condition data as early as possible, so that other
+    // Set page’s condition data as early as possible, so that other
     // extension(s) can use it without having to enter the `route` hook
     $path = \trim($url->path ?? "", '/');
     $route = \trim($state->route ?? "", '/');
@@ -27,20 +27,20 @@ namespace {
         $folder . \D . '.archive',
         $folder . \D . '.page'
     ], 1);
-    \State::set('is', [
-        'error' => $is_error = ("" === $path && !$is_home || "" !== $path && !$is_page) ? 404 : false,
-        'home' => !!$is_home,
-        'page' => $is_home || ($is_page && ($not_pages || !$has_pages)),
-        'pages' => $has_pages && !$not_pages
-    ]);
-    \State::set('has', [
-        'page' => $is_home || $is_page,
-        'pages' => !!$has_pages,
-        'parent' => $has_parent && false !== \strpos($path, '/')
-    ]);
     \State::set([
         'are' => [],
         'can' => [],
+        'has' => [
+            'page' => $is_home || $is_page,
+            'pages' => !!$has_pages,
+            'parent' => $has_parent && false !== \strpos($path, '/')
+        ],
+        'is' => [
+            'error' => $is_error = ("" === $path && !$is_home || "" !== $path && !$is_page) ? 404 : false,
+            'home' => !!$is_home,
+            'page' => $is_home || ($is_page && ($not_pages || !$has_pages)),
+            'pages' => $has_pages && !$not_pages
+        ],
         'not' => []
     ]);
 }
@@ -173,8 +173,8 @@ namespace x\page {
         \status(404);
         \Hook::fire('layout', ['error/' . ($path ?: $route) . '/' . ($i + 1)]);
     }
-    \Hook::set('route.page', __NAMESPACE__ . "\\route", 20);
     \Hook::set('route', function(...$lot) {
         \Hook::fire('route.page', $lot);
-    }, 20);
+    }, 100);
+    \Hook::set('route.page', __NAMESPACE__ . "\\route", 100);
 }
