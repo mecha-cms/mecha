@@ -2,11 +2,10 @@
 
 class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
 
-    public $i = 0;
-    public $lot = [];
-    public $parent = null;
-    public $join = "";
-    public $value = [];
+    public $join;
+    public $lot;
+    public $parent;
+    public $value;
 
     public function __construct(iterable $value = [], string $join = ', ') {
         if ($value instanceof \Traversable) {
@@ -31,7 +30,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        $value = $filter ? $this->is(function($v, $k) {
+        $value = $filter ? $this->is(static function($v, $k) {
             // Ignore `null`, `false` and item with key prefixed by a `_`
             return isset($v) && false !== $v && 0 !== strpos($k, '_');
         })->value : $this->value;
@@ -53,12 +52,12 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
-        $clone = $this->mitose();
-        $clone->value = array_chunk($clone->value, $chunk, $preserve_key);
+        $that = $this->mitose();
+        $that->value = array_chunk($that->value, $chunk, $preserve_key);
         if (-1 !== $index) {
-            $clone->value = $clone->value[$clone->i = $index] ?? [];
+            $that->value = $that->value[$index] ?? [];
         }
-        return $clone;
+        return $that;
     }
 
     public function count() {
@@ -91,9 +90,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function is($fn = null) {
-        $clone = $this->mitose();
-        $clone->value = is($clone->value, $fn);
-        return $clone;
+        $that = $this->mitose();
+        $that->value = is($that->value, $fn);
+        return $that;
     }
 
     public function join(string $join = ', ') {
@@ -124,22 +123,22 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function map(callable $fn) {
-        $clone = $this->mitose();
-        $clone->value = map($clone->value, $fn);
-        return $clone;
+        $that = $this->mitose();
+        $that->value = map($that->value, $fn);
+        return $that;
     }
 
     public function mitose() {
-        $clone = new static($this->value, $this->join);
-        $clone->lot = $this->lot;
-        $clone->parent = $this;
-        return $clone;
+        $that = new static($this->value, $this->join);
+        $that->lot = $this->lot;
+        $that->parent = $this;
+        return $that;
     }
 
     public function not($fn = null) {
-        $clone = $this->mitose();
-        $clone->value = not($clone->value, $fn);
-        return $clone;
+        $that = $this->mitose();
+        $that->value = not($that->value, $fn);
+        return $that;
     }
 
     public function offsetExists($key) {
@@ -163,14 +162,15 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function pluck(string $key, $value = null) {
-        $clone = $this->mitose();
-        $clone->value = pluck($clone->value, $key, $value);
-        return $clone;
+        $that = $this->mitose();
+        $that->value = pluck($that->value, $key, $value);
+        return $that;
     }
 
     public function reverse() {
-        $this->value = array_reverse($this->value);
-        return $this;
+        $that = $this->mitose();
+        $that->value = array_reverse($that->value);
+        return $that;
     }
 
     public function set(string $key, $value) {
