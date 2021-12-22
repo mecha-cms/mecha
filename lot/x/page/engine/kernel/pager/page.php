@@ -2,10 +2,6 @@
 
 class Page extends \Pager {
 
-    protected function page(string $path = null) {
-        return new \Page($path);
-    }
-
     public function __construct(array $value = [], $current = null, $parent = null) {
         parent::__construct();
         $value = \array_values($value);
@@ -31,6 +27,10 @@ class Page extends \Pager {
         } else if (\is_file($parent)) {
             $this->parent = $this->page($parent);
         }
+    }
+
+    public function page(string $path = null) {
+        return new \Page($path);
     }
 
 }

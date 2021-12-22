@@ -4,8 +4,8 @@ namespace x\link {
     // Get sub-folder path relative to the server’s root
     $sub = \trim(\strtr(\PATH . \D, [\rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', \D), \D) . \D => ""]), \D);
     // Set correct base URL
-    \define(__NAMESPACE__ . "\\host", $_SERVER['HTTP_HOST']);
-    \define(__NAMESPACE__ . "\\route", \x\link\host . ($sub ? '/' . $sub : ""));
+    \define(__NAMESPACE__ . "\\r", $_SERVER['HTTP_HOST']);
+    \define(__NAMESPACE__ . "\\route", \x\link\r . ($sub ? '/' . $sub : ""));
     function content($content) {
         if (!$content || false === \strpos($content, '<')) {
             return $content;
@@ -60,7 +60,7 @@ namespace x\link {
         return \x\link\link($path ?? $GLOBALS['url']->current);
     }
     function link($path) {
-        return null !== $path ? \strtr(\long($path), ['://' . \x\link\host => '://' . \x\link\route]) : null;
+        return null !== $path ? \strtr(\long($path), ['://' . \x\link\r => '://' . \x\link\route]) : null;
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 0);
     \Hook::set('kick', __NAMESPACE__ . "\\kick", 0);

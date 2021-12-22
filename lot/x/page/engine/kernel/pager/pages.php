@@ -2,19 +2,6 @@
 
 class Pages extends \Pager {
 
-    protected function page(string $path = null) {
-        return new \Page($path);
-    }
-
-    protected function to(...$lot) {
-        if (isset($lot[0]) && \is_object($lot[0])) {
-            $p = clone $lot[0];
-            $p->link = ($lot[0]->link ?? $lot[0]->url ?? "") . (isset($lot[1]) ? '/' . $lot[1] : "");
-            return $p;
-        }
-        return $this->page();
-    }
-
     public function __construct(array $value = [], $chunk = [5, 0], $parent = null) {
         parent::__construct();
         if (\is_object($parent)) {
@@ -38,6 +25,19 @@ class Pages extends \Pager {
                 $this->prev = $this->to($parent, $i);
             }
         }
+    }
+
+    public function page(string $path = null) {
+        return new \Page($path);
+    }
+
+    public function to(...$lot) {
+        if (isset($lot[0]) && \is_object($lot[0])) {
+            $p = clone $lot[0];
+            $p->link = ($lot[0]->link ?? $lot[0]->url ?? "") . (isset($lot[1]) ? '/' . $lot[1] : "");
+            return $p;
+        }
+        return $this->page();
     }
 
 }
