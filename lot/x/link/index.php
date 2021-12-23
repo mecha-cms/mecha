@@ -4,8 +4,8 @@ namespace x\link {
     // Get sub-folder path relative to the server’s root
     $sub = \trim(\strtr(\PATH . \D, [\rtrim(\strtr($_SERVER['DOCUMENT_ROOT'], '/', \D), \D) . \D => ""]), \D);
     // Set correct base URL
-    \define(__NAMESPACE__ . "\\r", $_SERVER['HTTP_HOST']);
-    \define(__NAMESPACE__ . "\\route", \x\link\r . ($sub ? '/' . $sub : ""));
+    \define(__NAMESPACE__ . "\\host", $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "");
+    \define(__NAMESPACE__ . "\\index", \x\link\host . ($sub ? '/' . $sub : ""));
     function content($content) {
         if (!$content || false === \strpos($content, '<')) {
             return $content;
@@ -60,7 +60,7 @@ namespace x\link {
         return \x\link\link($path ?? $GLOBALS['url']->current);
     }
     function link($path) {
-        return null !== $path ? \strtr(\long($path), ['://' . \x\link\r => '://' . \x\link\route]) : null;
+        return null !== $path ? \strtr(\long($path), ['://' . \x\link\host => '://' . \x\link\index]) : null;
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 0);
     \Hook::set('kick', __NAMESPACE__ . "\\kick", 0);
@@ -72,7 +72,7 @@ namespace x\link\content {
         if (false === \strpos($content, '://')) {
             return $content;
         }
-        $content = \preg_replace_callback('/\b(?:https?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/)))/i', static function($m) {
+        $content = \preg_replace_callback('/\bhttps?:\/\/[^\s"<]+\b\/?/i', static function($m) {
             return \x\link\link($m[0]);
         }, $content);
         return $content;
@@ -92,7 +92,7 @@ namespace x\link\content {
         if (false === \strpos($content, '://')) {
             return $content;
         }
-        $content = \preg_replace_callback('/\b(?:https?:\/\/[^\s()<>]+(?:\([\w\d]+\)|([^[:punct:]\s]|\/)))/i', static function($m) {
+        $content = \preg_replace_callback('/\bhttps?:\/\/[^\s"<]+\b\/?/i', static function($m) {
             return \x\link\link($m[0]);
         }, $content);
         return $content;

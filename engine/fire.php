@@ -710,23 +710,21 @@ foreach ($uses as $v) {
 
 unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $uses, $v);
 
+// This hook is useful for running task(s) before the response starts.
 Hook::fire('set');
 
-register_shutdown_function(static function() {
-    if (error_get_last()) {
-        return;
-    }
-    // Run task(s) if any…
-    if (is_file($task = PATH . D . 'task.php')) {
-        (static function($f) {
-            extract($GLOBALS, EXTR_SKIP);
-            require $f;
-        })($task);
-    }
-    // Ideally, a response body should be stated in this hook.
-    Hook::fire('get');
-    // This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`,
-    // when the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute
-    // this hook before every `exit` command on every response body you make in the hook above.
-    Hook::fire('let');
-});
+// Run task(s) if any…
+if (is_file($task = PATH . D . 'task.php')) {
+    (static function($f) {
+        extract($GLOBALS, EXTR_SKIP);
+        require $f;
+    })($task);
+}
+
+// Ideally, a response body should be made in this hook.
+Hook::fire('get');
+
+// This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`,
+// when the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute
+// this hook before every `exit` command on every response body you make in the hook above.
+Hook::fire('let');
