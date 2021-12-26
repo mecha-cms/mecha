@@ -525,33 +525,21 @@ body > div > header {
 
 /* `.\lot\x\alert` */
 
-.alert p {
+[role='alert'] {
   background: #fea;
   padding: calc(var(--margin) / 2) var(--margin);
 }
 
-.alert .error {
-  background: #faa;
-}
-
-.alert .info {
-  background: #aee;
-}
-
-.alert .success {
-  background: #afa;
-}
-
-body > .alert {
+body > [role='alert'] {
   margin-bottom: var(--gap);
 }
 
 /* `.\lot\x\markdown` */
 
-.notes {
+[role='doc-endnotes'] {
   margin-top: var(--gap);
 }
 
-.notes hr {
+[role='doc-endnotes'] hr {
   display: none;
 }
