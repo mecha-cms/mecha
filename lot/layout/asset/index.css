@@ -76,6 +76,7 @@ figure {
   text-align: center;
 }
 
+figure [role='img'],
 figure img {
   display: block;
 }
@@ -101,6 +102,7 @@ s {
   text-decoration: line-through;
 }
 
+[role='img'],
 img {
   height: auto;
   max-width: 100%;
@@ -115,10 +117,13 @@ a {
   color: inherit;
 }
 
+[role='link'],
 a:any-link {
   color: #00a;
 }
 
+[role='link']:active,
+[role='link']:focus,
 a:any-link:active,
 a:any-link:focus {
   color: #a00;
