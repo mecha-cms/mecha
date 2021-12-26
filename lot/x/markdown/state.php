@@ -31,12 +31,15 @@ return [
         'YAML' => 'YAML Ain’t Markup Language'
     ],
     'figuresEnabled' => true,
-    'figureAttributes' => ['class' => 'figure'],
-    'footnoteAttributes' => ['class' => 'notes p'],
+    'footnoteAttributes' => [
+        'class' => null,
+        'role' => 'doc-endnotes'
+    ],
     'footnoteLinkAttributes' => function($number, $attributes, &$element, $name) {
         return [
-            'class' => 'from',
-            'href' => '#to:' . $name
+            'class' => null,
+            'href' => '#to:' . $name,
+            'role' => 'doc-noteref'
         ];
     },
     'footnoteReferenceAttributes' => function($number, $attributes, &$element, $name, $index) {
@@ -44,27 +47,22 @@ return [
     },
     'footnoteBackLinkAttributes' => function($number, $attributes, &$element, $name, $index) {
         return [
-            'class' => 'to',
-            'href' => '#from:' . $name . '.' . $index
+            'class' => null,
+            'href' => '#from:' . $name . '.' . $index,
+            'rev' => null,
+            'role' => 'doc-backlink'
         ];
     },
     'footnoteBackReferenceAttributes' => function($number, $attributes, &$element, $name, $total) {
         return [
-            'class' => 'note',
-            'id' => 'to:' . $name
+            'id' => 'to:' . $name,
+            'role' => 'doc-endnote'
         ];
     },
     'linkAttributes' => function($html, $attributes, &$element, $internal) {
         return $internal ? [] : [
             'rel' => 'nofollow',
             'target' => '_blank'
-        ];
-    },
-    'tableAttributes' => ['class' => 'table'],
-    'tableColumnAttributes' => function($html, $attributes, &$element, $align) {
-        return [
-            'class' => $align ? 'text-' . $align : null,
-            'style' => null // Remove inline style(s)
         ];
     },
     'voidElementSuffix' => '>', // HTML5
