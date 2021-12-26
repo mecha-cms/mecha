@@ -98,7 +98,7 @@ Contributors
 Release Notes
 -------------
 
-### main
+### 3.0.0
 
  - [ ] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Added functions `abort`, `check`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
