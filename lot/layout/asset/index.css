@@ -46,6 +46,15 @@ abbr[title]:hover {
   border-bottom-color: inherit;
 }
 
+audio,
+iframe,
+video {
+  border: 0;
+  display: block;
+  height: auto;
+  width: 100%;
+}
+
 b,
 dt,
 legend,
@@ -65,6 +74,10 @@ var {
 caption,
 figure {
   text-align: center;
+}
+
+figure img {
+  display: block;
 }
 
 sub,
@@ -99,11 +112,15 @@ u {
 }
 
 a {
+  color: inherit;
+}
+
+a:any-link {
   color: #00a;
 }
 
-a:active,
-a:focus {
+a:any-link:active,
+a:any-link:focus {
   color: #a00;
 }
 
@@ -183,12 +200,6 @@ h6 {
   line-height: 1.2;
 }
 
-p,
-.p {
-  font-size: 1em;
-  font-weight: normal;
-}
-
 small,
 sub,
 sup {
@@ -214,9 +225,9 @@ sup {
 * + ol,
 * + p,
 * + pre,
+* + section,
 * + table,
-* + ul,
-* + .p {
+* + ul {
   margin-top: var(--margin);
 }
 
@@ -271,8 +282,7 @@ blockquote blockquote {
   font: inherit;
 }
 
-code,
-.code {
+code {
   font-family: monospace;
   font-style: normal;
   font-weight: normal;
@@ -354,11 +364,17 @@ body > div > header {
   }
 }
 
-.button,
-.input,
-.output,
-.select,
-.textarea {
+[role='button'],
+[role='combobox'],
+[role='listbox'],
+[role='searchbox'],
+[role='spinbutton'],
+[role='textbox'],
+button,
+input,
+output,
+select,
+textarea {
   accent-color: #00a;
   background: #eef;
   color: inherit;
@@ -371,32 +387,51 @@ body > div > header {
   width: 12rem;
 }
 
-.button::-moz-focus-inner,
-.input::-moz-focus-inner {
+button::-moz-focus-inner,
+input::-moz-focus-inner {
   border: 0;
   margin: 0;
   outline: 0;
   padding: 0;
 }
 
-.button {
+[role='button'],
+[role='button']:any-link,
+button,
+input[type='button'],
+input[type='reset'],
+input[type='submit'] {
   background: #00a;
   color: #fff;
+  cursor: pointer;
   text-align: center;
   user-select: none;
   width: auto;
 }
 
-.button:active,
-.button:focus {
+[role='button']:active,
+[role='button']:any-link:active,
+[role='button']:any-link:focus,
+[role='button']:focus,
+button:active,
+button:focus,
+input[type='button']:active,
+input[type='button']:focus,
+input[type='reset']:active,
+input[type='reset']:focus,
+input[type='submit']:active,
+input[type='submit']:focus {
   background: #a00;
   color: #fff;
 }
 
-.input[type=checkbox],
-.input[type=color],
-.input[type=file],
-.input[type=radio] {
+[role='checkbox'],
+[role='radio'],
+[role='switch'],
+input[type='checkbox'],
+input[type='color'],
+input[type='file'],
+input[type='radio'] {
   background: 0 0;
   border: 0;
   cursor: pointer;
@@ -405,19 +440,20 @@ body > div > header {
   width: auto;
 }
 
-.button,
-.input[type=image],
-.input[type=range],
-.select {
+[role='slider'],
+input[type='image'],
+input[type='range'] {
   cursor: pointer;
 }
 
-.input[type=color] {
+input[type='color'] {
   height: calc((1rem * var(--font-height)) * 1.25);
   width: calc((1rem * var(--font-height)) * 1.25);
 }
 
-.select {
+[role='combobox'],
+[role='listbox'],
+select {
   -moz-padding-start: calc((1rem * var(--font-height)) - var(--font-size) - 3px); /* <https://github.com/twbs/bootstrap/issues/32636> */
   appearance: none;
 }
@@ -434,96 +470,35 @@ body > div > header {
   padding: 0;
 }
 
-.table {
+table {
   border-collapse: collapse;
   width: 100%;
 }
 
-.table caption {
+table caption {
   caption-side: bottom;
   margin-top: var(--margin);
 }
 
-.table td,
-.table th {
+table td,
+table th {
   border: 1px solid;
   padding: calc(var(--font-size) / 3) calc(var(--font-size) / 1.5);
   text-align: left;
   vertical-align: top;
 }
 
-.textarea {
+[role='textbox'][aria-multiline='true'],
+textarea {
   min-height: calc(var(--font-size) * 6);
   resize: vertical;
 }
 
-.width {
-  display: block;
-  width: 100%;
-}
-
-:disabled {
+:disabled,
+[role='button']:not(:any-link) {
   cursor: not-allowed;
   opacity: .5;
 }
-
-.align-center,
-.align-center img {
-  display: block;
-  margin-right: auto;
-  margin-left: auto;
-}
-
-.align-left {
-  float: left;
-  margin-bottom: calc(var(--margin) * .5);
-  margin-right: calc(var(--margin) * 1.5);
-  margin-top: calc(var(--margin) * .5);
-}
-
-.align-right {
-  float: right;
-  margin-bottom: calc(var(--margin) * .5);
-  margin-left: calc(var(--margin) * 1.5);
-  margin-top: calc(var(--margin) * .5);
-}
-
-.align-left img,
-.align-right img {
-  display: block;
-}
-
-@media (max-width: 800px) {
-  .align-left,
-  .align-right {
-    display: block;
-    float: none;
-    margin: 0 auto;
-  }
-  * + .align-left,
-  * + .align-right {
-    margin-top: var(--margin);
-  }
-}
-
-.text-center {
-  text-align: center;
-}
-
-.text-justify {
-  text-align: justify;
-}
-
-.text-left {
-  text-align: left;
-}
-
-.text-right {
-  text-align: right;
-}
-
-
-/* `.\lot\x\alert` */
 
 [role='alert'] {
   background: #fea;
@@ -533,8 +508,6 @@ body > div > header {
 body > [role='alert'] {
   margin-bottom: var(--gap);
 }
-
-/* `.\lot\x\markdown` */
 
 [role='doc-endnotes'] {
   margin-top: var(--gap);
