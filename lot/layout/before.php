@@ -15,7 +15,7 @@
       <?= w($t->reverse); ?>
     </title>
     <link href="<?= $url; ?>/favicon.ico" rel="icon">
-    <link href="<?= $url->clean; ?>" rel="canonical">
+    <link href="<?= $url->current(false, false); ?>" rel="canonical">
   </head>
   <body>
     <?= self::alert(); ?>
