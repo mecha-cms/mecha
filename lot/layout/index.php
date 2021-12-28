@@ -31,8 +31,8 @@ $GLOBALS['traces'] = new Pages((static function($traces, $state, $url) {
     $chops = explode('/', trim($url->path, '/'));
     $v = LOT . D . 'page';
     while ($chop = array_shift($chops)) {
-        $v .= '/' . $chop;
-        if ($file = \exist([
+        $v .= D . $chop;
+        if ($file = exist([
             $v . '.archive',
             $v . '.page'
         ], 1)) {
