@@ -134,6 +134,21 @@ class Page extends File {
         unset($this->cache[$key], $this->lot[$key]);
     }
 
+    public function parent(int $type = 1) {
+        if (0 === $type) {
+            return parent::parent();
+        }
+        $path = $this->path;
+        $folder = dirname($path) . D . pathinfo($path, PATHINFO_FILENAME);
+        if ($file = exist([
+            $folder . '.archive',
+            $folder . '.page'
+        ], 1)) {
+            return new static($file);
+        }
+        return null;
+    }
+
     public function time(string $format = null) {
         $name = parent::name();
         // Set `time` value from the page’s file name

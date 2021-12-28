@@ -84,11 +84,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     public function offsetUnset($key) {}
 
     public function parent() {
-        if ($this->exist()) {
-            $parent = dirname($this->path);
-            return '.' !== $parent ? $parent : null;
-        }
-        return null;
+        return $this->exist() ? new static(dirname($this->path)) : null;
     }
 
     public function seal() {

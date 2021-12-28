@@ -94,7 +94,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function parent() {
-        return $this->exist() ? dirname($this->path) : null;
+        return $this->exist() ? new static(dirname($this->path)) : null;
     }
 
     public function size(string $unit = null, int $round = 2) {
