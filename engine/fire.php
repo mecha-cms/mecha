@@ -656,7 +656,8 @@ function short(string $value) {
 
 Hook::set('get', function() use($hash, $path, $query) {
     if (Hook::get('route')) {
-        // All application page status is initially forbidden. If there are route hook available, we assume that we have a page but is not found.
+        // All application page status is initially forbidden. If there are route hook available, we assume that we have
+        // a page but is not found.
         status(404);
     }
     Hook::fire('route', [$path, $query, $hash]);

@@ -236,10 +236,10 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
         }
         // Take the rest of the YAML stream just in case you need it!
         if (isset($parts[1])) {
-            // We use tab character as array key placeholder because based
-            // on the specification, this character should not be written in
-            // a YAML document, so it will be impossible that, there will be
-            // a YAML key denoted by a human using a tab character.
+            // We use tab character as array key placeholder because based on the specification, this character should
+            // not be written in a YAML document, so it will be impossible that, there will be a YAML key denoted by a
+            // human using a tab character.
+            //
             // <https://yaml.org/spec/1.2/spec.html#id2777534>
             $docs[$content] = trim($parts[1], "\n");
         }

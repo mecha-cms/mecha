@@ -432,9 +432,8 @@ function seal(string $path, $seal = null) {
 
 // Send email as HTML
 function send($from, $to, string $title, string $content, array $lot = []) {
-    // This function was intended to be used as a quick way to send HTML email
-    // There is no such email validation proccess here
-    // We assume that you have set the correct email address(es)
+    // This function was intended to be used as a quick way to send HTML email. There is no such email validation
+    // proccess here. We assume that you have set the correct email address(es)
     if (is_array($to)) {
         // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
         if (array_keys($to) !== range(0, count($to) - 1)) {

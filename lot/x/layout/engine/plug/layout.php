@@ -3,8 +3,8 @@
 foreach ([
     'camel' => "\\c",
     'description' => function(string $value = null, $max = 200) {
-        // Make sure to add space at the end of the block tag(s) that will be removed
-        // To make `<p>asdf.</p><p>asdf</p>` becomes `asdf. asdf` and not `asdf.asdf`
+        // Make sure to add space at the end of the block tag(s) that will be removed. To make `<p>asdf.</p><p>asdf</p>`
+        // becomes `asdf. asdf` and not `asdf.asdf`.
         $r = 'address|article|blockquote|details|div|d[dt]|figure|(?:fig)?caption|footer|h(?:[1-6]|eader|r)|li|main|nav|p(?:re)?|section|summary|t[dh]';
         $value = preg_replace(['/\s+/', '/\s*(<\/(?:' . $r . ')>)\s*/i'], [' ', '$1 '], $value);
         $value = strip_tags($value, '<a><abbr><b><br><cite><code><del><dfn><em><i><ins><kbd><mark><q><small><span><strong><sub><sup><time><u><var>');

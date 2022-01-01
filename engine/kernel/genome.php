@@ -2,10 +2,11 @@
 
 abstract class Genome {
 
-    // Method(s)…
+    // This property is supposed to be private, but who knows someone might need it, for example to check the data
+    // outside of the extended class. So I set this as a public property. Just don’t write it down in the manual.
+    // This property could change at any time.
     public static $_ = [];
 
-    // Call the added method with `$genome->foo()`
     public function __call(string $kin, array $lot = []) {
         $c = static::class;
         $m = '_' . $kin . '_';
@@ -50,7 +51,6 @@ abstract class Genome {
         }
     }
 
-    // Call the added method with `Genome::foo()`
     public static function __callStatic(string $kin, array $lot = []) {
         $c = static::class;
         $m = '_' . $kin . '_';
