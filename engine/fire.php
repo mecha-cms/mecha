@@ -517,11 +517,21 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
     foreach ($_FILES as $k => $v) {
         if (isset($v['name']) && is_array($v['name'])) {
             $vv = [];
-            foreach (['error', 'name', 'size', 'tmp_name', 'type'] as $kk) {
-                array_walk_recursive($v[$kk], static function(&$v, $k, $kk) {
-                    $v = [$kk => $v];
-                }, $kk);
-                $vv = array_replace_recursive($vv, $v[$kk]);
+            // <https://www.php.net/manual/en/features.file-upload.post-method.php>
+            foreach ([
+                'error',
+                'full_path',
+                'name',
+                'size',
+                'tmp_name',
+                'type'
+            ] as $kk) {
+                if (array_key_exists($kk, $v)) {
+                    array_walk_recursive($v[$kk], static function(&$v, $k, $kk) {
+                        $v = [$kk => $v];
+                    }, $kk);
+                    $vv = array_replace_recursive($vv, $v[$kk]);
+                }
             }
             $_POST[$k] = $vv;
         } else {
