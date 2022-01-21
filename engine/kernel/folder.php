@@ -55,7 +55,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public function count() {
         // Count file(s) only
-        return $this->exist() ? g($this->path, 1, true);
+        return $this->exist() ? q(g($this->path, 1, true)) : 0;
     }
 
     public function exist() {

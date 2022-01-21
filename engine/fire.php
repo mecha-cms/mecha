@@ -579,8 +579,8 @@ $path = strtr(trim($path, '/'), [
 // Prevent directory traversal attack
 $path = strtr($path, ['../' => ""]);
 
-// If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\b\c` then the sub-folder path of
-// this system will be `a\b\c`
+// If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\b\c`
+// then the sub-folder path of this system will be `a\b\c`
 $sub = trim(strtr(PATH . D, [rtrim(strtr($_SERVER['DOCUMENT_ROOT'] . D, '/', D), D) . D => ""]), D);
 
 // Remove sub-folder from path
@@ -666,8 +666,8 @@ function short(string $value) {
 
 Hook::set('get', function() use($hash, $path, $query) {
     if (Hook::get('route')) {
-        // All system page status is initially forbidden. If there are route hook available, we assume that we have a
-        // page but is not found.
+        // All system page status is initially forbidden. If there are route hook available,
+        // we assume that we have a page but is not found.
         status(404);
     }
     Hook::fire('route', [$path, $query, $hash]);
@@ -735,7 +735,7 @@ if (is_file($task = PATH . D . 'task.php')) {
 // Ideally, a response body should be made in this hook.
 Hook::fire('get');
 
-// This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`, when
-// the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute this hook
-// before every `exit` command on every response body you make in the hook above.
+// This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`,
+// when the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute
+// this hook before every `exit` command on every response body you make in the hook above.
 Hook::fire('let');

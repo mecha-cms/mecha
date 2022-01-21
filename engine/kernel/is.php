@@ -66,7 +66,7 @@ final class Is extends Genome {
         if (!is_string($value)) {
             return false;
         }
-        return 0 === strpos($value, ROOT) && false === strpos($value, "\n") && (!$exist || stream_resolve_include_path($value));
+        return 0 === strpos($value, PATH) && false === strpos($value, "\n") && (!$exist || stream_resolve_include_path($value));
     }
 
     // Check for valid boolean value
