@@ -576,9 +576,9 @@ function step(string $value, string $join = '.', int $direction = 1) {
 }
 
 function store(string $path, array $blob, string $as = null) {
-    if (!empty($blob['error'])) {
+    if (!empty($blob['status'])) {
         // Error
-        return $blob['error'];
+        return $blob['status'];
     }
     if (is_file($file = $path . D . ($as ?? $blob['name']))) {
         // Skip
@@ -588,7 +588,7 @@ function store(string $path, array $blob, string $as = null) {
         mkdir($path, 0775, true);
     }
     // Success?
-    return move_uploaded_file($blob['tmp_name'], $file) ? path($file) : null;
+    return move_uploaded_file($blob['file'], $file) ? path($file) : null;
 }
 
 // Get file content line by line

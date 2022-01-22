@@ -528,14 +528,22 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
             ] as $kk) {
                 if (array_key_exists($kk, $v)) {
                     array_walk_recursive($v[$kk], static function(&$v, $k, $kk) {
-                        $v = [$kk => $v];
+                        if ('error' === $kk) {
+                            $v = ['status' => $v];
+                        } else if ('full_path' === $kk) {
+                            $v = ['path' => $v];
+                        } else if ('tmp_name' === $kk) {
+                            $v = ['file' => $v];
+                        } else {
+                            $v = [$kk => $v];
+                        }
                     }, $kk);
                     $vv = array_replace_recursive($vv, $v[$kk]);
                 }
             }
-            $_POST[$k] = $vv;
+            $_POST[$k] = array_replace_recursive($vv, $_POST[$k] ?? []);
         } else {
-            $_POST[$k] = $v;
+            $_POST[$k] = array_replace_recursive($v, $_POST[$k] ?? []);
         }
     }
 }
