@@ -503,7 +503,7 @@ $GLOBALS['F'] = [
     'Ỹ' => 'Y'
 ];
 
-// Normalize `$_REQUEST` value
+// Normalize `$_GET`, `$_POST`, `$_REQUEST` value(s)
 $any = [&$_GET, &$_POST, &$_REQUEST];
 array_walk_recursive($any, static function(&$v) {
     // Trim white-space and normalize line-break
@@ -512,39 +512,33 @@ array_walk_recursive($any, static function(&$v) {
     $v = "" === $v ? null : e($v);
 });
 
-// Normalize `$_FILES` value to `$_POST`
+// Normalize `$_FILES` value(s) to `$_POST`
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
-    foreach ($_FILES as $k => $v) {
-        if (isset($v['name']) && is_array($v['name'])) {
-            $vv = [];
-            // <https://www.php.net/manual/en/features.file-upload.post-method.php>
-            foreach ([
-                'error',
-                'full_path',
-                'name',
-                'size',
-                'tmp_name',
-                'type'
-            ] as $kk) {
-                if (array_key_exists($kk, $v)) {
-                    array_walk_recursive($v[$kk], static function(&$v, $k, $kk) {
-                        if ('error' === $kk) {
-                            $v = ['status' => $v];
-                        } else if ('full_path' === $kk) {
-                            $v = ['path' => $v];
-                        } else if ('tmp_name' === $kk) {
-                            $v = ['file' => $v];
-                        } else {
-                            $v = [$kk => $v];
-                        }
-                    }, $kk);
-                    $vv = array_replace_recursive($vv, $v[$kk]);
-                }
-            }
-            $_POST[$k] = array_replace_recursive($vv, $_POST[$k] ?? []);
-        } else {
-            $_POST[$k] = array_replace_recursive($v, $_POST[$k] ?? []);
+    // <https://stackoverflow.com/a/30342756/1163000>
+    $tidy = static function(array $in) use(&$tidy) {
+        if (!is_array(reset($in))) {
+            return $in;
         }
+        $out = [];
+        $alter = [
+            'error' => 'status',
+            'full_path' => 'path',
+            'tmp_name' => 'blob'
+        ];
+        foreach ($in as $k => $v) {
+            foreach ($v as $kk => $vv) {
+                $out[$kk][$alter[$k] ?? $k] = $vv;
+            }
+        }
+        foreach ($out as &$v) {
+            ksort($v);
+            $v = $tidy($v);
+        }
+        unset($v);
+        return $out;
+    };
+    foreach ($_FILES as $k => $v) {
+        $_POST[$k] = array_replace_recursive($_POST[$k] ?? [], $tidy($v));
     }
 }
 
@@ -674,8 +668,8 @@ function short(string $value) {
 
 Hook::set('get', function() use($hash, $path, $query) {
     if (Hook::get('route')) {
-        // All system page status is initially forbidden. If there are route hook available,
-        // we assume that we have a page but is not found.
+        // All page status is initially forbidden. If we have at least one route
+        // hook available, we assume that we have a page but is not found.
         status(404);
     }
     Hook::fire('route', [$path, $query, $hash]);
