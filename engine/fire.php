@@ -520,6 +520,9 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
             return $in;
         }
         $out = [];
+        // The normalized value(s) do not follow the default value(s) given by `$_FILES`. Instead, it
+        // uses its own value(s) with slightly different specification, to make it easier for user(s)
+        // who are already familiar with the property of the page file.
         $alter = [
             'error' => 'status',
             'full_path' => 'path',
