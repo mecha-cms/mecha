@@ -79,26 +79,16 @@ namespace x {
             }
         }
     }
-    function layout(string $path, array $lot = [], $exit = true) {
+    function layout(string $path, array $lot = []) {
         if (!\is_file(\LOT . \D . 'layout' . \D . 'index.php')) {
             // Missing `.\lot\layout\index.php` file :(
             return null;
         }
         if (null !== ($content = \Layout::get($path, $lot))) {
-            $content = \Hook::fire('content', [$content]);
-            \ob_start();
-            \ob_start("\\ob_gzhandler");
-            echo $content; // The response body
-            \ob_end_flush();
-            // <https://www.php.net/manual/en/function.ob-get-length.php#59294>
-            \header('content-length: ' . \ob_get_length());
-            echo \ob_get_clean();
-            if ($exit) {
-                \Hook::fire('let');
-                exit;
-            }
-        } else if (\defined("\\TEST") && \TEST) {
-            \abort('Layout <code>' . $path . '</code> does not exist.', $exit);
+            return $content;
+        }
+        if (\defined("\\TEST") && \TEST) {
+            \abort('Layout <code>' . $path . '</code> does not exist.');
         }
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 20);

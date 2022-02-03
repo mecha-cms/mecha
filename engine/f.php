@@ -730,6 +730,9 @@ function e($value, array $lot = []) {
             return $value;
         }
         if (is_numeric($value)) {
+            if (strlen($value) > 1 && '0' === $value[0] && false === strpos($value, '.')) {
+                return $value; // Preserve as-is!
+            }
             return false !== strpos($value, '.') ? (float) $value : (int) $value;
         }
         if (array_key_exists($value, $lot = array_replace([

@@ -557,15 +557,6 @@ d(__DIR__ . D . 'kernel', static function($object, $n) {
 $state = is_file($f = __DIR__ . D . '..' . D . 'state.php') ? require $f : [];
 $GLOBALS['state'] = $state = new State($state);
 
-// Set default response status and header(s)
-status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
-
-// Set default response type
-type('text/' . (error_get_last() ? 'plain' : 'html'));
-
-// Set default time zone and locale
-zone($state->zone);
-
 $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
 $protocol = $scheme . '://';
@@ -669,15 +660,6 @@ function short(string $value) {
     return "" === $value ? '/' : $value;
 }
 
-Hook::set('get', function() use($hash, $path, $query) {
-    if (Hook::get('route')) {
-        // All page status is initially forbidden. If we have at least one route
-        // hook available, we assume that we have a page but is not found.
-        status(404);
-    }
-    Hook::fire('route', [$path, $query, $hash]);
-}, 10);
-
 $uses = [];
 foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
     if (empty($GLOBALS['X'][0][$v])) {
@@ -724,9 +706,15 @@ foreach ($uses as $v) {
     })($v);
 }
 
-unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $uses, $v);
+// Set default response status and header(s)
+status(403, ['x-powered-by' => 'Mecha/' . VERSION]);
 
-// This hook is useful for running task(s) before the response starts.
+// Set default response type
+type('text/' . (error_get_last() ? 'plain' : 'html'));
+
+// Set default time zone and locale
+zone($state->zone);
+
 Hook::fire('set');
 
 // Run task(s) if any…
@@ -737,10 +725,28 @@ if (is_file($task = PATH . D . 'task.php')) {
     })($task);
 }
 
-// Ideally, a response body should be made in this hook.
 Hook::fire('get');
 
-// This hook is useful for running task(s) after the response ends. However, since response may issue an `exit`,
-// when the command is executed, it will make this hook fail to execute. As a workaround, you may need to execute
-// this hook before every `exit` command on every response body you make in the hook above.
+(static function($path, $query, $hash) {
+    if ($v = Hook::fire('route', [[], $path, $query, $hash])) {
+        unset($path, $query, $hash);
+        extract($v);
+        if (isset($kick)) {
+            kick($kick);
+            exit;
+        }
+        status($status ?? 404);
+        type($type ?? 'text/html');
+        ob_start();
+        ob_start('ob_gzhandler');
+        echo Hook::fire('content', [$content ?? null]);
+        ob_end_flush();
+        // <https://www.php.net/manual/en/function.ob-get-length.php#59294>
+        header('content-length: ' . ob_get_length());
+        echo ob_get_clean();
+    }
+})($path, $query, $hash);
+
 Hook::fire('let');
+
+unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $uses, $v);
