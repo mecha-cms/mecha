@@ -50,9 +50,9 @@ namespace x\page {
     $GLOBALS['page'] = new \Page;
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
-    function route($data, $path, $query, $hash) {
-        if (isset($data['content']) || isset($data['kick'])) {
-            return $data;
+    function route($r, $path, $query, $hash) {
+        if (isset($r['content']) || isset($r['kick'])) {
+            return $r;
         }
         \extract($GLOBALS, \EXTR_SKIP);
         $path = \trim($path ?? "", '/');
@@ -72,8 +72,8 @@ namespace x\page {
         }
         $i = ((int) ($i ?? 1)) - 1;
         if ($i < 1 && $route === $path && !$query) {
-            $data['kick'] = '/'; // Redirect to home page
-            return $data;
+            $r['kick'] = '/'; // Redirect to home page
+            return $r;
         }
         if ($file = \exist([
             $folder . '.archive',
@@ -126,9 +126,9 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                $data['content'] = \Hook::fire('layout', ['page/' . ($path ?: $route) . '/' . ($i + 1)]);
-                $data['status'] = 200;
-                return $data;
+                $r['content'] = \Hook::fire('layout', ['page/' . ($path ?: $route) . '/' . ($i + 1)]);
+                $r['status'] = 200;
+                return $r;
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
@@ -156,9 +156,9 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                $data['content'] = \Hook::fire('layout', ['pages/' . ($path ?: $route) . '/' . ($i + 1)]);
-                $data['status'] = 200;
-                return $data;
+                $r['content'] = \Hook::fire('layout', ['pages/' . ($path ?: $route) . '/' . ($i + 1)]);
+                $r['status'] = 200;
+                return $r;
             }
         }
         \State::set([
@@ -176,9 +176,9 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        $data['content'] = \Hook::fire('layout', ['error/' . ($path ?: $route) . '/' . ($i + 1)]);
-        $data['status'] = 404;
-        return $data;
+        $r['content'] = \Hook::fire('layout', ['error/' . ($path ?: $route) . '/' . ($i + 1)]);
+        $r['status'] = 404;
+        return $r;
     }
     \Hook::set('route', function(...$lot) {
         return \Hook::fire('route.page', $lot);

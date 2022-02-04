@@ -725,17 +725,20 @@ if (is_file($task = PATH . D . 'task.php')) {
     })($task);
 }
 
+// Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
+// special feature to define variable in the response so clearing user data on global scope becomes necessary.
+unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v);
+
 Hook::fire('get');
 
-(static function($path, $query, $hash) {
-    if ($v = Hook::fire('route', [[], $path, $query, $hash])) {
-        unset($path, $query, $hash);
+(static function($v) {
+    if ($v = Hook::fire('route', [[], $v->path, $v->query, $v->hash])) {
         extract($v);
         if (isset($kick)) {
             kick($kick);
             exit;
         }
-        status($status ?? 404);
+        status(...((array) ($status ?? 404)));
         type($type ?? 'text/html');
         ob_start();
         ob_start('ob_gzhandler');
@@ -745,8 +748,6 @@ Hook::fire('get');
         header('content-length: ' . ob_get_length());
         echo ob_get_clean();
     }
-})($path, $query, $hash);
+})($url);
 
 Hook::fire('let');
-
-unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $uses, $v);

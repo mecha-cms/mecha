@@ -30,13 +30,13 @@ class Layout extends Genome {
         }
         unset($k, $v);
         // Need to use special variable name here!
-        if (${__FILE__} = self::path($id)) {
+        if ($f = self::path($id)) {
             extract($data, EXTR_SKIP);
             ob_start();
             if (isset($lot['data'])) {
                 $data = $lot['data'];
             }
-            require ${__FILE__};
+            require $f;
             return ob_get_clean();
         }
         return null;
