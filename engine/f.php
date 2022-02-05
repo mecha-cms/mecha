@@ -89,8 +89,20 @@ function cookie(...$lot) {
         $state['expires'] = (int) (strtotime($state['expires'], $time = time()) - $time);
     }
     $state['expires'] += time();
-    // <https://stackoverflow.com/a/1969339/1163000>
-    setcookie('*' . crc32($key), base64_encode(json_encode($value)), $state);
+    // TODO: Remove this hack in the future!
+    if (PHP_VERSION_ID < 70300) {
+        // <https://stackoverflow.com/a/51128675>
+        setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)),
+            $state['expires'],
+            $state['path'] . '; samesite=' . $state['samesite'],
+            $state['domain'],
+            $state['secure'],
+            $state['httponly']
+        );
+    } else {
+        // <https://stackoverflow.com/a/1969339/1163000>
+        setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)), $state);
+    }
 }
 
 function delete(string $path, $purge = true) {
