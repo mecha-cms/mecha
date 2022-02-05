@@ -600,7 +600,7 @@ function store(string $path, array $blob, string $as = null) {
         mkdir($path, 0775, true);
     }
     // Success?
-    return move_uploaded_file($blob['file'], $file) ? path($file) : null;
+    return move_uploaded_file($blob['blob'], $file) ? path($file) : null;
 }
 
 // Get file content line by line
