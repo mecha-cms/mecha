@@ -7,5 +7,5 @@ return [
     'language' => 'en',
     'route' => '/index',
     'title' => 'Site Title',
-    'zone' => date_default_timezone_get()
+    'zone' => zone()
 ];

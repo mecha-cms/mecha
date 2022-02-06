@@ -67,7 +67,7 @@ function cookie(...$lot) {
     }
     $key = array_shift($lot);
     if (0 === count($lot)) {
-        if (isset($_COOKIE[$k = '*' . crc32($key)])) {
+        if (isset($_COOKIE[$k = '*' . sprintf('%u', crc32($key))])) {
             return json_decode(base64_decode($_COOKIE[$k]), true);
         }
         return $_COOKIE[$key] ?? null;
