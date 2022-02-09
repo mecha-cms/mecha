@@ -4,7 +4,7 @@ description: A minimal layout with almost zero dependencies.
 image: /lot/layout/asset/index.png
 author: Taufik Nurrohman
 type: Markdown
-version: 1.7.0
+version: 1.7.1
 ...
 
 This layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons").

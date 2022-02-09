@@ -28,7 +28,7 @@ $GLOBALS['links'] = new Anemone((static function($links, $state, $url) {
 
 // Create site trace data to be used in navigation
 $GLOBALS['traces'] = new Pages((static function($traces, $state, $url) {
-    $chops = explode('/', trim($url->path, '/'));
+    $chops = explode('/', trim($url->path ?? "", '/'));
     $v = LOT . D . 'page';
     while ($chop = array_shift($chops)) {
         $v .= D . $chop;

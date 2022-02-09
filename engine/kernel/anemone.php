@@ -60,7 +60,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return $that;
     }
 
-    public function count() {
+    public function count(): int {
         return count($this->value);
     }
 
@@ -76,7 +76,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return isset($key) ? get($this->value, $key) : $this->value;
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         return new \ArrayIterator($this->value);
     }
 
@@ -99,6 +99,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return implode($join, $this->value);
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->value;
     }
@@ -141,15 +142,16 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return $that;
     }
 
-    public function offsetExists($key) {
+    public function offsetExists($key): bool {
         return isset($this->value[$key]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->value[$key] ?? null;
     }
 
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         if (isset($key)) {
             $this->value[$key] = $value;
         } else {
@@ -157,7 +159,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         }
     }
 
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         unset($this->value[$key]);
     }
 

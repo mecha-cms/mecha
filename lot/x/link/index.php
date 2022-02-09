@@ -105,7 +105,7 @@ namespace x\link\data {
             return $value;
         }
         $out = "";
-        foreach (\preg_split('/(\s*,\s*)(?!,)/', $value, null, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $v) {
+        foreach (\preg_split('/(\s*,\s*)(?!,)/', $value, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $v) {
             if (',' === \trim($v)) {
                 $out .= $v;
                 continue;

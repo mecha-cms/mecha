@@ -27,14 +27,15 @@ final class Alert extends Genome implements \Countable, \IteratorAggregate, \Jso
         return "";
     }
 
-    public function count() {
+    public function count(): int {
         return count((array) self::get(null, false));
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         return new \ArrayIterator(self::get(null, false) ?? []);
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return self::get(null, false);
     }

@@ -87,21 +87,23 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         return $out;
     }
 
-    public function count() {
+    public function count(): int {
         return 1; // Single node is always `1`
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->lot;
     }
 
-    public function offsetExists($key) {
+    public function offsetExists($key): bool {
         if (is_numeric($key)) {
             return isset($this->lot[$key]);
         }
         return isset($this->lot[2][$key]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         if (is_numeric($key)) {
             return $this->lot[$key] ?? null;
@@ -109,7 +111,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         return $this->lot[2][$key] ?? null;
     }
 
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         if (isset($key)) {
             if (is_numeric($key)) {
                 $this->lot[$key] = $value;
@@ -121,7 +123,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
         }
     }
 
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         if (is_numeric($key)) {
             unset($this->lot[$key]);
         } else {

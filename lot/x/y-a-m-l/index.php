@@ -140,7 +140,7 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
             $yaml_span = static function(string $value, $eval) use(&$yaml_eval) {
                 $out = "";
                 // Validate to JSON
-                foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $value, null, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
+                foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $value, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                     $out .= false !== strpos('[]{}:,', $v) ? $v : json_encode($v);
                 }
                 $out = json_decode($out, true) ?? $value;

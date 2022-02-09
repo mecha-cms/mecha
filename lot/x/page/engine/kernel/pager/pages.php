@@ -4,10 +4,12 @@ class Pages extends \Pager {
 
     public function __construct(array $value = [], $chunk = [5, 0], $parent = null) {
         parent::__construct();
-        if (\is_object($parent)) {
-            $this->parent = $parent;
-        } else if (\is_file($parent)) {
-            $this->parent = $parent = $this->page($parent);
+        if ($parent) {
+            if (\is_object($parent)) {
+                $this->parent = $parent;
+            } else if (\is_file($parent)) {
+                $this->parent = $parent = $this->page($parent);
+            }
         }
         $value = \array_chunk($value, $chunk[0] ?? 5);
         $i = $chunk[1] ?? 0;

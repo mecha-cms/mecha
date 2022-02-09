@@ -1003,6 +1003,7 @@ function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.
 }
 
 function w(string $value = null, $preserve_tags = [], $preserve_break = false) {
+    $value = (string) $value;
     // Should be a HTML input
     if (false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
         $preserve_tags = '<' . implode('><', is_string($preserve_tags) ? explode(',', $preserve_tags) : (array) $preserve_tags) . '>';

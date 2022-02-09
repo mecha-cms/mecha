@@ -64,7 +64,7 @@ class Page extends File {
         return $this->__call('content', $lot);
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         $out = [];
         if ($this->exist()) {
             $out = From::page(file_get_contents($path = $this->path), true);
@@ -80,10 +80,12 @@ class Page extends File {
         return new \ArrayIterator($out);
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->exist() ? From::page(file_get_contents($this->path), true) : [];
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         if ($this->exist()) {
             $path = $this->path;
@@ -122,7 +124,7 @@ class Page extends File {
         return $this->lot[$key] ?? null;
     }
 
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         if (isset($key)) {
             $this->lot[$key] = $value;
         } else {
@@ -130,7 +132,7 @@ class Page extends File {
         }
     }
 
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         unset($this->cache[$key], $this->lot[$key]);
     }
 

@@ -45,7 +45,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null;
     }
 
-    public function count() {
+    public function count(): int {
         return $this->exist() ? 1 : 0;
     }
 
@@ -53,10 +53,11 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->path ?? false;
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         return $this->stream();
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return [$this->path => 1];
     }
@@ -72,16 +73,17 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null;
     }
 
-    public function offsetExists($key) {
+    public function offsetExists($key): bool {
         return !!$this->offsetGet($key);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->__get($key);
     }
 
-    public function offsetSet($key, $value) {}
-    public function offsetUnset($key) {}
+    public function offsetSet($key, $value): void {}
+    public function offsetUnset($key): void {}
 
     public function parent() {
         return $this->exist() ? new Folder(dirname($this->path)) : null;

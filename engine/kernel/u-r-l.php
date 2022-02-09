@@ -137,7 +137,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         }
     }
 
-    public function count() {
+    public function count(): int {
         return count($this->lot);
     }
 
@@ -168,29 +168,31 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return $this->__toString() . $this->getPath() . $query . $hash;
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         foreach ($this->lot as $k => $v) {
             yield $k => $this->{'get' . ucfirst($k)}();
         }
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->lot;
     }
 
-    public function offsetExists($key) {
+    public function offsetExists($key): bool {
         return isset($this->lot[$key]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->lot[$key] ?? null;
     }
 
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         $this->{'set' . ucfirst($key)}($value);
     }
 
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         $this->__unset($key);
     }
 

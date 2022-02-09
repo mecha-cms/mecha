@@ -42,27 +42,29 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         self::let(p2f($key));
     }
 
-    public function count() {
+    public function count(): int {
         return count(self::$lot[static::class] ?? []);
     }
 
-    public function getIterator() {
+    public function getIterator(): \Traversable {
         return new \ArrayIterator(self::$lot[static::class] ?? []);
     }
 
+    #[\ReturnTypeWillChange]
     public function jsonSerialize() {
         return self::$lot[static::class] ?? [];
     }
 
-    public function offsetExists($key) {
+    public function offsetExists($key): bool {
         return isset(self::$lot[static::class][$key]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($key) {
         return self::$lot[static::class][$key] ?? null;
     }
 
-    public function offsetSet($key, $value) {
+    public function offsetSet($key, $value): void {
         $c = static::class;
         if (isset($key)) {
             self::$lot[$c][$key] = $value;
@@ -71,7 +73,7 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         }
     }
 
-    public function offsetUnset($key) {
+    public function offsetUnset($key): void {
         unset(self::$lot[static::class][$key]);
     }
 
