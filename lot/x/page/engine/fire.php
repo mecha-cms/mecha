@@ -51,7 +51,17 @@ namespace x\page {
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
     function route($r, $path, $query, $hash) {
-        if (isset($r['content']) || isset($r['kick'])) {
+        // This conditional statement is not mandatory, but is always a good practice to be added given that hook(s)
+        // are executed in order based on the `$stack` value. You could add a new route hook to overwrite the output
+        // of this hook which will be executed after this hook execution. But this practice is not efficient because
+        // this hook need(s) to be executed first, while the process inside it will not be used as it will be
+        // overwritten by your route hook anyway.
+        // To speed up the process, you need to set a higher `$stack` value to your route hook, so that it can be
+        // executed before this hook. Without this conditional statement, the output data of your previously executed
+        // hook will be overwritten by this hook. This conditional statement passes the value immediately if the
+        // previous hook value already contains the required response data (probably comes from the hook you added
+        // before this hook), so that all process(es) after this conditional statement will not be executed.
+        if (isset($r['content']) || isset($r['kick']) || isset($r['layout']) || isset($r['path'])) {
             return $r;
         }
         \extract($GLOBALS, \EXTR_SKIP);
@@ -126,7 +136,7 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                $r['content'] = \Hook::fire('layout', ['page/' . ($path ?: $route) . '/' . ($i + 1)]);
+                $r['layout'] = 'page/' . ($path ?: $route) . '/' . ($i + 1);
                 $r['status'] = 200;
                 return $r;
             }
@@ -156,7 +166,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                $r['content'] = \Hook::fire('layout', ['pages/' . ($path ?: $route) . '/' . ($i + 1)]);
+                $r['layout'] = 'pages/' . ($path ?: $route) . '/' . ($i + 1);
                 $r['status'] = 200;
                 return $r;
             }
@@ -176,7 +186,7 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        $r['content'] = \Hook::fire('layout', ['error/' . ($path ?: $route) . '/' . ($i + 1)]);
+        $r['layout'] = 'error/' . ($path ?: $route) . '/' . ($i + 1);
         $r['status'] = 404;
         return $r;
     }

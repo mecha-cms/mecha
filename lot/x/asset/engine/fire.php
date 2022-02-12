@@ -1,7 +1,7 @@
 <?php namespace x;
 
 function asset($content) {
-    return \strtr($content, [
+    return \strtr($content ?? "", [
         '</body>' => \Hook::fire('asset:body', [""], null, \Asset::class) . '</body>',
         '</head>' => \Hook::fire('asset:head', [""], null, \Asset::class) . '</head>'
     ]);

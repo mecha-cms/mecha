@@ -29,7 +29,6 @@ class Layout extends Genome {
             $data[$k] = $v;
         }
         unset($k, $v);
-        // Need to use special variable name here!
         if ($f = self::path($id)) {
             extract($data, EXTR_SKIP);
             ob_start();
@@ -52,7 +51,7 @@ class Layout extends Genome {
                 return $value;
             }
             $id = strtr($value, D, '/');
-            // Added by the `Layout::get()`
+            // Added by the `Layout::set()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
                 return exist(self::$lot[$c][1][$id], 1) ?: null;
             }

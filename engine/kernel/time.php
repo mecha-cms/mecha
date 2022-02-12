@@ -48,7 +48,48 @@ final class Time extends Genome {
     }
 
     public function i(string $pattern = '%Y-%m-%d %T') {
-        $out = strftime($pattern, strtotime($this->source));
+        // Can no longer use `strfmtime()` function because this function will be removed in PHP 9.0.0 :(
+        // Here, we use `strfmtime()` format in the user input, but use the `date()` function internally.
+        // <https://php.watch/versions/8.1/strftime-gmstrftime-deprecated>
+        // <https://www.php.net/manual/en/function.date.php>
+        // <https://www.php.net/manual/en/function.strftime.php>
+        $out = date(strtr($pattern, [
+            '%%' => '%',
+            '%A' => 'l',
+            '%B' => 'F',
+            '%D' => 'm/d/y',
+            '%F' => 'Y-m-d',
+            '%H' => 'H',
+            '%I' => 'h',
+            '%M' => 'i',
+            '%P' => 'a',
+            '%R' => 'H:i',
+            '%S' => 's',
+            '%T' => 'H:i:s',
+            '%W' => 'W',
+            '%X' => 'H:i:s',
+            '%Y' => 'Y',
+            '%Z' => 'T',
+            '%a' => 'D',
+            '%b' => 'M',
+            '%c' => 'D M j H:i:s Y',
+            '%d' => 'd',
+            '%e' => 'j',
+            '%h' => 'M',
+            '%k' => 'G',
+            '%l' => 'g',
+            '%m' => 'm',
+            '%n' => "\n",
+            '%p' => 'A',
+            '%r' => 'h:i:s A',
+            '%s' => 'U',
+            '%t' => "\t",
+            '%u' => 'N',
+            '%w' => 'w',
+            '%x' => 'm/d/y',
+            '%y' => 'y',
+            '%z' => 'O'
+        ]), strtotime($this->source));
         // Slightly improve the performance by detecting some pattern that produces word(s)
         if (
             // ‘Sun’ through ‘Sat’ or ‘Sunday’ through ‘Saturday’
