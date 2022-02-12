@@ -729,8 +729,10 @@ if (is_file($task = PATH . D . 'task.php')) {
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
 unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v);
 
-Hook::fire('get');
+Hook::set('get', function() use($url) {
+    echo (string) Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
+}, 1000);
 
-Hook::fire('route', [[], $url->path, $url->query, $url->hash]);
+Hook::fire('get');
 
 Hook::fire('let');
