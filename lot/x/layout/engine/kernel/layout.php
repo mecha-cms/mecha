@@ -21,14 +21,17 @@ class Layout extends Genome {
         return self::get($kin, ...$lot);
     }
 
-    public static function get($id, array $lot = []) {
+    public static function get($id, array $lot = [], int $status = null) {
         $data = [];
         foreach (array_replace($GLOBALS, $lot) as $k => $v) {
             // Sanitize array key
             $k = preg_replace('/\W/', "", strtr($k, '-', '_'));
             $data[$k] = $v;
         }
-        unset($k, $v);
+        if (isset($status) && !headers_sent()) {
+            status($status);
+        }
+        unset($k, $status, $v);
         if ($f = self::path($id)) {
             extract($data, EXTR_SKIP);
             ob_start();

@@ -79,37 +79,14 @@ namespace x\layout {
             }
         }
     }
-    function route($r) {
+    function route($content) {
         if (!\is_file(\LOT . \D . 'layout' . \D . 'index.php')) {
             // Missing `.\lot\layout\index.php` file :(
             return null;
         }
-        \extract($r);
-        if (isset($kick)) {
-            \kick($kick);
-            exit;
-        }
-        \status((int) ($status ?? 404), (array) ($lot ?? []));
-        \type($type ?? 'text/html');
         \ob_start();
         \ob_start("\\ob_gzhandler");
-        if (isset($layout)) {
-            if (null !== ($content = \Layout::get($layout))) {
-                echo \Hook::fire('content', [$content]);
-            } else if (\defined("\\TEST") && \TEST) {
-                \status(403);
-                \abort('Layout <code>' . $layout . '</code> does not exist.');
-            }
-        } else if (isset($path) && \is_file($path)) {
-            echo \Hook::fire('content', [(static function($f) {
-                \ob_start();
-                \extract($GLOBALS, \EXTR_SKIP);
-                require $f;
-                return \ob_get_clean();
-            })(\Hook::fire('path', [$path]))]);
-        } else {
-            echo \Hook::fire('content', [$content ?? null]);
-        }
+        echo \Hook::fire('content', [$content]);
         \ob_end_flush();
         // <https://www.php.net/manual/en/function.ob-get-length.php#59294>
         \header('content-length: ' . \ob_get_length());
