@@ -39,14 +39,12 @@ function check(string $token, $id = 0) {
     return $prev[1] && $token && $prev[1] === $token ? $token : false;
 }
 
-// <https://stackoverflow.com/a/67493326/1163000>
-function choke(float $hit = 1, string $id = null) {
-    $h = fopen(sys_get_temp_dir() . D . ($id ?? uniqid()), 'w+');
-    if (flock($h, LOCK_EX)) {
-        time_nanosleep(0, ceil(999999999 / $hit));
-        flock($h, LOCK_UN);
-    }
-    fclose($h);
+function choke(int $for = 1, string $id = null) {
+    $current = $_SERVER['REQUEST_TIME'];
+    $prev = $_SESSION['choke'][$id = $id ?? uniqid()] ?? $current;
+    $_SESSION['choke'][$id] = $current;
+    $wait = $current - $prev;
+    return $wait < $for ? $for - $wait : true;
 }
 
 function content(string $path) {
