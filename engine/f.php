@@ -42,9 +42,9 @@ function check(string $token, $id = 0) {
 function choke(int $for = 1, string $id = null) {
     $current = $_SERVER['REQUEST_TIME'];
     $prev = $_SESSION['choke'][$id = $id ?? uniqid()] ?? $current;
+    $v = $current - $prev;
     $_SESSION['choke'][$id] = $current;
-    $wait = $current - $prev;
-    return $wait < $for ? $for - $wait : true;
+    return $v < $for ? $for - $v : false;
 }
 
 function content(string $path) {
