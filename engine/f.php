@@ -35,20 +35,17 @@ function c2f(string $value = null, $accent = false) {
 }
 
 function check(string $token, $id = 0) {
-    $prev = $_SESSION['token'][$id] ?? [0, ""];
+    $prev = $_SESSION['token'][$id ?? uniqid()] ?? [0, ""];
     return $prev[1] && $token && $prev[1] === $token ? $token : false;
 }
 
-function choke(int $for = 1, string $id = null) {
+function choke(int $for = 1, $id = 0) {
+    $id = $id ?? uniqid();
     $current = $_SERVER['REQUEST_TIME'];
-    $prev = $_SESSION['choke'][$id = $id ?? uniqid()] ?? $current;
+    $prev = $_SESSION['choke'][$id] ?? $current;
     $v = $current - $prev;
     $_SESSION['choke'][$id] = $current;
     return $v < $for ? $for - $v : false;
-}
-
-function content(string $path) {
-    return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
 
 function concat(array $value, ...$lot) {
@@ -59,6 +56,10 @@ function concat(array $value, ...$lot) {
     }
     // `concat([…], […], […])`
     return array_merge_recursive($value, ...$lot);
+}
+
+function content(string $path) {
+    return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
 
 function cookie(...$lot) {
@@ -222,7 +223,7 @@ function f2p(string $value = null, $accent = false) {
 }
 
 function fetch(string $url, $lot = null, $type = 'GET') {
-    $headers = ['x-requested-with' => 'x-requested-with: CURL'];
+    $headers = ['x-requested-with' => 'x-requested-with: cURL'];
     $chops = explode('?', $url, 2);
     $type = strtoupper($type);
     // `fetch('/', ['x-foo' => 'bar'])`
