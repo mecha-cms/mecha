@@ -244,31 +244,81 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     if (extension_loaded('curl')) {
         $curl = curl_init($target);
         curl_setopt_array($curl, [
+            CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_FAILONERROR => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_MAXREDIRS => 2,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_TIMEOUT => 15
         ]);
-        if ('POST' === $type) {
+        if ('HEAD' === $type) {
+            curl_setopt($curl, CURLOPT_HEADER, true);
+            curl_setopt($curl, CURLOPT_NOBODY, true);
+        } else if ('POST' === $type) {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $chops[1] ?? "");
         }
         $out = curl_exec($curl);
+        if ('HEAD' === $type) {
+            $out = n(trim($out));
+        }
         if (defined('TEST') && 'curl' === TEST && false === $out) {
             throw new UnexpectedValueException(curl_error($curl));
         }
         curl_close($curl);
     } else {
-        $context = ['http' => ['method' => $type]];
-        if ('POST' === $type) {
-            $headers['content-type'] = 'content-type: application/x-www-form-urlencoded';
-            $context['http']['content'] = $chops[1] ?? "";
+        if ('HEAD' === $type) {
+            $out = [];
+            $headers = (array) get_headers($target, true, stream_context_set_default(['http' => ['method' => $type]]));
+            // If `$target` is redirected and the new target is also redirected, we got the `Location` data as array.
+            // We also got the HTTP code header in a number indexed value.
+            //
+            // <https://www.php.net/manual/en/function.get-headers.php#120075>
+            //
+            // [
+            //     0 => 'HTTP/1.1 302 Moved Temporarily',
+            //     'Location' => [
+            //         0 => '/test.php?id=2',
+            //         1 => '/test.php?id=3',
+            //         2 => '/test.php?id=4'
+            //     ],
+            //     1 => 'HTTP/1.1 302 Moved Temporarily',
+            //     2 => 'HTTP/1.1 302 Moved Temporarily',
+            //     3 => 'HTTP/1.1 200 OK'
+            // ]
+            if (isset($headers[0]) && isset($headers[1])) {
+                foreach ($headers as $k => $v) {
+                    if (is_array($v)) {
+                        foreach ($v as $kk => $vv) {
+                            $out[$kk][] = strtolower($k) . ': ' . $vv;
+                        }
+                        continue;
+                    }
+                    $out[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
+                }
+                foreach ($out as &$v) {
+                    $v = implode("\n", $v);
+                }
+                unset($v);
+            } else {
+                foreach ($headers as $k => $v) {
+                    $out[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
+                }
+            }
+            $out = trim(implode("\n", $out));
+        } else {
+            $context = [];
+            $headers['x-requested-with'] = 'x-requested-with: PHP';
+            if ('POST' === $type) {
+                $context['http']['content'] = $chops[1] ?? "";
+                $headers['content-type'] = 'content-type: application/x-www-form-urlencoded';
+            }
+            $context['http']['header'] = implode("\r\n", array_values($headers));
+            $context['http']['ignore_errors'] = true;
+            $context['http']['method'] = $type;
+            $out = file_get_contents($target, false, stream_context_create($context));
         }
-        $context['http']['header'] = implode("\r\n", array_values($headers));
-        $out = file_get_contents($target, false, stream_context_create($context));
     }
     return false !== $out ? $out : null;
 }
