@@ -1,6 +1,8 @@
 Mecha CMS
 =========
 
+![Code Size](https://img.shields.io/github/languages/code-size/mecha-cms/mecha?color=%23444&style=for-the-badge) ![License](https://img.shields.io/github/license/mecha-cms/mecha?color=%23444&style=for-the-badge)
+
 > Mecha is a flat-file content management system for minimalists.
 
 [<img src="https://user-images.githubusercontent.com/1669261/119496162-69eb5180-bd8d-11eb-830c-897168f58416.png" width="127" height="46">](https://mecha-cms.com) [<img src="https://user-images.githubusercontent.com/1669261/119496168-6b1c7e80-bd8d-11eb-8ee1-33e8eb5b90ed.png" width="87" height="46">](https://mecha-cms.com/reference) [<img src="https://user-images.githubusercontent.com/1669261/119496170-6bb51500-bd8d-11eb-9d6d-9d95c0510b67.png" width="102" height="46">](https://github.com/mecha-cms/mecha/discussions)
@@ -100,11 +102,11 @@ Release Notes
 
 ### 3.0.0
 
- - [ ] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
  - [x] Changed `content` function; is now read-only. To create a file, use `save` function.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
+ - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{camel,kebab,lower,pascal,sentence,snake,text,title,upper}` methods to `layout` extension.
  - [x] Moved classes `HTML`, `SGML` to `layout` extension.
@@ -113,6 +115,7 @@ Release Notes
  - [x] Removed `$parent` variable (#165)
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
+ - [x] Removed `parent` method from `File`, `Folder`, and `Page` class.
  - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
  - [x] Removed constant `GROUND`, `PS`.
  - [x] Removed separator options from URL functions and methods (#164)
