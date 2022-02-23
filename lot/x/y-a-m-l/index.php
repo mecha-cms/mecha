@@ -306,7 +306,7 @@ To::_('YAML', $plug = function(array $value, string $dent = '  ', $docs = false)
     $yaml_docs = static function(array $data, string $dent = '  ', $content = "\t") use(&$yaml) {
         $out = $c = "";
         if (array_key_exists($content, $data)) {
-            $c = $data[$content];
+            $c = $data[$content] ?? "";
             unset($data[$content]);
         }
         for ($i = 0, $count = count($data); $i < $count; ++$i) {
