@@ -40,12 +40,14 @@ function check(string $token, $id = 0) {
 }
 
 function choke(int $for = 1, $id = 0) {
-    $id = $id ?? uniqid();
     $current = $_SERVER['REQUEST_TIME'];
-    $prev = $_SESSION['choke'][$id] ?? $current;
-    $v = $current - $prev;
-    $_SESSION['choke'][$id] = $current;
-    return $v < $for ? $for - $v : false;
+    $id = $id ?? uniqid();
+    $prev = (int) (content($path = ENGINE . D . 'log' . D . $id) ?? $current);
+    if ($for > $current - $prev) {
+        return $for - ($current - $prev);
+    }
+    content($path, $current);
+    return false;
 }
 
 function concat(array $value, ...$lot) {
@@ -58,7 +60,16 @@ function concat(array $value, ...$lot) {
     return array_merge_recursive($value, ...$lot);
 }
 
-function content(string $path) {
+function content(string $path, $value = null) {
+    if (null !== $value) {
+        if (is_dir($path) || (is_file($path) && !is_writable($path))) {
+            return false;
+        }
+        if (!is_dir($parent = dirname($path))) {
+            mkdir($parent, 0775, true);
+        }
+        return is_int(file_put_contents($path, (string) $value));
+    }
     return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
 

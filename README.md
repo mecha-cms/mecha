@@ -103,7 +103,6 @@ Release Notes
 ### 3.0.0
 
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `zone`.
- - [x] Changed `content` function; is now read-only. To create a file, use `save` function.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
  - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
