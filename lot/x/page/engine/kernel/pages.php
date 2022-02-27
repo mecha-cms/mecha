@@ -18,6 +18,9 @@ class Pages extends Anemone {
     }
 
     public static function from(...$lot) {
+        if (is_array($v = reset($lot))) {
+            return new static($v);
+        }
         $pages = [];
         foreach (g($lot[0] ?? LOT . D . 'page', $lot[1] ?? 'page', $lot[2] ?? 0) as $k => $v) {
             if ("" === pathinfo($k, PATHINFO_FILENAME)) {

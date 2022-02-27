@@ -161,4 +161,11 @@ class Page extends File {
         return $this->__call('type', $lot) ?? 'HTML';
     }
 
+    public static function from(...$lot) {
+        if (is_array($v = reset($lot))) {
+            return new static(null, $v);
+        }
+        return new static(...$lot);
+    }
+
 }
