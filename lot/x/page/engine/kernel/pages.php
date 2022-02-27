@@ -4,17 +4,21 @@ class Pages extends Anemone {
 
     public function getIterator(): \Traversable {
         foreach ($this->value as $k => $v) {
-            yield $k => $this->page($v);
+            yield $k => is_array($v) ? $this->page(null, $v) : $this->page($v);
         }
     }
 
     #[\ReturnTypeWillChange]
     public function offsetGet($key) {
-        return $this->page(parent::offsetGet($key));
+        $value = parent::offsetGet($key);
+        if (is_array($value)) {
+            return $this->page(null, $value);
+        }
+        return $this->page($value);
     }
 
-    public function page(string $path) {
-        return new Page($path);
+    public function page(string $path = null, array $lot = []) {
+        return new Page($path, $lot);
     }
 
     public static function from(...$lot) {
