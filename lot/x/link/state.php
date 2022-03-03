@@ -43,6 +43,10 @@ return [
             'srcset' => "\\x\\link\\data\\source_set"
         ],
         'track' => ['src' => 1],
+        'use' => [ // `<svg>`
+            'href' => 1,
+            'xlink:href' => 1
+        ],
         'video' => [
             'src' => 1,
             'poster' => 1
