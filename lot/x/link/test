@@ -24,9 +24,18 @@ d/e 4x,  f?g=200 200w">
 <script>
 const link = '/foo/bar'; // Can’t decide if this is a relative link :\
 const link = 'http://127.0.0.1/foo/bar';
+const link = '<a href="http://127.0.0.1/foo/bar">foo</a>';
+</script>
+
+<script type="application/json">
+{
+  "link": "<a href=\"http:\/\/127.0.0.1\/foo\/bar\">foo<\/a>",
+  "link": "<a href=\"http:\/\/127.0.0.1\/foo\/bar\" rel="nofollow">bar<\/a>"
+}
 </script>
 
 <style>
+/* <a href="http://127.0.0.1/foo/bar">foo</a> */
 ::before {
   content: url('/foo/bar');
   content: url('http://127.0.0.1/foo/bar');
