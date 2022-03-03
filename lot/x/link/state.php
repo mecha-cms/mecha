@@ -24,7 +24,7 @@ return [
         'iframe' => ['src' => 1],
         'img' => [
             'src' => 1,
-            'srcset' => "\\x\\link\\data\\source_set"
+            'srcset' => "\\x\\link\\data\\img\\srcset"
         ],
         'input' => [
             'formaction' => 1,
@@ -32,20 +32,20 @@ return [
         ],
         'link' => [
             'href' => 1,
-            'imagesrcset' => "\\x\\link\\data\\source_set"
+            'imagesrcset' => "\\x\\link\\data\\img\\srcset"
         ],
         'object' => ['data' => 1],
         'param' => ['value' => 1],
-        'picture' => ['srcset' => "\\x\\link\\data\\source_set"],
+        'picture' => ['srcset' => "\\x\\link\\data\\img\\srcset"],
         'script' => ['src' => 1],
         'source' => [
             'src' => 1,
-            'srcset' => "\\x\\link\\data\\source_set"
+            'srcset' => "\\x\\link\\data\\img\\srcset"
         ],
         'track' => ['src' => 1],
         'use' => [ // `<svg>`
-            'href' => "\\x\\link\\data\\xlink_href",
-            'xlink:href' => "\\x\\link\\data\\xlink_href"
+            'href' => "\\x\\link\\data\\svg\\href",
+            'xlink:href' => "\\x\\link\\data\\svg\\href"
         ],
         'video' => [
             'src' => 1,
