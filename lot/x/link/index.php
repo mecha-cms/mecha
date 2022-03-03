@@ -17,7 +17,7 @@ namespace x\link {
                 if (!$v || false === \strpos($content, '</' . $k . '>')) {
                     continue;
                 }
-                $content = \preg_replace_callback('/(<' . \x($k) . '(?:\s(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^>])*?)?>)([\s\S]*?)(<\/' . \x($k) . '>)/', static function($m) use($v) {
+                $content = \preg_replace_callback('/(<' . \x($k) . '(?:\s(?:=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)?>)([\s\S]*?)(<\/' . \x($k) . '>)/', static function($m) use($v) {
                     $m[2] = \is_callable($v) ? \fire($v, [$m[2], (new \HTML($m[1]))[2] ?? []]) : \x\link\link($m[2]);
                     return $m[1] . $m[2] . $m[3];
                 }, $content);
@@ -33,7 +33,7 @@ namespace x\link {
                 ) {
                     continue;
                 }
-                $content = \preg_replace_callback('/<' . \x($k) . '(\s(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^>])*?)>/', static function($m) use($k, $v) {
+                $content = \preg_replace_callback('/<' . \x($k) . '(\s(?:=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)>/', static function($m) use($k, $v) {
                     if (false === \strpos($m[1], '=')) {
                         return $m[0];
                     }
