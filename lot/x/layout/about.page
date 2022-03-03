@@ -15,7 +15,7 @@ Layout files are stored in the `.\lot\layout` folder. To change the default them
 .\
 └── lot\
     └── layout\
-        ├── 404.php
+        ├── error.php
         ├── page.php
         └── pages.php
 ~~~
