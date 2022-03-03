@@ -18,6 +18,8 @@
 <a href="../../a">18</a>
 <a href="http://a">19</a>
 
+<img onerror="this.src='/foo/bar.baz';">
+
 <img src="a" srcset="a 1x, b 2x,c 3x,
 d/e 4x,  f?g=200 200w">
 

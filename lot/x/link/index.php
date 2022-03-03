@@ -12,52 +12,73 @@ namespace x\link {
         }
         \extract($GLOBALS, \EXTR_SKIP);
         $alter = $state->x->link ?? [];
-        if (!empty($alter->content)) {
-            foreach ($alter->content as $k => $v) {
+        $alter_content = (array) ($alter->content ?? []);
+        $alter_data = (array) ($alter->data ?? []);
+        $rest = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
+        if ($alter_content) {
+            foreach ($alter_content as $k => $v) {
                 if (!$v || false === \strpos($content, '</' . $k . '>')) {
                     continue;
                 }
-
-                $content = \preg_replace_callback('/(<' . \x($k) . '(?:\s(?:\S+?=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)?>)([\s\S]*?)(<\/' . \x($k) . '>)/', static function($m) use($v) {
+                $content = \preg_replace_callback('/(<' . \x($k) . $rest . '?>)([\s\S]*?)(<\/' . \x($k) . '>)/i', static function($m) use($v) {
                     $m[2] = \is_callable($v) ? \fire($v, [$m[2], (new \HTML($m[1]))[2] ?? []]) : \x\link\link($m[2]);
                     return $m[1] . $m[2] . $m[3];
                 }, $content);
             }
         }
-        if (!empty($alter->data)) {
-            foreach ($alter->data as $k => $v) {
-                if (
-                    false === \strpos($content, '</' . $k . '>') &&
-                    false === \strpos($content, '<' . $k . ' ') &&
-                    false === \strpos($content, '<' . $k . "\n") &&
-                    false === \strpos($content, '<' . $k . "\t")
-                ) {
-                    continue;
+        if ($alter_data) {
+            $keep = (static function($tags) use($rest) {
+                $out = [];
+                foreach ($tags as $tag) {
+                    $out[] = '<' . \x($tag) . $rest . '?>[\s\S]*?<\/' . \x($tag) . '>';
                 }
-                $content = \preg_replace_callback('/<' . \x($k) . '(\s(?:\S+?=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)>/', static function($m) use($k, $v) {
-                    if (false === \strpos($m[1], '=')) {
-                        return $m[0];
-                    }
-                    $that = new \HTML($m[0]);
-                    foreach ($v as $kk => $vv) {
-                        if (!$vv || !isset($that[$kk])) {
-                            continue;
-                        }
-                        $vvv = $that[$kk];
-                        if (\is_callable($vv)) {
-                            $vvv = \fire($vv, [$vvv, $kk, $k], $that);
-                        } else {
-                            $vvv = \x\link\link($vvv);
-                        }
-                        $that[$kk] = $vvv;
-                    }
-                    return (string) $that;
-                }, $content);
+                return \implode('|', $out);
+            })(\array_keys($alter_content));
+            $out = "";
+            foreach (\preg_split('/(' . $keep . ')/i', $content, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $part) {
+                if ($part && '<' === $part[0] && '>' === \substr($part, -1) && \preg_match('/^' . $keep . '$/i', $part)) {
+                    $out .= $part;
+                } else {
+                    $out .= \x\link\data($part, $alter_data);
+                }
             }
+            $content = $out;
         }
         return $content;
     }
-    function data($value) {} // Reserved!
+    function data($content, $data) {
+        $rest = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
+        foreach ($data as $k => $v) {
+            if (!$v || (
+                false === \strpos($content, '</' . $k . '>') &&
+                false === \strpos($content, '<' . $k . ' ') &&
+                false === \strpos($content, '<' . $k . "\n") &&
+                false === \strpos($content, '<' . $k . "\t")
+            )) {
+                continue;
+            }
+            $content = \preg_replace_callback('/<' . \x($k) . '(' . $rest . ')>/i', static function($m) use($k, $v) {
+                if (false === \strpos($m[1], '=')) {
+                    return $m[0];
+                }
+                $that = new \HTML($m[0]);
+                foreach ($v as $kk => $vv) {
+                    if (!$vv || !isset($that[$kk])) {
+                        continue;
+                    }
+                    $vvv = $that[$kk];
+                    if (\is_callable($vv)) {
+                        $vvv = \fire($vv, [$vvv, $kk, $k], $that);
+                    } else {
+                        $vvv = \x\link\link($vvv);
+                    }
+                    $that[$kk] = $vvv;
+                }
+                return (string) $that;
+            }, $content);
+        }
+        return $content;
+    }
     function kick($path) {
         return \x\link\link($path ?? $GLOBALS['url']->current);
     }
@@ -102,7 +123,7 @@ namespace x\link\content {
 }
 
 namespace x\link\data\img {
-    function srcset($value, $key, $name) {
+    function srcset($value) {
         if (!$value) {
             return $value;
         }
