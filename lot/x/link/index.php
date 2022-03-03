@@ -37,7 +37,7 @@ namespace x\link {
             $out = "";
             foreach (\preg_split('/(' . $keep . ')/i', $content, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $part) {
                 if ($part && '<' === $part[0] && '>' === \substr($part, -1) && \preg_match('/^' . $keep . '$/i', $part)) {
-                    $out .= \preg_replace_callback('/<([a-z\d:-]+)(' . $rest . ')?>/', static function($m) use($alter_data) {
+                    $out .= \preg_replace_callback('/^<([a-z\d:-]+)(' . $rest . ')?>/', static function($m) use($alter_data) {
                         if (isset($alter_data[$m[1]])) {
                             return \x\link\data($m[0], $alter_data);
                         }
