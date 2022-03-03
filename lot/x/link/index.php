@@ -115,4 +115,11 @@ namespace x\link\data {
         }
         return $out;
     }
+    function xlink_href($value) {
+        if ($value && \is_string($value) && '#' === $value[0]) {
+            // Do not resolve hash-only value!
+            return $value;
+        }
+        return \x\link\link($value);
+    }
 }
