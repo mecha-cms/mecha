@@ -596,6 +596,7 @@ function kick(string $path = null, int $status = null) {
 
 function long(string $value) {
     $url = $GLOBALS['url'];
+    $r = (string) $url;
     if ("" === $value) {
         return $url->current;
     }
@@ -615,7 +616,7 @@ function long(string $value) {
         if (0 === strpos($value, '&')) {
             $value = '?' . substr($value, 1);
         }
-        return rtrim($url . $value, '/');
+        return rtrim($r . $value, '/');
     }
     // `long('?foo=bar&baz=qux')`
     if (
@@ -627,11 +628,14 @@ function long(string $value) {
     ) {
         $parent = strtok($url->current, '?&#');
         // `long('foo/bar/baz')`
-        if ($value && false === strpos('.?&#', $value[0])) {
+        if ($value && false === strpos('.?&#', $value[0]) && $parent !== $r) {
             $parent = dirname($parent);
         }
         if (0 !== ($count = substr_count($value . '/', '../'))) {
-            $parent = dirname($parent, $count);
+            while ($count && $parent !== $r) {
+                $parent = dirname($parent);
+                --$count;
+            }
             $value = strtr($value . '/', ['../' => ""]);
         }
         return strtr(rtrim($parent . '/' . trim($value, '/'), '/'), [

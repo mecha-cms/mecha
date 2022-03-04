@@ -14,35 +14,33 @@ namespace x\link {
         $alter = $state->x->link ?? [];
         $alter_content = (array) ($alter->content ?? []);
         $alter_data = (array) ($alter->data ?? []);
-        $rest = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
+        $z = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
         if ($alter_content) {
             foreach ($alter_content as $k => $v) {
                 if (!$v || false === \strpos($content, '</' . $k . '>')) {
                     continue;
                 }
-                $content = \preg_replace_callback('/(<' . \x($k) . $rest . '?>)([\s\S]*?)(<\/' . \x($k) . '>)/i', static function($m) use($v) {
+                $content = \preg_replace_callback('/(<' . \x($k) . $z . '?>)([\s\S]*?)(<\/' . \x($k) . '>)/i', static function($m) use($v) {
                     $m[2] = \is_callable($v) ? \fire($v, [$m[2], (new \HTML($m[1]))[2] ?? []]) : \x\link\link($m[2]);
                     return $m[1] . $m[2] . $m[3];
                 }, $content);
             }
         }
         if ($alter_data) {
-            $keep = (static function($tags) use($rest) {
+            $keep = (static function($tags) use($z) {
                 $out = [];
                 foreach ($tags as $tag) {
-                    $out[] = '<' . \x($tag) . $rest . '?>[\s\S]*?<\/' . \x($tag) . '>';
+                    $out[] = '<' . \x($tag) . $z . '?>[\s\S]*?<\/' . \x($tag) . '>';
                 }
                 return \implode('|', $out);
             })(\array_keys($alter_content));
             $out = "";
             foreach (\preg_split('/(' . $keep . ')/i', $content, -1, \PREG_SPLIT_DELIM_CAPTURE | \PREG_SPLIT_NO_EMPTY) as $part) {
-                if ($part && '<' === $part[0] && '>' === \substr($part, -1) && \preg_match('/^' . $keep . '$/i', $part)) {
-                    $out .= \preg_replace_callback('/^<([a-z\d:-]+)(' . $rest . ')?>/', static function($m) use($alter_data) {
-                        if (isset($alter_data[$m[1]])) {
-                            return \x\link\data($m[0], $alter_data);
-                        }
-                        return $m[0];
-                    }, $part);
+                $n = \strtok(\substr($part, 1, -1), " \n\r\t>");
+                if ($part && '<' === $part[0] && '>' === \substr($part, -1) && '</' . $n . '>' === \substr($part, -(\strlen($n) + 3))) {
+                    $out .= !empty($alter_data[$n]) ? \preg_replace_callback('/^<[a-z\d:-]+' . $z . '?>/', static function($m) use($alter_data) {
+                        return \x\link\data($m[0], $alter_data);
+                    }, $part) : $part;
                 } else {
                     $out .= \x\link\data($part, $alter_data);
                 }
@@ -52,21 +50,35 @@ namespace x\link {
         return $content;
     }
     function data($content, $data) {
-        $rest = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
+        $z = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
         foreach ($data as $k => $v) {
             if (!$v || (
                 false === \strpos($content, '</' . $k . '>') &&
                 false === \strpos($content, '<' . $k . ' ') &&
                 false === \strpos($content, '<' . $k . "\n") &&
+                false === \strpos($content, '<' . $k . "\r") &&
                 false === \strpos($content, '<' . $k . "\t")
             )) {
                 continue;
             }
-            $content = \preg_replace_callback('/<' . \x($k) . '(' . $rest . ')>/i', static function($m) use($k, $v) {
+            $content = \preg_replace_callback('/<' . \x($k) . '(' . $z . ')>/i', static function($m) use($k, $v) {
                 if (false === \strpos($m[1], '=')) {
                     return $m[0];
                 }
                 $that = new \HTML($m[0]);
+                // Need to do the hard way for the `on*` and `style` attribute(s)
+                foreach ($that[2] as $kk => $vv) {
+                    if (0 !== \strpos($kk, 'on') && 'style' !== $kk) {
+                        continue;
+                    }
+                    $vvv = $that[$kk];
+                    if (\is_callable($vv = $v->{$kk} ?? \P)) {
+                        $vvv = \fire($vv, [$vvv, $kk, $k], $that);
+                    } else {
+                        $vvv = \call_user_func(__NAMESPACE__ . "\\content\\" . ('style' !== $kk ? 'script' : $kk), $vvv, $that[2]);
+                    }
+                    $that[$kk] = $vvv;
+                }
                 foreach ($v as $kk => $vv) {
                     if (!$vv || !isset($that[$kk])) {
                         continue;

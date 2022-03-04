@@ -18,7 +18,7 @@
 <a href="../../a">18</a>
 <a href="http://a">19</a>
 
-<img onerror="this.src='/foo/bar.baz';">
+<img onerror="this.src='/foo/bar.baz';" onload="this.src='http://127.0.0.1/foo/bar.baz';" style="background: #fff url('/foo/bar.baz') no-repeat 0 0;">
 
 <img src="a" srcset="a 1x, b 2x,c 3x,
 d/e 4x,  f?g=200 200w">
@@ -39,7 +39,7 @@ const link = '<a href="http://127.0.0.1/foo/bar">foo</a>';
 <style>
 /* <a href="http://127.0.0.1/foo/bar">foo</a> */
 ::before {
-  content: url('/foo/bar');
-  content: url('http://127.0.0.1/foo/bar');
+  content: url('/foo/bar.baz');
+  content: url('http://127.0.0.1/foo/bar.baz');
 }
 </style>
