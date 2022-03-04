@@ -106,13 +106,13 @@ function cookie(...$lot) {
         'secure' => false
     ], $expires);
     if (is_string($state['expires'])) {
-        $state['expires'] = (int) (strtotime($state['expires'], $time = time()) - $time);
+        $state['expires'] = strtotime($state['expires'], $time = time()) - $time;
     }
-    $state['expires'] += time();
+    $state['expires'] = (int) ($state['expires'] + time());
     if (PHP_VERSION_ID < 70300) {
         // <https://stackoverflow.com/a/51128675>
         setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)),
-            (int) $state['expires'],
+            $state['expires'],
             $state['path'] . '; samesite=' . $state['samesite'], // Hacky! :(
             $state['domain'],
             $state['secure'],
