@@ -26,7 +26,7 @@ function any(iterable $value, $fn = null) {
 
 // Convert class name to file name
 function c2f(string $value = null, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value), static function($v) use($accent) {
+    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
         return ltrim(strtr(h($v, '-', $accent, '_'), [
             '__-' => '.',
             '__' => '.'
@@ -221,14 +221,14 @@ function extend(array $value, ...$lot) {
 
 // Convert file name to class name
 function f2c(string $value = null, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value), static function($v) use($accent) {
+    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
         return p(strtr($v, ['.' => '__']), $accent, '_');
     }));
 }
 
 // Convert file name to property name
 function f2p(string $value = null, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value), static function($v) use($accent) {
+    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
         return c(strtr($v, ['.' => '__']), $accent, '_');
     }));
 }
@@ -272,7 +272,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
         }
         $out = curl_exec($curl);
         if ('HEAD' === $type) {
-            $out = n(trim($out));
+            $out = trim($out);
         }
         if (defined('TEST') && 'curl' === TEST && false === $out) {
             throw new UnexpectedValueException(curl_error($curl));
@@ -331,7 +331,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             $out = file_get_contents($target, false, stream_context_create($context));
         }
     }
-    return false !== $out ? $out : null;
+    return false !== $out ? n($out) : null;
 }
 
 function find(iterable $value, callable $fn) {
@@ -462,7 +462,7 @@ function not(iterable $value, $fn = null) {
 
 // Convert property name to file name
 function p2f(string $value = null, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value), static function($v) use($accent) {
+    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
         return strtr(h($v, '-', $accent, '_'), ['__' => '.']);
     }));
 }
@@ -847,7 +847,7 @@ function f(string $value = null, $accent = true, string $preserve = "") {
         '/[^\p{L}\p{N}\s' . $preserve . ']/u',
         // Convert multiple white-space to single space
         '/\s+/'
-    ], ' ', $value);
+    ], ' ', $value ?? "");
     return $accent && !empty($GLOBALS['F']) ? strtr($value, $GLOBALS['F']) : $value;
 }
 
@@ -949,6 +949,7 @@ function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) 
 }
 
 function l(string $value = null) {
+    $value = (string) $value;
     return extension_loaded('mbstring') ? mb_strtolower($value) : strtolower($value);
 }
 
@@ -958,6 +959,7 @@ function m($value, array $a, array $b) {
 }
 
 function n(string $value = null, string $tab = '    ') {
+    $value = (string) $value;
     // <https://stackoverflow.com/a/18870840/1163000>
     $value = strtr($value, ["\xEF\xBB\xBF" => ""]);
     // Tab to 4 space(s), line-break to `\n`
@@ -1057,7 +1059,7 @@ function t(string $value = null, string $open = '"', string $close = null) {
             $value = substr($value, 0, $end);
         }
     }
-    return $value;
+    return $value ?? "";
 }
 
 function u(string $value = null) {
@@ -1069,7 +1071,7 @@ function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.
     foreach (str_split($c . $d, 1) as $v) {
         $lot["\\" . $v] = $v;
     }
-    return strtr($value, $lot);
+    return strtr($value ?? "", $lot);
 }
 
 function w(string $value = null, $preserve_tags = [], $preserve_break = false) {
@@ -1101,7 +1103,7 @@ function w(string $value = null, $preserve_tags = [], $preserve_break = false) {
 }
 
 function x(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
-    return addcslashes($value, $c . $d);
+    return addcslashes($value ?? "", $c . $d);
 }
 
 function y(iterable $value) {

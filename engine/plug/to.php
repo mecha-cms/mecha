@@ -35,8 +35,8 @@ foreach ([
         return $out;
     },
     'file' => function(string $value = null) {
-        $value = preg_split('/\s*[\\/]\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
-        $n = preg_split('/\s*[.]\s*/', array_pop($value), -1, PREG_SPLIT_NO_EMPTY);
+        $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
+        $n = preg_split('/\s*[.]\s*/', array_pop($value) ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
         $out = "";
         foreach ($value as $v) {
@@ -46,7 +46,7 @@ foreach ([
         return '.' !== $out ? $out : null;
     },
     'folder' => function(string $value = null) {
-        $value = preg_split('/\s*[\\/]\s*/', $value, -1, PREG_SPLIT_NO_EMPTY);
+        $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($value);
         $out = "";
         foreach ($value as $v) {
