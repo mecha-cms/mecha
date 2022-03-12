@@ -385,6 +385,15 @@ function has(iterable $value, $has = "", string $x = P) {
     return false !== strpos($x . implode($x, $value) . $x, $x . $has . $x);
 }
 
+function ip() {
+    if ($for = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? "") {
+        $ip = strpos($for, ',') > 0 ? trim(strtok($ip[0], ',')) : $for;
+    } else {
+        $ip = $_SERVER['REMOTE_ADDR'];
+    }
+    return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
+}
+
 function is(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function($v) use($fn) {
@@ -723,6 +732,10 @@ function type(string $type = null) {
         return null;
     }
     status(['content-type' => $type]);
+}
+
+function ua() {
+    return $_SERVER['HTTP_USER_AGENT'] ?? null;
 }
 
 function zone(string $zone = null) {
