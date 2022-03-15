@@ -50,6 +50,9 @@ namespace x\link {
         return $content;
     }
     function data($content, $data) {
+        if (!$content || false === \strpos($content, '<')) {
+            return $content;
+        }
         $z = '(?:\s(?:[a-z\d:-]+=(?:"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\')|[^>])*?)';
         foreach ($data as $k => $v) {
             if (!$v || (
