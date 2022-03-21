@@ -48,7 +48,7 @@ Features
 Environments
 ------------
 
- - PHP 7.1.0 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") and [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`") extension.
+ - PHP 7.3.0 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") and [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`") extension.
  - Apache 2.4 and above, with enabled [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
 
 Preparations
@@ -127,6 +127,7 @@ Release Notes
  - [x] Renamed default error page file from `404.php` to `error.php`.
  - [x] Renamed function `anemon` to `anemone`.
  - [x] The `e` function will no longer evaluate string in the form of JSON pattern (#167)
+ - [x] Upgraded PHP version requirement to 7.3.0.
 
 ### 2.6.4
 
