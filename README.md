@@ -105,6 +105,7 @@ Release Notes
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `ip`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `ua`, `zone`.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
+ - [x] Improved `Genome` and `Page` class to make it possible to inherit (fake) methods and (fake) properties from the parent class automatically.
  - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{camel,kebab,lower,pascal,sentence,snake,text,title,upper}` methods to `layout` extension.

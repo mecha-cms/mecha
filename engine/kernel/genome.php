@@ -2,33 +2,31 @@
 
 abstract class Genome {
 
-    // This property is supposed to be private, but who knows someone might need it, for example to check the data
-    // outside of the extended class. So I set this as a public property. Just don’t write it down in the manual.
-    // This property could change at any time.
+    // This property is supposed to be private, but someone might need it in the future, for example to check the data
+    // from outside of the extended class. So I set this as a public property. This property could change at any time.
     public static $_ = [];
 
     public function __call(string $kin, array $lot = []) {
-        $c = static::class;
-        $m = '_' . $kin . '_';
         $this->_call = T_OBJECT_OPERATOR;
-        if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-            $a = self::$_[$c][$kin];
-            if (is_callable($a[0])) {
-                // Alter default function argument(s)
-                if (isset($a[1])) {
-                    $lot = array_replace((array) $a[1], $lot);
+        foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
+            if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
+                $v = self::$_[$c][$kin];
+                if (is_callable($v[0])) {
+                    // Alter default function argument(s)
+                    if (isset($v[1])) {
+                        $lot = array_replace((array) $v[1], $lot);
+                    }
+                    // Limit function argument(s)
+                    if (isset($v[2])) {
+                        $lot = array_slice($lot, 0, $v[2]);
+                    }
+                    return fire($v[0], $lot, $this/*, $n */);
                 }
-                // Limit function argument(s)
-                if (isset($a[2])) {
-                    $lot = array_slice($lot, 0, $a[2]);
-                }
-                return fire($a[0], $lot, $this/*, $c */);
+                return $v[0];
             }
-            return $a[0];
-        } else if (method_exists($this, $m) && (new \ReflectionMethod($this, $m))->isProtected()) {
-            return $this->{$m}(...$lot);
-        } else if (defined('DEBUG') && DEBUG) {
-            throw new \BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
+            if (defined('TEST') && TEST) {
+                throw new \BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
+            }
         }
     }
 
@@ -52,28 +50,27 @@ abstract class Genome {
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        $c = static::class;
-        $m = '_' . $kin . '_';
         $that = new static;
         $that->_call = T_DOUBLE_COLON;
-        if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-            $a = self::$_[$c][$kin];
-            if (is_callable($a[0])) {
-                // Alter default function argument(s)
-                if (isset($a[1])) {
-                    $lot = array_replace((array) $a[1], $lot);
+        foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
+            if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
+                $r = self::$_[$c][$kin];
+                if (is_callable($r[0])) {
+                    // Alter default function argument(s)
+                    if (isset($r[1])) {
+                        $lot = array_replace((array) $r[1], $lot);
+                    }
+                    // Limit function argument(s)
+                    if (isset($r[2])) {
+                        $lot = array_slice($lot, 0, $r[2]);
+                    }
+                    return fire($r[0], $lot, $that/*, $n */);
                 }
-                // Limit function argument(s)
-                if (isset($a[2])) {
-                    $lot = array_slice($lot, 0, $a[2]);
-                }
-                return fire($a[0], $lot, $that/*, $c */);
+                return $r[0];
             }
-            return $a[0];
-        } else if (method_exists($that, $m) && (new \ReflectionMethod($that, $m))->isProtected()) {
-            return $that->{$m}(...$lot);
-        } else if (defined('DEBUG') && DEBUG) {
-            throw new \BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
+            if (defined('TEST') && TEST) {
+                throw new \BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
+            }
         }
     }
 

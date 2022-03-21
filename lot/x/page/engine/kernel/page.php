@@ -2,8 +2,8 @@
 
 class Page extends File {
 
+    protected $c;
     protected $cache;
-    protected $hook;
     protected $lot;
 
     public function __call(string $kin, array $lot = []) {
@@ -14,7 +14,7 @@ class Page extends File {
             return $this->cache[$kin];
         }
         $v = $this->offsetGet($kin) ?? $this->lot[$kin] ?? null;
-        $v = Hook::fire(map($this->hook, static function($v) use($kin) {
+        $v = Hook::fire(map($this->c, static function($v) use($kin) {
             return $v .= '.' . $kin;
         }), [$v, $lot], $this);
         if ($lot && is_callable($v) && !is_string($v)) {
@@ -26,8 +26,10 @@ class Page extends File {
     public function __construct(string $path = null, array $lot = []) {
         parent::__construct($path);
         $this->cache = [];
-        $this->hook = [$c = c2f(self::class)];
-        $this->lot = array_replace_recursive((array) State::get('x.' . $c . '.page', true), $lot);
+        foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $v) {
+            $this->c[] = $v = c2f($v);
+            $this->lot = array_replace_recursive($this->lot ?? [], (array) State::get('x.' . $v . '.page', true), $lot);
+        }
     }
 
     public function __get(string $key) {
