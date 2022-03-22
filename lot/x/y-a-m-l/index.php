@@ -105,7 +105,7 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
                     $m = explode(':', $value, 2);
                     $m[0] = trim($m[0]);
                     if (false !== strpos($m[1], '#')) {
-                        $m[1] = preg_replace('#^\s*\#.*$#m', "", $m[1]);
+                        $m[1] = preg_replace('/^\s*#.*$/m', "", $m[1]);
                     }
                     $m[2] = ltrim(rtrim($m[1] ?? ""), "\n");
                     $m[1] = ':' . ($m[1][0] ?? "");
@@ -140,7 +140,7 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
             $yaml_span = static function(string $value, $eval) use(&$yaml_eval) {
                 $out = "";
                 // Validate to JSON
-                foreach (preg_split('#\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*#', $value, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
+                foreach (preg_split('/\s*("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[\[\]\{\}:,])\s*/', $value, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                     $out .= false !== strpos('[]{}:,', $v) ? $v : json_encode($v);
                 }
                 $out = json_decode($out, true) ?? $value;
@@ -228,7 +228,7 @@ From::_('YAML', $plug = function(string $value, string $dent = '  ', $docs = fal
         // Normalize line-break
         $value = trim(n($value));
         // Remove the first separator
-        $value = 0 === strpos($value, YAML\SOH) && '-' !== substr($value, 3, 1) ? preg_replace('#^' . x(YAML\SOH) . '\s*#', "", $value) : $value;
+        $value = 0 === strpos($value, YAML\SOH) && '-' !== substr($value, 3, 1) ? preg_replace('/^' . x(YAML\SOH) . '\s*/', "", $value) : $value;
         // Skip any string after `...`
         $parts = explode("\n" . YAML\EOT . "\n", trim($value) . "\n", 2);
         foreach (explode("\n" . YAML\ETB, $parts[0]) as $v) {
