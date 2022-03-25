@@ -94,8 +94,36 @@ Download the installer file from <https://mecha-cms.com/start> and then follow t
 Contributors
 ------------
 
-- [@taufik-nurrohman](https://github.com/taufik-nurrohman) (lead)
-- [@igoynawamreh](https://github.com/igoynawamreh) (member)
+### Code Contributors
+
+This project exists thanks to all the people who contribute.
+
+[![Contributors](https://opencollective.com/mecha-cms/contributors.svg?width=890&button=false)](https://github.com/taufik-nurrohman/mecha-cms/graphs/contributors)
+
+### Financial Contributors
+
+[Become a financial contributor](https://opencollective.com/mecha-cms/contribute) and help us sustain our community.
+
+#### Individuals
+
+[![Contribute](https://opencollective.com/mecha-cms/individuals.svg?width=890)](https://opencollective.com/mecha-cms)
+
+#### Organizations
+
+[Support this project with your organization](https://opencollective.com/mecha-cms/contribute). Your logo will show up here with a link to your website.
+
+<a href="https://opencollective.com/mecha-cms/organization/0/website"><img src="https://opencollective.com/mecha-cms/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/1/website"><img src="https://opencollective.com/mecha-cms/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/2/website"><img src="https://opencollective.com/mecha-cms/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/3/website"><img src="https://opencollective.com/mecha-cms/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/4/website"><img src="https://opencollective.com/mecha-cms/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/5/website"><img src="https://opencollective.com/mecha-cms/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/6/website"><img src="https://opencollective.com/mecha-cms/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/7/website"><img src="https://opencollective.com/mecha-cms/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/8/website"><img src="https://opencollective.com/mecha-cms/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/mecha-cms/organization/9/website"><img src="https://opencollective.com/mecha-cms/organization/9/avatar.svg"></a>
+
+---
 
 Release Notes
 -------------
