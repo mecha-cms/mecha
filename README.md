@@ -98,7 +98,7 @@ Contributors
 
 This project exists thanks to all the people who contribute.
 
-[![Contributors](https://opencollective.com/mecha-cms/contributors.svg?avatarHeight=24&button=false&width=890)](https://github.com/taufik-nurrohman/mecha-cms/mecha/graphs/contributors)
+[![Contributors](https://opencollective.com/mecha-cms/contributors.svg?avatarHeight=24&button=false&width=890)](https://github.com/mecha-cms/mecha/graphs/contributors)
 
 ### Financial Contributors
 
