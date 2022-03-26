@@ -31,9 +31,12 @@ class Pages extends Anemone {
         if (is_array($sort)) {
             $value = [];
             if (isset($sort[1])) {
-                foreach ($this->value as $v) {
-                    $f = $this->page($v);
-                    $value[$v] = $f[$sort[1]] ?? $f->{$sort[1]} ?? $sort[2] ?? null;
+                foreach ($this->value as $k) {
+                    $f = $this->page($k);
+                    if (is_string($v = $f[$sort[1]] ?? $f->{$sort[1]} ?? $sort[2] ?? null)) {
+                        $v = strip_tags($v); // Ignore HTML tag(s)
+                    }
+                    $value[$k] = $v;
                 }
             }
             -1 === $sort[0] ? arsort($value) : asort($value);
