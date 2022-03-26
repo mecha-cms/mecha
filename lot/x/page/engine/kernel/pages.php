@@ -21,6 +21,35 @@ class Pages extends Anemone {
         return new Page($path, $lot);
     }
 
+    public function sort($sort = 1, $preserve_key = false) {
+        if (count($value = $this->value) <= 1) {
+            if (!$preserve_key) {
+                $this->value = array_values($this->value);
+            }
+            return $this;
+        }
+        if (is_array($sort)) {
+            $value = [];
+            if (isset($sort[1])) {
+                foreach ($this->value as $v) {
+                    $f = $this->page($v);
+                    $value[$v] = $f[$sort[1]] ?? $f->{$sort[1]} ?? $sort[2] ?? null;
+                }
+            }
+            -1 === $sort[0] ? arsort($value) : asort($value);
+            $this->value = array_keys($value);
+        } else {
+            $value = $this->value;
+            if ($preserve_key) {
+                -1 === $sort ? arsort($value) : asort($value);
+            } else {
+                -1 === $sort ? rsort($value) : sort($value);
+            }
+            $this->value = $value;
+        }
+        return $this;
+    }
+
     public static function from(...$lot) {
         if (is_array($v = reset($lot))) {
             return new static($v);
