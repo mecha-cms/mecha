@@ -5,7 +5,7 @@ namespace {
     // extension(s) can use it without having to enter the `route` hook
     $path = \trim($url->path ?? "", '/');
     $route = \trim($state->route ?? "", '/');
-    $folder = \LOT . \D . 'page' . \D . ($path ?: $route);
+    $folder = \LOT . \D . 'page' . \D . (\preg_replace('/\/[1-9]\d*$/', "", $path) ?: $route);
     $parent = \dirname($folder);
     $has_pages = \q(\g($folder, 'page'));
     $has_parent = \exist([
