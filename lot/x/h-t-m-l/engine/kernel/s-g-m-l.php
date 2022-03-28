@@ -73,7 +73,7 @@ class SGML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable
                     $out .=  ' ' . $k;
                     continue;
                 }
-                if (null === $v || false === $v) {
+                if (false === $v || null === $v) {
                     continue;
                 }
                 $v = strtr($v, [

@@ -21,7 +21,7 @@ class HTML extends SGML {
                 if (true === $v) {
                     continue;
                 }
-                if (null === $v || false === $v) {
+                if (false === $v || null === $v) {
                     unset($this->lot[2][$k]);
                     continue;
                 }

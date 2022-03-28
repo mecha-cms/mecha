@@ -7,7 +7,5 @@ function alert(...$lot) {
     return count($lot) < 2 ? Alert::get(...$lot) : Alert::set(...$lot);
 }
 
-// Set default alert layout if `.\lot\layout\alert.php` file does not exist.
-if (!is_file(LOT . D . 'layout' . D . 'alert.php')) {
-    Layout::set('alert', __DIR__ . D . 'lot' . D . 'layout' . D . 'alert.php');
-}
+// Set default alert layout if `.\lot\y\*\alert.php` file does not exist.
+!Y::path('alert') && Y::set('alert', __DIR__ . D . 'lot' . D . 'y' . D . 'alert.php');

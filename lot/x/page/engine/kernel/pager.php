@@ -1,6 +1,6 @@
 <?php
 
-abstract class Pager extends Genome {
+abstract class Pager extends X {
 
     const next = '&#x25B6;';
     const parent = '&#x25C6;';

@@ -23,6 +23,7 @@ foreach ([
         return $raw ? rawurldecode($value) : urldecode($value);
     },
     'base64' => "\\base64_encode",
+    'camel' => "\\c",
     'dec' => function(string $value = null, $z = false, array $f = ['&#', ';']) {
         $out = "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
@@ -66,10 +67,15 @@ foreach ([
         }
         return $out;
     },
+    'kebab' => function(string $value = null, string $join = '-', $accent = true) {
+        return trim(h($value, $join, $accent), $join);
+    },
     'key' => function(string $value = null, $accent = true) {
         $out = trim(h($value, '_', $accent), '_');
         return $out && is_numeric($out[0]) ? '_' . $out : $out;
     },
+    'lower' => "\\l",
+    'pascal' => "\\p",
     'path' => function(string $value = null) {
         $url = $GLOBALS['url'] . "";
         $value = strtr($value, [
@@ -107,7 +113,12 @@ foreach ([
         }
         return $out ? '?' . implode('&', $out) : null;
     },
-    'serial' => "\\serialize"
+    'serial' => "\\serialize",
+    'snake' => function(string $value = null, $a = true) {
+        return trim(h($value, '_', $a), '_');
+    },
+    'text' => "\\w",
+    'upper' => "\\u"
 ] as $k => $v) {
     To::_($k, $v);
 }

@@ -10,9 +10,14 @@ namespace {
     $GLOBALS['site'] = $site = $state;
     // Default title for the layout
     $GLOBALS['t'] = $t = new \Anemone([$state->title], ' &#x00B7; ');
-    // Merge layout state to the global state
-    if (\is_file($file = \LOT . \D . 'layout' . \D . 'state.php')) {
-        \State::set(require $file);
+    // Merge layout state(s) to the global state
+    foreach (\g(\LOT . \D . 'y', 0) as $k => $v) {
+        if (!\is_file($k . \D . 'index.php')) {
+            continue;
+        }
+        if (\is_file($v = $k . \D . 'state.php')) {
+            \State::set(require $v);
+        }
     }
 }
 
@@ -28,7 +33,7 @@ namespace x\layout {
                 ) {
                     $r = new \HTML($m[0]);
                     $c = true === $r['class'] ? [] : \preg_split('/\s+/', $r['class'] ?? "");
-                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \State::get('[layout]', true)))));
+                    $c = \array_unique(\array_merge($c, \array_keys(\array_filter((array) \State::get('[y]', true)))));
                     \sort($c);
                     $r['class'] = \trim(\implode(' ', $c));
                     return $r;
@@ -39,51 +44,49 @@ namespace x\layout {
         return $content;
     }
     function get() {
-        $folder = \LOT . \D . 'layout';
         $key = \strtr(\State::get('language') ?? "", '-', '_');
         // Fix for missing language key → default to `en`
         if (!\Time::_($key)) {
             \Time::_($key, \Time::_('en'));
         }
-        // Run layout task if any
-        if (\is_file($task = $folder . \D . 'task.php')) {
-            (static function($f) {
-                \extract($GLOBALS, \EXTR_SKIP);
-                require $f;
-            })($task);
-        }
-        // Load user function(s) from the `.\lot\layout` folder if any
-        if (\is_file($index = $folder . \D . 'index.php')) {
-            (static function($f) {
-                \extract($GLOBALS, \EXTR_SKIP);
-                require $f;
-            })($index);
-        }
-        // Detect relative asset path to the `.\lot\layout\asset` folder
-        if (null !== \State::get('x.asset') && $assets = \Asset::get()) {
-            foreach ($assets as $k => $v) {
-                foreach ($v as $kk => $vv) {
-                    // Full path, no change!
-                    if (
-                        0 === \strpos($kk, \PATH) ||
-                        0 === \strpos($kk, '//') ||
-                        false !== \strpos($kk, '://')
-                    ) {
-                        continue;
-                    }
-                    if ($path = \Asset::path($folder . \D . 'asset' . \D . $kk)) {
-                        \Asset::let($kk);
-                        \Asset::set($path, $vv['stack'], $vv[2]);
+        foreach (\g(\LOT . \D . 'y', 0) as $k => $v) {
+            $folder = $k;
+            // Run layout task if any
+            if (\is_file($task = $folder . \D . 'task.php')) {
+                (static function($f) {
+                    \extract($GLOBALS, \EXTR_SKIP);
+                    require $f;
+                })($task);
+            }
+            // Load user function(s) from the `.\lot\y\*` folder if any
+            if (\is_file($index = $folder . \D . 'index.php')) {
+                (static function($f) {
+                    \extract($GLOBALS, \EXTR_SKIP);
+                    require $f;
+                })($index);
+            }
+            // Detect relative asset path to the `.\lot\y\*\asset` folder
+            if (null !== \State::get('x.asset') && $assets = \Asset::get()) {
+                foreach ($assets as $k => $v) {
+                    foreach ($v as $kk => $vv) {
+                        // Full path, no change!
+                        if (
+                            0 === \strpos($kk, \PATH) ||
+                            0 === \strpos($kk, '//') ||
+                            false !== \strpos($kk, '://')
+                        ) {
+                            continue;
+                        }
+                        if ($path = \Asset::path($folder . \D . 'asset' . \D . $kk)) {
+                            \Asset::let($kk);
+                            \Asset::set($path, $vv['stack'], $vv[2]);
+                        }
                     }
                 }
             }
         }
     }
     function route($content) {
-        if (!\is_file(\LOT . \D . 'layout' . \D . 'index.php')) {
-            // Missing `.\lot\layout\index.php` file :(
-            return null;
-        }
         \ob_start();
         \ob_start("\\ob_gzhandler");
         echo \Hook::fire('content', [$content]);
@@ -100,30 +103,30 @@ namespace x\layout {
 namespace x\layout\state {
     function are() {
         foreach ((array) \State::get('are', true) as $k => $v) {
-            \State::set('[layout].are:' . $k, $v);
+            \State::set('[y].are:' . $k, $v);
         }
     }
     function can() {
         foreach ((array) \State::get('can', true) as $k => $v) {
-            \State::set('[layout].can:' . $k, $v);
+            \State::set('[y].can:' . $k, $v);
         }
     }
     function has() {
         foreach ((array) \State::get('has', true) as $k => $v) {
-            \State::set('[layout].has:' . $k, $v);
+            \State::set('[y].has:' . $k, $v);
         }
     }
     function is() {
         foreach ((array) \State::get('is', true) as $k => $v) {
-            \State::set('[layout].is:' . $k, $v);
+            \State::set('[y].is:' . $k, $v);
         }
         if ($x = \State::get('is.error')) {
-            \State::set('[layout].error:' . $x, true);
+            \State::set('[y].error:' . $x, true);
         }
     }
     function not() {
         foreach ((array) \State::get('not', true) as $k => $v) {
-            \State::set('[layout].not:' . $k, $v);
+            \State::set('[y].not:' . $k, $v);
         }
     }
     \Hook::set('content', __NAMESPACE__ . "\\are", 0);

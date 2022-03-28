@@ -1,6 +1,6 @@
 <?php
 
-class Layout extends Genome {
+class Y extends Genome {
 
     protected static $lot;
 
@@ -47,30 +47,34 @@ class Layout extends Genome {
     public static function path($value) {
         $out = [];
         $c = static::class;
-        $path = LOT . D . 'layout';
+        $path = LOT . D . 'y';
         if (is_string($value)) {
             // Full path, be quick!
             if (0 === strpos($value, PATH) && is_file($value)) {
                 return $value;
             }
             $id = strtr($value, D, '/');
-            // Added by the `Layout::set()`
+            // Added by the `Y::set()`
             if (isset(self::$lot[$c][1][$id]) && !isset(self::$lot[$c][0][$id])) {
                 return exist(self::$lot[$c][1][$id], 1) ?: null;
             }
             // Guessing…
-            $out = array_values(step($id, '/'));
-            array_unshift($out, strtr($out[0], '/', '.'));
-            $out = array_unique($out);
+            $out = array_unique(array_values(step($id, '/')));
         } else {
-            $out = $value;
+            $out = (array) $value;
         }
-        $any = [];
-        foreach ((array) $out as $v) {
+        $files = [];
+        foreach ($out as $v) {
             $v = strtr($v, '/', D);
-            $any[] = 0 !== strpos($v, $path) ? $path . D . $v . '.php' : $v;
+            // Iterate over the `.\lot\y` folder to find active layout(s)
+            foreach (g($path, 0) as $kk => $vv) {
+                if (!is_file($kk . D . 'index.php')) {
+                    continue;
+                }
+                $files[] = 0 !== strpos($v, $kk) ? $kk . D . $v . '.php' : $v;
+            }
         }
-        return exist($any) ?: null;
+        return exist($files) ?: null;
     }
 
     public static function let($id = null) {

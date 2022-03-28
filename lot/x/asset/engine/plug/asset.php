@@ -2,8 +2,8 @@
 
 foreach ([
     '.css' => function($value, $key) {
-        $link = $value['link'];
-        $path = $value['path'];
+        $link = $value['link'] ?? "";
+        $path = $value['path'] ?? "";
         $x = false !== strpos($link, '://') || 0 === strpos($link, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';
@@ -22,8 +22,8 @@ foreach ([
         return new HTML($value);
     },
     '.js' => function($value, $key) {
-        $link = $value['link'];
-        $path = $value['path'];
+        $link = $value['link'] ?? "";
+        $path = $value['path'] ?? "";
         $x = false !== strpos($link, '://') || 0 === strpos($link, '//');
         if (!$path && !$x) {
             return '<!-- ' . $key . ' -->';

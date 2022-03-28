@@ -46,7 +46,7 @@ namespace {
 }
 
 namespace x\page {
-    // Initialize layout variable(s)
+    // Initialize response variable(s)
     $GLOBALS['page'] = new \Page;
     $GLOBALS['pager'] = new \Pager\Pages;
     $GLOBALS['pages'] = new \Pages;
@@ -55,7 +55,7 @@ namespace x\page {
         // executed in order based on the `$stack` value. You could add a new route hook to overwrite the output of
         // this hook which will be executed after this hook execution. But that is not efficient because this hook
         // need(s) to be executed first, while the process inside it will not be used as it will be overwritten by
-        // your route hook anyway. To speed up the process, you need to set a higher `$stack` value to your route hook,
+        // your route hook later. To speed up the process, you need to set a higher `$stack` value to your route hook,
         // so that it can be executed before this hook. Without this conditional statement, the output data of your
         // previously executed hook will be overwritten by this hook. This conditional statement passes the value
         // immediately if the previous hook value already contains the required response data (probably comes from the
@@ -134,7 +134,7 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                return \Layout::page(($path ?: $route) . '/' . ($i + 1), [], 200);
+                return \Y::page(($path ?: $route) . '/' . ($i + 1), [], 200);
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
@@ -162,7 +162,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                return \Layout::pages(($path ?: $route) . '/' . ($i + 1), [], 200);
+                return \Y::pages(($path ?: $route) . '/' . ($i + 1), [], 200);
             }
         }
         \State::set([
@@ -180,7 +180,7 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        return \Layout::error(($path ?: $route) . '/' . ($i + 1), [], 404);
+        return \Y::error(($path ?: $route) . '/' . ($i + 1), [], 404);
     }
     \Hook::set('route', function(...$lot) {
         return \Hook::fire('route.page', $lot);
