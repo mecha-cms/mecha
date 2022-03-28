@@ -65,7 +65,7 @@ namespace x\layout {
                     require $f;
                 })($index);
             }
-            // Detect relative asset path to the `.\lot\y\*\asset` folder
+            // Detect relative asset path to the `.\lot\y\*` folder
             if (null !== \State::get('x.asset') && $assets = \Asset::get()) {
                 foreach ($assets as $k => $v) {
                     foreach ($v as $kk => $vv) {
@@ -77,7 +77,7 @@ namespace x\layout {
                         ) {
                             continue;
                         }
-                        if ($path = \Asset::path($folder . \D . 'asset' . \D . $kk)) {
+                        if ($path = \Asset::path($folder . \D . $kk)) {
                             \Asset::let($kk);
                             \Asset::set($path, $vv['stack'], $vv[2]);
                         }
