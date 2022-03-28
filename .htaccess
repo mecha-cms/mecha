@@ -4,10 +4,6 @@ AddDefaultCharset UTF-8
   Options -Indexes
 </IfModule>
 
-<Files .htaccess>
-  deny from all
-</Files>
-
 <IfModule mod_rewrite.c>
   RewriteEngine on
   RewriteCond %{REQUEST_FILENAME} !-f
