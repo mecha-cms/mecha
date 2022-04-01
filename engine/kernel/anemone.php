@@ -80,8 +80,8 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return new \ArrayIterator($this->value);
     }
 
-    public function has(string $value = "", string $join = P) {
-        return has($this->value, $value, $join);
+    public function has(string $key = null) {
+        return isset($key) ? has($this->value, $key) : !empty($this->value);
     }
 
     public function index(string $key) {

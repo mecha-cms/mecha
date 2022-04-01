@@ -379,16 +379,22 @@ function gt($a, $b) {
     return q($a) > $b;
 }
 
-function has(iterable $value, $has = "", string $x = P) {
-    if (!is_string($has)) {
-        foreach ($value as $v) {
-            if ($has === $v) {
-                return true;
-            }
-        }
+function has(array $value, string $key, string $join = '.') {
+    if (!$value) {
         return false;
     }
-    return false !== strpos($x . implode($x, $value) . $x, $x . $has . $x);
+    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
+        return array_key_exists(strtr($key, [P => $join]), $value);
+    }
+    $keys = explode($join, $key);
+    foreach ($keys as $k) {
+        $k = strtr($k, [P => $join]);
+        if (is_array($value)) {
+            return array_key_exists($k, $value);
+        }
+        $value =& $value[$k];
+    }
+    return false;
 }
 
 function ip() {
