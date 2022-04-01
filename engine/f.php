@@ -389,12 +389,12 @@ function has(array $value, string $key, string $join = '.') {
     $keys = explode($join, $key);
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
-        if (is_array($value)) {
-            return array_key_exists($k, $value);
+        if (!is_array($value) || !array_key_exists($k, $value)) {
+            return false;
         }
         $value =& $value[$k];
     }
-    return false;
+    return true;
 }
 
 function ip() {
