@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html class dir="<?= $site->direction; ?>" lang="<?= $site->language; ?>">
+<html class lang="<?= $site->language; ?>">
   <head>
-    <meta charset="<?= $site->charset; ?>">
+    <meta charset="utf-8">
     <meta content="width=device-width" name="viewport">
     <?php if ($w = w($page->description ?? $site->description ?? "")): ?>
       <meta content="<?= $w; ?>" name="description">
