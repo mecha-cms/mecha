@@ -130,7 +130,7 @@ Release Notes
 
 ### 3.0.0
 
- - [x] Added classes `X` and `Y`.
+ - [x] Added classes `X`, `XML` and `Y`.
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `ip`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `ua`, `zone`.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
@@ -138,14 +138,14 @@ Release Notes
  - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{description,sentence,title}` methods to `page` extension.
- - [x] Moved classes `HTML`, `SGML` to `h-t-m-l` extension.
  - [x] Optimized hook sorting mechanism (#156)
+ - [x] Refactored function `has` to make it more useful along with `get`, `let`, and `set` functions.
  - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `$parent` variable (#165)
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Removed `parent` method from `File`, `Folder`, and `Page` class.
- - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Layout`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`.
+ - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Layout`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`, `SGML`.
  - [x] Removed constant `GROUND`, `PS`.
  - [x] Removed separator options from URL functions and methods (#164)
  - [x] Renamed `To::excerpt` to `To::description`.

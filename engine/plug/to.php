@@ -2,7 +2,7 @@
 
 foreach ([
     'HTML' => function(string $value = null) {
-        return htmlspecialchars_decode($value, ENT_COMPAT | ENT_HTML5);
+        return htmlspecialchars_decode($value, ENT_HTML5 | ENT_QUOTES);
     },
     'JSON' => function($value = null, $tidy = false) {
         if ($tidy) {

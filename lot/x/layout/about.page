@@ -9,6 +9,6 @@ version: 2.0.0
 
 ### Features
 
- - Detect asset path relative to the `.\lot\asset` and `.\lot\y\*\asset` folder.
+ - Detect asset path relative to the `.\lot\asset` and `.\lot\y\*` folder.
  - Detect layout path relative to the `.\lot\y\*` folder.
  - Add HTML classes automatically to the `<html>` element based on the current page conditional statements.
