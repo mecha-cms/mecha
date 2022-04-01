@@ -18,10 +18,10 @@
 
 # Deny access to `.htaccess`
 <Files .htaccess>
-  deny from all
+  Deny from all
 </Files>
 
 # Deny access to file(s) with `.` prefix
 <FilesMatch '^\.'>
-  deny from all
+  Deny from all
 </FilesMatch>
