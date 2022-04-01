@@ -358,7 +358,13 @@ function ge($a, $b) {
 }
 
 function get(array $value, string $key, string $join = '.') {
-    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    if (!$value) {
+        return null;
+    }
+    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
+        return $value[strtr($key, [P => $join])] ?? null;
+    }
+    $keys = explode($join, $key);
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
         if (!is_array($value) || !array_key_exists($k, $value)) {
@@ -408,7 +414,14 @@ function le($a, $b) {
 }
 
 function let(array &$value, string $key, string $join = '.') {
-    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    if (!$value) {
+        return $value;
+    }
+    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
+        unset($value[strtr($key, [P => $join])]);
+        return $value;
+    }
+    $keys = explode($join, $key);
     while (count($keys) > 1) {
         $k = strtr(array_shift($keys), [P => $join]);
         if (is_array($value) && array_key_exists($k, $value)) {
@@ -554,7 +567,11 @@ function send($from, $to, string $title, string $content, array $lot = []) {
 }
 
 function set(array &$out, string $key, $value = null, string $join = '.') {
-    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
+        $out[strtr($key, [P => $join])] = $value;
+        return $out;
+    }
+    $keys = explode($join, $key);
     while (count($keys) > 1) {
         $k = strtr(array_shift($keys), [P => $join]);
         if (!array_key_exists($k, $out)) {
