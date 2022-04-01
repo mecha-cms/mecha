@@ -27,7 +27,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         2 => []
                     ];
                     $this->strict = '/>' === substr($value, -2);
-                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^\s\/>]+)?)/', $m[2], $mm)) {
+                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $k => $v) {
                                 $vv = $mm[2][$k];
