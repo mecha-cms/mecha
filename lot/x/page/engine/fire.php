@@ -134,7 +134,7 @@ namespace x\page {
             $pages = \Pages::from($folder, 'page', $deep)->sort($sort); // (all)
             // No page(s) means “page” mode
             if (0 === $pages->count() || \is_file($folder . \D . '.' . $page->x)) {
-                return \Y::page(($path ?: $route) . '/' . ($i + 1), [], 200);
+                return ['page', [], 200];
             }
             // Create pager for “pages” mode
             $pager = new \Pager\Pages($pages->get(), [$chunk, $i], (object) [
@@ -162,7 +162,7 @@ namespace x\page {
                 $GLOBALS['page'] = $page;
                 $GLOBALS['pager'] = $pager;
                 $GLOBALS['pages'] = $pages;
-                return \Y::pages(($path ?: $route) . '/' . ($i + 1), [], 200);
+                return ['pages', [], 200];
             }
         }
         \State::set([
@@ -180,7 +180,7 @@ namespace x\page {
             ]
         ]);
         $GLOBALS['t'][] = i('Error');
-        return \Y::error(($path ?: $route) . '/' . ($i + 1), [], 404);
+        return ['error', [], 404];
     }
     \Hook::set('route', function(...$lot) {
         return \Hook::fire('route.page', $lot);

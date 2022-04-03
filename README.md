@@ -130,7 +130,7 @@ Release Notes
 
 ### 3.0.0
 
- - [x] Added classes `X`, `XML` and `Y`.
+ - [x] Added classes `XML`.
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `ip`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `ua`, `zone`.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
@@ -145,7 +145,7 @@ Release Notes
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Removed `parent` method from `File`, `Folder`, and `Page` class.
- - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Layout`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`, `SGML`.
+ - [x] Removed classes `Cache`, `Client`, `Cookie`, `Files`, `Folders`, `Get`, `Guard`, `Path`, `Post`, `Request`, `Route`, `Server`, `Session`, `SGML`.
  - [x] Removed constant `GROUND`, `PS`.
  - [x] Removed separator options from URL functions and methods (#164)
  - [x] Renamed `To::excerpt` to `To::description`.

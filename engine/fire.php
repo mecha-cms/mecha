@@ -734,7 +734,15 @@ if (is_file($task = PATH . D . 'task.php')) {
 unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v);
 
 Hook::set('get', function() use($url) {
-    echo (string) Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
+    $content = Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
+    if (is_array($content) || is_object($content)) {
+        if (!error_get_last()) {
+            type('application/json');
+        }
+        echo To::JSON($content, true);
+    } else {
+        echo $content;
+    }
 }, 1000);
 
 Hook::fire('get');

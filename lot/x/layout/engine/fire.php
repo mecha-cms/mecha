@@ -50,16 +50,15 @@ namespace x\layout {
             \Time::_($key, \Time::_('en'));
         }
         foreach (\g(\LOT . \D . 'y', 0) as $k => $v) {
-            $folder = $k;
-            // Run layout task if any
-            if (\is_file($task = $folder . \D . 'task.php')) {
-                (static function($f) {
-                    \extract($GLOBALS, \EXTR_SKIP);
-                    require $f;
-                })($task);
-            }
             // Load user function(s) from the `.\lot\y\*` folder if any
-            if (\is_file($index = $folder . \D . 'index.php')) {
+            if (\is_file($index = ($folder = $k) . \D . 'index.php')) {
+                // Run layout task if any
+                if (\is_file($task = $folder . \D . 'task.php')) {
+                    (static function($f) {
+                        \extract($GLOBALS, \EXTR_SKIP);
+                        require $f;
+                    })($task);
+                }
                 (static function($f) {
                     \extract($GLOBALS, \EXTR_SKIP);
                     require $f;
@@ -89,11 +88,15 @@ namespace x\layout {
     function route($content) {
         \ob_start();
         \ob_start("\\ob_gzhandler");
+        // `$content = ['page', [], 200];`
+        if (is_array($content) && isset($content[0]) && is_string($content[0])) {
+            $content = \Layout::get(...$content);
+        }
         echo \Hook::fire('content', [$content]);
         \ob_end_flush();
         // <https://www.php.net/manual/en/function.ob-get-length.php#59294>
         \header('content-length: ' . \ob_get_length());
-        echo \ob_get_clean();
+        return \ob_get_clean();
     }
     \Hook::set('content', __NAMESPACE__ . "\\content", 20);
     \Hook::set('get', __NAMESPACE__ . "\\get", 0);
