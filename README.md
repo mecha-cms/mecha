@@ -130,7 +130,7 @@ Release Notes
 
 ### 3.0.0
 
- - [x] Added classes `XML`.
+ - [x] Added class `XML`.
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `ip`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `ua`, `zone`.
  - [x] Changed `path` state property to `route`.
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
