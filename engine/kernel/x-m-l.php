@@ -8,14 +8,6 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         2 => []
     ];
 
-    protected function v($value) {
-        return To::HTML($value);
-    }
-
-    protected function x($value) {
-        return From::HTML($value);
-    }
-
     public $strict = true;
 
     public function __construct($value = []) {
@@ -28,18 +20,25 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         } else if (is_string($value)) {
             // Must starts with `<` and ends with `>`
             if (0 === strpos($value, '<') && '>' === substr($value, -1)) {
-                if (preg_match('/<([^\s"\'\/<=>]+)(\s(?:"(?:' . x($this->x('"')) . '|[^"])*"|\'(?:' . x($this->x("'")) . '|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)/', n($value), $m)) {
+                if (preg_match('/<([^\s"\'\/<=>]+)(\s(?:"(?:&quot;|[^"])*"|\'(?:&apos;|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)/', n($value), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
                     $this->strict = '/>' === substr($value, -2);
-                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:' . x($this->x('"')) . '|[^"])*"|\'(?:' . x($this->x("'")) . '|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
+                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:&quot;|[^"])*"|\'(?:&apos;|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $i => $k) {
                                 $v = $mm[2][$i];
-                                $v = $this->v(0 === strpos($v, '"') && '"' === substr($v, -1) || 0 === strpos($v, "'") && "'" === substr($v, -1) ? substr($v, 1, -1) : $v);
+                                // <https://www.w3.org/TR/xml#sec-predefined-ent>
+                                $v = strtr(0 === strpos($v, '"') && '"' === substr($v, -1) || 0 === strpos($v, "'") && "'" === substr($v, -1) ? substr($v, 1, -1) : $v, [
+                                    '&amp;' => '&',
+                                    '&apos;' => "'",
+                                    '&gt;' => '>',
+                                    '&lt;' => '<',
+                                    '&quot;' => '"'
+                                ]);
                                 $this->lot[2][$k] = $this->strict && $v === $k ? true : $v;
                             }
                         }
@@ -66,10 +65,16 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     continue;
                 }
                 if (true === $v) {
-                    $out .=  ' ' . $k . ($this->strict ? '="' . $this->x($k) . '"' : "");
+                    $out .=  ' ' . $k . ($this->strict ? '="' . $k . '"' : "");
                     continue;
                 }
-                $out .= ' ' . $k . '="' . $this->x($v) . '"';
+                $out .= ' ' . $k . '="' . strtr($v, [
+                    "'" => '&apos;',
+                    '"' => '&quot;',
+                    '&' => '&amp;',
+                    '<' => '&lt;',
+                    '>' => '&gt;'
+                ]) . '"';
             }
         }
         return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . $lot[1] . '</' . $lot[0]) . '>';
