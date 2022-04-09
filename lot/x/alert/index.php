@@ -8,4 +8,6 @@ function alert(...$lot) {
 }
 
 // Set default alert layout if `.\lot\y\*\alert.php` file does not exist.
-!Layout::path('alert') && Layout::set('alert', __DIR__ . D . 'engine' . D . 'y' . D . 'alert.php');
+if (class_exists('Layout') && !Layout::path('alert')) {
+    Layout::set('alert', __DIR__ . D . 'engine' . D . 'y' . D . 'alert.php');
+}
