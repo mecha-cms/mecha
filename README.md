@@ -142,6 +142,7 @@ Release Notes
  - [x] Refactored function `has` to make it more useful along with `get`, `let`, and `set` functions.
  - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `$parent` variable (#165)
+ - [x] Removed `404.php` file requirement of layout.
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Removed `parent` method from `File`, `Folder`, and `Page` class.
@@ -153,7 +154,6 @@ Release Notes
  - [x] Renamed constant `DEBUG` to `TEST` (#159)
  - [x] Renamed constant `DS` to `D`.
  - [x] Renamed constant `ROOT` to `PATH`.
- - [x] Renamed default error page file from `404.php` to `error.php`.
  - [x] Renamed function `anemon` to `anemone`.
  - [x] The `e` function will no longer evaluate string in the form of JSON pattern (#167)
  - [x] Upgraded PHP version requirement to 7.3.0.
