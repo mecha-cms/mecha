@@ -34,7 +34,8 @@ namespace {
         'has' => [
             'page' => $is_home || $is_page,
             'pages' => !!$has_pages,
-            'parent' => $has_parent && false !== \strpos($path, '/')
+            'parent' => $has_parent && false !== \strpos($path, '/'),
+            'part' => !!\preg_match('/\/[1-9]\d*$/', $path)
         ],
         'is' => [
             'error' => $is_error = ("" === $path && !$is_home || "" !== $path && !$is_page) ? 404 : false,
@@ -155,7 +156,6 @@ namespace x\page {
                     'page' => true,
                     'pages' => true,
                     'parent' => !!$pager->parent,
-                    'part' => $i + 1,
                     'prev' => !!$pager->prev
                 ],
                 'is' => [
