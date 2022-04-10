@@ -115,19 +115,6 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return $array ? $out : o($out);
     }
 
-    public static function has($key = null) {
-        $c = static::class;
-        if (is_array($key)) {
-            $out = [];
-            foreach ($key as $k) {
-                $out[$k] = self::has($k);
-            }
-            return $out;
-        }
-        $out = self::$lot[$c] ?? [];
-        return isset($key) ? has($out, $key) : !empty($out);
-    }
-
     public static function let($key = null) {
         $c = static::class;
         if (is_array($key)) {

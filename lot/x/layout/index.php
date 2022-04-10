@@ -89,7 +89,6 @@ namespace x\layout {
         \ob_start("\\ob_gzhandler");
         // `$content = ['page', [], 200];`
         if (\is_array($content) && isset($content[0]) && \is_string($content[0])) {
-            $content[0] .= ($path ?? \State::get('route'));
             $content = \Layout::get(...$content);
         }
         echo \Hook::fire('content', [$content]);
