@@ -19,3 +19,6 @@
 [submodule "lot/x/y-a-m-l"]
   path = lot/x/y-a-m-l
   url = https://github.com/mecha-cms/x.y-a-m-l.git
+[submodule "lot/y/log"]
+  path = lot/y/log
+  url = https://github.com/mecha-cms/y.log.git
