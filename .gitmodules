@@ -1,0 +1,21 @@
+[submodule "lot/x/alert"]
+  path = lot/x/alert
+  url = https://github.com/mecha-cms/x.alert.git
+[submodule "lot/x/asset"]
+  path = lot/x/asset
+  url = https://github.com/mecha-cms/x.asset.git
+[submodule "lot/x/layout"]
+  path = lot/x/layout
+  url = https://github.com/mecha-cms/x.layout.git
+[submodule "lot/x/link"]
+  path = lot/x/link
+  url = https://github.com/mecha-cms/x.link.git
+[submodule "lot/x/markdown"]
+  path = lot/x/markdown
+  url = https://github.com/mecha-cms/x.markdown.git
+[submodule "lot/x/page"]
+  path = lot/x/page
+  url = https://github.com/mecha-cms/x.page.git
+[submodule "lot/x/y-a-m-l"]
+  path = lot/x/y-a-m-l
+  url = https://github.com/mecha-cms/x.y-a-m-l.git
