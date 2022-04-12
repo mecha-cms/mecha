@@ -67,21 +67,15 @@ Alternatives
 
 ### Command Line
 
-This assumes that your site’s public directory is in `/srv/http`.
-
-#### Using Composer
-
-~~~ .txt
-$ cd /srv/http
-$ composer create-project mecha-cms/mecha .
-~~~
+This assumes that your site’s public directory is in `/srv/http`. Make sure the folder is empty, or move the existing files to another place first. Don’t forget with that `.` at the end of the command as written in the example below, to clone the repository into the current root folder.
 
 #### Using Git
 
 ~~~ .txt
 $ cd /srv/http
 $ git clone https://github.com/mecha-cms/mecha.git --depth 1 .
-$ rm LICENSE README.md
+$ git submodule update --init --recursive
+$ rm .gitmodules composer.json LICENSE README.md
 $ rm -r .git
 ~~~
 
@@ -94,34 +88,28 @@ Download the installer file from <https://mecha-cms.com/start> and then follow t
 Contributors
 ------------
 
-### Code Contributors
-
-This project exists thanks to all the people who contribute.
+This project exists and survives because of you. I would like to thank all those who have taken the time to contribute to this project.
 
 [![Contributors](https://opencollective.com/mecha-cms/contributors.svg?avatarHeight=24&button=false&width=890)](https://github.com/mecha-cms/mecha/graphs/contributors)
 
-### Financial Contributors
+Contribute financially to keep the project domain and website accessible to everyone. The website provides complete documentation and latest information regarding the software and future development plans. Some parts of the website also serve to provide a clean and efficient project file download feature which is obtained by managing responses from the [GitHub API](https://docs.github.com/en/rest/reference/repos).
 
-[Become a financial contributor](https://opencollective.com/mecha-cms/contribute) and help us sustain our community.
-
-#### Individuals
+### Backers
 
 [![Contribute](https://opencollective.com/mecha-cms/individuals.svg?width=890)](https://opencollective.com/mecha-cms)
 
-#### Organizations
+### Sponsors
 
-[Support this project with your organization](https://opencollective.com/mecha-cms/contribute). Your logo will show up here with a link to your website.
-
-<a href="https://opencollective.com/mecha-cms/organization/0/website"><img src="https://opencollective.com/mecha-cms/organization/0/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/1/website"><img src="https://opencollective.com/mecha-cms/organization/1/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/2/website"><img src="https://opencollective.com/mecha-cms/organization/2/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/3/website"><img src="https://opencollective.com/mecha-cms/organization/3/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/4/website"><img src="https://opencollective.com/mecha-cms/organization/4/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/5/website"><img src="https://opencollective.com/mecha-cms/organization/5/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/6/website"><img src="https://opencollective.com/mecha-cms/organization/6/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/7/website"><img src="https://opencollective.com/mecha-cms/organization/7/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/8/website"><img src="https://opencollective.com/mecha-cms/organization/8/avatar.svg"></a>
-<a href="https://opencollective.com/mecha-cms/organization/9/website"><img src="https://opencollective.com/mecha-cms/organization/9/avatar.svg"></a>
+[![0](https://opencollective.com/mecha-cms/organization/0/avatar.svg)](https://opencollective.com/mecha-cms/organization/0/website)
+[![1](https://opencollective.com/mecha-cms/organization/1/avatar.svg)](https://opencollective.com/mecha-cms/organization/1/website)
+[![2](https://opencollective.com/mecha-cms/organization/2/avatar.svg)](https://opencollective.com/mecha-cms/organization/2/website)
+[![3](https://opencollective.com/mecha-cms/organization/3/avatar.svg)](https://opencollective.com/mecha-cms/organization/3/website)
+[![4](https://opencollective.com/mecha-cms/organization/4/avatar.svg)](https://opencollective.com/mecha-cms/organization/4/website)
+[![5](https://opencollective.com/mecha-cms/organization/5/avatar.svg)](https://opencollective.com/mecha-cms/organization/5/website)
+[![6](https://opencollective.com/mecha-cms/organization/6/avatar.svg)](https://opencollective.com/mecha-cms/organization/6/website)
+[![7](https://opencollective.com/mecha-cms/organization/7/avatar.svg)](https://opencollective.com/mecha-cms/organization/7/website)
+[![8](https://opencollective.com/mecha-cms/organization/8/avatar.svg)](https://opencollective.com/mecha-cms/organization/8/website)
+[![9](https://opencollective.com/mecha-cms/organization/9/avatar.svg)](https://opencollective.com/mecha-cms/organization/9/website)
 
 ---
 
@@ -138,7 +126,9 @@ Release Notes
  - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
  - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{description,sentence,title}` methods to `page` extension.
+ - [x] Moved core extensions and layouts out of the repository and convert them to git sub-modules.
  - [x] Optimized hook sorting mechanism (#156)
+ - [x] Re-enabled the layout switcher feature (#205)
  - [x] Refactored function `has` to make it more useful along with `get`, `let`, and `set` functions.
  - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `$parent` variable (#165)
@@ -248,7 +238,7 @@ This update focuses on stabilizing the `URL` class. In this version, you can use
 
 ### 2.2.0
 
-Compatible with PHP 7.1.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator becomes a must-have feature in this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
+Compatible with PHP 7.3.0 and above. Mecha uses `Closure::fromCallable()` method (which is only available in PHP version 7.1.0 and above) to convert named function into closures, so that we can pass `$this` reference from another class instance to the function body even if it’s a named function. The `??` operator becomes a must-have feature in this version as we no longer use extra `$fail` parameter on certain class methods to set default values.
 
  - Added ability to read special file named `task.php`.
  - Added classes: `Client`, `Files`, `Folders`, `Layout`, `Pager\Page`, `Pager\Pages`, `Pages`, `Post`, `Server`, `SGML`.
