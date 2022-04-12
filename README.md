@@ -58,7 +58,7 @@ Preparations
  2. Download the available package from the [home page](https://mecha-cms.com).
  3. Upload Mecha through your FTP/SFTP to the public folder/directory on your site, then extract it!
  4. Take a look on the available extensions and layouts that you might be interested.
- 5. Upload your extension files to `.\lot\x` and your layout files to `.\lot\layout`. They’re auto-loaded.
+ 5. Upload your extension files to `.\lot\x` and your layout files to `.\lot\y`. They’re auto-loaded.
  6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/lot "GitHub").
  7. Install the panel extension if you are stuck by doing everything manually. You always have the full control to remove this extension without having to worry that your site will stop running after doing so.
 
@@ -132,7 +132,7 @@ Release Notes
  - [x] Refactored function `has` to make it more useful along with `get`, `let`, and `set` functions.
  - [x] Removed `$html` option in `To::description` (previously was `To::excerpt`). People who want to make page excerpt without HTML should be able to easily remove all the HTML markup from the input first, before using this function.
  - [x] Removed `$parent` variable (#165)
- - [x] Removed `404.php` file requirement of layout.
+ - [x] Removed `404.php` file requirement for layout.
  - [x] Removed `clean`, `d`, `i`, `port` property from `URL` class.
  - [x] Removed `get`, `has`, `let` and `set` methods from non-static classes (#166)
  - [x] Removed `parent` method from `File`, `Folder`, and `Page` class.
