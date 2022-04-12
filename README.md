@@ -94,22 +94,22 @@ This project exists and survives because of you. I would like to thank all those
 
 Contribute financially to keep the project domain and website accessible to everyone. The website provides complete documentation and latest information regarding the software and future development plans. Some parts of the website also serve to provide a clean and efficient project file download feature which is obtained by managing responses from the [GitHub API](https://docs.github.com/en/rest/reference/repos).
 
-| Backers |
-| ------- |
-| [![Contribute](https://opencollective.com/mecha-cms/individuals.svg?width=890)](https://opencollective.com/mecha-cms) |
+### Backers
 
-| Sponsors |
-| -------- |
-| [![0](https://opencollective.com/mecha-cms/organization/0/avatar.svg)](https://opencollective.com/mecha-cms/organization/0/website) |
-| [![1](https://opencollective.com/mecha-cms/organization/1/avatar.svg)](https://opencollective.com/mecha-cms/organization/1/website) |
-| [![2](https://opencollective.com/mecha-cms/organization/2/avatar.svg)](https://opencollective.com/mecha-cms/organization/2/website) |
-| [![3](https://opencollective.com/mecha-cms/organization/3/avatar.svg)](https://opencollective.com/mecha-cms/organization/3/website) |
-| [![4](https://opencollective.com/mecha-cms/organization/4/avatar.svg)](https://opencollective.com/mecha-cms/organization/4/website) |
-| [![5](https://opencollective.com/mecha-cms/organization/5/avatar.svg)](https://opencollective.com/mecha-cms/organization/5/website) |
-| [![6](https://opencollective.com/mecha-cms/organization/6/avatar.svg)](https://opencollective.com/mecha-cms/organization/6/website) |
-| [![7](https://opencollective.com/mecha-cms/organization/7/avatar.svg)](https://opencollective.com/mecha-cms/organization/7/website) |
-| [![8](https://opencollective.com/mecha-cms/organization/8/avatar.svg)](https://opencollective.com/mecha-cms/organization/8/website) |
-| [![9](https://opencollective.com/mecha-cms/organization/9/avatar.svg)](https://opencollective.com/mecha-cms/organization/9/website) |
+[![Contribute](https://opencollective.com/mecha-cms/individuals.svg?width=890)](https://opencollective.com/mecha-cms)
+
+### Sponsors
+
+[![0](https://opencollective.com/mecha-cms/organization/0/avatar.svg)](https://opencollective.com/mecha-cms/organization/0/website)
+[![1](https://opencollective.com/mecha-cms/organization/1/avatar.svg)](https://opencollective.com/mecha-cms/organization/1/website)
+[![2](https://opencollective.com/mecha-cms/organization/2/avatar.svg)](https://opencollective.com/mecha-cms/organization/2/website)
+[![3](https://opencollective.com/mecha-cms/organization/3/avatar.svg)](https://opencollective.com/mecha-cms/organization/3/website)
+[![4](https://opencollective.com/mecha-cms/organization/4/avatar.svg)](https://opencollective.com/mecha-cms/organization/4/website)
+[![5](https://opencollective.com/mecha-cms/organization/5/avatar.svg)](https://opencollective.com/mecha-cms/organization/5/website)
+[![6](https://opencollective.com/mecha-cms/organization/6/avatar.svg)](https://opencollective.com/mecha-cms/organization/6/website)
+[![7](https://opencollective.com/mecha-cms/organization/7/avatar.svg)](https://opencollective.com/mecha-cms/organization/7/website)
+[![8](https://opencollective.com/mecha-cms/organization/8/avatar.svg)](https://opencollective.com/mecha-cms/organization/8/website)
+[![9](https://opencollective.com/mecha-cms/organization/9/avatar.svg)](https://opencollective.com/mecha-cms/organization/9/website)
 
 ---
 
