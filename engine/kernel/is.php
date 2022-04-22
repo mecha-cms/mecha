@@ -12,10 +12,13 @@ final class Is extends Genome {
         if (!is_string($value) || "" === ($value = trim($value))) {
             return false;
         }
+        // `null` is valid JSON pattern <https://www.rfc-editor.org/rfc/rfc7159#section-1>
+        if ('null' === $value) {
+            return true;
+        }
         return (
             // Maybe boolean
             'false' === $value ||
-            'null' === $value ||
             'true' === $value ||
             // Maybe empty string, array or object
             '""' === $value ||
@@ -109,7 +112,7 @@ final class Is extends Genome {
     // Check for empty string, array or object
     public static function void($value) {
         if ($value instanceof \Traversable) {
-            return 0 === \iterator_count($value);
+            return 0 === iterator_count($value);
         }
         // `0` integer and `0` string is not considered void
         return (
