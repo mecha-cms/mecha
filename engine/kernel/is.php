@@ -12,20 +12,19 @@ final class Is extends Genome {
         if (!is_string($value) || "" === ($value = trim($value))) {
             return false;
         }
-        // `null` is valid JSON pattern <https://www.rfc-editor.org/rfc/rfc7159#section-1>
-        if ('null' === $value) {
-            return true;
-        }
-        return (
-            // Maybe boolean
+        if (
             'false' === $value ||
+            // `null` value is a valid JSON <https://www.rfc-editor.org/rfc/rfc7159#section-1>
+            'null' === $value ||
             'true' === $value ||
-            // Maybe empty string, array or object
             '""' === $value ||
             '[]' === $value ||
             '{}' === $value ||
-            // Maybe number
-            is_numeric($value) ||
+            is_numeric($value)
+        ) {
+            return true;
+        }
+        return (
             // Maybe string
             '"' === $value[0] && '"' === substr($value, -1) ||
             // Maybe array
