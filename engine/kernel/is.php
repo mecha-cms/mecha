@@ -14,7 +14,7 @@ final class Is extends Genome {
         }
         if (
             'false' === $value ||
-            // `null` value is a valid JSON <https://www.rfc-editor.org/rfc/rfc7159#section-1>
+            // `null` value is a valid JSON <https://www.rfc-editor.org/rfc/rfc8259#section-3>
             'null' === $value ||
             'true' === $value ||
             '""' === $value ||

@@ -246,7 +246,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
         $headers['user-agent'] = 'user-agent: ' . $lot;
     }
     if (!isset($headers['user-agent'])) {
-        // <https://tools.ietf.org/html/rfc7231#section-5.5.3>
+        // <https://www.rfc-editor.org/rfc/rfc7231#section-5.5.3>
         $port = (int) $_SERVER['SERVER_PORT'];
         $v = 'Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
         $headers['user-agent'] = 'user-agent: ' . $v;

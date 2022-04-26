@@ -14,6 +14,10 @@
   "description": "Mecha is a flat-file content management system that carries the concept of minimalism.",
   "funding": [
     {
+      "type": "opencollective",
+      "url": "https://opencollective.com/mecha-cms"
+    },
+    {
       "type": "other",
       "url": "https://paypal.me/tatautaufik"
     }
@@ -25,7 +29,7 @@
     "ext-dom": "*",
     "ext-json": "*",
     "ext-mbstring": "*",
-    "php": ">=7.1.0"
+    "php": ">=7.3.0"
   },
   "support": {
     "docs": "https://mecha-cms.com/reference",
