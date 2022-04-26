@@ -20,14 +20,14 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         } else if (is_string($value)) {
             // Must starts with `<` and ends with `>`
             if (0 === strpos($value, '<') && '>' === substr($value, -1)) {
-                if (preg_match('/<([^\s"\'\/<=>]+)(\s(?:"(?:&quot;|[^"])*"|\'(?:&apos;|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)/', n($value), $m)) {
+                if (preg_match('/<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)/', n($value), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
                     $this->strict = '/>' === substr($value, -2);
-                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:&quot;|[^"])*"|\'(?:&apos;|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
+                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $i => $k) {
                                 $v = $mm[2][$i];
