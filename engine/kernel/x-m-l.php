@@ -31,14 +31,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $i => $k) {
                                 $v = $mm[2][$i];
-                                // <https://www.w3.org/TR/xml#sec-predefined-ent>
-                                $v = strtr(0 === strpos($v, '"') && '"' === substr($v, -1) || 0 === strpos($v, "'") && "'" === substr($v, -1) ? substr($v, 1, -1) : $v, [
-                                    '&amp;' => '&',
-                                    '&apos;' => "'",
-                                    '&gt;' => '>',
-                                    '&lt;' => '<',
-                                    '&quot;' => '"'
-                                ]);
+                                $v = htmlspecialchars_decode(0 === strpos($v, '"') && '"' === substr($v, -1) || 0 === strpos($v, "'") && "'" === substr($v, -1) ? substr($v, 1, -1) : $v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
                                 $this->lot[2][$k] = $this->strict && $v === $k ? true : $v;
                             }
                         }
@@ -68,13 +61,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     $out .=  ' ' . $k . ($this->strict ? '="' . $k . '"' : "");
                     continue;
                 }
-                $out .= ' ' . $k . '="' . strtr($v, [
-                    "'" => '&apos;',
-                    '"' => '&quot;',
-                    '&' => '&amp;',
-                    '<' => '&lt;',
-                    '>' => '&gt;'
-                ]) . '"';
+                $out .= ' ' . $k . '="' . htmlspecialchars($v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
             }
         }
         return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . $lot[1] . '</' . $lot[0]) . '>';
