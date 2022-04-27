@@ -42,7 +42,7 @@ function check(string $token, $id = 0) {
 function choke(int $for = 1, $id = 0) {
     $current = $_SERVER['REQUEST_TIME'];
     $id = $id ?? uniqid();
-    $prev = (int) (content($path = ENGINE . D . 'log' . D . $id) ?? $current);
+    $prev = (int) (content($path = ENGINE . D . 'log' . D . $id) ?? 0);
     if ($for > $current - $prev) {
         return $for - ($current - $prev);
     }
@@ -271,7 +271,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             curl_setopt($curl, CURLOPT_POSTFIELDS, $chops[1] ?? "");
         }
         $out = curl_exec($curl);
-        if ('HEAD' === $type) {
+        if ('HEAD' === $type && false !== $out) {
             $out = trim($out);
         }
         if (defined('TEST') && 'curl' === TEST && false === $out) {

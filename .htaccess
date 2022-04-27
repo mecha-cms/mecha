@@ -16,11 +16,6 @@
   RewriteRule . index.php [L,QSA]
 </IfModule>
 
-# Deny access to `.htaccess`
-<Files .htaccess>
-  Deny from all
-</Files>
-
 # Deny access to file(s) with `.` prefix
 <FilesMatch '^\.'>
   Deny from all
