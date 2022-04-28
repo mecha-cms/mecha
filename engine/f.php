@@ -240,7 +240,13 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     // `fetch('/', ['x-foo' => 'bar'])`
     if (is_array($lot)) {
         foreach ($lot as $k => $v) {
-            $headers[$k] = $k . ': ' . $v;
+            if (is_array($v)) {
+                foreach ($v as $vv) {
+                    $headers[] = $k . ': ' . $vv;
+                }
+            } else {
+                $headers[$k] = $k . ': ' . $v;
+            }
         }
     } else if (is_string($lot)) {
         $headers['user-agent'] = 'user-agent: ' . $lot;
@@ -258,6 +264,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_FAILONERROR => true,
             CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HEADER => true,
             CURLOPT_HTTPHEADER => array_values($headers),
             CURLOPT_MAXREDIRS => 2,
             CURLOPT_RETURNTRANSFER => true,
@@ -265,58 +272,77 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             CURLOPT_TIMEOUT => 15
         ]);
         if ('HEAD' === $type) {
-            curl_setopt($curl, CURLOPT_HEADER, true);
             curl_setopt($curl, CURLOPT_NOBODY, true);
         } else if ('POST' === $type) {
+            curl_setopt($curl, CURLOPT_HEADER, false);
             curl_setopt($curl, CURLOPT_POSTFIELDS, $chops[1] ?? "");
         }
-        $out = curl_exec($curl);
-        if ('HEAD' === $type && false !== $out) {
-            $out = trim($out);
+        if (false !== ($out = curl_exec($curl))) {
+            if ('GET' === $type) {
+                $heads = [];
+                $size = curl_getinfo($curl, CURLINFO_HEADER_SIZE);
+                foreach (explode("\n", n(trim(substr($out, 0, $size)))) as $head) {
+                    if (false === strpos($head, ':')) {
+                        continue;
+                    }
+                    [$k, $v] = array_replace([null, null], explode(':', $head, 2));
+                    $v = trim($v);
+                    if (isset($heads[$k = strtolower(trim($k))])) {
+                        $heads[$k] = (array) $heads[$k];
+                        $heads[$k][] = $v;
+                    } else {
+                        $heads[$k] = trim($v);
+                    }
+                }
+                $out = substr($out, $size);
+            } else if ('HEAD' === $type) {
+                $out = trim($out);
+            }
         }
         if (defined('TEST') && 'curl' === TEST && false === $out) {
             throw new UnexpectedValueException(curl_error($curl));
         }
         curl_close($curl);
     } else {
-        if ('HEAD' === $type) {
-            $out = [];
-            $headers = (array) get_headers($target, true, stream_context_set_default(['http' => ['method' => $type]]));
-            // If `$target` is redirected and the new target is also redirected, we got the `Location` data as array.
-            // We also got the HTTP code header in a number indexed value.
-            //
-            // <https://www.php.net/manual/en/function.get-headers.php#120075>
-            //
-            // [
-            //     0 => 'HTTP/1.1 302 Moved Temporarily',
-            //     'Location' => [
-            //         0 => '/test.php?id=2',
-            //         1 => '/test.php?id=3',
-            //         2 => '/test.php?id=4'
-            //     ],
-            //     1 => 'HTTP/1.1 302 Moved Temporarily',
-            //     2 => 'HTTP/1.1 302 Moved Temporarily',
-            //     3 => 'HTTP/1.1 200 OK'
-            // ]
-            if (isset($headers[0]) && isset($headers[1])) {
-                foreach ($headers as $k => $v) {
-                    if (is_array($v)) {
-                        foreach ($v as $kk => $vv) {
-                            $out[$kk][] = strtolower($k) . ': ' . $vv;
-                        }
-                        continue;
+        $heads = array_change_key_case((array) get_headers($target, true, stream_context_set_default(['http' => ['method' => $type]])), CASE_LOWER);
+        $out = [];
+        // If `$target` is redirected and the new target is also redirected, we got the `Location` data as array.
+        // We also got the HTTP code header in a number indexed value.
+        //
+        // <https://www.php.net/manual/en/function.get-headers.php#120075>
+        //
+        // [
+        //     0 => 'HTTP/1.1 302 Moved Temporarily',
+        //     'Location' => [
+        //         0 => '/test.php?id=2',
+        //         1 => '/test.php?id=3',
+        //         2 => '/test.php?id=4'
+        //     ],
+        //     1 => 'HTTP/1.1 302 Moved Temporarily',
+        //     2 => 'HTTP/1.1 302 Moved Temporarily',
+        //     3 => 'HTTP/1.1 200 OK'
+        // ]
+        if (isset($heads[0]) && isset($heads[1])) {
+            foreach ($heads as $k => $v) {
+                if (is_array($v)) {
+                    foreach ($v as $kk => $vv) {
+                        $out[$kk][] = strtolower($k) . ': ' . $vv;
                     }
-                    $out[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
+                    continue;
                 }
-                foreach ($out as &$v) {
-                    $v = implode("\n", $v);
-                }
-                unset($v);
-            } else {
-                foreach ($headers as $k => $v) {
-                    $out[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
-                }
+                $out[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
             }
+            foreach ($out as &$v) {
+                $v = implode("\n", $v);
+            }
+            unset($v);
+        } else {
+            unset($heads[0]); // Remove the `HTTP/1.1 200 OK` part
+            foreach ($heads as $k => $v) {
+                $out[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
+            }
+        }
+        if ('HEAD' === $type) {
             $out = trim(implode("\n", $out));
         } else {
             $context = [];
@@ -329,6 +355,31 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             $context['http']['ignore_errors'] = true;
             $context['http']['method'] = $type;
             $out = file_get_contents($target, false, stream_context_create($context));
+        }
+    }
+    if (!empty($heads)) {
+        $stale = false;
+        // <https://www.rfc-editor.org/rfc/rfc7234#section-5.3>
+        $age = (new DateTime($heads['date'] ?? '@' . $_SERVER['REQUEST_TIME']))->getTimestamp();
+        if (($v = $heads['cache-control'] ?? "") && (false !== strpos($v, 'max-age=') || false !== strpos($v, 's-maxage='))) {
+            if (preg_match('/\b(max-age|s-maxage)=(\d+)/i', $v, $m)) {
+                $stale = $age + ((int) $m[2]);
+            }
+        } else if ($v = $heads['expires'] ?? "") {
+            // <https://www.rfc-editor.org/rfc/rfc7234#section-4.2.1>
+            $stale = (is_numeric($v) ? ((int) $v) : (new DateTime($v))->setTimezone(new DateTimeZone(zone()))->getTimestamp()) - $age;
+        }
+        // <https://www.rfc-editor.org/rfc/rfc7234#section-4.2.1>
+        if (false !== $stale) {
+            ;
+            if (!is_dir($folder = dirname($file = LOT . D . 'cache' . D . 'fetch.' . md5($target) . '.php'))) {
+                mkdir($folder, 0775, true);
+            }
+            if ($stale < $_SERVER['REQUEST_TIME']) {
+                // TODO: Store response data to `.\lot\cache` folder
+            } else {
+                // TODO: Return response data from `.\lot\cache` folder
+            }
         }
     }
     return false !== $out ? n($out) : null;
