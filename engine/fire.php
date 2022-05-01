@@ -664,50 +664,53 @@ function short(string $value) {
     return "" === $value ? '/' : $value;
 }
 
-$uses = [];
-foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
-    if (empty($GLOBALS['X'][0][$v])) {
-        $n = basename($d = dirname($v));
-        $uses[path($v)] = content($d . D . $n) ?? $n;
-        // Load state(s)…
-        State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
-        if (is_file($v = $d . D . 'state.php')) {
-            (static function($k, $v, $a) {
-                extract($GLOBALS, EXTR_SKIP);
-                State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
-            })($k, $v, $state['x'][$n] ?? []);
+try {
+    $uses = [];
+    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
+        if (empty($GLOBALS['X'][0][$v])) {
+            $n = basename($d = dirname($v));
+            $uses[path($v)] = content($d . D . $n) ?? $n;
+            // Load state(s)…
+            State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
+            if (is_file($v = $d . D . 'state.php')) {
+                (static function($k, $v, $a) {
+                    extract($GLOBALS, EXTR_SKIP);
+                    State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
+                })($k, $v, $state['x'][$n] ?? []);
+            }
         }
     }
-}
-
-natsort($uses);
-
-$GLOBALS['X'][1] = $uses = array_keys($uses);
-
-// Load class(es)…
-foreach ($uses as $v) {
-    $d = dirname($v) . D . 'engine';
-    d($d . D . 'kernel', static function($object, $n) use($d) {
-        if (is_file($f = $d . D . 'plug' . D . $n . '.php')) {
-            extract($GLOBALS, EXTR_SKIP);
-            require $f;
-        }
-    });
-}
-
-// Load extension(s)…
-foreach ($uses as $v) {
-    (static function($v) {
-        // Load task(s)…
-        if (is_file($k = dirname($v) . D . 'task.php')) {
-            (static function($k) {
+    natsort($uses);
+    $GLOBALS['X'][1] = $uses = array_keys($uses);
+    // Load class(es)…
+    foreach ($uses as $v) {
+        $d = dirname($v) . D . 'engine';
+        d($d . D . 'kernel', static function($object, $n) use($d) {
+            if (is_file($f = $d . D . 'plug' . D . $n . '.php')) {
                 extract($GLOBALS, EXTR_SKIP);
-                require $k;
-            })($k);
-        }
-        extract($GLOBALS, EXTR_SKIP);
-        require $v;
-    })($v);
+                require $f;
+            }
+        });
+    }
+    // Load extension(s)…
+    foreach ($uses as $v) {
+        (static function($v) {
+            // Load task(s)…
+            if (is_file($k = dirname($v) . D . 'task.php')) {
+                (static function($k) {
+                    extract($GLOBALS, EXTR_SKIP);
+                    require $k;
+                })($k);
+            }
+            extract($GLOBALS, EXTR_SKIP);
+            require $v;
+        })($v);
+    }
+} catch (Throwable $e) {
+    // Catch error that occurs in the loaded extension, and then disable the extension immediately!
+    $x = explode(D, substr($e->getFile(), strlen($folder = LOT . D . 'x' . D)), 2)[0] ?? P;
+    file_put_contents($folder . $x . D . 'error', ((string) $e) . PHP_EOL . PHP_EOL, FILE_APPEND);
+    rename($folder . $x . D . 'index.php', $folder . $x . D . 'index.x');
 }
 
 // Set default response status and header(s)
@@ -731,7 +734,7 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($any, $d, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v);
+unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v, $x);
 
 Hook::set('get', function() use($url) {
     $content = Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
