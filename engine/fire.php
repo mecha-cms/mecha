@@ -707,9 +707,9 @@ try {
         })($v);
     }
 } catch (Throwable $e) {
-    // Catch error that occurs in the loaded extension, and then disable the extension immediately!
+    // Catch error that occurs in the loaded extension then immediately disable the extension!
     $x = explode(D, substr($e->getFile(), strlen($folder = LOT . D . 'x' . D)), 2)[0] ?? P;
-    file_put_contents($folder . $x . D . 'error', ((string) $e) . PHP_EOL . PHP_EOL, FILE_APPEND);
+    file_put_contents(ENGINE . D . 'log' . D . 'error-x', ((string) $e) . PHP_EOL, FILE_APPEND);
     rename($folder . $x . D . 'index.php', $folder . $x . D . 'index.x');
 }
 
