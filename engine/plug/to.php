@@ -87,6 +87,9 @@ foreach ([
     },
     'query' => function(array $value = null) {
         $out = [];
+        if (!$value) {
+            return null;
+        }
         $q = static function(array $value, $enter) use(&$q) {
             $a = [];
             $exit = $enter ? ']' : "";

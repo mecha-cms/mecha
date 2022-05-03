@@ -15,6 +15,9 @@ foreach ([
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'query' => function(string $value = null) {
         $out = [];
+        if ("" === ($value = trim($value))) {
+            return $out;
+        }
         $q = static function(array &$out, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
