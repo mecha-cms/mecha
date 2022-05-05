@@ -71,12 +71,24 @@ This assumes that your site’s public directory is in `/srv/http`. Make sure th
 
 #### Using Git
 
-~~~ .txt
+~~~ .sh
 $ cd /srv/http
 $ git clone https://github.com/mecha-cms/mecha.git --depth 1 .
 $ git submodule update --init --recursive
 $ rm .gitmodules composer.json LICENSE README.md
 $ rm -r .git
+~~~
+
+You may want to install [user](https://github.com/mecha-cms/x.user) and [panel](https://github.com/mecha-cms/x.panel) extension as well:
+
+~~~ .sh
+$ cd lot/x
+$ git clone https://github.com/mecha-cms/x.user.git --depth 1 user
+$ rm user/LICENSE user/README.md
+$ rm -r user/.git
+$ git clone https://github.com/mecha-cms/x.panel.git --depth 1 panel
+$ rm panel/LICENSE panel/README.md
+$ rm -r panel/.git
 ~~~
 
 ### Web Browser
