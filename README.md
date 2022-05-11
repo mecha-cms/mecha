@@ -17,7 +17,7 @@ The default layout uses only Serif and Mono fonts. Different operating systems m
 Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 -----------------------------------------------------------------------------
 
-To be able to activate the back-end feature requires you to install our [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can choose to use this feature in the local version only, and get rid of it in the public version as the most basic security measure if you want.
+To be able to activate the back-end feature requires you to install our [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/141484343-0568ef0d-f7c5-4991-a8ee-7773379415b2.png)
 
