@@ -667,9 +667,9 @@ function short(string $value) {
 try {
     $uses = [];
     foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
-        if (empty($GLOBALS['X'][0][$v])) {
+        if (empty($GLOBALS['X'][0][$v = path($v)])) {
             $n = basename($d = dirname($v));
-            $uses[path($v)] = content($d . D . $n) ?? $n;
+            $uses[$v] = content($d . D . $n) ?? $n;
             // Load state(s)…
             State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
             if (is_file($v = $d . D . 'state.php')) {
@@ -710,7 +710,7 @@ try {
     // Catch error that occurs in the loaded extension then immediately disable the extension!
     $x = explode(D, substr($e->getFile(), strlen($folder = LOT . D . 'x' . D)), 2)[0] ?? P;
     file_put_contents(ENGINE . D . 'log' . D . 'error-x', ((string) $e) . PHP_EOL, FILE_APPEND);
-    rename($folder . $x . D . 'index.php', $folder . $x . D . 'index.x');
+    rename($folder . $x . D . 'index.php', $folder . $x . D . '.index.php');
 }
 
 // Set default response status and header(s)
