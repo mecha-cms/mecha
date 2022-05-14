@@ -666,22 +666,24 @@ function short(string $value) {
 
 try {
     $uses = [];
-    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . 'x' . D . '*' . D . 'index.php', GLOB_NOSORT) as $v) {
-        if (empty($GLOBALS['X'][0][$v = path($v)])) {
-            $n = basename($d = dirname($v));
-            $uses[$v] = content($d . D . $n) ?? $n;
+    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'index.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+        $n = basename($d = dirname($v = stream_resolve_include_path($v)));
+        if (empty($GLOBALS[strtoupper($r = basename(dirname($d)))][0][$v])) {
+            $uses[$v] = content($d . D . $n) ?? $r . '.' . $n;
             // Load state(s)…
-            State::set('x.' . ($k = strtr($n, ['.' => "\\."])), []);
+            State::set($r . '.' . ($k = strtr($n, ['.' => "\\."])), []);
             if (is_file($v = $d . D . 'state.php')) {
                 (static function($k, $v, $a) {
                     extract($GLOBALS, EXTR_SKIP);
-                    State::set('x.' . $k, array_replace_recursive((array) require $v, $a));
-                })($k, $v, $state['x'][$n] ?? []);
+                    State::set($r . '.' . $k, array_replace_recursive((array) require $v, $a));
+                })($k, $v, $state[$r][$n] ?? []);
             }
         }
     }
     natsort($uses);
-    $GLOBALS['X'][1] = $uses = array_keys($uses);
+    foreach ($uses = array_keys($uses) as $use) {
+        $GLOBALS[strtoupper(basename(dirname($use, 2)))][1][] = $use;
+    }
     // Load class(es)…
     foreach ($uses as $v) {
         $d = dirname($v) . D . 'engine';
@@ -692,7 +694,7 @@ try {
             }
         });
     }
-    // Load extension(s)…
+    // Load extension(s) and layout(s)…
     foreach ($uses as $v) {
         (static function($v) {
             // Load task(s)…
@@ -707,7 +709,7 @@ try {
         })($v);
     }
 } catch (Throwable $e) {
-    // Catch error that occurs in the loaded extension then immediately disable the extension!
+    // Catch error that occurs in the extension and layout file(s) then immediately disable!
     $x = explode(D, substr($e->getFile(), strlen($folder = LOT . D . 'x' . D)), 2)[0] ?? P;
     file_put_contents(ENGINE . D . 'log' . D . 'error-x', ((string) $e) . PHP_EOL, FILE_APPEND);
     rename($folder . $x . D . 'index.php', $folder . $x . D . '.index.php');
@@ -734,7 +736,7 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $scheme, $sub, $task, $uses, $v, $x);
+unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
 
 Hook::set('get', function() use($url) {
     $content = Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
