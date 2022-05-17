@@ -12,18 +12,18 @@ final class Time extends Genome {
         return $this->format('c');
     }
 
-    public function __construct($value) {
+    public function __construct($value = null) {
         $value = (string) $value;
         if (is_numeric($value)) {
             $this->source = date('Y-m-d H:i:s', $value);
-        } else if (strlen($value) >= 19 && 5 === substr_count($value, '-')) {
+        } else if (is_string($value) && strlen($value) >= 19 && 5 === substr_count($value, '-')) {
             if ($date = \DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
                 $this->source = $date->format('Y-m-d H:i:s');
             } else {
                 $this->source = date('Y-m-d H:i:s', 0);
             }
         } else {
-            $this->source = date('Y-m-d H:i:s', strtotime($value));
+            $this->source = date('Y-m-d H:i:s', $value ? strtotime($value) : null);
         }
     }
 
