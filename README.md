@@ -128,7 +128,7 @@ Contribute financially to keep the project domain and website accessible to ever
 Release Notes
 -------------
 
-### 3.0.0
+### 3.0.0 (unreleased)
 
  - [x] Added class `XML`.
  - [x] Added functions `abort`, `check`, `choke`, `cookie`, `delete`, `ip`, `kick`, `long`, `move`, `save`, `seal`, `short`, `size`, `status`, `store`, `token`, `type`, `ua`, `zone`.
