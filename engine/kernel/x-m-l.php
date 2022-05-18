@@ -61,7 +61,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     $out .=  ' ' . $k . ($this->strict ? '="' . $k . '"' : "");
                     continue;
                 }
-                $out .= ' ' . $k . '="' . htmlspecialchars($v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
+                $out .= ' ' . $k . '="' . htmlspecialchars(is_array($v) || is_object($v) ? json_encode($v) : s($v), ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
             }
         }
         return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . $lot[1] . '</' . $lot[0]) . '>';
