@@ -32,7 +32,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                             foreach ($mm[1] as $i => $k) {
                                 $v = $mm[2][$i];
                                 $v = htmlspecialchars_decode(0 === strpos($v, '"') && '"' === substr($v, -1) || 0 === strpos($v, "'") && "'" === substr($v, -1) ? substr($v, 1, -1) : $v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
-                                $this->lot[2][$k] = $this->strict && $v === $k ? true : $v;
+                                $this->lot[2][$k] = $this->strict && $v === $k || isset($mm[0][$i]) && false === strpos($mm[0][$i], '=') ? true : $v;
                             }
                         }
                     }
