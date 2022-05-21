@@ -1,6 +1,3 @@
-[submodule "mecha-cms/x.alert"]
-  path = lot/x/alert
-  url = https://github.com/mecha-cms/x.alert.git
 [submodule "mecha-cms/x.asset"]
   path = lot/x/asset
   url = https://github.com/mecha-cms/x.asset.git
