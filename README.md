@@ -17,7 +17,7 @@ The default layout uses only Serif and Mono fonts. Different operating systems m
 Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 -----------------------------------------------------------------------------
 
-To be able to activate the back-end feature requires you to install our [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
+To be able to activate the back-end feature requires you to install our [alert](https://github.com/mecha-cms/x.alert "Alert Extension"), [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/141484343-0568ef0d-f7c5-4991-a8ee-7773379415b2.png)
 
@@ -79,10 +79,13 @@ $ rm .gitmodules composer.json LICENSE README.md
 $ rm -r .git
 ~~~
 
-You may want to install [user](https://github.com/mecha-cms/x.user) and [panel](https://github.com/mecha-cms/x.panel) extension as well:
+You may want to install our [panel](https://github.com/mecha-cms/x.panel) extension as well. Here, [alert](https://github.com/mecha-cms/x.alert) and [user](https://github.com/mecha-cms/x.user) extension is required to be installed:
 
 ~~~ .sh
 $ cd lot/x
+$ git clone https://github.com/mecha-cms/x.alert.git --depth 1 alert
+$ rm alert/LICENSE alert/README.md
+$ rm -r alert/.git
 $ git clone https://github.com/mecha-cms/x.user.git --depth 1 user
 $ rm user/LICENSE user/README.md
 $ rm -r user/.git
@@ -136,7 +139,7 @@ Release Notes
  - [x] Implemented [WAI-ARIA](https://www.w3.org/TR/wai-aria) to allow class-less styling of HTML markup.
  - [x] Improved `Genome` and `Page` class to make it possible to inherit (fake) methods and (fake) properties from the parent class automatically.
  - [x] Layout is now behaves like extension. If it does not contain any `index.php` file, then its entire layout system will be discarded (#157).
- - [x] Moved [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
+ - [x] Moved [`alert`](https://github.com/mecha-cms/x.alert), [`art`](https://github.com/mecha-cms/x.art) and [`form`](https://github.com/mecha-cms/x.form) feature to a separate extension.
  - [x] Moved `To::{description,sentence,title}` methods to `page` extension.
  - [x] Moved core extensions and layouts out of the repository and convert them to git sub-modules.
  - [x] Optimized hook sorting mechanism (#156)
