@@ -11,7 +11,12 @@
       "role": "Developer"
     }
   ],
-  "description": "Mecha is a flat-file content management system that carries the concept of minimalism.",
+  "config": {
+    "lock": false,
+    "sort-packages": true,
+    "vendor-dir": "engine/vendor"
+  },
+  "description": "Minimalist content management system.",
   "funding": [
     {
       "type": "opencollective",
@@ -26,15 +31,27 @@
   "license": "GPL-3.0-or-later",
   "name": "mecha-cms/mecha",
   "require": {
-    "ext-dom": "*",
     "ext-json": "*",
-    "ext-mbstring": "*",
-    "php": ">=7.3.0"
+    "ext-ctype": "*",
+    "php": ">=7.3"
+  },
+  "scripts": {
+    "post-update-cmd": [
+      "rm -rf .github",
+      "rm .gitignore .gitmodules README.md"
+    ]
+  },
+  "suggest": {
+    "ext-curl": "We will use `file_get_contents()` if `ext-curl` is not installed. It will be more efficient when `curl_*()` functions are available.",
+    "ext-dom": "Required because `mecha-cms/x.markdown` is part of the core extension and it contains `erusev/parsedown-extra` that requires `ext-dom` to work properly.",
+    "ext-gd": "Required if you are interested in installing the `mecha-cms/x.image` extension.",
+    "ext-mbstring": "It would be great if `ext-mbstring` is installed. We will use another way if `ext-mbstring` is not available."
   },
   "support": {
-    "docs": "https://mecha-cms.com/reference",
     "forum": "https://github.com/mecha-cms/mecha/discussions",
-    "issues": "https://github.com/mecha-cms/mecha/issues"
+    "issues": "https://github.com/mecha-cms/mecha/issues",
+    "source": "https://github.com/mecha-cms/mecha",
+    "wiki": "https://github.com/mecha-cms/mecha/wiki"
   },
   "type": "project"
 }
