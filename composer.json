@@ -36,9 +36,9 @@
     "php": ">=7.3"
   },
   "scripts": {
-    "post-update-cmd": [
+    "post-create-project-cmd": [
       "rm -rf .github",
-      "rm .gitignore .gitmodules README.md"
+      "rm -f .gitignore .gitmodules README.md"
     ]
   },
   "suggest": {
