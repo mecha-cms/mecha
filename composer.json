@@ -12,6 +12,9 @@
     }
   ],
   "config": {
+    "allow-plugins": {
+      "mecha-cms/composer": true
+    },
     "lock": false,
     "sort-packages": true,
     "vendor-dir": "engine/vendor"
@@ -31,8 +34,9 @@
   "license": "GPL-3.0-or-later",
   "name": "mecha-cms/mecha",
   "require": {
-    "ext-json": "*",
     "ext-ctype": "*",
+    "ext-json": "*",
+    "mecha-cms/composer": "^0.0.3",
     "php": ">=7.3"
   },
   "scripts": {
