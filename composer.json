@@ -41,7 +41,7 @@
   },
   "scripts": {
     "post-create-project-cmd": [
-      "rm -rf .github",
+      "rm -fr .github",
       "rm -f .gitignore .gitmodules README.md"
     ]
   },
@@ -49,7 +49,8 @@
     "ext-curl": "We will use `file_get_contents()` if `ext-curl` is not installed. It will be more efficient when `curl_*()` functions are available.",
     "ext-dom": "Required because `mecha-cms/x.markdown` is part of the core extension and it contains `erusev/parsedown-extra` that requires `ext-dom` to work properly.",
     "ext-gd": "Required if you are interested in installing the `mecha-cms/x.image` extension.",
-    "ext-mbstring": "It would be great if `ext-mbstring` is installed. We will use another way if `ext-mbstring` is not available."
+    "ext-mbstring": "It would be great if `ext-mbstring` is installed. We will use another way if `ext-mbstring` is not available.",
+    "ext-zip": "Required if certain extensions (such as `mecha-cms/x.panel`) need to work with ZIP files."
   },
   "support": {
     "forum": "https://github.com/mecha-cms/mecha/discussions",
