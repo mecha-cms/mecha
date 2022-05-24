@@ -36,6 +36,13 @@
   "require": {
     "ext-json": "*",
     "mecha-cms/composer": "^0.0.3",
+    "mecha-cms/x.asset": "*",
+    "mecha-cms/x.layout": "*",
+    "mecha-cms/x.link": "*",
+    "mecha-cms/x.markdown": "*",
+    "mecha-cms/x.page": "*",
+    "mecha-cms/x.y-a-m-l": "*",
+    "mecha-cms/y.log": "*",
     "php": ">=7.3"
   },
   "scripts": {
