@@ -69,6 +69,19 @@ Alternatives
 
 This assumes that your site’s public directory is in `/srv/http`. Make sure the folder is empty, or move the existing files to another place first. Don’t forget with that `.` at the end of the command as written in the example below, to clone the repository into the current root folder.
 
+#### Using Composer
+
+~~~ .sh
+$ cd /srv/http
+$ composer create-project mecha-cms/mecha
+~~~
+
+You may want to install our [panel](https://github.com/mecha-cms/x.panel) extension as well:
+
+~~~ .sh
+$ composer require mecha-cms/x.panel
+~~~
+
 #### Using Git
 
 ~~~ .sh

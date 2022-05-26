@@ -36,13 +36,13 @@
   "require": {
     "ext-json": "*",
     "mecha-cms/composer": "^0.0.3",
-    "mecha-cms/x.asset": "*",
-    "mecha-cms/x.layout": "*",
-    "mecha-cms/x.link": "*",
-    "mecha-cms/x.markdown": "*",
-    "mecha-cms/x.page": "*",
-    "mecha-cms/x.y-a-m-l": "*",
-    "mecha-cms/y.log": "*",
+    "mecha-cms/x.asset": "^2.0.0",
+    "mecha-cms/x.layout": "^2.0.0",
+    "mecha-cms/x.link": "^2.0.0",
+    "mecha-cms/x.markdown": "^3.0.0",
+    "mecha-cms/x.page": "^2.0.0",
+    "mecha-cms/x.y-a-m-l": "^2.0.0",
+    "mecha-cms/y.log": "^2.0.0",
     "php": ">=7.3"
   },
   "scripts": {
