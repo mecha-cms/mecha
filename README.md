@@ -73,7 +73,7 @@ This assumes that your site’s public directory is in `/srv/http`. Make sure th
 
 ~~~ .sh
 $ cd /srv/http
-$ composer create-project mecha-cms/mecha
+$ composer create-project mecha-cms/mecha .
 ~~~
 
 You may want to install our [panel](https://github.com/mecha-cms/x.panel) extension as well:

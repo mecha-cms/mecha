@@ -553,7 +553,7 @@ function send($from, $to, string $title, string $content, array $lot = []) {
     // proccess here. We assume that you have set the correct email address(es)
     if (is_array($to)) {
         // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
-        if (array_keys($to) !== range(0, count($to) - 1)) {
+        if ((function_exists('array_is_list') && !array_is_list($to)) || array_keys($to) !== range(0, count($to) - 1)) {
             $s = "";
             foreach ($to as $k => $v) {
                 $s .= ', ' . $v . ' <' . $k . '>';
@@ -1029,7 +1029,7 @@ function n(string $value = null, string $tab = '    ') {
 function o($value, $safe = true) {
     if (is_array($value)) {
         if ($safe) {
-            $value = array_keys($value) !== range(0, count($value) - 1) ? (object) $value : $value;
+            $value = (function_exists('array_is_list') && !array_is_list($value)) || array_keys($value) !== range(0, count($value) - 1) ? (object) $value : $value;
         } else {
             $value = (object) $value;
         }
@@ -1172,8 +1172,14 @@ function y(iterable $value) {
 function z($value, $short = true) {
     if (is_array($value)) {
         $out = [];
-        foreach ($value as $k => $v) {
-            $out[] = var_export($k, true) . '=>' . z($v, $short);
+        if (function_exists('array_is_list') && array_is_list($value)) {
+            foreach ($value as $k => $v) {
+                $out[] = z($v, $short);
+            }
+        } else {
+            foreach ($value as $k => $v) {
+                $out[] = var_export($k, true) . '=>' . z($v, $short);
+            }
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
     }
