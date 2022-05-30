@@ -35,25 +35,25 @@ foreach ([
         }
         return $out;
     },
-    'file' => function(string $value = null) {
+    'file' => function(string $value = null, string $preserve = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = preg_split('/\s*[.]\s*/', array_pop($value) ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
         $out = "";
         foreach ($value as $v) {
-            $out .= h($v, '-', true, '_') . D;
+            $out .= h($v, '-', true, $preserve) . D;
         }
-        $out .= h(implode('.', $n), '-', true, '_.') . '.' . h($x, '-', true);
+        $out .= h(implode('.', $n), '-', true, $preserve) . '.' . h($x, '-', true);
         return '.' !== $out ? $out : null;
     },
-    'folder' => function(string $value = null) {
+    'folder' => function(string $value = null, string $preserve = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($value);
         $out = "";
         foreach ($value as $v) {
-            $out .= h($v, '-', true, '_') . D;
+            $out .= h($v, '-', true, $preserve) . D;
         }
-        $out = $out . h($n, '-', true, '_');
+        $out = $out . h($n, '-', true, $preserve);
         return "" !== $out ? $out : null;
     },
     'hex' => function(string $value = null, $z = false, array $f = ['&#x', ';']) {
