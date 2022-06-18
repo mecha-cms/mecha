@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - commit-message:
+      prefix: 'Composer'
+    directory: '/'
+    package-ecosystem: 'composer'
+    schedule:
+      interval: 'daily'
+  - commit-message:
+      prefix: 'Git'
+    directory: '/'
+    package-ecosystem: 'gitsubmodule'
+    schedule:
+      interval: 'daily'
