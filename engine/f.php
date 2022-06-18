@@ -1204,7 +1204,7 @@ function z($value, $short = true) {
                 }
                 $lot[] = $value;
             }
-            $content = implode("\n", array_slice(file($fn->getFileName()), $start = $fn->getStartLine() - 1, $fn->getEndLine() - $start));
+            $content = implode("", array_slice(file($fn->getFileName()), $start = $fn->getStartLine() - 1, $fn->getEndLine() - $start));
             if (false !== strpos($content, '<<<')) {
                 // TODO: Match `nowdoc`
                 $content = preg_replace_callback('/<<<([a-z_]\w*)(?:\R(?!\h*\1;$).*)*\R(?:\R(?!\h*\1;$).*)*\R\h*\1;$/im', static function($m) {
