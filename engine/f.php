@@ -1170,6 +1170,79 @@ function y(iterable $value) {
 }
 
 function z($value, $short = true) {
+    if (is_object($value)) {
+        if ($value instanceof stdClass) {
+            return '(object)' . z((array) $value, $short);
+        }
+        if ($value instanceof Closure) {
+            $fn = new ReflectionFunction($value);
+            $lot = [];
+            foreach ($fn->getParameters() as $param) {
+                $value = "";
+                if ($type = $param->getType()) {
+                    if (method_exists($type, 'getTypes')) {
+                        foreach ($type->getTypes() as $v) {
+                            $value .= $v->getName() . '|';
+                        }
+                        $value = substr($value, 0, -1) . ' ';
+                    } else {
+                        $value .= $type->getName() . ' ';
+                    }
+                }
+                if ($param->isPassedByReference()) {
+                    $value .= '&';
+                }
+                $value .= '$' . $param->getName();
+                if ($param->isDefaultValueAvailable()) {
+                    $value .= '=';
+                    if ($param->isDefaultValueConstant()) {
+                        $value .= $param->getDefaultValueConstantName();
+                    } else {
+                        $v = var_export($param->getDefaultValue(), true);
+                        $value .= ('NULL' === $v ? 'null' : $v);
+                    }
+                }
+                $lot[] = $value;
+            }
+            $content = implode("\n", array_slice(file($fn->getFileName()), $start = $fn->getStartLine() - 1, $fn->getEndLine() - $start));
+            if (false !== strpos($content, '<<<')) {
+                // TODO: Match `nowdoc`
+                $content = preg_replace_callback('/<<<([a-z_]\w*)(?:\R(?!\h*\1;$).*)*\R(?:\R(?!\h*\1;$).*)*\R\h*\1;$/im', static function($m) {
+                    return strtr($m[0], [
+                        '{' => P . '\\x7B' . P,
+                        '}' => P . '\\x7D' . P
+                    ]);
+                }, $content);
+            }
+            if (false !== strpos($content, '"') || false !== strpos($content, "'")) {
+                $content = preg_replace_callback('/"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'/', static function($m) {
+                    return strtr($m[0], [
+                        '{' => P . '\\x7B' . P,
+                        '}' => P . '\\x7D' . P
+                    ]);
+                }, $content);
+            }
+            if (preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
+                $content = strtr($m[1], [
+                    P . "\\x7B" . P => '{',
+                    P . "\\x7D" . P => '}'
+                ]);
+            } else {
+                $content = "";
+            }
+            $value = 'function(' . implode(',', $lot) . ')';
+            if ($type = $fn->getReturnType()) {
+                $value .= ':' . $type;
+            }
+            if ($uses = $fn->getClosureUsedVariables()) {
+                // TODO: Find a way to check if used variable is passed by reference
+                $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
+            }
+            return $value . '{' . $content . '}';
+        }
+        // TODO: Find a way to extract argument(s) from class instance
+        return 'new ' . get_class($value);
+    }
     if (is_array($value)) {
         $out = [];
         if (function_exists('array_is_list') && array_is_list($value)) {
@@ -1178,7 +1251,10 @@ function z($value, $short = true) {
             }
         } else {
             foreach ($value as $k => $v) {
-                $out[] = var_export($k, true) . '=>' . z($v, $short);
+                // It is currently not possible to extract function body without the `\n` character which is required
+                // by `ReflectionFunction::{getEndLine,getStartLine}()` to be able to return the value correctly
+                $n = is_object($v) && !($v instanceof stdClass) ? "\n" : "";
+                $out[] = $n . var_export($k, true) . '=>' . z($v, $short);
             }
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
