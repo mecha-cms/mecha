@@ -1175,11 +1175,12 @@ function z($value, $short = true) {
             return '(object)' . z((array) $value, $short);
         }
         if ($value instanceof Closure) {
-            $fn = new ReflectionFunction($value);
+            $content = "";
+            $f = new ReflectionFunction($value);
             $lot = [];
-            foreach ($fn->getParameters() as $param) {
+            foreach ($f->getParameters() as $p) {
                 $value = "";
-                if ($type = $param->getType()) {
+                if ($type = $p->getType()) {
                     if (method_exists($type, 'getTypes')) {
                         foreach ($type->getTypes() as $v) {
                             $value .= $v->getName() . '|';
@@ -1189,39 +1190,52 @@ function z($value, $short = true) {
                         $value .= $type->getName() . ' ';
                     }
                 }
-                if ($param->isPassedByReference()) {
+                if ($p->isPassedByReference()) {
                     $value .= '&';
                 }
-                $value .= '$' . $param->getName();
-                if ($param->isDefaultValueAvailable()) {
+                $value .= '$' . $p->getName();
+                if ($p->isDefaultValueAvailable()) {
                     $value .= '=';
-                    if ($param->isDefaultValueConstant()) {
-                        $value .= $param->getDefaultValueConstantName();
+                    if ($p->isDefaultValueConstant()) {
+                        $value .= $p->getDefaultValueConstantName();
                     } else {
-                        $v = var_export($param->getDefaultValue(), true);
-                        $value .= ('NULL' === $v ? 'null' : $v);
+                        $value .= z($p->getDefaultValue(), $short);
                     }
                 }
                 $lot[] = $value;
             }
-            $content = implode("", array_slice(file($fn->getFileName()), $start = $fn->getStartLine() - 1, $fn->getEndLine() - $start));
-            if (false !== strpos($content, '<<<')) {
-                // TODO: Match `nowdoc`
-                $content = preg_replace_callback('/<<<([a-z_]\w*)(?:\R(?!\h*\1;$).*)*\R(?:\R(?!\h*\1;$).*)*\R\h*\1;$/im', static function($m) {
-                    return strtr($m[0], [
-                        '{' => P . '\\x7B' . P,
-                        '}' => P . '\\x7D' . P
-                    ]);
-                }, $content);
+            foreach (token_get_all('<?' . 'php ' . implode("", array_slice(file($f->getFileName()), $start = $f->getStartLine() - 1, $f->getEndLine() - $start))) as $v) {
+                if (is_array($v)) {
+                    if (T_OPEN_TAG === $v[0]) {
+                        // Remove the `<?php ` prefix
+                        continue;
+                    }
+                    if (T_COMMENT === $v[0] || T_DOC_COMMENT === $v[0]) {
+                        // Remove comment(s)
+                        continue;
+                    }
+                    if (T_START_HEREDOC === $v[0]) {
+                        $content .= "<<<" . ("'" === $v[1][3] ? "'S'" : 'S') . "\n";
+                        continue;
+                    }
+                    if (T_END_HEREDOC === $v[0]) {
+                        $content .= 'S';
+                        continue;
+                    }
+                    if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_ENCAPSED_AND_WHITESPACE === $v[0]) {
+                        // Need to escape `{` and `}` in string so we can match function body properly later
+                        $content .= strtr($v[1], [
+                            '{' => P . '\\x7B' . P,
+                            '}' => P . '\\x7D' . P
+                        ]);
+                        continue;
+                    }
+                    $content .= ("" === trim($v[1]) ? "" : $v[1]);
+                    continue;
+                }
+                $content .= ("" === trim($v) ? "" : $v);
             }
-            if (false !== strpos($content, '"') || false !== strpos($content, "'")) {
-                $content = preg_replace_callback('/"(?:[^"\\\]|\\\.)*"|\'(?:[^\'\\\]|\\\.)*\'/', static function($m) {
-                    return strtr($m[0], [
-                        '{' => P . '\\x7B' . P,
-                        '}' => P . '\\x7D' . P
-                    ]);
-                }, $content);
-            }
+            // Match function body
             if (preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
                 $content = strtr($m[1], [
                     P . "\\x7B" . P => '{',
@@ -1231,10 +1245,10 @@ function z($value, $short = true) {
                 $content = "";
             }
             $value = 'function(' . implode(',', $lot) . ')';
-            if ($type = $fn->getReturnType()) {
+            if ($type = $f->getReturnType()) {
                 $value .= ':' . $type;
             }
-            if ($uses = $fn->getClosureUsedVariables()) {
+            if ($uses = $f->getClosureUsedVariables()) {
                 // TODO: Find a way to check if used variable is passed by reference
                 $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
             }
@@ -1259,5 +1273,5 @@ function z($value, $short = true) {
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
     }
-    return var_export($value, true);
+    return 'NULL' === ($value = var_export($value, true)) ? 'null' : $value;
 }
