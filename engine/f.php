@@ -1190,6 +1190,9 @@ function z($value, $short = true) {
                         $value .= $type->getName() . ' ';
                     }
                 }
+                if ($p->isVariadic()) {
+                    $value .= '...';
+                }
                 if ($p->isPassedByReference()) {
                     $value .= '&';
                 }
