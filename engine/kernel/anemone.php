@@ -7,6 +7,13 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     public $parent;
     public $value;
 
+    public function __call(string $kin, array $lot = []) {
+        if (property_exists($this, $kin) && (new \ReflectionProperty($this, $kin))->isPublic()) {
+            return $this->{$kin};
+        }
+        return parent::__call($kin, $lot);
+    }
+
     public function __construct(iterable $value = [], string $join = ', ') {
         if ($value instanceof \Traversable) {
             $value = iterator_to_array($value);
