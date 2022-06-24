@@ -17,6 +17,6 @@
 </IfModule>
 
 # Deny access to file(s) with `.` prefix
-<FilesMatch '^\.'>
+<FilesMatch '^[.]'>
   Deny from all
 </FilesMatch>
