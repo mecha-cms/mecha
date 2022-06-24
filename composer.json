@@ -35,7 +35,7 @@
   "name": "mecha-cms/mecha",
   "require": {
     "ext-json": "*",
-    "mecha-cms/composer": "^0.0.3",
+    "mecha-cms/composer": "^1.0.0",
     "mecha-cms/x.asset": "^2.0.0",
     "mecha-cms/x.layout": "^2.0.0",
     "mecha-cms/x.link": "^2.0.0",
@@ -44,12 +44,6 @@
     "mecha-cms/x.y-a-m-l": "^2.0.0",
     "mecha-cms/y.log": "^2.0.0",
     "php": ">=7.3"
-  },
-  "scripts": {
-    "post-create-project-cmd": [
-      "rm -fr .github",
-      "rm -f .gitignore .gitmodules README.md"
-    ]
   },
   "suggest": {
     "ext-curl": "We will use `file_get_contents()` if `ext-curl` is not installed. It will be more efficient when `curl_*()` functions are available.",
