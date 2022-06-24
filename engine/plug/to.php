@@ -6,9 +6,9 @@ foreach ([
     },
     'JSON' => function($value = null, $tidy = false) {
         if ($tidy) {
-            $flags = JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+            $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
         } else {
-            $flags = JSON_UNESCAPED_UNICODE;
+            $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
         }
         return json_encode($value, $flags);
     },
