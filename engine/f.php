@@ -819,10 +819,9 @@ function zone(string $zone = null) {
 function a($value, $safe = true) {
     if (is_object($value)) {
         if ($safe) {
-            return ($v = get_class($value)) && 'stdClass' !== $v ? $value : (array) $value;
-        } else {
-            $value = (array) $value;
+            return 'stdClass' !== get_class($value) ? $value : (array) $value;
         }
+        $value = (array) $value;
         foreach ($value as &$v) {
             $v = a($v, $safe);
         }
