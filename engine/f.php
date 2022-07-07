@@ -103,7 +103,7 @@ function cookie(...$lot) {
         'httponly' => true, // Safe by default
         'path' => '/',
         'samesite' => 'Strict', // Safe by default
-        'secure' => false
+        'secure' => !empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === (int) $_SERVER['SERVER_PORT']
     ], $expires);
     if (is_string($state['expires'])) {
         $state['expires'] = strtotime($state['expires'], $time = time()) - $time;
