@@ -524,8 +524,8 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
         // who are already familiar with the property of the page file.
         $alter = [
             'error' => 'status',
-            'full_path' => 'path',
-            'tmp_name' => 'blob'
+            'full_path' => 'from',
+            'tmp_name' => 'path'
         ];
         foreach ($in as $k => $v) {
             foreach ($v as $kk => $vv) {
