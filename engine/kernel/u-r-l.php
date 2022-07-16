@@ -6,6 +6,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         'hash' => null,
         'host' => null,
         'path' => null,
+        'port' => null,
         'protocol' => null,
         'query' => null
     ];
@@ -28,6 +29,10 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
             return '/' . $path;
         }
         return null;
+    }
+
+    private function getPort() {
+        return $this->lot['port'];
     }
 
     private function getProtocol() {
@@ -59,7 +64,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     private function setHost(string $host) {
-        $this->lot['host'] = $host;
+        $this->lot['host'] = strtok($host, ':');
     }
 
     private function setPath(string $path) {
@@ -70,6 +75,10 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
             '?' => '%3F'
         ]), '/');
         $this->lot['path'] = "" !== $path ? $path : null;
+    }
+
+    private function setPort(int $port) {
+        $this->lot['port'] = $port > 0 ? $port : null;
     }
 
     private function setProtocol(string $protocol) {
@@ -106,6 +115,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         $this->setHash($fragment ?? "");
         $this->setHost($host ?? "");
         $this->setPath($path ?? "");
+        $this->setPort($port ?? 0);
         $this->setProtocol($scheme ?? "");
         $this->setQuery($query ?? "");
     }
@@ -128,7 +138,10 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     public function __toString() {
-        return (string) ($this->getProtocol() . $this->getHost());
+        if ($port = $this->getPort()) {
+            $port = ':' . $port;
+        }
+        return (string) ($this->getProtocol() . $this->getHost() . $port);
     }
 
     public function __unset(string $key) {
