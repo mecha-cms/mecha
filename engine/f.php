@@ -1275,5 +1275,6 @@ function z($value, $short = true) {
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
     }
-    return 'NULL' === ($value = var_export($value, true)) ? 'null' : $value;
+    $value = var_export($value, true);
+    return 'NULL' === $value ? 'null' : ("''" === $value ? '""' : $value);
 }
