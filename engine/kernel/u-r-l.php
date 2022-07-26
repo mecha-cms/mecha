@@ -32,7 +32,11 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     private function getPort() {
-        return $this->lot['port'];
+        $port = $this->lot['port'];
+        if (null !== $port) {
+            return ':' . $port;
+        }
+        return null;
     }
 
     private function getProtocol() {
@@ -138,10 +142,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     public function __toString() {
-        if ($port = $this->getPort()) {
-            $port = ':' . $port;
-        }
-        return (string) ($this->getProtocol() . $this->getHost() . $port);
+        return (string) ($this->getProtocol() . $this->getHost() . $this->getPort());
     }
 
     public function __unset(string $key) {
