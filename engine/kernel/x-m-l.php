@@ -8,9 +8,49 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         2 => []
     ];
 
+    protected function deep($value) {
+        $out = [];
+        if (is_array($value)) {
+            foreach ($value as $v) {
+                $v = new static($v, $this->deep);
+                $out[] = $v->__toString();
+            }
+            return implode("", $out);
+        }
+        if (is_string($value)) {
+            if (preg_match_all('/<[?](?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>?])*[?]>|<[!]\[CDATA\[[\s\S]*?\]\]>|<[!](?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>])*>|<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)|[^<>]+|[<>]/', $value, $m)) {
+                foreach ($m[0] as $v) {
+                    // Must starts with `<` and ends with `>`
+                    if (0 === strpos($v, '<') && '>' === substr($v, -1)) {
+                        // Maybe a comment or a document type or a XML declaration or a CDATA section
+                        if (isset($v[1]) && false !== strpos('!?', $v[1])) {
+                            $out[] = [null, $v, []];
+                        // Must be a XML element
+                        } else {
+                            $v = new static($v, $this->deep);
+                            $out[] = [$v[0], $v[1], $v[2]];
+                        }
+                    } else {
+                        $v = [
+                            '&' => '&amp;',
+                            '<' => '&lt;',
+                            '>' => '&gt;'
+                        ][$v] ?? $v;
+                        // Plain text
+                        $out[] = [false, $v, []];
+                    }
+                }
+            }
+            return $out;
+        }
+        throw new \ParseError(static::class . ': ' . $value);
+    }
+
+    public $deep = false;
     public $strict = true;
 
-    public function __construct($value = []) {
+    public function __construct($value = [], $deep = false) {
+        $this->deep = $deep;
         if (is_array($value)) {
             $this->lot = array_replace_recursive($this->lot, $value);
         } else if (is_object($value) && $value instanceof self) {
@@ -26,6 +66,9 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         1 => isset($m[4]) ? $m[3] : false,
                         2 => []
                     ];
+                    if ($deep && isset($m[4])) {
+                        $this->lot[1] = $this->deep($m[3]);
+                    }
                     $this->strict = '/>' === substr($value, -2);
                     if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
@@ -64,7 +107,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 $out .= ' ' . $k . '="' . htmlspecialchars(is_array($v) || is_object($v) ? json_encode($v) : s($v), ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
             }
         }
-        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . $lot[1] . '</' . $lot[0]) . '>';
+        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep ? $this->deep($lot[1]) : $lot[1]) . '</' . $lot[0]) . '>';
     }
 
     public function count(): int {
