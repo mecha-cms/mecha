@@ -9,9 +9,16 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
     ];
 
     protected function deep($value) {
+        if (is_object($value) && $value instanceof self) {
+            return [[$value[0], $value[1], $value[2]]];
+        }
         $out = [];
         if (is_array($value)) {
             foreach ($value as $v) {
+                if (is_object($v) && $v instanceof self) {
+                    $out[] = $v->__toString();
+                    continue;
+                }
                 $v = new static($v, $this->deep);
                 $out[] = $v->__toString();
             }
@@ -25,20 +32,20 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         // Maybe a comment or a document type or a XML declaration or a CDATA section
                         if (isset($v[1]) && false !== strpos('!?', $v[1])) {
                             $out[] = [null, $v, []];
-                        // Must be a XML element
-                        } else {
-                            $v = new static($v, $this->deep);
-                            $out[] = [$v[0], $v[1], $v[2]];
+                            continue;
                         }
-                    } else {
-                        $v = [
-                            '&' => '&amp;',
-                            '<' => '&lt;',
-                            '>' => '&gt;'
-                        ][$v] ?? $v;
-                        // Plain text
-                        $out[] = [false, $v, []];
+                        // Must be a XML element
+                        $v = new static($v, $this->deep);
+                        $out[] = [$v[0], $v[1], $v[2]];
+                        continue;
                     }
+                    // Plain text
+                    $v = [
+                        '&' => '&amp;',
+                        '<' => '&lt;',
+                        '>' => '&gt;'
+                    ][$v] ?? $v;
+                    $out[] = [false, $v, []];
                 }
             }
             return $out;
