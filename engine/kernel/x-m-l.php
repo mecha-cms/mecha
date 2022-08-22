@@ -2,6 +2,7 @@
 
 class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable {
 
+    protected $c = [];
     protected $lot = [
         0 => null,
         1 => null,
@@ -25,16 +26,36 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
             return implode("", $out);
         }
         if (is_string($value)) {
-            if (preg_match_all('/<[?](?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>?])*[?]>|<[!]\[CDATA\[[\s\S]*?\]\]>|<[!](?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>])*>|<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)|[^<>]+|[<>]/', $value, $m)) {
+            if (preg_match_all('/' . implode('|', [
+                // Processing instruction
+                '<\?(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>?])*\?>',
+                // Comment
+                '<\!--[\s\S]*?-->',
+                // Character data section
+                '<\!\[CDATA\[[\s\S]*?\]\]>',
+                // Document type
+                '<\!(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>])*>',
+                // Element
+                '<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)',
+                // Text
+                '[^<>]+',
+                // Remaining `<` and `>` character(s) to escape
+                '[<>]'
+            ]) . '/', $value, $m)) {
                 foreach ($m[0] as $v) {
                     // Must starts with `<` and ends with `>`
                     if (0 === strpos($v, '<') && '>' === substr($v, -1)) {
-                        // Maybe a comment or a document type or a XML declaration or a CDATA section
+                        // Maybe a document type or a character data section or a comment or a processing instruction
                         if (isset($v[1]) && false !== strpos('!?', $v[1])) {
                             $out[] = [null, $v, []];
                             continue;
                         }
-                        // Must be a XML element
+                        // Must be an element
+                        if (!empty($this->c[substr($v, strrpos($v, '/') + 1, -1)])) {
+                            $v = new static($v, false);
+                            $out[] = [$v[0], [[false, $v[1], []]], $v[2]];
+                            continue;
+                        }
                         $v = new static($v, $this->deep);
                         $out[] = [$v[0], $v[1], $v[2]];
                         continue;
@@ -70,12 +91,9 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 if (preg_match('/<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)/', n($value), $m)) {
                     $this->lot = [
                         0 => $m[1],
-                        1 => isset($m[4]) ? $m[3] : false,
+                        1 => isset($m[4]) ? ($deep ? $this->deep($m[3]) : $m[3]) : false,
                         2 => []
                     ];
-                    if ($deep && isset($m[4])) {
-                        $this->lot[1] = $this->deep($m[3]);
-                    }
                     $this->strict = '/>' === substr($value, -2);
                     if (isset($m[2]) && preg_match_all('/\s+([^\s"\'=]+)(?:=("(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
