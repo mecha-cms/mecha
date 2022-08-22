@@ -20,8 +20,12 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     $out[] = $v->__toString();
                     continue;
                 }
-                $v = new static($v, $this->deep);
-                $out[] = $v->__toString();
+                if (is_array($v) || (is_string($v) && 0 === strpos($v, '<') && '>' === substr($v, -1))) {
+                    $v = new static($v, $this->deep);
+                    $out[] = $v->__toString();
+                    continue;
+                }
+                $out[] = (string) $v;
             }
             return implode("", $out);
         }
@@ -69,9 +73,8 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     $out[] = [false, $v, []];
                 }
             }
-            return $out;
         }
-        throw new \ParseError(static::class . ': ' . $value);
+        return $out;
     }
 
     public $deep = false;
@@ -116,7 +119,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
     public function __toString() {
         $lot = $this->lot;
         if (!isset($lot[0]) || false === $lot[0]) {
-            return $lot[1] ?? null;
+            return $lot[1] ?? "";
         }
         $out = '<' . $lot[0];
         if (!empty($lot[2])) {
@@ -132,7 +135,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 $out .= ' ' . $k . '="' . htmlspecialchars(is_array($v) || is_object($v) ? json_encode($v) : s($v), ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
             }
         }
-        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep ? $this->deep($lot[1]) : $lot[1]) . '</' . $lot[0]) . '>';
+        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep && !is_string($lot[1]) ? $this->deep($lot[1]) : $lot[1]) . '</' . $lot[0]) . '>';
     }
 
     public function count(): int {
