@@ -135,7 +135,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 $out .= ' ' . $k . '="' . htmlspecialchars(is_array($v) || is_object($v) ? json_encode($v) : s($v), ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
             }
         }
-        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep && !is_string($lot[1]) ? $this->deep($lot[1]) : $lot[1]) . '</' . $lot[0]) . '>';
+        return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep && (is_array($lot[1]) || is_object($lot[1])) ? $this->deep($lot[1]) : s($lot[1])) . '</' . $lot[0]) . '>';
     }
 
     public function count(): int {
