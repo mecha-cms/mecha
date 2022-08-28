@@ -57,7 +57,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         // Must be an element
                         if (!empty($this->c[substr($v, strrpos($v, '/') + 1, -1)])) {
                             $v = new static($v, false);
-                            $out[] = [$v[0], [[false, $v[1], []]], $v[2]];
+                            $out[] = [$v[0], $v[1], $v[2]];
                             continue;
                         }
                         $v = new static($v, $this->deep);
@@ -65,12 +65,11 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         continue;
                     }
                     // Plain text
-                    $v = [
+                    $out[] = [
                         '&' => '&amp;',
                         '<' => '&lt;',
                         '>' => '&gt;'
                     ][$v] ?? $v;
-                    $out[] = [false, $v, []];
                 }
             }
         }
