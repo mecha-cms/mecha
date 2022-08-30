@@ -20,7 +20,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                     $out[] = $v->__toString();
                     continue;
                 }
-                if (is_array($v) || (is_string($v) && 0 === strpos($v, '<') && '>' === substr($v, -1))) {
+                if (is_array($v)) {
                     $v = new static($v, $this->deep);
                     $out[] = $v->__toString();
                     continue;
@@ -40,7 +40,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 // Document type
                 '<\!(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^>])*>',
                 // Element
-                '<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)',
+                '<([^\s"\'\/<=>]+)(?:\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>(?:(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
                 // Text
                 '[^<>]+',
                 // Remaining `<` and `>` character(s) to escape
@@ -73,6 +73,12 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                 }
             }
         }
+        $v = reset($out);
+        // Return plain text if it is the only item in array
+        if (1 === count($out) && is_string($v)) {
+            return $v;
+        }
+        // Else, return the array
         return $out;
     }
 
@@ -90,7 +96,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         } else if (is_string($value)) {
             // Must starts with `<` and ends with `>`
             if (0 === strpos($value, '<') && '>' === substr($value, -1)) {
-                if (preg_match('/^<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>((?R)|[\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)$/', n($value), $m)) {
+                if (preg_match('/^<([^\s"\'\/<=>]+)(\s(?:"(?:&(?:#34|quot);|[^"])*"|\'(?:&(?:#39|apos);|[^\'])*\'|[^\/>])*)?(?:>([\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)$/', n($value), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? ($deep ? $this->deep($m[3]) : $m[3]) : false,
