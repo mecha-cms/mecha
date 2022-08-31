@@ -7,6 +7,8 @@ Mecha CMS
 
 ![Code Size](https://img.shields.io/github/languages/code-size/mecha-cms/mecha?color=%23444&style=for-the-badge) ![License](https://img.shields.io/github/license/mecha-cms/mecha?color=%23444&style=for-the-badge)
 
+[![Meme](https://user-images.githubusercontent.com/1669261/187597836-936abaa2-6898-4817-a968-346c4a678d93.png)](https://vincentdnl.com/drawings/developers-side-projects)
+
 Front-End
 ---------
 
