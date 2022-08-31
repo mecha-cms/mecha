@@ -240,6 +240,10 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     // `fetch('/', ['x-foo' => 'bar'])`
     if (is_array($lot)) {
         foreach ($lot as $k => $v) {
+            if (false === $v || null === $v) {
+                unset($headers[$k]);
+                continue;
+            }
             if (is_array($v)) {
                 foreach ($v as $vv) {
                     $headers[] = $k . ': ' . $vv;
