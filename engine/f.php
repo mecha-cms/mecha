@@ -1,5 +1,40 @@
 <?php
 
+// This feature is available since PHP 8.1
+if (!function_exists('array_is_list')) {
+    function array_is_list(array $value) {
+        if ([] === $value) {
+            return true;
+        }
+        $key = -1;
+        foreach ($value as $k => $v) {
+            if ($k !== ++$key) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
+
+// This feature is available since PHP 7.3
+if (!function_exists('array_key_first')) {
+    function array_key_first(array $value) {
+        if ($value) {
+            foreach ($value as $k => $v) {
+                return $k;
+            }
+        }
+        return null;
+    }
+}
+
+// This feature is available since PHP 7.3
+if (!function_exists('array_key_last')) {
+    function array_key_last(array $value) {
+        return $value ? key(array_slice($value, -1, 1, true)) : null;
+    }
+}
+
 function abort(string $alert, $exit = true) {
     ob_start();
     debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
@@ -556,16 +591,16 @@ function send($from, $to, string $title, string $content, array $lot = []) {
     // This function was intended to be used as a quick way to send HTML email. There is no such email validation
     // proccess here. We assume that you have set the correct email address(es)
     if (is_array($to)) {
-        // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
-        if ((function_exists('array_is_list') && !array_is_list($to)) || array_keys($to) !== range(0, count($to) - 1)) {
-            $s = "";
-            foreach ($to as $k => $v) {
-                $s .= ', ' . $v . ' <' . $k . '>';
-            }
-            $to = substr($s, 2);
         // ['foo@bar', 'baz@qux']
-        } else {
+        if (array_is_list($to)) {
             $to = implode(', ', $to);
+        // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
+        } else {
+            $out = "";
+            foreach ($to as $k => $v) {
+                $out .= ', ' . $v . ' <' . $k . '>';
+            }
+            $to = substr($out, 2);
         }
     }
     $lot = array_filter(array_replace([
@@ -1031,11 +1066,7 @@ function n(string $value = null, string $tab = '    ') {
 
 function o($value, $safe = true) {
     if (is_array($value)) {
-        if ($safe) {
-            $value = (function_exists('array_is_list') && !array_is_list($value)) || array_keys($value) !== range(0, count($value) - 1) ? (object) $value : $value;
-        } else {
-            $value = (object) $value;
-        }
+        $value = $safe && array_is_list($value) ? $value : (object) $value;
         foreach ($value as &$v) {
             $v = o($v, $safe);
         }
@@ -1265,7 +1296,7 @@ function z($value, $short = true) {
     }
     if (is_array($value)) {
         $out = [];
-        if (function_exists('array_is_list') && array_is_list($value)) {
+        if (array_is_list($value)) {
             foreach ($value as $k => $v) {
                 $out[] = z($v, $short);
             }
