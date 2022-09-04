@@ -709,9 +709,9 @@ try {
     }
 } catch (Throwable $e) {
     // Catch error that occurs in the extension and layout file(s) then immediately disable!
-    $x = explode(D, substr($e->getFile(), strlen($folder = LOT . D . 'x' . D)), 2)[0] ?? P;
-    file_put_contents(ENGINE . D . 'log' . D . 'error-x', ((string) $e) . PHP_EOL, FILE_APPEND);
-    rename($folder . $x . D . 'index.php', $folder . $x . D . '.index.php');
+    [$k, $name] = explode(D, substr($e->getFile(), strlen($folder = LOT . D)), 3);
+    file_put_contents(ENGINE . D . 'log' . D . 'error-' . $k, ((string) $e) . PHP_EOL, FILE_APPEND);
+    rename($folder . $k . D . $name . D . 'index.php', $folder . $k . D . $name . D . '.index.php');
 }
 
 // Set default response status and header(s)
