@@ -1,24 +1,24 @@
 <?php
 
 foreach ([
-    'HTML' => function(string $value = null, $deep = false) {
+    'HTML' => function (string $value = null, $deep = false) {
         return htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
     },
-    'JSON' => function(string $value = null) {
+    'JSON' => function (string $value = null) {
         return json_decode($value);
     },
-    'URL' => function($value = null, $raw = false) {
+    'URL' => function ($value = null, $raw = false) {
         return $raw ? rawurlencode($value) : urlencode($value);
     },
     'base64' => "\\base64_decode",
     'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'query' => function(string $value = null) {
+    'query' => function (string $value = null) {
         $out = [];
         if ("" === ($value = trim($value))) {
             return $out;
         }
-        $q = static function(array &$out, $k, $v) {
+        $q = static function (array &$out, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
                 $kk = array_shift($k);

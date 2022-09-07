@@ -1,10 +1,10 @@
 <?php
 
 foreach ([
-    'HTML' => function(string $value = null) {
+    'HTML' => function (string $value = null) {
         return htmlspecialchars_decode($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
     },
-    'JSON' => function($value = null, $tidy = false) {
+    'JSON' => function ($value = null, $tidy = false) {
         if ($tidy) {
             $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
         } else {
@@ -12,7 +12,7 @@ foreach ([
         }
         return json_encode($value, $flags);
     },
-    'URL' => function(string $value = null, $raw = false) {
+    'URL' => function (string $value = null, $raw = false) {
         $url = $GLOBALS['url'] . "";
         $value = realpath($value) ?: $value;
         $value = strtr($value, [
@@ -24,7 +24,7 @@ foreach ([
     },
     'base64' => "\\base64_encode",
     'camel' => "\\c",
-    'dec' => function(string $value = null, $z = false, array $f = ['&#', ';']) {
+    'dec' => function (string $value = null, $z = false, array $f = ['&#', ';']) {
         $out = "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
             $s = ord($value[$i]);
@@ -35,7 +35,7 @@ foreach ([
         }
         return $out;
     },
-    'file' => function(string $value = null, string $preserve = '._') {
+    'file' => function (string $value = null, string $preserve = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = preg_split('/\s*[.]\s*/', array_pop($value) ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
@@ -46,7 +46,7 @@ foreach ([
         $out .= h(implode('.', $n), '-', true, $preserve) . '.' . h($x, '-', true);
         return '.' !== $out ? $out : null;
     },
-    'folder' => function(string $value = null, string $preserve = '._') {
+    'folder' => function (string $value = null, string $preserve = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($value);
         $out = "";
@@ -56,7 +56,7 @@ foreach ([
         $out = $out . h($n, '-', true, $preserve);
         return "" !== $out ? $out : null;
     },
-    'hex' => function(string $value = null, $z = false, array $f = ['&#x', ';']) {
+    'hex' => function (string $value = null, $z = false, array $f = ['&#x', ';']) {
         $out = "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
             $s = dechex(ord($value[$i]));
@@ -67,16 +67,16 @@ foreach ([
         }
         return $out;
     },
-    'kebab' => function(string $value = null, string $join = '-', $accent = true) {
+    'kebab' => function (string $value = null, string $join = '-', $accent = true) {
         return trim(h($value, $join, $accent), $join);
     },
-    'key' => function(string $value = null, $accent = true) {
+    'key' => function (string $value = null, $accent = true) {
         $out = trim(h($value, '_', $accent), '_');
         return $out && is_numeric($out[0]) ? '_' . $out : $out;
     },
     'lower' => "\\l",
     'pascal' => "\\p",
-    'path' => function(string $value = null) {
+    'path' => function (string $value = null) {
         $url = $GLOBALS['url'] . "";
         $value = strtr($value, [
             $url => PATH,
@@ -85,12 +85,12 @@ foreach ([
         ]);
         return realpath($value) ?: $value;
     },
-    'query' => function(array $value = null) {
+    'query' => function (array $value = null) {
         $out = [];
         if (!$value) {
             return null;
         }
-        $q = static function(array $value, $enter) use(&$q) {
+        $q = static function (array $value, $enter) use (&$q) {
             $a = [];
             $exit = $enter ? ']' : "";
             foreach ($value as $k => $v) {
@@ -117,7 +117,7 @@ foreach ([
         return $out ? '?' . implode('&', $out) : null;
     },
     'serial' => "\\serialize",
-    'snake' => function(string $value = null, $a = true) {
+    'snake' => function (string $value = null, $a = true) {
         return trim(h($value, '_', $a), '_');
     },
     'text' => "\\w",

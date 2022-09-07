@@ -504,7 +504,7 @@ $GLOBALS['F'] = [
 
 // Normalize `$_GET`, `$_POST`, `$_REQUEST` value(s)
 $any = [&$_GET, &$_POST, &$_REQUEST];
-array_walk_recursive($any, static function(&$v) {
+array_walk_recursive($any, static function (&$v) {
     // Trim white-space and normalize line-break
     $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
     // Replace all empty value with `null` and evaluate other(s)
@@ -514,7 +514,7 @@ array_walk_recursive($any, static function(&$v) {
 // Normalize `$_FILES` value(s) to `$_POST`
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     // <https://stackoverflow.com/a/30342756/1163000>
-    $tidy = static function(array $in) use(&$tidy) {
+    $tidy = static function (array $in) use (&$tidy) {
         if (!is_array(reset($in))) {
             return $in;
         }
@@ -545,7 +545,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 }
 
 // Load class(es)…
-d(__DIR__ . D . 'kernel', static function($object, $n) {
+d(__DIR__ . D . 'kernel', static function ($object, $n) {
     if (is_file($f = __DIR__ . D . 'plug' . D . $n . '.php')) {
         extract($GLOBALS, EXTR_SKIP);
         require $f;
@@ -672,7 +672,7 @@ try {
             // Load state(s)…
             State::set($r . '.' . ($k = strtr($n, ['.' => "\\."])), []);
             if (is_file($v = $d . D . 'state.php')) {
-                (static function($k, $v, $a) {
+                (static function ($k, $v, $a) {
                     extract($GLOBALS, EXTR_SKIP);
                     State::set($r . '.' . $k, array_replace_recursive((array) require $v, $a));
                 })($k, $v, $state[$r][$n] ?? []);
@@ -686,7 +686,7 @@ try {
     // Load class(es)…
     foreach ($uses as $v) {
         $d = dirname($v) . D . 'engine';
-        d($d . D . 'kernel', static function($object, $n) use($d) {
+        d($d . D . 'kernel', static function ($object, $n) use ($d) {
             if (is_file($f = $d . D . 'plug' . D . $n . '.php')) {
                 extract($GLOBALS, EXTR_SKIP);
                 require $f;
@@ -695,10 +695,10 @@ try {
     }
     // Load extension(s) and layout(s)…
     foreach ($uses as $v) {
-        (static function($v) {
+        (static function ($v) {
             // Load task(s)…
             if (is_file($k = dirname($v) . D . 'task.php')) {
-                (static function($k) {
+                (static function ($k) {
                     extract($GLOBALS, EXTR_SKIP);
                     require $k;
                 })($k);
@@ -727,7 +727,7 @@ Hook::fire('set');
 
 // Run task(s) if any…
 if (is_file($task = PATH . D . 'task.php')) {
-    (static function($f) {
+    (static function ($f) {
         extract($GLOBALS, EXTR_SKIP);
         require $f;
     })($task);
@@ -737,7 +737,7 @@ if (is_file($task = PATH . D . 'task.php')) {
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
 unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
 
-Hook::set('get', function() use($url) {
+Hook::set('get', function () use ($url) {
     $content = Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
     if (is_array($content) || is_object($content)) {
         if (!error_get_last()) {

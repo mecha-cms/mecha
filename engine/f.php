@@ -12,7 +12,7 @@ function abort(string $alert, $exit = true) {
 
 function any(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function($v) use($fn) {
+        $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
     }
@@ -26,7 +26,7 @@ function any(iterable $value, $fn = null) {
 
 // Convert class name to file name
 function c2f(string $value = null, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
+    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return ltrim(strtr(h($v, '-', $accent, '_'), [
             '__-' => '.',
             '__' => '.'
@@ -221,14 +221,14 @@ function extend(array $value, ...$lot) {
 
 // Convert file name to class name
 function f2c(string $value = null, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
+    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return p(strtr($v, ['.' => '__']), $accent, '_');
     }));
 }
 
 // Convert file name to property name
 function f2p(string $value = null, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
+    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return c(strtr($v, ['.' => '__']), $accent, '_');
     }));
 }
@@ -420,7 +420,7 @@ function ip() {
 
 function is(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function($v) use($fn) {
+        $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
     }
@@ -491,18 +491,18 @@ function ne($a, $b) {
 
 function not(iterable $value, $fn = null) {
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function($v) use($fn) {
+        $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
     }
-    return array_filter($value, static function($v, $k) use($fn) {
+    return array_filter($value, static function ($v, $k) use ($fn) {
         return !call_user_func($fn, $v, $k);
     }, ARRAY_FILTER_USE_BOTH);
 }
 
 // Convert property name to file name
 function p2f(string $value = null, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function($v) use($accent) {
+    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return strtr(h($v, '-', $accent, '_'), ['__' => '.']);
     }));
 }
@@ -846,13 +846,13 @@ function b($value, array $range = [0]) {
 
 function c(string $value = null, $accent = false, string $preserve = "") {
     $preserve = x($preserve);
-    return strtr(preg_replace_callback('/([ ' . $preserve . '])([\p{L}\p{N}' . $preserve . '])/u', static function($m) {
+    return strtr(preg_replace_callback('/([ ' . $preserve . '])([\p{L}\p{N}' . $preserve . '])/u', static function ($m) {
         return $m[1] . u($m[2]);
     }, f($value, $accent, $preserve)), [' ' => ""]);
 }
 
 function d(string $folder, callable $fn = null) {
-    spl_autoload_register(static function($object) use($folder, $fn) {
+    spl_autoload_register(static function ($object) use ($folder, $fn) {
         $name = c2f($object);
         if (is_file($file = $folder . D . $name . '.php')) {
             extract($GLOBALS, EXTR_SKIP);
@@ -913,7 +913,7 @@ function f(string $value = null, $accent = true, string $preserve = "") {
 function g(string $folder, $x = null, $deep = 0) {
     if (is_dir($folder)) {
         $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-        $it = new RecursiveCallbackFilterIterator($it, static function($v, $k, $a) use($deep, $x) {
+        $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $a) use ($deep, $x) {
             if ($deep > 0 && $a->hasChildren()) {
                 return true;
             }
@@ -943,7 +943,7 @@ function g(string $folder, $x = null, $deep = 0) {
 }
 
 function h(string $value = null, string $join = '-', $accent = false, string $preserve = "") {
-    return strtr(preg_replace_callback('/\p{Lu}/', static function($m) use($join) {
+    return strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
         return $join . l($m[0]);
     }, f($value, $accent, $join . $preserve)), [
         ' ' => $join,
@@ -1175,7 +1175,7 @@ function z($value, $short = true) {
         }
         if ($value instanceof Closure) {
             $content = "";
-            $f = new ReflectionFunction($value);
+            $f = new Reflectionfunction ($value);
             $lot = [];
             foreach ($f->getParameters() as $p) {
                 $value = "";
@@ -1246,13 +1246,13 @@ function z($value, $short = true) {
             } else {
                 $content = "";
             }
-            $value = 'function(' . implode(',', $lot) . ')';
+            $value = 'function (' . implode(',', $lot) . ')';
             if ($type = $f->getReturnType()) {
                 $value .= ':' . $type;
             }
             if ($uses = $f->getClosureUsedVariables()) {
                 // TODO: Find a way to check if used variable is passed by reference
-                $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
+                $value .= ' use ($' . implode(',$', array_keys($uses)) . ')';
             }
             return $value . '{' . $content . '}';
         }

@@ -37,7 +37,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        $value = $filter ? $this->is(static function($v, $k) {
+        $value = $filter ? $this->is(static function ($v, $k) {
             // Ignore `null`, `false` and item with key prefixed by a `_`
             return isset($v) && false !== $v && 0 !== strpos($k, '_');
         })->value : $this->value;
@@ -206,7 +206,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
             $i = $sort[0];
             if (isset($sort[1])) {
                 $key = $sort[1];
-                $fn = -1 === $i ? static function($a, $b) use($key) {
+                $fn = -1 === $i ? static function ($a, $b) use ($key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }
@@ -220,7 +220,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
                         return -1;
                     }
                     return $b[$key] <=> $a[$key];
-                } : static function($a, $b) use($key) {
+                } : static function ($a, $b) use ($key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }
