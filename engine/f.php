@@ -1267,10 +1267,12 @@ function z($value, $short = true) {
                         ]);
                         continue;
                     }
-                    $content .= ("" === trim($v[1]) ? "" : $v[1]);
+                    $v = "" === trim($v[1]) ? "" : $v[1];
+                    $content .= (0 === strpos($v, '$') ? ' ' : "") . $v;
                     continue;
                 }
-                $content .= ("" === trim($v) ? "" : $v);
+                $v = "" === trim($v) ? "" : $v;
+                $content .= (0 === strpos($v, '$') ? ' ' : "") . $v;
             }
             // Match function body
             if (preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
@@ -1289,15 +1291,15 @@ function z($value, $short = true) {
             if ($type = $f->getReturnType()) {
                 $value .= ':' . $type;
             }
-            if ($uses = $f->getClosureUsedVariables()) {
-                // TODO: Find a way to check if used variable is passed by reference
-                // $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
-                $var = "";
-                foreach ($uses as $kk => $vv) {
-                    $var .= '$' . $kk . '=' . z($vv, $short) . ';';
-                }
-                $content = $var . $content;
-            }
+            // if ($uses = $f->getClosureUsedVariables()) {
+            //     // TODO: Find a way to check if used variable is passed by reference
+            //     // $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
+            //     $var = "";
+            //     foreach ($uses as $kk => $vv) {
+            //         $var .= '$' . $kk . '=' . z($vv, $short) . ';';
+            //     }
+            //     $content = $var . $content;
+            // }
             return $value . '{' . $content . '}';
         }
         // TODO: Find a way to extract argument(s) from class instance
