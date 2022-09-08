@@ -2,7 +2,6 @@
 
 // This feature is available since PHP 8.1
 if (!function_exists('array_is_list')) {
-    $keep = true;
     function array_is_list(array $value) {
         if ([] === $value) {
             return true;
@@ -19,7 +18,6 @@ if (!function_exists('array_is_list')) {
 
 // This feature is available since PHP 7.3
 if (!function_exists('array_key_first')) {
-    $keep = true;
     function array_key_first(array $value) {
         if ($value) {
             foreach ($value as $k => $v) {
@@ -32,7 +30,6 @@ if (!function_exists('array_key_first')) {
 
 // This feature is available since PHP 7.3
 if (!function_exists('array_key_last')) {
-    $keep = true;
     function array_key_last(array $value) {
         return $value ? key(array_slice($value, -1, 1, true)) : null;
     }
@@ -1213,7 +1210,7 @@ function z($value, $short = true) {
         }
         if ($value instanceof Closure) {
             $content = "";
-            $f = new Reflectionfunction ($value);
+            $f = new ReflectionFunction($value);
             $lot = [];
             foreach ($f->getParameters() as $p) {
                 $value = "";
@@ -1284,13 +1281,22 @@ function z($value, $short = true) {
             } else {
                 $content = "";
             }
-            $value = 'function (' . implode(',', $lot) . ')';
+            $value = "";
+            if (!$f->getClosureThis()) {
+                $value .= 'static ';
+            }
+            $value .= 'function(' . implode(',', $lot) . ')';
             if ($type = $f->getReturnType()) {
                 $value .= ':' . $type;
             }
             if ($uses = $f->getClosureUsedVariables()) {
                 // TODO: Find a way to check if used variable is passed by reference
-                $value .= ' use ($' . implode(',$', array_keys($uses)) . ')';
+                // $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
+                $var = "";
+                foreach ($uses as $kk => $vv) {
+                    $var .= '$' . $kk . '=' . z($vv, $short) . ';';
+                }
+                $content = $var . $content;
             }
             return $value . '{' . $content . '}';
         }
