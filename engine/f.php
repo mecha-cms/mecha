@@ -1244,6 +1244,14 @@ function z($value, $short = true) {
             $body = implode("", array_slice(file($f->getFileName()), $start = $f->getStartLine() - 1, $f->getEndLine() - $start));
             $tokens = token_get_all('<?' . 'php ' . $body);
             foreach ($tokens as $k => $v) {
+                // Peek previous token
+                if (is_array($prev = $tokens[$k - 1] ?? "")) {
+                    $prev = $prev[1];
+                }
+                // Peek next token
+                if (is_array($next = $tokens[$k + 1] ?? "")) {
+                    $next = $next[1];
+                }
                 if (is_array($v)) {
                     if (T_OPEN_TAG === $v[0]) {
                         // Remove the `<?php ` prefix
@@ -1254,11 +1262,29 @@ function z($value, $short = true) {
                         continue;
                     }
                     if (T_START_HEREDOC === $v[0]) {
-                        $content .= "<<<" . ("'" === $v[1][3] ? "'S'" : 'S') . "\n";
+                        $content .= '<<<' . ("'" === $v[1][3] ? "'S'" : 'S') . "\n";
                         continue;
                     }
                     if (T_END_HEREDOC === $v[0]) {
                         $content .= 'S';
+                        // Prior to PHP 7.3.0, it is very important to note that the line with the closing identifier
+                        // must contain no other character(s), except a semicolon (`;`). That means especially that the
+                        // identifier may not be indented, and there may not be any space(s) or tab(s) before or after
+                        // the semicolon. It’s also important to realize that the first character before the closing
+                        // identifier must be a new-line as defined by the local operating system. This is `\n` on UNIX
+                        // system(s), including macOS. The closing delimiter must also be followed by a new-line.
+                        //
+                        // <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc>
+                        if (PHP_VERSION_ID < 70300) {
+                            if (';' === $next) {
+                                $content .= ';' . P; // Replace this with a new-line later!
+                                continue;
+                            }
+                            if (',' !== $next) {
+                                $content .= "\n";
+                                continue;
+                            }
+                        }
                         continue;
                     }
                     if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_ENCAPSED_AND_WHITESPACE === $v[0]) {
@@ -1269,15 +1295,26 @@ function z($value, $short = true) {
                         ]);
                         continue;
                     }
-                    if (T_WHITESPACE === $v[0] && $v[1] && false === strpos('().[]{}', substr($content, -1))) {
+                    if (T_WHITESPACE === $v[0]) {
+                        // Check if previous or next token contains only punctuation mark(s). White-space around this
+                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `&=`.
+                        // Of course, they can also be present in comment and string, but we already filtered them.
+                        if ($prev && (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))) {
+                            continue;
+                        }
+                        if ($next && (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next))) {
+                            continue;
+                        }
                         $content .= ' ';
                     }
                     $content .= ("" === trim($v[1]) ? "" : $v[1]);
                     continue;
                 }
-                $content = trim($content, ' ');
                 $content .= ("" === trim($v) ? "" : $v);
             }
+            $content = strtr($content, [
+                ';' . P . ';' => ";\n"
+            ]);
             // Match function body
             if (false !== strpos($content, '}') && preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
                 $content = strtr($m[1], [
@@ -1288,8 +1325,8 @@ function z($value, $short = true) {
                 $content = "";
             }
             $value = 'function(' . implode(',', $lot) . ')';
-            // Need to check if `ReflectionFunction::getClosureUsedVariables()` method is available because we want to
-            // support PHP 7. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8
+            // Need to check if `ReflectionFunction::getClosureUsedVariables()` method is available as we want to
+            // support PHP 7.1. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8.
             // <https://www.php.net/manual/en/reflectionfunctionabstract.getclosureusedvariables.php>
             if (method_exists($f, 'getClosureUsedVariables')) {
                 if ($uses = $f->getClosureUsedVariables()) {
