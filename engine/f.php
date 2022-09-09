@@ -1241,7 +1241,9 @@ function z($value, $short = true) {
                 }
                 $lot[] = $value;
             }
-            foreach (token_get_all('<?' . 'php ' . implode("", array_slice(file($f->getFileName()), $start = $f->getStartLine() - 1, $f->getEndLine() - $start))) as $v) {
+            $body = implode("", array_slice(file($f->getFileName()), $start = $f->getStartLine() - 1, $f->getEndLine() - $start));
+            $tokens = token_get_all('<?' . 'php ' . $body);
+            foreach ($tokens as $k => $v) {
                 if (is_array($v)) {
                     if (T_OPEN_TAG === $v[0]) {
                         // Remove the `<?php ` prefix
@@ -1267,15 +1269,17 @@ function z($value, $short = true) {
                         ]);
                         continue;
                     }
-                    $v = "" === trim($v[1]) ? "" : $v[1];
-                    $content .= (0 === strpos($v, '$') ? ' ' : "") . $v;
+                    if (T_WHITESPACE === $v[0] && $v[1] && false === strpos('().[]{}', substr($content, -1))) {
+                        $content .= ' ';
+                    }
+                    $content .= ("" === trim($v[1]) ? "" : $v[1]);
                     continue;
                 }
-                $v = "" === trim($v) ? "" : $v;
-                $content .= (0 === strpos($v, '$') ? ' ' : "") . $v;
+                $content = trim($content, ' ');
+                $content .= ("" === trim($v) ? "" : $v);
             }
             // Match function body
-            if (preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
+            if (false !== strpos($content, '}') && preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
                 $content = strtr($m[1], [
                     P . "\\x7B" . P => '{',
                     P . "\\x7D" . P => '}'
@@ -1283,23 +1287,19 @@ function z($value, $short = true) {
             } else {
                 $content = "";
             }
-            $value = "";
-            if (!$f->getClosureThis()) {
-                $value .= 'static ';
+            $value = 'function(' . implode(',', $lot) . ')';
+            // Need to check if `ReflectionFunction::getClosureUsedVariables()` method is available because we want to
+            // support PHP 7. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8
+            // <https://www.php.net/manual/en/reflectionfunctionabstract.getclosureusedvariables.php>
+            if (method_exists($f, 'getClosureUsedVariables')) {
+                if ($uses = $f->getClosureUsedVariables()) {
+                    // TODO: Find a way to check if used variable is passed by reference
+                    $value .= 'use($' . implode(',$', array_keys($uses)) . ')';
+                }
             }
-            $value .= 'function(' . implode(',', $lot) . ')';
             if ($type = $f->getReturnType()) {
                 $value .= ':' . $type;
             }
-            // if ($uses = $f->getClosureUsedVariables()) {
-            //     // TODO: Find a way to check if used variable is passed by reference
-            //     // $value .= ' use($' . implode(',$', array_keys($uses)) . ')';
-            //     $var = "";
-            //     foreach ($uses as $kk => $vv) {
-            //         $var .= '$' . $kk . '=' . z($vv, $short) . ';';
-            //     }
-            //     $content = $var . $content;
-            // }
             return $value . '{' . $content . '}';
         }
         // TODO: Find a way to extract argument(s) from class instance
