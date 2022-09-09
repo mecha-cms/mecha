@@ -1277,7 +1277,11 @@ function z($value, $short = true) {
                         // <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc>
                         if (PHP_VERSION_ID < 70300) {
                             if (';' === $next) {
-                                $content .= ';' . P; // Replace this with a new-line later!
+                                if (is_array($tokens[$k + 1])) {
+                                    $tokens[$k + 1][1] .= "\n";
+                                } else {
+                                    $tokens[$k + 1] .= "\n";
+                                }
                                 continue;
                             }
                             if (',' !== $next) {
@@ -1312,9 +1316,6 @@ function z($value, $short = true) {
                 }
                 $content .= ("" === trim($v) ? "" : $v);
             }
-            $content = strtr($content, [
-                ';' . P . ';' => ";\n"
-            ]);
             // Match function body
             if (false !== strpos($content, '}') && preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
                 $content = strtr($m[1], [
