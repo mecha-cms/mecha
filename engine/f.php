@@ -1310,6 +1310,11 @@ function z($value, $short = true) {
                             (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
                             (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
                         ) {
+                            // `_` is a punctuation but it can be used to name a valid constant, function and property
+                            if ('_' === $next) {
+                                $out .= ' ';
+                                continue;
+                            }
                             continue;
                         }
                         // Check if previous or next token is a comment, then remove white-space around it!
