@@ -144,7 +144,7 @@ function cookie(...$lot) {
         $state['expires'] = strtotime($state['expires'], $time = time()) - $time;
     }
     $state['expires'] = (int) ($state['expires'] + time());
-    if (PHP_VERSION_ID < 70300) {
+    if (version_compare(PHP_VERSION, '7.3.0') < 0) {
         // <https://stackoverflow.com/a/51128675>
         setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)),
             $state['expires'],
@@ -1275,7 +1275,7 @@ function z($value, $short = true) {
                         // system(s), including macOS. The closing delimiter must also be followed by a new-line.
                         //
                         // <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc>
-                        if (PHP_VERSION_ID < 70300) {
+                        if (version_compare(PHP_VERSION, '7.3.0') < 0) {
                             if (';' === $next) {
                                 if (is_array($tokens[$k + 1])) {
                                     $tokens[$k + 1][1] .= "\n";
@@ -1300,19 +1300,38 @@ function z($value, $short = true) {
                         continue;
                     }
                     if (T_WHITESPACE === $v[0]) {
+                        if (!$next || !$prev) {
+                            continue;
+                        }
                         // Check if previous or next token contains only punctuation mark(s). White-space around this
-                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `&=`.
+                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `||`.
                         // Of course, they can also be present in comment and string, but we already filtered them.
-                        if ($prev && (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))) {
+                        if (
+                            (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
+                            (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
+                        ) {
                             continue;
                         }
-                        if ($next && (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next))) {
+                        // Check if previous or next token is a comment, then remove white-space around it!
+                        if (
+                            0 === strpos($next, '#') ||
+                            0 === strpos($prev, '#') ||
+                            0 === strpos($next, '//') ||
+                            0 === strpos($prev, '//') ||
+                            '/*' === substr($next, 0, 2) && '*/' === substr($next, -2) ||
+                            '/*' === substr($prev, 0, 2) && '*/' === substr($prev, -2)
+                        ) {
                             continue;
                         }
+                        // Convert multiple white-space to single space
                         $content .= ' ';
                     }
                     $content .= ("" === trim($v[1]) ? "" : $v[1]);
                     continue;
+                }
+                // Remove trailing `,`
+                if (',' === substr($content, -1) && false !== strpos(')]}', $v)) {
+                    $content = substr($content, 0, -1);
                 }
                 $content .= ("" === trim($v) ? "" : $v);
             }
