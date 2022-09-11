@@ -16,25 +16,6 @@ if (!function_exists('array_is_list')) {
     }
 }
 
-// This feature is available since PHP 7.3
-if (!function_exists('array_key_first')) {
-    function array_key_first(array $value) {
-        if ($value) {
-            foreach ($value as $k => $v) {
-                return $k;
-            }
-        }
-        return null;
-    }
-}
-
-// This feature is available since PHP 7.3
-if (!function_exists('array_key_last')) {
-    function array_key_last(array $value) {
-        return $value ? key(array_slice($value, -1, 1, true)) : null;
-    }
-}
-
 function abort(string $alert, $exit = true) {
     ob_start();
     debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
