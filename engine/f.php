@@ -125,19 +125,8 @@ function cookie(...$lot) {
         $state['expires'] = strtotime($state['expires'], $time = time()) - $time;
     }
     $state['expires'] = (int) ($state['expires'] + time());
-    if (version_compare(PHP_VERSION, '7.3.0') < 0) {
-        // <https://stackoverflow.com/a/51128675>
-        setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)),
-            $state['expires'],
-            $state['path'] . '; samesite=' . $state['samesite'], // Hacky! :(
-            $state['domain'],
-            $state['secure'],
-            $state['httponly']
-        );
-    } else {
-        // <https://stackoverflow.com/a/1969339/1163000>
-        setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)), $state);
-    }
+    // <https://stackoverflow.com/a/1969339/1163000>
+    setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)), $state);
 }
 
 function delete(string $path, $purge = true) {
@@ -1274,28 +1263,6 @@ function z($value, $short = true) {
                     }
                     if (T_END_HEREDOC === $v[0]) {
                         $content .= 'S';
-                        // Prior to PHP 7.3.0, it is very important to note that the line with the closing identifier
-                        // must contain no other character(s), except a semicolon (`;`). That means especially that the
-                        // identifier may not be indented, and there may not be any space(s) or tab(s) before or after
-                        // the semicolon. It’s also important to realize that the first character before the closing
-                        // identifier must be a new-line as defined by the local operating system. This is `\n` on UNIX
-                        // system(s), including macOS. The closing delimiter must also be followed by a new-line.
-                        //
-                        // <https://www.php.net/manual/en/language.types.string.php#language.types.string.syntax.heredoc>
-                        if (version_compare(PHP_VERSION, '7.3.0') < 0) {
-                            if (';' === $next) {
-                                if (is_array($tokens[$k + 1])) {
-                                    $tokens[$k + 1][1] .= "\n";
-                                } else {
-                                    $tokens[$k + 1] .= "\n";
-                                }
-                                continue;
-                            }
-                            if (',' !== $next) {
-                                $content .= "\n";
-                                continue;
-                            }
-                        }
                         continue;
                     }
                     if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_ENCAPSED_AND_WHITESPACE === $v[0]) {
@@ -1325,15 +1292,15 @@ function z($value, $short = true) {
                             (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
                             (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
                         ) {
-                            // `$_` variable is all punctuation but it needs to be preceded by a space to ensure that we don’t
-                            // experience a result like `const$_=1` in the output.
-                            if ('$_' === $next && (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev))) {
+                            // `$_` variable is all punctuation but it needs to be preceded by a space to
+                            // ensure that we don’t experience a result like `static$_=1` in the output.
+                            if ('$' === $next[0] && (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev))) {
                                 $content .= ' ';
                                 continue;
                             }
-                            // `_` is a punctuation but it needs to be preceded by a space to ensure that we don’t experience
-                            // a result like `function_(){}` or `const_=1` in the output.
-                            if ('_' === $next) {
+                            // `_` is a punctuation but it needs to be preceded by a space to ensure that we
+                            // don’t experience a result like `function_(){}` or `const_=1` in the output.
+                            if ('_' === $next[0]) {
                                 $content .= ' ';
                                 continue;
                             }
