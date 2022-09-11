@@ -1253,12 +1253,26 @@ function z($value, $short = true) {
                     $next = $next[1];
                 }
                 if (is_array($v)) {
+                    if (T_COMMENT === $v[0] || T_DOC_COMMENT === $v[0]) {
+                        // Remove comment(s)
+                        continue;
+                    }
                     if (T_OPEN_TAG === $v[0]) {
                         // Remove the `<?php ` prefix
                         continue;
                     }
-                    if (T_COMMENT === $v[0] || T_DOC_COMMENT === $v[0]) {
-                        // Remove comment(s)
+                    if (T_IF === $v[0]) {
+                        if ('else ' === substr($content, -5)) {
+                            $content = substr($content, 0, -1) . 'if'; // Replace `else if` with `elseif`
+                            continue;
+                        }
+                    }
+                    if (T_DNUMBER === $v[0]) {
+                        if (0 === strpos($v[1], '0.')) {
+                            $v[1] = substr($v[1], 1); // Replace `0.` prefix with `.` from float
+                        }
+                        $v[1] = rtrim(rtrim($v[1], '0'), '.'); // Remove trailing `.0` from float
+                        $content .= $v[1];
                         continue;
                     }
                     if (T_START_HEREDOC === $v[0]) {
@@ -1299,6 +1313,11 @@ function z($value, $short = true) {
                         ]);
                         continue;
                     }
+                    // Any type cast
+                    if (0 === strpos($v[1], '(') && ')' === substr($v[1], -1) && '_CAST' === substr(token_name($v[0]), -5)) {
+                        $content .= '(' . trim(substr($v[1], 1, -1)) . ')'; // Remove white-space after `(` and before `)`
+                        continue;
+                    }
                     if (T_WHITESPACE === $v[0]) {
                         if (!$next || !$prev) {
                             continue;
@@ -1312,7 +1331,7 @@ function z($value, $short = true) {
                         ) {
                             // `_` is a punctuation but it can be used to name a valid constant, function and property
                             if ('_' === $next) {
-                                $out .= ' ';
+                                $content .= ' ';
                                 continue;
                             }
                             continue;
@@ -1326,6 +1345,10 @@ function z($value, $short = true) {
                             '/*' === substr($next, 0, 2) && '*/' === substr($next, -2) ||
                             '/*' === substr($prev, 0, 2) && '*/' === substr($prev, -2)
                         ) {
+                            continue;
+                        }
+                        // Remove white-space after type cast
+                        if (0 === strpos($prev, '(') && ')' === substr($prev, -1) && preg_match('/^\(\s*[^()\s]+\s*\)$/', $prev)) {
                             continue;
                         }
                         // Convert multiple white-space to single space
