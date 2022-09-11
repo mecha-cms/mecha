@@ -58,11 +58,11 @@ function check(string $token, $id = 0) {
 function choke(int $for = 1, $id = 0) {
     $current = $_SERVER['REQUEST_TIME'];
     $id = $id ?? uniqid();
-    $prev = (int) (content($path = ENGINE . D . 'log' . D . $id) ?? 0);
+    $prev = is_file($path = ENGINE . D . 'log' . D . $id) ? filemtime($path) : 0;
     if ($for > $current - $prev) {
         return $for - ($current - $prev);
     }
-    content($path, $current);
+    touch($path, $current);
     return false;
 }
 
