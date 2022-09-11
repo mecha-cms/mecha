@@ -1261,6 +1261,10 @@ function z($value, $short = true) {
                         // Remove the `<?php ` prefix
                         continue;
                     }
+                    if (T_CASE === $v[0] || T_RETURN === $v[0]) {
+                        $content .= $v[1] . ' ';
+                        continue;
+                    }
                     if (T_IF === $v[0]) {
                         if ('else ' === substr($content, -5)) {
                             $content = substr($content, 0, -1) . 'if'; // Replace `else if` with `elseif`
@@ -1319,7 +1323,7 @@ function z($value, $short = true) {
                         continue;
                     }
                     if (T_WHITESPACE === $v[0]) {
-                        if (!$next || !$prev) {
+                        if ("" === $next || "" === $prev) {
                             continue;
                         }
                         // Check if previous or next token contains only punctuation mark(s). White-space around this
@@ -1360,6 +1364,11 @@ function z($value, $short = true) {
                 // Remove trailing `,`
                 if (',' === substr($content, -1) && false !== strpos(')]}', $v)) {
                     $content = substr($content, 0, -1);
+                }
+                if ('case ' === substr($content, -5) || 'return ' === substr($content, -7)) {
+                    if ($v && false !== strpos('([', $v[0])) {
+                        $content = substr($content, 0, -1);
+                    }
                 }
                 $content .= ("" === trim($v) ? "" : $v);
             }
