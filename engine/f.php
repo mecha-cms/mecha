@@ -1261,7 +1261,15 @@ function z($value, $short = true) {
                         // Remove the `<?php ` prefix
                         continue;
                     }
-                    if (T_CASE === $v[0] || T_RETURN === $v[0]) {
+                    if (T_ECHO === $v[0] || T_PRINT === $v[0]) {
+                        if ('<?php ' === substr($content, -6)) {
+                            $content = substr($content, 0, -4) . '='; // Replace `<?php echo` with `<?=`
+                            continue;
+                        }
+                        $content .= 'echo '; // Replace `print` with `echo`
+                        continue;
+                    }
+                    if (T_CASE === $v[0] || T_RETURN === $v[0] || T_YIELD === $v[0]) {
                         $content .= $v[1] . ' ';
                         continue;
                     }
@@ -1319,12 +1327,15 @@ function z($value, $short = true) {
                     }
                     // Any type cast
                     if (0 === strpos($v[1], '(') && ')' === substr($v[1], -1) && '_CAST' === substr(token_name($v[0]), -5)) {
-                        $content .= '(' . trim(substr($v[1], 1, -1)) . ')'; // Remove white-space after `(` and before `)`
+                        $content = rtrim($content) . '(' . trim(substr($v[1], 1, -1)) . ')'; // Remove white-space after `(` and before `)`
                         continue;
                     }
                     if (T_WHITESPACE === $v[0]) {
                         if ("" === $next || "" === $prev) {
                             continue;
+                        }
+                        if (' ' === substr($content, -1)) {
+                            continue; // Has been followed by single space, skip!
                         }
                         // Check if previous or next token contains only punctuation mark(s). White-space around this
                         // token usually safe to be removed. They must be PHP operator(s) like `&&` and `||`.
@@ -1333,7 +1344,14 @@ function z($value, $short = true) {
                             (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
                             (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
                         ) {
-                            // `_` is a punctuation but it can be used to name a valid constant, function and property
+                            // `$_` variable is all punctuation but it needs to be preceded by a space to ensure that we don’t
+                            // experience a result like `const$_=1` in the output.
+                            if ('$_' === $next && (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev))) {
+                                $content .= ' ';
+                                continue;
+                            }
+                            // `_` is a punctuation but it needs to be preceded by a space to ensure that we don’t experience
+                            // a result like `function_(){}` or `const_=1` in the output.
                             if ('_' === $next) {
                                 $content .= ' ';
                                 continue;
@@ -1361,12 +1379,21 @@ function z($value, $short = true) {
                     $content .= ("" === trim($v[1]) ? "" : $v[1]);
                     continue;
                 }
+                // Replace `-0` with `0`
+                if ('-' === $v && '0' === $next) {
+                    continue;
+                }
                 // Remove trailing `,`
                 if (',' === substr($content, -1) && false !== strpos(')]}', $v)) {
                     $content = substr($content, 0, -1);
                 }
-                if ('case ' === substr($content, -5) || 'return ' === substr($content, -7)) {
-                    if ($v && false !== strpos('([', $v[0])) {
+                if (
+                    'case ' === substr($content, -5) ||
+                    'echo ' === substr($content, -5) ||
+                    'return ' === substr($content, -7) ||
+                    'yield ' === substr($content, -6)
+                ) {
+                    if ($v && false !== strpos('!([', $v[0])) {
                         $content = substr($content, 0, -1);
                     }
                 }
