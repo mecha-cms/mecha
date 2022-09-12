@@ -58,7 +58,11 @@ function check(string $token, $id = 0) {
 function choke(int $for = 1, $id = 0) {
     $current = $_SERVER['REQUEST_TIME'];
     $id = $id ?? uniqid();
-    $prev = is_file($path = ENGINE . D . 'log' . D . $id) ? filemtime($path) : 0;
+    if (is_file($path = ENGINE . D . 'log' . D . $id)) {
+        $prev = filemtime($path);
+    } else {
+        touch($path, $prev = 0);
+    }
     if ($for > $current - $prev) {
         return $for - ($current - $prev);
     }
@@ -1358,7 +1362,7 @@ function z($value, $short = true) {
             }
             $value = 'function(' . implode(',', $lot) . ')';
             // Need to check if `ReflectionFunction::getClosureUsedVariables()` method is available as we want to
-            // support PHP 7.1. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8.
+            // support PHP 7.3. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8.0.
             // <https://www.php.net/manual/en/reflectionfunctionabstract.getclosureusedvariables.php>
             if (method_exists($f, 'getClosureUsedVariables')) {
                 if ($uses = $f->getClosureUsedVariables()) {
