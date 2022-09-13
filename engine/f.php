@@ -58,15 +58,18 @@ function check(string $token, $id = 0) {
 function choke(int $for = 1, $id = 0) {
     $current = $_SERVER['REQUEST_TIME'];
     $id = $id ?? uniqid();
-    if (is_file($path = ENGINE . D . 'log' . D . $id)) {
-        $prev = filemtime($path);
-    } else {
-        touch($path, $prev = 0);
+    if (!is_file($file = ENGINE . D . 'log' . D . $id)) {
+        if (!is_dir($folder = dirname($file))) {
+            mkdir($folder, 0775, true);
+        }
+        touch($file, 0);
+        return false;
     }
+    $prev = filemtime($file);
     if ($for > $current - $prev) {
         return $for - ($current - $prev);
     }
-    touch($path, $current);
+    touch($file, $current);
     return false;
 }
 
@@ -80,15 +83,19 @@ function concat(array $value, ...$lot) {
     return array_merge_recursive($value, ...$lot);
 }
 
-function content(string $path, $value = null) {
+function content(string $path, $value = null, $seal = null) {
     if (null !== $value) {
         if (is_dir($path) || (is_file($path) && !is_writable($path))) {
             return false;
         }
-        if (!is_dir($parent = dirname($path))) {
-            mkdir($parent, 0775, true);
+        if (!is_dir($folder = dirname($path))) {
+            mkdir($folder, 0775, true);
         }
-        return is_int(file_put_contents($path, (string) $value));
+        if (is_int(file_put_contents($path, (string) $value))) {
+            $seal && seal($path, $seal);
+            return true;
+        }
+        return false;
     }
     return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
@@ -541,7 +548,7 @@ function save(string $path, $value = "", $seal = null) {
     if (!is_dir($folder = dirname($path))) {
         mkdir($folder, 0775, true);
     }
-    if (file_put_contents($path, $value)) {
+    if (is_int(file_put_contents($path, $value))) {
         $seal && seal($path, $seal);
         // Success
         return path($path);
