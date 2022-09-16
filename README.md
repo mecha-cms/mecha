@@ -51,7 +51,7 @@ Requirements
 ------------
 
  - Apache 2.4 and above, with enabled [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
- - PHP 7.3 and above, with enabled [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") and [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`") extension.
+ - PHP 7.3 and above, with enabled [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`"), [`json`](http://php.net/manual/en/book.json.php "PHP Extension `json`") and [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
 
 Preparations
 ------------
@@ -61,7 +61,7 @@ Preparations
  3. Upload Mecha through your FTP/SFTP to the public folder/directory on your site, then extract it!
  4. Take a look on the available extensions and layouts that you might be interested.
  5. Upload your extension files to `.\lot\x` and your layout files to `.\lot\y`. They’re auto-loaded.
- 6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/lot "GitHub").
+ 6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/site "GitHub").
  7. Install the panel extension if you are stuck by doing everything manually. You always have the full control to remove this extension without having to worry that your site will stop running after doing so.
 
 Alternatives
