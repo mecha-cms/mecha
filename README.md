@@ -14,18 +14,18 @@ Front-End
 
 The default layout uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
-![Front-End](https://user-images.githubusercontent.com/1669261/141647070-e994e220-8061-4cd6-bdf7-45ef9ad8ea56.png)
+![Front-End](https://user-images.githubusercontent.com/1669261/190838629-860bfd9c-0444-4426-990f-71a604b95c32.png)
 
 Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 -----------------------------------------------------------------------------
 
 To be able to activate the back-end feature requires you to install our [alert](https://github.com/mecha-cms/x.alert "Alert Extension"), [panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [user](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
 
-![Back-End](https://user-images.githubusercontent.com/1669261/141484343-0568ef0d-f7c5-4991-a8ee-7773379415b2.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/190838552-78eb9fc6-ff17-4c92-9133-a200312bfc01.png)
 
 Colors and font types in the control panel preview above are generated from the default layout files. Without them, the display will look like the preview below:
 
-![Back-End](https://user-images.githubusercontent.com/1669261/141484323-d97a403f-5706-4e84-b5ab-78ebd9eb6bd9.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/190838548-ec6bf7fe-fa5c-4ccd-8242-b6eff21d9d9e.png)
 
 Mecha survives on the principle that a database-less site should be personal, portable, light and easy to be exported and backed up. That’s why most of the projects associated with Mecha are created with personal natures and are dedicated to be used for personal purposes such as blog, journal and diary. Mecha’s market shares are people with high creativity and individuals who want to dedicate themselves to the freedom of speech, that probably don’t have much time to learn web programming languages. By introducing Mecha as files and folders that used to be seen by people everyday in their working desktop, we hope you will soon be familiar with the way Mecha CMS works.
 
