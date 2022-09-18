@@ -483,11 +483,13 @@ function map(iterable $value, callable $fn) {
 function move(string $path, string $to, string $as = null) {
     $out = [];
     if (!is_dir($path) && !is_file($path)) {
-        return [false, null];
+        return [null, null];
     }
-    if (is_file($out[0] = path($path))) {
-        if (is_file($file = $to . DS . ($as ?? basename($path)))) {
-            // Return `false` if file exist
+    $path = path($path);
+    // Move a file to a folder
+    if (is_file($out[0] = $path)) {
+        if (is_file($file = $to . D . ($as ?? basename($path)))) {
+            // Return `false` if file exists
             $out[1] = false;
         } else {
             if (!is_dir($folder = dirname($file))) {
@@ -498,7 +500,36 @@ function move(string $path, string $to, string $as = null) {
         }
         return $out;
     }
-    // TODO: Move folder with its contents
+    // Move a folder with its contents to a folder
+    $out = [$path, null];
+    if (!is_dir($to)) {
+        return $out;
+    }
+    $out[1] = [];
+    if (!is_dir($to .= D . ($as ?? basename($path)))) {
+        mkdir($to, 0775, true);
+    }
+    if ($path === ($to = path($to))) {
+        return $out; // Nothing to move
+    }
+    foreach (g($path, 1, true) as $k => $v) {
+        $file = $to . D . substr($k, strlen($path) + 1);
+        if (!is_dir($folder = dirname($file))) {
+            $out[1][$folder] = mkdir($folder, 0775, true) ? 0 : null;
+        }
+        $out[1][$file] = rename($k, $file) ? 1 : null;
+    }
+    // Delete empty folder
+    foreach (g($path, 0, true) as $k => $v) {
+        if (0 === q(g($k))) {
+            rmdir($k);
+        }
+    }
+    // Delete folder
+    if (0 === q(g($path))) {
+        rmdir($path);
+    }
+    return $out;
 }
 
 function ne($a, $b) {
