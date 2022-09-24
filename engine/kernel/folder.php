@@ -49,7 +49,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this->exist() ? To::URL($this->path) : null;
     }
 
-    public function content(string $path) {
+    public function content() {
         return null;
     }
 
@@ -95,9 +95,9 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $this->exist() ? basename($this->path) : null;
     }
 
-    public function size(string $unit = null, int $fix = 2) {
+    public function size(string $unit = null, int $fix = 2, int $base = 1000) {
         if (null !== ($size = $this->_size())) {
-            return size($size, $unit, $fix);
+            return size($size, $unit, $fix, $base);
         }
         return null;
     }

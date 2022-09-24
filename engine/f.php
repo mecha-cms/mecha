@@ -671,12 +671,15 @@ function shake(array $value, $preserve_key = true) {
 }
 
 // Tidy file size <https://en.wikipedia.org/wiki/Byte#Multiple-byte_units>
-function size(float $size, string $unit = null, int $fix = 2, int $of = 1024) {
-    $i = log($size, $of);
-    $x = 1024 === $of ? ['B', 'KB', 'MB', 'GB', 'TB'] : ['B', 'KiB', 'MiB', 'GiB', 'TiB'];
-    $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor($i) : 0);
-    $out = round($size / pow($of, $u), $fix);
-    return $out < 0 ? null : trim($out . ' ' . $x[$u]);
+function size(float $size, string $unit = null, int $fix = 2, int $base = 1000) {
+    $bases = [
+        1000 => ['B', 'KB', 'MB', 'GB', 'TB'],
+        1024 => ['B', 'KiB', 'MiB', 'GiB', 'TiB']
+    ];
+    $x = $bases[$base] ?? [];
+    $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor(log($size, $base)) : 0);
+    $out = round($size / pow($base, $u), $fix);
+    return $out < 0 ? null : trim($out . ' ' . ($x[$u] ?? ""));
 }
 
 function status(...$lot) {

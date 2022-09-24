@@ -89,9 +89,9 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
     }
 
-    public function size(string $unit = null, int $fix = 2) {
+    public function size(string $unit = null, int $fix = 2, int $base = 1000) {
         if ($this->exist()) {
-            return size(filesize($path), $unit, $fix);
+            return size(filesize($path), $unit, $fix, $base);
         }
         return null;
     }

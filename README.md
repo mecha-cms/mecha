@@ -23,7 +23,7 @@ To be able to activate the back-end feature requires you to install our [alert](
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/190838552-78eb9fc6-ff17-4c92-9133-a200312bfc01.png)
 
-Colors and font types in the control panel preview above are generated from the default layout files. Without them, the display will look like the preview below:
+Colors and font types in the control panel preview above are generated from the [default skin](https://github.com/mecha-cms/x.panel.skin.default "Panel Skin: Default"). Without them, the display will look like the preview below:
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/190838548-ec6bf7fe-fa5c-4ccd-8242-b6eff21d9d9e.png)
 
