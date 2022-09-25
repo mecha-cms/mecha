@@ -708,10 +708,15 @@ try {
         })($v);
     }
 } catch (Throwable $e) {
+    // Core error?
+    if (0 === strpos($file = $e->getFile(), ENGINE . D)) {
+        file_put_contents(ENGINE . D . 'log' . D . 'error', ((string) $e) . PHP_EOL, FILE_APPEND);
     // Catch error that occurs in the extension and layout file(s) then immediately disable!
-    [$k, $name] = explode(D, substr($e->getFile(), strlen($folder = LOT . D)), 3);
-    file_put_contents(ENGINE . D . 'log' . D . 'error-' . $k, ((string) $e) . PHP_EOL, FILE_APPEND);
-    rename($folder . $k . D . $name . D . 'index.php', $folder . $k . D . $name . D . '.index.php');
+    } else {
+        [$k, $name] = explode(D, substr($file, strlen($folder = LOT . D)), 3);
+        file_put_contents(ENGINE . D . 'log' . D . 'error-' . $k, ((string) $e) . PHP_EOL, FILE_APPEND);
+        rename($folder . $k . D . $name . D . 'index.php', $folder . $k . D . $name . D . '.index.php');
+    }
 }
 
 // Set default response status and header(s)
