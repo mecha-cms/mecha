@@ -31,14 +31,14 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         }
         if (is_string($value)) {
             if (preg_match_all('/' . implode('|', [
-                // Processing instruction
-                '<\?(?:"[^"]*"|\'[^\']*\'|[^>?])*\?>',
-                // Comment
-                '<\!--[\s\S]*?-->',
                 // Character data section
                 '<\!\[CDATA\[[\s\S]*?\]\]>',
+                // Comment
+                '<\!--[\s\S]*?-->',
                 // Document type
                 '<\!(?:"[^"]*"|\'[^\']*\'|[^>])*>',
+                // Processing instruction
+                '<\?(?:"[^"]*"|\'[^\']*\'|[^>?])*\?>',
                 // Element
                 '<([^\s"\'\/<=>]+)(?:\s(?:"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>(?:(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
                 // Text
