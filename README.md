@@ -21,11 +21,11 @@ Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 
 To be able to activate the back-end feature requires you to install our [Alert](https://github.com/mecha-cms/x.alert "Alert Extension"), [Panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [User](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
 
-![Back-End](https://user-images.githubusercontent.com/1669261/190838552-78eb9fc6-ff17-4c92-9133-a200312bfc01.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/193995098-3d4ff7c3-6d49-4d77-86e6-ca3ca0039d3f.png)
 
 Colors and font types in the control panel preview above are generated from the [default skin](https://github.com/mecha-cms/x.panel.skin.default "Panel Skin: Default"). Without them, the display will look like the preview below:
 
-![Back-End](https://user-images.githubusercontent.com/1669261/190838548-ec6bf7fe-fa5c-4ccd-8242-b6eff21d9d9e.png)
+![Back-End](https://user-images.githubusercontent.com/1669261/193995030-9538357e-a5c4-4292-8ad2-a1e657f40acc.png)
 
 Features
 --------
