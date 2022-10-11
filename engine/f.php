@@ -120,22 +120,21 @@ function cookie(...$lot) {
         return $_COOKIE[$key] ?? null;
     }
     $value = array_shift($lot);
-    $expires = array_shift($lot) ?? '1 day';
+    $expires = array_shift($lot) ?? '+1 day';
     if (!is_array($expires)) {
         $expires = ['expires' => $expires];
     }
     $state = array_replace([
         'domain' => "",
-        'expires' => '1 day',
+        'expires' => '+1 day',
         'httponly' => true, // Safe by default
         'path' => '/',
         'samesite' => 'Strict', // Safe by default
         'secure' => !empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === (int) $_SERVER['SERVER_PORT']
     ], $expires);
     if (is_string($state['expires'])) {
-        $state['expires'] = strtotime($state['expires'], $time = time()) - $time;
+        $state['expires'] = strtotime($state['expires']);
     }
-    $state['expires'] = (int) ($state['expires'] + time());
     // <https://stackoverflow.com/a/1969339/1163000>
     setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)), $state);
 }
