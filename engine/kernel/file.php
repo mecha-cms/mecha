@@ -91,6 +91,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
 
     public function size(string $unit = null, int $fix = 2, int $base = 1000) {
         if ($this->exist()) {
+            $path = $this->path;
             return size(filesize($path), $unit, $fix, $base);
         }
         return null;
