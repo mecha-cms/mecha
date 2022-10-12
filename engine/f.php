@@ -22,7 +22,7 @@ function abort(string $alert, $exit = true) {
     $trace = explode("\n", n(ob_get_clean()), 2);
     array_shift($trace);
     $trace = trim(strtr(implode("\n", $trace), [PATH => '.']), "\n");
-    echo '<details' . ($exit ? ' open' : "") . ' style="background:#f00;color:#fff;font:normal normal 100%/1.5 sans-serif;margin:0;padding:0;selection:none;text-shadow:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em 1rem;text-shadow:none;">' . $alert . '</summary><pre style="background:#000;font:normal normal 100%/1.25 monospace;margin:0;overflow:auto;padding:0;text-shadow:none;white-space:pre;"><code style="color:inherit;display:block;font:inherit;margin:0;padding:.5em 1rem;text-shadow:none;">' . $trace . '</code></pre></details>';
+    echo '<details' . ($exit ? ' open' : "") . ' style="background:#ff8;border:2px solid #000;color:#000;font:normal normal 100%/1.5 sans-serif;margin:0;padding:0;selection:none;text-shadow:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em .75rem;text-shadow:none;user-select:none;">' . $alert . '</summary><pre style="background:#ffa;border:1px solid #000;border-width:1px 0 0;font:normal normal 100%/1.25 monospace;margin:0;overflow:auto;padding:0;text-shadow:none;white-space:pre;"><code style="color:inherit;display:block;font:inherit;margin:0;padding:.5em .75rem;text-shadow:none;">' . $trace . '</code></pre></details>';
     $exit && exit;
 }
 
