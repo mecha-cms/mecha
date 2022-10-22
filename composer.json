@@ -16,8 +16,7 @@
       "mecha-cms/composer": true
     },
     "lock": false,
-    "sort-packages": true,
-    "vendor-dir": "engine/vendor"
+    "sort-packages": true
   },
   "description": "Minimalist content management system.",
   "funding": [
