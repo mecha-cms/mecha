@@ -201,20 +201,30 @@ function eq($a, $b) {
 
 function exist($path, $type = null) {
     if (is_array($path)) {
-        foreach ($path as $v) {
-            if ($v && $v = stream_resolve_include_path($v)) {
-                if (0 === $type) {
+        if (0 === $type) {
+            foreach ($path as $v) {
+                if ($v && $v = stream_resolve_include_path($v)) {
                     if (!is_dir($v)) {
                         continue;
                     }
                     return $v;
                 }
-                if (1 === $type) {
+            }
+            return false;
+        }
+        if (1 === $type) {
+            foreach ($path as $v) {
+                if ($v && $v = stream_resolve_include_path($v)) {
                     if (!is_file($v)) {
                         continue;
                     }
                     return $v;
                 }
+            }
+            return false;
+        }
+        foreach ($path as $v) {
+            if ($v && $v = stream_resolve_include_path($v)) {
                 return $v;
             }
         }
