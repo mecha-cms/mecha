@@ -75,6 +75,10 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return $out;
     }
 
+    public function name() {
+        return $this->exist() ? basename($this->path) : null;
+    }
+
     public function offsetExists($key): bool {
         return !!$this->offsetGet($key);
     }
@@ -89,10 +93,6 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
 
     public function seal() {
         return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
-    }
-
-    public function name() {
-        return $this->exist() ? basename($this->path) : null;
     }
 
     public function size(string $unit = null, int $fix = 2, int $base = 1000) {

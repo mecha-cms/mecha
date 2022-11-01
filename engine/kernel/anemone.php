@@ -58,11 +58,13 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return any($this->value, $fn);
     }
 
-    public function chunk(int $chunk = 5, int $index = -1, $preserve_key = false) {
+    public function chunk(int $chunk = 5, int $index = -1, $keys = false) {
         $that = $this->mitose();
-        $that->value = array_chunk($that->value, $chunk, $preserve_key);
-        if (-1 !== $index) {
-            $that->value = $that->value[$index] ?? [];
+        if (0 !== $chunk) {
+            $that->value = array_chunk($that->value, $chunk, $keys);
+            if (-1 !== $index) {
+                $that->value = $that->value[$index] ?? [];
+            }
         }
         return $that;
     }
@@ -187,21 +189,21 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return $this;
     }
 
-    public function shake($preserve_key = true) {
-        $this->value = shake($this->value, $preserve_key);
+    public function shake($keys = true) {
+        $this->value = shake($this->value, $keys);
         return $this;
     }
 
     // Sort array value: `1` for “asc” and `-1` for “desc”
-    public function sort($sort = 1, $preserve_key = false) {
+    public function sort($sort = 1, $keys = false) {
         if (count($value = $this->value) <= 1) {
-            if (!$preserve_key) {
+            if (!$keys) {
                 $this->value = array_values($this->value);
             }
             return $this;
         }
         if (is_callable($sort)) {
-            $preserve_key ? uasort($value, $sort) : usort($value, $sort);
+            $keys ? uasort($value, $sort) : usort($value, $sort);
         } else if (is_array($sort)) {
             $i = $sort[0];
             if (isset($sort[1])) {
@@ -243,16 +245,16 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
                     }
                     unset($v);
                 }
-                $preserve_key ? uasort($value, $fn) : usort($value, $fn);
+                $keys ? uasort($value, $fn) : usort($value, $fn);
             } else {
-                if ($preserve_key) {
+                if ($keys) {
                     -1 === $i ? arsort($value) : asort($value);
                 } else {
                     -1 === $i ? rsort($value) : sort($value);
                 }
             }
         } else {
-            if ($preserve_key) {
+            if ($keys) {
                 -1 === $sort ? arsort($value) : asort($value);
             } else {
                 -1 === $sort ? rsort($value) : sort($value);

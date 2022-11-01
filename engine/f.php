@@ -663,13 +663,13 @@ function set(array &$out, string $key, $value = null, string $join = '.') {
     return $out;
 }
 
-function shake(array $value, $preserve_key = true) {
-    if (is_callable($preserve_key)) {
-        // `$preserve_key` as `$fn`
-        $value = call_user_func($preserve_key, $value);
+function shake(array $value, $keys = true) {
+    if (is_callable($keys)) {
+        // `$keys` as `$fn`
+        $value = call_user_func($keys, $value);
     } else {
         // <http://php.net/manual/en/function.shuffle.php#94697>
-        if ($preserve_key) {
+        if ($keys) {
             $keys = array_keys($value);
             $values = [];
             shuffle($keys);
@@ -825,7 +825,7 @@ function test(...$lot) {
     echo '</p>';
 }
 
-function token($id = 0, $for = '1 minute') {
+function token($id = 0, $for = '+1 minute') {
     $prev = $_SESSION['token'][$id] ?? [0, ""];
     if ($prev[0] > time()) {
         return $prev[1];
@@ -909,11 +909,11 @@ function b($value, array $range = [0]) {
     return $value;
 }
 
-function c(string $value = null, $accent = false, string $preserve = "") {
-    $preserve = x($preserve);
-    return strtr(preg_replace_callback('/([ ' . $preserve . '])([\p{L}\p{N}' . $preserve . '])/u', static function ($m) {
+function c(string $value = null, $accent = false, string $keep = "") {
+    $keep = x($keep);
+    return strtr(preg_replace_callback('/([ ' . $keep . '])([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
         return $m[1] . u($m[2]);
-    }, f($value, $accent, $preserve)), [' ' => ""]);
+    }, f($value, $accent, $keep)), [' ' => ""]);
 }
 
 function d(string $folder, callable $fn = null) {
@@ -961,14 +961,14 @@ function e($value, array $lot = []) {
     return $value;
 }
 
-function f(string $value = null, $accent = true, string $preserve = "") {
+function f(string $value = null, $accent = true, string $keep = "") {
     // This function does not trim white-space at the start and end of the string
-    $preserve = x($preserve);
+    $keep = x($keep);
     $value = preg_replace([
         // Remove HTML tag(s) and character(s) reference
         '/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i',
         // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}\s' . $preserve . ']/u',
+        '/[^\p{L}\p{N}\s' . $keep . ']/u',
         // Convert multiple white-space to single space
         '/\s+/'
     ], ' ', $value ?? "");
@@ -1007,10 +1007,10 @@ function g(string $folder, $x = null, $deep = 0) {
     return yield from [];
 }
 
-function h(string $value = null, string $join = '-', $accent = false, string $preserve = "") {
+function h(string $value = null, string $join = '-', $accent = false, string $keep = "") {
     return strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
         return $join . l($m[0]);
-    }, f($value, $accent, $join . $preserve)), [
+    }, f($value, $accent, $join . $keep)), [
         ' ' => $join,
         ' ' . $join => $join,
         $join . $join => $join
@@ -1105,8 +1105,8 @@ function o($value, $safe = true) {
     return $value;
 }
 
-function p(string $value = null, $accent = false, string $preserve = "") {
-    return c(' ' . $value, $accent, $preserve);
+function p(string $value = null, $accent = false, string $keep = "") {
+    return c(' ' . $value, $accent, $keep);
 }
 
 function q($value) {
@@ -1194,12 +1194,12 @@ function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.
     return strtr($value ?? "", $lot);
 }
 
-function w(string $value = null, $preserve_tags = [], $preserve_break = false) {
+function w(string $value = null, $keep = [], $break = false) {
     $value = (string) $value;
     // Should be a HTML input
     if (false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
-        $preserve_tags = '<' . implode('><', is_string($preserve_tags) ? explode(',', $preserve_tags) : (array) $preserve_tags) . '>';
-        return preg_replace($preserve_break ? '/ +/' : '/\s+/', ' ', trim(strip_tags($value, $preserve_tags)));
+        $keep = is_string($keep) ? explode(',', $keep) : (array) $keep;
+        return preg_replace($break ? '/ +/' : '/\s+/', ' ', trim(strip_tags($value, $keep)));
     }
     // [1]. Replace `+` with ` `
     // [2]. Replace `-` with ` `
