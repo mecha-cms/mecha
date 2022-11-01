@@ -94,7 +94,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function index(string $key) {
-        $index = array_search($key, array_keys($this->value));
+        $index = array_search($key, array_values($this->value));
         return false !== $index ? $index : null;
     }
 
@@ -114,7 +114,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function key(int $index) {
-        $array = array_keys($this->value);
+        $array = array_values($this->value);
         return array_key_exists($index, $array) ? $array[$index] : null;
     }
 
