@@ -2,7 +2,7 @@
 
 foreach ([
     'HTML' => function (string $value = null) {
-        return htmlspecialchars_decode($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
+        return htmlspecialchars_decode($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
     },
     'JSON' => function ($value = null, $tidy = false) {
         if ($tidy) {
@@ -10,10 +10,11 @@ foreach ([
         } else {
             $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
         }
-        return json_encode($value, $flags);
+        return json_encode($value ?? "", $flags);
     },
     'URL' => function (string $value = null, $raw = false) {
         $url = $GLOBALS['url'] . "";
+        $value = $value ?? "";
         $value = realpath($value) ?: $value;
         $value = strtr($value, [
             PATH => $url,
@@ -26,6 +27,7 @@ foreach ([
     'camel' => "\\c",
     'dec' => function (string $value = null, $z = false, array $f = ['&#', ';']) {
         $out = "";
+        $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
             $s = ord($value[$i]);
             if (!$z) {
@@ -58,6 +60,7 @@ foreach ([
     },
     'hex' => function (string $value = null, $z = false, array $f = ['&#x', ';']) {
         $out = "";
+        $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
             $s = dechex(ord($value[$i]));
             if (!$z) {
@@ -78,7 +81,7 @@ foreach ([
     'pascal' => "\\p",
     'path' => function (string $value = null) {
         $url = $GLOBALS['url'] . "";
-        $value = strtr($value, [
+        $value = strtr($value ?? "", [
             $url => PATH,
             strtr($url, '/', D) => PATH,
             '/' => D

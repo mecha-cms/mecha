@@ -55,11 +55,11 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return null;
     }
 
-    private function setHash(string $hash) {
+    private function setHash(string $hash = null) {
         if ($hash && '#' === $hash[0]) {
             $hash = substr($hash, 1);
         }
-        $hash = strtr($hash, [
+        $hash = strtr($hash ?? "", [
             '#' => '%23',
             '&' => '%26',
             '?' => '%3F'
@@ -67,12 +67,12 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         $this->lot['hash'] = "" !== $hash ? $hash : null;
     }
 
-    private function setHost(string $host) {
-        $this->lot['host'] = strtok($host, ':');
+    private function setHost(string $host = null) {
+        $this->lot['host'] = strtok($host ?? "", ':');
     }
 
-    private function setPath(string $path) {
-        $path = trim(strtr($path, [
+    private function setPath(string $path = null) {
+        $path = trim(strtr($path ?? "", [
             "\\" => '/',
             '#' => '%23',
             '&' => '%26',
@@ -81,20 +81,20 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         $this->lot['path'] = "" !== $path ? $path : null;
     }
 
-    private function setPort(int $port) {
+    private function setPort(int $port = null) {
         $this->lot['port'] = $port > 0 ? $port : null;
     }
 
-    private function setProtocol(string $protocol) {
-        $protocol = strtok($protocol, ':');
+    private function setProtocol(string $protocol = null) {
+        $protocol = strtok($protocol ?? "", ':');
         $this->lot['protocol'] = "" !== $protocol ? $protocol : null;
     }
 
-    private function setQuery(string $query) {
+    private function setQuery(string $query = null) {
         if ($query && ('&' === $query[0] || '?' === $query[0])) {
             $query = substr($query, 1);
         }
-        $query = strtr($query, [
+        $query = strtr($query ?? "", [
             '#' => '%23',
             '?' => '%3F'
         ]);

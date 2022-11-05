@@ -2,20 +2,20 @@
 
 foreach ([
     'HTML' => function (string $value = null, $deep = false) {
-        return htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
+        return htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
     },
     'JSON' => function (string $value = null) {
-        return json_decode($value);
+        return json_decode($value ?? "");
     },
     'URL' => function ($value = null, $raw = false) {
-        return $raw ? rawurlencode($value) : urlencode($value);
+        return $raw ? rawurlencode($value ?? "") : urlencode($value ?? "");
     },
     'base64' => "\\base64_decode",
     'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
     'query' => function (string $value = null) {
         $out = [];
-        if ("" === ($value = trim($value))) {
+        if ("" === ($value = trim($value ?? ""))) {
             return $out;
         }
         $q = static function (array &$out, $k, $v) {

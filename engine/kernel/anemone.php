@@ -58,12 +58,12 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return any($this->value, $fn);
     }
 
-    public function chunk(int $chunk = 5, int $index = -1, $keys = false) {
+    public function chunk(int $chunk = 5, int $part = -1, $keys = false) {
         $that = $this->mitose();
-        if (0 !== $chunk) {
+        if ($chunk > 0) {
             $that->value = array_chunk($that->value, $chunk, $keys);
-            if (-1 !== $index) {
-                $that->value = $that->value[$index] ?? [];
+            if ($part > -1) {
+                $that->value = $that->value[$part] ?? [];
             }
         }
         return $that;
