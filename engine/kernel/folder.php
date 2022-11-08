@@ -91,6 +91,13 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     public function offsetSet($key, $value): void {}
     public function offsetUnset($key): void {}
 
+    public function parent() {
+        if ($this->exist()) {
+            return new static(dirname($this->path));
+        }
+        return null;
+    }
+
     public function seal() {
         return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
     }
