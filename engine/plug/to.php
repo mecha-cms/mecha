@@ -25,15 +25,15 @@ foreach ([
     },
     'base64' => "\\base64_encode",
     'camel' => "\\c",
-    'dec' => function (string $value = null, $z = false, array $f = ['&#', ';']) {
+    'dec' => function (string $value = null, int $pad = 4) {
         $out = "";
         $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
-            $s = ord($value[$i]);
-            if (!$z) {
-                $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+            $v = ord($value[$i]);
+            if ($pad) {
+                $v = str_pad($v, $pad, '0', STR_PAD_LEFT);
             }
-            $out .= $f[0] . $s . $f[1];
+            $out .= '&#' . $v . ';';
         }
         return $out;
     },
@@ -58,15 +58,15 @@ foreach ([
         $out = $out . h($n, '-', true, $keep);
         return "" !== $out ? $out : null;
     },
-    'hex' => function (string $value = null, $z = false, array $f = ['&#x', ';']) {
+    'hex' => function (string $value = null, int $pad = 4) {
         $out = "";
         $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
-            $s = dechex(ord($value[$i]));
-            if (!$z) {
-                $s = str_pad($s, 4, '0', STR_PAD_LEFT);
+            $v = dechex(ord($value[$i]));
+            if ($pad) {
+                $v = str_pad($v, $pad, '0', STR_PAD_LEFT);
             }
-            $out .= $f[0] . $s . $f[1];
+            $out .= '&#x' . $v . ';';
         }
         return $out;
     },
@@ -120,8 +120,8 @@ foreach ([
         return $out ? '?' . implode('&', $out) : null;
     },
     'serial' => "\\serialize",
-    'snake' => function (string $value = null, $a = true) {
-        return trim(h($value, '_', $a), '_');
+    'snake' => function (string $value = null, $accent = true) {
+        return trim(h($value, '_', $accent), '_');
     },
     'text' => "\\w",
     'upper' => "\\u"
