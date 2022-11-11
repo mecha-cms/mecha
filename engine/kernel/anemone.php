@@ -37,10 +37,14 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        $value = $filter ? $this->is(static function ($v, $k) {
-            // Ignore `null`, `false` and item with key prefixed by a `_`
-            return isset($v) && false !== $v && 0 !== strpos($k, '_');
-        })->value : $this->value;
+        if (is_callable($filter)) {
+            $value = $this->is($filter)->value;
+        } else {
+            $value = $filter ? $this->is(static function ($v, $k) {
+                // Ignore `null`, `false` and item with key prefixed by a `_`
+                return isset($v) && false !== $v && 0 !== strpos($k, '_');
+            })->value : $this->value;
+        }
         foreach ($value as $k => $v) {
             // Ignore value(s) that cannot be converted to string
             if (is_array($v) || (is_object($v) && !method_exists($v, '__toString'))) {
@@ -105,7 +109,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function join(string $join = ', ') {
-        return implode($join, $this->value);
+        return $this->__invoke($join);
     }
 
     #[\ReturnTypeWillChange]
