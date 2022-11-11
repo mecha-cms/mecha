@@ -59,6 +59,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function any($fn = null) {
+        if (is_callable($fn)) {
+            $fn = Closure::fromCallable($fn)->bindTo($this);
+        }
         return any($this->value, $fn);
     }
 
