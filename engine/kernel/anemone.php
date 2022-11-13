@@ -150,11 +150,6 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return true;
     }
 
-    public function lot(array $value = [], $over = false) {
-        $this->value = $this->lot = $over ? array_replace_recursive($this->lot, $value) : $value;
-        return $this;
-    }
-
     public function map(callable $fn) {
         $that = $this->mitose();
         $that->value = map($that->value, Closure::fromCallable($fn)->bindTo($this));
@@ -195,16 +190,16 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         unset($this->value[$key]);
     }
 
-    public function pluck(string $key, $value = null) {
+    public function pluck(string $key, $value = null, $keys = false) {
         $that = $this->mitose();
-        $that->value = pluck($that->value, $key, $value);
+        $that->value = pluck($that->value, $key, $value, $keys);
         return $that;
     }
 
-    public function reverse() {
-        $that = $this->mitose();
-        $that->value = array_reverse($that->value);
-        return $that;
+    public function reverse($keys = false) {
+        $value = array_reverse($this->value, $keys);
+        $this->value = $keys ? $value : array_values($value);
+        return $this;
     }
 
     public function set($key, $value = null) {
@@ -223,7 +218,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return $this;
     }
 
-    // Sort array value: `1` for “asc” and `-1` for “desc”
+    // Sort array value: `+1` or `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $keys = false) {
         if (count($value = $this->value) <= 1) {
             if (!$keys) {

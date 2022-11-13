@@ -581,12 +581,12 @@ function path(?string $value) {
 }
 
 // Generate new array contains value from the key
-function pluck(iterable $values, string $key, $value = null) {
+function pluck(iterable $values, string $key, $value = null, $keys = false) {
     $out = [];
-    foreach ($values as $v) {
-        $out[] = $v[$key] ?? $value;
+    foreach ($values as $k => $v) {
+        $out[$k] = $v[$key] ?? $value;
     }
-    return $out;
+    return $keys ? $out : array_values($out);
 }
 
 function save(string $path, $value = "", $seal = null) {
