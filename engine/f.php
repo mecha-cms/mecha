@@ -449,13 +449,14 @@ function ip() {
     return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
 
-function is(iterable $value, $fn = null) {
+function is(iterable $value, $fn = null, $keys = false) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
     }
-    return $fn ? array_filter($value, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($value);
+    $value = $fn ? array_filter($value, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($value);
+    return $keys ? $value : array_values($value);
 }
 
 function le($a, $b) {
@@ -463,12 +464,16 @@ function le($a, $b) {
 }
 
 function let(array &$value, string $key, string $join = '.') {
+    $out = $value;
     if (!$value) {
-        return $value;
+        return false;
     }
     if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        unset($value[strtr($key, [P => $join])]);
-        return $value;
+        if (array_key_exists($key = strtr($key, [P => $join]), $value)) {
+            unset($value[$key]);
+            return true;
+        }
+        return false;
     }
     $keys = explode($join, $key);
     while (count($keys) > 1) {
@@ -479,8 +484,9 @@ function let(array &$value, string $key, string $join = '.') {
     }
     if (is_array($value) && array_key_exists($k = array_shift($keys), $value)) {
         unset($value[$k]);
+        return true;
     }
-    return $value;
+    return false;
 }
 
 function lt($a, $b) {
@@ -551,15 +557,16 @@ function ne($a, $b) {
     return q($a) !== $b;
 }
 
-function not(iterable $value, $fn = null) {
+function not(iterable $value, $fn = null, $keys = false) {
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
     }
-    return array_filter($value, static function ($v, $k) use ($fn) {
+    $value = array_filter($value, static function ($v, $k) use ($fn) {
         return !call_user_func($fn, $v, $k);
     }, ARRAY_FILTER_USE_BOTH);
+    return $keys ? $value : array_values($value);
 }
 
 // Convert property name to file name
@@ -663,7 +670,7 @@ function set(array &$out, string $key, $value = null, string $join = '.') {
     return $out;
 }
 
-function shake(array $value, $keys = true) {
+function shake(array $value, $keys = false) {
     if (is_callable($keys)) {
         // `$keys` as `$fn`
         $value = call_user_func($keys, $value);

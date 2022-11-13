@@ -101,13 +101,16 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function index(string $key) {
-        $index = array_search($key, array_values($this->value));
+        if (!$this->value || !array_key_exists($key, $this->value)) {
+            return null;
+        }
+        $index = array_search($key, array_keys($this->value));
         return false !== $index ? $index : null;
     }
 
-    public function is($fn) {
+    public function is($fn, $keys = false) {
         $that = $this->mitose();
-        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
         return $that;
     }
 
@@ -121,8 +124,11 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function key(int $index) {
-        $array = array_values($this->value);
-        return array_key_exists($index, $array) ? $array[$index] : null;
+        if (!$this->value || $index > count($this->value)) {
+            return null;
+        }
+        $keys = array_keys($this->value);
+        return array_key_exists($index, $keys) ? (string) $keys[$index] : null;
     }
 
     public function last($take = false) {
@@ -136,9 +142,12 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return false !== $last ? $last : null;
     }
 
-    public function let(string $key) {
-        let($this->value, $key);
-        return $this;
+    public function let(string $key = null) {
+        if (isset($key)) {
+            return let($this->value, $key);
+        }
+        $this->value = [];
+        return true;
     }
 
     public function lot(array $value = [], $over = false) {
@@ -159,9 +168,9 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return $that;
     }
 
-    public function not($fn) {
+    public function not($fn, $keys = false) {
         $that = $this->mitose();
-        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
         return $that;
     }
 
@@ -198,12 +207,18 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return $that;
     }
 
-    public function set(string $key, $value) {
-        set($this->value, $key, $value);
-        return $this;
+    public function set($key, $value = null) {
+        if (is_iterable($key)) {
+            // `$key` as `$values`
+            if ($key instanceof Traversable) {
+                $key = iterator_to_array($key);
+            }
+            return ($this->value = $key);
+        }
+        return set($this->value, $key, $value);
     }
 
-    public function shake($keys = true) {
+    public function shake($keys = false) {
         $this->value = shake($this->value, is_callable($keys) ? Closure::fromCallable($keys)->bindTo($this) : $keys);
         return $this;
     }
