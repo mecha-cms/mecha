@@ -12,7 +12,7 @@ final class Time extends Genome {
         return $this->format('c');
     }
 
-    public function __construct($value = null) {
+    public function __construct(string $value = null) {
         $value = (string) $value;
         if (is_numeric($value)) {
             $this->source = date('Y-m-d H:i:s', $value);
@@ -40,7 +40,7 @@ final class Time extends Genome {
         return $this->i($pattern);
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return (string) $this->source;
     }
 
@@ -156,8 +156,8 @@ final class Time extends Genome {
         return $this->format('Y');
     }
 
-    public static function from($value) {
-        return new static($value);
+    public static function from(...$lot) {
+        return new static(...$lot);
     }
 
 }

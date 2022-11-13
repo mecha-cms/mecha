@@ -41,7 +41,7 @@ function any(iterable $value, $fn = null) {
 }
 
 // Convert class name to file name
-function c2f(string $value = null, $accent = false) {
+function c2f(?string $value, $accent = false) {
     return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return ltrim(strtr(h($v, '-', $accent, '_'), [
             '__-' => '.',
@@ -251,14 +251,14 @@ function extend(array $value, ...$lot) {
 }
 
 // Convert file name to class name
-function f2c(string $value = null, $accent = false) {
+function f2c(?string $value, $accent = false) {
     return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return p(strtr($v, ['.' => '__']), $accent, '_');
     }));
 }
 
 // Convert file name to property name
-function f2p(string $value = null, $accent = false) {
+function f2p(?string $value, $accent = false) {
     return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return c(strtr($v, ['.' => '__']), $accent, '_');
     }));
@@ -386,14 +386,14 @@ function find(iterable $value, callable $fn) {
     return null;
 }
 
-function fire(callable $fn, array $lot = [], $that = null, string $scope = null) {
+function fire(callable $fn, array $lot = [], $that = null, $scope = 'static') {
     $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
     // `fire($fn, [], Foo::class)`
     if (is_string($that)) {
         $scope = $that;
         $that = null;
     }
-    return call_user_func($fn->bindTo($that, $scope ?? 'static'), ...$lot);
+    return call_user_func($fn->bindTo($that, $scope), ...$lot);
 }
 
 function ge($a, $b) {
@@ -563,14 +563,14 @@ function not(iterable $value, $fn = null) {
 }
 
 // Convert property name to file name
-function p2f(string $value = null, $accent = false) {
+function p2f(?string $value, $accent = false) {
     return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return strtr(h($v, '-', $accent, '_'), ['__' => '.']);
     }));
 }
 
-function path(string $value = null) {
-    return stream_resolve_include_path($value) ?: null;
+function path(?string $value) {
+    return stream_resolve_include_path($value ?? "") ?: null;
 }
 
 // Generate new array contains value from the key
@@ -614,7 +614,7 @@ function seal(string $path, $seal = null) {
 }
 
 // Send email as HTML
-function send($from, $to, string $title, string $content, array $lot = []) {
+function send(string $from, $to, string $title, string $content, array $lot = []) {
     // This function was intended to be used as a quick way to send HTML email. There is no such email validation
     // proccess here. We assume that you have set the correct email address(es)
     if (is_array($to)) {
@@ -909,7 +909,7 @@ function b($value, array $range = [0]) {
     return $value;
 }
 
-function c(string $value = null, $accent = false, string $keep = "") {
+function c(?string $value, $accent = false, string $keep = "") {
     $keep = x($keep);
     return strtr(preg_replace_callback('/([ ' . $keep . '])([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
         return $m[1] . u($m[2]);
@@ -961,7 +961,7 @@ function e($value, array $lot = []) {
     return $value;
 }
 
-function f(string $value = null, $accent = true, string $keep = "") {
+function f(?string $value, $accent = true, string $keep = "") {
     // This function does not trim white-space at the start and end of the string
     $keep = x($keep);
     $value = preg_replace([
@@ -1007,7 +1007,7 @@ function g(string $folder, $x = null, $deep = 0) {
     return yield from [];
 }
 
-function h(string $value = null, string $join = '-', $accent = false, string $keep = "") {
+function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
     return strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
         return $join . l($m[0]);
     }, f($value, $accent, $join . $keep)), [
@@ -1017,7 +1017,7 @@ function h(string $value = null, string $join = '-', $accent = false, string $ke
     ]);
 }
 
-function i($value = null, $lot = [], $or = null) {
+function i(?string $value, $lot = [], string $or = null) {
     if (null === $value) {
         return;
     }
@@ -1029,7 +1029,7 @@ function i($value = null, $lot = [], $or = null) {
         }
     }
     $value = $GLOBALS['I'][$value] ?? $or ?? $value;
-    return is_string($value) && $lot ? vsprintf($value, $lot) : $value;
+    return $lot ? vsprintf($value, $lot) : $value;
 }
 
 function j(array $a, array $b) {
@@ -1072,7 +1072,7 @@ function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) 
     }
 }
 
-function l(string $value = null) {
+function l(?string $value) {
     $value = (string) $value;
     return extension_loaded('mbstring') ? mb_strtolower($value) : strtolower($value);
 }
@@ -1082,7 +1082,7 @@ function m($value, array $a, array $b) {
     return ($value - $a[0]) * ($b[1] - $b[0]) / ($a[1] - $a[0]) + $b[0];
 }
 
-function n(string $value = null, string $tab = '    ') {
+function n(?string $value, string $tab = '    ') {
     $value = (string) $value;
     // <https://stackoverflow.com/a/18870840/1163000>
     $value = strtr($value, ["\xEF\xBB\xBF" => ""]);
@@ -1105,7 +1105,7 @@ function o($value, $safe = true) {
     return $value;
 }
 
-function p(string $value = null, $accent = false, string $keep = "") {
+function p(?string $value, $accent = false, string $keep = "") {
     return c(' ' . $value, $accent, $keep);
 }
 
@@ -1169,7 +1169,7 @@ function s($value, array $lot = []) {
     return (string) $value;
 }
 
-function t(string $value = null, string $open = '"', string $close = null) {
+function t(?string $value, string $open = '"', string $close = null) {
     if ($value) {
         if ("" !== $open && 0 === strpos($value, $open)) {
             $value = substr($value, strlen($open));
@@ -1179,14 +1179,15 @@ function t(string $value = null, string $open = '"', string $close = null) {
             $value = substr($value, 0, $end);
         }
     }
-    return $value ?? "";
+    return (string) $value;
 }
 
-function u(string $value = null) {
+function u(?string $value) {
+    $value = (string) $value;
     return extension_loaded('mbstring') ? mb_strtoupper($value) : strtoupper($value);
 }
 
-function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+function v(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
     $lot = [];
     foreach (str_split($c . $d, 1) as $v) {
         $lot["\\" . $v] = $v;
@@ -1194,7 +1195,7 @@ function v(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.
     return strtr($value ?? "", $lot);
 }
 
-function w(string $value = null, $keep = [], $break = false) {
+function w(?string $value, $keep = [], $break = false) {
     $value = (string) $value;
     // Should be a HTML input
     if (false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
@@ -1222,7 +1223,7 @@ function w(string $value = null, $keep = [], $break = false) {
     ], urldecode($value));
 }
 
-function x(string $value = null, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
+function x(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
     return addcslashes($value ?? "", $c . $d);
 }
 

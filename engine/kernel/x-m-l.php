@@ -121,7 +121,7 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
         }
     }
 
-    public function __toString() {
+    public function __toString(): string {
         $lot = $this->lot;
         if (!isset($lot[0]) || false === $lot[0]) {
             return $this->deep && (is_array($lot[1]) || is_object($lot[1])) ? $this->deep($lot[1]) : s($lot[1]);

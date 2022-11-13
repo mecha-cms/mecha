@@ -21,7 +21,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
         return null !== $this->__get($key);
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return $this->exist() ? $this->path : "";
     }
 

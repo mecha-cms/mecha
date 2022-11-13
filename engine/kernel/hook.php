@@ -79,7 +79,7 @@ class Hook extends Genome {
         }
     }
 
-    public static function set($id = null, callable $fn = null, float $stack = 10) {
+    public static function set($id, callable $fn, float $stack = 10) {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $v) {

@@ -34,7 +34,7 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
         return self::set(p2f($key), $value);
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return json_encode(self::get());
     }
 

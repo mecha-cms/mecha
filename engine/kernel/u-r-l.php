@@ -112,6 +112,7 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
     }
 
     public function __construct(string $value = null) {
+        $value = (string) $value;
         if ($value && 0 === strpos($value, '//')) {
             $value = 'http:' . $value; // Force protocol
         }
@@ -141,7 +142,7 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         }
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return (string) ($this->getProtocol() . $this->getHost() . $this->getPort());
     }
 

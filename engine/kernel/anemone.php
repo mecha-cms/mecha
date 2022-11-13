@@ -37,14 +37,10 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        if (is_callable($filter)) {
-            $value = $this->is($filter)->value;
-        } else {
-            $value = $filter ? $this->is(function ($v, $k) {
-                // Ignore `null`, `false` and item with key prefixed by a `_`
-                return isset($v) && false !== $v && 0 !== strpos($k, '_');
-            })->value : $this->value;
-        }
+        $value = $filter ? ($this->is(is_callable($filter) ? $filter : function ($v, $k) {
+            // Ignore `null`, `false` and item with key prefixed by a `_`
+            return isset($v) && false !== $v && 0 !== strpos($k, '_');
+        }) : $this)->value;
         foreach ($value as $k => $v) {
             // Ignore value(s) that cannot be converted to string
             if (is_array($v) || (is_object($v) && !method_exists($v, '__toString'))) {
@@ -54,15 +50,12 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return implode($join, $value);
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return (string) $this->__invoke($this->join);
     }
 
-    public function any($fn = null) {
-        if (is_callable($fn)) {
-            $fn = Closure::fromCallable($fn)->bindTo($this);
-        }
-        return any($this->value, $fn);
+    public function any($fn) {
+        return any($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
     }
 
     public function chunk(int $chunk = 5, int $part = -1, $keys = false) {
@@ -80,11 +73,8 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return count($this->value);
     }
 
-    public function find(callable $fn = null) {
-        if (is_callable($fn)) {
-            $fn = Closure::fromCallable($fn)->bindTo($this);
-        }
-        return find($this->value, $fn);
+    public function find($fn) {
+        return find($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
     }
 
     public function first($take = false) {
@@ -96,7 +86,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function getIterator(): Traversable {
-        return new ArrayIterator($this->value);
+        yield from $this->value;
     }
 
     public function has(string $key = null) {
@@ -108,12 +98,9 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return false !== $index ? $index : null;
     }
 
-    public function is($fn = null) {
-        if (is_callable($fn)) {
-            $fn = Closure::fromCallable($fn)->bindTo($this);
-        }
+    public function is($fn) {
         $that = $this->mitose();
-        $that->value = is($that->value, $fn);
+        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
         return $that;
     }
 
@@ -147,7 +134,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
 
     public function map(callable $fn) {
         $that = $this->mitose();
-        $that->value = map($that->value, $fn);
+        $that->value = map($that->value, Closure::fromCallable($fn)->bindTo($this));
         return $that;
     }
 
@@ -158,12 +145,9 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return $that;
     }
 
-    public function not($fn = null) {
-        if (is_callable($fn)) {
-            $fn = Closure::fromCallable($fn)->bindTo($this);
-        }
+    public function not($fn) {
         $that = $this->mitose();
-        $that->value = not($that->value, $fn);
+        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
         return $that;
     }
 
@@ -206,11 +190,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function shake($keys = true) {
-        if (is_callable($keys)) {
-            // `$keys` as `$fn`
-            $keys = Closure::fromCallable($keys)->bindTo($this);
-        }
-        $this->value = shake($this->value, $keys);
+        $this->value = shake($this->value, is_callable($keys) ? Closure::fromCallable($keys)->bindTo($this) : $keys);
         return $this;
     }
 

@@ -21,7 +21,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return null !== $this->__get($key);
     }
 
-    public function __toString() {
+    public function __toString(): string {
         return $this->exist() ? $this->path : "";
     }
 
@@ -63,7 +63,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function getIterator(): Traversable {
-        return $this->stream(null, true, true);
+        yield from $this->stream(null, true, true);
     }
 
     #[ReturnTypeWillChange]
