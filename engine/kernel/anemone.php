@@ -78,7 +78,14 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function first($take = false) {
-        return $take ? array_shift($this->value) : reset($this->value);
+        if (!$this->value) {
+            return null;
+        }
+        if ($take) {
+            return array_shift($this->value);
+        }
+        $first = reset($this->value);
+        return false !== $first ? $first : null;
     }
 
     public function get(string $key = null) {
@@ -119,7 +126,14 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function last($take = false) {
-        return $take ? array_pop($this->value) : end($this->value);
+        if (!$this->value) {
+            return null;
+        }
+        if ($take) {
+            return array_pop($this->value);
+        }
+        $last = end($this->value);
+        return false !== $last ? $last : null;
     }
 
     public function let(string $key) {
