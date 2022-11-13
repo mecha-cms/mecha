@@ -1,6 +1,6 @@
 <?php
 
-class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+class State extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
 
     protected static $lot = [];
 
@@ -46,11 +46,11 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return count(self::$lot[static::class] ?? []);
     }
 
-    public function getIterator(): \Traversable {
-        return new \ArrayIterator(self::$lot[static::class] ?? []);
+    public function getIterator(): Traversable {
+        return new ArrayIterator(self::$lot[static::class] ?? []);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return self::$lot[static::class] ?? [];
     }
@@ -59,7 +59,7 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         return isset(self::$lot[static::class][$key]);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return self::$lot[static::class][$key] ?? null;
     }
@@ -85,7 +85,7 @@ class State extends Genome implements \ArrayAccess, \Countable, \IteratorAggrega
         if ($lot) {
             $value = self::get($kin);
             // Asynchronous value with closure
-            if ($value instanceof \Closure) {
+            if ($value instanceof Closure) {
                 return fire($value, $lot, null, static::class);
             }
             // Asynchronous value with class instance

@@ -1,6 +1,6 @@
 <?php
 
-class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
 
     public $path;
 
@@ -11,7 +11,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
         return null;
@@ -62,11 +62,11 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return !!$this->path;
     }
 
-    public function getIterator(): \Traversable {
+    public function getIterator(): Traversable {
         return $this->stream(null, true, true);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         $out = [$this->path => 0];
         foreach ($this->stream(null, true) as $k => $v) {
@@ -83,7 +83,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return !!$this->offsetGet($key);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->__get($key);
     }
@@ -109,7 +109,7 @@ class Folder extends Genome implements \ArrayAccess, \Countable, \IteratorAggreg
         return null;
     }
 
-    public function stream($x = null, $deep = 0, $content = false): \Generator {
+    public function stream($x = null, $deep = 0, $content = false): Generator {
         if ($content) {
             foreach (g($this->path, $x, $deep) as $k => $v) {
                 yield $k => 0 === $v ? [] : file_get_contents($k);

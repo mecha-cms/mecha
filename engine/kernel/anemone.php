@@ -1,6 +1,6 @@
 <?php
 
-class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
 
     public $join;
     public $lot;
@@ -8,14 +8,14 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     public $value;
 
     public function __call(string $kin, array $lot = []) {
-        if (property_exists($this, $kin) && (new \ReflectionProperty($this, $kin))->isPublic()) {
+        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
             return $this->{$kin};
         }
         return parent::__call($kin, $lot);
     }
 
     public function __construct(iterable $value = [], string $join = ', ') {
-        if ($value instanceof \Traversable) {
+        if ($value instanceof Traversable) {
             $value = iterator_to_array($value);
         }
         $this->lot = $this->value = $value;
@@ -30,7 +30,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
         return $this->__call($key);
@@ -40,7 +40,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         if (is_callable($filter)) {
             $value = $this->is($filter)->value;
         } else {
-            $value = $filter ? $this->is(static function ($v, $k) {
+            $value = $filter ? $this->is(function ($v, $k) {
                 // Ignore `null`, `false` and item with key prefixed by a `_`
                 return isset($v) && false !== $v && 0 !== strpos($k, '_');
             })->value : $this->value;
@@ -81,6 +81,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function find(callable $fn = null) {
+        if (is_callable($fn)) {
+            $fn = Closure::fromCallable($fn)->bindTo($this);
+        }
         return find($this->value, $fn);
     }
 
@@ -92,8 +95,8 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return isset($key) ? get($this->value, $key) : $this->value;
     }
 
-    public function getIterator(): \Traversable {
-        return new \ArrayIterator($this->value);
+    public function getIterator(): Traversable {
+        return new ArrayIterator($this->value);
     }
 
     public function has(string $key = null) {
@@ -106,6 +109,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function is($fn = null) {
+        if (is_callable($fn)) {
+            $fn = Closure::fromCallable($fn)->bindTo($this);
+        }
         $that = $this->mitose();
         $that->value = is($that->value, $fn);
         return $that;
@@ -115,7 +121,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return $this->__invoke($join);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->value;
     }
@@ -153,6 +159,9 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function not($fn = null) {
+        if (is_callable($fn)) {
+            $fn = Closure::fromCallable($fn)->bindTo($this);
+        }
         $that = $this->mitose();
         $that->value = not($that->value, $fn);
         return $that;
@@ -162,7 +171,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
         return isset($this->value[$key]);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->value[$key] ?? null;
     }
@@ -197,6 +206,10 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
     }
 
     public function shake($keys = true) {
+        if (is_callable($keys)) {
+            // `$keys` as `$fn`
+            $keys = Closure::fromCallable($keys)->bindTo($this);
+        }
         $this->value = shake($this->value, $keys);
         return $this;
     }
@@ -210,6 +223,7 @@ class Anemone extends Genome implements \ArrayAccess, \Countable, \IteratorAggre
             return $this;
         }
         if (is_callable($sort)) {
+            $sort = Closure::fromCallable($sort)->bindTo($this);
             $keys ? uasort($value, $sort) : usort($value, $sort);
         } else if (is_array($sort)) {
             $i = $sort[0];

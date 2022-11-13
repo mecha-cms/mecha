@@ -1,6 +1,6 @@
 <?php
 
-class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
 
     public $path;
 
@@ -11,7 +11,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
         return null;
@@ -53,11 +53,11 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return $this->path ?? false;
     }
 
-    public function getIterator(): \Traversable {
+    public function getIterator(): Traversable {
         return $this->stream();
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return [$this->path => 1];
     }
@@ -77,7 +77,7 @@ class File extends Genome implements \ArrayAccess, \Countable, \IteratorAggregat
         return !!$this->offsetGet($key);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->__get($key);
     }

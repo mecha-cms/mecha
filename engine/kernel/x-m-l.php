@@ -1,6 +1,6 @@
 <?php
 
-class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable {
+class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
 
     protected $c = [];
     protected $lot = [
@@ -113,10 +113,10 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
                         }
                     }
                 } else {
-                    throw new \ParseError(static::class . ': ' . $value);
+                    throw new ParseError(static::class . ': ' . $value);
                 }
             } else {
-                throw new \ParseError(static::class . ': ' . $value);
+                throw new ParseError(static::class . ': ' . $value);
             }
         }
     }
@@ -147,7 +147,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         return 1; // Single node is always `1`
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->lot;
     }
@@ -159,7 +159,7 @@ class XML extends Genome implements \ArrayAccess, \Countable, \JsonSerializable 
         return isset($this->lot[2][$key]);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         if (is_numeric($key)) {
             return $this->lot[$key] ?? null;

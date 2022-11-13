@@ -17,7 +17,7 @@ final class Time extends Genome {
         if (is_numeric($value)) {
             $this->source = date('Y-m-d H:i:s', $value);
         } else if (is_string($value) && strlen($value) >= 19 && 5 === substr_count($value, '-')) {
-            if ($date = \DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
+            if ($date = DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
                 $this->source = $date->format('Y-m-d H:i:s');
             } else {
                 $this->source = date('Y-m-d H:i:s', 0);
@@ -143,8 +143,8 @@ final class Time extends Genome {
     }
 
     public function to(string $zone = 'UTC') {
-        $date = new \DateTime($this->source);
-        $date->setTimeZone(new \DateTimeZone($zone));
+        $date = new DateTime($this->source);
+        $date->setTimeZone(new DateTimeZone($zone));
         if (!isset($this->o[$zone])) {
             $this->o[$zone] = new static($date->format('Y-m-d H:i:s'));
             $this->o[$zone]->parent = $this;

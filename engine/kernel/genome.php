@@ -7,7 +7,6 @@ abstract class Genome {
     public static $_ = [];
 
     public function __call(string $kin, array $lot = []) {
-        $this->_call = T_OBJECT_OPERATOR;
         foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
             if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
                 $v = self::$_[$c][$kin];
@@ -20,12 +19,12 @@ abstract class Genome {
                     if (isset($v[2])) {
                         $lot = array_slice($lot, 0, $v[2]);
                     }
-                    return fire($v[0], $lot, $this/*, $n */);
+                    return fire($v[0], $lot, $this);
                 }
                 return $v[0];
             }
             if (defined('TEST') && TEST) {
-                throw new \BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
+                throw new BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
             }
         }
     }
@@ -50,8 +49,6 @@ abstract class Genome {
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        $that = new static;
-        $that->_call = T_DOUBLE_COLON;
         foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
             if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
                 $r = self::$_[$c][$kin];
@@ -64,12 +61,12 @@ abstract class Genome {
                     if (isset($r[2])) {
                         $lot = array_slice($lot, 0, $r[2]);
                     }
-                    return fire($r[0], $lot, $that/*, $n */);
+                    return fire($r[0], $lot);
                 }
                 return $r[0];
             }
             if (defined('TEST') && TEST) {
-                throw new \BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
+                throw new BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
             }
         }
     }

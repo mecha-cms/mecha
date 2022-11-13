@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAggregate, \JsonSerializable {
+final class URL extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
 
     private $lot = [
         'hash' => null,
@@ -125,7 +125,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
     }
 
     public function __get(string $key) {
-        if (method_exists($this, $key) && (new \ReflectionMethod($this, $key))->isPublic()) {
+        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
         return $this->__call($key);
@@ -182,13 +182,13 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return $this->__toString() . $this->getPath() . $query . $hash;
     }
 
-    public function getIterator(): \Traversable {
+    public function getIterator(): Traversable {
         foreach ($this->lot as $k => $v) {
             yield $k => $this->{'get' . ucfirst($k)}();
         }
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->lot;
     }
@@ -197,7 +197,7 @@ final class URL extends Genome implements \ArrayAccess, \Countable, \IteratorAgg
         return isset($this->lot[$key]);
     }
 
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->lot[$key] ?? null;
     }

@@ -1,10 +1,10 @@
 <?php
 
 foreach ([
-    'HTML' => function (string $value = null) {
+    'HTML' => static function (string $value = null) {
         return htmlspecialchars_decode($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
     },
-    'JSON' => function ($value = null, $tidy = false) {
+    'JSON' => static function ($value = null, $tidy = false) {
         if ($tidy) {
             $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
         } else {
@@ -12,7 +12,7 @@ foreach ([
         }
         return json_encode($value ?? "", $flags);
     },
-    'URL' => function (string $value = null, $raw = false) {
+    'URL' => static function (string $value = null, $raw = false) {
         $url = $GLOBALS['url'] . "";
         $value = $value ?? "";
         $value = realpath($value) ?: $value;
@@ -25,7 +25,7 @@ foreach ([
     },
     'base64' => "\\base64_encode",
     'camel' => "\\c",
-    'dec' => function (string $value = null, int $pad = 4) {
+    'dec' => static function (string $value = null, int $pad = 4) {
         $out = "";
         $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
@@ -37,7 +37,7 @@ foreach ([
         }
         return $out;
     },
-    'file' => function (string $value = null, string $keep = '._') {
+    'file' => static function (string $value = null, string $keep = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = preg_split('/\s*[.]\s*/', array_pop($value) ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $x = array_pop($n);
@@ -48,7 +48,7 @@ foreach ([
         $out .= h(implode('.', $n), '-', true, $keep) . '.' . h($x, '-', true);
         return '.' !== $out ? $out : null;
     },
-    'folder' => function (string $value = null, string $keep = '._') {
+    'folder' => static function (string $value = null, string $keep = '._') {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
         $n = array_pop($value);
         $out = "";
@@ -58,7 +58,7 @@ foreach ([
         $out = $out . h($n, '-', true, $keep);
         return "" !== $out ? $out : null;
     },
-    'hex' => function (string $value = null, int $pad = 4) {
+    'hex' => static function (string $value = null, int $pad = 4) {
         $out = "";
         $value = $value ?? "";
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
@@ -70,16 +70,16 @@ foreach ([
         }
         return $out;
     },
-    'kebab' => function (string $value = null, string $join = '-', $accent = true) {
+    'kebab' => static function (string $value = null, string $join = '-', $accent = true) {
         return trim(h($value, $join, $accent), $join);
     },
-    'key' => function (string $value = null, $accent = true) {
+    'key' => static function (string $value = null, $accent = true) {
         $out = trim(h($value, '_', $accent), '_');
         return $out && is_numeric($out[0]) ? '_' . $out : $out;
     },
     'lower' => "\\l",
     'pascal' => "\\p",
-    'path' => function (string $value = null) {
+    'path' => static function (string $value = null) {
         $url = $GLOBALS['url'] . "";
         $value = strtr($value ?? "", [
             $url => PATH,
@@ -88,7 +88,7 @@ foreach ([
         ]);
         return realpath($value) ?: $value;
     },
-    'query' => function (array $value = null) {
+    'query' => static function (array $value = null) {
         $out = [];
         if (!$value) {
             return null;
@@ -120,7 +120,7 @@ foreach ([
         return $out ? '?' . implode('&', $out) : null;
     },
     'serial' => "\\serialize",
-    'snake' => function (string $value = null, $accent = true) {
+    'snake' => static function (string $value = null, $accent = true) {
         return trim(h($value, '_', $accent), '_');
     },
     'text' => "\\w",
