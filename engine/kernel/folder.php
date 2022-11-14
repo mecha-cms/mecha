@@ -68,11 +68,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
 
     #[ReturnTypeWillChange]
     public function jsonSerialize() {
-        $out = [$this->path => 0];
-        foreach ($this->stream(null, true) as $k => $v) {
-            $out[$k] = $v;
-        }
-        return $out;
+        return $this->exist();
     }
 
     public function name() {
@@ -80,12 +76,12 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function offsetExists($key): bool {
-        return !!$this->offsetGet($key);
+        return null !== $this->offsetGet($key); // TODO
     }
 
     #[ReturnTypeWillChange]
     public function offsetGet($key) {
-        return $this->__get($key);
+        return $this->__get($key); // TODO
     }
 
     // Reserved. Should be used for read only!
@@ -110,7 +106,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return null;
     }
 
-    public function stream($x = null, $deep = 0, $content = false): Generator {
+    public function stream($x = null, $deep = 0, $content = false): Traversable {
         if ($content) {
             foreach (g($this->path, $x, $deep) as $k => $v) {
                 yield $k => 0 === $v ? [] : file_get_contents($k);
@@ -134,6 +130,10 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
 
     public function x() {
         return null;
+    }
+
+    public static function from(...$lot) {
+        return new static(...$lot);
     }
 
 }
