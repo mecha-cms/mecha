@@ -63,7 +63,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function getIterator(): Traversable {
-        yield from $this->stream(null, true, true);
+        return $this->stream(null, true, true);
     }
 
     #[ReturnTypeWillChange]

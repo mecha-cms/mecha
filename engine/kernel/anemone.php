@@ -93,7 +93,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function getIterator(): Traversable {
-        yield from $this->value;
+        return new ArrayIterator($this->value);
     }
 
     public function has(string $key = null) {

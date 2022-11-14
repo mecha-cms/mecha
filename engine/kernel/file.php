@@ -61,7 +61,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function getIterator(): Traversable {
-        yield from $this->stream();
+        return $this->stream();
     }
 
     #[ReturnTypeWillChange]
