@@ -59,7 +59,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function exist() {
-        return !!$this->path;
+        return $this->path ?? false;
     }
 
     public function getIterator(): Traversable {
@@ -88,6 +88,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return $this->__get($key);
     }
 
+    // Reserved. Should be used for read only!
     public function offsetSet($key, $value): void {}
     public function offsetUnset($key): void {}
 

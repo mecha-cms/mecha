@@ -46,7 +46,14 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function count(): int {
-        return $this->exist() ? 1 : 0;
+        if ($this->exist()) {
+            $count = 0;
+            foreach ($this->stream() as $v) {
+                ++$count;
+            }
+            return $count;
+        }
+        return 0;
     }
 
     public function exist() {
@@ -54,12 +61,12 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function getIterator(): Traversable {
-        return $this->stream();
+        yield from $this->stream();
     }
 
     #[ReturnTypeWillChange]
     public function jsonSerialize() {
-        return [$this->path => 1];
+        return $this->exist();
     }
 
     public function name($x = false) {
@@ -74,14 +81,20 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function offsetExists($key): bool {
-        return !!$this->offsetGet($key);
+        return null !== $this->offsetGet($key);
     }
 
     #[ReturnTypeWillChange]
     public function offsetGet($key) {
-        return $this->__get($key);
+        foreach ($this->stream() as $k => $v) {
+            if ($key === $k) {
+                return $v;
+            }
+        }
+        return null;
     }
 
+    // Reserved. Should be used for read only!
     public function offsetSet($key, $value): void {}
     public function offsetUnset($key): void {}
 
@@ -104,8 +117,8 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
         return null;
     }
 
-    public function stream() {
-        return $this->exist() ? stream($this->path) : yield from [];
+    public function stream(int $max = 1024): Traversable {
+        yield from ($this->exist() ? stream($this->path, $max) : []);
     }
 
     public function time(string $format = null) {
@@ -117,19 +130,22 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function type() {
-        return $this->exist() ? mime_content_type($this->path) : null;
+        if ($this->exist()) {
+            $type = mime_content_type($this->path);
+            return false !== $type ? $type : null;
+        }
+        return null;
     }
 
     public function x() {
         if ($this->exist()) {
             $path = $this->path;
-            if (false === strpos($path, '.')) {
+            if (false === strpos(basename($path), '.')) {
                 return null;
             }
-            $x = pathinfo($path, PATHINFO_EXTENSION);
-            return $x ? strtolower($x) : null;
+            return strtolower(pathinfo($path, PATHINFO_EXTENSION));
         }
-        return false; // Return `false` if file does not exist
+        return null;
     }
 
     public static function from(...$lot) {
