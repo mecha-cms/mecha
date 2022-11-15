@@ -2,6 +2,8 @@
 
 class Hook extends Genome {
 
+    private function __construct() {}
+
     protected static $current;
     protected static $lot;
     protected static $sort;
@@ -25,9 +27,17 @@ class Hook extends Genome {
                 unset(self::$sort[$c][$id]);
                 $any = (new Anemone($any))->sort([1, 'stack']);
             }
-            foreach ($any as $v) {
-                if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
-                    $lot[0] = $r;
+            if (null !== $that) {
+                foreach ($any as $v) {
+                    if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
+                        $lot[0] = $r;
+                    }
+                }
+            } else {
+                foreach ($any as $v) {
+                    if (null !== ($r = fire($v['fn'], $lot))) {
+                        $lot[0] = $r;
+                    }
                 }
             }
         }

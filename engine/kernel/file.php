@@ -99,10 +99,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     public function offsetUnset($key): void {}
 
     public function parent() {
-        if ($this->exist()) {
-            return new Folder(dirname($this->path));
-        }
-        return null;
+        return $this->exist() ? new Folder(dirname($this->path)) : null;
     }
 
     public function seal() {

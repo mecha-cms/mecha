@@ -63,7 +63,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function getIterator(): Traversable {
-        return $this->stream(null, true, true);
+        return $this->stream(null, true);
     }
 
     #[ReturnTypeWillChange]
@@ -76,12 +76,21 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     }
 
     public function offsetExists($key): bool {
-        return null !== $this->offsetGet($key); // TODO
+        return null !== $this->offsetGet($key);
     }
 
     #[ReturnTypeWillChange]
     public function offsetGet($key) {
-        return $this->__get($key); // TODO
+        if ($this->exist()) {
+            $path = $this->path . D . ltrim(strtr($key, '/', D), D);
+            if (is_dir($path)) {
+                return new static($path);
+            }
+            if (is_file($path)) {
+                return new File($path);
+            }
+        }
+        return null;
     }
 
     // Reserved. Should be used for read only!
@@ -89,10 +98,7 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
     public function offsetUnset($key): void {}
 
     public function parent() {
-        if ($this->exist()) {
-            return new static(dirname($this->path));
-        }
-        return null;
+        return $this->exist() ? new static(dirname($this->path)) : null;
     }
 
     public function seal() {
@@ -106,13 +112,9 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return null;
     }
 
-    public function stream($x = null, $deep = 0, $content = false): Traversable {
-        if ($content) {
-            foreach (g($this->path, $x, $deep) as $k => $v) {
-                yield $k => 0 === $v ? [] : file_get_contents($k);
-            }
-        } else {
-            yield from g($this->path, $x, $deep);
+    public function stream($x = null, $deep = 0): Traversable {
+        foreach (g($this->path, $x, $deep) as $k => $v) {
+            yield $k => 0 === $v ? new static($k) : new File($k);
         }
     }
 

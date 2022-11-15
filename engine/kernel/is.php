@@ -2,6 +2,8 @@
 
 final class Is extends Genome {
 
+    private function __construct() {}
+
     // Check for IP address
     public static function IP($value) {
         return filter_var($value, FILTER_VALIDATE_IP);
