@@ -38,15 +38,13 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
 
     public function __invoke(string $join = ', ', $filter = true) {
         $value = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
-            // Ignore `null`, `false` and item with key prefixed by a `_`
-            return isset($v) && false !== $v && 0 !== strpos($k, '_');
-        }) : $this)->value;
-        foreach ($value as $k => $v) {
             // Ignore value(s) that cannot be converted to string
-            if (is_array($v) || (is_object($v) && !method_exists($v, '__toString'))) {
-                unset($value[$k]);
+            if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
+                return false;
             }
-        }
+            // Ignore `false` and `null` value(s)
+            return false !== $v && null !== $v;
+        }) : $this)->value;
         return implode($join, $value);
     }
 
