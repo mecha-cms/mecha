@@ -149,7 +149,9 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
 
     #[ReturnTypeWillChange]
     public function jsonSerialize() {
-        return $this->lot;
+        $lot = $this->lot;
+        $lot[2] = (object) ($lot[2] ?? []);
+        return $lot;
     }
 
     public function offsetExists($key): bool {
