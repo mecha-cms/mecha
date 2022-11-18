@@ -181,7 +181,7 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
 
     public function offsetUnset($key): void {
         if (is_numeric($key)) {
-            unset($this->lot[$key]);
+            $this->lot[$key] = 2 === $key ? [] : null;
         } else {
             unset($this->lot[2][$key]);
         }
