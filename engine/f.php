@@ -400,42 +400,42 @@ function ge($a, $b) {
     return q($a) >= $b;
 }
 
-function get(array $value, string $key, string $join = '.') {
-    if (!$value) {
+function get(array $from, string $key, string $join = '.') {
+    if (!$from) {
         return null;
     }
     if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        return $value[strtr($key, [P => $join])] ?? null;
+        return $from[strtr($key, [P => $join])] ?? null;
     }
     $keys = explode($join, $key);
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
-        if (!is_array($value) || !array_key_exists($k, $value)) {
+        if (!is_array($from) || !array_key_exists($k, $from)) {
             return null;
         }
-        $value =& $value[$k];
+        $from =& $from[$k];
     }
-    return $value;
+    return $from;
 }
 
 function gt($a, $b) {
     return q($a) > $b;
 }
 
-function has(array $value, string $key, string $join = '.') {
-    if (!$value) {
+function has(array $from, string $key, string $join = '.') {
+    if (!$from) {
         return false;
     }
     if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        return array_key_exists(strtr($key, [P => $join]), $value);
+        return array_key_exists(strtr($key, [P => $join]), $from);
     }
     $keys = explode($join, $key);
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
-        if (!is_array($value) || !array_key_exists($k, $value)) {
+        if (!is_array($from) || !array_key_exists($k, $from)) {
             return false;
         }
-        $value =& $value[$k];
+        $from =& $from[$k];
     }
     return true;
 }
@@ -463,14 +463,13 @@ function le($a, $b) {
     return q($a) <= $b;
 }
 
-function let(array &$value, string $key, string $join = '.') {
-    $out = $value;
-    if (!$value) {
+function let(array &$from, string $key, string $join = '.') {
+    if (!$from) {
         return false;
     }
     if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        if (array_key_exists($key = strtr($key, [P => $join]), $value)) {
-            unset($value[$key]);
+        if (array_key_exists($key = strtr($key, [P => $join]), $from)) {
+            unset($from[$key]);
             return true;
         }
         return false;
@@ -478,12 +477,12 @@ function let(array &$value, string $key, string $join = '.') {
     $keys = explode($join, $key);
     while (count($keys) > 1) {
         $k = strtr(array_shift($keys), [P => $join]);
-        if (is_array($value) && array_key_exists($k, $value)) {
-            $value =& $value[$k];
+        if (is_array($from) && array_key_exists($k, $from)) {
+            $from =& $from[$k];
         }
     }
-    if (is_array($value) && array_key_exists($k = array_shift($keys), $value)) {
-        unset($value[$k]);
+    if (is_array($from) && array_key_exists($k = array_shift($keys), $from)) {
+        unset($from[$k]);
         return true;
     }
     return false;
@@ -581,9 +580,9 @@ function path(?string $value) {
 }
 
 // Generate new array contains value from the key
-function pluck(iterable $values, string $key, $value = null, $keys = false) {
+function pluck(iterable $from, string $key, $value = null, $keys = false) {
     $out = [];
-    foreach ($values as $k => $v) {
+    foreach ($from as $k => $v) {
         $out[$k] = $v[$key] ?? $value;
     }
     return $keys ? $out : array_values($out);
@@ -653,21 +652,21 @@ function send(string $from, $to, string $title, string $content, array $lot = []
     return mail($to, $title, $content, implode("\r\n", $lot));
 }
 
-function set(array &$out, string $key, $value = null, string $join = '.') {
+function set(array &$to, string $key, $value = null, string $join = '.') {
     if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        $out[strtr($key, [P => $join])] = $value;
-        return $out;
+        $to[strtr($key, [P => $join])] = $value;
+        return $to;
     }
     $keys = explode($join, $key);
     while (count($keys) > 1) {
         $k = strtr(array_shift($keys), [P => $join]);
-        if (!array_key_exists($k, $out)) {
-            $out[$k] = [];
+        if (!array_key_exists($k, $to)) {
+            $to[$k] = [];
         }
-        $out =& $out[$k];
+        $to =& $to[$k];
     }
-    $out[strtr(array_shift($keys), [P => $join])] = $value;
-    return $out;
+    $to[strtr(array_shift($keys), [P => $join])] = $value;
+    return $to;
 }
 
 function shake(array $value, $keys = false) {
