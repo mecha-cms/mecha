@@ -39,6 +39,7 @@ foreach ([
                 $kk = count($out);
             }
             $out[$kk] = $v;
+            ksort($out);
         };
         if (isset($value[0]) && '?' === $value[0]) {
             $value = substr($value, 1);
