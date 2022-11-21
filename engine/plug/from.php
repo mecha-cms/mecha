@@ -27,13 +27,18 @@ foreach ([
         $q = static function (array &$out, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
-                $kk = array_shift($k);
+                if ("" === ($kk = array_shift($k))) {
+                    $kk = count($out);
+                }
                 if (!array_key_exists($kk, $out)) {
                     $out[$kk] = [];
                 }
                 $out =& $out[$kk];
             }
-            $out[array_shift($k)] = $v;
+            if ("" === ($kk = array_shift($k))) {
+                $kk = count($out);
+            }
+            $out[$kk] = $v;
         };
         if (isset($value[0]) && '?' === $value[0]) {
             $value = substr($value, 1);
