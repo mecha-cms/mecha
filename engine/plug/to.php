@@ -7,12 +7,11 @@ foreach ([
     },
     'JSON' => static function ($value, $tidy = false): ?string {
         if ($tidy) {
-            $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
+            $mode = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
         } else {
-            $flags = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+            $mode = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
         }
-        $out = json_encode($value ?? "", $flags);
-        return "" !== $out ? $out : null;
+        return "" !== ($value = json_encode($value ?? "", $mode)) ? $value : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
         $url = $GLOBALS['url'] . "";
@@ -26,17 +25,22 @@ foreach ([
         $out = $raw ? rawurldecode($value) : urldecode($value);
         return "" !== $out ? $out : null;
     },
-    'base64' => "\\base64_encode",
+    'base64' => static function (?string $value): ?string {
+        return "" !== ($value = base64_encode($value ?? "")) ? $value : null;
+    },
     'camel' => "\\c",
-    'dec' => static function (?string $value, int $pad = 4): ?string {
+    'entity' => static function (?string $value, $hex = false, int $pad = 4): ?string {
         $out = "";
         $value = (string) $value;
         for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
             $v = ord($value[$i]);
+            if ($hex) {
+                $v = dechex($v);
+            }
             if ($pad) {
                 $v = str_pad($v, $pad, '0', STR_PAD_LEFT);
             }
-            $out .= '&#' . $v . ';';
+            $out .= '&#' . ($hex ? 'x' : "") . $v . ';';
         }
         return "" !== $out ? $out : null;
     },
@@ -49,7 +53,7 @@ foreach ([
             $out .= h($v, '-', true, $keep) . D;
         }
         $out .= h(implode('.', $n), '-', true, $keep) . '.' . h($x, '-', true);
-        return '.' !== $out ? $out : null;
+        return "" !== $out && '.' !== $out ? $out : null;
     },
     'folder' => static function (?string $value, string $keep = '._'): ?string {
         $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
@@ -59,19 +63,7 @@ foreach ([
             $out .= h($v, '-', true, $keep) . D;
         }
         $out = $out . h($n, '-', true, $keep);
-        return "" !== $out ? $out : null;
-    },
-    'hex' => static function (?string $value, int $pad = 4): ?string {
-        $out = "";
-        $value = (string) $value;
-        for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
-            $v = dechex(ord($value[$i]));
-            if ($pad) {
-                $v = str_pad($v, $pad, '0', STR_PAD_LEFT);
-            }
-            $out .= '&#x' . $v . ';';
-        }
-        return "" !== $out ? $out : null;
+        return "" !== $out && '.' !== $out ? $out : null;
     },
     'kebab' => static function (?string $value, string $join = '-', $accent = true): ?string {
         $out = trim(h($value, $join, $accent), $join);
@@ -91,7 +83,7 @@ foreach ([
             strtr($url, '/', D) => PATH,
             '/' => D
         ]);
-        $out = realpath($value) ?: $value;
+        $out = stream_resolve_include_path($value) ?: $value;
         return "" !== $out ? $out : null;
     },
     'query' => static function (?array $value = []): ?string {
@@ -125,10 +117,12 @@ foreach ([
         }
         return $out ? '?' . implode('&', $out) : null;
     },
-    'serial' => "\\serialize",
+    'serial' => static function (?string $value): ?string {
+        return "" !== ($value = serialize($value)) ? $value : null;
+    },
     'snake' => static function (?string $value, $accent = true): ?string {
-        $out = trim(h($value, '_', $accent), '_');
-        return "" !== $out ? $out : null;
+        $value = trim(h($value, '_', $accent), '_');
+        return "" !== $value ? $value : null;
     },
     'text' => "\\w",
     'upper' => "\\u"

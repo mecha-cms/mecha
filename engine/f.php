@@ -916,10 +916,10 @@ function b($value, array $range = [0]) {
 }
 
 function c(?string $value, $accent = false, string $keep = "") {
-    $keep = x($keep);
-    return strtr(preg_replace_callback('/([ ' . $keep . '])([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
+    $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . '])([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
         return $m[1] . u($m[2]);
-    }, f($value, $accent, $keep)), [' ' => ""]);
+    }, f($value, $accent, $keep) ?? ""), [' ' => ""]);
+    return "" !== $value ? $value : null;
 }
 
 function d(string $folder, callable $fn = null) {
@@ -969,16 +969,16 @@ function e($value, array $lot = []) {
 
 function f(?string $value, $accent = true, string $keep = "") {
     // This function does not trim white-space at the start and end of the string
-    $keep = x($keep);
     $value = preg_replace([
         // Remove HTML tag(s) and character(s) reference
         '/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i',
         // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}\s' . $keep . ']/u',
+        '/[^\p{L}\p{N}\s' . ($keep = x($keep)) . ']/u',
         // Convert multiple white-space to single space
         '/\s+/'
     ], ' ', $value ?? "");
-    return $accent && !empty($GLOBALS['F']) ? strtr($value, $GLOBALS['F']) : $value;
+    $value = $accent && !empty($GLOBALS['F']) ? strtr($value, $GLOBALS['F']) : $value;
+    return "" !== $value ? $value : null;
 }
 
 function g(string $folder, $x = null, $deep = 0) {
@@ -1014,13 +1014,14 @@ function g(string $folder, $x = null, $deep = 0) {
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
-    return strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
+    $value = strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
         return $join . l($m[0]);
-    }, f($value, $accent, $join . $keep)), [
+    }, f($value, $accent, $join . $keep) ?? ""), [
         ' ' => $join,
         ' ' . $join => $join,
         $join . $join => $join
     ]);
+    return "" !== $value ? $value : null;
 }
 
 function i(?string $value, $lot = [], string $or = null) {
@@ -1035,7 +1036,8 @@ function i(?string $value, $lot = [], string $or = null) {
         }
     }
     $value = $GLOBALS['I'][$value] ?? $or ?? $value;
-    return $lot ? vsprintf($value, $lot) : $value;
+    $value = $lot ? vsprintf($value, $lot) : $value;
+    return "" !== $value ? $value : null;
 }
 
 function j(array $a, array $b) {
@@ -1080,7 +1082,8 @@ function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) 
 
 function l(?string $value) {
     $value = (string) $value;
-    return extension_loaded('mbstring') ? mb_strtolower($value) : strtolower($value);
+    $value = extension_loaded('mbstring') ? mb_strtolower($value) : strtolower($value);
+    return "" !== $value ? $value : null;
 }
 
 function m($value, array $a, array $b) {
@@ -1093,11 +1096,12 @@ function n(?string $value, string $tab = '    ') {
     // <https://stackoverflow.com/a/18870840/1163000>
     $value = strtr($value, ["\xEF\xBB\xBF" => ""]);
     // Tab to 4 space(s), line-break to `\n`
-    return strtr($value, [
+    $value = strtr($value, [
         "\r\n" => "\n",
         "\r" => "\n",
         "\t" => $tab
     ]);
+    return "" !== $value ? $value : null;
 }
 
 function o($value, $safe = true) {
@@ -1137,13 +1141,14 @@ function q($value) {
     return count($value);
 }
 
-function r($from, $to, string $value = null) {
+function r(?string $value, $from, $to) {
     if (is_string($from) && is_string($to)) {
         return 1 === strlen($from) && 1 === strlen($to) ? strtr($value, $from, $to) : strtr($value, [
             $from => $to
         ]);
     }
-    return strtr($value, array_combine($from, $to));
+    $value = strtr($value, array_combine($from, $to));
+    return "" !== $value ? $value : null;
 }
 
 function s($value, array $lot = []) {
@@ -1185,12 +1190,13 @@ function t(?string $value, string $open = '"', string $close = null) {
             $value = substr($value, 0, $end);
         }
     }
-    return (string) $value;
+    return "" !== $value ? $value : null;
 }
 
 function u(?string $value) {
     $value = (string) $value;
-    return extension_loaded('mbstring') ? mb_strtoupper($value) : strtoupper($value);
+    $value = extension_loaded('mbstring') ? mb_strtoupper($value) : strtoupper($value);
+    return "" !== $value ? $value : null;
 }
 
 function v(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
@@ -1198,7 +1204,7 @@ function v(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\'
     foreach (str_split($c . $d, 1) as $v) {
         $lot["\\" . $v] = $v;
     }
-    return strtr($value ?? "", $lot);
+    return "" !== ($value = strtr($value ?? "", $lot)) ? $value : null;
 }
 
 function w(?string $value, $keep = [], $break = false) {
@@ -1212,7 +1218,7 @@ function w(?string $value, $keep = [], $break = false) {
     // [2]. Replace `-` with ` `
     // [3]. Replace `---` with ` - `
     // [4]. Replace `--` with `-`
-    return preg_replace([
+    $value = preg_replace([
         '/^[._]+|[._]+$/', // remove `.` and `__` prefix/suffix in file name
         '/---/',
         '/--/',
@@ -1227,10 +1233,12 @@ function w(?string $value, $keep = [], $break = false) {
         ' ',
         '-'
     ], urldecode($value));
+    return "" !== $value ? $value : null;
 }
 
 function x(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
-    return addcslashes($value ?? "", $c . $d);
+    ;
+    return "" !== ($value = addcslashes($value ?? "", $c . $d)) ? $value : null;
 }
 
 function y(iterable $value) {
@@ -1353,23 +1361,25 @@ function z($value, $short = true) {
                             continue; // Has been followed by single space, skip!
                         }
                         // Check if previous or next token contains only punctuation mark(s). White-space around this
-                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `||`.
-                        // Of course, they can also be present in comment and string, but we already filtered them.
+                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `||`. Of course,
+                        // they can also be present in comment and string, but we already filtered them before.
                         if (
                             (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
                             (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
                         ) {
-                            // `$_` variable is all punctuation but it needs to be preceded by a space to
-                            // ensure that we don’t experience a result like `static$_=1` in the output.
-                            if ('$' === $next[0] && (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev))) {
-                                $content .= ' ';
-                                continue;
-                            }
-                            // `_` is a punctuation but it needs to be preceded by a space to ensure that we
-                            // don’t experience a result like `function_(){}` or `const_=1` in the output.
-                            if ('_' === $next[0]) {
-                                $content .= ' ';
-                                continue;
+                            if (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev)) {
+                                // `$_` variable is all punctuation but it needs to be preceded by a space to ensure
+                                // that we don’t experience a result like `static$_=1` in the output.
+                                if ('$' === $next[0]) {
+                                    $content .= ' ';
+                                    continue;
+                                }
+                                // `_` is a punctuation but it needs to be preceded by a space to ensure that we don’t
+                                // experience a result like `function_(){}` or `const_=1` in the output.
+                                if ('_' === $next[0]) {
+                                    $content .= ' ';
+                                    continue;
+                                }
                             }
                             continue;
                         }

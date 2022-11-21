@@ -13,9 +13,12 @@ foreach ([
         $out = $raw ? rawurlencode($value ?? "") : urlencode($value ?? "");
         return "" !== $out ? $out : null;
     },
-    'base64' => "\\base64_decode",
-    'dec' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
-    'hex' => ["\\html_entity_decode", [null, ENT_QUOTES | ENT_HTML5]],
+    'base64' => static function (?string $value): ?string {
+        return "" !== ($value = base64_decode($value ?? "")) ? $value : null;
+    },
+    'entity' => static function (?string $value): ?string {
+        return "" !== ($value = html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES)) ? $value : null;
+    },
     'query' => static function (?string $value): array {
         $out = [];
         if ("" === ($value = trim($value ?? ""))) {
@@ -41,7 +44,9 @@ foreach ([
         }
         return $out;
     },
-    'serial' => "\\unserialize"
+    'serial' => static function (?string $value): ?string {
+        return "" !== ($value = unserialize($value)) ? $value : null;
+    }
 ] as $k => $v) {
     From::_($k, $v);
 }
