@@ -8,7 +8,7 @@ class Hook extends Genome {
     protected static $lot;
     protected static $sort;
 
-    public static function fire($id, array $lot = [], $that = null, string $scope = null) {
+    public static function fire($id, array $lot = [], $that = null, $scope = null) {
         $c = static::class;
         if (is_array($id)) {
             foreach ($id as $v) {
