@@ -55,7 +55,7 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         return null;
     }
 
-    private function setHash(string $hash = null) {
+    private function setHash(?string $hash) {
         if ($hash && '#' === $hash[0]) {
             $hash = substr($hash, 1);
         }
@@ -67,11 +67,11 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         $this->lot['hash'] = "" !== $hash ? $hash : null;
     }
 
-    private function setHost(string $host = null) {
+    private function setHost(?string $host) {
         $this->lot['host'] = strtok($host ?? "", ':');
     }
 
-    private function setPath(string $path = null) {
+    private function setPath(?string $path) {
         $path = trim(strtr($path ?? "", [
             "\\" => '/',
             '#' => '%23',
@@ -81,16 +81,16 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         $this->lot['path'] = "" !== $path ? $path : null;
     }
 
-    private function setPort(int $port = null) {
+    private function setPort(?int $port) {
         $this->lot['port'] = $port > 0 ? $port : null;
     }
 
-    private function setProtocol(string $protocol = null) {
+    private function setProtocol(?string $protocol) {
         $protocol = strtok($protocol ?? "", ':');
         $this->lot['protocol'] = "" !== $protocol ? $protocol : null;
     }
 
-    private function setQuery(string $query = null) {
+    private function setQuery(?string $query) {
         if ($query && ('&' === $query[0] || '?' === $query[0])) {
             $query = substr($query, 1);
         }
