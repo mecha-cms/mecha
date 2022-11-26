@@ -6,7 +6,7 @@ final class Is extends Genome {
 
     // Check for IP address
     public static function IP($value) {
-        return filter_var($value, FILTER_VALIDATE_IP);
+        return false !== filter_var($value, FILTER_VALIDATE_IP);
     }
 
     // Check for JSON pattern
@@ -38,7 +38,7 @@ final class Is extends Genome {
 
     // Check for URL address
     public static function URL($value) {
-        return filter_var($value, FILTER_VALIDATE_URL);
+        return false !== filter_var($value, FILTER_VALIDATE_URL);
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
@@ -47,7 +47,7 @@ final class Is extends Genome {
 
     // Check for email address
     public static function email($value) {
-        return filter_var($value, FILTER_VALIDATE_EMAIL);
+        return false !== filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 
     // Check for valid file name
@@ -56,13 +56,8 @@ final class Is extends Genome {
     }
 
     // Check for valid folder name
-    public static function files($value) {
-        return is_string($value) && strlen($value) <= 260 && is_dir($value);
-    }
-
-    // Alias for `files`
     public static function folder($value) {
-        return self::files($value);
+        return is_string($value) && strlen($value) <= 260 && is_dir($value);
     }
 
     // Check for valid local path address (whether it is exists or not)
@@ -107,7 +102,7 @@ final class Is extends Genome {
 
     // Check for valid boolean value
     public static function toggle($value) {
-        return filter_var($value, FILTER_VALIDATE_BOOLEAN);
+        return null !== filter_var($value, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
     }
 
     // Check for empty string, array or object
