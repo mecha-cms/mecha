@@ -19,7 +19,7 @@ foreach ([
     'entity' => static function (?string $value): ?string {
         return "" !== ($value = html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES)) ? $value : null;
     },
-    'query' => static function (?string $value): array {
+    'query' => static function (?string $value, $eval = true): array {
         $out = [];
         if ("" === ($value = trim($value ?? ""))) {
             return $out;
@@ -46,7 +46,8 @@ foreach ([
         }
         foreach (explode('&', $value) as $v) {
             $v = explode('=', $v, 2);
-            $q($out, urldecode($v[0]), isset($v[1]) ? e(urldecode($v[1])) : true);
+            $v[1] = isset($v[1]) ? urldecode($v[1]) : true;
+            $q($out, urldecode($v[0]), $eval ? e($v[1]) : $v[1]);
         }
         return $out;
     },

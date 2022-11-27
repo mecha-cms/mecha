@@ -94,6 +94,7 @@ foreach ([
         $q = static function (array $value, $enter) use (&$q) {
             $a = [];
             $exit = $enter ? ']' : "";
+            ksort($value);
             foreach ($value as $k => $v) {
                 $k = urlencode($k);
                 if (is_array($v)) {
