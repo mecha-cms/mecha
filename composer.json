@@ -22,11 +22,15 @@
   "description": "Minimalist content management system.",
   "funding": [
     {
+      "type": "github",
+      "url": "https://github.com/sponsors/mecha-cms"
+    },
+    {
       "type": "opencollective",
       "url": "https://opencollective.com/mecha-cms"
     },
     {
-      "type": "other",
+      "type": "paypal",
       "url": "https://paypal.me/tatautaufik"
     }
   ],
