@@ -112,10 +112,10 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
                             }
                         }
                     }
-                } else {
+                } else if (defined('TEST') && TEST) {
                     throw new ParseError(static::class . ': ' . $value);
                 }
-            } else {
+            } else if (defined('TEST') && TEST) {
                 throw new ParseError(static::class . ': ' . $value);
             }
         }

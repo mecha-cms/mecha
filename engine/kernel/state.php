@@ -56,7 +56,7 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
     }
 
     public function offsetExists($key): bool {
-        return isset(self::$lot[static::class][$key]);
+        return null !== self::offsetGet($key);
     }
 
     #[ReturnTypeWillChange]
@@ -100,29 +100,52 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
 
     public static function get($key = null, $array = false) {
         $c = static::class;
-        if (is_array($key)) {
+        if ($key && is_array($key)) {
             $out = [];
-            foreach ($key as $k => $v) {
-                $out[$k] = self::get($k, $array) ?? $v;
+            // `State::get(['a', 'b', 'c'])`
+            if (array_is_list($key)) {
+                foreach ($key as $k) {
+                    $out[] = self::get($k, $array);
+                }
+            // `State::get(['a' => null, 'b' => null, 'c' => null])`
+            } else {
+                foreach ($key as $k => $v) {
+                    $out[$k] = self::get($k, $array) ?? $v;
+                }
             }
             return $array ? $out : o($out);
-        } else if (isset($key)) {
+        }
+        // `State::get('a')`
+        if (isset($key) && !is_array($key)) {
             $out = self::$lot[$c] ?? [];
-            $out = get($out, $key);
+            $out = get($out, (string) $key);
             return $array ? $out : o($out);
         }
+        // `State::get()`
         $out = self::$lot[$c] ?? [];
         return $array ? $out : o($out);
     }
 
     public static function let($key = null) {
         $c = static::class;
-        if (is_array($key)) {
-            foreach ($key as $v) {
-                self::let($v);
+        if ($key && is_array($key)) {
+            // `State::let(['a', 'b', 'c'])`
+            if (array_is_list($key)) {
+                foreach ($key as $k) {
+                    self::let($k);
+                }
+            // `State::let(['a' => null, 'b' => null, 'c' => null])`
+            } else {
+                foreach ($key as $k => $v) {
+                    if ($v === self::get($k)) {
+                        self::let($k);
+                    }
+                }
             }
-        } else if (isset($key)) {
-            let(self::$lot[$c], $key);
+        // `State::let('a')`
+        } else if (isset($key) && !is_array($key)) {
+            let(self::$lot[$c], (string) $key);
+        // `State::let()`
         } else {
             self::$lot[$c] = [];
         }
@@ -132,7 +155,15 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
         $c = static::class;
         $in = [];
         if (is_array($key)) {
-            $in = $key;
+            if (array_is_list($key)) {
+                foreach ($key as $k) {
+                    set($in, $k, $value);
+                }
+            } else {
+                foreach ($key as $k => $v) {
+                    set($in, $k, $v);
+                }
+            }
         } else {
             set($in, $key, $value);
         }
