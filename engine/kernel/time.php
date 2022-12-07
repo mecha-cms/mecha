@@ -8,14 +8,9 @@ final class Time extends Genome {
     public $parent;
     public $source;
 
-    public function ISO8601() {
-        return $this->format('c');
-    }
-
-    public function __construct(string $value = null) {
-        $value = (string) $value;
+    public function __construct($value = null) {
         if (is_numeric($value)) {
-            $this->source = date('Y-m-d H:i:s', $value);
+            $this->source = date('Y-m-d H:i:s', (int) $value);
         } else if (is_string($value) && strlen($value) >= 19 && 5 === substr_count($value, '-')) {
             if ($date = DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
                 $this->source = $date->format('Y-m-d H:i:s');
@@ -32,6 +27,7 @@ final class Time extends Genome {
             if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
                 return $this->i($v);
             }
+            return parent::__call($key);
         }
         return method_exists($this, $key) ? $this->{$key}() : null;
     }
