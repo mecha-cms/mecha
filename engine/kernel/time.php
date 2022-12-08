@@ -45,7 +45,13 @@ final class Time extends Genome {
     }
 
     public function day($type = null) {
-        return $this->i(is_string($type) ? '%A' : '%u');
+        if (is_array($type)) {
+            return $type[$day = $this->format('l')] ?? $day;
+        }
+        if (is_string($type)) {
+            return $this->i('%A'); // The day name, translated
+        }
+        return str_pad($this->format('w'), 2, '0', STR_PAD_LEFT);
     }
 
     public function i(string $pattern = '%Y-%m-%d %T') {
@@ -126,7 +132,13 @@ final class Time extends Genome {
     }
 
     public function month($type = null) {
-        return $this->i(is_string($type) ? '%B' : '%m');
+        if (is_array($type)) {
+            return $type[$month = $this->format('F')] ?? $month;
+        }
+        if (is_string($type)) {
+            return $this->i('%B'); // The month name, translated
+        }
+        return $this->format('m');
     }
 
     // Convert date to file name
@@ -138,9 +150,12 @@ final class Time extends Genome {
         return $this->format('s');
     }
 
-    public function to(string $zone = 'UTC') {
+    public function to(string $zone = null, string $to = null) {
         $date = new DateTime($this->source);
-        $date->setTimeZone(new DateTimeZone($zone));
+        $date->setTimeZone(new DateTimeZone($zone = $zone ?? zone()));
+        if (isset($to)) {
+            $date->modify($to);
+        }
         if (!isset($this->o[$zone])) {
             $this->o[$zone] = new static($date->format('Y-m-d H:i:s'));
             $this->o[$zone]->parent = $this;
