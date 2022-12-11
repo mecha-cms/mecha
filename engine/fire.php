@@ -515,10 +515,6 @@ array_walk_recursive($any, static function (&$v) {
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     // <https://stackoverflow.com/a/30342756/1163000>
     $tidy = static function (array $in) use (&$tidy) {
-        if (!is_array(reset($in))) {
-            return $in;
-        }
-        $out = [];
         // The normalized value(s) do not follow the default value(s) given by `$_FILES`. Instead, it
         // uses its own value(s) with slightly different specification, to make it easier for user(s)
         // who are already familiar with the property of the page file.
@@ -527,6 +523,13 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
             'full_path' => 'from',
             'tmp_name' => 'path'
         ];
+        $out = [];
+        if (!is_array(reset($in))) {
+            foreach ($in as $k => $v) {
+                $out[$alter[$k] ?? $k] = $v;
+            }
+            return $out;
+        }
         foreach ($in as $k => $v) {
             foreach ($v as $kk => $vv) {
                 $out[$kk][$alter[$k] ?? $k] = $vv;
