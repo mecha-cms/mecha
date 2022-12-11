@@ -150,11 +150,11 @@ final class Time extends Genome {
         return $this->format('s');
     }
 
-    public function to(string $zone = null, string $to = null) {
+    public function to(string $zone = null, string $modify = null) {
         $date = new DateTime($this->source);
         $date->setTimeZone(new DateTimeZone($zone = $zone ?? zone()));
-        if (isset($to)) {
-            $date->modify($to);
+        if (isset($modify)) {
+            $date->modify($modify);
         }
         if (!isset($this->o[$zone])) {
             $this->o[$zone] = new static($date->format('Y-m-d H:i:s'));
