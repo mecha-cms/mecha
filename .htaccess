@@ -1,11 +1,16 @@
-# Set default character set to `UTF-8`
-<IfModule mod_mime.c>
-  AddDefaultCharset utf-8
-</IfModule>
+# Deny access to file(s) with `.` prefix
+<FilesMatch '^[.]'>
+  Deny from all
+</FilesMatch>
 
 # Deny access to folder(s)
 <IfModule mod_autoindex.c>
   Options -Indexes
+</IfModule>
+
+# Set default character set to `UTF-8`
+<IfModule mod_mime.c>
+  AddDefaultCharset utf-8
 </IfModule>
 
 # Rewrite the path to `index.php` if it’s not a file/folder
@@ -15,8 +20,3 @@
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteRule . index.php [L,QSA]
 </IfModule>
-
-# Deny access to file(s) with `.` prefix
-<FilesMatch '^[.]'>
-  Deny from all
-</FilesMatch>
