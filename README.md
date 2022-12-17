@@ -68,39 +68,39 @@ This assumes that your site’s public directory is in `/srv/http`. Make sure th
 #### Using Composer
 
 ~~~ .sh
-$ cd /srv/http
-$ composer create-project mecha-cms/mecha .
+cd /srv/http
+composer create-project mecha-cms/mecha .
 ~~~
 
 You may want to install our [Panel](https://github.com/mecha-cms/x.panel) extension as well:
 
 ~~~ .sh
-$ composer require mecha-cms/x.panel
+composer require mecha-cms/x.panel
 ~~~
 
 #### Using Git
 
 ~~~ .sh
-$ cd /srv/http
-$ git clone https://github.com/mecha-cms/mecha.git --depth 1 .
-$ git submodule update --init --recursive
-$ rm .gitmodules composer.json LICENSE README.md
-$ rm -r .git
+cd /srv/http
+git clone https://github.com/mecha-cms/mecha.git --depth 1 .
+git submodule update --init --recursive
+rm .gitmodules composer.json LICENSE README.md
+rm -r .git
 ~~~
 
 You may want to install our [Panel](https://github.com/mecha-cms/x.panel) extension as well. Here, [Alert](https://github.com/mecha-cms/x.alert) and [User](https://github.com/mecha-cms/x.user) extension is required to be installed:
 
 ~~~ .sh
-$ cd lot/x
-$ git clone https://github.com/mecha-cms/x.alert.git --depth 1 alert
-$ rm alert/LICENSE alert/README.md
-$ rm -r alert/.git
-$ git clone https://github.com/mecha-cms/x.user.git --depth 1 user
-$ rm user/LICENSE user/README.md
-$ rm -r user/.git
-$ git clone https://github.com/mecha-cms/x.panel.git --depth 1 panel
-$ rm panel/LICENSE panel/README.md
-$ rm -r panel/.git
+cd lot/x
+git clone https://github.com/mecha-cms/x.alert.git --depth 1 alert
+rm alert/LICENSE alert/README.md
+rm -r alert/.git
+git clone https://github.com/mecha-cms/x.user.git --depth 1 user
+rm user/LICENSE user/README.md
+rm -r user/.git
+git clone https://github.com/mecha-cms/x.panel.git --depth 1 panel
+rm panel/LICENSE panel/README.md
+rm -r panel/.git
 ~~~
 
 ### Web Browser
