@@ -20,6 +20,9 @@
     "vendor-dir": "engine/vendor"
   },
   "description": "Minimalist content management system.",
+  "extra": {
+    "minify": true
+  },
   "funding": [
     {
       "type": "github",
