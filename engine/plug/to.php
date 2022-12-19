@@ -31,9 +31,10 @@ foreach ([
     'camel' => "\\c",
     'entity' => static function (?string $value, $hex = false, int $pad = 4): ?string {
         $out = "";
+        $utf8 = extension_loaded('mbstring');
         $value = (string) $value;
-        for ($i = 0, $count = strlen($value); $i < $count; ++$i) {
-            $v = ord($value[$i]);
+        for ($i = 0, $count = $utf8 ? mb_strlen($value) : strlen($value); $i < $count; ++$i) {
+            $v = $utf8 ? mb_ord(mb_substr($value, $i, 1), 'UTF-8') : ord($value[$i]);
             if ($hex) {
                 $v = dechex($v);
             }
