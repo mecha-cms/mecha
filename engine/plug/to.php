@@ -33,8 +33,9 @@ foreach ([
         $out = "";
         $utf8 = extension_loaded('mbstring');
         $value = (string) $value;
-        for ($i = 0, $count = $utf8 ? mb_strlen($value) : strlen($value); $i < $count; ++$i) {
-            $v = $utf8 ? mb_ord(mb_substr($value, $i, 1), 'UTF-8') : ord($value[$i]);
+        $value = $utf8 ? mb_str_split($value, 1, 'UTF-8') : str_split($value);
+        for ($i = 0, $count = count($value); $i < $count; ++$i) {
+            $v = $utf8 ? mb_ord($value[$i], 'UTF-8') : ord($value[$i]);
             if ($hex) {
                 $v = dechex($v);
             }
