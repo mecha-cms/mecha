@@ -918,7 +918,7 @@ function b($value, array $range = [0]) {
 function c(?string $value, $accent = false, string $keep = "") {
     $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . '])([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
         return $m[1] . u($m[2]);
-    }, f($value, $accent, $keep) ?? ""), [' ' => ""]);
+    }, f($value, $accent, $keep ?? "") ?? ""), [' ' => ""]);
     return "" !== $value ? $value : null;
 }
 
