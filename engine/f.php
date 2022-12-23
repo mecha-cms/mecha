@@ -968,16 +968,18 @@ function e($value, array $lot = []) {
 }
 
 function f(?string $value, $accent = true, string $keep = "") {
-    // This function does not trim white-space at the start and end of the string
+    // Remove HTML tag(s) and character(s) reference
+    $value = preg_replace('/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
+    if (!$accent || is_array($accent)) {
+        $value = !empty($GLOBALS['F']) ? strtr($value, array_replace($GLOBALS['F'], (array) $accent)) : $value;
+    }
     $value = preg_replace([
-        // Remove HTML tag(s) and character(s) reference
-        '/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i',
         // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}\s' . ($keep = x($keep)) . ']/u',
+        '/[^\p{L}\p{N}‘’“”\s' . ($keep = x($keep)) . ']/u', // TODO
         // Convert multiple white-space to single space
         '/\s+/'
-    ], ' ', $value ?? "");
-    $value = $accent && !empty($GLOBALS['F']) ? strtr($value, $GLOBALS['F']) : $value;
+    ], ' ', $value);
+    // This function does not trim white-space at the start and end of the string
     return "" !== $value ? $value : null;
 }
 
@@ -1014,7 +1016,7 @@ function g(string $folder, $x = null, $deep = 0) {
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
-    $value = strtr(preg_replace_callback('/\p{Lu}/', static function ($m) use ($join) {
+    $value = strtr(preg_replace_callback('/\p{Lu}/u', static function ($m) use ($join) {
         return $join . l($m[0]);
     }, f($value, $accent, $join . $keep) ?? ""), [
         ' ' => $join,
@@ -1214,12 +1216,12 @@ function w(?string $value, $keep = [], $break = false) {
         $keep = is_string($keep) ? explode(',', $keep) : (array) $keep;
         return preg_replace($break ? '/ +/' : '/\s+/', ' ', trim(strip_tags($value, $keep)));
     }
-    // [1]. Replace `+` with ` `
-    // [2]. Replace `-` with ` `
-    // [3]. Replace `---` with ` - `
-    // [4]. Replace `--` with `-`
+    // Replace `+` with ` `
+    // Replace `-` with ` `
+    // Replace `---` with ` - `
+    // Replace `--` with `-`
     $value = preg_replace([
-        '/^[._]+|[._]+$/', // remove `.` and `__` prefix/suffix in file name
+        '/^[._]+|[._]+$/', // remove `.` and `_` prefix/suffix in file name
         '/---/',
         '/--/',
         '/-/',
@@ -1237,7 +1239,6 @@ function w(?string $value, $keep = [], $break = false) {
 }
 
 function x(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
-    ;
     return "" !== ($value = addcslashes($value ?? "", $c . $d)) ? $value : null;
 }
 

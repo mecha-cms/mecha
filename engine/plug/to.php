@@ -2,8 +2,8 @@
 
 foreach ([
     'HTML' => static function (?string $value): ?string {
-        $out = htmlspecialchars_decode($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
-        return "" !== $out ? $out : null;
+        $value = htmlspecialchars_decode($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
+        return "" !== $value ? $value : null;
     },
     'JSON' => static function ($value, $tidy = false): ?string {
         if ($tidy) {
@@ -22,8 +22,8 @@ foreach ([
             strtr(PATH, D, '/') => $url,
             D => '/'
         ]);
-        $out = $raw ? rawurldecode($value) : urldecode($value);
-        return "" !== $out ? $out : null;
+        $value = $raw ? rawurldecode($value) : urldecode($value);
+        return "" !== $value ? $value : null;
     },
     'base64' => static function (?string $value): ?string {
         return "" !== ($value = base64_encode($value ?? "")) ? $value : null;
@@ -47,34 +47,36 @@ foreach ([
         return "" !== $out ? $out : null;
     },
     'file' => static function (?string $value, string $keep = '._'): ?string {
-        $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
-        $n = preg_split('/\s*[.]\s*/', array_pop($value) ?? "", -1, PREG_SPLIT_NO_EMPTY);
-        $x = array_pop($n);
-        $out = "";
-        foreach ($value as $v) {
-            $out .= h($v, '-', true, $keep) . D;
+        if ("" === trim($value ?? "")) {
+            return null;
         }
-        $out .= h(implode('.', $n), '-', true, $keep) . '.' . h($x, '-', true);
-        return "" !== $out && '.' !== $out ? $out : null;
+        // Trim white-space(s) around `DIRECTORY_SEPARATOR`
+        $value = preg_replace('/\s*[' . ($v = "\\\\\/") . ']\s*/', D, $value);
+        // Make sure file extension uses lower-case(s)
+        $value = preg_replace_callback('/\s*[.]\s*([a-z\d]+)$/i', static function ($m) {
+            return '.' . strtolower($m[1]);
+        }, $value);
+        // Convert to safe file path
+        $value = strtr(h($value, '-', true, $keep . $v) ?? "", ["\\" => D, '/' => D]);
+        // Convert `\.\` and `\..\` to `\`
+        $value = strtr($value, [D . '.' . D => D, D . '..' . D => D]);
+        return "" !== trim($value, '.') ? $value : null;
     },
     'folder' => static function (?string $value, string $keep = '._'): ?string {
-        $value = preg_split('/\s*[\\/]\s*/', $value ?? "", -1, PREG_SPLIT_NO_EMPTY);
-        $n = array_pop($value);
-        $out = "";
-        foreach ($value as $v) {
-            $out .= h($v, '-', true, $keep) . D;
+        if ("" === trim($value ?? "")) {
+            return null;
         }
-        $out = $out . h($n, '-', true, $keep);
-        return "" !== $out && '.' !== $out ? $out : null;
+        // Trim white-space(s) around `DIRECTORY_SEPARATOR`
+        $value = preg_replace('/\s*[' . ($v = "\\\\\/") . ']\s*/', D, $value);
+        // Convert to safe folder path
+        $value = strtr(h($value, '-', true, $keep . $v) ?? "", ["\\" => D, '/' => D]);
+        // Convert `\.\` and `\..\` to `\`
+        $value = strtr($value, [D . '.' . D => D, D . '..' . D => D]);
+        return "" !== trim($value, '.') ? $value : null;
     },
-    'kebab' => static function (?string $value, string $join = '-', $accent = true): ?string {
-        $out = trim(h($value, $join, $accent), $join);
-        return "" !== $out ? $out : null;
-    },
-    'key' => static function (?string $value, $accent = true): ?string {
-        $out = trim(h($value, '_', $accent), '_');
-        $out = $out && is_numeric($out[0]) ? '_' . $out : $out;
-        return "" !== $out ? $out : null;
+    'kebab' => static function (?string $value, string $join = '-', $accent = false): ?string {
+        $value = trim(h($value, $join, $accent) ?? "", $join);
+        return "" !== $value ? $value : null;
     },
     'lower' => "\\l",
     'pascal' => "\\p",
@@ -85,8 +87,8 @@ foreach ([
             strtr($url, '/', D) => PATH,
             '/' => D
         ]);
-        $out = stream_resolve_include_path($value) ?: $value;
-        return "" !== $out ? $out : null;
+        $value = stream_resolve_include_path($value) ?: $value;
+        return "" !== $value ? $value : null;
     },
     'query' => static function (?array $value = []): ?string {
         $out = [];
@@ -120,11 +122,11 @@ foreach ([
         }
         return $out ? '?' . implode('&', $out) : null;
     },
-    'serial' => static function (?string $value): ?string {
+    'serial' => static function ($value): ?string {
         return "" !== ($value = serialize($value)) ? $value : null;
     },
-    'snake' => static function (?string $value, $accent = true): ?string {
-        $value = trim(h($value, '_', $accent), '_');
+    'snake' => static function (?string $value, $accent = false): ?string {
+        $value = trim(h($value, '_', $accent) ?? "", '_');
         return "" !== $value ? $value : null;
     },
     'text' => "\\w",
