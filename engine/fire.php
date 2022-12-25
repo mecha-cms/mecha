@@ -751,18 +751,6 @@ if (is_file($task = PATH . D . 'task.php')) {
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
 unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
 
-Hook::set('get', function () use ($url) {
-    $content = Hook::fire('route', [null, $url->path, $url->query, $url->hash]);
-    if (is_array($content) || is_object($content)) {
-        if (!error_get_last()) {
-            type('application/json');
-        }
-        echo To::JSON($content, true);
-    } else {
-        echo $content;
-    }
-}, 1000);
-
 Hook::fire('get');
 
 Hook::fire('let');
