@@ -975,7 +975,7 @@ function f(?string $value, $accent = true, string $keep = "") {
     }
     $value = preg_replace([
         // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}‘’“”\s' . ($keep = x($keep)) . ']/u', // TODO
+        '/[^\p{L}\p{N}«»‘’“”\s' . ($keep = x($keep)) . ']/u',
         // Convert multiple white-space to single space
         '/\s+/'
     ], ' ', $value);
