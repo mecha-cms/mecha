@@ -892,10 +892,10 @@ function zone(string $zone = null) {
 // z: Export array/object into a compact PHP file
 
 function a($value, $safe = true) {
+    if ($safe && is_object($value) && 'stdClass' !== get_class($value)) {
+        return $value;
+    }
     if (is_object($value)) {
-        if ($safe) {
-            return 'stdClass' !== get_class($value) ? $value : (array) $value;
-        }
         $value = (array) $value;
         foreach ($value as &$v) {
             $v = a($v, $safe);
@@ -905,7 +905,7 @@ function a($value, $safe = true) {
     return $value;
 }
 
-function b($value, array $range = [0]) {
+function b($value, array $range = [0, null]) {
     if (isset($range[0]) && $value < $range[0]) {
         return $range[0];
     }
