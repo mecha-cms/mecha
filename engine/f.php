@@ -42,12 +42,14 @@ function any(iterable $value, $fn = null) {
 
 // Convert class name to file name
 function c2f(?string $value, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
-        return ltrim(strtr(h($v, '-', $accent, '_'), [
+    $value = implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+        return ltrim(strtr(h($v, '-', $accent, '_') ?? "", [
+            '_-' => '_',
             '__-' => '.',
             '__' => '.'
         ]), '-');
     }));
+    return "" !== $value ? $value : null;
 }
 
 function check(string $token, $id = 0) {
@@ -252,16 +254,18 @@ function extend(array $value, ...$lot) {
 
 // Convert file name to class name
 function f2c(?string $value, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return p(strtr($v, ['.' => '__']), $accent, '_');
     }));
+    return "" !== $value ? $value : null;
 }
 
 // Convert file name to property name
 function f2p(?string $value, $accent = false) {
-    return implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
         return c(strtr($v, ['.' => '__']), $accent, '_');
     }));
+    return "" !== $value ? $value : null;
 }
 
 function fetch(string $url, $lot = null, $type = 'GET') {
@@ -570,9 +574,10 @@ function not(iterable $value, $fn = null, $keys = false) {
 
 // Convert property name to file name
 function p2f(?string $value, $accent = false) {
-    return implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
-        return strtr(h($v, '-', $accent, '_'), ['__' => '.']);
+    $value = implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+        return strtr(h($v, '-', $accent, '_') ?? "", ['__' => '.']);
     }));
+    return "" !== $value ? $value : null;
 }
 
 function path(?string $value) {
