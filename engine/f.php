@@ -1139,13 +1139,16 @@ function q($value) {
     if (is_string($value)) {
         return extension_loaded('mbstring') ? mb_strlen($value) : strlen($value);
     }
+    if ($value instanceof Countable) {
+        return count($value);
+    }
     if ($value instanceof Traversable) {
         return iterator_count($value);
     }
     if ($value instanceof stdClass) {
         return count((array) $value);
     }
-    return count($value);
+    return empty($value) ? 0 : 1;
 }
 
 function r(?string $value, $from, $to) {
