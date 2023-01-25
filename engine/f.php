@@ -922,6 +922,9 @@ function b($value, array $range = [0, null]) {
 
 function c(?string $value, $accent = false, string $keep = "") {
     $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . ']+)([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
+        if (' ' !== substr($m[1], -1)) {
+            return $m[1] . $m[2];
+        }
         return $m[1] . u($m[2]);
     }, f($value, $accent, $keep ?? "") ?? ""), [' ' => ""]);
     return "" !== $value ? $value : null;
@@ -1123,7 +1126,10 @@ function o($value, $safe = true) {
 }
 
 function p(?string $value, $accent = false, string $keep = "") {
-    return c(' ' . $value, $accent, $keep);
+    $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . ']+)([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
+        return $m[1] . u($m[2]);
+    }, f(' ' . $value, $accent, $keep ?? "") ?? ""), [' ' => ""]);
+    return "" !== $value ? $value : null;
 }
 
 function q($value) {
