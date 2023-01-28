@@ -90,7 +90,7 @@ foreach ([
         $value = stream_resolve_include_path($value) ?: $value;
         return "" !== $value ? $value : null;
     },
-    'query' => static function (?array $value = []): ?string {
+    'query' => static function (?array $value): ?string {
         $out = [];
         if (!$value) {
             return null;
