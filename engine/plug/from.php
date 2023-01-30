@@ -5,8 +5,8 @@ foreach ([
         $out = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
         return "" !== $out ? $out : null;
     },
-    'JSON' => static function (?string $value): ?string {
-        $out = json_decode($value ?? "");
+    'JSON' => static function (?string $value, $array = false) {
+        $out = json_decode($value ?? "", $array);
         return "" !== $out ? $out : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
@@ -65,4 +65,8 @@ foreach ([
     'url' => 'URL'
 ] as $k => $v) {
     From::_($k, From::_($v));
+}
+
+function from(...$lot) {
+    return From::_(...$lot);
 }
