@@ -6,7 +6,6 @@ class Hook extends Genome {
 
     protected static $current;
     protected static $lot;
-    protected static $sort;
 
     public static function fire($id, array $lot = [], $that = null, $scope = null) {
         $c = static::class;
@@ -22,19 +21,14 @@ class Hook extends Genome {
                 self::$lot[1][$c][$id] = [];
                 return $lot[0] ?? null;
             }
-            $any = self::$lot[1][$c][$id];
-            if (isset(self::$sort[$c][$id])) {
-                unset(self::$sort[$c][$id]);
-                $any = (new Anemone($any))->sort([1, 'stack']);
-            }
             if (null !== $that) {
-                foreach ($any as $v) {
+                foreach (self::$lot[1][$c][$id] as $v) {
                     if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
                         $lot[0] = $r;
                     }
                 }
             } else {
-                foreach ($any as $v) {
+                foreach (self::$lot[1][$c][$id] as $v) {
                     if (null !== ($r = fire($v['fn'], $lot))) {
                         $lot[0] = $r;
                     }
@@ -99,7 +93,6 @@ class Hook extends Genome {
             if (!empty(self::$lot[0][$c][$id][is_object($fn) ? spl_object_hash($fn) : $fn])) {
                 // Skip!
             } else {
-                self::$sort[$c][$id] = 1;
                 if (!isset(self::$lot[1][$c][$id])) {
                     self::$lot[1][$c][$id] = [];
                 }
@@ -110,6 +103,9 @@ class Hook extends Genome {
                     'fn' => $fn,
                     'stack' => (float) $stack
                 ];
+                if (count(self::$lot[1][$c][$id]) > 1) {
+                    self::$lot[1][$c][$id] = (new Anemone(self::$lot[1][$c][$id]))->sort([1, 'stack']);
+                }
             }
         }
     }
