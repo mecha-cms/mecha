@@ -1051,22 +1051,21 @@ function i(?string $value, $lot = [], string $or = null) {
 }
 
 function j(array $a, array $b) {
-    $f = [];
+    $out = [];
     foreach ($a as $k => $v) {
         if (is_array($v)) {
             if (!array_key_exists($k, $b) || !is_array($b[$k])) {
-                $f[$k] = $v;
+                $out[$k] = $v;
             } else {
-                $ff = j($v, $b[$k]);
-                if (!empty($ff)) {
-                    $f[$k] = $ff;
+                if ($vv = j($v, $b[$k])) {
+                    $out[$k] = $vv;
                 }
             }
         } else if (!array_key_exists($k, $b) || $v !== $b[$k]) {
-            $f[$k] = $v;
+            $out[$k] = $v;
         }
     }
-    return $f;
+    return $out;
 }
 
 function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) {
