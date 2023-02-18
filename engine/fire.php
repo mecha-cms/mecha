@@ -558,13 +558,13 @@ d(__DIR__ . D . 'kernel', static function ($object, $n) {
     if (is_file($f = __DIR__ . D . 'plug' . D . $n . '.php')) {
         extract($GLOBALS, EXTR_SKIP);
         require $f;
-        // Load plug(s) of extension(s) and layout(s)…
-        foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
-            if (!is_file(dirname($v, 3) . D . 'index.php')) {
-                continue; // Skip in-active extension(s) and layout(s)
-            }
-            require $v;
+    }
+    // Load plug(s) of extension(s) and layout(s)…
+    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+        if (!is_file(dirname($v = stream_resolve_include_path($v), 3) . D . 'index.php')) {
+            continue; // Skip in-active extension(s) and layout(s)
         }
+        require $v;
     }
 });
 
@@ -730,6 +730,16 @@ try {
             if (is_file($f = $d . D . 'plug' . D . $n . '.php')) {
                 extract($GLOBALS, EXTR_SKIP);
                 require $f;
+            }
+            // Load plug(s) of other extension(s) and layout(s)…
+            foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+                if ($f === ($v = stream_resolve_include_path($v))) {
+                    continue; // Skip current plug
+                }
+                if (!is_file(dirname($v, 3) . D . 'index.php')) {
+                    continue; // Skip in-active extension(s) and layout(s)
+                }
+                require $v;
             }
         });
     }

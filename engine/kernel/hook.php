@@ -53,6 +53,9 @@ class Hook extends Genome {
 
     public static function let($name = null, callable $fn = null) {
         $c = static::class;
+        if (is_string($fn)) {
+            $fn = trim($fn, "\\");
+        }
         if (is_array($name)) {
             foreach ($name as $v) {
                 self::let($v, $name);
@@ -85,6 +88,9 @@ class Hook extends Genome {
 
     public static function set($name, callable $fn, float $stack = 10) {
         $c = static::class;
+        if (is_string($fn)) {
+            $fn = trim($fn, "\\");
+        }
         if (is_array($name)) {
             foreach ($name as $v) {
                 self::set((string) $v, $fn, $stack);
