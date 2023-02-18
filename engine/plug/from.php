@@ -66,7 +66,3 @@ foreach ([
 ] as $k => $v) {
     From::_($k, From::_($v));
 }
-
-function from(...$lot) {
-    return From::_(...$lot);
-}

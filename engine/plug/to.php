@@ -143,7 +143,3 @@ foreach ([
 ] as $k => $v) {
     To::_($k, To::_($v));
 }
-
-function to(...$lot) {
-    return To::_(...$lot);
-}
