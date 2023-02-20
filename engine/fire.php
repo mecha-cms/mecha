@@ -554,18 +554,29 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 }
 
 // Load class(es)…
-d(__DIR__ . D . 'kernel', static function ($object, $n) {
-    if (is_file($f = __DIR__ . D . 'plug' . D . $n . '.php')) {
+d($folder = __DIR__ . D . 'kernel', static function ($object, $n) use ($folder) {
+    if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
         extract($GLOBALS, EXTR_SKIP);
         require $f;
     }
     // Load plug(s) of extension(s) and layout(s)…
-    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+    foreach (glob(dirname($folder, 2) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
         if (!is_file(dirname($v = stream_resolve_include_path($v), 3) . D . 'index.php')) {
             continue; // Skip in-active extension(s) and layout(s)
         }
         require $v;
     }
+});
+
+// Add a hook that will execute just before the response body is sent
+header_register_callback(static function () {
+    Hook::fire('enter');
+});
+
+// Add a hook that will execute just after the response body is sent
+register_shutdown_function(static function () {
+    // This hook will also execute when the application is forced to stop by using the `exit` or `die` command
+    Hook::fire('exit');
 });
 
 // Set default state(s)…
@@ -705,13 +716,13 @@ function to(...$lot) {
 
 try {
     $uses = [];
-    foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'index.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
-        $n = basename($d = dirname($v = stream_resolve_include_path($v)));
-        if (empty($GLOBALS[strtoupper($r = basename(dirname($d)))][0][$v])) {
-            $uses[$v] = content($d . D . $n) ?? $r . '.' . $n;
+    foreach (glob(dirname(__DIR__) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'index.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+        $n = basename($folder = dirname($v = stream_resolve_include_path($v)));
+        if (empty($GLOBALS[strtoupper($r = basename(dirname($folder)))][0][$v])) {
+            $uses[$v] = content($folder . D . $n) ?? $r . '.' . $n;
             // Load state(s)…
             State::set($r . '.' . ($k = strtr($n, ['.' => "\\."])), []);
-            if (is_file($v = $d . D . 'state.php')) {
+            if (is_file($v = $folder . D . 'state.php')) {
                 (static function ($k, $v, $a) {
                     extract($GLOBALS, EXTR_SKIP);
                     State::set($r . '.' . $k, array_replace_recursive((array) require $v, $a));
@@ -725,14 +736,13 @@ try {
     }
     // Load class(es)…
     foreach ($uses as $v) {
-        $d = dirname($v) . D . 'engine';
-        d($d . D . 'kernel', static function ($object, $n) use ($d) {
-            if (is_file($f = $d . D . 'plug' . D . $n . '.php')) {
+        d($folder = dirname($v) . D . 'engine' . D . 'kernel', static function ($object, $n) use ($folder) {
+            if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
                 extract($GLOBALS, EXTR_SKIP);
                 require $f;
             }
             // Load plug(s) of other extension(s) and layout(s)…
-            foreach (glob(__DIR__ . D . '..' . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+            foreach (glob(dirname($folder, 3) . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
                 if ($f === ($v = stream_resolve_include_path($v))) {
                     continue; // Skip current plug
                 }
@@ -790,7 +800,7 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($any, $d, $e, $f, $folder, $hash, $host, $k, $n, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
+unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
 
 Hook::fire('get');
 
