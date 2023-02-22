@@ -937,7 +937,7 @@ function d(string $folder, callable $fn = null) {
             extract($GLOBALS, EXTR_SKIP);
             require $file;
             if (is_callable($fn)) {
-                call_user_func($fn, $object, $name);
+                call_user_func($fn, $object, $name, $file);
             }
         }
     });
@@ -1224,30 +1224,15 @@ function v(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\'
 
 function w(?string $value, $keep = [], $break = false) {
     $value = (string) $value;
-    // Should be a HTML input
-    if (false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
+    // Should be a HTML input (if `$keep` is not empty, assume that input is a HTML anyway)
+    if ($keep || false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
         $keep = is_string($keep) ? explode(',', $keep) : (array) $keep;
-        return preg_replace($break ? '/ +/' : '/\s+/', ' ', trim(strip_tags($value, $keep)));
+        $value = preg_replace($break ? '/ +/' : '/\s+/', ' ', trim(strip_tags($value, $keep)));
+        return "" !== $value ? $value : null;
     }
-    // Replace `+` with ` `
-    // Replace `-` with ` `
-    // Replace `---` with ` - `
-    // Replace `--` with `-`
-    $value = preg_replace([
-        '/^[._]+|[._]+$/', // remove `.` and `_` prefix/suffix in file name
-        '/---/',
-        '/--/',
-        '/-/',
-        '/\s+/',
-        '/[' . P . ']/'
-    ], [
-        "",
-        ' ' . P . ' ',
-        P,
-        ' ',
-        ' ',
-        '-'
-    ], urldecode($value));
+    // Remove `-`, `.`, `_`, and `~` prefix/suffix from the file name then replace `-` with a space. If you want to keep
+    // the `-`, be sure to write it as `%2D` in the file name. Then, it decodes the file name as if it were an URL.
+    $value = rawurldecode(preg_replace('/[-]+/', ' ', trim($value, '-._~')));
     return "" !== $value ? $value : null;
 }
 
