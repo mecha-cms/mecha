@@ -699,7 +699,7 @@ function short(string $value) {
         }
     }
     $value = substr($value, strlen($parent));
-    return "" === $value ? '/' : $value;
+    return "" === $value ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
 }
 
 function state(...$lot) {
