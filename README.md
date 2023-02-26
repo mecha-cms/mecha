@@ -12,18 +12,28 @@ Mecha is a flat-file content management system for minimalists.
 Front-End
 ---------
 
-The [default layout](https://github.com/mecha-cms/y.log "Log Layout") uses only Serif and Mono fonts. Different operating systems might display somewhat different results. This preview was taken through a computer with Linux operating system. Serif font that’s displayed in the preview below should be [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
+The [default layout](https://github.com/mecha-cms/y.log "Log Layout") uses only Serif and Mono fonts. Different
+operating systems might display somewhat different results. This preview was taken through a computer with Linux
+operating system. Serif font that’s displayed in the preview below should be
+[DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
 ![Front-End](https://user-images.githubusercontent.com/1669261/190838629-860bfd9c-0444-4426-990f-71a604b95c32.png)
 
 Back-End ([Optional](https://github.com/mecha-cms/x.panel "Panel Extension"))
 -----------------------------------------------------------------------------
 
-To be able to activate the back-end feature requires you to install our [Alert](https://github.com/mecha-cms/x.alert "Alert Extension"), [Panel](https://github.com/mecha-cms/x.panel "Panel Extension") and [User](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use this feature on the local version only, and remove it on the public version to secure your website (only if you don&rsquo;t trust this extension).
+To be able to activate the back-end feature requires you to install our
+[Alert](https://github.com/mecha-cms/x.alert "Alert Extension"),
+[Panel](https://github.com/mecha-cms/x.panel "Panel Extension") and
+[User](https://github.com/mecha-cms/x.user "User Extension") extensions. This feature is forever optional. You can use
+this feature on the local version only, and remove it on the public version to secure your website (only if you don’t
+trust this extension).
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/193995098-3d4ff7c3-6d49-4d77-86e6-ca3ca0039d3f.png)
 
-Colors and font types in the control panel preview above are generated from the [default skin](https://github.com/mecha-cms/x.panel.skin.default "Panel Skin: Default"). Without them, the display will look like the preview below:
+Colors and font types in the control panel preview above are generated from the
+[default skin](https://github.com/mecha-cms/x.panel.skin.default "Panel Skin: Default"). Without them, the display will
+look like the preview below:
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/193995030-9538357e-a5c4-4292-8ad2-a1e657f40acc.png)
 
@@ -34,9 +44,11 @@ Features
  - Unlimited page children.
  - Unlimited page fields.
  - Extensible as hell.
- - Create unique design for each blog post by adding special CSS and JavaScript files using [Art](https://github.com/mecha-cms/x.art "Art Extension") extension.
+ - Create unique design for each blog post by adding special CSS and JavaScript files using
+   [Art](https://github.com/mecha-cms/x.art "Art Extension") extension.
  - Built-in commenting system using [Comment](https://github.com/mecha-cms/x.comment "Comment Extension") extension.
- - RSS and Sitemap using the [Feed](https://github.com/mecha-cms/x.feed "Feed Extension") and [Sitemap](https://github.com/mecha-cms/x.sitemap "Sitemap Extension") extension.
+ - RSS and Sitemap using the [Feed](https://github.com/mecha-cms/x.feed "Feed Extension") and
+   [Sitemap](https://github.com/mecha-cms/x.sitemap "Sitemap Extension") extension.
  - Easy to use and well documented API.
  - Almost everything are optional.
  - Control panel using [Panel](https://github.com/mecha-cms/x.panel "Panel Extension") extension.
@@ -44,8 +56,11 @@ Features
 Requirements
 ------------
 
- - Apache 2.4 and above, with enabled [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
- - PHP 7.3 and above, with enabled [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`"), [`json`](http://php.net/manual/en/book.json.php "PHP Extension `json`") and [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
+ - Apache 2.4 and above, with enabled
+   [`mod_rewrite`](http://httpd.apache.org/docs/current/mod/mod_rewrite.html "Apache Module `mod_rewrite`") module.
+ - PHP 7.3 and above, with enabled [`dom`](http://php.net/manual/en/book.dom.php "PHP Extension `dom`"),
+   [`json`](http://php.net/manual/en/book.json.php "PHP Extension `json`") and
+   [`mbstring`](http://php.net/manual/en/book.mbstring.php "PHP Extension `mbstring`") extension.
 
 Preparations
 ------------
@@ -55,15 +70,20 @@ Preparations
  3. Upload Mecha through your FTP/SFTP to the public folder/directory on your site, then extract it!
  4. Take a look on the available extensions and layouts that you might be interested.
  5. Upload your extension files to `.\lot\x` and your layout files to `.\lot\y`. They’re auto-loaded.
- 6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the [source code](https://github.com/mecha-cms/site "GitHub").
- 7. Install [Panel](https://github.com/mecha-cms/x.panel "Panel Extension") extension if you are stuck by doing everything manually. You always have the full control to remove this extension without having to worry that your site will stop running after doing so.
+ 6. Read on how to add pages and tags. Learn on how to create pages from the author by looking at the
+    [source code](https://github.com/mecha-cms/site "GitHub").
+ 7. Install [Panel](https://github.com/mecha-cms/x.panel "Panel Extension") extension if you are stuck by doing
+    everything manually. You always have the full control to remove this extension without having to worry that your
+    site will stop running after doing so.
 
 Alternatives
 ------------
 
 ### Command Line
 
-This assumes that your site’s public directory is in `/srv/http`. Make sure the folder is empty, or move the existing files to another place first. Don’t forget with that `.` at the end of the command as written in the example below, to clone the repository into the current root folder.
+This assumes that your site’s public directory is in `/srv/http`. Make sure the folder is empty, or move the existing
+files to another place first. Don’t forget with that `.` at the end of the command as written in the example below, to
+clone the repository into the current root folder.
 
 #### Using Composer
 
@@ -84,23 +104,16 @@ composer require mecha-cms/x.panel
 cd /srv/http
 git clone https://github.com/mecha-cms/mecha.git --depth 1 .
 git submodule update --init --recursive
-rm .gitmodules composer.json LICENSE README.md
-rm -r .git
 ~~~
 
-You may want to install our [Panel](https://github.com/mecha-cms/x.panel) extension as well. Here, [Alert](https://github.com/mecha-cms/x.alert) and [User](https://github.com/mecha-cms/x.user) extension is required to be installed:
+You may want to install our [Panel](https://github.com/mecha-cms/x.panel) extension as well. Here,
+[Alert](https://github.com/mecha-cms/x.alert) and [User](https://github.com/mecha-cms/x.user) extension is required to
+be installed:
 
 ~~~ .sh
-cd lot/x
-git clone https://github.com/mecha-cms/x.alert.git --depth 1 alert
-rm alert/LICENSE alert/README.md
-rm -r alert/.git
-git clone https://github.com/mecha-cms/x.user.git --depth 1 user
-rm user/LICENSE user/README.md
-rm -r user/.git
-git clone https://github.com/mecha-cms/x.panel.git --depth 1 panel
-rm panel/LICENSE panel/README.md
-rm -r panel/.git
+git submodule add https://github.com/mecha-cms/x.alert.git --depth 1 lot/x/alert
+git submodule add https://github.com/mecha-cms/x.user.git --depth 1 lot/x/user
+git submodule add https://github.com/mecha-cms/x.panel.git --depth 1 lot/x/panel
 ~~~
 
 ### Web Browser
@@ -112,11 +125,15 @@ Download the installer file from <https://mecha-cms.com/start> and then follow t
 Contributors
 ------------
 
-This project exists and survives because of you. I would like to thank all those who have taken the time to contribute to this project.
+This project exists and survives because of you. I would like to thank all those who have taken the time to contribute
+to this project.
 
 [![Contributors](https://opencollective.com/mecha-cms/contributors.svg?avatarHeight=24&button=false&width=890)](https://github.com/mecha-cms/mecha/graphs/contributors)
 
-Contribute financially to keep the project domain and website accessible to everyone. The website provides complete documentation and latest information regarding the software and future development plans. Some parts of the website also serve to provide a clean and efficient project file download feature which is obtained by managing responses from the [GitHub API](https://docs.github.com/en/rest/reference/repos).
+Contribute financially to keep the project domain and website accessible to everyone. The website provides complete
+documentation and latest information regarding the software and future development plans. Some parts of the website also
+serve to provide a clean and efficient project file download feature which is obtained by managing responses from the
+[GitHub API](https://docs.github.com/en/rest/reference/repos).
 
 ### Backers
 
