@@ -197,6 +197,11 @@ function drop(iterable $value, callable $fn = null) {
     return [] !== $value ? $value : null;
 }
 
+// [E]scape HTML [at]tribute’s value
+function eat(?string $value) {
+    return "" !== ($value = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false)) ? $value : null;
+}
+
 function eq($a, $b) {
     return $b === q($a);
 }

@@ -24,7 +24,7 @@ abstract class Genome {
                 return $v[0];
             }
             if (defined('TEST') && TEST) {
-                throw new BadMethodCallException('Method $' . c2f($c, '_', '/') . '->' . $kin . '() does not exist.');
+                throw new BadMethodCallException('Method $' . basename($c) . '->' . $kin . '() does not exist.');
             }
         }
     }
