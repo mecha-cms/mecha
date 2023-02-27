@@ -26,7 +26,27 @@ function abort(string $alert, $exit = true) {
     $exit && exit;
 }
 
+function all(iterable $value, $fn = null) {
+    if (!$value) {
+        return true;
+    }
+    if (!is_callable($fn) && null !== $fn) {
+        $fn = static function ($v) use ($fn) {
+            return $v === $fn;
+        };
+    }
+    foreach ($value as $k => $v) {
+        if (!call_user_func($fn, $v, $k)) {
+            return false;
+        }
+    }
+    return true;
+}
+
 function any(iterable $value, $fn = null) {
+    if (!$value) {
+        return false;
+    }
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
@@ -176,6 +196,9 @@ function delete(string $path, $purge = true) {
 
 // Remove empty array, empty string and `null` value from array
 function drop(iterable $value, callable $fn = null) {
+    if (!$value) {
+        return null;
+    }
     $n = null === $fn; // Use default filter?
     foreach ($value as $k => $v) {
         if (is_array($v) && !empty($v)) {
@@ -387,6 +410,9 @@ function fetch(string $url, $lot = null, $type = 'GET') {
 }
 
 function find(iterable $value, callable $fn) {
+    if (!$value) {
+        return null;
+    }
     foreach ($value as $k => $v) {
         if (call_user_func($fn, $v, $k)) {
             return $v;
@@ -459,6 +485,9 @@ function ip() {
 }
 
 function is(iterable $value, $fn = null, $keys = false) {
+    if (!$value) {
+        return $value;
+    }
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
@@ -502,6 +531,9 @@ function lt($a, $b) {
 }
 
 function map(iterable $value, callable $fn) {
+    if (!$value) {
+        return $value;
+    }
     $out = [];
     foreach ($value as $k => $v) {
         $out[$k] = call_user_func($fn, $v, $k);
@@ -566,6 +598,9 @@ function ne($a, $b) {
 }
 
 function not(iterable $value, $fn = null, $keys = false) {
+    if (!$value) {
+        return $value;
+    }
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
@@ -591,6 +626,9 @@ function path(?string $value) {
 
 // Generate new array contains value from the key
 function pluck(iterable $from, string $key, $value = null, $keys = false) {
+    if (!$from) {
+        return [];
+    }
     $out = [];
     foreach ($from as $k => $v) {
         $out[$k] = $v[$key] ?? $value;
