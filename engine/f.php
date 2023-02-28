@@ -117,7 +117,7 @@ function content(string $path, $value = null, $seal = null) {
             $seal && seal($path, $seal);
             return true;
         }
-        return false;
+        return null;
     }
     return is_file($path) && is_readable($path) ? file_get_contents($path) : null;
 }
