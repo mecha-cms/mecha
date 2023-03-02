@@ -848,9 +848,9 @@ function store(string $path, array $blob, string $as = null) {
 }
 
 // Get file content line by line
-function stream(string $path, int $max = 1024) {
+function stream(string $path, ?int $max = 1024) {
     if (is_file($path) && $h = fopen($path, 'r')) {
-        $max += 1;
+        $max = is_int($max) ? $max + 1 : $max;
         while (false !== ($v = fgets($h, $max))) {
             yield strtr($v, [
                 "\r\n" => "\n",
@@ -1122,7 +1122,7 @@ function k(string $folder, $x = null, $deep = 0, $query = [], $content = false) 
                 yield $k => $v;
             // Find by query in file content…
             } else if ($content && 1 === $v) {
-                foreach (stream($k) as $vv) {
+                foreach (stream($k, strlen($q)) as $vv) {
                     if (false !== stripos($vv, $q)) {
                         yield $k => 1;
                     }

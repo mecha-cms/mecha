@@ -48,7 +48,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     public function count(): int {
         if ($this->exist()) {
             $count = 0;
-            foreach ($this->stream() as $v) {
+            foreach ($this->stream(null) as $v) {
                 ++$count;
             }
             return $count;
@@ -61,7 +61,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function getIterator(): Traversable {
-        return $this->stream();
+        return $this->stream(null);
     }
 
     #[ReturnTypeWillChange]
@@ -86,7 +86,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
 
     #[ReturnTypeWillChange]
     public function offsetGet($key) {
-        foreach ($this->stream() as $k => $v) {
+        foreach ($this->stream(null) as $k => $v) {
             if ($key === $k) {
                 return $v;
             }
@@ -114,7 +114,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
         return null;
     }
 
-    public function stream(int $max = 1024): Traversable {
+    public function stream(?int $max = 1024): Traversable {
         yield from ($this->exist() ? stream($this->path, $max) : []);
     }
 
