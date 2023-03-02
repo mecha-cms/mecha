@@ -828,7 +828,7 @@ function step(string $value, string $join = '.', int $direction = 1) {
         }
         return $c;
     }
-    return (array) $value;
+    return ["" => $value];
 }
 
 function store(string $path, array $blob, string $as = null) {
