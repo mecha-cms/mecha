@@ -872,7 +872,7 @@ function test(...$lot) {
             "\r" => ""
         ]);
         $v = strtr($v, [
-            '<code>' => '<code style="display:block;word-wrap:break-word;white-space:pre-wrap;background:#fff;color:#000;border:0;border-bottom:1px solid #000;padding:.5em;border-radius:0;box-shadow:none;text-shadow:none;">'
+            '<code>' => '<code style="background:#fff;border:0;border-bottom:1px solid #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">'
         ]);
         echo $v;
     }
