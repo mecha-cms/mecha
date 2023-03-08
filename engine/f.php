@@ -906,7 +906,7 @@ function ua() {
 
 function zone(string $zone = null) {
     if (!isset($zone)) {
-        return date_default_timezone_get();
+        return 'UTC' !== ($zone = date_default_timezone_get()) ? $zone : null;
     }
     return date_default_timezone_set($zone);
 }
