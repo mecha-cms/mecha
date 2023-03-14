@@ -37,6 +37,89 @@ look like the preview below:
 
 ![Back-End](https://user-images.githubusercontent.com/1669261/193995030-9538357e-a5c4-4292-8ad2-a1e657f40acc.png)
 
+Usage
+-----
+
+~~~ php
+<?php
+
+use AssertionError;
+
+use Mecha\Component\LCL;
+use Mecha\Pilot\Dummy;
+use Mecha\Pilot\Human;
+use Mecha\System\GUI;
+use Mecha\System\Plug;
+use Mecha\System\Plugs;
+use Mecha\System\Power;
+use Mecha\System\Powers;
+use Mecha\System\Transmission;
+use Mecha\System\Transmissions;
+use Mecha\Target;
+use Mecha\Unit;
+
+use function base_convert as convert;
+use function define;
+
+define('EVA_01', convert('001', 8, 10)));
+define('EVA_02', convert('002', 8, 10)));
+define('EVA_03', convert('003', 8, 10)));
+
+$unit = new Unit(type: EVA_01);
+
+$unit->setPlugs(Plugs::from([new Plug(of: new Human(name: '碇 シンジ'))]));
+$unit->setPowers(Powers::from([new Power(1000)]));
+$unit->setTransmissions(Transmissions::from([new Transmission(type: Transmission::TYPE_HYDRO)]));
+
+// Single pilot
+if ($plug = $unit->getPlugByName('碇 シンジ')) {
+    while (20 !== $plug->depth) {
+        $v = $plug->depth;
+        $v = $v > 20 ? $v - 1 : $v + 1;
+        $plug->depth = $v;
+    }
+    try {
+        $plug->contact(level: 1, unit: $unit); // Run the first contact
+        $plug->fill(new LCL(1000))->plug($unit->getPowers());
+        $plug->contact(level: 2, $unit: $unit); // Run the second contact
+        $plug->start(new GUI(locale: 'ja-JP'));
+        if ($unit->connect(to: $plug->nervus(of: Human::NEURON_A10))) {
+            $unit->detach(from: 1, to: 15);
+            $unit->move(to: new Target('K-52'));
+            $unit->launch();
+        }
+    } catch (AssertionError $error) {
+        // Use dummy pilot
+        $unit->setPlugs(Plugs::from([$dummy = new Dummy(of: Dummy::GOLGOTHA_BASE_BUILT)]));
+        foreach ($unit->getPlugs() as $v) {
+            if ($v instanceof Human) {
+                $v->abort(by: $dummy):
+            }
+        }
+        $plug->contact(level: 3, unit: $unit);
+        $plug->start();
+        $unit->detach(from: 1, to: 15);
+        $unit->move(to: new Target('K-52'));
+        $unit->launch();
+    }
+} else {
+    // Use dummy pilot
+    $unit->setPlugs(Plugs::from([$dummy = new Dummy(of: Dummy::GOLGOTHA_BASE_BUILT)]));
+    foreach ($unit->getPlugs() as $v) {
+        if ($v instanceof Human) {
+            $v->abort(by: $dummy):
+        }
+    }
+    $plug->contact(level: 3, unit: $unit);
+    $plug->start();
+    $unit->detach(from: 1, to: 15);
+    $unit->move(to: new Target('K-52'));
+    $unit->launch();
+}
+~~~
+
+Just kidding. Read on!
+
 Features
 --------
 
