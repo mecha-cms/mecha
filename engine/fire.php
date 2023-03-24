@@ -198,11 +198,7 @@ $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 $GLOBALS['url'] = $url = new URL($protocol . $host . $path . $query . $hash);
 
 function anemone(...$lot) {
-    return new Anemone(...$lot);
-}
-
-function from(...$lot) {
-    return From::_(...$lot);
+    return Anemone::from(...$lot);
 }
 
 function hook(...$lot) {
@@ -291,10 +287,6 @@ function state(...$lot) {
         return State::get(...$lot);
     }
     return State::set(...$lot);
-}
-
-function to(...$lot) {
-    return To::_(...$lot);
 }
 
 try {
