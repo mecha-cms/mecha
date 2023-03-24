@@ -291,6 +291,9 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public static function from(...$lot) {
+        if (isset($lot[0]) && is_string($lot[0])) {
+            $lot[0] = explode($lot[1] ?? ', ', $lot[0]);
+        }
         return new static(...$lot);
     }
 
