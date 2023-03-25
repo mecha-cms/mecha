@@ -943,7 +943,7 @@ function a($value, $safe = true) {
     if ($safe && is_object($value) && 'stdClass' !== get_class($value)) {
         return $value;
     }
-    if (is_object($value)) {
+    if (is_array($value) || is_object($value)) {
         $value = (array) $value;
         foreach ($value as &$v) {
             $v = a($v, $safe);
