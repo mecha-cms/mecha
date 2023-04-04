@@ -69,10 +69,10 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
         return $this->exist();
     }
 
-    public function name($x = false) {
+    public function name(...$lot) {
         if ($this->exist()) {
             $path = $this->path;
-            if (true === $x) {
+            if (true === ($x = array_shift($lot) ?? false)) {
                 return basename($path);
             }
             return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
