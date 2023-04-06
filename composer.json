@@ -21,7 +21,7 @@
   },
   "description": "Minimalist content management system.",
   "extra": {
-    "minify": true
+    "minify": false
   },
   "funding": [
     {
