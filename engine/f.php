@@ -403,6 +403,8 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             $context['http']['header'] = implode("\r\n", array_values($headers));
             $context['http']['ignore_errors'] = true;
             $context['http']['method'] = $type;
+            $context['ssl']['verify_peer'] = false;
+            $context['ssl']['verify_peer_name'] = false;
             $out = file_get_contents($target, false, stream_context_create($context));
         }
     }
