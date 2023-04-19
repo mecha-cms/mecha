@@ -118,7 +118,7 @@ git submodule add https://github.com/mecha-cms/x.panel.git --depth 1 lot/x/panel
 
 ### Web Browser
 
-Download the installer file from <https://mecha-cms.com/start> and then follow the instructions.
+Download the installer file from <https://github.com/mecha-cms/start> and then follow the instructions.
 
 ---
 
