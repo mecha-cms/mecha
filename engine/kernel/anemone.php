@@ -15,8 +15,8 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function __construct(iterable $value = [], string $join = ', ') {
-        $this->lot = $this->value = y($value);
         $this->join = $join;
+        $this->lot = $this->value = y($value);
     }
 
     public function __destruct() {
