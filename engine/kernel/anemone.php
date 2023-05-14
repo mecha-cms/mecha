@@ -15,10 +15,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function __construct(iterable $value = [], string $join = ', ') {
-        if ($value instanceof Traversable) {
-            $value = iterator_to_array($value);
-        }
-        $this->lot = $this->value = $value;
+        $this->lot = $this->value = y($value);
         $this->join = $join;
     }
 
@@ -206,10 +203,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     public function set($key, $value = null) {
         if (is_iterable($key)) {
             // `$key` as `$values`
-            if ($key instanceof Traversable) {
-                $key = iterator_to_array($key);
-            }
-            return ($this->value = $key);
+            return ($this->value = y($key));
         }
         return set($this->value, $key, $value);
     }
