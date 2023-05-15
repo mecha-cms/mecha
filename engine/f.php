@@ -79,8 +79,8 @@ function check(string $token, $id = 0) {
 
 function choke(int $for = 1, $id = 0) {
     $current = $_SERVER['REQUEST_TIME'];
-    $id = $id ?? uniqid();
-    if (!is_file($file = ENGINE . D . 'log' . D . $id)) {
+    $id = md5((string) ($id ?? uniqid()));
+    if (!is_file($file = ENGINE . D . 'log' . D . 'choke' . D . $id)) {
         if (!is_dir($folder = dirname($file))) {
             mkdir($folder, 0775, true);
         }
