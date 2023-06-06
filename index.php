@@ -19,7 +19,7 @@ define('PATH', __DIR__);
 define('ENGINE', PATH . D . 'engine');
 define('LOT', PATH . D . 'lot');
 
-define('TEST', true); // Change to `true` to enable test mode
+define('TEST', false); // Change to `true` to enable test mode
 
 require ENGINE . D . 'f.php';
 require ENGINE . D . 'fire.php';
