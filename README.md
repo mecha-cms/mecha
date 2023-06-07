@@ -13,8 +13,8 @@ Front-End
 ---------
 
 The [default layout](https://github.com/mecha-cms/y.log "Log Layout") uses only Serif and Mono fonts. Different
-operating systems might display somewhat different results. This preview was taken through a computer with Linux
-operating system. Serif font that’s displayed in the preview below should be
+operating systems may produce slightly different results. This preview was taken from a computer running
+[Arch Linux](https://github.com/taufik-nurrohman/arch) operating system. The Serif font shown in the preview should be
 [DejaVu Serif](https://commons.wikimedia.org/wiki/File:DejaVuSerifSpecimen.svg "DejaVu Serif · Wikimedia Commons"):
 
 ![Front-End](https://user-images.githubusercontent.com/1669261/190838629-860bfd9c-0444-4426-990f-71a604b95c32.png)
