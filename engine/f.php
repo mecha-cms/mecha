@@ -1024,11 +1024,17 @@ function f(?string $value, $accent = true, string $keep = "") {
     // Remove HTML tag(s) and character(s) reference
     $value = preg_replace('/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
     if (!$accent || is_array($accent)) {
+        if (false === $accent) {
+            $accent = []; // Because `(array) false` will turn into `[0 => false]` which we don’t want
+        }
+        // If the previous condition is not checked, the translation below will incorrectly translate all `'0'` to
+        // `false` (which will be casted as an empty string), and so any string containing a `'0'` character will always
+        // drop that character in the output :(
         $value = !empty($GLOBALS['F']) ? strtr($value, array_replace($GLOBALS['F'], (array) $accent)) : $value;
     }
     $value = preg_replace([
         // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}«»‘’“”\s' . ($keep = x($keep)) . ']/u',
+        '/[^\p{L}\p{N}«»‘’“”\s' . x($keep) . ']/u',
         // Convert multiple white-space to single space
         '/\s+/'
     ], ' ', $value);
