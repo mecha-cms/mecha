@@ -1060,7 +1060,7 @@ function g(string $folder, $x = null, $deep = 0) {
             }
             // Filter by function
             if (is_callable($x)) {
-                return fire($x, [$k, $v->isDir() ? 0 : 1], $v);
+                return fire($x, [$v->isDir() ? 0 : 1, $k], $v);
             }
             // No filter
             return true;
