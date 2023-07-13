@@ -19,37 +19,37 @@ foreach ([
     'entity' => static function (?string $value): ?string {
         return "" !== ($value = html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES)) ? $value : null;
     },
-    'query' => static function (?string $value, $eval = true): array {
-        $out = [];
-        if ("" === ($value = trim($value ?? ""))) {
-            return $out;
+    'query' => static function (?string $from, $eval = true, $value = true): array {
+        $to = [];
+        if ("" === ($from = trim($from ?? ""))) {
+            return $to;
         }
-        $q = static function (array &$out, $k, $v) {
+        $q = static function (array &$to, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
                 if ("" === ($kk = array_shift($k))) {
-                    $kk = count($out);
+                    $kk = count($to);
                 }
-                if (!array_key_exists($kk, $out)) {
-                    $out[$kk] = [];
+                if (!array_key_exists($kk, $to)) {
+                    $to[$kk] = [];
                 }
-                $out =& $out[$kk];
+                $to =& $to[$kk];
             }
             if ("" === ($kk = array_shift($k))) {
-                $kk = count($out);
+                $kk = count($to);
             }
-            $out[$kk] = $v;
-            ksort($out);
+            $to[$kk] = $v;
+            ksort($to);
         };
-        if (isset($value[0]) && '?' === $value[0]) {
-            $value = substr($value, 1);
+        if (isset($from[0]) && '?' === $from[0]) {
+            $from = substr($from, 1);
         }
-        foreach (explode('&', $value) as $v) {
+        foreach (explode('&', $from) as $v) {
             $v = explode('=', $v, 2);
-            $v[1] = isset($v[1]) ? urldecode($v[1]) : true;
-            $q($out, urldecode($v[0]), $eval ? e($v[1]) : $v[1]);
+            $v[1] = isset($v[1]) ? urldecode($v[1]) : $value;
+            $q($to, urldecode($v[0]), $eval ? e($v[1]) : $v[1]);
         }
-        return $out;
+        return $to;
     },
     'serial' => static function (?string $value): ?string {
         return "" !== ($value = unserialize($value)) ? $value : null;
