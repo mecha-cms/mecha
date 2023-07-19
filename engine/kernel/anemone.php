@@ -217,7 +217,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     public function sort($sort = 1, $keys = false) {
         if (count($value = $this->value) <= 1) {
             if (!$keys && $value) {
-                $this->value = array_values($value);
+                $this->value = [reset($value)];
             }
             return $this;
         }
