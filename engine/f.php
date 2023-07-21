@@ -19,7 +19,7 @@ if (!function_exists('array_is_list')) {
 function abort(string $alert, $exit = true) {
     ob_start();
     debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-    $trace = strtr(trim(strstr(n(ob_get_clean()), "\n"), "\n"), [PATH => '.']);
+    $trace = strtr(trim(strstr(n(ob_get_clean()) . "\n", "\n"), "\n"), [PATH => '.']);
     echo '<details' . ($exit ? ' open' : "") . ' style="background:#fc8;border:2px solid #000;color:#000;font:100%/1.5 sans-serif;margin:0;padding:0;selection:none;text-shadow:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em .75em;text-shadow:none;user-select:none;">' . $alert . '</summary><pre style="background:#fe9;border:1px solid #000;border-width:1px 0 0;font:100%/1.25 monospace;margin:0;overflow:auto;padding:0;text-shadow:none;white-space:pre;"><code style="color:inherit;display:block;font:inherit;margin:0;padding:.5em .75em;text-shadow:none;">' . $trace . '</code></pre></details>';
     $exit && exit;
 }
@@ -893,7 +893,7 @@ function type(string $type = null) {
     if (!isset($type)) {
         $type = status()[1]['content-type'] ?? null;
         if (is_string($type)) {
-            return strstr($type, ';', true);
+            return strstr($type . ';', ';', true);
         }
         return null;
     }
