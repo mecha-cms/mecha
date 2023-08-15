@@ -7,11 +7,16 @@ foreach ([
     },
     'JSON' => static function ($value, $tidy = false): ?string {
         if ($tidy) {
-            $mode = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT;
-        } else {
-            $mode = JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE;
+            $value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            if (is_int($tidy)) {
+                $tidy = str_repeat(' ', $tidy);
+            }
+            if (is_string($tidy)) {
+                $value = strtr($value, ['    ' => $tidy]);
+            }
+            return "" !== $value ? $value : null;
         }
-        return "" !== ($value = json_encode($value ?? "", $mode)) ? $value : null;
+        return "" !== ($value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ? $value : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
         $url = $GLOBALS['url'] . "";
