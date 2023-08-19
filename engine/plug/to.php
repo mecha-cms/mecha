@@ -5,14 +5,14 @@ foreach ([
         $value = htmlspecialchars_decode($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
         return "" !== $value ? $value : null;
     },
-    'JSON' => static function ($value, $tidy = false): ?string {
-        if ($tidy) {
+    'JSON' => static function ($value, $dent = false): ?string {
+        if ($dent) {
             $value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
-            if (is_int($tidy)) {
-                $tidy = str_repeat(' ', $tidy);
+            if (is_int($dent)) {
+                $dent = str_repeat(' ', $dent);
             }
-            if (is_string($tidy)) {
-                $value = strtr($value, ['    ' => $tidy]);
+            if (is_string($dent)) {
+                $value = strtr($value, ['    ' => $dent]);
             }
             return "" !== $value ? $value : null;
         }
