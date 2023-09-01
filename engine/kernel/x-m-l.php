@@ -36,11 +36,11 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
                 // Comment
                 '<\!--[\s\S]*?-->',
                 // Document type
-                '<\!(?:"[^"]*"|\'[^\']*\'|[^>])*>',
+                '<\!(?>"[^"]*"|\'[^\']*\'|[^>])*>',
                 // Processing instruction
-                '<\?(?:"[^"]*"|\'[^\']*\'|[^>?])*\?>',
+                '<\?(?>"[^"]*"|\'[^\']*\'|[^>?])*\?>',
                 // Element
-                '<([^\s"\'\/<=>]+)(?:\s(?:"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>(?:(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
+                '<([^\s"\'\/<=>]+)(?>\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>(?>(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
                 // Text
                 '[^<>]+',
                 // Remaining `<` and `>` character(s) to escape
@@ -73,9 +73,8 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
                 }
             }
         }
-        $v = reset($out);
         // Return plain text if it is the only item in array
-        if (1 === count($out) && is_string($v)) {
+        if (1 === count($out) && is_string($v = reset($out))) {
             return $v;
         }
         // Else, return the array
@@ -96,14 +95,14 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
         } else if (is_string($value)) {
             // Must starts with `<` and ends with `>`
             if (0 === strpos($value, '<') && '>' === substr($value, -1)) {
-                if (preg_match('/^<([^\s"\'\/<=>]+)(\s(?:"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>([\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)$/', n($value), $m)) {
+                if (preg_match('/^<([^\s"\'\/<=>]+)(\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>([\s\S]*?)<\/(\1)>|\/' . ($this->strict ? "" : '?') . '>)$/', n($value), $m)) {
                     $this->lot = [
                         0 => $m[1],
                         1 => isset($m[4]) ? ($deep ? $this->deep($m[3]) : $m[3]) : false,
                         2 => []
                     ];
                     $this->strict = '/>' === substr($value, -2);
-                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'\/<=>]+)(?:=("[^"]*"|\'[^\']*\'|[^\s\/>]*))?/', $m[2], $mm)) {
+                    if (isset($m[2]) && preg_match_all('/\s+([^\s"\'\/<=>]+)(?>=("[^"]*"|\'[^\']*\'|[^\s\/>]*))?/', $m[2], $mm)) {
                         if (!empty($mm[1])) {
                             foreach ($mm[1] as $i => $k) {
                                 $v = $mm[2][$i];

@@ -33,7 +33,7 @@ class HTML extends XML {
     public function __construct($value = [], $deep = false) {
         if ($deep && is_string($value) && !$this->strict) {
             // Convert `<tag>` to `<tag/>`
-            $value = preg_replace('/<(' . implode('|', array_keys(array_filter($this->void))) . ')(\s(?:"[^"]*"|\'[^\']*\'|[^\/>])*)?>/i', '<$1$2/>', $value);
+            $value = preg_replace('/<(' . implode('|', array_keys(array_filter($this->void))) . ')(\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?>/i', '<$1$2/>', $value);
         }
         parent::__construct($value, $deep);
     }
