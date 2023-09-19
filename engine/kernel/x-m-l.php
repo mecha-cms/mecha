@@ -40,7 +40,7 @@ class XML extends Genome implements ArrayAccess, Countable, JsonSerializable {
                 // Processing instruction
                 '<\?(?>"[^"]*"|\'[^\']*\'|[^>?])*\?>',
                 // Element
-                '<([^\s"\'\/<=>]+)(?>\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?(?:>(?>(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
+                '<([^\s"\'\/<=>]+)(?>\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?(?>>(?>(?R)|[\s\S])*?<\/\1>|\/' . ($this->strict ? "" : '?') . '>)',
                 // Text
                 '[^<>]+',
                 // Remaining `<` and `>` character(s) to escape
