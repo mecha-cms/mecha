@@ -1095,7 +1095,9 @@ function i(?string $value, $lot = [], string $or = null) {
         }
     }
     $value = $GLOBALS['I'][$value] ?? $or ?? $value;
-    $value = $lot ? vsprintf($value, $lot) : $value;
+    try {
+        $value = $lot ? vsprintf($value, $lot) : $value;
+    } catch (Throwable $e) {}
     return "" !== $value ? $value : null;
 }
 
