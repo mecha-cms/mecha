@@ -2,3 +2,4 @@
 .github export-ignore
 .gitignore export-ignore
 README.md export-ignore
+composer.json export-ignore
