@@ -3,7 +3,7 @@
 // This feature is available since PHP 8.1
 if (!function_exists('array_is_list')) {
     function array_is_list(array $value) {
-        if ([] === $value) {
+        if (!$value) {
             return true;
         }
         $key = -1;
