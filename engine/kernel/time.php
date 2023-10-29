@@ -11,7 +11,7 @@ final class Time extends Genome {
     public function __construct($value = null) {
         if (is_numeric($value)) {
             $this->source = date('Y-m-d H:i:s', (int) $value);
-        } else if (is_string($value) && strlen($value) >= 19 && 5 === substr_count($value, '-')) {
+        } else if (is_string($value) && strspn($value, '-0123456789') >= 19 && 5 === substr_count($value, '-')) {
             if ($date = DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
                 $this->source = $date->format('Y-m-d H:i:s');
             } else {

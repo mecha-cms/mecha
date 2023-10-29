@@ -20,9 +20,6 @@
     "vendor-dir": "engine/vendor"
   },
   "description": "Minimalist content management system.",
-  "extra": {
-    "minify": false
-  },
   "funding": [
     {
       "type": "github",
@@ -47,8 +44,7 @@
     "mecha-cms/x.layout": "^2.0.0",
     "mecha-cms/x.link": "^2.0.0",
     "mecha-cms/x.markdown": "^3.0.0",
-    "mecha-cms/x.page": "^3.0.0",
-    "mecha-cms/x.y-a-m-l": "^2.0.0",
+    "mecha-cms/x.page": "^3.1.0",
     "mecha-cms/y.log": "^2.0.0",
     "php": ">=7.3"
   },
