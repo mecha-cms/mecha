@@ -836,6 +836,9 @@ function store(string $path, array $blob, string $as = null) {
         // Error
         return $blob['status'];
     }
+    if (null !== ($folder = $blob['folder'])) {
+        $path .= D . $folder;
+    }
     if (is_file($file = $path . D . ($as ?? $blob['name']))) {
         // Skip
         return false;

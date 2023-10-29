@@ -109,15 +109,26 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
         // who are already familiar with the property of the page file.
         $alter = [
             'error' => 'status',
-            'full_path' => 'from',
             'tmp_name' => 'path'
         ];
         $out = [];
         if (!is_array(reset($in))) {
             foreach ($in as $k => $v) {
+                if ('full_path' === $k) {
+                    $v = strtr(dirname($v), ['/' => D]);
+                    $out['folder'] = "" !== $v ? $v : null;
+                    continue;
+                }
                 $out[$alter[$k] ?? $k] = $v;
             }
             return $out;
+        }
+        if (isset($in['full_path'])) {
+            foreach ($in['full_path'] as $k => $v) {
+                $v = strtr(dirname($v), ['/' => D]);
+                $out[$k]['folder'] = "" !== $v ? $v : null;
+            }
+            unset($in['full_path']);
         }
         foreach ($in as $k => $v) {
             foreach ($v as $kk => $vv) {
