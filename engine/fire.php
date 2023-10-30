@@ -100,35 +100,32 @@ array_walk_recursive($any, static function (&$v) {
     $v = "" === $v ? null : e($v);
 });
 
-// Normalize `$_FILES` value(s) to `$_POST`
+// Normalize `$_FILES` property to `$_POST`
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     // <https://stackoverflow.com/a/30342756/1163000>
     $tidy = static function (array $in) use (&$tidy) {
-        // The normalized value(s) do not follow the default value(s) given by `$_FILES`. Instead, it
-        // uses its own value(s) with slightly different specification, to make it easier for user(s)
-        // who are already familiar with the property of the page file.
         $alter = [
             'error' => 'status',
             'tmp_name' => 'path'
         ];
         $out = [];
         if (!is_array(reset($in))) {
+            if (isset($in[$k = 'full_path'])) {
+                $v = strtr(dirname($in[$k]), ['/' => D]);
+                $out['folder'] = "" !== $v && '.' !== $v ? $v : null;
+                unset($in[$k]);
+            }
             foreach ($in as $k => $v) {
-                if ('full_path' === $k) {
-                    $v = strtr(dirname($v), ['/' => D]);
-                    $out['folder'] = "" !== $v ? $v : null;
-                    continue;
-                }
                 $out[$alter[$k] ?? $k] = $v;
             }
             return $out;
         }
-        if (isset($in['full_path'])) {
-            foreach ($in['full_path'] as $k => $v) {
-                $v = strtr(dirname($v), ['/' => D]);
-                $out[$k]['folder'] = "" !== $v ? $v : null;
+        if (isset($in[$k = 'full_path'])) {
+            foreach ($in[$k] as $kk => $vv) {
+                $vv = strtr(dirname($vv), ['/' => D]);
+                $out[$kk]['folder'] = "" !== $vv && '.' !== $vv ? $vv : null;
             }
-            unset($in['full_path']);
+            unset($in[$k]);
         }
         foreach ($in as $k => $v) {
             foreach ($v as $kk => $vv) {
