@@ -21,7 +21,7 @@ foreach ([
     'URL' => static function (?string $value, $raw = false): ?string {
         $url = $GLOBALS['url'] . "";
         $value = (string) $value;
-        $value = realpath($value) ?: $value;
+        $value = stream_resolve_include_path($value) ?: $value;
         $value = strtr($value, [
             PATH => $url,
             strtr(PATH, D, '/') => $url,
