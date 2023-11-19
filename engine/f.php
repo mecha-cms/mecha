@@ -82,7 +82,7 @@ function choke(int $for = 1, $id = 0) {
         if (!is_dir($folder = dirname($file))) {
             mkdir($folder, 0775, true);
         }
-        touch($file, 0);
+        touch($file, $current);
         return false;
     }
     $prev = filemtime($file);
