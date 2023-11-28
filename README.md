@@ -52,7 +52,7 @@ Requirements
 ------------
 
  - Apache 2.4 and above, with enabled [`mod_rewrite`][apache/mod_rewrite] module.
- - PHP 7.3 and above, with enabled [`dom`][php/dom], [`json`][php/json] and [`mbstring`][php/mbstring] extension.
+ - PHP 7.3 and above.
 
 Preparations
 ------------
