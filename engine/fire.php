@@ -371,8 +371,6 @@ type('text/' . (error_get_last() ? 'plain' : 'html'));
 // Set default time zone and locale
 zone($state->zone);
 
-Hook::fire('set');
-
 // Run task(s) if any…
 if (is_file($task = PATH . D . 'task.php')) {
     (static function ($f) {
@@ -385,6 +383,4 @@ if (is_file($task = PATH . D . 'task.php')) {
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
 unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $uses, $v, $x);
 
-Hook::fire('get');
-
-Hook::fire('let');
+Hook::fire(['set', 'get', 'let']);
