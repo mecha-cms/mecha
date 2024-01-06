@@ -34,7 +34,7 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
     }
 
     public function URL() {
-        return $this->exist() ? To::URL($this->path) : null;
+        return ($route = $this->route()) ? long($route) : null;
     }
 
     public function content() {
@@ -100,6 +100,13 @@ class File extends Genome implements ArrayAccess, Countable, IteratorAggregate, 
 
     public function parent() {
         return $this->exist() ? new Folder(dirname($this->path)) : null;
+    }
+
+    public function route() {
+        if ($this->exist()) {
+            return '/' . trim(strtr($this->path, [PATH . D => '/', D => '/']), '/');
+        }
+        return null;
     }
 
     public function seal() {
