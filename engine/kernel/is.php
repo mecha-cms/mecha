@@ -4,6 +4,10 @@ final class Is extends Genome {
 
     private function __construct() {}
 
+    public static function __callStatic(string $kin, array $lot = []) {
+        return parent::_($kin) ? parent::__callStatic($kin, $lot) : null;
+    }
+
     // Check for IP address
     public static function IP($value) {
         return false !== filter_var($value, FILTER_VALIDATE_IP);
@@ -14,35 +18,12 @@ final class Is extends Genome {
         if (!is_string($value) || "" === ($value = trim($value))) {
             return false;
         }
-        if (
-            'false' === $value ||
-            // `null` value is a valid JSON <https://www.rfc-editor.org/rfc/rfc8259#section-3>
-            'null' === $value ||
-            'true' === $value ||
-            '""' === $value ||
-            '[]' === $value ||
-            '{}' === $value ||
-            is_numeric($value)
-        ) {
-            return true;
-        }
-        return (
-            // Maybe string
-            '"' === $value[0] && '"' === substr($value, -1) ||
-            // Maybe array
-            '[' === $value[0] && ']' === substr($value, -1) ||
-            // Maybe object
-            '{' === $value[0] && '}' === substr($value, -1)
-        ) && null !== json_decode($value);
+        return json_validate($value);
     }
 
     // Check for URL address
     public static function URL($value) {
         return false !== filter_var($value, FILTER_VALIDATE_URL);
-    }
-
-    public static function __callStatic(string $kin, array $lot = []) {
-        return parent::_($kin) ? parent::__callStatic($kin, $lot) : null;
     }
 
     // Check for email address

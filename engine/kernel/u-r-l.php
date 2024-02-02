@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
+final class URL extends Genome {
 
     private $lot = [
         'hash' => null,
@@ -132,11 +132,11 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         return $this->__call($key);
     }
 
-    public function __isset(string $key) {
+    public function __isset(string $key): bool {
         return !!$this->__get($key);
     }
 
-    public function __set(string $key, $value = null) {
+    public function __set(string $key, $value = null): void {
         if (method_exists($this, $set = 'set' . ucfirst($key))) {
             $this->{$set}($value);
         }
@@ -146,7 +146,7 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         return (string) ($this->getProtocol() . $this->getHost() . $this->getPort());
     }
 
-    public function __unset(string $key) {
+    public function __unset(string $key): void {
         if (array_key_exists($key, $this->lot)) {
             $this->lot[$key] = null;
         }
@@ -189,7 +189,6 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         }
     }
 
-    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->lot;
     }
@@ -198,7 +197,6 @@ final class URL extends Genome implements ArrayAccess, Countable, IteratorAggreg
         return isset($this->lot[$key]);
     }
 
-    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->lot[$key] ?? null;
     }

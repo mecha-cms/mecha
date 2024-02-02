@@ -1,18 +1,64 @@
 <?php
 
-// This feature is available since PHP 8.1
+// <https://wiki.php.net/rfc/phase_out_serializable>
+if (!interface_exists('Serializable')) {
+    // PHP >= 10.0
+    interface Serializable {
+        public function serialize(): ?string;
+        public function unserialize(string $data): void;
+    }
+}
+
+// <https://wiki.php.net/rfc/stringable>
+if (!interface_exists('Stringable')) {
+    // PHP < 8.0
+    interface Stringable {
+        public function __toString(): string;
+    }
+}
+
+// <https://wiki.php.net/rfc/is_list>
 if (!function_exists('array_is_list')) {
-    function array_is_list(array $value) {
-        if (!$value) {
+    // PHP < 8.1
+    function array_is_list(array $array): bool {
+        if (!$array) {
             return true;
         }
         $key = -1;
-        foreach ($value as $k => $v) {
+        foreach ($array as $k => $v) {
             if ($k !== ++$key) {
                 return false;
             }
         }
         return true;
+    }
+}
+
+// <https://wiki.php.net/rfc/json_validate>
+if (!function_exists('json_validate')) {
+    // PHP < 8.3
+    function json_validate(string $json): bool {
+        $json = trim($json);
+        if (
+            'false' === $json ||
+            // `null` is a valid JSON <https://www.rfc-editor.org/rfc/rfc8259#section-3>
+            'null' === $json ||
+            'true' === $json ||
+            '""' === $json ||
+            '[]' === $json ||
+            '{}' === $json ||
+            is_numeric($json)
+        ) {
+            return true;
+        }
+        return (
+            // Maybe string
+            '"' === $json[0] && '"' === substr($json, -1) ||
+            // Maybe array
+            '[' === $json[0] && ']' === substr($json, -1) ||
+            // Maybe object
+            '{' === $json[0] && '}' === substr($json, -1)
+        ) && null !== json_decode($json);
     }
 }
 

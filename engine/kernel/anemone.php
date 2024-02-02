@@ -1,6 +1,6 @@
 <?php
 
-class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
+class Anemone extends Genome {
 
     public $join;
     public $lot;
@@ -46,7 +46,7 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
     }
 
     public function __toString(): string {
-        return (string) $this->__invoke($this->join);
+        return (string) $this->join($this->join);
     }
 
     public function all($fn) {
@@ -116,7 +116,6 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return $this->__invoke($join);
     }
 
-    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return $this->value;
     }
@@ -171,7 +170,6 @@ class Anemone extends Genome implements ArrayAccess, Countable, IteratorAggregat
         return isset($this->value[$key]);
     }
 
-    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return $this->value[$key] ?? null;
     }

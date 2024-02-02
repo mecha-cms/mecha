@@ -1,10 +1,6 @@
 <?php
 
-abstract class Genome {
-
-    // This property is supposed to be private, but someone might need it in the future, for example to check the data
-    // from outside of the extended class. So I set this as a public property. This property could change at any time.
-    public static $_ = [];
+abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Serializable, Stringable {
 
     public function __call(string $kin, array $lot = []) {
         foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
@@ -28,6 +24,80 @@ abstract class Genome {
             }
         }
     }
+
+    public function __clone(): void {}
+
+    public function __construct() {}
+
+    public function __debugInfo(): array {
+        return $this->__serialize();
+    }
+
+    public function __destruct() {}
+
+    #[ReturnTypeWillChange]
+    public function __get(string $key) {
+        return null;
+    }
+
+    #[ReturnTypeWillChange]
+    public function __invoke() {}
+
+    public function __isset(string $key): bool {
+        return false;
+    }
+
+    public function __serialize(): array {
+        return get_object_vars($this);
+    }
+
+    public function __set(string $key, $value): void {}
+
+    public function __toString(): string {
+        return json_encode($this->__serialize());
+    }
+
+    public function __unserialize(array $data): void {
+        static::__set_state($data);
+    }
+
+    public function __unset(string $key): void {}
+
+    public function count(): int {
+        return count($this->__serialize());
+    }
+
+    public function getIterator(): Traversable {
+        return new ArrayIterator($this->__serialize());
+    }
+
+    #[ReturnTypeWillChange]
+    public function jsonSerialize() {
+        return $this->__serialize();
+    }
+
+    public function offsetExists($key): bool {
+        return false;
+    }
+
+    #[ReturnTypeWillChange]
+    public function offsetGet($key) {
+        return null;
+    }
+
+    public function offsetSet($key, $value): void {}
+
+    public function offsetUnset($key): void {}
+
+    // PHP Serializable < 7.4
+    public function serialize(): ?string {
+        return serialize($this->__serialize());
+    }
+
+    // PHP Serializable < 7.4
+    public function unserialize(string $data): void {}
+
+    public static $_ = [];
 
     public static function _(...$lot) {
         $c = static::class;
@@ -70,5 +140,7 @@ abstract class Genome {
             }
         }
     }
+
+    public static function __set_state(array $lot): object {}
 
 }

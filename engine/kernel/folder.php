@@ -1,6 +1,6 @@
 <?php
 
-class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
+class Folder extends Genome {
 
     public $path;
 
@@ -17,12 +17,15 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return null;
     }
 
-    public function __isset(string $key) {
+    public function __isset(string $key): bool {
         return null !== $this->__get($key);
     }
 
     public function __toString(): string {
-        return $this->exist() ? $this->path : "";
+        if ($path = $this->path) {
+            return strtr($path, [PATH . D => ".\\", D => "\\"]);
+        }
+        return "";
     }
 
     public function _seal() {
@@ -66,9 +69,8 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return $this->stream(null, true);
     }
 
-    #[ReturnTypeWillChange]
     public function jsonSerialize() {
-        return $this->exist();
+        return $this->__toString() ?: null;
     }
 
     public function name() {
@@ -79,7 +81,6 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         return null !== $this->offsetGet($key);
     }
 
-    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         if ($this->exist()) {
             $path = $this->path . D . ltrim(strtr($key, '/', D), D);
@@ -92,10 +93,6 @@ class Folder extends Genome implements ArrayAccess, Countable, IteratorAggregate
         }
         return null;
     }
-
-    // Reserved. Should be used for read only!
-    public function offsetSet($key, $value): void {}
-    public function offsetUnset($key): void {}
 
     public function parent() {
         return $this->exist() ? new static(dirname($this->path)) : null;

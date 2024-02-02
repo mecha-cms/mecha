@@ -1,6 +1,6 @@
 <?php
 
-class State extends Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable {
+class State extends Genome {
 
     protected static $lot = [];
 
@@ -26,19 +26,19 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
         return count($lot) < 2 ? self::get(...$lot) : self::set(...$lot);
     }
 
-    public function __isset(string $key) {
+    public function __isset(string $key): bool {
         return !!$this->__get($key);
     }
 
-    public function __set(string $key, $value = null) {
-        return self::set(p2f($key), $value);
+    public function __set(string $key, $value = null): void {
+        self::set(p2f($key), $value);
     }
 
     public function __toString(): string {
-        return json_encode(self::get());
+        return serialize(self::get(null, true));
     }
 
-    public function __unset(string $key) {
+    public function __unset(string $key): void {
         self::let(p2f($key));
     }
 
@@ -50,7 +50,6 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
         return new ArrayIterator(self::$lot[static::class] ?? []);
     }
 
-    #[ReturnTypeWillChange]
     public function jsonSerialize() {
         return self::$lot[static::class] ?? [];
     }
@@ -59,7 +58,6 @@ class State extends Genome implements ArrayAccess, Countable, IteratorAggregate,
         return null !== self::offsetGet($key);
     }
 
-    #[ReturnTypeWillChange]
     public function offsetGet($key) {
         return self::$lot[static::class][$key] ?? null;
     }
