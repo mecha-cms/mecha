@@ -143,7 +143,7 @@ final class URL extends Genome {
     }
 
     public function __serialize(): array {
-        return $this->lot;
+        return ['lot' => $this->lot ?? []];
     }
 
     public function __toString(): string {
@@ -151,7 +151,7 @@ final class URL extends Genome {
     }
 
     public function __unserialize(array $lot): void {
-        $this->lot = $lot;
+        $this->lot = $lot['lot'] ?? [];
     }
 
     public function __unset(string $key): void {
@@ -227,12 +227,6 @@ final class URL extends Genome {
             return To::query(array_replace_recursive(From::query($query), $lot));
         }
         return "" !== $query ? '?' . $query : null;
-    }
-
-    public static function __set_state(array $lot): object {
-        $that = new static;
-        $that->lot = $lot;
-        return $that;
     }
 
 }

@@ -58,7 +58,9 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
     }
 
     public function __unserialize(array $lot): void {
-        static::__set_state($lot);
+        foreach ($lot as $k => $v) {
+            $this->{$k} = $v;
+        }
     }
 
     public function __unset(string $key): void {}
@@ -142,7 +144,7 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
     }
 
     public static function __set_state(array $lot): object {
-        return new static;
+        return (new static)->__unserialize($lot);
     }
 
 }

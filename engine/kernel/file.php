@@ -22,7 +22,11 @@ class File extends Genome {
     }
 
     public function __serialize(): array {
-        return ['path' => $this->path];
+        $lot = parent::__serialize();
+        if (is_string($path = $lot['path'] ?? 0) && 0 !== strpos($path, ".\\")) {
+            $lot['path'] = strtr($path, [PATH . D => ".\\", D => "\\"]);
+        }
+        return $lot;
     }
 
     public function __toString(): string {
@@ -33,7 +37,10 @@ class File extends Genome {
     }
 
     public function __unserialize(array $lot): void {
-        $this->path = $lot['path'] ?? null;
+        if (is_string($path = $lot['path'] ?? 0) && 0 === strpos($path, ".\\")) {
+            $lot['path'] = PATH . D . strtr(substr($path, 2), ["\\" => D]);
+        }
+        parent::__unserialize($lot);
     }
 
     public function _seal() {

@@ -45,16 +45,8 @@ class Anemone extends Genome {
         return implode($join, $value);
     }
 
-    public function __serialize(): array {
-        return $this->value;
-    }
-
     public function __toString(): string {
         return (string) $this->join($this->join);
-    }
-
-    public function __unserialize(array $value): void {
-        $this->value = $value;
     }
 
     public function all($fn) {
@@ -284,10 +276,6 @@ class Anemone extends Genome {
         }
         $this->value = $value;
         return $this;
-    }
-
-    public static function __set_state(array $lot): object {
-        return new static($lot);
     }
 
     public static function from(...$lot) {

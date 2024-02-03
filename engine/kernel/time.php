@@ -4,9 +4,10 @@ final class Time extends Genome {
 
     public $parent;
     public $value;
-    public $z;
+    public $zone;
 
     public function __construct($value = null) {
+        $this->zone = zone();
         if (is_numeric($value)) {
             $this->value = date('Y-m-d H:i:s', (int) $value);
         } else if (is_string($value) && strspn($value, '-0123456789') >= 19 && 5 === substr_count($value, '-')) {
@@ -34,16 +35,8 @@ final class Time extends Genome {
         return $this->i($pattern);
     }
 
-    public function __serialize(): array {
-        return ['value' => $this->value];
-    }
-
     public function __toString(): string {
         return (string) $this->value;
-    }
-
-    public function __unserialize(array $lot): void {
-        $this->value = $lot['value'] ?? date('Y-m-d H:i:s', $value ? strtotime($value) : null);
     }
 
     public function date() {
@@ -156,29 +149,20 @@ final class Time extends Genome {
         return $this->format('s');
     }
 
-    public function to(string $zone = null, string $modify = null) {
+    public function to(string $zone = null, string $offset = null) {
         $date = new DateTime($this->value);
-        $date->setTimeZone(new DateTimeZone($zone = $zone ?? zone()));
-        if (isset($modify)) {
-            $date->modify($modify);
+        $date->setTimeZone(new DateTimeZone($zone = $zone ?? $this->zone));
+        if (isset($offset)) {
+            $date->modify($offset);
         }
-        if (!isset($this->z[$zone])) {
-            $this->z[$zone] = new static($date->format('Y-m-d H:i:s'));
-            $this->z[$zone]->parent = $this;
-        }
-        return $this->z[$zone];
+        $that = new static($date->format('Y-m-d H:i:s'));
+        $that->parent = $this;
+        $that->zone = 'UTC' !== $zone ? $zone : null;
+        return $that;
     }
 
     public function year() {
         return $this->format('Y');
-    }
-
-    public static function __set_state(array $lot): object {
-        $that = new static($lot['value'] ?? null);
-        if ($zone = $lot['zone'] ?? 0) {
-            return $that->to($zone);
-        }
-        return $that;
     }
 
     public static function from(...$lot) {

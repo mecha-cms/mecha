@@ -38,4 +38,10 @@ class HTML extends XML {
         parent::__construct($value, $deep);
     }
 
+    public function __serialize(): array {
+        $lot = parent::__serialize();
+        unset($lot['c'], $lot['void']);
+        return $lot;
+    }
+
 }

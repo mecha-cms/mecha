@@ -1547,6 +1547,25 @@ function z($value, $short = true) {
             }
             return $value . '{' . $content . '}';
         }
+        if (method_exists($value, '__set_state')) {
+            $content = "";
+            $test = substr(explode('::__set_state(', var_export($value, true), 2)[1], 0, -1);
+            foreach (preg_split('/(\'(?>[^\'\\\\]*(?>\\.[^\'\\\\]*)*)\')/', $test, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
+                if (0 === strpos($v, "'") && "'" === substr($v, -1)) {
+                    $content .= $v;
+                    continue;
+                }
+                $v = preg_replace('/\s+/', "", trim($v));
+                if ('array(' === $v && $short) {
+                    $v = '[';
+                }
+                if (',)' === $v) {
+                    $v = $short ? ']' : ')';
+                }
+                $content .= $v;
+            }
+            return get_class($value) . '::__set_state(' . $content . ')';
+        }
         // TODO: Find a way to extract argument(s) from class instance
         return 'new ' . get_class($value);
     }
