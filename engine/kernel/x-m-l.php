@@ -120,6 +120,12 @@ class XML extends Genome {
         }
     }
 
+    public function __serialize(): array {
+        $lot = $this->lot;
+        $lot[2] = (array) ($lot[2] ?? []);
+        return $lot;
+    }
+
     public function __toString(): string {
         $lot = $this->lot;
         if (!isset($lot[0]) || false === $lot[0]) {
@@ -142,13 +148,18 @@ class XML extends Genome {
         return $out . (false === $lot[1] ? ($this->strict ? '/' : "") : '>' . ($this->deep && (is_array($lot[1]) || is_object($lot[1])) ? $this->deep($lot[1]) : s($lot[1])) . '</' . $lot[0]) . '>';
     }
 
+    public function __unserialize(array $lot): void {
+        $lot[2] = (array) ($lot[2] ?? []);
+        $this->lot = $lot;
+    }
+
     public function count(): int {
         return 1; // Single node is always `1`
     }
 
     public function jsonSerialize() {
-        $lot = $this->lot;
-        $lot[2] = (object) ($lot[2] ?? []);
+        $lot = $this->__serialize();
+        $lot[2] = (object) $lot[2];
         return $lot;
     }
 
@@ -184,6 +195,11 @@ class XML extends Genome {
         } else {
             unset($this->lot[2][$key]);
         }
+    }
+
+    public static function __set_state(array $lot): object {
+        $lot[2] = (array) ($lot[2] ?? []);
+        return new static($lot);
     }
 
 }

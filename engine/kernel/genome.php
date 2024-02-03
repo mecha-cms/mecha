@@ -57,8 +57,8 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return json_encode($this->__serialize());
     }
 
-    public function __unserialize(array $data): void {
-        static::__set_state($data);
+    public function __unserialize(array $lot): void {
+        static::__set_state($lot);
     }
 
     public function __unset(string $key): void {}
@@ -95,7 +95,7 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
     }
 
     // PHP Serializable < 7.4
-    public function unserialize(string $data): void {}
+    public function unserialize(string $lot): void {}
 
     public static $_ = [];
 
@@ -141,6 +141,8 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         }
     }
 
-    public static function __set_state(array $lot): object {}
+    public static function __set_state(array $lot): object {
+        return new static;
+    }
 
 }

@@ -34,8 +34,16 @@ class State extends Genome {
         self::set(p2f($key), $value);
     }
 
+    public function __serialize(): array {
+        return self::$lot[static::class] ?? [];
+    }
+
     public function __toString(): string {
         return serialize(self::get(null, true));
+    }
+
+    public function __unserialize(array $lot): void {
+        self::$lot[static::class] = $lot;
     }
 
     public function __unset(string $key): void {
@@ -43,15 +51,7 @@ class State extends Genome {
     }
 
     public function count(): int {
-        return count(self::$lot[static::class] ?? []);
-    }
-
-    public function getIterator(): Traversable {
-        return new ArrayIterator(self::$lot[static::class] ?? []);
-    }
-
-    public function jsonSerialize() {
-        return self::$lot[static::class] ?? [];
+        return count($this->__serialize());
     }
 
     public function offsetExists($key): bool {
@@ -94,6 +94,10 @@ class State extends Genome {
             return self::get($kin . '.' . $lot[0], !empty($lot[1]));
         }
         return self::get($kin);
+    }
+
+    public static function __set_state(array $lot): object {
+        return new static($lot);
     }
 
     public static function get($key = null, $array = false) {

@@ -2,23 +2,21 @@
 
 final class Time extends Genome {
 
-    private static $zone;
-
-    public $o;
     public $parent;
-    public $source;
+    public $value;
+    public $z;
 
     public function __construct($value = null) {
         if (is_numeric($value)) {
-            $this->source = date('Y-m-d H:i:s', (int) $value);
+            $this->value = date('Y-m-d H:i:s', (int) $value);
         } else if (is_string($value) && strspn($value, '-0123456789') >= 19 && 5 === substr_count($value, '-')) {
             if ($date = DateTime::createFromFormat('Y-m-d-H-i-s', $value)) {
-                $this->source = $date->format('Y-m-d H:i:s');
+                $this->value = $date->format('Y-m-d H:i:s');
             } else {
-                $this->source = date('Y-m-d H:i:s', 0);
+                $this->value = date('Y-m-d H:i:s', 0);
             }
         } else {
-            $this->source = date('Y-m-d H:i:s', $value ? strtotime($value) : null);
+            $this->value = date('Y-m-d H:i:s', $value ? strtotime($value) : null);
         }
     }
 
@@ -36,8 +34,16 @@ final class Time extends Genome {
         return $this->i($pattern);
     }
 
+    public function __serialize(): array {
+        return ['value' => $this->value];
+    }
+
     public function __toString(): string {
-        return (string) $this->source;
+        return (string) $this->value;
+    }
+
+    public function __unserialize(array $lot): void {
+        $this->value = $lot['value'] ?? date('Y-m-d H:i:s', $value ? strtotime($value) : null);
     }
 
     public function date() {
@@ -96,7 +102,7 @@ final class Time extends Genome {
             '%x' => 'm/d/y',
             '%y' => 'y',
             '%z' => 'O'
-        ]), strtotime($this->source));
+        ]), strtotime($this->value));
         // Slightly improve the performance by detecting some pattern that produces word(s)
         if (
             // ‘Sun’ through ‘Sat’ or ‘Sunday’ through ‘Saturday’
@@ -120,7 +126,7 @@ final class Time extends Genome {
     }
 
     public function format(string $format = 'Y-m-d H:i:s') {
-        return date($format, strtotime($this->source)); // Generic PHP date formatter
+        return date($format, strtotime($this->value)); // Generic PHP date formatter
     }
 
     public function hour($type = null) {
@@ -143,7 +149,7 @@ final class Time extends Genome {
 
     // Convert date to file name
     public function name(string $join = '-') {
-        return strtr($this->source, '- :', str_repeat($join, 3));
+        return strtr($this->value, '- :', str_repeat($join, 3));
     }
 
     public function second() {
@@ -151,20 +157,28 @@ final class Time extends Genome {
     }
 
     public function to(string $zone = null, string $modify = null) {
-        $date = new DateTime($this->source);
+        $date = new DateTime($this->value);
         $date->setTimeZone(new DateTimeZone($zone = $zone ?? zone()));
         if (isset($modify)) {
             $date->modify($modify);
         }
-        if (!isset($this->o[$zone])) {
-            $this->o[$zone] = new static($date->format('Y-m-d H:i:s'));
-            $this->o[$zone]->parent = $this;
+        if (!isset($this->z[$zone])) {
+            $this->z[$zone] = new static($date->format('Y-m-d H:i:s'));
+            $this->z[$zone]->parent = $this;
         }
-        return $this->o[$zone];
+        return $this->z[$zone];
     }
 
     public function year() {
         return $this->format('Y');
+    }
+
+    public static function __set_state(array $lot): object {
+        $that = new static($lot['value'] ?? null);
+        if ($zone = $lot['zone'] ?? 0) {
+            return $that->to($zone);
+        }
+        return $that;
     }
 
     public static function from(...$lot) {

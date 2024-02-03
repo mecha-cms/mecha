@@ -21,11 +21,19 @@ class Folder extends Genome {
         return null !== $this->__get($key);
     }
 
+    public function __serialize(): array {
+        return ['path' => $this->path];
+    }
+
     public function __toString(): string {
         if ($path = $this->path) {
             return strtr($path, [PATH . D => ".\\", D => "\\"]);
         }
         return "";
+    }
+
+    public function __unserialize(array $lot): void {
+        $this->path = $lot['path'] ?? null;
     }
 
     public function _seal() {
@@ -136,6 +144,10 @@ class Folder extends Genome {
 
     public function x() {
         return null;
+    }
+
+    public static function __set_state(array $lot): object {
+        return new static($lot['path'] ?? null);
     }
 
     public static function from(...$lot) {

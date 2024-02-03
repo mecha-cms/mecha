@@ -142,8 +142,16 @@ final class URL extends Genome {
         }
     }
 
+    public function __serialize(): array {
+        return $this->lot;
+    }
+
     public function __toString(): string {
         return (string) ($this->getProtocol() . $this->getHost() . $this->getPort());
+    }
+
+    public function __unserialize(array $lot): void {
+        $this->lot = $lot;
     }
 
     public function __unset(string $key): void {
@@ -189,10 +197,6 @@ final class URL extends Genome {
         }
     }
 
-    public function jsonSerialize() {
-        return $this->lot;
-    }
-
     public function offsetExists($key): bool {
         return isset($this->lot[$key]);
     }
@@ -223,6 +227,12 @@ final class URL extends Genome {
             return To::query(array_replace_recursive(From::query($query), $lot));
         }
         return "" !== $query ? '?' . $query : null;
+    }
+
+    public static function __set_state(array $lot): object {
+        $that = new static;
+        $that->lot = $lot;
+        return $that;
     }
 
 }
