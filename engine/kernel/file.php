@@ -4,6 +4,13 @@ class File extends Genome {
 
     public $path;
 
+    public function __call(string $kin, array $lot = []) {
+        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
+            return $this->{$kin};
+        }
+        return parent::__call($kin, $lot);
+    }
+
     public function __construct(string $path = null) {
         if ($path && is_string($path) && 0 === strpos($path, PATH)) {
             $this->path = stream_resolve_include_path($path) ?: null;
@@ -14,7 +21,7 @@ class File extends Genome {
         if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
-        return null;
+        return $this->__call($key);
     }
 
     public function __isset(string $key): bool {

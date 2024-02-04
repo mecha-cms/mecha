@@ -6,6 +6,13 @@ final class Time extends Genome {
     public $value;
     public $zone;
 
+    public function __call(string $kin, array $lot = []) {
+        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
+            return $this->{$kin};
+        }
+        return parent::__call($kin, $lot);
+    }
+
     public function __construct($value = null) {
         $this->zone = zone();
         if (is_numeric($value)) {
@@ -22,13 +29,15 @@ final class Time extends Genome {
     }
 
     public function __get(string $key) {
+        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
+            return $this->{$key}();
+        }
         if ($v = parent::_($key)) {
             if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
                 return $this->i($v);
             }
-            return parent::__call($key);
         }
-        return method_exists($this, $key) ? $this->{$key}() : null;
+        return parent::__call($key);
     }
 
     public function __invoke(string $pattern = '%Y-%m-%d %T') {
