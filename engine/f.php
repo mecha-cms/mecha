@@ -1552,15 +1552,26 @@ function z($value, $short = true) {
             $test = substr(explode('::__set_state(', var_export($value, true), 2)[1], 0, -1);
             foreach (preg_split('/(\'(?>[^\'\\\\]*(?>\\.[^\'\\\\]*)*)\')/', $test, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                 if (0 === strpos($v, "'") && "'" === substr($v, -1)) {
+                    $test = substr($v, 1);
+                    if (0 === strpos($test, ENGINE . D)) {
+                        $v = "ENGINE.D.'" . strtr(substr($test, strlen(ENGINE . D)), [D => "'.D.'"]);
+                    } else if (0 === strpos($test, LOT . D)) {
+                        $v = "LOT.D.'" . strtr(substr($test, strlen(LOT . D)), [D => "'.D.'"]);
+                    } else if (0 === strpos($test, PATH . D)) {
+                        $v = "PATH.D.'" . strtr(substr($test, strlen(PATH . D)), [D => "'.D.'"]);
+                    }
                     $content .= $v;
                     continue;
                 }
-                $v = preg_replace('/\s+/', "", trim($v));
-                if ('array(' === $v && $short) {
-                    $v = '[';
-                }
-                if (',)' === $v) {
-                    $v = $short ? ']' : ')';
+                $v = strtr(preg_replace('/\s+/', "", trim($v)), [
+                    ',)' => ')',
+                    'NULL' => 'null'
+                ]);
+                if ($short) {
+                    $v = strtr($v, [
+                        ')' => ']',
+                        'array(' => '['
+                    ]);
                 }
                 $content .= $v;
             }
