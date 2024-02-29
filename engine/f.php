@@ -1340,9 +1340,24 @@ function x(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\'
     return "" !== ($value = addcslashes($value ?? "", $c . $d)) ? $value : null;
 }
 
-function y(iterable $value) {
+function y(iterable $value, $deep = 0) {
     if ($value instanceof Traversable) {
-        return iterator_to_array($value);
+        $value = iterator_to_array($value);
+        if (true === $deep) {
+            foreach ($value as &$v) {
+                $v = is_iterable($v) || $v instanceof stdClass ? y($v, $deep) : $v;
+            }
+            unset($v);
+            return $value;
+        }
+        if ($deep > 0) {
+            foreach ($value as &$v) {
+                $v = is_iterable($v) || $v instanceof stdClass ? y($v, $deep - 1) : $v;
+            }
+            unset($v);
+            return $value;
+        }
+        return $value;
     }
     return (array) $value;
 }
