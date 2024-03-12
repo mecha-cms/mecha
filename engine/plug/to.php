@@ -19,7 +19,7 @@ foreach ([
         return "" !== ($value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ? $value : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
-        $url = $GLOBALS['url'] . "";
+        $url = lot('url') . "";
         $value = (string) $value;
         $value = stream_resolve_include_path($value) ?: $value;
         $value = strtr($value, [
@@ -86,7 +86,7 @@ foreach ([
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => static function (?string $value): ?string {
-        $url = $GLOBALS['url'] . "";
+        $url = lot('url') . "";
         $value = strtr($value ?? "", [
             $url => PATH,
             strtr($url, '/', D) => PATH,

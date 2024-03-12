@@ -18,7 +18,7 @@ if (defined('TEST')) {
     }
 }
 
-$GLOBALS['F'] = [
+lot('F', [
     '°' => '0',
     '¹' => '1',
     '²' => '2',
@@ -89,7 +89,7 @@ $GLOBALS['F'] = [
     '’' => "'",
     '“' => '"',
     '”' => '"'
-];
+]);
 
 // Normalize `$_GET`, `$_POST`, `$_REQUEST` value(s)
 $any = [&$_GET, &$_POST, &$_REQUEST];
@@ -147,7 +147,7 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 // Load class(es)…
 d($folder = __DIR__ . D . 'kernel', static function ($object, $n) use ($folder) {
     if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
-        extract($GLOBALS, EXTR_SKIP);
+        extract(lot(), EXTR_SKIP);
         require $f;
     }
     // Load plug(s) of extension(s) and layout(s)…
@@ -172,7 +172,8 @@ register_shutdown_function(static function () {
 
 // Set default state(s)…
 $state = is_file($f = __DIR__ . D . '..' . D . 'state.php') ? require $f : [];
-$GLOBALS['state'] = $state = new State($state);
+
+lot('state', $state = new State($state));
 
 $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
@@ -203,7 +204,7 @@ $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
 $hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
-$GLOBALS['url'] = $url = new URL($protocol . $host . $path . $query . $hash);
+lot('url', $url = new URL($protocol . $host . $path . $query . $hash));
 
 function anemone(...$lot) {
     return Anemone::from(...$lot);
@@ -220,7 +221,7 @@ function kick(string $path = null, int $status = null) {
 }
 
 function long(string $value) {
-    $url = $GLOBALS['url'];
+    $url = lot('url');
     $r = (string) $url;
     if ("" === $value) {
         return $url->current;
@@ -273,7 +274,7 @@ function long(string $value) {
 }
 
 function short(string $value) {
-    $url = $GLOBALS['url'];
+    $url = lot('url');
     $parent = $url . "";
     if (0 === strpos($value, '//')) {
         if (0 !== strpos($value, '//' . $url->host)) {
@@ -301,13 +302,13 @@ try {
     $uses = [];
     foreach (glob(dirname(__DIR__) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'index.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
         $n = basename($folder = dirname($v = stream_resolve_include_path($v)));
-        if (empty($GLOBALS[strtoupper($r = basename(dirname($folder)))][0][$v])) {
+        if (empty(lot(strtoupper($r = basename(dirname($folder))))[0][$v])) {
             $uses[$v] = content($folder . D . $n) ?? $r . '.' . $n;
             // Load state(s)…
             State::set($r . '.' . ($k = strtr($n, ['.' => "\\."])), []);
             if (is_file($v = $folder . D . 'state.php')) {
                 (static function ($k, $v, $a) {
-                    extract($GLOBALS, EXTR_SKIP);
+                    extract(lot(), EXTR_SKIP);
                     State::set($r . '.' . $k, array_replace_recursive((array) require $v, $a));
                 })($k, $v, $state[$r][$n] ?? []);
             }
@@ -315,13 +316,13 @@ try {
     }
     natsort($uses);
     foreach ($uses = array_keys($uses) as $use) {
-        $GLOBALS[strtoupper(basename(dirname($use, 2)))][1][] = $use;
+        lot(strtoupper(basename(dirname($use, 2))))[1][] = $use;
     }
     // Load class(es)…
     foreach ($uses as $v) {
         d($folder = dirname($v) . D . 'engine' . D . 'kernel', static function ($object, $n) use ($folder) {
             if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
-                extract($GLOBALS, EXTR_SKIP);
+                extract(lot(), EXTR_SKIP);
                 require $f;
             }
             // Load plug(s) of other extension(s) and layout(s)…
@@ -342,11 +343,11 @@ try {
             // Load task(s)…
             if (is_file($k = dirname($v) . D . 'task.php')) {
                 (static function ($k) {
-                    extract($GLOBALS, EXTR_SKIP);
+                    extract(lot(), EXTR_SKIP);
                     require $k;
                 })($k);
             }
-            extract($GLOBALS, EXTR_SKIP);
+            extract(lot(), EXTR_SKIP);
             require $v;
         })($v);
     }
@@ -374,7 +375,7 @@ zone($state->zone);
 // Run task(s) if any…
 if (is_file($task = PATH . D . 'task.php')) {
     (static function ($f) {
-        extract($GLOBALS, EXTR_SKIP);
+        extract(lot(), EXTR_SKIP);
         require $f;
     })($task);
 }

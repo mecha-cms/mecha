@@ -572,6 +572,33 @@ function let(array &$from, string $key, string $join = '.') {
     return false;
 }
 
+function &lot(...$lot) {
+    if (0 === count($lot)) {
+        return $GLOBALS;
+    }
+    // <https://www.php.net/manual/en/language.variables.php>
+    $pattern = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+    if (1 === count($lot)) {
+        if (is_string($lot[0])) {
+            $r =& $GLOBALS[$lot[0]] ?? null;
+            return $r;
+        }
+        $lot[0] = (array) ($lot[0] ?? []);
+        foreach ($lot[0] as $k => $v) {
+            if ("" === $k || is_int($k) || is_numeric($k[0]) || !preg_match($pattern, $k)) {
+                unset($lot[0][$k]);
+            }
+        }
+        $r =& array_replace($GLOBALS, $lot[0]);
+        return $r;
+    }
+    $r =& $lot[1] ?? null;
+    if ("" !== $lot[0] && is_string($lot[0]) && !is_numeric($lot[0]) && preg_match($pattern, $lot[0])) {
+        $GLOBALS[$lot[0]] = $r;
+    }
+    return $r;
+}
+
 function lt($a, $b) {
     return q($a) < $b;
 }
@@ -1026,7 +1053,7 @@ function d(string $folder, callable $fn = null) {
     spl_autoload_register(static function ($object) use ($folder, $fn) {
         $name = c2f($object);
         if (is_file($file = $folder . D . $name . '.php')) {
-            extract($GLOBALS, EXTR_SKIP);
+            extract(lot(), EXTR_SKIP);
             require $file;
             if (is_callable($fn)) {
                 call_user_func($fn, $object, $name, $file);
@@ -1071,13 +1098,13 @@ function f(?string $value, $accent = true, string $keep = "") {
     // Remove HTML tag(s) and character(s) reference
     $value = preg_replace('/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
     if (!$accent || is_array($accent)) {
+        // If this condition is not checked, the translation below will incorrectly translate all `'0'` to `false`
+        // (which will be casted as an empty string), and so any string containing a `'0'` character will always drop
+        // that character in the output :(
         if (false === $accent) {
             $accent = []; // Because `(array) false` will turn into `[0 => false]` which we don’t want
         }
-        // If the previous condition is not checked, the translation below will incorrectly translate all `'0'` to
-        // `false` (which will be casted as an empty string), and so any string containing a `'0'` character will always
-        // drop that character in the output :(
-        $value = !empty($GLOBALS['F']) ? strtr($value, array_replace($GLOBALS['F'], (array) $accent)) : $value;
+        $value = ($any = (array) lot('F')) ? strtr($value, array_replace($any, (array) $accent)) : $value;
     }
     $value = preg_replace([
         // Remove anything except character(s) white-list
@@ -1143,7 +1170,7 @@ function i(?string $value, $lot = [], string $or = null) {
             $v = i($v);
         }
     }
-    $value = $GLOBALS['I'][$value] ?? $or ?? $value;
+    $value = lot('I')[$value] ?? $or ?? $value;
     try {
         $value = $lot ? vsprintf($value, $lot) : $value;
     } catch (Throwable $e) {}
