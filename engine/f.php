@@ -589,7 +589,8 @@ function &lot(...$lot) {
                 unset($lot[0][$k]);
             }
         }
-        $r =& array_replace($GLOBALS, $lot[0]);
+        $lot[0] = array_replace($GLOBALS, $lot[0]);
+        $r =& $lot[0];
         return $r;
     }
     $r =& $lot[1] ?? null;
