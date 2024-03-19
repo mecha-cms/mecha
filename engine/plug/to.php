@@ -7,7 +7,7 @@ foreach ([
     },
     'JSON' => static function ($value, $dent = false): ?string {
         if ($dent) {
-            $value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT);
+            $value = json_encode($value ?? "", JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_PRESERVE_ZERO_FRACTION | JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
             if (is_int($dent)) {
                 $dent = str_repeat(' ', $dent);
             }
@@ -16,7 +16,7 @@ foreach ([
             }
             return "" !== $value ? $value : null;
         }
-        return "" !== ($value = json_encode($value ?? "", JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)) ? $value : null;
+        return "" !== ($value = json_encode($value ?? "", JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE)) ? $value : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
         $url = lot('url') . "";
