@@ -970,11 +970,12 @@ function type(string $type = null) {
     if (!isset($type)) {
         $type = status()[1]['content-type'] ?? null;
         if (is_string($type)) {
-            return strstr($type . ';', ';', true);
+            return trim(strstr($type . ';', ';', true));
         }
         return null;
     }
-    status(['content-type' => $type]);
+    $type = trim(strstr($type . ';', ';', true));
+    status(['content-type' => $type . '; charset=utf-8']);
 }
 
 function ua() {
