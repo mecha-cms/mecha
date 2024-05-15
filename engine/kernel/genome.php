@@ -25,7 +25,8 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         }
     }
 
-    public function __clone(): void {}
+    #[ReturnTypeWillChange]
+    public function __clone() {}
 
     public function __construct() {}
 
