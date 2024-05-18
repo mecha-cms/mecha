@@ -52,22 +52,20 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return get_object_vars($this);
     }
 
-    #[ReturnTypeWillChange]
-    public function __set(string $key, $value) {}
+    public function __set(string $key, $value): void {}
 
     public function __toString(): string {
         return json_encode($this->__serialize());
     }
 
     #[ReturnTypeWillChange]
-    public function __unserialize(array $lot) {
+    public function __unserialize(array $lot): void {
         foreach ($lot as $k => $v) {
             $this->{$k} = $v;
         }
     }
 
-    #[ReturnTypeWillChange]
-    public function __unset(string $key) {}
+    public function __unset(string $key): void {}
 
     public function count(): int {
         return count($this->__serialize());
@@ -91,20 +89,21 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return null;
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetSet($key, $value) {}
+    public function offsetSet($key, $value): void {}
 
-    #[ReturnTypeWillChange]
-    public function offsetUnset($key) {}
+    public function offsetUnset($key): void {}
 
     // PHP Serializable < 7.4
-    public function serialize(): ?string {
+    #[ReturnTypeWillChange]
+    public function serialize() {
         return serialize($this->__serialize());
     }
 
     // PHP Serializable < 7.4
     #[ReturnTypeWillChange]
-    public function unserialize(string $lot) {}
+    public function unserialize($lot) {
+        $this->__unserialize(unserialize($lot));
+    }
 
     public static $_ = [];
 
