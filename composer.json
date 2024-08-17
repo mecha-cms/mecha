@@ -20,6 +20,31 @@
     "vendor-dir": "engine/vendor"
   },
   "description": "Minimalist content management system.",
+  "extra": {
+    "minify-on-install": false,
+    "remove-on-install": {
+        ".factory/": true,
+        ".git/": true,
+        ".github/": true,
+        ".node_modules/": true,
+        "test/": true,
+        ".editorconfig": true,
+        ".gitattributes": true,
+        ".gitignore": true,
+        ".gitmodules": true,
+        ".keep": true,
+        "README.md": true,
+        "package-lock.json": true,
+        "package.json": true,
+        "test": 1,
+        "test.css": true,
+        "test.html": true,
+        "test.js": true,
+        "test.json": true,
+        "test.php": true,
+        "test.txt": true
+    }
+  },
   "funding": [
     {
       "type": "github",
