@@ -1119,7 +1119,7 @@ function f(?string $value, $accent = true, string $keep = "") {
 }
 
 function g(string $folder, $x = null, $deep = 0) {
-    if (is_dir($folder)) {
+    if (is_dir($folder) && (new FilesystemIterator($folder))->valid()) {
         $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
         $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $a) use ($deep, $x) {
             if ($deep > 0 && $a->hasChildren()) {
@@ -1146,8 +1146,9 @@ function g(string $folder, $x = null, $deep = 0) {
         foreach ($it as $k => $v) {
             yield $k => $v->isDir() ? 0 : 1;
         }
+    } else {
+        yield from [];
     }
-    return yield from [];
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
