@@ -89,7 +89,8 @@ final class Is extends Genome {
     // Check for empty string, array or object
     public static function void($value) {
         if ($value instanceof Traversable) {
-            return 0 === iterator_count($value);
+            $value->rewind();
+            return !$value->valid();
         }
         // `0` integer and `0` string is not considered void
         return (
