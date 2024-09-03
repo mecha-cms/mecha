@@ -191,7 +191,9 @@ $path = strtr(trim($path, '/'), [
 ]);
 
 // Prevent directory traversal attack
-$path = strtr($path, ['../' => ""]);
+while (false !== strpos($path, '../')) {
+    $path = strtr($path, ['../' => ""]);
+}
 
 // If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\b\c`
 // then the sub-folder path of this system will be `a\b\c`
