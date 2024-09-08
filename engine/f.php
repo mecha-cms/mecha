@@ -1410,205 +1410,10 @@ function z($value, $short = true) {
         if ($value instanceof stdClass) {
             return '(object)' . z((array) $value, $short);
         }
-        if ($value instanceof Closure) {
-            $content = "";
-            $f = new ReflectionFunction($value);
-            $lot = [];
-            foreach ($f->getParameters() as $p) {
-                $value = "";
-                if ($type = $p->getType()) {
-                    if (method_exists($type, 'getTypes')) {
-                        foreach ($type->getTypes() as $v) {
-                            $value .= $v->getName() . '|';
-                        }
-                        $value = substr($value, 0, -1) . ' ';
-                    } else {
-                        $value .= $type->getName() . ' ';
-                    }
-                }
-                if ($p->isVariadic()) {
-                    $value .= '...';
-                }
-                if ($p->isPassedByReference()) {
-                    $value .= '&';
-                }
-                $value .= '$' . $p->getName();
-                if ($p->isDefaultValueAvailable()) {
-                    $value .= '=';
-                    if ($p->isDefaultValueConstant()) {
-                        $value .= $p->getDefaultValueConstantName();
-                    } else {
-                        $value .= z($p->getDefaultValue(), $short);
-                    }
-                }
-                $lot[] = $value;
-            }
-            $body = implode("", array_slice(file($f->getFileName()), $start = $f->getStartLine() - 1, $f->getEndLine() - $start));
-            $tokens = token_get_all('<?' . 'php ' . $body);
-            foreach ($tokens as $k => $v) {
-                // Peek previous token
-                if (is_array($prev = $tokens[$k - 1] ?? "")) {
-                    $prev = $prev[1];
-                }
-                // Peek next token
-                if (is_array($next = $tokens[$k + 1] ?? "")) {
-                    $next = $next[1];
-                }
-                if (is_array($v)) {
-                    if (T_COMMENT === $v[0] || T_DOC_COMMENT === $v[0]) {
-                        // Remove comment(s)
-                        continue;
-                    }
-                    if (T_OPEN_TAG === $v[0]) {
-                        // Remove the `<?php ` prefix
-                        continue;
-                    }
-                    if (T_ECHO === $v[0] || T_PRINT === $v[0]) {
-                        if ('<?php ' === substr($content, -6)) {
-                            $content = substr($content, 0, -4) . '='; // Replace `<?php echo` with `<?=`
-                            continue;
-                        }
-                        $content .= 'echo '; // Replace `print` with `echo`
-                        continue;
-                    }
-                    if (T_CASE === $v[0] || T_RETURN === $v[0] || T_YIELD === $v[0]) {
-                        $content .= $v[1] . ' ';
-                        continue;
-                    }
-                    if (T_IF === $v[0]) {
-                        if ('else ' === substr($content, -5)) {
-                            $content = substr($content, 0, -1) . 'if'; // Replace `else if` with `elseif`
-                            continue;
-                        }
-                    }
-                    if (T_DNUMBER === $v[0]) {
-                        if (0 === strpos($v[1], '0.')) {
-                            $v[1] = substr($v[1], 1); // Replace `0.` prefix with `.` from float
-                        }
-                        $v[1] = rtrim(rtrim($v[1], '0'), '.'); // Remove trailing `.0` from float
-                        $content .= $v[1];
-                        continue;
-                    }
-                    if (T_START_HEREDOC === $v[0]) {
-                        $content .= '<<<' . ("'" === $v[1][3] ? "'S'" : 'S') . "\n";
-                        continue;
-                    }
-                    if (T_END_HEREDOC === $v[0]) {
-                        $content .= 'S';
-                        continue;
-                    }
-                    if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_ENCAPSED_AND_WHITESPACE === $v[0]) {
-                        // Need to escape `{` and `}` in string so we can match function body properly later
-                        $content .= strtr($v[1], [
-                            '{' => P . '\\x7B' . P,
-                            '}' => P . '\\x7D' . P
-                        ]);
-                        continue;
-                    }
-                    // Any type cast
-                    if (0 === strpos($v[1], '(') && ')' === substr($v[1], -1) && '_CAST' === substr(token_name($v[0]), -5)) {
-                        $content = rtrim($content) . '(' . trim(substr($v[1], 1, -1)) . ')'; // Remove white-space after `(` and before `)`
-                        continue;
-                    }
-                    if (T_WHITESPACE === $v[0]) {
-                        if ("" === $next || "" === $prev) {
-                            continue;
-                        }
-                        if (' ' === substr($content, -1)) {
-                            continue; // Has been followed by single space, skip!
-                        }
-                        // Check if previous or next token contains only punctuation mark(s). White-space around this
-                        // token usually safe to be removed. They must be PHP operator(s) like `&&` and `||`. Of course,
-                        // they can also be present in comment and string, but we already filtered them before.
-                        if (
-                            (function_exists('ctype_punct') && ctype_punct($next) || preg_match('/^\p{P}$/', $next)) ||
-                            (function_exists('ctype_punct') && ctype_punct($prev) || preg_match('/^\p{P}$/', $prev))
-                        ) {
-                            if (function_exists('ctype_alnum') && ctype_alnum(strtr($prev, ['_' => ""])) || preg_match('/^\w+$/', $prev)) {
-                                // `$_` variable is all punctuation but it needs to be preceded by a space to ensure
-                                // that we don’t experience a result like `static$_=1` in the output.
-                                if ('$' === $next[0]) {
-                                    $content .= ' ';
-                                    continue;
-                                }
-                                // `_` is a punctuation but it needs to be preceded by a space to ensure that we don’t
-                                // experience a result like `function_(){}` or `const_=1` in the output.
-                                if ('_' === $next[0]) {
-                                    $content .= ' ';
-                                    continue;
-                                }
-                            }
-                            continue;
-                        }
-                        // Check if previous or next token is a comment, then remove white-space around it!
-                        if (
-                            0 === strpos($next, '#') ||
-                            0 === strpos($prev, '#') ||
-                            0 === strpos($next, '//') ||
-                            0 === strpos($prev, '//') ||
-                            '/*' === substr($next, 0, 2) && '*/' === substr($next, -2) ||
-                            '/*' === substr($prev, 0, 2) && '*/' === substr($prev, -2)
-                        ) {
-                            continue;
-                        }
-                        // Remove white-space after type cast
-                        if (0 === strpos($prev, '(') && ')' === substr($prev, -1) && preg_match('/^\(\s*[^()\s]+\s*\)$/', $prev)) {
-                            continue;
-                        }
-                        // Convert multiple white-space to single space
-                        $content .= ' ';
-                    }
-                    $content .= ("" === trim($v[1]) ? "" : $v[1]);
-                    continue;
-                }
-                // Replace `-0` with `0`
-                if ('-' === $v && '0' === $next) {
-                    continue;
-                }
-                // Remove trailing `,`
-                if (',' === substr($content, -1) && false !== strpos(')]}', $v)) {
-                    $content = substr($content, 0, -1);
-                }
-                if (
-                    'case ' === substr($content, -5) ||
-                    'echo ' === substr($content, -5) ||
-                    'return ' === substr($content, -7) ||
-                    'yield ' === substr($content, -6)
-                ) {
-                    if ($v && false !== strpos('!([', $v[0])) {
-                        $content = substr($content, 0, -1);
-                    }
-                }
-                $content .= ("" === trim($v) ? "" : $v);
-            }
-            // Match function body
-            if (false !== strpos($content, '}') && preg_match('/\{((?>[^{}]++|(?R))*)\}/', $content, $m)) {
-                $content = strtr($m[1], [
-                    P . "\\x7B" . P => '{',
-                    P . "\\x7D" . P => '}'
-                ]);
-            } else {
-                $content = "";
-            }
-            $value = 'function(' . implode(',', $lot) . ')';
-            // Need to check if `ReflectionFunction::getClosureUsedVariables()` method is available as we want to
-            // support PHP 7.3. Method `ReflectionFunction::getClosureUsedVariables()` is available since PHP 8.0.
-            // <https://www.php.net/manual/en/reflectionfunctionabstract.getclosureusedvariables.php>
-            if (method_exists($f, 'getClosureUsedVariables')) {
-                if ($uses = $f->getClosureUsedVariables()) {
-                    // TODO: Find a way to check if used variable is passed by reference
-                    $value .= 'use($' . implode(',$', array_keys($uses)) . ')';
-                }
-            }
-            if ($type = $f->getReturnType()) {
-                $value .= ':' . $type;
-            }
-            return $value . '{' . $content . '}';
-        }
         if (method_exists($value, '__set_state')) {
             $content = "";
             $test = substr(explode('::__set_state(', var_export($value, true), 2)[1], 0, -1);
-            foreach (preg_split('/(\'(?>[^\'\\\\]*(?>\\.[^\'\\\\]*)*)\')/', $test, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
+            foreach (preg_split("/('(?>[^'\\\\]*(?>\\.[^'\\\\]*)*)')/", $test, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
                 if (0 === strpos($v, "'") && "'" === substr($v, -1)) {
                     $test = substr($v, 1);
                     if (0 === strpos($test, ENGINE . D)) {
@@ -1635,7 +1440,6 @@ function z($value, $short = true) {
             }
             return get_class($value) . '::__set_state(' . $content . ')';
         }
-        // TODO: Find a way to extract argument(s) from class instance
         return 'new ' . get_class($value);
     }
     if (is_array($value)) {
@@ -1646,14 +1450,25 @@ function z($value, $short = true) {
             }
         } else {
             foreach ($value as $k => $v) {
-                // It is currently not possible to extract function body without the `\n` character which is required
-                // by `ReflectionFunction::{getEndLine,getStartLine}()` to be able to return the value correctly
-                $n = is_object($v) && !($v instanceof stdClass) ? "\n" : "";
-                $out[] = $n . var_export($k, true) . '=>' . z($v, $short);
+                $out[] = var_export($k, true) . '=>' . z($v, $short);
             }
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
     }
     $value = var_export($value, true);
-    return 'NULL' === $value ? 'null' : ("''" === $value ? '""' : $value);
+    if ("''" === $value) {
+        return '""';
+    }
+    if ('NULL' === $value) {
+        return 'null';
+    }
+    $test = substr($value, 1);
+    if (0 === strpos($test, ENGINE . D)) {
+        $value = "ENGINE.D.'" . strtr(substr($test, strlen(ENGINE . D)), [D => "'.D.'"]);
+    } else if (0 === strpos($test, LOT . D)) {
+        $value = "LOT.D.'" . strtr(substr($test, strlen(LOT . D)), [D => "'.D.'"]);
+    } else if (0 === strpos($test, PATH . D)) {
+        $value = "PATH.D.'" . strtr(substr($test, strlen(PATH . D)), [D => "'.D.'"]);
+    }
+    return $value;
 }
