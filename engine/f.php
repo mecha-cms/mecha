@@ -943,15 +943,9 @@ function stream(string $path, ?int $max = 1024) {
 function test(...$lot) {
     echo '<p style="border:2px solid #000;border-bottom-width:1px;">';
     foreach ($lot as $v) {
-        $v = var_export($v, true);
-        $v = strtr(highlight_string("<?php\n\n" . $v . "\n\n?>", true), [
-            "\n" => "",
-            "\r" => ""
-        ]);
-        $v = strtr($v, [
-            '<code>' => '<code style="background:#fff;border:0;border-bottom:1px solid #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">'
-        ]);
-        echo $v;
+        $v = strip_tags(highlight_string("<?php\n\n" . var_export($v, true), true), '<br><span>');
+        $v = '<code style="background:#fff;border:0;border-bottom:1px solid #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . $v . '</code>';
+        echo implode("", explode("&lt;?php\n\n", $v, 2));
     }
     echo '</p>';
 }
