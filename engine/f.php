@@ -941,11 +941,13 @@ function stream(string $path, ?int $max = 1024) {
 
 // Dump PHP code
 function test(...$lot) {
-    echo '<p style="border:2px solid #000;border-bottom-width:1px;">';
+    $trace = debug_backtrace()[0];
+    echo '<p style="border:2px solid #000;">';
+    echo '<code style="background:#ffa;border:0;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . strtr($trace['file'], [PATH . D => '.' . D]) . '#' . $trace['line'] . '</code>';
     foreach ($lot as $v) {
-        $v = strip_tags(highlight_string("<?php\n\n" . var_export($v, true), true), '<br><span>');
-        $v = '<code style="background:#fff;border:0;border-bottom:1px solid #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . $v . '</code>';
-        echo implode("", explode("&lt;?php\n\n", $v, 2));
+        $v = strip_tags(highlight_string('<?php ' . var_export($v, true), true), '<br><span>');
+        $v = '<code style="background:#fff;border:0;border-top:1px dotted #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . $v . '</code>';
+        echo implode("", explode('&lt;?php ', $v, 2));
     }
     echo '</p>';
 }
@@ -1364,7 +1366,7 @@ function w(?string $value, $keep = [], $break = false) {
     // Should be a HTML input (if `$keep` is not empty, assume that input is a HTML anyway)
     if ($keep || false !== strpos($value, '<') || false !== strpos($value, ' ') || false !== strpos($value, "\n")) {
         $keep = is_string($keep) ? explode(',', $keep) : (array) $keep;
-        $value = trim(preg_replace($break ? '/ +/' : '/\s+/', ' ', strip_tags($value, $keep)));
+        $value = trim(preg_replace($break ? '/[ \t]+/' : '/\s+/', ' ', strip_tags($value, $keep)));
         return "" !== $value ? $value : null;
     }
     // Remove `-`, `.`, `_`, and `~` prefix/suffix from the file name then replace `-` with a space. If you want to keep
