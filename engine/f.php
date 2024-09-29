@@ -62,11 +62,19 @@ if (!function_exists('json_validate')) {
     }
 }
 
+function _card($open, $summary, $body, $color) {
+    return '<details' . ($open ? ' open' : "") . ' style="background:' . $color[2] . ';border:2px solid ' . $color[1] . ';border-radius:0;box-shadow:none;color:' . $color[0] . ';font:100%/1.25 monospace;margin:0 0 2px;padding:0;text-shadow:none;"><summary style="background:' . $color[3] . ';border:0;border-radius:0;box-shadow:none;color:' . $color[4] . ';cursor:pointer;display:block;font:inherit;margin:0;padding:.5em .75em;text-shadow:none;user-select:none;">' . $summary . '</summary>' . $body . '</details>';
+}
+
 function abort(string $alert, $exit = true) {
     ob_start();
     debug_print_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-    $trace = strtr(trim(strstr(n(ob_get_clean()) . "\n", "\n"), "\n"), [PATH => '.']);
-    echo '<details' . ($exit ? ' open' : "") . ' style="background:#fc8;border:2px solid #000;color:#000;font:100%/1.5 sans-serif;margin:0;padding:0;selection:none;text-shadow:none;"><summary style="cursor:pointer;display:block;margin:0;padding:.5em .75em;text-shadow:none;user-select:none;">' . $alert . '</summary><pre style="background:#fe9;border:1px solid #000;border-width:1px 0 0;font:100%/1.25 monospace;margin:0;overflow:auto;padding:0;text-shadow:none;white-space:pre;"><code style="color:inherit;display:block;font:inherit;margin:0;padding:.5em .75em;text-shadow:none;">' . $trace . '</code></pre></details>';
+    $trace = explode("\n", strtr(trim(ob_get_clean()), [PATH . D => '.' . D]));
+    foreach ($trace as &$v) {
+        $v = trim(strstr($v, ' '));
+    }
+    unset($v);
+    echo _card(true, $alert, '<pre style="background:0 0;border:0 solid #000;border-top-width:1px;border-radius:0;box-shadow:none;color:inherit;display:flex;font:inherit;margin:0;padding:0;text-shadow:none;white-space:pre;"><span style="background:#eee;padding:.5em .75em;user-select:none;">' . implode("\n", range(1, count($trace))) . '</span><span style="flex:1;overflow:auto;padding:.5em .75em;">' . implode("\n", array_reverse($trace)) . '</span></pre>', ['#000', '#000', '#fff', '#fc9', '#000']);
     $exit && exit;
 }
 
@@ -941,15 +949,69 @@ function stream(string $path, ?int $max = 1024) {
 
 // Dump PHP code
 function test(...$lot) {
+    $content = "";
+    $keys = [];
     $trace = debug_backtrace()[0];
-    echo '<p style="border:2px solid #000;">';
-    echo '<code style="background:#ffa;border:0;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . strtr($trace['file'], [PATH . D => '.' . D]) . '#' . $trace['line'] . '</code>';
-    foreach ($lot as $v) {
-        $v = strip_tags(highlight_string('<?php ' . var_export($v, true), true), '<br><span>');
-        $v = '<code style="background:#fff;border:0;border-top:1px dotted #000;border-radius:0;box-shadow:none;color:#000;display:block;padding:.5em;text-shadow:none;white-space:pre-wrap;word-wrap:break-word;">' . $v . '</code>';
-        echo implode("", explode('&lt;?php ', $v, 2));
+    foreach (token_get_all('<?php ' . array_slice(file($trace['file']), $trace['line'] - 1, 1)[0]) as $v) {
+        if (is_array($v)) {
+            if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_DNUMBER === $v[0] || T_LNUMBER === $v[0] || T_STRING === $v[0]) {
+                $keys[] = $v[1];
+                continue;
+            }
+            if (T_VARIABLE === $v[0]) {
+                $keys[] = $v[1];
+                continue;
+            }
+        }
     }
-    echo '</p>';
+    array_shift($keys); // Drop function name
+    foreach (array_values($lot) as $k => $v) {
+        $dent = "";
+        $v = z($v, true);
+        $value = "";
+        foreach (token_get_all('<?php ' . $v) as $vv) {
+            if (is_array($vv)) {
+                if (T_DOUBLE_ARROW === $vv[0]) {
+                    $value .= ' ' . $vv[1] . ' ';
+                    continue;
+                }
+                $value .= $vv[1];
+                continue;
+            }
+            if (',' === $vv) {
+                $value .= $vv . "\n" . $dent;
+                continue;
+            }
+            if ('.' === $vv) {
+                $value .= ' ' . $vv . ' ';
+                continue;
+            }
+            if ('[' === $vv) {
+                $value .= $vv . "\n" . ($dent .= '  ');
+                continue;
+            }
+            if (']' === $vv) {
+                $dent = substr($dent, 2);
+                if ('[' === substr(trim($value), -1)) {
+                    $value = trim($value) . $vv; // Empty array
+                    continue;
+                }
+                $value .= "\n" . $dent . $vv;
+                continue;
+            }
+            $value .= $vv;
+        }
+        if ('$' === ($keys[$k][0] ?? 0)) {
+            $value = substr_replace($value, $keys[$k] . ' = ', 6, 0) . ';';
+        }
+        $v = strip_tags(highlight_string($value, true), '<br><span>');
+        $v = strtr($v, ['&nbsp;' => ' ', '<br />' => "\n"]); // PHP < 8.3
+        $v = strtr($v, [">\n<" => '><']); // `<span style="…">\n<span style="…">…` to `<span style="…"><span style="…">…`
+        $v = trim(strtr($v, ['&lt;?php ' => ""]));
+        $v = '<span style="background:0 0;border:0 dotted #000;border-top-width:1px;border-radius:0;box-shadow:none;color:#000;display:block;margin:0;overflow:auto;padding:.5em .75em;text-shadow:none;white-space:pre;">' . $v . '</span>';
+        $content .= $v;
+    }
+    echo _card(true, strtr($trace['file'], [PATH . D => '.' . D]) . '(' . $trace['line'] . ')', $content, ['#000', '#000', '#fff', '#ff9', '#000']);
 }
 
 function token($id = 0, $for = '+1 minute') {
@@ -1408,35 +1470,34 @@ function z($value, $short = true) {
         }
         if (method_exists($value, '__set_state')) {
             $content = "";
-            $test = substr(explode('::__set_state(', var_export($value, true), 2)[1], 0, -1);
-            foreach (preg_split("/('(?>[^'\\\\]*(?>\\.[^'\\\\]*)*)')/", $test, -1, PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY) as $v) {
-                if (0 === strpos($v, "'") && "'" === substr($v, -1)) {
-                    $test = substr($v, 1);
-                    if (0 === strpos($test, ENGINE . D)) {
-                        $v = "ENGINE.D.'" . strtr(substr($test, strlen(ENGINE . D)), [D => "'.D.'"]);
-                    } else if (0 === strpos($test, LOT . D)) {
-                        $v = "LOT.D.'" . strtr(substr($test, strlen(LOT . D)), [D => "'.D.'"]);
-                    } else if (0 === strpos($test, PATH . D)) {
-                        $v = "PATH.D.'" . strtr(substr($test, strlen(PATH . D)), [D => "'.D.'"]);
+            foreach (array_slice(token_get_all('<?php ' . var_export($value, true)), 1) as $v) {
+                if (is_array($v)) {
+                    if (T_CONSTANT_ENCAPSED_STRING === $v[0]) {
+                        $content .= z(substr($v[1], 1, -1), $short);
+                        continue;
                     }
-                    $content .= $v;
+                    if (T_WHITESPACE === $v[0]) {
+                        continue;
+                    }
+                    $content .= "''" === ($v = $v[1]) ? '""' : ('NULL' === $v ? 'null' : $v);
                     continue;
                 }
-                $v = strtr(preg_replace('/\s+/', "", trim($v)), [
-                    ',)' => ')',
-                    'NULL' => 'null'
-                ]);
-                if ($short) {
-                    $v = strtr($v, [
-                        ')' => ']',
-                        'array(' => '['
-                    ]);
+                if ('(' === $v && $short && 'array' === substr($content, -5)) {
+                    $content = substr($content, 0, -5) . '[';
+                    continue;
+                }
+                if (')' === $v) {
+                    $content = trim($content, ',');
+                    if ($short) {
+                        $content .= ']';
+                        continue;
+                    }
                 }
                 $content .= $v;
             }
-            return get_class($value) . '::__set_state(' . $content . ')';
+            return trim(substr($content, 0, -1) . ')', "\\");
         }
-        return 'new ' . get_class($value);
+        return 'new ' . get_class($value); // Broken :(
     }
     if (is_array($value)) {
         $out = [];
@@ -1446,7 +1507,7 @@ function z($value, $short = true) {
             }
         } else {
             foreach ($value as $k => $v) {
-                $out[] = var_export($k, true) . '=>' . z($v, $short);
+                $out[] = z($v, $short) . '=>' . z($v, $short);
             }
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
