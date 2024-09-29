@@ -13,6 +13,9 @@
 [submodule "mecha-cms/x.page"]
   path = lot/x/page
   url = https://github.com/mecha-cms/x.page.git
+[submodule "mecha-cms/x.test"]
+  path = lot/x/test
+  url = https://github.com/mecha-cms/x.test.git
 [submodule "mecha-cms/x.y-a-m-l"]
   path = lot/x/y-a-m-l
   url = https://github.com/mecha-cms/x.y-a-m-l.git
