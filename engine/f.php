@@ -62,8 +62,8 @@ if (!function_exists('json_validate')) {
     }
 }
 
-function _card($open, $summary, $body, $color) {
-    return '<details' . ($open ? ' open' : "") . ' style="background:' . $color[2] . ';border:2px solid ' . $color[1] . ';border-radius:0;box-shadow:none;color:' . $color[0] . ';font:100%/1.25 monospace;margin:0 0 2px;padding:0;text-shadow:none;"><summary style="background:' . $color[3] . ';border:0;border-radius:0;box-shadow:none;color:' . $color[4] . ';cursor:pointer;display:block;font:inherit;margin:0;padding:.5em .75em;text-shadow:none;user-select:none;">' . $summary . '</summary>' . $body . '</details>';
+function ___($open, $summary, $body, $color) {
+    return '<details' . ($open ? ' open' : "") . ' style="background:' . $color[2] . ';border:2px solid ' . $color[1] . ';border-radius:0;box-shadow:none;color:' . $color[0] . ';font:100%/1.25 monospace;margin:2px 0;padding:0;text-shadow:none;"><summary style="background:' . $color[3] . ';border:0;border-radius:0;box-shadow:none;color:' . $color[4] . ';cursor:pointer;display:block;font:inherit;margin:0;padding:.5em .75em;text-shadow:none;user-select:none;">' . $summary . '</summary>' . $body . '</details>';
 }
 
 function abort(string $alert, $exit = true) {
@@ -74,7 +74,7 @@ function abort(string $alert, $exit = true) {
         $v = trim(strstr($v, ' '));
     }
     unset($v);
-    echo _card(true, $alert, '<pre style="background:0 0;border:0 solid #000;border-top-width:1px;border-radius:0;box-shadow:none;color:inherit;display:flex;font:inherit;margin:0;padding:0;text-shadow:none;white-space:pre;"><span style="background:#eee;padding:.5em .75em;user-select:none;">' . implode("\n", range(1, count($trace))) . '</span><span style="flex:1;overflow:auto;padding:.5em .75em;">' . implode("\n", array_reverse($trace)) . '</span></pre>', ['#000', '#000', '#fff', '#fc9', '#000']);
+    echo ___(true, $alert, '<pre style="background:0 0;border:0 solid #000;border-top-width:1px;border-radius:0;box-shadow:none;color:inherit;display:flex;font:inherit;margin:0;padding:0;text-shadow:none;white-space:pre;"><span style="background:#eee;padding:.5em .75em;user-select:none;">' . implode("\n", range(1, count($trace))) . '</span><span style="flex:1;overflow:auto;padding:.5em .75em;">' . implode("\n", array_reverse($trace)) . '</span></pre>', ['#000', '#000', '#fff', '#fc9', '#000']);
     $exit && exit;
 }
 
@@ -952,8 +952,12 @@ function test(...$lot) {
     $content = "";
     $keys = [];
     $trace = debug_backtrace()[0];
-    foreach (token_get_all('<?php ' . array_slice(file($trace['file']), $trace['line'] - 1, 1)[0]) as $v) {
+    $z = implode("\n", array_slice(file($trace['file']), $trace['line'] - 1));
+    foreach (token_get_all((0 === strpos($z, '<?php') ? "" : '<?php ') . $z) as $v) {
         if (is_array($v)) {
+            if (T_CLOSE_TAG === $v[0]) {
+                break;
+            }
             if (T_CONSTANT_ENCAPSED_STRING === $v[0] || T_DNUMBER === $v[0] || T_LNUMBER === $v[0] || T_STRING === $v[0]) {
                 $keys[] = $v[1];
                 continue;
@@ -962,6 +966,9 @@ function test(...$lot) {
                 $keys[] = $v[1];
                 continue;
             }
+        }
+        if (';' === $v) {
+            break;
         }
     }
     array_shift($keys); // Drop function name
@@ -976,6 +983,9 @@ function test(...$lot) {
                     continue;
                 }
                 $value .= $vv[1];
+                if (T_OBJECT_CAST === $vv[0]) {
+                    $value .= ' ';
+                }
                 continue;
             }
             if (',' === $vv) {
@@ -1001,17 +1011,17 @@ function test(...$lot) {
             }
             $value .= $vv;
         }
-        if ('$' === ($keys[$k][0] ?? 0)) {
+        if ($var = '$' === ($keys[$k][0] ?? 0)) {
             $value = substr_replace($value, $keys[$k] . ' = ', 6, 0) . ';';
         }
         $v = strip_tags(highlight_string($value, true), '<br><span>');
         $v = strtr($v, ['&nbsp;' => ' ', '<br />' => "\n"]); // PHP < 8.3
-        $v = strtr($v, [">\n<" => '><']); // `<span style="…">\n<span style="…">…` to `<span style="…"><span style="…">…`
+        $v = strtr($v, [">\n<" => '><']); // `<span style="…">\n<span style="…">` to `<span style="…"><span style="…">`
         $v = trim(strtr($v, ['&lt;?php ' => ""]));
-        $v = '<span style="background:0 0;border:0 dotted #000;border-top-width:1px;border-radius:0;box-shadow:none;color:#000;display:block;margin:0;overflow:auto;padding:.5em .75em;text-shadow:none;white-space:pre;">' . $v . '</span>';
+        $v = '<span style="background:' . ($var ? '0 0' : '#ffe') . ';border:0 ' . (0 === $k ? 'solid' : 'dotted') . ' #000;border-top-width:1px;border-radius:0;box-shadow:none;color:#000;display:block;margin:0;overflow:auto;padding:.5em .75em;text-shadow:none;white-space:pre;">' . $v . '</span>';
         $content .= $v;
     }
-    echo _card(true, strtr($trace['file'], [PATH . D => '.' . D]) . '(' . $trace['line'] . ')', $content, ['#000', '#000', '#fff', '#ff9', '#000']);
+    echo ___(true, strtr($trace['file'], [PATH . D => '.' . D]) . '(' . $trace['line'] . '): test()', $content, ['#000', '#000', '#fff', '#ff9', '#000']);
 }
 
 function token($id = 0, $for = '+1 minute') {
@@ -1507,7 +1517,7 @@ function z($value, $short = true) {
             }
         } else {
             foreach ($value as $k => $v) {
-                $out[] = z($v, $short) . '=>' . z($v, $short);
+                $out[] = z($k, $short) . '=>' . z($v, $short);
             }
         }
         return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
