@@ -121,7 +121,7 @@ function choke(int $for = 1, $id = 0) {
             mkdir($folder, 0775, true);
         }
         touch($file, $current);
-        return false;
+        return $for;
     }
     $prev = filemtime($file);
     if ($for > $current - $prev) {
