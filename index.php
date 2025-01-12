@@ -8,7 +8,7 @@
  * -----------------------------------------
  */
 
-define('VERSION', '3.1.1'); // Current version
+define('VERSION', '3.1.2'); // Current version
 
 define('D', DIRECTORY_SEPARATOR); // Directory separator
 define('N', PHP_EOL); // Line break
