@@ -86,7 +86,7 @@ class Anemone extends Genome {
         return false !== $first ? $first : null;
     }
 
-    public function get(string $key = null) {
+    public function get(?string $key = null) {
         return isset($key) ? get($this->value, $key) : $this->value;
     }
 
@@ -94,7 +94,7 @@ class Anemone extends Genome {
         return new ArrayIterator($this->value);
     }
 
-    public function has(string $key = null) {
+    public function has(?string $key = null) {
         return isset($key) ? has($this->value, $key) : !empty($this->value);
     }
 
@@ -135,7 +135,7 @@ class Anemone extends Genome {
         return false !== $last ? $last : null;
     }
 
-    public function let(string $key = null) {
+    public function let(?string $key = null) {
         if (isset($key)) {
             return let($this->value, $key);
         }

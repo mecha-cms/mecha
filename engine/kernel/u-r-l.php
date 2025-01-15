@@ -111,7 +111,7 @@ final class URL extends Genome {
         return null;
     }
 
-    public function __construct(string $value = null) {
+    public function __construct(?string $value = null) {
         $value = (string) $value;
         if ($value && 0 === strpos($value, '//')) {
             $value = 'http:' . $value; // Force protocol

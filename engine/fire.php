@@ -11,7 +11,7 @@ if (defined('TEST')) {
         ini_set('display_startup_errors', false);
         ini_set('max_execution_time', 300); // 5 minute(s)
     } else {
-        error_reporting(E_ALL | E_STRICT);
+        error_reporting(E_ALL);
         ini_set('display_errors', true);
         ini_set('display_startup_errors', true);
         ini_set('html_errors', 1);
@@ -216,7 +216,7 @@ function hook(...$lot) {
     return count($lot) < 2 ? Hook::get(...$lot) : Hook::set(...$lot);
 }
 
-function kick(string $path = null, int $status = null) {
+function kick(?string $path = null, ?int $status = null) {
     $path = Hook::fire('kick', [$path, $status]);
     header('location: ' . $path, true, $status ?? 301);
     exit;

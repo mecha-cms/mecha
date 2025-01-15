@@ -231,7 +231,7 @@ function delete(string $path, $purge = true) {
 }
 
 // Remove empty array, empty string and `null` value from array
-function drop(iterable $value, callable $fn = null) {
+function drop(iterable $value, ?callable $fn = null) {
     if (!$value) {
         return null;
     }
@@ -607,7 +607,7 @@ function map(iterable $value, callable $fn) {
     return $out;
 }
 
-function move(string $path, string $to, string $as = null) {
+function move(string $path, string $to, ?string $as = null) {
     $out = [];
     if (!is_dir($path) && !is_file($path)) {
         return [null, null];
@@ -806,7 +806,7 @@ function shake(array $value, $keys = false) {
 }
 
 // Tidy file size <https://en.wikipedia.org/wiki/Byte#Multiple-byte_units>
-function size(float $size, string $unit = null, int $fix = 2, int $base = 1000) {
+function size(float $size, ?string $unit = null, int $fix = 2, int $base = 1000) {
     $bases = [
         1000 => ['B', 'KB', 'MB', 'GB', 'TB'],
         1024 => ['B', 'KiB', 'MiB', 'GiB', 'TiB']
@@ -897,7 +897,7 @@ function step(string $value, string $join = '.', int $direction = 1) {
     return ["" => $value];
 }
 
-function store(string $path, array $blob, string $as = null) {
+function store(string $path, array $blob, ?string $as = null) {
     if (!empty($blob['status'])) {
         // Error
         return $blob['status'];
@@ -941,7 +941,7 @@ function token($id = 0, $for = '+1 minute') {
     return $v[1];
 }
 
-function type(string $type = null) {
+function type(?string $type = null) {
     if (!isset($type)) {
         $type = status()[2]['content-type'] ?? null;
         if (is_string($type)) {
@@ -957,7 +957,7 @@ function ua() {
     return $_SERVER['HTTP_USER_AGENT'] ?? null;
 }
 
-function zone(string $zone = null) {
+function zone(?string $zone = null) {
     if (!isset($zone)) {
         return 'UTC' !== ($zone = date_default_timezone_get()) ? $zone : null;
     }
@@ -1026,7 +1026,7 @@ function c(?string $value, $accent = false, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-function d(string $folder, callable $fn = null) {
+function d(string $folder, ?callable $fn = null) {
     spl_autoload_register(static function ($object) use ($folder, $fn) {
         $name = c2f($object);
         if (is_file($file = $folder . D . $name . '.php')) {
@@ -1137,7 +1137,7 @@ function h(?string $value, string $join = '-', $accent = false, string $keep = "
     return "" !== $value ? $value : null;
 }
 
-function i(?string $value, $lot = [], string $or = null) {
+function i(?string $value, $lot = [], ?string $or = null) {
     if (null === $value) {
         return;
     }
@@ -1313,7 +1313,7 @@ function s($value, array $lot = []) {
     return (string) $value;
 }
 
-function t(?string $value, string $open = '"', string $close = null) {
+function t(?string $value, string $open = '"', ?string $close = null) {
     if ($value) {
         if ("" !== $open && 0 === strpos($value, $open)) {
             $value = substr($value, strlen($open));

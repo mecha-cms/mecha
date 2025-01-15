@@ -158,7 +158,7 @@ final class Time extends Genome {
         return $this->format('s');
     }
 
-    public function to(string $zone = null, string $offset = null) {
+    public function to(?string $zone = null, ?string $offset = null) {
         $date = new DateTime($this->value);
         $date->setTimeZone(new DateTimeZone($zone = $zone ?? $this->zone));
         if (isset($offset)) {

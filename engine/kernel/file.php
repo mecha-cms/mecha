@@ -11,7 +11,7 @@ class File extends Genome {
         return parent::__call($kin, $lot);
     }
 
-    public function __construct(string $path = null) {
+    public function __construct(?string $path = null) {
         if ($path && is_string($path) && 0 === strpos($path, PATH)) {
             $this->path = stream_resolve_include_path($path) ?: null;
         }
@@ -128,7 +128,7 @@ class File extends Genome {
         return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
     }
 
-    public function size(string $unit = null, int $fix = 2, int $base = 1000) {
+    public function size(?string $unit = null, int $fix = 2, int $base = 1000) {
         if ($this->exist()) {
             $path = $this->path;
             return size(filesize($path), $unit, $fix, $base);
@@ -140,7 +140,7 @@ class File extends Genome {
         yield from ($this->exist() ? stream($this->path, $max) : []);
     }
 
-    public function time(string $format = null) {
+    public function time(?string $format = null) {
         if ($this->exist()) {
             $time = filectime($this->path);
             return $format ? (new Time($time))($format) : $time;

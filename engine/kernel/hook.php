@@ -38,7 +38,7 @@ class Hook extends Genome {
         return $lot[0] ?? null;
     }
 
-    public static function get(string $name = null) {
+    public static function get(?string $name = null) {
         $c = static::class;
         if (isset($name)) {
             return self::$lot[1][$c][$name] ?? null;
@@ -46,12 +46,12 @@ class Hook extends Genome {
         return self::$lot[1][$c] ?? [];
     }
 
-    public static function is(string $name = null) {
+    public static function is(?string $name = null) {
         $c = static::class;
         return isset($name) ? self::$current[$c] === $name : self::$current[$c];
     }
 
-    public static function let($name = null, callable $fn = null) {
+    public static function let($name = null, ?callable $fn = null) {
         $c = static::class;
         if (is_string($fn)) {
             $fn = trim($fn, "\\");
