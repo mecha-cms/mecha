@@ -111,19 +111,20 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
         $out = [];
         if (!is_array(reset($in))) {
             if (isset($in[$k = 'full_path'])) {
-                $v = strtr(dirname($in[$k]), ['/' => D]);
-                $out['folder'] = "" !== $v && '.' !== $v ? $v : null;
+                $v = strtr($in[$k], [D => '/']);
+                $out['route'] = "" !== $v ? '/' . $v : null;
                 unset($in[$k]);
             }
             foreach ($in as $k => $v) {
                 $out[$alter[$k] ?? $k] = $v;
             }
+            ksort($out);
             return $out;
         }
         if (isset($in[$k = 'full_path'])) {
             foreach ($in[$k] as $kk => $vv) {
-                $vv = strtr(dirname($vv), ['/' => D]);
-                $out[$kk]['folder'] = "" !== $vv && '.' !== $vv ? $vv : null;
+                $vv = strtr($vv, [D => '/']);
+                $out[$kk]['route'] = "" !== $vv ? '/' . $vv : null;
             }
             unset($in[$k]);
         }
@@ -131,9 +132,9 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
             foreach ($v as $kk => $vv) {
                 $out[$kk][$alter[$k] ?? $k] = $vv;
             }
+            ksort($out[$kk]);
         }
         foreach ($out as &$v) {
-            ksort($v);
             $v = $tidy($v);
         }
         unset($v);
