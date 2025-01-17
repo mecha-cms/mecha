@@ -902,8 +902,8 @@ function store(string $path, array $blob, ?string $as = null) {
         // Error
         return $blob['status'];
     }
-    if (null !== ($folder = $blob['folder'])) {
-        $path .= D . $folder;
+    if ("" !== trim($route = $blob['route'] ?? "", '/')) {
+        $path .= D . dirname($route);
     }
     if (is_file($file = $path . D . ($as ?? $blob['name']))) {
         // Skip
