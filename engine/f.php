@@ -113,12 +113,16 @@ function apart(?string $value) {
         }
         // <https://www.w3.org/TR/xml#sec-references>
         if ('&' === ($v = $value[0] ?? 0)) {
-            $value = substr($value, 1);
-            if (';' === ($c = $value[0] ?? 0) && 0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= $c;
-                $value = substr($value, 1);
+            if (false !== strpos($skip . ';', substr($value, 1, 1))) {
+                if (0 === ($out[$i][1] ?? 1)) {
+                    $out[$i][0] .= substr($value, 0, 2);
+                } else {
+                    $out[++$i] = [substr($value, 0, 2), 0];
+                }
+                $value = substr($value, 2);
                 continue;
             }
+            $value = substr($value, 1);
             if ($n = strspn($value, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
                 $v .= substr($value, 0, $n);
                 if (';' === ($c = ($value = substr($value, $n))[0] ?? 0)) {
@@ -153,6 +157,15 @@ function apart(?string $value) {
             $out[++$i] = [$v, 0];
             continue;
         }
+        if (false !== strpos($skip . '>', substr($value, 1, 1))) {
+            if (0 === ($out[$i][1] ?? 1)) {
+                $out[$i][0] .= substr($value, 0, 2);
+            } else {
+                $out[++$i] = [substr($value, 0, 2), 0];
+            }
+            $value = substr($value, 2);
+            continue;
+        }
         // <https://www.w3.org/TR/xml#sec-comments>
         if ('<!--' === substr($value, 0, 4) && false !== ($n = strpos($value, '-->'))) {
             $out[++$i] = [substr($value, 0, $n += 3), 1];
@@ -166,8 +179,12 @@ function apart(?string $value) {
             continue;
         }
         if ('<!' === substr($value, 0, 2)) {
-            if ('>' === substr($value, 2, 1) && 0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= substr($value, 0, 3);
+            if (false !== strpos($skip . '>', substr($value, 2, 1))) {
+                if (0 === ($out[$i][1] ?? 1)) {
+                    $out[$i][0] .= substr($value, 0, 3);
+                } else {
+                    $out[++$i] = [substr($value, 0, 3), 0];
+                }
                 $value = substr($value, 3);
                 continue;
             }
@@ -197,8 +214,12 @@ function apart(?string $value) {
         }
         // <https://www.w3.org/TR/xml#sec-pi>
         if ('<?' === substr($value, 0, 2)) {
-            if ('>' === substr($value, 2, 1) && 0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= substr($value, 0, 3);
+            if (false !== strpos($skip . '>', substr($value, 2, 1))) {
+                if (0 === ($out[$i][1] ?? 1)) {
+                    $out[$i][0] .= substr($value, 0, 3);
+                } else {
+                    $out[++$i] = [substr($value, 0, 3), 0];
+                }
                 $value = substr($value, 3);
                 continue;
             }
@@ -223,12 +244,8 @@ function apart(?string $value) {
             }
             continue;
         }
-        if ("" === (string) ($k = strtok(substr($value, 1), $skip . '>'))) {
-            $out[$i][0] .= substr($value, 0, 1);
-            $value = substr($value, 1);
-            continue;
-        }
         // <https://www.w3.org/TR/xml#sec-starttags>
+        $k = strtok(substr($value, 1), $skip . '>');
         $out[++$i] = [substr($value, 0, $n = strlen($k) + 1), 2];
         $value = substr($value, $n);
         while ((
