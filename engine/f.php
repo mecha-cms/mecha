@@ -96,190 +96,191 @@ function any(iterable $value, $fn = null) {
     return false;
 }
 
-function apart(?string $value) {
+function apart(?string $from, array $void = []) {
+    $from = $from ?? "";
     $i = -1;
-    $out = [];
     $skip = " \n\r\t";
-    $value = $value ?? "";
-    while (false !== ($n = strpos($value, '&')) || false !== ($n = strpos($value, '<'))) {
+    $test = implode('"', array_filter($void));
+    $to = [];
+    while (false !== ($n = strpos($from, '&')) || false !== ($n = strpos($from, '<'))) {
         if ($n > 0) {
-            if (0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= substr($value, 0, $n);
-                $value = substr($value, $n);
+            if (0 === ($to[$i][1] ?? 1)) {
+                $to[$i][0] .= substr($from, 0, $n);
+                $from = substr($from, $n);
                 continue;
             }
-            $out[++$i] = [substr($value, 0, $n), 0];
-            $value = substr($value, $n);
+            $to[++$i] = [substr($from, 0, $n), 0];
+            $from = substr($from, $n);
         }
         // <https://www.w3.org/TR/xml#sec-references>
-        if ('&' === ($v = $value[0] ?? 0)) {
-            if (false !== strpos($skip . ';', substr($value, 1, 1))) {
-                if (0 === ($out[$i][1] ?? 1)) {
-                    $out[$i][0] .= substr($value, 0, 2);
+        if ('&' === ($v = $from[0] ?? 0)) {
+            if (false !== strpos($skip . ';', substr($from, 1, 1))) {
+                if (0 === ($to[$i][1] ?? 1)) {
+                    $to[$i][0] .= substr($from, 0, 2);
                 } else {
-                    $out[++$i] = [substr($value, 0, 2), 0];
+                    $to[++$i] = [substr($from, 0, 2), 0];
                 }
-                $value = substr($value, 2);
+                $from = substr($from, 2);
                 continue;
             }
-            $value = substr($value, 1);
-            if ($n = strspn($value, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
-                $v .= substr($value, 0, $n);
-                if (';' === ($c = ($value = substr($value, $n))[0] ?? 0)) {
+            $from = substr($from, 1);
+            if ($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
+                $v .= substr($from, 0, $n);
+                if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
                     $v .= $c;
-                    $value = substr($value, 1);
+                    $from = substr($from, 1);
                 }
-            } else if ('#' === ($c = $value[0] ?? 0)) {
+            } else if ('#' === ($c = $from[0] ?? 0)) {
                 $v .= $c;
-                $value = substr($value, 1);
-                if ('x' === ($c = $value[0] ?? 0) && ($n = strspn($value, '0123456789ABCDEFabcdef', 1))) {
-                    $v .= substr($value, 0, $n += 1);
-                    if (';' === ($c = ($value = substr($value, $n))[0] ?? 0)) {
+                $from = substr($from, 1);
+                if ('x' === ($c = $from[0] ?? 0) && ($n = strspn($from, '0123456789ABCDEFabcdef', 1))) {
+                    $v .= substr($from, 0, $n += 1);
+                    if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
                         $v .= $c;
-                        $value = substr($value, 1);
+                        $from = substr($from, 1);
                     }
-                } else if ($n = strspn($value, '0123456789')) {
-                    $v .= substr($value, 0, $n);
-                    if (';' === ($c = ($value = substr($value, $n))[0] ?? 0)) {
+                } else if ($n = strspn($from, '0123456789')) {
+                    $v .= substr($from, 0, $n);
+                    if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
                         $v .= $c;
-                        $value = substr($value, 1);
+                        $from = substr($from, 1);
                     }
                 }
             }
             if (';' === substr($v, -1)) {
-                $out[++$i] = [$v, -1];
+                $to[++$i] = [$v, -1];
                 continue;
             }
-            if (0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= $v;
+            if (0 === ($to[$i][1] ?? 1)) {
+                $to[$i][0] .= $v;
                 continue;
             }
-            $out[++$i] = [$v, 0];
+            $to[++$i] = [$v, 0];
             continue;
         }
-        if (false !== strpos($skip . '>', substr($value, 1, 1))) {
-            if (0 === ($out[$i][1] ?? 1)) {
-                $out[$i][0] .= substr($value, 0, 2);
+        if (false !== strpos($skip . '>', substr($from, 1, 1))) {
+            if (0 === ($to[$i][1] ?? 1)) {
+                $to[$i][0] .= substr($from, 0, 2);
             } else {
-                $out[++$i] = [substr($value, 0, 2), 0];
+                $to[++$i] = [substr($from, 0, 2), 0];
             }
-            $value = substr($value, 2);
+            $from = substr($from, 2);
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-comments>
-        if ('<!--' === substr($value, 0, 4) && false !== ($n = strpos($value, '-->'))) {
-            $out[++$i] = [substr($value, 0, $n += 3), 1];
-            $value = substr($value, $n);
+        if ('<!--' === substr($from, 0, 4) && false !== ($n = strpos($from, '-->'))) {
+            $to[++$i] = [substr($from, 0, $n += 3), 1];
+            $from = substr($from, $n);
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-cdata-sect>
-        if ('<![CDATA[' === substr($value, 0, 9) && false !== ($n = strpos($value, ']]>'))) {
-            $out[++$i] = [substr($value, 0, $n += 3), 1];
-            $value = substr($value, $n);
+        if ('<![CDATA[' === substr($from, 0, 9) && false !== ($n = strpos($from, ']]>'))) {
+            $to[++$i] = [substr($from, 0, $n += 3), 1];
+            $from = substr($from, $n);
             continue;
         }
-        if ('<!' === substr($value, 0, 2)) {
-            if (false !== strpos($skip . '>', substr($value, 2, 1))) {
-                if (0 === ($out[$i][1] ?? 1)) {
-                    $out[$i][0] .= substr($value, 0, 3);
+        if ('<!' === substr($from, 0, 2)) {
+            if (false !== strpos($skip . '>', substr($from, 2, 1))) {
+                if (0 === ($to[$i][1] ?? 1)) {
+                    $to[$i][0] .= substr($from, 0, 3);
                 } else {
-                    $out[++$i] = [substr($value, 0, 3), 0];
+                    $to[++$i] = [substr($from, 0, 3), 0];
                 }
-                $value = substr($value, 3);
+                $from = substr($from, 3);
                 continue;
             }
-            $out[++$i] = [substr($value, 0, 2), 1];
-            $value = substr($value, 2);
+            $to[++$i] = [substr($from, 0, 2), 1];
+            $from = substr($from, 2);
             while ((
                 // <https://www.w3.org/TR/xml#sec-entexpand>
-                false !== ($n = strpos($value, $c = '"')) ||
-                false !== ($n = strpos($value, $c = "'")) ||
+                false !== ($n = strpos($from, $c = '"')) ||
+                false !== ($n = strpos($from, $c = "'")) ||
                 // <https://www.w3.org/TR/xml#vc-roottype>
-                false !== ($n = strpos($value, $c = '['))
-            ) && $n < strpos($value, '>')) {
+                false !== ($n = strpos($from, $c = '['))
+            ) && $n < strpos($from, '>')) {
                 if ($n > 0) {
-                    $out[$i][0] .= substr($value, 0, $n);
-                    $value = substr($value, $n);
+                    $to[$i][0] .= substr($from, 0, $n);
+                    $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($value, '[' === $c ? ']' : $c, 1))) {
-                    $out[$i][0] .= substr($value, 0, $n += 1);
-                    $value = substr($value, $n);
+                if (false !== ($n = strpos($from, '[' === $c ? ']' : $c, 1))) {
+                    $to[$i][0] .= substr($from, 0, $n += 1);
+                    $from = substr($from, $n);
                 }
             }
-            if (false !== ($n = strpos($value, '>'))) {
-                $out[$i][0] .= substr($value, 0, $n += 1);
-                $value = substr($value, $n);
+            if (false !== ($n = strpos($from, '>'))) {
+                $to[$i][0] .= substr($from, 0, $n += 1);
+                $from = substr($from, $n);
             }
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-pi>
-        if ('<?' === substr($value, 0, 2)) {
-            if (false !== strpos($skip . '>', substr($value, 2, 1))) {
-                if (0 === ($out[$i][1] ?? 1)) {
-                    $out[$i][0] .= substr($value, 0, 3);
+        if ('<?' === substr($from, 0, 2)) {
+            if (false !== strpos($skip . '>', substr($from, 2, 1))) {
+                if (0 === ($to[$i][1] ?? 1)) {
+                    $to[$i][0] .= substr($from, 0, 3);
                 } else {
-                    $out[++$i] = [substr($value, 0, 3), 0];
+                    $to[++$i] = [substr($from, 0, 3), 0];
                 }
-                $value = substr($value, 3);
+                $from = substr($from, 3);
                 continue;
             }
-            $out[++$i] = [substr($value, 0, 2), 1];
-            $value = substr($value, 2);
+            $to[++$i] = [substr($from, 0, 2), 1];
+            $from = substr($from, 2);
             while ((
-                false !== ($n = strpos($value, $c = '"')) ||
-                false !== ($n = strpos($value, $c = "'"))
-            ) && $n < strpos($value, '?>')) {
+                false !== ($n = strpos($from, $c = '"')) ||
+                false !== ($n = strpos($from, $c = "'"))
+            ) && $n < strpos($from, '?>')) {
                 if ($n > 0) {
-                    $out[$i][0] .= substr($value, 0, $n);
-                    $value = substr($value, $n);
+                    $to[$i][0] .= substr($from, 0, $n);
+                    $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($value, $c, 1))) {
-                    $out[$i][0] .= substr($value, 0, $n += 1);
-                    $value = substr($value, $n);
+                if (false !== ($n = strpos($from, $c, 1))) {
+                    $to[$i][0] .= substr($from, 0, $n += 1);
+                    $from = substr($from, $n);
                 }
             }
-            if (false !== ($n = strpos($value, '?>'))) {
-                $out[$i][0] .= substr($value, 0, $n += 2);
-                $value = substr($value, $n);
+            if (false !== ($n = strpos($from, '?>'))) {
+                $to[$i][0] .= substr($from, 0, $n += 2);
+                $from = substr($from, $n);
             }
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
-        $k = strtok(substr($value, 1), $skip . '>');
-        $out[++$i] = [substr($value, 0, $n = strlen($k) + 1), 2];
-        $value = substr($value, $n);
+        $k = strtok(substr($from, 1), $skip . '>/');
+        $to[++$i] = [substr($from, 0, $n = strlen($k) + 1), false !== strpos('"' . $test . '"', '"' . $k . '"') ? 1 : 2];
+        $from = substr($from, $n);
         while ((
-            // <https://www.w3.org/TR/xml#NT-AttValue>
-            false !== ($n = strpos($value, $c = '"')) ||
-            false !== ($n = strpos($value, $c = "'"))
-        ) && $n < strpos($value, '>')) {
+            // <https://www.w3.org/TR/xml#NT-Attfrom>
+            false !== ($n = strpos($from, $c = '"')) ||
+            false !== ($n = strpos($from, $c = "'"))
+        ) && $n < strpos($from, '>')) {
             if ($n > 0) {
-                $out[$i][0] .= substr($value, 0, $n);
-                $value = substr($value, $n);
+                $to[$i][0] .= substr($from, 0, $n);
+                $from = substr($from, $n);
             }
-            if (false !== ($n = strpos($value, $c, 1))) {
-                $out[$i][0] .= substr($value, 0, $n += 1);
-                $value = substr($value, $n);
+            if (false !== ($n = strpos($from, $c, 1))) {
+                $to[$i][0] .= substr($from, 0, $n += 1);
+                $from = substr($from, $n);
             }
         }
-        if (false !== ($n = strpos($value, '>'))) {
-            $out[$i][0] .= substr($value, 0, $n += 1);
+        if (false !== ($n = strpos($from, '>'))) {
+            $to[$i][0] .= substr($from, 0, $n += 1);
             // <https://www.w3.org/TR/xml#d0e2480>
-            if ('/' === substr($value, $n - 2, 1)) {
-                $out[$i][1] = 1;
+            if ('/' === substr($from, $n - 2, 1)) {
+                $to[$i][1] = 1;
             }
-            $value = substr($value, $n);
+            $from = substr($from, $n);
             continue;
         }
     }
-    if ("" !== $value) {
-        if (0 === ($out[$i][1] ?? 1)) {
-            $out[$i][0] .= $value;
+    if ("" !== $from) {
+        if (0 === ($to[$i][1] ?? 1)) {
+            $to[$i][0] .= $from;
         } else {
-            $out[++$i] = [$value, 0];
+            $to[++$i] = [$from, 0];
         }
     }
-    return $out;
+    return $to;
 }
 
 // Convert class name to file name
@@ -872,52 +873,52 @@ function p2f(?string $value, $accent = false) {
     return "" !== $value ? $value : null;
 }
 
-function pair(?string $value) {
-    if ("" === ($value = trim($value ?? ""))) {
+function pair(?string $from) {
+    if ("" === ($from = trim($from ?? ""))) {
         return [];
     }
-    $out = [];
     $skip = " \n\r\t";
-    while (false !== ($n = strpos($value, '='))) {
-        if ($k = trim(substr($value, 0, $n))) {
+    $to = [];
+    while (false !== ($n = strpos($from, '='))) {
+        if ($k = trim(substr($from, 0, $n))) {
             // Case for `a b="c d"`
             if (strlen($k) > ($x = strcspn($k, $skip)) && $x < $n) {
-                $out[substr($k, 0, $x)] = true;
-                $value = substr($value, $x + 1);
+                $to[substr($k, 0, $x)] = true;
+                $from = substr($from, $x + 1);
                 continue;
             }
-            $out[$k] = "";
+            $to[$k] = "";
             // Case for `a= `
-            if ($n = strspn($value = substr($value, $n + 1), $skip)) {
-                $value = substr($value, $n);
+            if ($n = strspn($from = substr($from, $n + 1), $skip)) {
+                $from = substr($from, $n);
                 continue;
             }
-            $c = $value[0] ?? 0;
+            $c = $from[0] ?? 0;
             // Case for `a="b c"` and/or `a='b c'`
-            if (('"' === $c || "'" === $c) && false !== ($n = strpos($value, $c, 1))) {
-                $out[$k] = substr($value, 1, $n - 1);
-                $value = substr($value, $n + 1);
+            if (('"' === $c || "'" === $c) && false !== ($n = strpos($from, $c, 1))) {
+                $to[$k] = substr($from, 1, $n - 1);
+                $from = substr($from, $n + 1);
                 continue;
             }
             // Case for `a=b c`
-            if ($n = strcspn($value, $skip)) {
-                $out[$k] = substr($value, 0, $n);
-                $value = substr($value, $n + 1);
+            if ($n = strcspn($from, $skip)) {
+                $to[$k] = substr($from, 0, $n);
+                $from = substr($from, $n + 1);
                 continue;
             }
         }
     }
-    if ("" !== ($k = trim($value))) {
+    if ("" !== ($k = trim($from))) {
         // Case for `a b c d`
         while ($n = strcspn($k, $skip)) {
-            $out[substr($k, 0, $n)] = true;
+            $to[substr($k, 0, $n)] = true;
             $k = substr($k, $n + 1);
         }
         if ("" !== $k) {
-            $out[$k] = true;
+            $to[$k] = true;
         }
     }
-    return $out;
+    return $to;
 }
 
 function path(?string $value) {
