@@ -28,20 +28,8 @@ class HTML extends XML {
         'wbr' => 1
     ];
 
-    public $strict = false;
-
-    public function __construct($value = [], $deep = false) {
-        if ($deep && is_string($value) && !$this->strict) {
-            // Convert `<tag>` to `<tag/>`
-            $value = preg_replace('/<(' . implode('|', array_keys(array_filter($this->void))) . ')(\s(?>"[^"]*"|\'[^\']*\'|[^\/>])*)?>/i', '<$1$2/>', $value);
-        }
-        parent::__construct($value, $deep);
-    }
-
-    public function __serialize(): array {
-        $lot = parent::__serialize();
-        unset($lot['c'], $lot['void']);
-        return $lot;
+    public function __construct($value = [], $deep = false, $strict = false) {
+        parent::__construct($value, $deep, $strict);
     }
 
 }

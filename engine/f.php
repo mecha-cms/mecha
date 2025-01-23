@@ -96,13 +96,13 @@ function any(iterable $value, $fn = null) {
     return false;
 }
 
-function apart(?string $from, array $void = []) {
-    $from = $from ?? "";
+function apart(string $value, array $void = []) {
+    $from = $value;
     $i = -1;
-    $skip = " \n\r\t";
-    $test = implode('"', array_filter($void));
+    $s = " \n\r\t";
     $to = [];
-    while (false !== ($n = strpos($from, '&')) || false !== ($n = strpos($from, '<'))) {
+    $void = P . implode(P, array_filter($void)) . P;
+    while (false !== ($n = strpos($from, '<')) || false !== ($n = strpos($from, '&'))) {
         if ($n > 0) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, $n);
@@ -114,7 +114,7 @@ function apart(?string $from, array $void = []) {
         }
         // <https://www.w3.org/TR/xml#sec-references>
         if ('&' === ($v = $from[0] ?? 0)) {
-            if (false !== strpos($skip . ';', substr($from, 1, 1))) {
+            if (false !== strpos($s . ';', substr($from, 1, 1))) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 2);
                 } else {
@@ -124,13 +124,7 @@ function apart(?string $from, array $void = []) {
                 continue;
             }
             $from = substr($from, 1);
-            if ($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
-                $v .= substr($from, 0, $n);
-                if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
-                    $v .= $c;
-                    $from = substr($from, 1);
-                }
-            } else if ('#' === ($c = $from[0] ?? 0)) {
+            if ('#' === ($c = $from[0] ?? 0)) {
                 $v .= $c;
                 $from = substr($from, 1);
                 if ('x' === ($c = $from[0] ?? 0) && ($n = strspn($from, '0123456789ABCDEFabcdef', 1))) {
@@ -146,6 +140,12 @@ function apart(?string $from, array $void = []) {
                         $from = substr($from, 1);
                     }
                 }
+            } else if ($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
+                $v .= substr($from, 0, $n);
+                if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
+                    $v .= $c;
+                    $from = substr($from, 1);
+                }
             }
             if (';' === substr($v, -1)) {
                 $to[++$i] = [$v, -1];
@@ -158,7 +158,7 @@ function apart(?string $from, array $void = []) {
             $to[++$i] = [$v, 0];
             continue;
         }
-        if (false !== strpos($skip . '>', substr($from, 1, 1))) {
+        if (false !== strpos($s . '>', substr($from, 1, 1))) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, 2);
             } else {
@@ -180,7 +180,7 @@ function apart(?string $from, array $void = []) {
             continue;
         }
         if ('<!' === substr($from, 0, 2)) {
-            if (false !== strpos($skip . '>', substr($from, 2, 1))) {
+            if (false !== strpos($s . '>', substr($from, 2, 1))) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
                 } else {
@@ -215,7 +215,7 @@ function apart(?string $from, array $void = []) {
         }
         // <https://www.w3.org/TR/xml#sec-pi>
         if ('<?' === substr($from, 0, 2)) {
-            if (false !== strpos($skip . '>', substr($from, 2, 1))) {
+            if (false !== strpos($s . '>', substr($from, 2, 1))) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
                 } else {
@@ -246,8 +246,8 @@ function apart(?string $from, array $void = []) {
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
-        $k = strtok(substr($from, 1), $skip . '>/');
-        $to[++$i] = [substr($from, 0, $n = strlen($k) + 1), false !== strpos('"' . $test . '"', '"' . $k . '"') ? 1 : 2];
+        $k = strtok(substr($from, 1), $s . '/>');
+        $to[++$i] = [substr($from, 0, $n = strlen($k) + 1), false !== strpos($void, P . $k . P) ? 1 : 2];
         $from = substr($from, $n);
         while ((
             // <https://www.w3.org/TR/xml#NT-Attfrom>
@@ -664,16 +664,13 @@ function get(array $from, string $key, string $join = '.') {
     if (!$from) {
         return null;
     }
-    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        return $from[strtr($key, [P => $join])] ?? null;
-    }
-    $keys = explode($join, $key);
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if (!is_array($from) || !array_key_exists($k, $from)) {
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    foreach ($keys as $key) {
+        $key = strtr($key, [P => $join]);
+        if (!is_array($from) || !array_key_exists($key, $from)) {
             return null;
         }
-        $from =& $from[$k];
+        $from =& $from[$key];
     }
     return $from;
 }
@@ -686,16 +683,13 @@ function has(array $from, string $key, string $join = '.') {
     if (!$from) {
         return false;
     }
-    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        return array_key_exists(strtr($key, [P => $join]), $from);
-    }
-    $keys = explode($join, $key);
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if (!is_array($from) || !array_key_exists($k, $from)) {
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    foreach ($keys as $key) {
+        $key = strtr($key, [P => $join]);
+        if (!is_array($from) || !array_key_exists($key, $from)) {
             return false;
         }
-        $from =& $from[$k];
+        $from =& $from[$key];
     }
     return true;
 }
@@ -730,21 +724,15 @@ function let(array &$from, string $key, string $join = '.') {
     if (!$from) {
         return false;
     }
-    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        if (array_key_exists($key = strtr($key, [P => $join]), $from)) {
-            unset($from[$key]);
-            return true;
-        }
-        return false;
-    }
-    $keys = explode($join, $key);
-    while (count($keys) > 1) {
-        $k = strtr(array_shift($keys), [P => $join]);
-        if (is_array($from) && array_key_exists($k, $from)) {
-            $from =& $from[$k];
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    $k = strtr(array_pop($keys), [P => $join]);
+    while ($keys) {
+        $key = strtr(array_shift($keys), [P => $join]);
+        if (is_array($from) && array_key_exists($key, $from)) {
+            $from =& $from[$key];
         }
     }
-    if (is_array($from) && array_key_exists($k = array_shift($keys), $from)) {
+    if (is_array($from) && array_key_exists($k, $from)) {
         unset($from[$k]);
         return true;
     }
@@ -873,23 +861,23 @@ function p2f(?string $value, $accent = false) {
     return "" !== $value ? $value : null;
 }
 
-function pair(?string $from) {
-    if ("" === ($from = trim($from ?? ""))) {
+function pair(string $value) {
+    if ("" === ($from = trim($value))) {
         return [];
     }
-    $skip = " \n\r\t";
+    $s = " \n\r\t";
     $to = [];
     while (false !== ($n = strpos($from, '='))) {
         if ($k = trim(substr($from, 0, $n))) {
             // Case for `a b="c d"`
-            if (strlen($k) > ($x = strcspn($k, $skip)) && $x < $n) {
+            if (strlen($k) > ($x = strcspn($k, $s)) && $x < $n) {
                 $to[substr($k, 0, $x)] = true;
                 $from = substr($from, $x + 1);
                 continue;
             }
             $to[$k] = "";
             // Case for `a= `
-            if ($n = strspn($from = substr($from, $n + 1), $skip)) {
+            if ($n = strspn($from = substr($from, $n + 1), $s)) {
                 $from = substr($from, $n);
                 continue;
             }
@@ -901,7 +889,7 @@ function pair(?string $from) {
                 continue;
             }
             // Case for `a=b c`
-            if ($n = strcspn($from, $skip)) {
+            if ($n = strcspn($from, $s)) {
                 $to[$k] = substr($from, 0, $n);
                 $from = substr($from, $n + 1);
                 continue;
@@ -910,7 +898,7 @@ function pair(?string $from) {
     }
     if ("" !== ($k = trim($from))) {
         // Case for `a b c d`
-        while ($n = strcspn($k, $skip)) {
+        while ($n = strcspn($k, $s)) {
             $to[substr($k, 0, $n)] = true;
             $k = substr($k, $n + 1);
         }
@@ -1002,20 +990,16 @@ function send(string $from, $to, string $title, string $content, array $lot = []
 }
 
 function set(array &$to, string $key, $value = null, string $join = '.') {
-    if (false === strpos($key = strtr($key, ["\\" . $join => P]), $join)) {
-        $to[strtr($key, [P => $join])] = $value;
-        return $to;
-    }
-    $keys = explode($join, $key);
-    while (count($keys) > 1) {
-        $k = strtr(array_shift($keys), [P => $join]);
-        if (!array_key_exists($k, $to)) {
-            $to[$k] = [];
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    $k = strtr(array_pop($keys), [P => $join]);
+    while ($keys) {
+        $key = strtr(array_shift($keys), [P => $join]);
+        if (!array_key_exists($key, $to)) {
+            $to[$key] = [];
         }
-        $to =& $to[$k];
+        $to =& $to[$key];
     }
-    $to[strtr(array_shift($keys), [P => $join])] = $value;
-    return $to;
+    return ($to[$k] = $value);
 }
 
 function shake(array $value, $keys = false) {
