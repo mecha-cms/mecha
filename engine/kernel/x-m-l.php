@@ -8,15 +8,16 @@ class XML extends Genome {
         2 => []
     ];
 
-    protected $c = [];
+    protected $raw = [];
     protected $void = [];
 
     protected function apart(string $value, $deep = false) {
         $i = -1;
         $lot = [];
         $stack = 0;
+        $raw = array_keys(array_filter($this->raw));
         $void = array_keys(array_filter($this->void));
-        foreach (apart($value, $void) as $v) {
+        foreach (apart($value, $raw, $void) as $v) {
             if ($stack > 0) {
                 if (2 === $v[1]) {
                     $stack += '/' === $v[0][1] ? -1 : 1;
@@ -27,19 +28,29 @@ class XML extends Genome {
             if (2 === $v[1]) {
                 $stack += '/' === $v[0][1] ? -1 : 1;
             }
-            $lot[++$i] = [$v[0], $v[1], strlen($v[0])];
+            $lot[++$i] = [$v[0], $v[1], $v[2] ?? strlen($v[0])];
         }
+        $strict = $this->strict;
         foreach ($lot as &$v) {
+            // <https://www.w3.org/TR/xml#d0e2480>
+            if (1 === $v[1] && false === strpos('!?', $v[0][1])) {
+                $n = strtok(substr($t = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t/");
+                $v = [$n, false, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
+                continue;
+            }
             // <https://www.w3.org/TR/xml#sec-starttags>
-            if (1 === $v[1] && false === strpos('!?', $v[0][1]) || 2 === $v[1]) {
-                $n = strtok(substr($start = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t/");
+            if (2 === $v[1]) {
+                $n = strtok(substr($t = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t/");
                 $r = substr($v[0], $v[2]);
-                if (2 === $v[1] && '</' . $n . '>' === substr($r, -(strlen($n) + 3))) {
-                    $r = substr($r, 0, -(strlen($n) + 3));
-                    $v = [$n, $deep ? (2 === $v[1] ? $this->apart($r, empty($this->c[$n]) ? $deep : false) : false) : $r, $this->pair(trim(substr($start, strlen($n) + 1, -1), '/'))];
+                if ('</' . $n . '>' === substr($r, $x = -(2 + strlen($n) + 1))) {
+                    $r = substr($r, 0, $x);
+                    $v = [$n, $deep ? $this->apart($r, empty($this->raw[$n]) ? $deep : false) : $r, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
                     continue;
                 }
-                $v = [$n, false, $this->pair(trim(substr($start, strlen($n) + 1, -1), '/'))];
+                if ($strict) {
+                    throw new ParseError(htmlspecialchars($v[0], ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
+                }
+                $v = [$n, false, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
                 continue;
             }
             // <https://www.w3.org/TR/xml#sec-cdata-sect>
@@ -88,10 +99,10 @@ class XML extends Genome {
                 if (1 === count($apart = $this->apart($value, $deep))) {
                     $this->lot = reset($apart);
                 } else if (defined('TEST') && TEST) {
-                    throw new LengthException($value);
+                    throw new ParseError(htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
                 }
             } else if (defined('TEST') && TEST) {
-                throw new ParseError($value);
+                throw new ParseError(htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
             }
         }
     }

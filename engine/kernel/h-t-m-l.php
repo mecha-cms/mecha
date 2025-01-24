@@ -2,7 +2,7 @@
 
 class HTML extends XML {
 
-    protected $c = [
+    protected $raw = [
         'script' => 1,
         'style' => 1,
         'textarea' => 1

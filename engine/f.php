@@ -96,13 +96,15 @@ function any(iterable $value, $fn = null) {
     return false;
 }
 
-function apart(string $value, array $void = []) {
+function apart(string $value, array $raw = [], array $void = []) {
     $from = $value;
     $i = -1;
     $s = " \n\r\t";
     $to = [];
-    $void = P . implode(P, array_filter($void)) . P;
-    while (false !== ($n = strpos($from, '<')) || false !== ($n = strpos($from, '&'))) {
+    $raw = $raw ? P . implode(P, $raw) . P : P;
+    $void = $void ? P . implode(P, $void) . P : P;
+    while ("" !== $from) {
+        $n = strcspn($from, '<&');
         if ($n > 0) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, $n);
@@ -113,49 +115,26 @@ function apart(string $value, array $void = []) {
             $from = substr($from, $n);
         }
         // <https://www.w3.org/TR/xml#sec-references>
-        if ('&' === ($v = $from[0] ?? 0)) {
-            if (false !== strpos($s . ';', substr($from, 1, 1))) {
-                if (0 === ($to[$i][1] ?? 1)) {
-                    $to[$i][0] .= substr($from, 0, 2);
-                } else {
-                    $to[++$i] = [substr($from, 0, 2), 0];
-                }
-                $from = substr($from, 2);
+        if ('&' === ($from[0] ?? 0)) {
+            if ('#' === substr($from, 1, 1) && (
+                ($n = strspn($from, '0123456789', $x = 2)) ||
+                ($n = strspn($from, '0123456789ABCDEFabcdef', $x = 3)) && 'x' === substr($from, 2, 1)
+            ) && ';' === substr($from, $n + $x, 1)) {
+                $to[++$i] = [substr($from, 0, $n += ($x + 1)), -1];
+                $from = substr($from, $n);
                 continue;
             }
-            $from = substr($from, 1);
-            if ('#' === ($c = $from[0] ?? 0)) {
-                $v .= $c;
-                $from = substr($from, 1);
-                if ('x' === ($c = $from[0] ?? 0) && ($n = strspn($from, '0123456789ABCDEFabcdef', 1))) {
-                    $v .= substr($from, 0, $n += 1);
-                    if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
-                        $v .= $c;
-                        $from = substr($from, 1);
-                    }
-                } else if ($n = strspn($from, '0123456789')) {
-                    $v .= substr($from, 0, $n);
-                    if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
-                        $v .= $c;
-                        $from = substr($from, 1);
-                    }
-                }
-            } else if ($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz')) {
-                $v .= substr($from, 0, $n);
-                if (';' === ($c = ($from = substr($from, $n))[0] ?? 0)) {
-                    $v .= $c;
-                    $from = substr($from, 1);
-                }
-            }
-            if (';' === substr($v, -1)) {
-                $to[++$i] = [$v, -1];
+            if (($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 1)) && ';' === substr($from, $n + 1, 1)) {
+                $to[++$i] = [substr($from, 0, $n += 2), -1];
+                $from = substr($from, $n);
                 continue;
             }
             if (0 === ($to[$i][1] ?? 1)) {
-                $to[$i][0] .= $v;
-                continue;
+                $to[$i][0] .= substr($from, 0, 1);
+            } else {
+                $to[++$i] = [substr($from, 0, 1), 0];
             }
-            $to[++$i] = [$v, 0];
+            $from = substr($from, 1);
             continue;
         }
         if (false !== strpos($s . '>', substr($from, 1, 1))) {
@@ -191,18 +170,14 @@ function apart(string $value, array $void = []) {
             }
             $to[++$i] = [substr($from, 0, 2), 1];
             $from = substr($from, 2);
-            while ((
-                // <https://www.w3.org/TR/xml#sec-entexpand>
-                false !== ($n = strpos($from, $c = '"')) ||
-                false !== ($n = strpos($from, $c = "'")) ||
-                // <https://www.w3.org/TR/xml#vc-roottype>
-                false !== ($n = strpos($from, $c = '['))
-            ) && $n < strpos($from, '>')) {
+            // <https://www.w3.org/TR/xml#sec-entexpand>
+            // <https://www.w3.org/TR/xml#vc-roottype>
+            while (($n = strcspn($from, '["' . "'")) < strpos($from, '>')) {
                 if ($n > 0) {
                     $to[$i][0] .= substr($from, 0, $n);
                     $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($from, '[' === $c ? ']' : $c, 1))) {
+                if (false !== ($n = strpos($from, '[' === $from[0] ? ']' : $from[0], 1))) {
                     $to[$i][0] .= substr($from, 0, $n += 1);
                     $from = substr($from, $n);
                 }
@@ -226,15 +201,12 @@ function apart(string $value, array $void = []) {
             }
             $to[++$i] = [substr($from, 0, 2), 1];
             $from = substr($from, 2);
-            while ((
-                false !== ($n = strpos($from, $c = '"')) ||
-                false !== ($n = strpos($from, $c = "'"))
-            ) && $n < strpos($from, '?>')) {
+            while (($n = strcspn($from, '"' . "'")) < strpos($from, '?>')) {
                 if ($n > 0) {
                     $to[$i][0] .= substr($from, 0, $n);
                     $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($from, $c, 1))) {
+                if (false !== ($n = strpos($from, $from[0], 1))) {
                     $to[$i][0] .= substr($from, 0, $n += 1);
                     $from = substr($from, $n);
                 }
@@ -247,18 +219,15 @@ function apart(string $value, array $void = []) {
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
         $k = strtok(substr($from, 1), $s . '/>');
-        $to[++$i] = [substr($from, 0, $n = strlen($k) + 1), false !== strpos($void, P . $k . P) ? 1 : 2];
+        $to[++$i] = [substr($from, 0, $n = 1 + strlen($k)), false !== strpos($void, P . $k . P) ? 1 : 2];
         $from = substr($from, $n);
-        while ((
-            // <https://www.w3.org/TR/xml#NT-Attfrom>
-            false !== ($n = strpos($from, $c = '"')) ||
-            false !== ($n = strpos($from, $c = "'"))
-        ) && $n < strpos($from, '>')) {
+        // <https://www.w3.org/TR/xml#NT-AttValue>
+        while (($n = strcspn($from, '"' . "'")) < strpos($from, '>')) {
             if ($n > 0) {
                 $to[$i][0] .= substr($from, 0, $n);
                 $from = substr($from, $n);
             }
-            if (false !== ($n = strpos($from, $c, 1))) {
+            if (false !== ($n = strpos($from, $from[0], 1))) {
                 $to[$i][0] .= substr($from, 0, $n += 1);
                 $from = substr($from, $n);
             }
@@ -269,15 +238,19 @@ function apart(string $value, array $void = []) {
             if ('/' === substr($from, $n - 2, 1)) {
                 $to[$i][1] = 1;
             }
+            $to[$i][2] = strlen($to[$i][0]);
             $from = substr($from, $n);
+            if (false !== strpos($raw, P . $k . P)) {
+                $to[$i][1] = 1;
+                if (false !== ($n = strpos($from, '</' . $k . '>'))) {
+                    $to[$i][0] .= substr($from, 0, $n += 2 + strlen($k) + 1);
+                    $from = substr($from, $n);
+                    continue;
+                }
+                $to[$i][0] .= $from;
+                break;
+            }
             continue;
-        }
-    }
-    if ("" !== $from) {
-        if (0 === ($to[$i][1] ?? 1)) {
-            $to[$i][0] .= $from;
-        } else {
-            $to[++$i] = [$from, 0];
         }
     }
     return $to;
