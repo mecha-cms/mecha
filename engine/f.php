@@ -103,9 +103,8 @@ function apart(string $value, array $raw = [], array $void = []) {
     $to = [];
     $raw = $raw ? P . implode(P, $raw) . P : P;
     $void = $void ? P . implode(P, $void) . P : P;
-    while ("" !== $from) {
-        $n = strcspn($from, '<&');
-        if ($n > 0) {
+    while ("" !== (string) $from) {
+        if ($n = strcspn($from, '<&')) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, $n);
                 $from = substr($from, $n);

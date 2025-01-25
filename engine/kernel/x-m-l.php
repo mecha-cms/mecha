@@ -26,7 +26,7 @@ class XML extends Genome {
                 continue;
             }
             if (2 === $v[1]) {
-                $stack += '/' === $v[0][1] ? -1 : 1;
+                $stack += 1;
             }
             $lot[++$i] = [$v[0], $v[1], $v[2] ?? strlen($v[0])];
         }
@@ -48,7 +48,7 @@ class XML extends Genome {
                     continue;
                 }
                 if ($strict) {
-                    throw new ParseError(htmlspecialchars($v[0], ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
+                    throw new ParseError($this->x($v[0]));
                 }
                 $v = [$n, false, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
                 continue;
@@ -72,12 +72,20 @@ class XML extends Genome {
         $lot = [];
         foreach (pair($value) as $k => $v) {
             if ($v && is_string($v)) {
-                $lot[$k] = htmlspecialchars_decode($v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
+                $lot[$k] = $this->v($v);
                 continue;
             }
             $lot[$k] = $v;
         }
         return $lot;
+    }
+
+    protected function v(string $v) {
+        return htmlspecialchars_decode($v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE);
+    }
+
+    protected function x(string $v) {
+        return htmlspecialchars($v, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false);
     }
 
     public $deep;
@@ -99,10 +107,10 @@ class XML extends Genome {
                 if (1 === count($apart = $this->apart($value, $deep))) {
                     $this->lot = reset($apart);
                 } else if (defined('TEST') && TEST) {
-                    throw new ParseError(htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
+                    throw new ParseError($this->x($value));
                 }
             } else if (defined('TEST') && TEST) {
-                throw new ParseError(htmlspecialchars($value, ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE));
+                throw new ParseError($this->x($value));
             }
         }
     }
@@ -138,7 +146,7 @@ class XML extends Genome {
                     $value .= ' ' . $k . ($strict ? '="' . $k . '"' : "");
                     continue;
                 }
-                $value .= ' ' . $k . '="' . htmlspecialchars(is_array($v) || is_object($v) ? json_encode($v) : s($v), ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', false) . '"';
+                $value .= ' ' . $k . '="' . $this->x(is_array($v) || is_object($v) ? json_encode($v) : s($v)) . '"';
             }
         }
         if (false === $lot[1]) {
