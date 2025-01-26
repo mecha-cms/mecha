@@ -233,11 +233,12 @@ function apart(string $value, array $raw = [], array $void = []) {
         }
         if (false !== ($n = strpos($from, '>'))) {
             $to[$i][0] .= substr($from, 0, $n += 1);
+            $to[$i][2] = strlen($to[$i][0]);
             // <https://www.w3.org/TR/xml#d0e2480>
             if ('/' === substr($from, $n - 2, 1)) {
                 $to[$i][1] = 1;
+                $to[$i][3] = true;
             }
-            $to[$i][2] = strlen($to[$i][0]);
             $from = substr($from, $n);
             if (false !== strpos($raw, P . $k . P)) {
                 $to[$i][1] = 1;
@@ -839,44 +840,42 @@ function pair(string $value) {
     }
     $s = " \n\r\t";
     $to = [];
-    while (false !== ($n = strpos($from, '='))) {
-        if ($k = trim(substr($from, 0, $n))) {
-            // Case for `a b="c d"`
-            if (strlen($k) > ($x = strcspn($k, $s)) && $x < $n) {
-                $to[substr($k, 0, $x)] = true;
-                $from = substr($from, $x + 1);
+    while ("" !== (string) $from) {
+        if ($n = strcspn($from, '"' . "'" . $s)) {
+            $k = trim(substr($from, 0, $n));
+            $from = substr($from, $n);
+            if ('=' === substr($k, -1)) {
+                $k = trim(substr($k, 0, -1));
+                // Case `a="b c"` and/or `a='b c'`
+                if ('"' === ($c = $from[0] ?? 0) || "'" === $c) {
+                    if (false !== ($n = strpos($from, $c, 1))) {
+                        $to[$k] = substr($from, 1, $n - 1);
+                        $from = trim(substr($from, $n + 1));
+                        continue;
+                    }
+                    // Case `a="b c` and/or `a='b c`
+                    $to[$k] = trim($from);
+                    break;
+                }
+                // Case `a= `
+                $to[$k] = "";
+                $from = substr($from, 1);
                 continue;
             }
-            $to[$k] = "";
-            // Case for `a= `
-            if ($n = strspn($from = substr($from, $n + 1), $s)) {
-                $from = substr($from, $n);
+            // Case `a=b`
+            if (($n = strpos($k, '=')) > 0) {
+                $to[substr($k, 0, $n)] = substr($k, $n + 1);
+                $from = substr($from, 1);
                 continue;
             }
-            $c = $from[0] ?? 0;
-            // Case for `a="b c"` and/or `a='b c'`
-            if (('"' === $c || "'" === $c) && false !== ($n = strpos($from, $c, 1))) {
-                $to[$k] = substr($from, 1, $n - 1);
-                $from = substr($from, $n + 1);
-                continue;
-            }
-            // Case for `a=b c`
-            if ($n = strcspn($from, $s)) {
-                $to[$k] = substr($from, 0, $n);
-                $from = substr($from, $n + 1);
-                continue;
-            }
-        }
-    }
-    if ("" !== ($k = trim($from))) {
-        // Case for `a b c d`
-        while ($n = strcspn($k, $s)) {
-            $to[substr($k, 0, $n)] = true;
-            $k = substr($k, $n + 1);
-        }
-        if ("" !== $k) {
+            // Case `a b`
             $to[$k] = true;
+            $from = substr($from, 1);
+            continue;
         }
+        // Case `a b`
+        $to[trim($from)] = true;
+        break;
     }
     return $to;
 }

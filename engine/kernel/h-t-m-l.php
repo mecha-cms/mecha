@@ -28,8 +28,8 @@ class HTML extends XML {
         'wbr' => 1
     ];
 
-    public function __construct($value = [], $deep = false, $strict = false) {
-        parent::__construct($value, $deep, $strict);
+    public function __construct($value = [], $deep = false, $strict = null) {
+        parent::__construct($value, $deep, $strict ?? (is_string($value) && '/>' === substr($value, -2)));
     }
 
 }

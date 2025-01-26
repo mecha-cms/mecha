@@ -35,7 +35,11 @@ class XML extends Genome {
             // <https://www.w3.org/TR/xml#d0e2480>
             if (1 === $v[1] && false === strpos('!?', $v[0][1])) {
                 $n = strtok(substr($t = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t/");
-                $v = [$n, false, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
+                if (!empty($this->raw[$n]) && '</' . $n . '>' === substr($v[0], $x = -(2 + strlen($n) + 1))) {
+                    $v = [$n, substr($v[0], $v[2], $x), $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
+                    continue;
+                }
+                $v = [$n, false, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
                 continue;
             }
             // <https://www.w3.org/TR/xml#sec-starttags>
@@ -44,13 +48,13 @@ class XML extends Genome {
                 $r = substr($v[0], $v[2]);
                 if ('</' . $n . '>' === substr($r, $x = -(2 + strlen($n) + 1))) {
                     $r = substr($r, 0, $x);
-                    $v = [$n, $deep ? $this->apart($r, empty($this->raw[$n]) ? $deep : false) : $r, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
+                    $v = [$n, $deep ? $this->apart($r, empty($this->raw[$n]) ? $deep : false) : $r, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
                     continue;
                 }
                 if ($strict) {
                     throw new ParseError($this->x($v[0]));
                 }
-                $v = [$n, false, $this->pair(trim(substr($t, strlen($n) + 1, -1), '/'))];
+                $v = [$n, false, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
                 continue;
             }
             // <https://www.w3.org/TR/xml#sec-cdata-sect>
