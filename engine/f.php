@@ -217,7 +217,7 @@ function apart(string $value, array $raw = [], array $void = []) {
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
-        $k = strtok(substr($from, 1), $s . '/>');
+        $k = rtrim(strtok(substr($from, 1), $s . '>'), '/');
         $to[++$i] = [substr($from, 0, $n = 1 + strlen($k)), false !== strpos($void, P . $k . P) ? 1 : 2];
         $from = substr($from, $n);
         // <https://www.w3.org/TR/xml#NT-AttValue>
