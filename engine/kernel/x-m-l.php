@@ -12,20 +12,28 @@ class XML extends Genome {
     protected $void = [];
 
     protected function apart(string $value, $deep = false) {
+        $current = $stack = 0;
         $i = -1;
         $lot = [];
-        $stack = 0;
         $raw = array_keys(array_filter($this->raw));
         $void = array_keys(array_filter($this->void));
         foreach (apart($value, $raw, $void) as $v) {
             if ($stack > 0) {
                 if (2 === $v[1]) {
-                    $stack += '/' === $v[0][1] ? -1 : 1;
+                    if ('/' === $v[0][1]) {
+                        // if (trim(substr($v[0], 2, -1)) === $current) {
+                            $stack -= 1;
+                        // }
+                    } else {
+                        // $current = rtrim(strtok(substr($v[0], 1), " \n\r\t>"), '/');
+                        $stack += 1;
+                    }
                 }
                 $lot[$i][0] .= $v[0];
                 continue;
             }
             if (2 === $v[1]) {
+                // $current = rtrim(strtok(substr($v[0], 1), " \n\r\t>"), '/');
                 $stack += 1;
             }
             $lot[++$i] = [$v[0], $v[1], $v[2] ?? strlen($v[0])];
