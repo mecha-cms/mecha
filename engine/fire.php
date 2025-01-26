@@ -14,7 +14,7 @@ if (defined('TEST')) {
         error_reporting(E_ALL);
         ini_set('display_errors', true);
         ini_set('display_startup_errors', true);
-        ini_set('html_errors', 1);
+        ini_set('html_errors', 0);
     }
 }
 
@@ -167,6 +167,7 @@ header_register_callback(static function () {
 
 // Add a hook that will execute just after the response body is sent
 register_shutdown_function(static function () {
+    error_get_last() && type('text/plain');
     // This hook will also execute when the application is forced to stop by using the `exit` or `die` command
     Hook::fire('exit');
 });

@@ -60,7 +60,7 @@ class XML extends Genome {
                     continue;
                 }
                 if ($strict) {
-                    throw new ParseError($this->x($v[0]));
+                    throw new ParseError($v[0]);
                 }
                 $v = [$n, false, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
                 continue;
@@ -119,10 +119,10 @@ class XML extends Genome {
                 if (1 === count($apart = $this->apart($value, $deep))) {
                     $this->lot = reset($apart);
                 } else if (defined('TEST') && TEST) {
-                    throw new ParseError($this->x($value));
+                    throw new ParseError($value);
                 }
             } else if (defined('TEST') && TEST) {
-                throw new ParseError($this->x($value));
+                throw new ParseError($value);
             }
         }
     }
