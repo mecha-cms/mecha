@@ -1263,7 +1263,7 @@ function e($value, array $lot = []) {
 
 function f(?string $value, $accent = true, string $keep = "") {
     // Remove HTML tag(s) and character(s) reference
-    $value = preg_replace('/<[^>]+?>|&(?:[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
+    $value = preg_replace('/<("[^"]*"|\'[^\']*\'|[^>])+>|&(?>[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
     if (!$accent || is_array($accent)) {
         // If this condition is not checked, the translation below will incorrectly translate all `'0'` to `false`
         // (which will be casted as an empty string), and so any string containing a `'0'` character will always drop
