@@ -128,7 +128,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                 $from = substr($from, $n);
                 continue;
             }
-            // Case `&asdf`
+            // Entity that does not end with a `;` is not valid
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, 1);
             } else {
@@ -137,6 +137,7 @@ function apart(string $value, array $raw = [], array $void = []) {
             $from = substr($from, 1);
             continue;
         }
+        // Tag such as `<>` and `< >` is not valid because it does not have a name
         if (false !== strpos($s . '>', substr($from, 1, 1))) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, 2);
@@ -148,7 +149,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         }
         // <https://www.w3.org/TR/xml#sec-comments>
         if ('<!--' === substr($from, 0, 4)) {
-            // `Case <!--asdf`
+            // Comment is left open for some reason until the end of the stream
             if (false === ($n = strpos($from, '-->'))) {
                 $to[++$i] = [$from, 1];
                 break;
@@ -159,7 +160,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         }
         // <https://www.w3.org/TR/xml#sec-cdata-sect>
         if ('<![CDATA[' === substr($from, 0, 9)) {
-            // `Case <![CDATA[asdf`
+            // Character data section is left open for some reason until the end of the stream
             if (false === ($n = strpos($from, ']]>'))) {
                 $to[++$i] = [$from, 1];
                 break;
@@ -169,6 +170,7 @@ function apart(string $value, array $raw = [], array $void = []) {
             continue;
         }
         if ('<!' === substr($from, 0, 2)) {
+            // DTD such as `<!>` and `<! >` is not valid because it does not have a name
             if (false !== strpos($s . '>', substr($from, 2, 1))) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
@@ -187,31 +189,28 @@ function apart(string $value, array $raw = [], array $void = []) {
                     $to[$i][0] .= substr($from, 0, $n);
                     $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($from, '[' === $from[0] ? ']' : $from[0], 1))) {
-                    $to[$i][0] .= substr($from, 0, $n += 1);
-                    $from = substr($from, $n);
-                    continue;
+                // DTD is left open for some reason until the end of the stream
+                if (false === ($n = strpos($from, '[' === $from[0] ? ']' : $from[0], 1))) {
+                    $to[$i][0] .= $from;
+                    $from = "";
+                    break;
                 }
-                // Case `<!asdf [asdf asdf`
-                // Case `<!asdf asdf="asdf`
-                // Case `<!asdf asdf='asdf`
-                $to[$i][0] .= $from;
-                $from = "";
-                break;
-            }
-            if ("" !== $from && false !== ($n = strpos($from, '>'))) {
                 $to[$i][0] .= substr($from, 0, $n += 1);
                 $from = substr($from, $n);
                 continue;
             }
-            // Case `<!asdf [asdf asdf]`
-            // Case `<!asdf asdf="asdf"`
-            // Case `<!asdf asdf='asdf'`
-            $to[$i][0] .= $from;
-            break;
+            // DTD is left open for some reason until the end of the stream
+            if ("" === $from || false === ($n = strpos($from, '>'))) {
+                $to[$i][0] .= $from;
+                break;
+            }
+            $to[$i][0] .= substr($from, 0, $n += 1);
+            $from = substr($from, $n);
+            continue;
         }
         // <https://www.w3.org/TR/xml#sec-pi>
         if ('<?' === substr($from, 0, 2)) {
+            /* PI such as `<?>` and `<? >` is not valid because it does not have a name */
             if (false !== strpos($s . '>', substr($from, 2, 1))) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
@@ -228,26 +227,24 @@ function apart(string $value, array $raw = [], array $void = []) {
                     $to[$i][0] .= substr($from, 0, $n);
                     $from = substr($from, $n);
                 }
-                if (false !== ($n = strpos($from, $from[0], 1))) {
-                    $to[$i][0] .= substr($from, 0, $n += 1);
-                    $from = substr($from, $n);
-                    continue;
+                // PI is left open for some reason until the end of the stream
+                if (false === ($n = strpos($from, $from[0], 1))) {
+                    $to[$i][0] .= $from;
+                    $from = "";
+                    break;
                 }
-                // Case `<?asdf asdf="asdf`
-                // Case `<?asdf asdf='asdf`
-                $to[$i][0] .= $from;
-                $from = "";
-                break;
-            }
-            if ("" !== $from && false !== ($n = strpos($from, '?>'))) {
-                $to[$i][0] .= substr($from, 0, $n += 2);
+                $to[$i][0] .= substr($from, 0, $n += 1);
                 $from = substr($from, $n);
                 continue;
             }
-            // Case `<?asdf asdf="asdf"`
-            // Case `<?asdf asdf='asdf'`
-            $to[$i][0] .= $from;
-            break;
+            // PI is left open for some reason until the end of the stream
+            if ("" === $from || false === ($n = strpos($from, '?>'))) {
+                $to[$i][0] .= $from;
+                break;
+            }
+            $to[$i][0] .= substr($from, 0, $n += 2);
+            $from = substr($from, $n);
+            continue;
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
         $k = rtrim(strtok(substr($from, 1), $s . '>'), '/');
@@ -259,43 +256,40 @@ function apart(string $value, array $raw = [], array $void = []) {
                 $to[$i][0] .= substr($from, 0, $n);
                 $from = substr($from, $n);
             }
-            if (false !== ($n = strpos($from, $from[0], 1))) {
-                $to[$i][0] .= substr($from, 0, $n += 1);
-                $from = substr($from, $n);
-                continue;
-            }
-            // Case `<asdf asdf="asdf`
-            // Case `<asdf asdf='asdf`
-            $to[$i][0] .= $from;
-            $from = "";
-            break;
-        }
-        if ("" !== $from && false !== ($n = strpos($from, '>'))) {
-            $to[$i][0] .= substr($from, 0, $n += 1);
-            $to[$i][2] = strlen($to[$i][0]);
-            // <https://www.w3.org/TR/xml#d0e2480>
-            if ('/' === substr($from, $n - 2, 1)) {
-                $to[$i][1] = 1;
-                $to[$i][3] = true;
-            }
-            $from = substr($from, $n);
-            if (false !== strpos($raw, P . $k . P)) {
-                $to[$i][1] = 1;
-                if (false !== ($n = strpos($from, '</' . $k . '>'))) {
-                    $to[$i][0] .= substr($from, 0, $n += 2 + strlen($k) + 1);
-                    $from = substr($from, $n);
-                    continue;
-                }
-                // Case `<asdf>asdf asdf`
+            // Tag is left open for some reason until the end of the stream
+            if (false === ($n = strpos($from, $from[0], 1))) {
                 $to[$i][0] .= $from;
+                $from = "";
                 break;
             }
+            $to[$i][0] .= substr($from, 0, $n += 1);
+            $from = substr($from, $n);
             continue;
         }
-        // Case `<asdf asdf="asdf"`
-        // Case `<asdf asdf='asdf'`
-        $to[$i][0] .= $from;
-        break;
+        // Tag is left open for some reason until the end of the stream
+        if ("" === $from || false === ($n = strpos($from, '>'))) {
+            $to[$i][0] .= $from;
+            break;
+        }
+        $to[$i][0] .= substr($from, 0, $n += 1);
+        $to[$i][2] = strlen($to[$i][0]);
+        // <https://www.w3.org/TR/xml#d0e2480>
+        if ('/' === substr($from, $n - 2, 1)) {
+            $to[$i][1] = 1;
+            $to[$i][3] = true;
+        }
+        $from = substr($from, $n);
+        if (false === strpos($raw, P . $k . P)) {
+            continue;
+        }
+        $to[$i][1] = 1;
+        // Raw element is left open for some reason until the end of the stream
+        if (false === ($n = strpos($from, '</' . $k . '>'))) {
+            $to[$i][0] .= $from;
+            break;
+        }
+        $to[$i][0] .= substr($from, 0, $n += 2 + strlen($k) + 1);
+        $from = substr($from, $n);
     }
     return $to;
 }
@@ -890,34 +884,29 @@ function pair(string $value) {
             $from = substr($from, $n);
             if ('=' === substr($k, -1)) {
                 $k = trim(substr($k, 0, -1));
-                // Case `a="b c"` and/or `a='b c'`
                 if ('"' === ($c = $from[0] ?? 0) || "'" === $c) {
-                    if (false !== ($n = strpos($from, $c, 1))) {
-                        $to[$k] = substr($from, 1, $n - 1);
-                        $from = trim(substr($from, $n + 1));
-                        continue;
+                    // Attribute value is left open for some reason until the end of the stream
+                    if (false === ($n = strpos($from, $c, 1))) {
+                        $to[$k] = substr($from, 1);
+                        break;
                     }
-                    // Case `a="b c` and/or `a='b c`
-                    $to[$k] = substr($from, 1);
-                    break;
+                    $to[$k] = substr($from, 1, $n - 1);
+                    $from = trim(substr($from, $n + 1));
+                    continue;
                 }
-                // Case `a= `
                 $to[$k] = "";
                 $from = substr($from, 1);
                 continue;
             }
-            // Case `a=b`
             if (($n = strpos($k, '=')) > 0) {
                 $to[substr($k, 0, $n)] = substr($k, $n + 1);
                 $from = substr($from, 1);
                 continue;
             }
-            // Case `a b`
             $to[$k] = true;
             $from = substr($from, 1);
             continue;
         }
-        // Case `a b`
         $to[trim($from)] = true;
         break;
     }
