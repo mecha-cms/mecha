@@ -229,9 +229,14 @@ function apart(string $value, array $raw = [], array $void = []) {
             if (false !== ($n = strpos($from, $from[0], 1))) {
                 $to[$i][0] .= substr($from, 0, $n += 1);
                 $from = substr($from, $n);
+                continue;
             }
+            // Case `<asdf asdf="asdf asdf`
+            $to[$i][0] .= $from;
+            $from = "";
+            break;
         }
-        if (false !== ($n = strpos($from, '>'))) {
+        if ("" !== $from && false !== ($n = strpos($from, '>'))) {
             $to[$i][0] .= substr($from, 0, $n += 1);
             $to[$i][2] = strlen($to[$i][0]);
             // <https://www.w3.org/TR/xml#d0e2480>
@@ -252,6 +257,9 @@ function apart(string $value, array $raw = [], array $void = []) {
             }
             continue;
         }
+        // Case `<asdf asdf="asdf asdf"`
+        $to[$i][0] .= $from;
+        break;
     }
     return $to;
 }
@@ -854,7 +862,7 @@ function pair(string $value) {
                         continue;
                     }
                     // Case `a="b c` and/or `a='b c`
-                    $to[$k] = trim($from);
+                    $to[$k] = substr($from, 1);
                     break;
                 }
                 // Case `a= `
