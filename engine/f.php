@@ -128,6 +128,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                 $from = substr($from, $n);
                 continue;
             }
+            // Case `&asdf`
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, 1);
             } else {
@@ -146,13 +147,23 @@ function apart(string $value, array $raw = [], array $void = []) {
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-comments>
-        if ('<!--' === substr($from, 0, 4) && false !== ($n = strpos($from, '-->'))) {
+        if ('<!--' === substr($from, 0, 4)) {
+            // `Case <!--asdf`
+            if (false === ($n = strpos($from, '-->'))) {
+                $to[++$i] = [$from, 1];
+                break;
+            }
             $to[++$i] = [substr($from, 0, $n += 3), 1];
             $from = substr($from, $n);
             continue;
         }
         // <https://www.w3.org/TR/xml#sec-cdata-sect>
-        if ('<![CDATA[' === substr($from, 0, 9) && false !== ($n = strpos($from, ']]>'))) {
+        if ('<![CDATA[' === substr($from, 0, 9)) {
+            // `Case <![CDATA[asdf`
+            if (false === ($n = strpos($from, ']]>'))) {
+                $to[++$i] = [$from, 1];
+                break;
+            }
             $to[++$i] = [substr($from, 0, $n += 3), 1];
             $from = substr($from, $n);
             continue;
@@ -179,13 +190,25 @@ function apart(string $value, array $raw = [], array $void = []) {
                 if (false !== ($n = strpos($from, '[' === $from[0] ? ']' : $from[0], 1))) {
                     $to[$i][0] .= substr($from, 0, $n += 1);
                     $from = substr($from, $n);
+                    continue;
                 }
+                // Case `<!asdf [asdf asdf`
+                // Case `<!asdf asdf="asdf`
+                // Case `<!asdf asdf='asdf`
+                $to[$i][0] .= $from;
+                $from = "";
+                break;
             }
-            if (false !== ($n = strpos($from, '>'))) {
+            if ("" !== $from && false !== ($n = strpos($from, '>'))) {
                 $to[$i][0] .= substr($from, 0, $n += 1);
                 $from = substr($from, $n);
+                continue;
             }
-            continue;
+            // Case `<!asdf [asdf asdf]`
+            // Case `<!asdf asdf="asdf"`
+            // Case `<!asdf asdf='asdf'`
+            $to[$i][0] .= $from;
+            break;
         }
         // <https://www.w3.org/TR/xml#sec-pi>
         if ('<?' === substr($from, 0, 2)) {
@@ -208,13 +231,23 @@ function apart(string $value, array $raw = [], array $void = []) {
                 if (false !== ($n = strpos($from, $from[0], 1))) {
                     $to[$i][0] .= substr($from, 0, $n += 1);
                     $from = substr($from, $n);
+                    continue;
                 }
+                // Case `<?asdf asdf="asdf`
+                // Case `<?asdf asdf='asdf`
+                $to[$i][0] .= $from;
+                $from = "";
+                break;
             }
-            if (false !== ($n = strpos($from, '?>'))) {
+            if ("" !== $from && false !== ($n = strpos($from, '?>'))) {
                 $to[$i][0] .= substr($from, 0, $n += 2);
                 $from = substr($from, $n);
+                continue;
             }
-            continue;
+            // Case `<?asdf asdf="asdf"`
+            // Case `<?asdf asdf='asdf'`
+            $to[$i][0] .= $from;
+            break;
         }
         // <https://www.w3.org/TR/xml#sec-starttags>
         $k = rtrim(strtok(substr($from, 1), $s . '>'), '/');
@@ -231,7 +264,8 @@ function apart(string $value, array $raw = [], array $void = []) {
                 $from = substr($from, $n);
                 continue;
             }
-            // Case `<asdf asdf="asdf asdf`
+            // Case `<asdf asdf="asdf`
+            // Case `<asdf asdf='asdf`
             $to[$i][0] .= $from;
             $from = "";
             break;
@@ -252,12 +286,14 @@ function apart(string $value, array $raw = [], array $void = []) {
                     $from = substr($from, $n);
                     continue;
                 }
+                // Case `<asdf>asdf asdf`
                 $to[$i][0] .= $from;
                 break;
             }
             continue;
         }
-        // Case `<asdf asdf="asdf asdf"`
+        // Case `<asdf asdf="asdf"`
+        // Case `<asdf asdf='asdf'`
         $to[$i][0] .= $from;
         break;
     }
