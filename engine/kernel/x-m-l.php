@@ -145,7 +145,7 @@ class XML extends Genome {
                 }
                 return $value;
             }
-            return is_array($lot[1]) || is_object($lot[1]) ? json_encode($lot[1]) : s($lot[1]);
+            return is_array($lot[1]) || is_object($lot[1]) ? json_encode($lot[1]) : (null !== $lot[1] ? s($lot[1]) : "");
         }
         $value = '<' . $lot[0];
         if (!empty($lot[2])) {
@@ -158,7 +158,7 @@ class XML extends Genome {
                     $value .= ' ' . $k . ($strict ? '="' . $k . '"' : "");
                     continue;
                 }
-                $value .= ' ' . $k . '="' . $this->x(is_array($v) || is_object($v) ? json_encode($v) : s($v)) . '"';
+                $value .= ' ' . $k . '="' . $this->x(is_array($v) || is_object($v) ? json_encode($v) : (null !== $v ? s($v) : "")) . '"';
             }
         }
         if (false === $lot[1]) {
@@ -174,7 +174,7 @@ class XML extends Genome {
                 $value .= $v;
             }
         } else {
-            $value .= s($lot[1]);
+            $value .= $lot[1];
         }
         return $value . '</' . $lot[0] . '>';
     }
