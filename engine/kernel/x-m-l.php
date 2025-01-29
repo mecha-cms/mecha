@@ -171,10 +171,10 @@ class XML extends Genome {
                     $value .= new static($v, $deep, $strict);
                     continue;
                 }
-                $value .= $v;
+                $value .= (null !== $v ? s($v) : "");
             }
         } else {
-            $value .= $lot[1];
+            $value .= (null !== $lot[1] ? s($lot[1]) : "");
         }
         return $value . '</' . $lot[0] . '>';
     }
