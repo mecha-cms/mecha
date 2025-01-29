@@ -129,7 +129,7 @@ class XML extends Genome {
 
     public function __serialize(): array {
         $lot = parent::__serialize();
-        unset($lot['c'], $lot['void']);
+        unset($lot['raw'], $lot['void']);
         return $lot;
     }
 
