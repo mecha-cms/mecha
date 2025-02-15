@@ -707,7 +707,7 @@ function has(array $from, string $key, string $join = '.') {
 
 function ip() {
     if ($for = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? "") {
-        $ip = strpos($for, ',') > 0 ? trim(strtok($ip[0], ',')) : $for;
+        $ip = trim(strstr($for, ',', true) ?: $for);
     } else {
         $ip = $_SERVER['REMOTE_ADDR'];
     }

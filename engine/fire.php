@@ -384,8 +384,8 @@ if (is_file($task = PATH . D . 'task.php')) {
     })($task);
 }
 
-// Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use special
-// feature to define variable in the response so clearing user data on global scope becomes necessary.
+// Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
+// special feature to define variable in the response so clearing user data on global scope becomes necessary.
 unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $use, $uses, $v, $x);
 
 Hook::fire(['set', 'get', 'let']);
