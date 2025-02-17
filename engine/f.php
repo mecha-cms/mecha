@@ -1609,7 +1609,7 @@ function z($value, $short = true) {
             return '(object)' . z((array) $value, $short);
         }
         if (method_exists($value, '__set_state')) {
-            $content = "";
+            $content = $stack = "";
             foreach (array_slice(token_get_all('<?php ' . var_export($value, true)), 1) as $v) {
                 if (is_array($v)) {
                     if (T_CONSTANT_ENCAPSED_STRING === $v[0]) {
@@ -1622,20 +1622,30 @@ function z($value, $short = true) {
                     $content .= "''" === ($v = $v[1]) ? '""' : ('NULL' === $v ? 'null' : $v);
                     continue;
                 }
-                if ('(' === $v && $short && 'array' === substr($content, -5)) {
-                    $content = substr($content, 0, -5) . '[';
+                if ('(' === $v) {
+                    if ($short && 'array' === substr($content, -5)) {
+                        $content = substr($content, 0, -5) . '[';
+                        $stack .= '[';
+                        continue;
+                    }
+                    $content .= $v;
+                    $stack .= '(';
                     continue;
                 }
                 if (')' === $v) {
                     $content = trim($content, ',');
-                    if ($short) {
+                    if ($short && '[' === substr($stack, -1)) {
                         $content .= ']';
+                        $stack = substr($stack, 0, -1);
                         continue;
                     }
+                    $content .= $v;
+                    $stack = substr($stack, 0, -1);
+                    continue;
                 }
                 $content .= $v;
             }
-            return trim(substr($content, 0, -1) . ')', "\\");
+            return $content;
         }
         return 'new ' . get_class($value); // Broken :(
     }
