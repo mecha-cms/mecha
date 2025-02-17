@@ -13,7 +13,7 @@ class Folder extends Genome {
 
     public function __construct(?string $path = null) {
         if ($path && is_string($path) && 0 === strpos($path, PATH)) {
-            $this->path = stream_resolve_include_path($path) ?: null;
+            $this->path = is_dir($path = stream_resolve_include_path($path)) ? $path : null;
         }
     }
 
@@ -51,18 +51,18 @@ class Folder extends Genome {
     }
 
     public function _seal() {
-        return $this->exist() ? fileperms($this->path) : null;
+        return $this->exist() && null !== ($path = $this->path) ? fileperms($path) : null;
     }
 
     public function _size() {
-        if ($this->exist()) {
+        if ($this->exist() && null !== ($path = $this->path)) {
             // Empty folder
-            if (0 === q(g($this->path, 1))) {
+            if (0 === q(g($path, 1))) {
                 return 0;
             }
             // Scan all file(s) to get the total size
             $size = 0;
-            foreach (g($this->path, 1, true) as $k => $v) {
+            foreach (g($path, 1, true) as $k => $v) {
                 $size += filesize($k);
             }
             return $size;
@@ -80,7 +80,7 @@ class Folder extends Genome {
 
     public function count(): int {
         // Count file(s) only
-        return $this->exist() ? q(g($this->path, 1, true)) : 0;
+        return $this->exist() && null !== ($path = $this->path) ? q(g($path, 1, true)) : 0;
     }
 
     public function exist() {
@@ -92,7 +92,7 @@ class Folder extends Genome {
     }
 
     public function name() {
-        return $this->exist() ? basename($this->path) : null;
+        return $this->exist() && null !== ($path = $this->path) ? basename($path) : null;
     }
 
     public function offsetExists($key): bool {
@@ -100,8 +100,8 @@ class Folder extends Genome {
     }
 
     public function offsetGet($key) {
-        if ($this->exist()) {
-            $path = $this->path . D . ltrim(strtr($key, '/', D), D);
+        if ($this->exist() && null !== ($path = $this->path)) {
+            $path .= D . ltrim(strtr($key, '/', D), D);
             if (is_dir($path)) {
                 return new static($path);
             }
@@ -113,12 +113,12 @@ class Folder extends Genome {
     }
 
     public function parent() {
-        return $this->exist() ? new static(dirname($this->path)) : null;
+        return $this->exist() && null !== ($path = $this->path) ? new static(dirname($path)) : null;
     }
 
     public function route() {
-        if ($this->exist()) {
-            return '/' . trim(strtr($this->path, [PATH . D => '/', D => '/']), '/');
+        if ($this->exist() && null !== ($path = $this->path)) {
+            return '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/');
         }
         return null;
     }
@@ -141,8 +141,8 @@ class Folder extends Genome {
     }
 
     public function time(?string $format = null) {
-        if ($this->exist()) {
-            $time = filectime($this->path);
+        if ($this->exist() && null !== ($path = $this->path)) {
+            $time = filectime($path);
             return $format ? (new Time($time))($format) : $time;
         }
         return null;

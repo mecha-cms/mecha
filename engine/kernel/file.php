@@ -13,7 +13,7 @@ class File extends Genome {
 
     public function __construct(?string $path = null) {
         if ($path && is_string($path) && 0 === strpos($path, PATH)) {
-            $this->path = stream_resolve_include_path($path) ?: null;
+            $this->path = is_file($path = stream_resolve_include_path($path)) ? $path : null;
         }
     }
 
@@ -51,11 +51,11 @@ class File extends Genome {
     }
 
     public function _seal() {
-        return $this->exist() ? fileperms($this->path) : null;
+        return $this->exist() && null !== ($path = $this->path) ? fileperms($path) : null;
     }
 
     public function _size() {
-        return $this->exist() ? filesize($this->path) : null;
+        return $this->exist() && null !== ($path = $this->path) ? filesize($path) : null;
     }
 
     public function URL() {
@@ -63,8 +63,8 @@ class File extends Genome {
     }
 
     public function content() {
-        if ($this->exist()) {
-            $content = file_get_contents($this->path);
+        if ($this->exist() && null !== ($path = $this->path)) {
+            $content = file_get_contents($path);
             return false !== $content ? $content : null;
         }
         return null;
@@ -90,8 +90,7 @@ class File extends Genome {
     }
 
     public function name(...$lot) {
-        if ($this->exist()) {
-            $path = $this->path;
+        if ($this->exist() && null !== ($path = $this->path)) {
             if (true === ($x = array_shift($lot) ?? false)) {
                 return basename($path);
             }
@@ -114,12 +113,12 @@ class File extends Genome {
     }
 
     public function parent() {
-        return $this->exist() ? new Folder(dirname($this->path)) : null;
+        return $this->exist() && null !== ($path = $this->path) ? new Folder(dirname($path)) : null;
     }
 
     public function route() {
-        if ($this->exist()) {
-            return '/' . trim(strtr($this->path, [PATH . D => '/', D => '/']), '/');
+        if ($this->exist() && null !== ($path = $this->path)) {
+            return '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/');
         }
         return null;
     }
@@ -129,36 +128,34 @@ class File extends Genome {
     }
 
     public function size(?string $unit = null, int $fix = 2, int $base = 1000) {
-        if ($this->exist()) {
-            $path = $this->path;
+        if ($this->exist() && null !== ($path = $this->path)) {
             return size(filesize($path), $unit, $fix, $base);
         }
         return null;
     }
 
     public function stream(?int $max = 1024): Traversable {
-        yield from ($this->exist() ? stream($this->path, $max) : []);
+        yield from ($this->exist() && null !== ($path = $this->path) ? stream($path, $max) : []);
     }
 
     public function time(?string $format = null) {
-        if ($this->exist()) {
-            $time = filectime($this->path);
+        if ($this->exist() && null !== ($path = $this->path)) {
+            $time = filectime($path);
             return $format ? (new Time($time))($format) : $time;
         }
         return null;
     }
 
     public function type() {
-        if ($this->exist()) {
-            $type = mime_content_type($this->path);
+        if ($this->exist() && null !== ($path = $this->path)) {
+            $type = mime_content_type($path);
             return false !== $type ? $type : null;
         }
         return null;
     }
 
     public function x() {
-        if ($this->exist()) {
-            $path = $this->path;
+        if ($this->exist() && null !== ($path = $this->path)) {
             if (false === strpos(basename($path), '.')) {
                 return null;
             }
