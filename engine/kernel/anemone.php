@@ -52,6 +52,7 @@ class Anemone extends Genome {
     public function all($fn) {
         return all($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
     }
+
     public function any($fn) {
         return any($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
     }
