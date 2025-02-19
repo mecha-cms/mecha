@@ -63,7 +63,7 @@ if (!function_exists('json_validate')) {
 }
 
 function all(iterable $value, $fn = null) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return true;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -80,7 +80,7 @@ function all(iterable $value, $fn = null) {
 }
 
 function any(iterable $value, $fn = null) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return false;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -430,7 +430,7 @@ function delete(string $path, $purge = true) {
 
 // Remove empty array, empty string and `null` value from array
 function drop(iterable $value, ?callable $fn = null) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return null;
     }
     $n = null === $fn; // Use default filter?
@@ -451,7 +451,7 @@ function drop(iterable $value, ?callable $fn = null) {
             }
         }
     }
-    return [] !== $value ? $value : null;
+    return 0 !== count($value) ? $value : null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -646,7 +646,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
 }
 
 function find(iterable $value, callable $fn) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return null;
     }
     foreach ($value as $k => $v) {
@@ -715,13 +715,16 @@ function ip() {
 }
 
 function is(iterable $value, $fn = null, $keys = false) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return $value;
     }
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
+    }
+    if (is_object($value) && $value instanceof Traversable) {
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, $fn);
     }
     $value = $fn ? array_filter($value, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($value);
     return $keys ? $value : array_values($value);
@@ -783,7 +786,7 @@ function lt($a, $b) {
 }
 
 function map(iterable $value, callable $fn) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return $value;
     }
     $out = [];
@@ -850,13 +853,18 @@ function ne($a, $b) {
 }
 
 function not(iterable $value, $fn = null, $keys = false) {
-    if (!$value) {
+    if (!$value || 0 === count($value)) {
         return $value;
     }
     if (!is_callable($fn) && null !== $fn) {
         $fn = static function ($v) use ($fn) {
             return $v === $fn;
         };
+    }
+    if (is_object($value) && $value instanceof Traversable) {
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn) {
+            return !call_user_func($fn, $v, $k);
+        });
     }
     $value = array_filter($value, static function ($v, $k) use ($fn) {
         return !call_user_func($fn, $v, $k);

@@ -33,9 +33,13 @@ class AnemoneNew extends Genome {
         return (string) $this->join($this->join);
     }
 
-    public function all($fn) {}
+    public function all($fn) {
+        return all($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    }
 
-    public function any($fn) {}
+    public function any($fn) {
+        return any($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    }
 
     public function chunk(int $chunk = 5, int $part = -1, $keys = false) {
         $that = $this->mitose();
@@ -70,7 +74,9 @@ class AnemoneNew extends Genome {
         return count($this->value);
     }
 
-    public function find($fn) {}
+    public function find($fn) {
+        return find($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    }
 
     public function first($take = false) {}
 
@@ -84,7 +90,11 @@ class AnemoneNew extends Genome {
 
     public function index(string $key) {}
 
-    public function is($fn, $keys = false) {}
+    public function is($fn, $keys = false) {
+        $that = $this->mitose();
+        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        return $that;
+    }
 
     public function join(string $join = ', ') {
         return $this->__invoke($join);
@@ -96,7 +106,11 @@ class AnemoneNew extends Genome {
 
     public function let(?string $key = null) {}
 
-    public function map(callable $fn) {}
+    public function map(callable $fn) {
+        $that = $this->mitose();
+        $that->value = map($that->value, Closure::fromCallable($fn)->bindTo($this));
+        return $that;
+    }
 
     public function mitose() {
         $that = new static($this->value, $this->join);
@@ -104,7 +118,11 @@ class AnemoneNew extends Genome {
         return $that;
     }
 
-    public function not($fn, $keys = false) {}
+    public function not($fn, $keys = false) {
+        $that = $this->mitose();
+        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        return $that;
+    }
 
     public function offsetExists($key): bool {
         return isset($this->value[$key]);
@@ -129,23 +147,32 @@ class AnemoneNew extends Genome {
     public function pluck(string $key, $value = null, $keys = false) {}
 
     public function reverse($keys = false) {
-        $that = $this->mitose();
-        if (is_array($value = $that->value)) {
+        if (count($value = $this->value) < 2) {
+            return $this;
+        }
+        if (is_array($value)) {
             $value = array_reverse($value, $keys);
-            $that->value = $keys ? $value : array_values($value);
-            return $that;
+            $this->value = $keys ? $value : array_values($value);
+            return $this;
         }
-        if ($keys) {
-            $stack = new SplStack;
-            foreach ($value as $v) {
-                $stack[] = $v;
+        $list = new SplDoublyLinkedList;
+        $list->setIteratorMode(SplDoublyLinkedList::IT_MODE_KEEP | SplDoublyLinkedList::IT_MODE_LIFO);
+        foreach ($value as $k => $v) {
+            $list[] = $v;
+        }
+        $this->value = $list;
+        // Another instance of `SplDoublyLinkedList` just to sort the key(s) :(
+        if (!$keys) {
+            $list = new SplDoublyLinkedList;
+            $list->setIteratorMode(SplDoublyLinkedList::IT_MODE_KEEP | SplDoublyLinkedList::IT_MODE_FIFO);
+            $value = $this->value;
+            $value->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE | SplDoublyLinkedList::IT_MODE_LIFO);
+            foreach ($value as $k => $v) {
+                $list[] = $v;
             }
-            $that->value = $stack;
-            return $that;
+            $this->value = $list;
         }
-        // To preserve the stream key is more memory-efficient for now :(
-        $that->value = SplFixedArray::fromArray(array_reverse(y($value)));
-        return $that;
+        return $this;
     }
 
     public function set($key, $value = null) {}
