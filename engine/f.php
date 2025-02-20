@@ -62,34 +62,34 @@ if (!function_exists('json_validate')) {
     }
 }
 
-function all(iterable $value, $fn = null) {
-    if (!$value || 0 === count($value)) {
+function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return true;
     }
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function ($v) use ($fn) {
+        $fn = function ($v) use ($fn) {
             return $v === $fn;
         };
     }
     foreach ($value as $k => $v) {
-        if (!call_user_func($fn, $v, $k)) {
+        if (!fire($fn, [$v, $k], $that, $scope)) {
             return false;
         }
     }
     return true;
 }
 
-function any(iterable $value, $fn = null) {
-    if (!$value || 0 === count($value)) {
+function any(iterable $value, $fn = null, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return false;
     }
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function ($v) use ($fn) {
+        $fn = function ($v) use ($fn) {
             return $v === $fn;
         };
     }
     foreach ($value as $k => $v) {
-        if (call_user_func($fn, $v, $k)) {
+        if (fire($fn, [$v, $k], $that, $scope)) {
             return true;
         }
     }
@@ -429,14 +429,14 @@ function delete(string $path, $purge = true) {
 }
 
 // Remove empty array, empty string and `null` value from array
-function drop(iterable $value, ?callable $fn = null) {
-    if (!$value || 0 === count($value)) {
+function drop(iterable $value, ?callable $fn = null, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return null;
     }
     $n = null === $fn; // Use default filter?
     foreach ($value as $k => $v) {
         if (is_array($v) && !empty($v)) {
-            if ($v = drop($v, $fn)) {
+            if ($v = drop($v, $fn, $that, $scope)) {
                 $value[$k] = $v;
             } else {
                 unset($value[$k]); // Drop!
@@ -446,12 +446,12 @@ function drop(iterable $value, ?callable $fn = null) {
                 unset($value[$k]); // Drop!
             }
         } else {
-            if (call_user_func($fn, $v, $k)) {
+            if (fire($fn, [$v, $k], $that, $scope)) {
                 unset($value[$k]); // Drop!
             }
         }
     }
-    return 0 !== count($value) ? $value : null;
+    return 0 !== q($value) ? $value : null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -645,12 +645,12 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     return false !== $out ? $out : null;
 }
 
-function find(iterable $value, callable $fn) {
-    if (!$value || 0 === count($value)) {
+function find(iterable $value, callable $fn, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return null;
     }
     foreach ($value as $k => $v) {
-        if (call_user_func($fn, $v, $k)) {
+        if (fire($fn, [$v, $k], $that, $scope)) {
             return $v;
         }
     }
@@ -658,26 +658,23 @@ function find(iterable $value, callable $fn) {
 }
 
 function fire(callable $fn, array $lot = [], $that = null, $scope = 'static') {
-    $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
-    // `fire($fn, [], Foo::class)`
-    if (is_string($that)) {
-        $scope = $that;
-        $that = null;
-    }
-    return call_user_func($fn->bindTo($that, $scope), ...$lot);
+    return call_user_func(that($fn, $that, $scope), ...$lot);
 }
 
 function ge($a, $b) {
     return q($a) >= $b;
 }
 
-function get(array $from, string $key, string $join = '.') {
-    if (!$from) {
+function get(iterable $from, string $key, string $join = '.') {
+    if (!$from || 0 === q($from)) {
         return null;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     foreach ($keys as $key) {
         $key = strtr($key, [P => $join]);
+        if (is_object($from) && $from instanceof ArrayAccess && !$from->offsetExists($key)) {
+            return null;
+        }
         if (!is_array($from) || !array_key_exists($key, $from)) {
             return null;
         }
@@ -690,13 +687,16 @@ function gt($a, $b) {
     return q($a) > $b;
 }
 
-function has(array $from, string $key, string $join = '.') {
-    if (!$from) {
+function has(iterable $from, string $key, string $join = '.') {
+    if (!$from || 0 === q($from)) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     foreach ($keys as $key) {
         $key = strtr($key, [P => $join]);
+        if (is_object($from) && $from instanceof ArrayAccess && !$from->offsetExists($key)) {
+            return false;
+        }
         if (!is_array($from) || !array_key_exists($key, $from)) {
             return false;
         }
@@ -714,19 +714,14 @@ function ip() {
     return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
 
-function is(iterable $value, $fn = null, $keys = false) {
-    if (!$value || 0 === count($value)) {
+function is(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
-    if (!is_callable($fn) && null !== $fn) {
-        $fn = static function ($v) use ($fn) {
-            return $v === $fn;
-        };
+    if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, that($fn, $that, $scope));
     }
-    if (is_object($value) && $value instanceof Traversable) {
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, $fn);
-    }
-    $value = $fn ? array_filter($value, $fn, ARRAY_FILTER_USE_BOTH) : array_filter($value);
+    $value = $fn ? array_filter($value, that($fn, $that, $scope), ARRAY_FILTER_USE_BOTH) : array_filter($value);
     return $keys ? $value : array_values($value);
 }
 
@@ -734,19 +729,19 @@ function le($a, $b) {
     return q($a) <= $b;
 }
 
-function let(array &$from, string $key, string $join = '.') {
-    if (!$from) {
+function let(iterable &$from, string $key, string $join = '.') {
+    if (!$from || 0 === q($from)) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     $k = strtr(array_pop($keys), [P => $join]);
     while ($keys) {
         $key = strtr(array_shift($keys), [P => $join]);
-        if (is_array($from) && array_key_exists($key, $from)) {
+        if (is_array($from) && array_key_exists($key, $from) || is_object($from) && $from instanceof ArrayAccess && $from->offsetExists($key)) {
             $from =& $from[$key];
         }
     }
-    if (is_array($from) && array_key_exists($k, $from)) {
+    if (is_array($from) && array_key_exists($k, $from) || is_object($from) && $from instanceof ArrayAccess && $from->offsetExists($k)) {
         unset($from[$k]);
         return true;
     }
@@ -785,13 +780,13 @@ function lt($a, $b) {
     return q($a) < $b;
 }
 
-function map(iterable $value, callable $fn) {
-    if (!$value || 0 === count($value)) {
+function map(iterable $value, callable $fn, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
     $out = [];
     foreach ($value as $k => $v) {
-        $out[$k] = call_user_func($fn, $v, $k);
+        $out[$k] = fire($fn, [$v, $k], $that, $scope);
     }
     return $out;
 }
@@ -852,22 +847,22 @@ function ne($a, $b) {
     return q($a) !== $b;
 }
 
-function not(iterable $value, $fn = null, $keys = false) {
-    if (!$value || 0 === count($value)) {
+function not(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
     if (!is_callable($fn) && null !== $fn) {
-        $fn = static function ($v) use ($fn) {
+        $fn = function ($v) use ($fn) {
             return $v === $fn;
         };
     }
-    if (is_object($value) && $value instanceof Traversable) {
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn) {
-            return !call_user_func($fn, $v, $k);
+    if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn, $that, $scope) {
+            return !fire($fn, [$v, $k], $that, $scope);
         });
     }
-    $value = array_filter($value, static function ($v, $k) use ($fn) {
-        return !call_user_func($fn, $v, $k);
+    $value = array_filter($value, static function ($v, $k) use ($fn, $that, $scope) {
+        return !fire($fn, [$v, $k], $that, $scope);
     }, ARRAY_FILTER_USE_BOTH);
     return $keys ? $value : array_values($value);
 }
@@ -1001,12 +996,12 @@ function send(string $from, $to, string $title, string $content, array $lot = []
     return mail($to, $title, $content, implode("\r\n", $lot));
 }
 
-function set(array &$to, string $key, $value = null, string $join = '.') {
+function set(iterable &$to, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     $k = strtr(array_pop($keys), [P => $join]);
     while ($keys) {
         $key = strtr(array_shift($keys), [P => $join]);
-        if (!array_key_exists($key, $to)) {
+        if (is_array($to) && !array_key_exists($key, $to) || is_object($to) && $to instanceof ArrayAccess && !$to->offsetExists($key)) {
             $to[$key] = [];
         }
         $to =& $to[$key];
@@ -1160,6 +1155,16 @@ function stream(string $path, ?int $max = 1024) {
         fclose($h);
     }
     yield from [];
+}
+
+function that(callable $fn, $that = null, $scope = 'static') {
+    $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
+    // `bind($fn, Foo::class)`
+    if (is_string($that)) {
+        $scope = $that;
+        $that = null;
+    }
+    return $fn->bindTo($that, $scope);
 }
 
 function token($id = 0, $for = '+1 minute') {

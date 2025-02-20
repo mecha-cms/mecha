@@ -3,23 +3,19 @@
 class AnemoneNew extends Genome {
 
     public $join;
+    public $lazy;
     public $parent;
     public $value;
 
     public function __call(string $kin, array $lot = []) {}
 
-    public function __construct(iterable $value = [], string $join = ', ') {
+    public function __construct($value = [], string $join = ', ') {
         $this->join = $join;
-        if (is_array($value) || is_object($value) && $value instanceof stdClass) {
-            $value = (array) $value;
-            $this->value = array_is_list($value) ? SplFixedArray::fromArray($value, false) : $value;
-        } else {
-            $this->value = $value;
-        }
+        $this->lazy = is_callable($this->value = $value);
     }
 
     public function __destruct() {
-        $this->lot = [];
+        $this->value = [];
         if ($parent = $this->parent) {
             unset($parent);
         }
@@ -34,11 +30,11 @@ class AnemoneNew extends Genome {
     }
 
     public function all($fn) {
-        return all($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+        return all($this->value, that($fn, $this));
     }
 
     public function any($fn) {
-        return any($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+        return any($this->value, that($fn, $this));
     }
 
     public function chunk(int $chunk = 5, int $part = -1, $keys = false) {
@@ -52,30 +48,44 @@ class AnemoneNew extends Genome {
             }
             return $that;
         }
-        // <https://gist.github.com/shadowhand/9b402c62f520c7219c30566422f93bd5>
-        $k = -1;
-        $that->value = new SplFixedArray(ceil(($n = count($value)) / $chunk));
-        foreach ($value as $v) {
-            if (0 === ($i = (int) ++$k % $chunk)) {
-                $that->value[$k / $chunk] = $fix = new SplFixedArray($chunk);
+        $that->value = function () use ($chunk, $keys, $part, $value) {
+            $v = fire($value);
+            if ($part > -1) {
+                foreach (new LimitIterator($v, $chunk * $part, $chunk) as $k => $v) {
+                    if ($keys) {
+                        yield $k => $v;
+                    } else {
+                        yield $v;
+                    }
+                }
+            } else {
+                $lot = new ArrayIterator;
+                while ($v->valid()) {
+                    if ($keys) {
+                        $lot[$v->key()] = $v->current();
+                    } else {
+                        $lot[] = $v->current();
+                    }
+                    $v->next();
+                    if ($chunk === $lot->count()) {
+                        yield $lot;
+                        $lot = new ArrayIterator;
+                    }
+                }
+                if ($lot->count()) {
+                    yield $lot;
+                }
             }
-            $fix[$i] = $v;
-        }
-        if (($rest = (int) $n % $chunk) > 0) {
-            $fix->setSize($rest);
-        }
-        if ($part > -1) {
-            $that->value = $that->value[$part] ?? new SplFixedArray(0);
-        }
+        };
         return $that;
     }
 
     public function count(): int {
-        return count($this->value);
+        return $this->lazy ? q(fire($this->value)) : count($this->value);
     }
 
     public function find($fn) {
-        return find($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+        return find($this->value, that($fn, $this));
     }
 
     public function first($take = false) {}
@@ -83,16 +93,18 @@ class AnemoneNew extends Genome {
     public function get(?string $key = null) {}
 
     public function getIterator(): Traversable {
-        return is_array($value = $this->value) ? new ArrayIterator($value) : $value;
+        return $this->lazy ? fire($value = $this->value) : $value;
     }
 
-    public function has(?string $key = null) {}
+    public function has(?string $key = null) {
+        return has($this->lazy ? fire($value = $this->value) : $value, $key);
+    }
 
     public function index(string $key) {}
 
     public function is($fn, $keys = false) {
         $that = $this->mitose();
-        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        $that->value = is($this->lazy ? fire($value = $this->value) : $value, $fn, $keys);
         return $that;
     }
 
@@ -104,11 +116,13 @@ class AnemoneNew extends Genome {
 
     public function last($take = false) {}
 
-    public function let(?string $key = null) {}
+    public function let(?string $key = null) {
+        return let($this->lazy ? fire($value = $this->value) : $value, $key);
+    }
 
     public function map(callable $fn) {
         $that = $this->mitose();
-        $that->value = map($that->value, Closure::fromCallable($fn)->bindTo($this));
+        $that->value = map($this->lazy ? fire($value = $this->value) : $value, $fn);
         return $that;
     }
 
@@ -120,28 +134,52 @@ class AnemoneNew extends Genome {
 
     public function not($fn, $keys = false) {
         $that = $this->mitose();
-        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        $that->value = not($this->lazy ? fire($value = $this->value) : $value, $fn, $keys);
         return $that;
     }
 
     public function offsetExists($key): bool {
+        if ($this->lazy) {
+            foreach (fire($this->value) as $k => $v) {
+                if ($k === $key) {
+                    return true;
+                }
+            }
+            return false;
+        }
         return isset($this->value[$key]);
     }
 
     public function offsetGet($key) {
+        if ($this->lazy) {
+            foreach (fire($this->value) as $k => $v) {
+                if ($k === $key) {
+                    return $v;
+                }
+            }
+            return null;
+        }
         return $this->value[$key] ?? null;
     }
 
     public function offsetSet($key, $value): void {
-        if (isset($key)) {
-            $this->value[$key] = $value;
+        if ($this->lazy) {
+            // TODO
         } else {
-            $this->value[] = $value;
+            if (isset($key)) {
+                $this->value[$key] = $value;
+            } else {
+                $this->value[] = $value;
+            }
         }
     }
 
     public function offsetUnset($key): void {
-        unset($this->value[$key]);
+        if ($this->lazy) {
+            // TODO
+        } else {
+            unset($this->value[$key]);
+        }
     }
 
     public function pluck(string $key, $value = null, $keys = false) {}
@@ -155,27 +193,25 @@ class AnemoneNew extends Genome {
             $this->value = $keys ? $value : array_values($value);
             return $this;
         }
-        $list = new SplDoublyLinkedList;
-        $list->setIteratorMode(SplDoublyLinkedList::IT_MODE_KEEP | SplDoublyLinkedList::IT_MODE_LIFO);
-        foreach ($value as $k => $v) {
-            $list[] = $v;
-        }
-        $this->value = $list;
-        // Another instance of `SplDoublyLinkedList` just to sort the key(s) :(
-        if (!$keys) {
-            $list = new SplDoublyLinkedList;
-            $list->setIteratorMode(SplDoublyLinkedList::IT_MODE_KEEP | SplDoublyLinkedList::IT_MODE_FIFO);
-            $value = $this->value;
-            $value->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE | SplDoublyLinkedList::IT_MODE_LIFO);
-            foreach ($value as $k => $v) {
-                $list[] = $v;
+        $value = $this->value;
+        $this->value = function () use ($keys, $value) {
+            $v = fire($value);
+            for (end($v); null !== ($k = key($v)); prev($v)) {
+                if ($keys) {
+                    yield $k => current($v);
+                } else {
+                    yield $v;
+                }
             }
-            $this->value = $list;
-        }
+        };
         return $this;
     }
 
     public function set($key, $value = null) {}
+
+    public function set($key, $value = null) {
+        return set($this->lazy ? fire($v = $this->value) : $v, $key, $value);
+    }
 
     public function shake($keys = false) {}
 

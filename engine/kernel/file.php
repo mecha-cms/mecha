@@ -11,8 +11,8 @@ class File extends Genome {
         return parent::__call($kin, $lot);
     }
 
-    public function __construct(?string $path = null) {
-        if ($path && is_string($path) && 0 === strpos($path, PATH)) {
+    public function __construct($path = null) {
+        if (is_string($path) && 0 === strpos($path, PATH)) {
             $this->path = is_file($path = stream_resolve_include_path($path)) ? $path : null;
         }
     }
