@@ -63,7 +63,7 @@ if (!function_exists('json_validate')) {
 }
 
 function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return true;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -71,8 +71,9 @@ function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
             return $v === $fn;
         };
     }
+    $fn = that($fn, $that, $scope);
     foreach ($value as $k => $v) {
-        if (!fire($fn, [$v, $k], $that, $scope)) {
+        if (!call_user_func($fn, $v, $k)) {
             return false;
         }
     }
@@ -80,7 +81,7 @@ function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
 }
 
 function any(iterable $value, $fn = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return false;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -88,8 +89,9 @@ function any(iterable $value, $fn = null, $that = null, $scope = 'static') {
             return $v === $fn;
         };
     }
+    $fn = that($fn, $that, $scope);
     foreach ($value as $k => $v) {
-        if (fire($fn, [$v, $k], $that, $scope)) {
+        if (call_user_func($fn, $v, $k)) {
             return true;
         }
     }
@@ -429,11 +431,13 @@ function delete(string $path, $purge = true) {
 }
 
 // Remove empty array, empty string and `null` value from array
-function drop(iterable $value, ?callable $fn = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function drop(array $value, ?callable $fn = null, $that = null, $scope = 'static') {
+    if (!$value) {
         return null;
     }
-    $n = null === $fn; // Use default filter?
+    if (!$n = (null === $fn)) {
+        $fn = that($fn, $that, $scope);
+    }
     foreach ($value as $k => $v) {
         if (is_array($v) && !empty($v)) {
             if ($v = drop($v, $fn, $that, $scope)) {
@@ -441,17 +445,17 @@ function drop(iterable $value, ?callable $fn = null, $that = null, $scope = 'sta
             } else {
                 unset($value[$k]); // Drop!
             }
-        } else if ($n) {
+        } else if ($n) { // Default filter
             if ("" === $v || null === $v || [] === $v) {
                 unset($value[$k]); // Drop!
             }
         } else {
-            if (fire($fn, [$v, $k], $that, $scope)) {
+            if (call_user_func($fn, $v, $k)) {
                 unset($value[$k]); // Drop!
             }
         }
     }
-    return 0 !== q($value) ? $value : null;
+    return [] !== $value ? $value : null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -646,11 +650,12 @@ function fetch(string $url, $lot = null, $type = 'GET') {
 }
 
 function find(iterable $value, callable $fn, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return null;
     }
+    $fn = that($fn, $that, $scope);
     foreach ($value as $k => $v) {
-        if (fire($fn, [$v, $k], $that, $scope)) {
+        if (call_user_func($fn, $v, $k)) {
             return $v;
         }
     }
@@ -666,7 +671,7 @@ function ge($a, $b) {
 }
 
 function get(iterable $from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
+    if (!$from) {
         return null;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -688,7 +693,7 @@ function gt($a, $b) {
 }
 
 function has(iterable $from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
+    if (!$from) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -715,7 +720,7 @@ function ip() {
 }
 
 function is(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return $value;
     }
     if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
@@ -730,7 +735,7 @@ function le($a, $b) {
 }
 
 function let(iterable &$from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
+    if (!$from) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -781,12 +786,13 @@ function lt($a, $b) {
 }
 
 function map(iterable $value, callable $fn, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return $value;
     }
     $out = [];
+    $fn = that($fn, $that, $scope);
     foreach ($value as $k => $v) {
-        $out[$k] = fire($fn, [$v, $k], $that, $scope);
+        $out[$k] = call_user_func($fn, $v, $k);
     }
     return $out;
 }
@@ -848,7 +854,7 @@ function ne($a, $b) {
 }
 
 function not(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+    if (!$value) {
         return $value;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -857,12 +863,14 @@ function not(iterable $value, $fn = null, $keys = false, $that = null, $scope = 
         };
     }
     if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn, $that, $scope) {
-            return !fire($fn, [$v, $k], $that, $scope);
+        $fn = that($fn, $that, $scope);
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn) {
+            return !call_user_func($fn, $v, $k);
         });
     }
-    $value = array_filter($value, static function ($v, $k) use ($fn, $that, $scope) {
-        return !fire($fn, [$v, $k], $that, $scope);
+    $fn = that($fn, $that, $scope);
+    $value = array_filter($value, static function ($v, $k) use ($fn) {
+        return !call_user_func($fn, $v, $k);
     }, ARRAY_FILTER_USE_BOTH);
     return $keys ? $value : array_values($value);
 }
@@ -920,16 +928,13 @@ function path(?string $value) {
     return stream_resolve_include_path($value ?? "") ?: null;
 }
 
-// Generate new array contains value from the key
-function pluck(iterable $from, string $key, $value = null, $keys = false) {
+function pluck(iterable $from, string $key, $value = null, $that = null, $scope = 'static') {
     if (!$from) {
         return [];
     }
-    $out = [];
-    foreach ($from as $k => $v) {
-        $out[$k] = $v[$key] ?? $value;
-    }
-    return $keys ? $out : array_values($out);
+    return map($from, function ($v, $k) use ($key, $value) {
+        return $v[$key] ?? $value;
+    }, $that, $scope);
 }
 
 function save(string $path, $value = "", $seal = null) {
@@ -1164,7 +1169,7 @@ function that(callable $fn, $that = null, $scope = 'static') {
         $scope = $that;
         $that = null;
     }
-    return $fn->bindTo($that, $scope);
+    return $that ? $fn->bindTo($that, $scope) : $fn;
 }
 
 function token($id = 0, $for = '+1 minute') {
@@ -1332,8 +1337,8 @@ function f(?string $value, $accent = true, string $keep = "") {
 function g(string $folder, $x = null, $deep = 0) {
     if (is_dir($folder) && (new FilesystemIterator($folder))->valid()) {
         $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
-        $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $a) use ($deep, $x) {
-            if ($deep > 0 && $a->hasChildren()) {
+        $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $it) use ($deep, $x) {
+            if ($deep > 0 && $it->hasChildren()) {
                 return true;
             }
             // Filter by type (`0` for folder and `1` for file)
