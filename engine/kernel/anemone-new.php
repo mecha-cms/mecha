@@ -4,18 +4,18 @@ class AnemoneNew extends Genome {
 
     public $join;
     public $lazy;
+    public $lot;
     public $parent;
-    public $value;
 
     public function __call(string $kin, array $lot = []) {}
 
-    public function __construct($value = [], string $join = ', ') {
+    public function __construct($lot = [], string $join = ', ') {
         $this->join = $join;
-        $this->lazy = is_callable($this->value = $value);
+        $this->lazy = is_callable($this->lot = $lot);
     }
 
     public function __destruct() {
-        $this->value = [];
+        $this->lot = [];
         if ($parent = $this->parent) {
             unset($parent);
         }
@@ -29,18 +29,18 @@ class AnemoneNew extends Genome {
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        $value = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
+        $lot = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
             // Ignore value(s) that cannot be converted to string
             if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
                 return false;
             }
             // Ignore `false` and `null` value(s)
             return false !== $v && null !== $v;
-        }) : $this)->value;
+        }) : $this)->lot;
         if ($this->lazy) {
-            return implode($join, y(fire($value)));
+            return implode($join, y(fire($lot)));
         }
-        return implode($join, $value);
+        return implode($join, $lot);
     }
 
     public function __toString(): string {
@@ -60,12 +60,12 @@ class AnemoneNew extends Genome {
         if ($chunk < 1) {
             return $that;
         }
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
-            $that->value = function () use ($chunk, $keys, $part, $value) {
-                $value = fire($value);
+            $that->lot = function () use ($chunk, $keys, $lot, $part) {
+                $lot = fire($lot);
                 if ($part > -1) {
-                    foreach (new LimitIterator($value, $chunk * $part, $chunk) as $k => $v) {
+                    foreach (new LimitIterator($lot, $chunk * $part, $chunk) as $k => $v) {
                         if ($keys) {
                             yield $k => $v;
                         } else {
@@ -73,29 +73,29 @@ class AnemoneNew extends Genome {
                         }
                     }
                 } else {
-                    $lot = new ArrayIterator;
-                    while ($value->valid()) {
+                    $it = new ArrayIterator;
+                    while ($lot->valid()) {
                         if ($keys) {
-                            $lot[$value->key()] = $value->current();
+                            $it[$lot->key()] = $lot->current();
                         } else {
-                            $lot[] = $value->current();
+                            $it[] = $lot->current();
                         }
-                        $value->next();
-                        if ($chunk === $lot->count()) {
-                            yield $lot;
-                            $lot = new ArrayIterator;
+                        $lot->next();
+                        if ($chunk === $it->count()) {
+                            yield $it;
+                            $it = new ArrayIterator;
                         }
                     }
-                    if ($lot->count()) {
-                        yield $lot;
+                    if ($it->count()) {
+                        yield $it;
                     }
                 }
             };
             return $that;
         }
-        $that->value = $value = array_chunk($value, $chunk, $keys);
+        $that->lot = $lot = array_chunk($lot, $chunk, $keys);
         if ($part > -1) {
-            $that->value = $value[$part] ?? [];
+            $that->lot = $lot[$part] ?? [];
         }
         return $that;
     }
@@ -109,13 +109,13 @@ class AnemoneNew extends Genome {
     }
 
     public function first($take = false) {
-        if ($this->lazy || !$this->value) {
+        if ($this->lazy || !$this->lot) {
             return null;
         }
         if ($take) {
-            return array_shift($this->value);
+            return array_shift($this->lot);
         }
-        $first = reset($this->value);
+        $first = reset($this->lot);
         return false !== $first ? $first : null;
     }
 
@@ -124,8 +124,8 @@ class AnemoneNew extends Genome {
     }
 
     public function getIterator(): Traversable {
-        $value = $this->value;
-        return $this->lazy ? fire($value) : $value;
+        $lot = $this->lot;
+        return $this->lazy ? fire($lot) : new ArrayIterator($lot);
     }
 
     public function has(?string $key = null) {
@@ -133,10 +133,10 @@ class AnemoneNew extends Genome {
     }
 
     public function index(string $key) {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
             $i = 0;
-            foreach (fire($value) as $k => $v) {
+            foreach (fire($lot) as $k => $v) {
                 if ($k === $key) {
                     return $i;
                 }
@@ -144,23 +144,23 @@ class AnemoneNew extends Genome {
             }
             return null;
         }
-        if (!$value || !array_key_exists($key, $value)) {
+        if (!$lot || !array_key_exists($key, $lot)) {
             return null;
         }
-        $index = array_search($key, array_keys($value));
+        $index = array_search($key, array_keys($lot));
         return false !== $index ? $index : null;
     }
 
     public function is($fn, $keys = false) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $value = $this->value;
         if ($this->lazy) {
-            $that->value = function () use ($fn, $keys, $that, $value) {
-                yield from is(fire($value), $fn, $keys, $that);
+            $that->lot = function () use ($fn, $keys, $lot, $that) {
+                yield from is(fire($lot), $fn, $keys, $that);
             };
             return $that;
         }
-        $that->value = is($value, $fn, $keys, $that);
+        $that->lot = is($lot, $fn, $keys, $that);
         return $that;
     }
 
@@ -169,10 +169,10 @@ class AnemoneNew extends Genome {
     }
 
     public function key(int $index) {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
             $i = 0;
-            foreach (fire($value) as $k => $v) {
+            foreach (fire($lot) as $k => $v) {
                 if ($i === $index) {
                     return $k;
                 }
@@ -180,21 +180,21 @@ class AnemoneNew extends Genome {
             }
             return null;
         }
-        if (!$value || $index > count($value)) {
+        if (!$lot || $index > count($lot)) {
             return null;
         }
-        $keys = array_keys($value);
+        $keys = array_keys($lot);
         return array_key_exists($index, $keys) ? (string) $keys[$index] : null;
     }
 
     public function last($take = false) {
-        if ($this->lazy || !$this->value) {
+        if ($this->lazy || !$this->lot) {
             return null;
         }
         if ($take) {
-            return array_pop($this->value);
+            return array_pop($this->lot);
         }
-        $last = end($this->value);
+        $last = end($this->lot);
         return false !== $last ? $last : null;
     }
 
@@ -202,180 +202,194 @@ class AnemoneNew extends Genome {
         if (isset($key)) {
             return let($this->getIterator(), $key);
         }
-        $this->value = [];
+        $this->lot = [];
         return true;
     }
 
     public function map(callable $fn) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $value = $this->value;
         if ($this->lazy) {
-            $that->value = function () use ($fn, $that, $value) {
-                yield from map(fire($value), $fn, $that);
+            $that->lot = function () use ($fn, $lot, $that) {
+                yield from map(fire($lot), $fn, $that);
             };
             return $that;
         }
-        $that->value = map($value, $fn, $that);
+        $that->lot = map($lot, $fn, $that);
         return $that;
     }
 
     public function mitose() {
-        $that = new static($this->value, $this->join);
+        $that = new static($this->lot, $this->join);
         $that->parent = $this;
         return $that;
     }
 
     public function not($fn, $keys = false) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $value = $this->value;
         if ($this->lazy) {
-            $that->value = function () use ($fn, $keys, $that, $value) {
-                yield from not(fire($value), $fn, $keys, $that);
+            $that->lot = function () use ($fn, $keys, $lot, $that) {
+                yield from not(fire($lot), $fn, $keys, $that);
             };
             return $that;
         }
-        $that->value = not($value, $fn, $keys, $that);
+        $that->lot = not($lot, $fn, $keys, $that);
         return $that;
     }
 
     public function offsetExists($key): bool {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
-            foreach (fire($value) as $k => $v) {
+            foreach (fire($lot) as $k => $v) {
                 if ($k === $key) {
                     return true;
                 }
             }
             return false;
         }
-        return isset($value[$key]);
+        return isset($lot[$key]);
     }
 
     public function offsetGet($key) {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
-            foreach (fire($value) as $k => $v) {
+            foreach (fire($lot) as $k => $v) {
                 if ($k === $key) {
                     return $v;
                 }
             }
             return null;
         }
-        return $value[$key] ?? null;
+        return $lot[$key] ?? null;
     }
 
     public function offsetSet($key, $value): void {
         if (!$this->lazy) {
             if (isset($key)) {
-                $this->value[$key] = $value;
+                $this->lot[$key] = $value;
             } else {
-                $this->value[] = $value;
+                $this->lot[] = $value;
             }
         }
     }
 
     public function offsetUnset($key): void {
         if (!$this->lazy) {
-            unset($this->value[$key]);
+            unset($this->lot[$key]);
         }
     }
 
     public function pluck(string $key, $value = null) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $v = $this->value;
         if ($this->lazy) {
-            $that->value = function () use ($key, $that, $v, $value) {
-                yield from pluck(fire($v), $key, $value, $that);
+            $that->lot = function () use ($key, $lot, $that, $value) {
+                yield from pluck(fire($lot), $key, $value, $that);
             };
             return $that;
         }
-        $that->value = pluck($v, $key, $value, $that);
+        $that->lot = pluck($lot, $key, $value, $that);
         return $that;
     }
 
     public function rank(callable $fn, $keys = false) {
-        return $this->vote($fn, $keys, true);
+        return $this->vote($fn, $keys)->reverse($keys);
     }
 
     public function reverse($keys = false) {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
-            $this->value = function () use ($keys, $value) {
-                $lot = new SplStack;
-                foreach (fire($value) as $k => $v) {
-                    $lot[] = $v;
+            $this->lot = function () use ($keys, $lot) {
+                $r = new SplDoublyLinkedList;
+                $r->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE | SplDoublyLinkedList::IT_MODE_LIFO);
+                foreach (fire($lot) as $k => $v) {
+                    $r->push($keys ? [$k, $v] : $v);
                 }
-                if ($keys) {
-                    yield from $lot;
-                } else {
-                    foreach ($lot as $v) {
+                foreach ($r as $v) {
+                    if ($keys) {
+                        yield $v[0] => $v[1];
+                    } else {
                         yield $v;
                     }
                 }
             };
             return $this;
         }
-        if (count($value) < 2) {
+        if (count($lot) < 2) {
             return $this;
         }
-        $value = array_reverse($value, $keys);
-        $this->value = $keys ? $value : array_values($value);
+        $lot = array_reverse($lot, $keys);
+        $this->lot = $keys ? $lot : array_values($lot);
         return $this;
     }
 
     public function set($key, $value = null) {
         if (is_iterable($key)) {
             if ($this->lazy) {
-                $this->value = function () use ($key) {
+                $this->lot = function () use ($key) {
                     yield from $key;
                 };
                 return $this;
             }
-            return ($this->value = $key);
+            return ($this->lot = $key);
         }
         return set($this->getIterator(), $key, $value);
     }
 
     public function shake($keys = false) {
-        $value = $this->value;
+        $lot = $this->lot;
         if ($this->lazy) {
             $that = $this;
-            $this->value = function () use ($keys, $that, $value) {
-                yield from shake(y(fire($value)), is_callable($keys) ? that($keys, $that) : $keys); // :(
+            $this->lot = function () use ($keys, $lot, $that) {
+                yield from shake(y(fire($lot)), is_callable($keys) ? that($keys, $that) : $keys); // :(
             };
             return $this;
         }
-        $this->value = shake($value, is_callable($keys) ? that($keys, $this) : $keys);
+        $this->lot = shake($lot, is_callable($keys) ? that($keys, $this) : $keys);
         return $this;
     }
 
     public function sort($sort = 1, $keys = false) {
-        $value = $this->value;
+        $lot = $this->lot;
         if (is_callable($sort)) {
             $fn = that($sort, $this);
             if ($this->lazy) {
-                $this->value = function () use ($fn, $keys, $value) {
-                    $value = y(fire($value)); // :(
-                    $keys ? uasort($value, $fn) : usort($value, $fn);
-                    foreach ($value as $k => $v) {
+                $this->lot = function () use ($fn, $keys, $lot) {
+                    $lot = y(fire($lot)); // :(
+                    $keys ? uasort($lot, $fn) : usort($lot, $fn);
+                    foreach ($lot as $k => $v) {
                         yield $k => $v;
                     }
                 };
             } else {
-                $keys ? uasort($this->value, $fn) : usort($this->value, $fn);
+                $keys ? uasort($this->lot, $fn) : usort($this->lot, $fn);
             }
             return $this;
         }
         if ($this->lazy) {
             if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
                 $d = $sort[0];
-                $h = -1 === $d || SORT_DESC === $d ? new SplMinHeap : new SplMaxHeap;
-                // TODO
+                $this->{-1 === $d || SORT_DESC === $d ? 'vote' : 'rank'}(function ($v) use ($key) {
+                    return $v[$key] ?? null;
+                }, $keys);
+                return $this;
             }
+            $this->lot = function () use ($lot, $sort) {
+                $d = is_array($sort) ? reset($sort) : $sort;
+                $lot = y(fire($lot)); // :(
+                if ($keys) {
+                    -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
+                } else {
+                    -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
+                }
+                yield from $lot;
+            };
+            return $this;
         }
-        if (count($value) < 2) {
-            if (!$keys && $value) {
-                $this->value = [reset($value)];
+        if (count($lot) < 2) {
+            if (!$keys && $lot) {
+                $this->lot = [reset($lot)];
             }
             return $this;
         }
@@ -411,38 +425,38 @@ class AnemoneNew extends Genome {
                 return $a[$key] <=> $b[$key];
             };
             if (array_key_exists(2, $sort)) {
-                foreach ($value as &$v) {
+                foreach ($lot as &$v) {
                     if (is_array($v) && !isset($v[$key])) {
                         $v[$key] = $sort[2];
                     }
                 }
                 unset($v);
             }
-            $keys ? uasort($value, $fn) : usort($value, $fn);
+            $keys ? uasort($lot, $fn) : usort($lot, $fn);
         } else {
             $d = is_array($sort) ? reset($sort) : $sort;
             if ($keys) {
-                -1 === $d || SORT_DESC === $d ? arsort($value) : asort($value);
+                -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
             } else {
-                -1 === $d || SORT_DESC === $d ? rsort($value) : sort($value);
+                -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
             }
         }
-        $this->value = $value;
+        $this->lot = $lot;
         return $this;
     }
 
-    public function vote(callable $fn, $keys = false, $reverse = false) {
+    public function vote(callable $fn, $keys = false) {
         $fn = that($fn, $this);
+        $lot = $this->getIterator();
+        $max = PHP_INT_MAX;
         $q = new SplPriorityQueue;
         $q->setExtractFlags(SplPriorityQueue::EXTR_DATA);
-        $value = $this->value;
-        $value = $this->lazy ? fire($value) : $value;
-        foreach ($value as $k => $v) {
+        foreach ($lot as $k => $v) {
             $stack = call_user_func($fn, $v, $k) ?? PHP_INT_MIN;
-            $q->insert($keys ? [$k, $v] : $v, $reverse ? PHP_INT_MAX - $stack : $stack);
+            $q->insert($keys ? [$k, $v] : $v, [$stack, $max--]);
         }
         if ($this->lazy) {
-            $this->value = function () use ($keys, $q) {
+            $this->lot = function () use ($keys, $q) {
                 while (!$q->isEmpty()) {
                     $v = $q->extract();
                     if ($keys) {
@@ -452,18 +466,20 @@ class AnemoneNew extends Genome {
                     }
                 }
             };
+            unset($v);
             return $this;
         }
-        $value = [];
+        $lot = [];
         while (!$q->isEmpty()) {
             $v = $q->extract();
             if ($keys) {
-                $value[$v[0]] = $v[1];
+                $lot[$v[0]] = $v[1];
             } else {
-                $value[] = $v;
+                $lot[] = $v;
             }
         }
-        $this->value = $value;
+        $this->lot = $lot;
+        unset($q);
         return $this;
     }
 
