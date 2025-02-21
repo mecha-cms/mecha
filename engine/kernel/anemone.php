@@ -3,9 +3,9 @@
 class Anemone extends Genome {
 
     public $join;
+    public $lazy;
     public $lot;
     public $parent;
-    public $value;
 
     public function __call(string $kin, array $lot = []) {
         if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
@@ -14,15 +14,21 @@ class Anemone extends Genome {
         return parent::__call($kin, $lot);
     }
 
-    public function __construct(iterable $value = [], string $join = ', ') {
+    public function __construct($lot = [], string $join = ', ') {
         $this->join = $join;
-        $this->lot = $this->value = y($value);
+        if ($this->lazy = $lot instanceof Closure) {
+            $this->lot = $lot;
+        } else if (is_iterable($lot)) {
+            $this->lot = y($lot);
+        } else {
+            $this->lot = []; // Broken :(
+        }
     }
 
     public function __destruct() {
-        $this->lot = $this->value = [];
-        if ($this->parent) {
-            unset($this->parent);
+        $this->lot = [];
+        if ($parent = $this->parent) {
+            unset($parent);
         }
     }
 
@@ -34,82 +40,157 @@ class Anemone extends Genome {
     }
 
     public function __invoke(string $join = ', ', $filter = true) {
-        $value = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
+        $lot = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
             // Ignore value(s) that cannot be converted to string
             if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
                 return false;
             }
             // Ignore `false` and `null` value(s)
             return false !== $v && null !== $v;
-        }) : $this)->value;
-        return implode($join, $value);
+        }) : $this)->lot;
+        if ($this->lazy) {
+            return implode($join, y(fire($lot)));
+        }
+        return implode($join, $lot);
+    }
+
+    public function __serialize(): array {
+        $lot = get_object_vars($this);
+        unset($lot['parent']);
+        if (is_callable($lot['lot'])) {
+            $lot['lazy'] = false;
+            $lot['lot'] = y(fire($lot['lot']));
+        }
+        return $lot;
     }
 
     public function __toString(): string {
         return (string) $this->join($this->join);
     }
 
-    public function all($fn) {
-        return all($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    public function all(callable $fn) {
+        return all($this->getIterator(), $fn, $this);
     }
 
-    public function any($fn) {
-        return any($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    public function any(callable $fn) {
+        return any($this->getIterator(), $fn, $this);
     }
 
     public function chunk(int $chunk = 5, int $part = -1, $keys = false) {
         $that = $this->mitose();
-        if ($chunk > 0) {
-            $that->value = array_chunk($that->value, $chunk, $keys);
-            if ($part > -1) {
-                $that->value = $that->value[$part] ?? [];
-            }
+        if ($chunk < 1) {
+            return $that;
+        }
+        $lot = $this->lot;
+        if ($this->lazy) {
+            $that->lot = that(function () use ($chunk, $keys, $lot, $part) {
+                $lot = fire($lot);
+                if ($part > -1) {
+                    foreach (new LimitIterator($lot, $chunk * $part, $chunk) as $k => $v) {
+                        if ($keys) {
+                            yield $k => $v;
+                        } else {
+                            yield $v;
+                        }
+                    }
+                } else {
+                    $it = new ArrayIterator;
+                    while ($lot->valid()) {
+                        if ($keys) {
+                            $it[$lot->key()] = $lot->current();
+                        } else {
+                            $it[] = $lot->current();
+                        }
+                        $lot->next();
+                        if ($chunk === $it->count()) {
+                            yield $it;
+                            $it = new ArrayIterator;
+                        }
+                    }
+                    if ($it->count()) {
+                        yield $it;
+                    }
+                }
+            }, $that);
+            return $that;
+        }
+        $that->lot = $lot = array_chunk($lot, $chunk, $keys);
+        if ($part > -1) {
+            $that->lot = $lot[$part] ?? [];
         }
         return $that;
     }
 
     public function count(): int {
-        return count($this->value);
+        if ($this->lazy) {
+            $count = 0;
+            foreach ($this->getIterator() as $v) {
+                ++$count;
+            }
+            return $count;
+        }
+        return count($this->lot);
     }
 
-    public function find($fn) {
-        return find($this->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn);
+    public function find(callable $fn) {
+        return find($this->getIterator(), $fn, $this);
     }
 
     public function first($take = false) {
-        if (!$this->value) {
+        if ($this->lazy || !$this->lot) {
             return null;
         }
         if ($take) {
-            return array_shift($this->value);
+            return array_shift($this->lot);
         }
-        $first = reset($this->value);
+        $first = reset($this->lot);
         return false !== $first ? $first : null;
     }
 
     public function get(?string $key = null) {
-        return isset($key) ? get($this->value, $key) : $this->value;
+        return get($this->getIterator(), $key);
     }
 
     public function getIterator(): Traversable {
-        return new ArrayIterator($this->value);
+        $lot = $this->lot;
+        return $this->lazy ? fire($lot) : new ArrayIterator($lot);
     }
 
     public function has(?string $key = null) {
-        return isset($key) ? has($this->value, $key) : !empty($this->value);
+        return has($this->getIterator(), $key);
     }
 
     public function index(string $key) {
-        if (!$this->value || !array_key_exists($key, $this->value)) {
+        $lot = $this->lot;
+        if ($this->lazy) {
+            $i = 0;
+            foreach (fire($lot) as $k => $v) {
+                if ($k === $key) {
+                    return $i;
+                }
+                ++$i;
+            }
             return null;
         }
-        $index = array_search($key, array_keys($this->value));
+        if (!$lot || !array_key_exists($key, $lot)) {
+            return null;
+        }
+        $index = array_search($key, array_keys($lot));
         return false !== $index ? $index : null;
     }
 
-    public function is($fn, $keys = false) {
+    public function is(callable $fn, $keys = false) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $that->value = is($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        if ($this->lazy) {
+            $that->lot = that(function () use ($fn, $keys, $lot) {
+                foreach (is(fire($lot), $fn, $keys, $this) as $k => $v) {
+                    yield $k => $v;
+                }
+            }, $that);
+            return $that;
+        }
+        $that->lot = is($lot, $fn, $keys, $that);
         return $that;
     }
 
@@ -118,164 +199,324 @@ class Anemone extends Genome {
     }
 
     public function key(int $index) {
-        if (!$this->value || $index > count($this->value)) {
+        $lot = $this->lot;
+        if ($this->lazy) {
+            $i = 0;
+            foreach (fire($lot) as $k => $v) {
+                if ($i === $index) {
+                    return $k;
+                }
+                ++$i;
+            }
             return null;
         }
-        $keys = array_keys($this->value);
+        if (!$lot || $index > count($lot)) {
+            return null;
+        }
+        $keys = array_keys($lot);
         return array_key_exists($index, $keys) ? (string) $keys[$index] : null;
     }
 
     public function last($take = false) {
-        if (!$this->value) {
+        if ($this->lazy || !$this->lot) {
             return null;
         }
         if ($take) {
-            return array_pop($this->value);
+            return array_pop($this->lot);
         }
-        $last = end($this->value);
+        $last = end($this->lot);
         return false !== $last ? $last : null;
     }
 
     public function let(?string $key = null) {
         if (isset($key)) {
-            return let($this->value, $key);
+            return let($this->getIterator(), $key);
         }
-        $this->value = [];
+        $this->lot = [];
         return true;
     }
 
     public function map(callable $fn) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $that->value = map($that->value, Closure::fromCallable($fn)->bindTo($this));
+        if ($this->lazy) {
+            $that->lot = that(function () use ($fn, $lot) {
+                foreach (map(fire($lot), $fn, $this) as $k => $v) {
+                    yield $k => $v;
+                }
+            }, $that);
+            return $that;
+        }
+        $that->lot = map($lot, $fn, $that);
         return $that;
     }
 
     public function mitose() {
-        $that = new static($this->value, $this->join);
-        $that->lot = $this->lot;
+        $that = new static($this->lot, $this->join);
         $that->parent = $this;
         return $that;
     }
 
-    public function not($fn, $keys = false) {
+    public function not(callable $fn, $keys = false) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $that->value = not($that->value, is_callable($fn) ? Closure::fromCallable($fn)->bindTo($this) : $fn, $keys);
+        if ($this->lazy) {
+            $that->lot = that(function () use ($fn, $keys, $lot) {
+                foreach (not(fire($lot), $fn, $keys, $this) as $k => $v) {
+                    yield $k => $v;
+                }
+            }, $that);
+            return $that;
+        }
+        $that->lot = not($lot, $fn, $keys, $that);
         return $that;
     }
 
     public function offsetExists($key): bool {
-        return isset($this->value[$key]);
+        $lot = $this->lot;
+        if ($this->lazy) {
+            foreach (fire($lot) as $k => $v) {
+                if ($k === $key) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return isset($lot[$key]);
     }
 
     public function offsetGet($key) {
-        return $this->value[$key] ?? null;
+        $lot = $this->lot;
+        if ($this->lazy) {
+            foreach (fire($lot) as $k => $v) {
+                if ($k === $key) {
+                    return $v;
+                }
+            }
+            return null;
+        }
+        return $lot[$key] ?? null;
     }
 
     public function offsetSet($key, $value): void {
-        if (isset($key)) {
-            $this->value[$key] = $value;
-        } else {
-            $this->value[] = $value;
+        if (!$this->lazy) {
+            if (isset($key)) {
+                $this->lot[$key] = $value;
+            } else {
+                $this->lot[] = $value;
+            }
         }
     }
 
     public function offsetUnset($key): void {
-        unset($this->value[$key]);
+        if (!$this->lazy) {
+            unset($this->lot[$key]);
+        }
     }
 
-    public function pluck(string $key, $value = null, $keys = false) {
+    public function pluck(string $key, $value = null) {
+        $lot = $this->lot;
         $that = $this->mitose();
-        $that->value = pluck($that->value, $key, $value, $keys);
+        if ($this->lazy) {
+            $that->lot = that(function () use ($key, $lot, $value) {
+                foreach (pluck(fire($lot), $key, $value, $this) as $k => $v) {
+                    yield $k => $v;
+                }
+            }, $that);
+            return $that;
+        }
+        $that->lot = pluck($lot, $key, $value, $that);
         return $that;
     }
 
+    public function rank(callable $fn, $keys = false) {
+        return $this->vote($fn, $keys)->reverse($keys);
+    }
+
     public function reverse($keys = false) {
-        $value = array_reverse($this->value, $keys);
-        $this->value = $keys ? $value : array_values($value);
+        $lot = $this->lot;
+        if ($this->lazy) {
+            $this->lot = that(function () use ($keys, $lot) {
+                $r = new SplDoublyLinkedList;
+                $r->setIteratorMode(SplDoublyLinkedList::IT_MODE_DELETE | SplDoublyLinkedList::IT_MODE_LIFO);
+                foreach (fire($lot) as $k => $v) {
+                    $r->push($keys ? [$k, $v] : $v);
+                }
+                foreach ($r as $v) {
+                    if ($keys) {
+                        yield $v[0] => $v[1];
+                    } else {
+                        yield $v;
+                    }
+                }
+            }, $this);
+            return $this;
+        }
+        if (count($lot) < 2) {
+            return $this;
+        }
+        $lot = array_reverse($lot, $keys);
+        $this->lot = $keys ? $lot : array_values($lot);
         return $this;
     }
 
     public function set($key, $value = null) {
         if (is_iterable($key)) {
-            // `$key` as `$values`
-            return ($this->value = y($key));
+            if ($this->lazy) {
+                $this->lot = that(function () use ($key) {
+                    yield from $key;
+                }, $this);
+                return $this;
+            }
+            return ($this->lot = $key);
         }
-        return set($this->value, $key, $value);
+        return set($this->getIterator(), $key, $value);
     }
 
     public function shake($keys = false) {
-        $this->value = shake($this->value, is_callable($keys) ? Closure::fromCallable($keys)->bindTo($this) : $keys);
+        $lot = $this->lot;
+        if ($this->lazy) {
+            $this->lot = that(function () use ($keys, $lot) {
+                foreach (shake(y(fire($lot)), $keys, $this) as $k => $v) {
+                    yield $k => $v;
+                }
+            }, $this);
+            return $this;
+        }
+        $this->lot = shake($lot, $keys, $this);
         return $this;
     }
 
-    // Sort array value: `+1` or `1` for “asc” and `-1` for “desc”
     public function sort($sort = 1, $keys = false) {
-        if (count($value = $this->value) <= 1) {
-            if (!$keys && $value) {
-                $this->value = [reset($value)];
+        $lot = $this->lot;
+        if (is_callable($sort)) {
+            $fn = that($sort, $this);
+            if ($this->lazy) {
+                $this->lot = that(function () use ($fn, $keys, $lot) {
+                    $lot = y(fire($lot)); // :(
+                    $keys ? uasort($lot, $fn) : usort($lot, $fn);
+                    foreach ($lot as $k => $v) {
+                        yield $k => $v;
+                    }
+                }, $this);
+            } else {
+                $keys ? uasort($this->lot, $fn) : usort($this->lot, $fn);
             }
             return $this;
         }
-        if (is_callable($sort)) {
-            $sort = Closure::fromCallable($sort)->bindTo($this);
-            $keys ? uasort($value, $sort) : usort($value, $sort);
-        } else if (is_array($sort)) {
-            $i = $sort[0];
-            if (isset($sort[1])) {
-                $key = $sort[1];
-                $fn = -1 === $i ? static function ($a, $b) use ($key) {
-                    if (!is_array($a) || !is_array($b)) {
-                        return 0;
-                    }
-                    if (!isset($a[$key]) && !isset($b[$key])) {
-                        return 0;
-                    }
-                    if (!isset($b[$key])) {
-                        return 1;
-                    }
-                    if (!isset($a[$key])) {
-                        return -1;
-                    }
-                    return $b[$key] <=> $a[$key];
-                } : static function ($a, $b) use ($key) {
-                    if (!is_array($a) || !is_array($b)) {
-                        return 0;
-                    }
-                    if (!isset($a[$key]) && !isset($b[$key])) {
-                        return 0;
-                    }
-                    if (!isset($a[$key])) {
-                        return 1;
-                    }
-                    if (!isset($b[$key])) {
-                        return -1;
-                    }
-                    return $a[$key] <=> $b[$key];
-                };
-                if (array_key_exists(2, $sort)) {
-                    foreach ($value as &$v) {
-                        if (is_array($v) && !isset($v[$key])) {
-                            $v[$key] = $sort[2];
-                        }
-                    }
-                    unset($v);
-                }
-                $keys ? uasort($value, $fn) : usort($value, $fn);
-            } else {
-                if ($keys) {
-                    -1 === $i ? arsort($value) : asort($value);
-                } else {
-                    -1 === $i ? rsort($value) : sort($value);
-                }
+        if ($this->lazy) {
+            if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
+                $d = $sort[0];
+                $this->{-1 === $d || SORT_DESC === $d ? 'vote' : 'rank'}(function ($v) use ($key) {
+                    return $v[$key] ?? null;
+                }, $keys);
+                return $this;
             }
+            $this->lot = that(function () use ($lot, $sort) {
+                $d = is_array($sort) ? reset($sort) : $sort;
+                $lot = y(fire($lot)); // :(
+                if ($keys) {
+                    -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
+                } else {
+                    -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
+                }
+                yield from $lot;
+            }, $this);
+            return $this;
+        }
+        if (count($lot) < 2) {
+            if (!$keys && $lot) {
+                $this->lot = [reset($lot)];
+            }
+            return $this;
+        }
+        if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
+            $d = $sort[0];
+            $fn = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($key) {
+                if (!is_array($a) || !is_array($b)) {
+                    return 0;
+                }
+                if (!isset($a[$key]) && !isset($b[$key])) {
+                    return 0;
+                }
+                if (!isset($b[$key])) {
+                    return 1;
+                }
+                if (!isset($a[$key])) {
+                    return -1;
+                }
+                return $b[$key] <=> $a[$key];
+            } : static function ($a, $b) use ($key) {
+                if (!is_array($a) || !is_array($b)) {
+                    return 0;
+                }
+                if (!isset($a[$key]) && !isset($b[$key])) {
+                    return 0;
+                }
+                if (!isset($a[$key])) {
+                    return 1;
+                }
+                if (!isset($b[$key])) {
+                    return -1;
+                }
+                return $a[$key] <=> $b[$key];
+            };
+            if (array_key_exists(2, $sort)) {
+                foreach ($lot as &$v) {
+                    if (is_array($v) && !isset($v[$key])) {
+                        $v[$key] = $sort[2];
+                    }
+                }
+                unset($v);
+            }
+            $keys ? uasort($lot, $fn) : usort($lot, $fn);
         } else {
+            $d = is_array($sort) ? reset($sort) : $sort;
             if ($keys) {
-                -1 === $sort ? arsort($value) : asort($value);
+                -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
             } else {
-                -1 === $sort ? rsort($value) : sort($value);
+                -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
             }
         }
-        $this->value = $value;
+        $this->lot = $lot;
+        return $this;
+    }
+
+    public function vote(callable $fn, $keys = false) {
+        $fn = that($fn, $this);
+        $lot = $this->getIterator();
+        $max = PHP_INT_MAX;
+        $q = new SplPriorityQueue;
+        $q->setExtractFlags(SplPriorityQueue::EXTR_DATA);
+        foreach ($lot as $k => $v) {
+            $stack = call_user_func($fn, $v, $k) ?? PHP_INT_MIN;
+            $q->insert($keys ? [$k, $v] : $v, [$stack, $max--]);
+        }
+        if ($this->lazy) {
+            $this->lot = that(function () use ($keys, $q) {
+                while (!$q->isEmpty()) {
+                    $v = $q->extract();
+                    if ($keys) {
+                        yield $v[0] => $v[1];
+                    } else {
+                        yield $v;
+                    }
+                }
+            }, $this);
+            unset($v);
+            return $this;
+        }
+        $lot = [];
+        while (!$q->isEmpty()) {
+            $v = $q->extract();
+            if ($keys) {
+                $lot[$v[0]] = $v[1];
+            } else {
+                $lot[] = $v;
+            }
+        }
+        $this->lot = $lot;
+        unset($q);
         return $this;
     }
 

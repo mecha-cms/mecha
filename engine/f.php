@@ -1013,10 +1013,10 @@ function set(iterable &$to, string $key, $value = null, string $join = '.') {
     return ($to[$k] = $value);
 }
 
-function shake(array $value, $keys = false) {
+function shake(array $value, $keys = false, $that = null, $scope = 'static') {
     if (is_callable($keys)) {
         // `$keys` as `$fn`
-        $value = call_user_func($keys, $value);
+        $value = fire($keys, [$value], $that, $scope);
     } else {
         // <http://php.net/manual/en/function.shuffle.php#94697>
         if ($keys) {
@@ -1513,7 +1513,7 @@ function q($value) {
     }
     // The `Generator` and `NoRewindIterator` should not be counted as it will cause the iterator to iterate :(
     if ($value instanceof Generator || $value instanceof NoRewindIterator) {
-        return INF;
+        return PHP_INT_MAX;
     }
     if ($value instanceof Traversable) {
         $count = iterator_count($value);

@@ -58,7 +58,6 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return json_encode($this->__serialize());
     }
 
-    #[ReturnTypeWillChange]
     public function __unserialize(array $lot): void {
         foreach ($lot as $k => $v) {
             $this->{$k} = $v;
