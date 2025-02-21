@@ -63,7 +63,7 @@ if (!function_exists('json_validate')) {
 }
 
 function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return true;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -81,7 +81,7 @@ function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
 }
 
 function any(iterable $value, $fn = null, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return false;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -430,9 +430,9 @@ function delete(string $path, $purge = true) {
     return $out;
 }
 
-// Remove empty array, empty string and `null` value from array
-function drop(array $value, ?callable $fn = null, $that = null, $scope = 'static') {
-    if (!$value) {
+// Remove empty array and array-like, empty string and `null` value from array and array-like
+function drop(iterable $value, ?callable $fn = null, $that = null, $scope = 'static') {
+    if (!$value || 0 === q($value)) {
         return null;
     }
     if (!$n = (null === $fn)) {
@@ -455,7 +455,7 @@ function drop(array $value, ?callable $fn = null, $that = null, $scope = 'static
             }
         }
     }
-    return [] !== $value ? $value : null;
+    return 0 !== q($value) ? $value : null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -650,7 +650,7 @@ function fetch(string $url, $lot = null, $type = 'GET') {
 }
 
 function find(iterable $value, callable $fn, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return null;
     }
     $fn = that($fn, $that, $scope);
@@ -671,7 +671,7 @@ function ge($a, $b) {
 }
 
 function get(iterable $from, string $key, string $join = '.') {
-    if (!$from) {
+    if (!$from || 0 === q($from)) {
         return null;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -693,7 +693,7 @@ function gt($a, $b) {
 }
 
 function has(iterable $from, string $key, string $join = '.') {
-    if (!$from) {
+    if (!$from || 0 === q($from)) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -720,7 +720,7 @@ function ip() {
 }
 
 function is(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
     if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
@@ -735,7 +735,7 @@ function le($a, $b) {
 }
 
 function let(iterable &$from, string $key, string $join = '.') {
-    if (!$from) {
+    if (!$from || 0 === q($from)) {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
@@ -786,15 +786,14 @@ function lt($a, $b) {
 }
 
 function map(iterable $value, callable $fn, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
-    $out = [];
     $fn = that($fn, $that, $scope);
     foreach ($value as $k => $v) {
-        $out[$k] = call_user_func($fn, $v, $k);
+        $value[$k] = call_user_func($fn, $v, $k);
     }
-    return $out;
+    return $value;
 }
 
 function move(string $path, string $to, ?string $as = null) {
@@ -854,7 +853,7 @@ function ne($a, $b) {
 }
 
 function not(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value) {
+    if (!$value || 0 === q($value)) {
         return $value;
     }
     if (!is_callable($fn) && null !== $fn) {
@@ -929,7 +928,7 @@ function path(?string $value) {
 }
 
 function pluck(iterable $from, string $key, $value = null, $that = null, $scope = 'static') {
-    if (!$from) {
+    if (!$from || 0 === q($from)) {
         return [];
     }
     return map($from, function ($v, $k) use ($key, $value) {
@@ -1164,7 +1163,7 @@ function stream(string $path, ?int $max = 1024) {
 
 function that(callable $fn, $that = null, $scope = 'static') {
     $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
-    // `bind($fn, Foo::class)`
+    // `that($fn, Foo::class)`
     if (is_string($that)) {
         $scope = $that;
         $that = null;
@@ -1503,14 +1502,25 @@ function q($value) {
     if (is_string($value)) {
         return extension_loaded('mbstring') ? mb_strlen($value) : strlen($value);
     }
-    if ($value instanceof Countable) {
-        return count($value);
-    }
-    if ($value instanceof Traversable) {
-        return iterator_count($value);
-    }
     if ($value instanceof stdClass) {
         return count((array) $value);
+    }
+    if ($value instanceof Countable) {
+        return $value->count();
+    }
+    if ($value instanceof EmptyIterator) {
+        return 0;
+    }
+    // The `Generator` and `NoRewindIterator` should not be counted as it will cause the iterator to iterate :(
+    if ($value instanceof Generator || $value instanceof NoRewindIterator) {
+        return INF;
+    }
+    if ($value instanceof Traversable) {
+        $count = iterator_count($value);
+        if (method_exists($value, 'rewind')) {
+            $value->rewind();
+        }
+        return $count;
     }
     return empty($value) ? 0 : 1;
 }
@@ -1632,6 +1642,12 @@ function z($value, $short = true) {
                 if (is_array($v)) {
                     if (T_CONSTANT_ENCAPSED_STRING === $v[0]) {
                         $content .= z(substr($v[1], 1, -1), $short);
+                        continue;
+                    }
+                    // TODO: Prefer this one once we drop PHP 7.3 support!
+                    // if (T_NAME_FULLY_QUALIFIED === $v[0]) {
+                    if ('T_NAME_FULLY_QUALIFIED' === token_name($v[0])) {
+                        $content .= trim($v[1], "\\");
                         continue;
                     }
                     if (T_WHITESPACE === $v[0]) {

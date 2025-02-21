@@ -80,7 +80,7 @@ class AnemoneNew extends Genome {
                         } else {
                             $lot[] = $value->current();
                         }
-                        $v->next();
+                        $value->next();
                         if ($chunk === $lot->count()) {
                             yield $lot;
                             $lot = new ArrayIterator;
@@ -293,6 +293,10 @@ class AnemoneNew extends Genome {
         return $that;
     }
 
+    public function rank(callable $fn, $keys = false) {
+        return $this->vote($fn, $keys, true);
+    }
+
     public function reverse($keys = false) {
         $value = $this->value;
         if ($this->lazy) {
@@ -345,7 +349,123 @@ class AnemoneNew extends Genome {
         return $this;
     }
 
-    public function sort($sort = 1, $keys = false) {}
+    public function sort($sort = 1, $keys = false) {
+        $value = $this->value;
+        if (is_callable($sort)) {
+            $fn = that($sort, $this);
+            if ($this->lazy) {
+                $this->value = function () use ($fn, $keys, $value) {
+                    $value = y(fire($value)); // :(
+                    $keys ? uasort($value, $fn) : usort($value, $fn);
+                    foreach ($value as $k => $v) {
+                        yield $k => $v;
+                    }
+                };
+            } else {
+                $keys ? uasort($this->value, $fn) : usort($this->value, $fn);
+            }
+            return $this;
+        }
+        if ($this->lazy) {
+            if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
+                $d = $sort[0];
+                $h = -1 === $d || SORT_DESC === $d ? new SplMinHeap : new SplMaxHeap;
+                // TODO
+            }
+        }
+        if (count($value) < 2) {
+            if (!$keys && $value) {
+                $this->value = [reset($value)];
+            }
+            return $this;
+        }
+        if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
+            $d = $sort[0];
+            $fn = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($key) {
+                if (!is_array($a) || !is_array($b)) {
+                    return 0;
+                }
+                if (!isset($a[$key]) && !isset($b[$key])) {
+                    return 0;
+                }
+                if (!isset($b[$key])) {
+                    return 1;
+                }
+                if (!isset($a[$key])) {
+                    return -1;
+                }
+                return $b[$key] <=> $a[$key];
+            } : static function ($a, $b) use ($key) {
+                if (!is_array($a) || !is_array($b)) {
+                    return 0;
+                }
+                if (!isset($a[$key]) && !isset($b[$key])) {
+                    return 0;
+                }
+                if (!isset($a[$key])) {
+                    return 1;
+                }
+                if (!isset($b[$key])) {
+                    return -1;
+                }
+                return $a[$key] <=> $b[$key];
+            };
+            if (array_key_exists(2, $sort)) {
+                foreach ($value as &$v) {
+                    if (is_array($v) && !isset($v[$key])) {
+                        $v[$key] = $sort[2];
+                    }
+                }
+                unset($v);
+            }
+            $keys ? uasort($value, $fn) : usort($value, $fn);
+        } else {
+            $d = is_array($sort) ? reset($sort) : $sort;
+            if ($keys) {
+                -1 === $d || SORT_DESC === $d ? arsort($value) : asort($value);
+            } else {
+                -1 === $d || SORT_DESC === $d ? rsort($value) : sort($value);
+            }
+        }
+        $this->value = $value;
+        return $this;
+    }
+
+    public function vote(callable $fn, $keys = false, $reverse = false) {
+        $fn = that($fn, $this);
+        $q = new SplPriorityQueue;
+        $q->setExtractFlags(SplPriorityQueue::EXTR_DATA);
+        $value = $this->value;
+        $value = $this->lazy ? fire($value) : $value;
+        foreach ($value as $k => $v) {
+            $stack = call_user_func($fn, $v, $k) ?? PHP_INT_MIN;
+            $q->insert($keys ? [$k, $v] : $v, $reverse ? PHP_INT_MAX - $stack : $stack);
+        }
+        if ($this->lazy) {
+            $this->value = function () use ($keys, $q) {
+                while (!$q->isEmpty()) {
+                    $v = $q->extract();
+                    if ($keys) {
+                        yield $v[0] => $v[1];
+                    } else {
+                        yield $v;
+                    }
+                }
+            };
+            return $this;
+        }
+        $value = [];
+        while (!$q->isEmpty()) {
+            $v = $q->extract();
+            if ($keys) {
+                $value[$v[0]] = $v[1];
+            } else {
+                $value[] = $v;
+            }
+        }
+        $this->value = $value;
+        return $this;
+    }
 
     public static function from(...$lot) {
         if (isset($lot[0]) && is_string($lot[0])) {
