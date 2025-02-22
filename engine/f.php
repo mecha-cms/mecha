@@ -1333,37 +1333,62 @@ function f(?string $value, $accent = true, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-function g(string $folder, $x = null, $deep = 0) {
+function g(string $folder, $x = null, $deep = 0, $keys = true) {
     if (is_dir($folder) && (new FilesystemIterator($folder))->valid()) {
-        $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS);
+        $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::CURRENT_AS_PATHNAME | FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::SKIP_DOTS);
         $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $it) use ($deep, $x) {
             if ($deep > 0 && $it->hasChildren()) {
                 return true;
             }
             // Filter by type (`0` for folder and `1` for file)
-            if (0 === $x || 1 === $x) {
-                return $v->{'is' . (0 === $x ? 'Dir' : 'File')}();
+            if (0 === $x) {
+                return is_dir($v);
             }
-            // Filter file(s) by extension
+            if (1 === $x) {
+                return is_file($v);
+            }
+            // Filter by file extension
             if (is_string($x)) {
                 $x = ',' . $x . ',';
-                return $v->isFile() && false !== strpos($x, ',' . $v->getExtension() . ',');
-            }
-            // Filter by function
-            if (is_callable($x)) {
-                return fire($x, [$v->isDir() ? 0 : 1, $k], $v);
+                return is_file($v) && false !== strpos($x, ',' . pathinfo($v, PATHINFO_EXTENSION) . ',');
             }
             // No filter
             return true;
         });
-        $it = new RecursiveIteratorIterator($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY);
-        $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
-        foreach ($it as $k => $v) {
-            yield $k => $v->isDir() ? 0 : 1;
-        }
     } else {
-        yield from [];
+        $it = new EmptyIterator;
     }
+    $it = new class ($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY) extends RecursiveIteratorIterator implements Countable {
+        public $i = 0;
+        public $list = false;
+        public function count(): int {
+            $this->rewind();
+            while ($this->valid()) {
+                $this->next();
+            }
+            return $this->i;
+        }
+        #[ReturnTypeWillChange]
+        public function current() {
+            $v = parent::current();
+            return $this->list ? $v : (is_dir($v) ? 0 : 1);
+        }
+        #[ReturnTypeWillChange]
+        public function key() {
+            return $this->list ? $this->i : parent::key();
+        }
+        public function next(): void {
+            ++$this->i;
+            parent::next();
+        }
+        public function rewind(): void {
+            $this->i = 0;
+            parent::rewind();
+        }
+    };
+    $it->list = !$keys;
+    $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
+    return $it;
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
@@ -1511,16 +1536,12 @@ function q($value) {
     if ($value instanceof EmptyIterator) {
         return 0;
     }
-    // The `Generator` and `NoRewindIterator` should not be counted as it will cause the iterator to iterate :(
-    if ($value instanceof Generator || $value instanceof NoRewindIterator) {
-        return PHP_INT_MAX;
-    }
     if ($value instanceof Traversable) {
-        $count = iterator_count($value);
+        $v = iterator_count($value);
         if (method_exists($value, 'rewind')) {
             $value->rewind();
         }
-        return $count;
+        return $v;
     }
     return empty($value) ? 0 : 1;
 }

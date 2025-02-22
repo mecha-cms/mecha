@@ -2,6 +2,28 @@
 
 class Anemone extends Genome {
 
+    /*
+    protected function _q(callable $fn, $sort = -1, $keys = false) {
+        $q = new class extends SplPriorityQueue {
+            public $k = -1;
+            public $sort = -1;
+            public function compare($a, $b) {
+            }
+            public function current() {
+
+            }
+            public function key() {
+
+            }
+        };
+        if ($keys) {
+            $q->k = 0;
+        }
+        $q->sort = $sort;
+        return $q;
+    }
+    */
+
     public $join;
     public $lazy;
     public $lot;
