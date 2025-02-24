@@ -158,7 +158,8 @@ class Anemone extends Genome {
     }
 
     public function get(?string $key = null) {
-        return get($this->lot, $key);
+        $lot = $this->lot;
+        return isset($key) ? get($lot, $key) : $lot;
     }
 
     public function getIterator(): Traversable {

@@ -1350,33 +1350,32 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
             // No filter
             return true;
         });
-    } else {
-        $it = new EmptyIterator;
+        $it = new class ($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY) extends RecursiveIteratorIterator {
+            public $i = 0;
+            public $list = false;
+            #[ReturnTypeWillChange]
+            public function current() {
+                $v = parent::current();
+                return $this->list ? $v : (is_dir($v) ? 0 : 1);
+            }
+            #[ReturnTypeWillChange]
+            public function key() {
+                return $this->list ? $this->i : parent::key();
+            }
+            public function next(): void {
+                ++$this->i;
+                parent::next();
+            }
+            public function rewind(): void {
+                $this->i = 0;
+                parent::rewind();
+            }
+        };
+        $it->list = !$keys;
+        $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
+        return $it;
     }
-    $it = new class ($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY) extends RecursiveIteratorIterator {
-        public $i = 0;
-        public $list = false;
-        #[ReturnTypeWillChange]
-        public function current() {
-            $v = parent::current();
-            return $this->list ? $v : (is_dir($v) ? 0 : 1);
-        }
-        #[ReturnTypeWillChange]
-        public function key() {
-            return $this->list ? $this->i : parent::key();
-        }
-        public function next(): void {
-            ++$this->i;
-            parent::next();
-        }
-        public function rewind(): void {
-            $this->i = 0;
-            parent::rewind();
-        }
-    };
-    $it->list = !$keys;
-    $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
-    return $it;
+    return new EmptyIterator;
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
