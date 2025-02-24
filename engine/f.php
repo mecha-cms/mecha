@@ -62,36 +62,36 @@ if (!function_exists('json_validate')) {
     }
 }
 
-function all(iterable $value, $fn = null, $that = null, $scope = 'static') {
+function all(iterable $value, $valid = null, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return true;
     }
-    if (!is_callable($fn) && null !== $fn) {
-        $fn = function ($v) use ($fn) {
-            return $v === $fn;
+    if (!is_callable($valid) && null !== $valid) {
+        $valid = function ($v) use ($valid) {
+            return $v === $valid;
         };
     }
-    $fn = that($fn, $that, $scope);
+    $valid = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (!call_user_func($fn, $v, $k)) {
+        if (!call_user_func($valid, $v, $k)) {
             return false;
         }
     }
     return true;
 }
 
-function any(iterable $value, $fn = null, $that = null, $scope = 'static') {
+function any(iterable $value, $valid = null, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return false;
     }
-    if (!is_callable($fn) && null !== $fn) {
-        $fn = function ($v) use ($fn) {
-            return $v === $fn;
+    if (!is_callable($valid) && null !== $valid) {
+        $valid = function ($v) use ($valid) {
+            return $v === $valid;
         };
     }
-    $fn = that($fn, $that, $scope);
+    $valid = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (call_user_func($fn, $v, $k)) {
+        if (call_user_func($valid, $v, $k)) {
             return true;
         }
     }
@@ -431,31 +431,27 @@ function delete(string $path, $purge = true) {
 }
 
 // Remove empty array and array-like, empty string and `null` value from array and array-like
-function drop(iterable $value, ?callable $fn = null, $that = null, $scope = 'static') {
+function drop(iterable $value, ?callable $valid = null, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return null;
     }
-    if (!$n = (null === $fn)) {
-        $fn = that($fn, $that, $scope);
-    }
+    $valid = cue($valid ?? function ($v, $k) {
+        return "" === $v || null === $v || [] === $v || is_countable($v) && 0 === count($v);
+    }, $that, $scope);
     foreach ($value as $k => $v) {
         if (is_array($v) && !empty($v)) {
-            if ($v = drop($v, $fn, $that, $scope)) {
+            if ($v = drop($v, $valid, $that, $scope)) {
                 $value[$k] = $v;
             } else {
                 unset($value[$k]); // Drop!
             }
-        } else if ($n) { // Default filter
-            if ("" === $v || null === $v || [] === $v) {
-                unset($value[$k]); // Drop!
-            }
         } else {
-            if (call_user_func($fn, $v, $k)) {
+            if (call_user_func($valid, $v, $k)) {
                 unset($value[$k]); // Drop!
             }
         }
     }
-    return 0 !== q($value) ? $value : null;
+    return [] !== $value ? (is_countable($value) && 0 !== count($value) ? $value : null) : null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -649,21 +645,21 @@ function fetch(string $url, $lot = null, $type = 'GET') {
     return false !== $out ? $out : null;
 }
 
-function find(iterable $value, callable $fn, $that = null, $scope = 'static') {
+function find(iterable $value, callable $valid, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return null;
     }
-    $fn = that($fn, $that, $scope);
+    $valid = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (call_user_func($fn, $v, $k)) {
+        if (call_user_func($valid, $v, $k)) {
             return $v;
         }
     }
     return null;
 }
 
-function fire(callable $fn, array $lot = [], $that = null, $scope = 'static') {
-    return call_user_func(that($fn, $that, $scope), ...$lot);
+function fire(callable $task, array $lot = [], $that = null, $scope = 'static') {
+    return call_user_func(cue($task, $that, $scope), ...$lot);
 }
 
 function ge($a, $b) {
@@ -719,14 +715,14 @@ function ip() {
     return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
 
-function is(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
+function is(iterable $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return $value;
     }
-    if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, that($fn, $that, $scope));
+    if (is_callable($valid) && is_object($value) && $value instanceof Traversable) {
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, cue($valid, $that, $scope));
     }
-    $value = $fn ? array_filter($value, that($fn, $that, $scope), ARRAY_FILTER_USE_BOTH) : array_filter($value);
+    $value = $valid ? array_filter($value, cue($valid, $that, $scope), ARRAY_FILTER_USE_BOTH) : array_filter($value);
     return $keys ? $value : array_values($value);
 }
 
@@ -785,13 +781,13 @@ function lt($a, $b) {
     return q($a) < $b;
 }
 
-function map(iterable $value, callable $fn, $that = null, $scope = 'static') {
+function map(iterable $value, callable $at, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return $value;
     }
-    $fn = that($fn, $that, $scope);
+    $at = cue($at, $that, $scope);
     foreach ($value as $k => $v) {
-        $value[$k] = call_user_func($fn, $v, $k);
+        $value[$k] = call_user_func($at, $v, $k);
     }
     return $value;
 }
@@ -852,24 +848,24 @@ function ne($a, $b) {
     return q($a) !== $b;
 }
 
-function not(iterable $value, $fn = null, $keys = false, $that = null, $scope = 'static') {
+function not(iterable $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return $value;
     }
-    if (!is_callable($fn) && null !== $fn) {
-        $fn = function ($v) use ($fn) {
-            return $v === $fn;
+    if (!is_callable($valid) && null !== $valid) {
+        $valid = function ($v) use ($valid) {
+            return $v === $valid;
         };
     }
-    if (is_callable($fn) && is_object($value) && $value instanceof Traversable) {
-        $fn = that($fn, $that, $scope);
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($fn) {
-            return !call_user_func($fn, $v, $k);
+    if (is_callable($valid) && is_object($value) && $value instanceof Traversable) {
+        $valid = cue($valid, $that, $scope);
+        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($valid) {
+            return !call_user_func($valid, $v, $k);
         });
     }
-    $fn = that($fn, $that, $scope);
-    $value = array_filter($value, static function ($v, $k) use ($fn) {
-        return !call_user_func($fn, $v, $k);
+    $valid = cue($valid, $that, $scope);
+    $value = array_filter($value, static function ($v, $k) use ($valid) {
+        return !call_user_func($valid, $v, $k);
     }, ARRAY_FILTER_USE_BOTH);
     return $keys ? $value : array_values($value);
 }
@@ -1015,7 +1011,7 @@ function set(iterable &$to, string $key, $value = null, string $join = '.') {
 
 function shake(array $value, $keys = false, $that = null, $scope = 'static') {
     if (is_callable($keys)) {
-        // `$keys` as `$fn`
+        // `$keys` as `$task`
         $value = fire($keys, [$value], $that, $scope);
     } else {
         // <http://php.net/manual/en/function.shuffle.php#94697>
@@ -1161,14 +1157,13 @@ function stream(string $path, ?int $max = 1024) {
     yield from [];
 }
 
-function that(callable $fn, $that = null, $scope = 'static') {
-    $fn = $fn instanceof Closure ? $fn : Closure::fromCallable($fn);
-    // `that($fn, Foo::class)`
+function cue(callable $task, $that = null, $scope = 'static') {
+    $task = $task instanceof Closure ? $task : Closure::fromCallable($task);
     if (is_string($that)) {
         $scope = $that;
         $that = null;
     }
-    return $that ? $fn->bindTo($that, $scope) : $fn;
+    return $that ? $task->bindTo($that, $scope) : $task;
 }
 
 function token($id = 0, $for = '+1 minute') {
@@ -1206,12 +1201,12 @@ function zone(?string $zone = null) {
 
 
 // a: Convert object to array
-// b: Keep value between `a` and `b`
+// b: Keep value between `$a` and `$b`
 // c: Convert text to camel case
-// d: Declare class(es) with callback
-// e: Evaluate string to their appropriate data type
+// d: Declare class(es) with task
+// e: Evaluate string to their data type
 // f: Filter/sanitize string
-// g: Advance PHP `glob` function that returns generator
+// g: Advance PHP `glob()` function that returns iterator
 // h: Convert text to snake case with `-` (hyphen) as the default separator
 // i: Internationalization
 // j: Compare array(s) and return all item(s) that exist just once in any
@@ -1221,7 +1216,7 @@ function zone(?string $zone = null) {
 // n: Normalize white-space in string
 // o: Convert array to object
 // p: Convert text to pascal case
-// q: Quantity (length of a string, number, array and object)
+// q: Quantity (length of a string, number, array, and object)
 // r: Replace string
 // s: Convert data type to their string format
 // t: Trim string from prefix and suffix once
@@ -1230,7 +1225,7 @@ function zone(?string $zone = null) {
 // w: Convert any data to plain word(s)
 // x: Escape
 // y: Convert iterator to plain array
-// z: Export array/object into a compact PHP file
+// z: Export array/object into a compact PHP data string
 
 function a($value, $safe = true) {
     if ($safe && is_object($value) && 'stdClass' !== get_class($value)) {
@@ -1266,14 +1261,14 @@ function c(?string $value, $accent = false, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-function d(string $folder, ?callable $fn = null) {
-    spl_autoload_register(static function ($object) use ($folder, $fn) {
-        $name = c2f($object);
-        if (is_file($file = $folder . D . $name . '.php')) {
+function d(string $folder, ?callable $task = null) {
+    spl_autoload_register(static function ($object) use ($folder, $task) {
+        $f = c2f($object);
+        if (is_file($file = $folder . D . $f . '.php')) {
             extract(lot(), EXTR_SKIP);
             require $file;
-            if (is_callable($fn)) {
-                call_user_func($fn, $object, $name, $file);
+            if (is_callable($task)) {
+                call_user_func($task, $object, $f, $file);
             }
         }
     });
@@ -1358,16 +1353,9 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
     } else {
         $it = new EmptyIterator;
     }
-    $it = new class ($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY) extends RecursiveIteratorIterator implements Countable {
+    $it = new class ($it, null === $x || 0 === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY) extends RecursiveIteratorIterator {
         public $i = 0;
         public $list = false;
-        public function count(): int {
-            $this->rewind();
-            while ($this->valid()) {
-                $this->next();
-            }
-            return $this->i;
-        }
         #[ReturnTypeWillChange]
         public function current() {
             $v = parent::current();
@@ -1521,27 +1509,31 @@ function q($value) {
     if (false === $value || null === $value) {
         return 0;
     }
+    if (is_countable($value)) {
+        return count($value);
+    }
     if (is_int($value) || is_float($value)) {
         return $value;
     }
+    if (is_object($value)) {
+        if ($value instanceof EmptyIterator) {
+            return 0;
+        }
+        if ($value instanceof stdClass) {
+            return count((array) $value);
+        }
+        if ($value instanceof Traversable) {
+            if ($r = method_exists($value, 'rewind')) {
+                $value->rewind();
+            }
+            $v = iterator_count($value);
+            $r && $value->rewind();
+            return $v;
+        }
+        return 1;
+    }
     if (is_string($value)) {
         return extension_loaded('mbstring') ? mb_strlen($value) : strlen($value);
-    }
-    if ($value instanceof stdClass) {
-        return count((array) $value);
-    }
-    if ($value instanceof Countable) {
-        return $value->count();
-    }
-    if ($value instanceof EmptyIterator) {
-        return 0;
-    }
-    if ($value instanceof Traversable) {
-        $v = iterator_count($value);
-        if (method_exists($value, 'rewind')) {
-            $value->rewind();
-        }
-        return $v;
     }
     return empty($value) ? 0 : 1;
 }

@@ -146,17 +146,17 @@ if ('POST' === $_SERVER['REQUEST_METHOD']) {
 }
 
 // Load class(es)…
-d($folder = __DIR__ . D . 'kernel', static function ($object, $n) use ($folder) {
-    if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
+d($folder = __DIR__ . D . 'kernel', static function ($object, $f) use ($folder) {
+    if (is_file($file = dirname($folder) . D . 'plug' . D . $f . '.php')) {
         extract(lot(), EXTR_SKIP);
-        require $f;
+        require $file;
     }
     // Load plug(s) of extension(s) and layout(s)…
-    foreach (glob(dirname($folder, 2) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
-        if (!is_file(dirname($v = stream_resolve_include_path($v), 3) . D . 'index.php')) {
+    foreach (glob(dirname($folder, 2) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'engine' . D . 'plug' . D . $f . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+        if (!is_file(dirname($file = stream_resolve_include_path($v), 3) . D . 'index.php')) {
             continue; // Skip in-active extension(s) and layout(s)
         }
-        require $v;
+        require $file;
     }
 });
 
@@ -173,14 +173,14 @@ register_shutdown_function(static function () {
 });
 
 // Set default state(s)…
-$state = is_file($f = __DIR__ . D . '..' . D . 'state.php') ? require $f : [];
+$state = is_file($file = __DIR__ . D . '..' . D . 'state.php') ? require $file : [];
 
 lot('state', $state = new State($state));
 
+$hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
+$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
 $port = (int) $_SERVER['SERVER_PORT'];
 $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
-$protocol = $scheme . '://';
-$host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
 
 [$path, $query] = array_replace(["", ""], explode('?', $_SERVER['REQUEST_URI'], 2));
 
@@ -197,8 +197,8 @@ while (false !== strpos($path, '../')) {
     $path = strtr($path, ['../' => ""]);
 }
 
-// If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\b\c`
-// then the sub-folder path of this system will be `a\b\c`
+// If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\s\d\f`
+// then the sub-folder path of this system will be `a\s\d\f`
 $sub = trim(strtr(PATH . D, [rtrim(strtr($_SERVER['DOCUMENT_ROOT'] . D, '/', D), D) . D => ""]), D);
 
 // Remove sub-folder from path
@@ -206,9 +206,8 @@ $path = "" !== $sub ? substr($path, strlen($sub) + 1) : $path;
 
 $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
-$hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
 
-lot('url', $url = new URL($protocol . $host . $path . $query . $hash));
+lot('url', $url = new URL($scheme . '://' . $host . $path . $query . $hash));
 
 function anemone(...$lot) {
     return Anemone::from(...$lot);
@@ -307,13 +306,13 @@ try {
     foreach (glob(dirname(__DIR__) . D . 'lot' . D . '{x,y}' . D . '*' . D . 'index.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
         $n = basename($folder = dirname($v = stream_resolve_include_path($v)));
         if (empty(lot(strtoupper($r = basename(dirname($folder))))[0][$v])) {
-            $uses[$v] = content($folder . D . $n) ?? $r . '.' . $n;
+            $uses[$v] = content($folder . D . '.stack') ?? $r . '.' . $n;
             // Load state(s)…
             State::set($r . '.' . ($k = strtr($n, ['.' => "\\."])), []);
             if (is_file($v = $folder . D . 'state.php')) {
-                (static function ($k, $v, $a) {
+                (static function ($k, $v, $lot) {
                     extract(lot(), EXTR_SKIP);
-                    State::set($r . '.' . $k, array_replace_recursive((array) require $v, $a));
+                    State::set($r . '.' . $k, array_replace_recursive((array) require $v, $lot));
                 })($k, $v, $state[$r][$n] ?? []);
             }
         }
@@ -324,20 +323,20 @@ try {
     }
     // Load class(es)…
     foreach ($uses as $v) {
-        d($folder = dirname($v) . D . 'engine' . D . 'kernel', static function ($object, $n) use ($folder) {
-            if (is_file($f = dirname($folder) . D . 'plug' . D . $n . '.php')) {
+        d($folder = dirname($v) . D . 'engine' . D . 'kernel', static function ($object, $f) use ($folder) {
+            if (is_file($file = dirname($folder) . D . 'plug' . D . $f . '.php')) {
                 extract(lot(), EXTR_SKIP);
-                require $f;
+                require $file;
             }
             // Load plug(s) of other extension(s) and layout(s)…
-            foreach (glob(dirname($folder, 3) . D . '*' . D . 'engine' . D . 'plug' . D . $n . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
-                if ($f === ($v = stream_resolve_include_path($v))) {
+            foreach (glob(dirname($folder, 3) . D . '*' . D . 'engine' . D . 'plug' . D . $f . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
+                if ($file === ($file = stream_resolve_include_path($v))) {
                     continue; // Skip current plug
                 }
-                if (!is_file(dirname($v, 3) . D . 'index.php')) {
+                if (!is_file(dirname($file, 3) . D . 'index.php')) {
                     continue; // Skip in-active extension(s) and layout(s)
                 }
-                require $v;
+                require $file;
             }
         });
     }
@@ -386,6 +385,6 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $protocol, $query, $r, $scheme, $sub, $task, $use, $uses, $v, $x);
+unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $query, $r, $scheme, $sub, $task, $use, $uses, $v, $x);
 
 Hook::fire(['set', 'get', 'let']);

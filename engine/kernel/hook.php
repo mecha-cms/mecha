@@ -23,13 +23,13 @@ class Hook extends Genome {
             }
             if (null !== $that) {
                 foreach (self::$lot[1][$c][$name] as $v) {
-                    if (null !== ($r = fire($v['fn'], $lot, $that, $scope))) {
+                    if (null !== ($r = fire($v['task'], $lot, $that, $scope))) {
                         $lot[0] = $r;
                     }
                 }
             } else {
                 foreach (self::$lot[1][$c][$name] as $v) {
-                    if (null !== ($r = fire($v['fn'], $lot))) {
+                    if (null !== ($r = fire($v['task'], $lot))) {
                         $lot[0] = $r;
                     }
                 }
@@ -51,10 +51,10 @@ class Hook extends Genome {
         return isset($name) ? self::$current[$c] === $name : self::$current[$c];
     }
 
-    public static function let($name = null, ?callable $fn = null) {
+    public static function let($name = null, ?callable $task = null) {
         $c = static::class;
-        if (is_string($fn)) {
-            $fn = trim($fn, "\\");
+        if (is_string($task)) {
+            $task = trim($task, "\\");
         }
         if (is_array($name)) {
             foreach ($name as $v) {
@@ -62,11 +62,11 @@ class Hook extends Genome {
             }
         } else if (isset($name)) {
             if (isset(self::$lot[1][$c][$name])) {
-                if (isset($fn)) {
+                if (isset($task)) {
                     self::$lot[0][$c][$name] = [];
                     foreach (self::$lot[1][$c][$name] as $k => $v) {
-                        if ($v['fn'] === $fn) {
-                            self::$lot[0][$c][$name][is_object($fn) ? spl_object_hash($fn) : $fn] = $v;
+                        if ($v['task'] === $task) {
+                            self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task] = $v;
                             unset(self::$lot[1][$c][$name][$k]);
                         }
                     }
@@ -75,8 +75,8 @@ class Hook extends Genome {
                     unset(self::$lot[1][$c][$name]);
                 }
             } else {
-                if (isset($fn)) {
-                    self::$lot[0][$c][$name][is_object($fn) ? spl_object_hash($fn) : $fn] = 1;
+                if (isset($task)) {
+                    self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task] = 1;
                 } else {
                     self::$lot[0][$c][$name] = 1;
                 }
@@ -86,17 +86,17 @@ class Hook extends Genome {
         }
     }
 
-    public static function set($name, callable $fn, float $stack = 10) {
+    public static function set($name, callable $task, float $stack = 10) {
         $c = static::class;
-        if (is_string($fn)) {
-            $fn = trim($fn, "\\");
+        if (is_string($task)) {
+            $task = trim($task, "\\");
         }
         if (is_array($name)) {
             foreach ($name as $v) {
-                self::set((string) $v, $fn, $stack);
+                self::set((string) $v, $task, $stack);
             }
         } else {
-            if (!empty(self::$lot[0][$c][$name][is_object($fn) ? spl_object_hash($fn) : $fn])) {
+            if (!empty(self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task])) {
                 // Skip!
             } else {
                 if (!isset(self::$lot[1][$c][$name])) {
@@ -106,11 +106,11 @@ class Hook extends Genome {
                     '0' => c2f($c),
                     '1' => "",
                     '2' => [],
-                    'fn' => $fn,
-                    'stack' => (float) $stack
+                    'stack' => (float) $stack,
+                    'task' => $task
                 ];
                 if (count(self::$lot[1][$c][$name]) > 1) {
-                    self::$lot[1][$c][$name] = (new Anemone(self::$lot[1][$c][$name]))->sort([1, 'stack']);
+                    self::$lot[1][$c][$name] = (new Anemone(self::$lot[1][$c][$name]))->sort([1, 'stack'])->lot;
                 }
             }
         }
