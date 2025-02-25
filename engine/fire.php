@@ -103,42 +103,42 @@ array_walk_recursive($any, static function (&$v) {
 // Normalize `$_FILES` property to `$_POST`
 if ('POST' === $_SERVER['REQUEST_METHOD']) {
     // <https://stackoverflow.com/a/30342756/1163000>
-    $tidy = static function (array $in) use (&$tidy) {
+    $tidy = static function (array $lot) use (&$tidy) {
         $alter = [
             'error' => 'status',
             'tmp_name' => 'path'
         ];
-        $out = [];
-        if (!is_array(reset($in))) {
-            if (isset($in[$k = 'full_path'])) {
-                $v = strtr($in[$k], [D => '/']);
-                $out['route'] = "" !== $v ? '/' . $v : null;
-                unset($in[$k]);
+        $r = [];
+        if (!is_array(reset($lot))) {
+            if (isset($lot[$k = 'full_path'])) {
+                $v = strtr($lot[$k], [D => '/']);
+                $r['route'] = "" !== $v ? '/' . $v : null;
+                unset($lot[$k]);
             }
-            foreach ($in as $k => $v) {
-                $out[$alter[$k] ?? $k] = $v;
+            foreach ($lot as $k => $v) {
+                $r[$alter[$k] ?? $k] = $v;
             }
-            ksort($out);
-            return $out;
+            ksort($r);
+            return $r;
         }
-        if (isset($in[$k = 'full_path'])) {
-            foreach ($in[$k] as $kk => $vv) {
+        if (isset($lot[$k = 'full_path'])) {
+            foreach ($lot[$k] as $kk => $vv) {
                 $vv = strtr($vv, [D => '/']);
-                $out[$kk]['route'] = "" !== $vv ? '/' . $vv : null;
+                $r[$kk]['route'] = "" !== $vv ? '/' . $vv : null;
             }
-            unset($in[$k]);
+            unset($lot[$k]);
         }
-        foreach ($in as $k => $v) {
+        foreach ($lot as $k => $v) {
             foreach ($v as $kk => $vv) {
-                $out[$kk][$alter[$k] ?? $k] = $vv;
+                $r[$kk][$alter[$k] ?? $k] = $vv;
             }
-            ksort($out[$kk]);
+            ksort($r[$kk]);
         }
-        foreach ($out as &$v) {
+        foreach ($r as &$v) {
             $v = $tidy($v);
         }
         unset($v);
-        return $out;
+        return $r;
     };
     foreach ($_FILES as $k => $v) {
         $_POST[$k] = array_replace_recursive($_POST[$k] ?? [], $tidy($v));

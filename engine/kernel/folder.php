@@ -156,6 +156,10 @@ class Folder extends Genome {
         return null;
     }
 
+    public static function __set_state(array $lot): object {
+        return new static($lot['path'] ?? null);
+    }
+
     public static function from(...$lot) {
         return new static(...$lot);
     }

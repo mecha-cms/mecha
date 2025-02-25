@@ -2,52 +2,33 @@
 
 class Anemone extends Genome {
 
+    protected $join;
+    protected $lot;
+    protected $parent;
+
     protected function _q(callable $at, $sort = -1, $keys = false, $that = null) {
-        $count = 0;
+        $count = $i = 0;
+        $n = PHP_INT_MAX;
         $it = new class extends SplPriorityQueue {
-            public $i = 0;
-            public $list = false;
-            public $n = PHP_INT_MAX;
             public $sort = -1;
             public function compare($a, $b): int {
                 return -1 === ($d = $this->sort) || SORT_DESC === $d ? $a <=> $b : $b <=> $a;
             }
-            #[ReturnTypeWillChange]
-            public function current() {
-                return parent::current()[0];
-            }
-            public function insert($value, $i) {
-                parent::insert(is_array($value) ? $value : [$value], [$i, --$this->n]);
-            }
-            #[ReturnTypeWillChange]
-            public function key() {
-                return $this->list ? $this->i : (parent::current()[1] ?? $this->i);
-            }
-            public function next(): void {
-                parent::next();
-                ++$this->i;
-            }
-            public function rewind(): void {
-                $this->i = 0;
-                parent::rewind();
-            }
         };
-        $it->list = !$keys;
+        $it->setExtractFlags(SplPriorityQueue::EXTR_DATA);
         $it->sort = $sort;
         foreach ($this->lot as $k => $v) {
-            $it->insert([$v, $k], fire($at, [$v, $k], $that));
+            $value = $keys ? [$v, $k] : [$v, null];
+            $it->insert($value, [fire($at, $value, $that), --$n]);
             ++$count;
         }
         $r = $keys ? new ArrayIterator : new SplFixedArray($count);
-        foreach ($it as $k => $v) {
-            $r[$k] = $v;
+        while ($it->valid()) {
+            [$v, $k] = $it->extract();
+            $r[$k ?? $i++] = $v;
         }
         return $r;
     }
-
-    public $join;
-    public $lot;
-    public $parent;
 
     public function __call(string $kin, array $lot = []) {
         if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
@@ -58,6 +39,7 @@ class Anemone extends Genome {
 
     public function __construct(iterable $lot = [], string $join = ', ') {
         $this->join = $join;
+        // $this->lot = is_array($lot) && array_is_list($lot) ? SplFixedArray::fromArray($lot) : $lot;
         $this->lot = $lot;
     }
 
@@ -77,7 +59,7 @@ class Anemone extends Genome {
 
     public function __invoke(string $join = ', ', $filter = true) {
         $lot = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
-            // Ignore value(s) that cannot be converted to string
+            // Ignore value(s) that cannot be converted to a string
             if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
                 return false;
             }
@@ -154,7 +136,26 @@ class Anemone extends Genome {
             }
             return false !== ($v = reset($lot)) ? $v : null;
         }
-        return null; // TODO
+        // `SplDoublyLinkedList`
+        // `SplQueue`
+        // `SplStack`
+        if ($lot instanceof SplDoublyLinkedList) {
+            return $lot->{$take ? 'shift' : 'top'}();
+        }
+        // `SplHeap`
+        // `SplMaxHeap`
+        // `SplMinHeap`
+        // `SplPriorityQueue`
+        if ($lot instanceof SplHeap) {
+            return $lot->top(); // Read only :(
+        }
+        foreach ($lot as $k => $v) {
+            if ($take) {
+                unset($this->lot[$k]);
+            }
+            return $v;
+        }
+        return null;
     }
 
     public function get(?string $key = null) {
@@ -220,7 +221,7 @@ class Anemone extends Genome {
     }
 
     public function last($take = false) {
-        if (!$this->count()) {
+        if (!$q = $this->count()) {
             return null;
         }
         if (is_array($lot = $this->lot)) {
@@ -229,7 +230,29 @@ class Anemone extends Genome {
             }
             return false !== ($v = end($lot)) ? $v : null;
         }
-        return null; // TODO
+        // `SplDoublyLinkedList`
+        // `SplQueue`
+        // `SplStack`
+        if ($lot instanceof SplDoublyLinkedList) {
+            return $lot->{$take ? 'pop' : 'bottom'}();
+        }
+        // `SplHeap`
+        // `SplMaxHeap`
+        // `SplMinHeap`
+        // `SplPriorityQueue`
+        if ($lot instanceof SplHeap) {
+            return null; // There is no “bottom” in a “heap” :(
+        }
+        $index = -1;
+        foreach ($lot as $k => $v) {
+            if ($q === ++$index) {
+                if ($take) {
+                    unset($this->lot[$k]);
+                }
+                return $v;
+            }
+        }
+        return null;
     }
 
     public function let(?string $key = null) {
@@ -296,7 +319,14 @@ class Anemone extends Genome {
                 $lot[] = $value;
             }
         } else if ($lot instanceof ArrayAccess) {
-            $lot->offsetSet($key, $value);
+            if (isset($key)) {
+                $lot->offsetSet($key, $value);
+            } else {
+                if ($lot instanceof SplFixedArray) {
+                    $lot->setSize(($key = $lot->getSize()) + 1);
+                }
+                $lot->offsetSet($key, $value);
+            }
         }
         $this->lot = $lot;
     }
@@ -308,6 +338,10 @@ class Anemone extends Genome {
             $lot->offsetUnset($key);
         }
         $this->lot = $lot;
+    }
+
+    public function parent() {
+        return $this->parent;
     }
 
     public function pluck(string $key, $value = null) {
@@ -411,13 +445,13 @@ class Anemone extends Genome {
         }
         if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
             $d = $sort[0];
-            $this->{-1 === $d || SORT_DESC === $d ? 'vote' : 'rank'}(function ($v) use ($key) {
+            $this->_q(function ($v, $k) use ($key) {
                 return $v[$key] ?? null;
-            }, $keys);
+            }, $sort, $keys, $this);
             return $this;
         }
         $d = is_array($sort) ? reset($sort) : $sort;
-        $lot = y(fire($lot)); // TODO
+        $lot = y($lot); // :(
         if ($keys) {
             -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
         } else {

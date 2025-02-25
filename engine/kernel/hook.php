@@ -110,7 +110,8 @@ class Hook extends Genome {
                     'task' => $task
                 ];
                 if (count(self::$lot[1][$c][$name]) > 1) {
-                    self::$lot[1][$c][$name] = (new Anemone(self::$lot[1][$c][$name]))->sort([1, 'stack'])->lot;
+                    $v = (new Anemone(self::$lot[1][$c][$name]))->sort([1, 'stack'])->get();
+                    self::$lot[1][$c][$name] = is_array($v) ? $v : (is_object($v) && $v instanceof SplFixedArray ? $v->toArray() : y($v));
                 }
             }
         }
