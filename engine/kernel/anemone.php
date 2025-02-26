@@ -19,7 +19,7 @@ class Anemone extends Genome {
         $it->sort = $sort;
         foreach ($this->lot as $k => $v) {
             $value = $keys ? [$v, $k] : [$v, null];
-            $it->insert($value, [fire($at, $value, $that), --$n]);
+            $it->insert($value, [fire($at, $value, $that) ?? PHP_INT_MIN, --$n]);
             ++$count;
         }
         $r = $keys ? new ArrayIterator : new SplFixedArray($count);
@@ -27,7 +27,8 @@ class Anemone extends Genome {
             [$v, $k] = $it->extract();
             $r[$k ?? $i++] = $v;
         }
-        return $r;
+        $this->lot = $r;
+        return $this;
     }
 
     public function __call(string $kin, array $lot = []) {
@@ -39,8 +40,7 @@ class Anemone extends Genome {
 
     public function __construct(iterable $lot = [], string $join = ', ') {
         $this->join = $join;
-        // $this->lot = is_array($lot) && array_is_list($lot) ? SplFixedArray::fromArray($lot) : $lot;
-        $this->lot = $lot;
+        $this->lot = is_array($lot) && array_is_list($lot) ? SplFixedArray::fromArray($lot, false) : $lot;
     }
 
     public function __destruct() {
@@ -351,8 +351,7 @@ class Anemone extends Genome {
     }
 
     public function rank(callable $at, $keys = false) {
-        $this->lot = $this->_q($at, 1, $keys, $this);
-        return $this;
+        return $this->_q($at, 1, $keys, $this);
     }
 
     public function reverse($keys = false) {
@@ -364,10 +363,9 @@ class Anemone extends Genome {
             $this->lot = $keys ? $lot : array_values($lot);
             return $this;
         }
-        $this->lot = $this->_q(function ($v, $k) {
+        return $this->_q(function ($v, $k) {
             return 1;
         }, -1, $keys, $this);
-        return $this;
     }
 
     public function set($key, $value = null) {
@@ -444,11 +442,9 @@ class Anemone extends Genome {
             return $this;
         }
         if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
-            $d = $sort[0];
-            $this->_q(function ($v, $k) use ($key) {
+            return $this->_q(function ($v, $k) use ($key) {
                 return $v[$key] ?? null;
-            }, $sort, $keys, $this);
-            return $this;
+            }, $sort[0], $keys, $this);
         }
         $d = is_array($sort) ? reset($sort) : $sort;
         $lot = y($lot); // :(
@@ -462,8 +458,7 @@ class Anemone extends Genome {
     }
 
     public function vote(callable $at, $keys = false) {
-        $this->lot = $this->_q($at, -1, $keys, $this);
-        return $this;
+        return $this->_q($at, -1, $keys, $this);
     }
 
     public static function from(...$lot) {
