@@ -18,8 +18,7 @@ class Anemone extends Genome {
         $it->setExtractFlags(SplPriorityQueue::EXTR_DATA);
         $it->sort = $sort;
         foreach ($this->lot as $k => $v) {
-            $value = $keys ? [$v, $k] : [$v, null];
-            $it->insert($value, [fire($at, $value, $that) ?? PHP_INT_MIN, --$n]);
+            $it->insert($v = [$v, $keys ? $k : null], [fire($at, $v, $that) ?? PHP_INT_MIN, --$n]);
             ++$count;
         }
         $r = $keys ? new ArrayIterator : new SplFixedArray($count);
