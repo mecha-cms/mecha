@@ -365,7 +365,7 @@ class Anemone extends Genome {
         }
         return $this->_q(function ($v, $k) {
             return 1;
-        }, -1, $keys, $this);
+        }, 1, $keys, $this);
     }
 
     public function set($key, $value = null) {
