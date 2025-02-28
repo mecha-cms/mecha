@@ -242,7 +242,7 @@ class Anemone extends Genome {
         if ($lot instanceof SplHeap) {
             return null; // There is no “bottom” in a “heap” :(
         }
-        $index = -1;
+        $index = 0;
         foreach ($lot as $k => $v) {
             if ($q === ++$index) {
                 if ($take) {
