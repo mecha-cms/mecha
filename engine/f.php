@@ -927,7 +927,11 @@ function pluck(iterable $from, string $key, $value = null, $that = null, $scope 
     if (!$from || 0 === q($from)) {
         return [];
     }
-    return map($from, function ($v, $k) use ($key, $value) {
+    $dot = false !== strpos(strtr($key, ["\\." => P]), '.');
+    return map($from, function ($v, $k) use ($dot, $key, $value) {
+        if ($dot && is_array($v)) {
+            return get($v, $key) ?? $value;
+        }
         return $v[$key] ?? $value;
     }, $that, $scope);
 }

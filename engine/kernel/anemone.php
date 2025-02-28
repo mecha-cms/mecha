@@ -390,40 +390,49 @@ class Anemone extends Genome {
                 return $this;
             }
             if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
-                $d = $sort[0];
-                $test = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($key) {
+                $d = reset($sort);
+                $dot = false !== strpos(strtr($key, ["\\." => \P]), '.');
+                $test = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($dot, $key) {
+                    if (!is_array($b) || !is_array($a)) {
+                        return 0;
+                    }
+                    if (($dot && null === get($b, $key) && null === get($a, $key)) || !isset($b[$key]) && !isset($a[$key])) {
+                        return 0;
+                    }
+                    if (($dot && null === get($b, $key)) || !isset($b[$key])) {
+                        return 1;
+                    }
+                    if (($dot && null === get($a, $key)) || !isset($a[$key])) {
+                        return -1;
+                    }
+                    return $dot ? get($b, $key) <=> get($a, $key) : $b[$key] <=> $a[$key];
+                } : static function ($a, $b) use ($dot, $key) {
                     if (!is_array($a) || !is_array($b)) {
                         return 0;
                     }
-                    if (!isset($a[$key]) && !isset($b[$key])) {
+                    if (($dot && null === get($a, $key) && null === get($b, $key)) || !isset($a[$key]) && !isset($b[$key])) {
                         return 0;
                     }
-                    if (!isset($b[$key])) {
+                    if (($dot && null === get($a, $key)) || !isset($a[$key])) {
                         return 1;
                     }
-                    if (!isset($a[$key])) {
+                    if (($dot && null === get($b, $key)) || !isset($b[$key])) {
                         return -1;
                     }
-                    return $b[$key] <=> $a[$key];
-                } : static function ($a, $b) use ($key) {
-                    if (!is_array($a) || !is_array($b)) {
-                        return 0;
-                    }
-                    if (!isset($a[$key]) && !isset($b[$key])) {
-                        return 0;
-                    }
-                    if (!isset($a[$key])) {
-                        return 1;
-                    }
-                    if (!isset($b[$key])) {
-                        return -1;
-                    }
-                    return $a[$key] <=> $b[$key];
+                    return $dot ? get($a, $key) <=> get($b, $key) : $a[$key] <=> $b[$key];
                 };
                 if (array_key_exists(2, $sort)) {
-                    foreach ($lot as &$v) {
-                        if (is_array($v) && !isset($v[$key])) {
-                            $v[$key] = $sort[2];
+                    if ($dot) {
+                        foreach ($lot as &$v) {
+                            if (is_array($v) && null === get($v, $key)) {
+                                set($v, $key, $sort[2]);
+                            }
+                        }
+                    } else {
+                        foreach ($lot as &$v) {
+                            if (is_array($v) && !isset($v[$key])) {
+                                $v[$key] = $sort[2];
+                            }
                         }
                     }
                     unset($v);
@@ -441,8 +450,13 @@ class Anemone extends Genome {
             return $this;
         }
         if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
-            return $this->_q(function ($v, $k) use ($key) {
-                return $v[$key] ?? null;
+            $dot = false !== strpos(strtr($key, ["\\." => \P]), '.');
+            $value = array_key_exists(2, $sort) ? $sort[2] : null;
+            return $this->_q(function ($v, $k) use ($dot, $key, $value) {
+                if ($dot && is_array($v)) {
+                    return get($v, $key) ?? $value;
+                }
+                return $v[$key] ?? $value;
             }, $sort[0], $keys, $this);
         }
         $d = is_array($sort) ? reset($sort) : $sort;
