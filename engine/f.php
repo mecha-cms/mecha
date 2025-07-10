@@ -1404,9 +1404,13 @@ function i(?string $value, $lot = [], ?string $or = null) {
             $v = i($v);
         }
     }
-    $value = lot('I')[$value] ?? $or ?? $value;
+    $value = $raw = lot('I')[$value] ?? $or ?? $value;
     try {
         $value = $lot ? vsprintf($value, $lot) : $value;
+        // Also translate the result after the argument(s) are applied
+        if ($value !== $raw) { // This prevents recursive function calls
+            $value = i($value, [], $or);
+        }
     } catch (Throwable $e) {}
     return "" !== $value ? $value : null;
 }
