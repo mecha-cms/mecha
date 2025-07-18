@@ -2,111 +2,92 @@
 
 final class URL extends Genome {
 
-    private $lot = [
-        'hash' => null,
-        'host' => null,
-        'path' => null,
-        'port' => null,
-        'protocol' => null,
-        'query' => null
-    ];
+    private $lot = [];
 
-    private function getHash() {
-        $hash = $this->lot['hash'];
-        if (null !== $hash) {
-            return '#' . $hash;
+    private function _hash(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['hash'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return '#' . $v;
+            }
+            return null;
         }
-        return null;
-    }
-
-    private function getHost() {
-        return $this->lot['host'];
-    }
-
-    private function getPath() {
-        $path = $this->lot['path'];
-        if (null !== $path) {
-            return '/' . $path;
-        }
-        return null;
-    }
-
-    private function getPort() {
-        $port = $this->lot['port'];
-        if (null !== $port) {
-            return ':' . $port;
-        }
-        return null;
-    }
-
-    private function getProtocol() {
-        $protocol = $this->lot['protocol'];
-        if (null !== $protocol) {
-            return $protocol . '://';
-        }
-        return null;
-    }
-
-    private function getQuery() {
-        $query = $this->lot['query'];
-        if (null !== $query) {
-            return '?' . $query;
-        }
-        return null;
-    }
-
-    private function setHash(?string $hash) {
-        if ($hash && '#' === $hash[0]) {
-            $hash = substr($hash, 1);
-        }
-        $hash = strtr($hash ?? "", [
+        $this->lot['hash'] = strtr(trim($v, '#'), [
             '#' => '%23',
             '&' => '%26',
             '?' => '%3F'
         ]);
-        $this->lot['hash'] = "" !== $hash ? $hash : null;
     }
 
-    private function setHost(?string $host) {
-        $this->lot['host'] = strtok($host ?? "", ':');
+    private function _host(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['host'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return $v;
+            }
+            return null;
+        }
+        $this->lot['host'] = strstr($v . ':', ':', true);
     }
 
-    private function setPath(?string $path) {
-        $path = trim(strtr($path ?? "", [
+    private function _path(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['path'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return '/' . $v;
+            }
+            return null;
+        }
+        $this->lot['path'] = strtr(trim($v, '/'), [
             "\\" => '/',
             '#' => '%23',
             '&' => '%26',
             '?' => '%3F'
-        ]), '/');
-        $this->lot['path'] = "" !== $path ? $path : null;
+        ]);
     }
 
-    private function setPort(?int $port) {
-        $this->lot['port'] = $port > 0 ? $port : null;
-    }
-
-    private function setProtocol(?string $protocol) {
-        $protocol = strtok($protocol ?? "", ':');
-        $this->lot['protocol'] = "" !== $protocol ? $protocol : null;
-    }
-
-    private function setQuery(?string $query) {
-        if ($query && ('&' === $query[0] || '?' === $query[0])) {
-            $query = substr($query, 1);
+    private function _port(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['port'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return ':' . $v;
+            }
+            return null;
         }
-        $query = strtr($query ?? "", [
+        $this->lot['port'] = $v;
+    }
+
+    private function _protocol(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['protocol'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return $v . '://';
+            }
+            return null;
+        }
+        $this->lot['protocol'] = strstr($v . ':', ':', true);
+    }
+
+    private function _query(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['query'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return '?' . $v;
+            }
+            return null;
+        }
+        $this->lot['query'] = strtr(trim($v, '&?'), [
             '#' => '%23',
             '?' => '%3F'
         ]);
-        $this->lot['query'] = "" !== $query ? $query : null;
     }
 
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin)) {
             return parent::__call($kin, $lot);
         }
-        if (method_exists($this, $get = 'get' . ucfirst($kin))) {
-            return $this->{$get}(...$lot);
+        if (method_exists($this, $key = '_' . $kin)) {
+            return $this->{$key}(...$lot);
         }
         return null;
     }
@@ -117,12 +98,12 @@ final class URL extends Genome {
             $value = 'http:' . $value; // Force protocol
         }
         extract(parse_url($value), EXTR_SKIP);
-        $this->setHash($fragment ?? "");
-        $this->setHost($host ?? "");
-        $this->setPath($path ?? "");
-        $this->setPort($port ?? 0);
-        $this->setProtocol($scheme ?? "");
-        $this->setQuery($query ?? "");
+        $this->_hash((string) ($fragment ?? ""));
+        $this->_host((string) ($host ?? ""));
+        $this->_path((string) ($path ?? ""));
+        $this->_port((string) ($port ?? ""));
+        $this->_protocol((string) ($scheme ?? ""));
+        $this->_query((string) ($query ?? ""));
     }
 
     public function __get(string $key) {
@@ -136,18 +117,18 @@ final class URL extends Genome {
         return !!$this->__get($key);
     }
 
-    public function __set(string $key, $value = null): void {
-        if (method_exists($this, $set = 'set' . ucfirst($key))) {
-            $this->{$set}($value);
-        }
-    }
-
     public function __serialize(): array {
         return ['lot' => $this->lot ?? []];
     }
 
+    public function __set(string $key, $value = null): void {
+        if (method_exists($this, $key = '_' . $key)) {
+            $this->{$key}($value);
+        }
+    }
+
     public function __toString(): string {
-        return (string) ($this->getProtocol() . $this->getHost() . $this->getPort());
+        return (string) ($this->_protocol() . $this->_host() . $this->_port());
     }
 
     public function __unserialize(array $lot): void {
@@ -155,9 +136,7 @@ final class URL extends Genome {
     }
 
     public function __unset(string $key): void {
-        if (array_key_exists($key, $this->lot)) {
-            $this->lot[$key] = null;
-        }
+        unset($this->lot[$key]);
     }
 
     public function count(): int {
@@ -166,34 +145,27 @@ final class URL extends Genome {
 
     public function current($query = [], $hash = true) {
         if (true === $hash) {
-            $hash = $this->getHash();
+            $hash = $this->_hash();
         } else if (is_string($hash)) {
-            $hash = '#' . strtr($hash, [
-                '#' => '%23',
-                '&' => '%26',
-                '?' => '%3F'
-            ]);
+            $hash = $this->_hash($hash)->_hash();
         } else {
             $hash = "";
         }
         if (true === $query) {
-            $query = $this->query();
+            $query = $this->_query();
         } else if (is_array($query)) {
             $query = $this->query($query);
         } else if (is_string($query)) {
-            $query = '?' . strtr($query, [
-                '#' => '%23',
-                '?' => '%3F'
-            ]);
+            $query = $this->_query($query)->_query();
         } else {
             $query = "";
         }
-        return $this->__toString() . $this->getPath() . $query . $hash;
+        return $this->__toString() . $this->_path() . $query . $hash;
     }
 
     public function getIterator(): Traversable {
         foreach ($this->lot as $k => $v) {
-            yield $k => $this->{'get' . ucfirst($k)}();
+            yield $k => $this->{'_' . $k}();
         }
     }
 
@@ -202,11 +174,14 @@ final class URL extends Genome {
     }
 
     public function offsetGet($key) {
+        if ('port' === $key) {
+            return (int) ($this->lot[$key] ?? 0);
+        }
         return $this->lot[$key] ?? null;
     }
 
     public function offsetSet($key, $value): void {
-        $this->{'set' . ucfirst($key)}($value);
+        $this->{'_' . $key}($value);
     }
 
     public function offsetUnset($key): void {
@@ -214,19 +189,18 @@ final class URL extends Genome {
     }
 
     public function path(array $lot = []) {
-        $path = $this->lot['path'] . "";
         if ($lot) {
-            $path = implode('/', array_replace(explode('/', $path), $lot));
+            $path = trim($this->_path() ?? "", '/');
+            return '/' . implode('/', array_replace(explode('/', $path), $lot));
         }
-        return "" !== $path ? '/' . $path : null;
+        return $this->_path();
     }
 
     public function query(array $lot = []) {
-        $query = $this->lot['query'] . "";
         if ($lot) {
-            return To::query(array_replace_recursive(From::query($query), $lot));
+            return To::query(array_replace_recursive(From::query($this->_query()), $lot));
         }
-        return "" !== $query ? '?' . $query : null;
+        return $this->_query();
     }
 
 }
