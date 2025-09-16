@@ -330,13 +330,13 @@ try {
             }
             // Load plug(s) of other extension(s) and layout(s)…
             foreach (glob(dirname($folder, 3) . D . '*' . D . 'engine' . D . 'plug' . D . $f . '.php', GLOB_BRACE | GLOB_NOSORT) as $v) {
-                if ($file === ($file = stream_resolve_include_path($v))) {
+                if ($file === ($v = stream_resolve_include_path($v))) {
                     continue; // Skip current plug
                 }
-                if (!is_file(dirname($file, 3) . D . 'index.php')) {
+                if (!is_file(dirname($v, 3) . D . 'index.php')) {
                     continue; // Skip in-active extension(s) and layout(s)
                 }
-                require $file;
+                require $v;
             }
         });
     }
