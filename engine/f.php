@@ -1377,6 +1377,8 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
         };
         $it->list = !$keys;
         $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
+        // To get the first element of a `RecursiveIteratorIterator` instance, a rewind is needed, somehow :(
+        $it->rewind(); // This should execute the `RecursiveIteratorIterator::beginIteration()` method
         return $it;
     }
     return new EmptyIterator;
