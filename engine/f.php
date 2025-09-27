@@ -1485,17 +1485,17 @@ function n(?string $value, $tab = '    ', string $c = ' ') {
         "\r" => "\n"
     ]);
     // Tab(s) to pad(s)
-    if (\is_int($tab)) {
-        $value = \explode("\n", $value);
+    if (is_int($tab)) {
+        $value = explode("\n", $value);
         foreach ($value as &$v) {
-            while (false !== ($pad = \strstr($v, "\t", true))) {
-                $v = $pad . \str_repeat($c, $tab - ($n = \strlen($pad)) % $tab) . \substr($v, $n + 1);
+            while (false !== ($pad = strstr($v, "\t", true))) {
+                $v = $pad . str_repeat($c, $tab - ($n = strlen($pad)) % $tab) . substr($v, $n + 1);
             }
         }
         unset($v);
-        $value = \implode("\n", $value);
+        $value = implode("\n", $value);
     // Tab(s) to character(s)
-    } else if (\is_string($tab)) {
+    } else if (is_string($tab)) {
         $value = strtr($value, ["\t" => $tab]);
     }
     return "" !== $value ? $value : null;
