@@ -141,6 +141,13 @@ class Anemone extends Genome {
         if ($lot instanceof SplDoublyLinkedList) {
             return $lot->{$take ? 'shift' : 'top'}();
         }
+        // `SplFixedArray`
+        if ($lot instanceof SplFixedArray) {
+            if ($take) {
+                // TODO
+            }
+            return $lot->offsetGet(0) ?? null;
+        }
         // `SplHeap`
         // `SplMaxHeap`
         // `SplMinHeap`
@@ -158,8 +165,31 @@ class Anemone extends Genome {
     }
 
     public function get(?string $key = null) {
-        $lot = $this->lot;
-        return isset($key) ? get($lot, $key) : $lot;
+        if (isset($key) && !$this->count()) {
+            return null;
+        }
+        if (is_array($lot = $this->lot)) {
+            return isset($key) ? get($lot, $key) : $lot;
+        }
+        // `SplDoublyLinkedList`
+        // `SplFixedArray`
+        // `SplQueue`
+        // `SplStack`
+        if ($lot instanceof ArrayAccess) {
+            return isset($key) ? ($lot->offsetGet($key) ?? null) : $lot;
+        }
+        // `SplHeap`
+        // `SplMaxHeap`
+        // `SplMinHeap`
+        // `SplPriorityQueue`
+        if ($lot instanceof SplHeap) {
+            // A “heap” is not a key-value storage. There is only one useful access method —the `top()` method— to
+            // access the top item. The only accepted key is `0` because it is identical to the first item in the array.
+            if (0 === (int) $key) {
+                return $lot->top();
+            }
+        }
+        return null;
     }
 
     public function getIterator(): Traversable {
@@ -167,7 +197,29 @@ class Anemone extends Genome {
     }
 
     public function has(?string $key = null) {
-        return has($this->lot, $key);
+        if (!$this->count()) {
+            return false;
+        }
+        if (is_array($lot = $this->lot)) {
+            return has($lot, $key);
+        }
+        // `SplDoublyLinkedList`
+        // `SplFixedArray`
+        // `SplQueue`
+        // `SplStack`
+        if ($lot instanceof ArrayAccess) {
+            return $lot->offsetExists($key);
+        }
+        // `SplHeap`
+        // `SplMaxHeap`
+        // `SplMinHeap`
+        // `SplPriorityQueue`
+        if ($lot instanceof SplHeap) {
+            if (0 === (int) $key) {
+                return !!$lot->top();
+            }
+        }
+        return false;
     }
 
     public function index(string $key) {
@@ -235,6 +287,13 @@ class Anemone extends Genome {
         if ($lot instanceof SplDoublyLinkedList) {
             return $lot->{$take ? 'pop' : 'bottom'}();
         }
+        // `SplFixedArray`
+        if ($lot instanceof SplFixedArray) {
+            if ($take) {
+                // TODO
+            }
+            return $lot->offsetGet($lot->getSize() - 1) ?? null;
+        }
         // `SplHeap`
         // `SplMaxHeap`
         // `SplMinHeap`
@@ -256,7 +315,34 @@ class Anemone extends Genome {
 
     public function let(?string $key = null) {
         if (isset($key)) {
-            return let($this->lot, $key);
+            if (is_array($lot = $this->lot)) {
+                return let($this->lot, $key);
+            }
+            // `SplDoublyLinkedList`
+            // `SplFixedArray`
+            // `SplQueue`
+            // `SplStack`
+            if ($lot instanceof ArrayAccess) {
+                if ($lot instanceof SplFixedArray) {
+                    $count = $lot->count();
+                    $key = (int) $key;
+                    if ($key < 0 || $key >= $count) {
+                        return false;
+                    }
+                    $k = 0;
+                    $r = new SplFixedArray($count - 1);
+                    for ($i = 0; $i < $count; ++$i) {
+                        if ($key === $i) {
+                            continue;
+                        }
+                        $r->offsetSet($k++, $lot->offsetGet($i));
+                    }
+                    $this->lot = $r;
+                    return true;
+                }
+                return $lot->offsetUnset($key);
+            }
+            return false;
         }
         $this->lot = [];
         return true;
@@ -368,7 +454,24 @@ class Anemone extends Genome {
     }
 
     public function set($key, $value = null) {
-        return set($this->lot, $key, $value);
+        if (is_array($lot = $this->lot)) {
+            return set($this->lot, $key, $value);
+        }
+        // `SplDoublyLinkedList`
+        // `SplFixedArray`
+        // `SplQueue`
+        // `SplStack`
+        if ($lot instanceof ArrayAccess) {
+            return $lot->offsetSet($key, $value);
+        }
+        // `SplHeap`
+        // `SplMaxHeap`
+        // `SplMinHeap`
+        // `SplPriorityQueue`
+        if ($lot instanceof SplHeap) {
+            return null;
+        }
+        return null;
     }
 
     public function shake($keys = false) {
