@@ -143,10 +143,15 @@ class Anemone extends Genome {
         }
         // `SplFixedArray`
         if ($lot instanceof SplFixedArray) {
+            $v = $lot->offsetGet(0) ?? null;
             if ($take) {
-                // TODO
+                $r = new SplFixedArray($size = $lot->getSize() - 1);
+                for ($i = 0; $i < $size; ++$i) {
+                    $r->offsetSet($i, $lot->offsetGet($i + 1));
+                }
+                $this->lot = $r;
             }
-            return $lot->offsetGet(0) ?? null;
+            return $v;
         }
         // `SplHeap`
         // `SplMaxHeap`
@@ -289,10 +294,11 @@ class Anemone extends Genome {
         }
         // `SplFixedArray`
         if ($lot instanceof SplFixedArray) {
+            $v = $lot->offsetGet($size = $lot->getSize() - 1) ?? null;
             if ($take) {
-                // TODO
+                $lot->setSize($size);
             }
-            return $lot->offsetGet($lot->getSize() - 1) ?? null;
+            return $v;
         }
         // `SplHeap`
         // `SplMaxHeap`
