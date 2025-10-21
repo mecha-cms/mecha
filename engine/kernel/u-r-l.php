@@ -57,15 +57,9 @@ final class URL extends Genome {
         $this->lot['port'] = $v;
     }
 
+    #[Deprecated]
     private function _protocol(?string $v = null) {
-        if ("" === ($v = (string) $v)) {
-            $v = $this->lot['protocol'] ?? "";
-            if ("" !== $v && is_string($v)) {
-                return $v . '://';
-            }
-            return null;
-        }
-        $this->lot['protocol'] = strstr($v . ':', ':', true);
+        return $this->_scheme($v);
     }
 
     private function _query(?string $v = null) {
@@ -82,6 +76,17 @@ final class URL extends Genome {
         ]);
     }
 
+    private function _scheme(?string $v = null) {
+        if ("" === ($v = (string) $v)) {
+            $v = $this->lot['scheme'] ?? "";
+            if ("" !== $v && is_string($v)) {
+                return $v . '://';
+            }
+            return null;
+        }
+        $this->lot['scheme'] = strstr($v . ':', ':', true);
+    }
+
     public function __call(string $kin, array $lot = []) {
         if (parent::_($kin)) {
             return parent::__call($kin, $lot);
@@ -95,15 +100,15 @@ final class URL extends Genome {
     public function __construct(?string $value = null) {
         $value = (string) $value;
         if ($value && 0 === strpos($value, '//')) {
-            $value = 'http:' . $value; // Force protocol
+            $value = 'http:' . $value; // Force scheme
         }
         extract(parse_url($value), EXTR_SKIP);
         $this->_hash((string) ($fragment ?? ""));
         $this->_host((string) ($host ?? ""));
         $this->_path((string) ($path ?? ""));
         $this->_port((string) ($port ?? ""));
-        $this->_protocol((string) ($scheme ?? ""));
         $this->_query((string) ($query ?? ""));
+        $this->_scheme((string) ($scheme ?? ""));
     }
 
     public function __get(string $key) {
@@ -128,7 +133,7 @@ final class URL extends Genome {
     }
 
     public function __toString(): string {
-        return (string) ($this->_protocol() . $this->_host() . $this->_port());
+        return (string) ($this->_scheme() . $this->_host() . $this->_port());
     }
 
     public function __unserialize(array $lot): void {

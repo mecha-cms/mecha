@@ -231,7 +231,7 @@ function long(string $value) {
     }
     // `long('//example.com')`
     if (0 === strpos($value, '//')) {
-        return rtrim(substr($url->protocol, 0, -2) . $value, '/');
+        return rtrim(substr($url->scheme, 0, -2) . $value, '/');
     }
     // `long('./foo/bar/baz')`
     if ('.' === $value || 0 === strpos($value, './')) {
@@ -283,7 +283,7 @@ function short(string $value) {
         if (0 !== strpos($value, '//' . $url->host)) {
             return $value; // Ignore external URL
         }
-        $value = $url->protocol . substr($value, 2);
+        $value = $url->scheme . substr($value, 2);
     } else {
         if (0 !== strpos($value, $parent)) {
             return $value; // Ignore external URL
