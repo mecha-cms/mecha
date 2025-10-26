@@ -62,6 +62,29 @@ if (!function_exists('json_validate')) {
     }
 }
 
+// To be used by `g()`
+class RecursiveIteratorIteratorG extends RecursiveIteratorIterator {
+    public $i = 0;
+    public $list = false;
+    #[ReturnTypeWillChange]
+    public function current() {
+        $v = parent::current();
+        return $this->list ? $v : (is_dir($v) ? 0 : 1);
+    }
+    #[ReturnTypeWillChange]
+    public function key() {
+        return $this->list ? $this->i : parent::key();
+    }
+    public function next(): void {
+        ++$this->i;
+        parent::next();
+    }
+    public function rewind(): void {
+        $this->i = 0;
+        parent::rewind();
+    }
+}
+
 function all(iterable $value, $valid = null, $that = null, $scope = 'static') {
     if (!$value || 0 === q($value)) {
         return true;
@@ -1332,82 +1355,8 @@ function f(?string $value, $accent = true, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-class RecursiveIteratorIteratorG extends RecursiveIteratorIterator {
-    private $current = null;
-    private $key = 0;
-    public $f = null;
-    public $list = false;
-    public function __destruct() {
-        return $this->endIteration();
-    }
-    #[ReturnTypeWillChange]
-    public function beginIteration() {
-        parent::beginIteration();
-        $this->current = null;
-        $this->key = 0;
-    }
-    #[ReturnTypeWillChange]
-    public function current() {
-        $v = parent::current();
-        return $this->list ? $v : (is_dir($v) ? 0 : 1);
-    }
-    #[ReturnTypeWillChange]
-    public function endIteration() {
-        if (is_resource($f = $this->f)) {
-            fclose($f);
-            $this->f = null;
-        }
-        parent::endIteration();
-    }
-    #[ReturnTypeWillChange]
-    public function key() {
-        return $this->list ? $this->key : parent::key();
-    }
-    public function next(): void {
-        if (null !== ($v = $this->current) && false !== $v && is_resource($f = $this->f) && flock($f, LOCK_EX)) {
-            fwrite($f, substr($v, strlen(PATH . D)) . "\n");
-            flock($f, LOCK_UN);
-        }
-        parent::next();
-        $this->current = parent::current();
-        $this->key++;
-    }
-    public function rewind(): void {
-        parent::rewind();
-        $this->current = parent::current();
-    }
-}
-
 function g(string $folder, $x = null, $deep = 0, $keys = true) {
     if (is_dir($folder) && (new FilesystemIterator($folder))->valid()) {
-        // Load from cache…
-        if (is_file($f = LOT . D . 'cache' . D . 'g' . D . md5(substr($folder, strlen(PATH . D)) . '?deep=' . s($deep) . '&x=' . s($x)) . '.lst')) {
-            if (0 === filesize($f)) {
-                return new EmptyIterator;
-            }
-            $r = new ArrayIterator;
-            $w = fopen($f, 'rb');
-            if ($keys) {
-                while (false !== ($v = fgets($w))) {
-                    if ("" === ($v = trim($v))) {
-                        continue;
-                    }
-                    $r[$v = PATH . D . $v] = is_dir($v) ? 0 : 1;
-                }
-            } else {
-                while (false !== ($v = fgets($w))) {
-                    if ("" === ($v = trim($v))) {
-                        continue;
-                    }
-                    $r[] = PATH . D . $v;
-                }
-            }
-            fclose($w);
-            return $r; // TODO
-        }
-        if (!is_dir($d = dirname($f))) {
-            mkdir($d, 0700, true);
-        }
         $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::CURRENT_AS_PATHNAME | FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::SKIP_DOTS);
         $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $it) use ($deep, $x) {
             if ($deep > 0 && $it->hasChildren()) {
@@ -1429,7 +1378,6 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
             return true;
         });
         $it = new RecursiveIteratorIteratorG($it, null === $x || 0 === $x ? RecursiveIteratorIteratorG::CHILD_FIRST : RecursiveIteratorIteratorG::LEAVES_ONLY);
-        $it->f = fopen($f, 'wb');
         $it->list = !$keys;
         $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
         // To get the first element of a `RecursiveIteratorIterator` instance, a rewind is needed, somehow :(
