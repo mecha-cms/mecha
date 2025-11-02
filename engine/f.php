@@ -294,6 +294,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         // Tag is left open for some reason until the end of the stream
         if ("" === $from || false === ($n = strpos($from, '>'))) {
             $to[$i][0] .= $from;
+            $to[$i][1] = 0;
             break;
         }
         $to[$i][0] .= substr($from, 0, $n += 1);
@@ -307,14 +308,27 @@ function apart(string $value, array $raw = [], array $void = []) {
         if (false === strpos($raw, P . $k . P)) {
             continue;
         }
+        $last = -1;
         $to[$i][1] = 1;
-        // Raw element is left open for some reason until the end of the stream
-        if (false === ($n = strpos($from, '</' . $k . '>'))) {
-            $to[$i][0] .= $from;
-            break;
+        while (false !== ($last = strpos($from, '</' . $k, $last + 1))) {
+            if (false !== strpos($s . '>', substr($from, $last + strlen($k) + 2, 1))) {
+                $n = $last + strlen($k) + 2;
+                $to[$i][0] .= substr($from, 0, $n);
+                $from = substr($from, $n);
+                // Raw element is left open for some reason until the end of the stream
+                if (false === ($n = strpos($from, '>'))) {
+                    $to[$i][0] .= $from;
+                    $to[$i][3] = null;
+                    break;
+                }
+                $to[$i][0] .= substr($from, 0, $n += 1);
+                $to[$i][3] = -(strlen($k) + 2 + $n);
+                $from = substr($from, $n);
+                continue 2;
+            }
         }
-        $to[$i][0] .= substr($from, 0, $n += 2 + strlen($k) + 1);
-        $from = substr($from, $n);
+        $to[$i][0] .= $from;
+        break;
     }
     return $to;
 }
