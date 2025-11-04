@@ -128,7 +128,7 @@ function apart(string $value, array $raw = [], array $void = []) {
     $to = [];
     $raw = $raw ? P . implode(P, $raw) . P : P;
     $void = $void ? P . implode(P, $void) . P : P;
-    while ("" !== (string) $from) {
+    while ("" !== $from) {
         if ($n = strcspn($from, '<&')) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, $n);
@@ -324,6 +324,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                 $to[$i][0] .= substr($from, 0, $n += 1);
                 $to[$i][3] = -(strlen($k) + 2 + $n);
                 $from = substr($from, $n);
+                // I still feel that this line is ugly. I’m sorry :(
                 continue 2;
             }
         }
@@ -921,7 +922,7 @@ function pair(string $value) {
     }
     $s = " \n\r\t";
     $to = [];
-    while ("" !== (string) $from) {
+    while ("" !== $from) {
         if ($n = strcspn($from, '"' . "'" . $s)) {
             $k = trim(substr($from, 0, $n));
             $from = substr($from, $n);
