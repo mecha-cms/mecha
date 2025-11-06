@@ -1538,7 +1538,6 @@ function p(?string $value, $accent = false, string $keep = "") {
 }
 
 function q($value) {
-    static $cache = [];
     if (true === $value) {
         return 1;
     }
@@ -1559,13 +1558,10 @@ function q($value) {
             return count((array) $value);
         }
         if ($value instanceof Traversable) {
-            if (isset($cache[$k = spl_object_hash($value)])) {
-                return $cache[$k];
-            }
             if ($r = method_exists($value, 'rewind')) {
                 $value->rewind();
             }
-            $cache[$k] = $v = iterator_count($value);
+            $v = iterator_count($value);
             $r && $value->rewind();
             return $v;
         }
