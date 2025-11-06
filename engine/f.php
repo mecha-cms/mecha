@@ -1455,7 +1455,7 @@ function j(array $a, array $b) {
 
 function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $content = false) {
     $query = (array) $query;
-    return new CallbackFilterIterator(g($folder, $x, $deep, $keys), static function ($v, $k) use ($keys, $query) {
+    return new CallbackFilterIterator(g($folder, $x, $deep, $keys), static function ($v, $k) use ($content, $keys, $query) {
         $test = $keys ? $k : $v;
         foreach ($query as $q) {
             if ("" === $q) {
