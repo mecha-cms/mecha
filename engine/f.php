@@ -63,9 +63,26 @@ if (!function_exists('json_validate')) {
 }
 
 // To be used by `g()`
-class RecursiveIteratorIteratorG extends RecursiveIteratorIterator {
+class RecursiveIteratorIteratorG extends RecursiveIteratorIterator implements Countable {
+    public $c = 0;
+    public $count = [];
     public $i = 0;
     public $list = false;
+    public function count(): int {
+        if (-1 !== ($v = $this->count[$c = $this->c] ?? -1)) {
+            return $v;
+        }
+        // if (null !== ($v = content($f = LOT . D . 'cache' . D . 'g' . D . md5($c) . '.count'))) {
+        //     return (int) ($v ?? 0);
+        // }
+        $this->rewind();
+        $this->count[$c] = $v = iterator_count($this);
+        $this->rewind();
+        // if (!headers_sent()) {
+        //     save($f, (string) $v, 0600);
+        // }
+        return $v;
+    }
     #[ReturnTypeWillChange]
     public function current() {
         $v = parent::current();
@@ -1393,6 +1410,7 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
             return true;
         });
         $it = new RecursiveIteratorIteratorG($it, null === $x || 0 === $x ? RecursiveIteratorIteratorG::CHILD_FIRST : RecursiveIteratorIteratorG::LEAVES_ONLY);
+        $it->c = $folder . '?deep=' . s($deep) . '&x=' . s($x);
         $it->list = !$keys;
         $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
         // To get the first element of a `RecursiveIteratorIterator` instance, a rewind is needed, somehow :(
@@ -1752,12 +1770,12 @@ function z($value, $short = true) {
         return 'null';
     }
     $test = substr($value, 1);
-    if (0 === strpos($test, ENGINE . D)) {
-        $value = "ENGINE.D.'" . strtr(substr($test, strlen(ENGINE . D)), [D => "'.D.'"]);
-    } else if (0 === strpos($test, LOT . D)) {
-        $value = "LOT.D.'" . strtr(substr($test, strlen(LOT . D)), [D => "'.D.'"]);
-    } else if (0 === strpos($test, PATH . D)) {
-        $value = "PATH.D.'" . strtr(substr($test, strlen(PATH . D)), [D => "'.D.'"]);
+    if (0 === strpos($test, $v = ENGINE . D)) {
+        $value = "ENGINE.D.'" . strtr(substr($test, strlen($v)), [D => "'.D.'"]);
+    } else if (0 === strpos($test, $v = LOT . D)) {
+        $value = "LOT.D.'" . strtr(substr($test, strlen($v)), [D => "'.D.'"]);
+    } else if (0 === strpos($test, $v = PATH . D)) {
+        $value = "PATH.D.'" . strtr(substr($test, strlen($v)), [D => "'.D.'"]);
     }
     return $value;
 }
