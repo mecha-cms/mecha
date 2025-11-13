@@ -1603,7 +1603,7 @@ function r(?string $value, $from, $to = null) {
     if (null === $to) {
         return "" !== ($value = strtr($value, $from)) ? $value : null;
     }
-    // `r('…', ['…', '…'], function ($from) { … })`
+    // `r('…', ['…', '…'], function ($c) { … })`
     if (is_callable($to)) {
         usort($from, function ($a, $b) {
             return strlen($b) <=> strlen($a);
@@ -1626,6 +1626,10 @@ function r(?string $value, $from, $to = null) {
             }
         }
         return "" !== $r ? $r : null;
+    }
+    // `r('…', ['…', '…'], '…')`
+    if (is_string($to)) {
+        $to = array_fill(0, count($from), $to);
     }
     // `r('…', ['…', '…'], ['…', '…'])`
     return "" !== ($value = strtr($value, array_combine($from, array_replace($from, $to)))) ? $value : null;

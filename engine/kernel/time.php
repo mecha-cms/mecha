@@ -68,7 +68,7 @@ final class Time extends Genome {
         // <https://php.watch/versions/8.1/strftime-gmstrftime-deprecated>
         // <https://www.php.net/manual/en/function.date.php>
         // <https://www.php.net/manual/en/function.strftime.php>
-        $out = date(strtr($pattern, [
+        $r = date(strtr($pattern, [
             '%%' => '%',
             '%A' => 'l',
             '%B' => 'F',
@@ -118,11 +118,11 @@ final class Time extends Genome {
             // ‘AM’ or ‘PM’ based on the given time
             false !== stripos($pattern, '%p')
         ) {
-            return r($out, ['AM', 'Apr', 'April', 'Aug', 'August', 'Dec', 'December', 'Feb', 'February', 'Fri', 'Friday', 'Jan', 'January', 'Jul', 'July', 'Jun', 'June', 'Mar', 'March', 'May', 'May', 'Mon', 'Monday', 'Nov', 'November', 'Oct', 'October', 'PM', 'Sat', 'Saturday', 'Sep', 'September', 'Sun', 'Sunday', 'Thu', 'Thursday', 'Tue', 'Tuesday', 'Wed', 'Wednesday'], function ($v) {
-                return i($v);
+            return r($r, ['AM', 'Apr', 'April', 'Aug', 'August', 'Dec', 'December', 'Feb', 'February', 'Fri', 'Friday', 'Jan', 'January', 'Jul', 'July', 'Jun', 'June', 'Mar', 'March', 'May', 'May', 'Mon', 'Monday', 'Nov', 'November', 'Oct', 'October', 'PM', 'Sat', 'Saturday', 'Sep', 'September', 'Sun', 'Sunday', 'Thu', 'Thursday', 'Tue', 'Tuesday', 'Wed', 'Wednesday'], function ($c) {
+                return i($c);
             });
         }
-        return $out;
+        return $r;
     }
 
     public function format(string $format = 'Y-m-d H:i:s') {
