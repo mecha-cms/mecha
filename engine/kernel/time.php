@@ -105,7 +105,7 @@ final class Time extends Genome {
             '%y' => 'y',
             '%z' => 'O'
         ]), strtotime($this->value));
-        // Slightly improve the performance by detecting some pattern that produces word(s)
+        // Make the date translation system to work without PHP `intl` extension
         if (
             // ‘Sun’ through ‘Sat’ or ‘Sunday’ through ‘Saturday’
             false !== stripos($pattern, '%a') ||
@@ -118,11 +118,9 @@ final class Time extends Genome {
             // ‘AM’ or ‘PM’ based on the given time
             false !== stripos($pattern, '%p')
         ) {
-            // Make the date translation system to work without PHP `intl` extension
-            // Assume every word(s) in the formatted date as a translate-able string
-            $out = preg_replace_callback('/[a-z]\w+/i', static function ($m) {
-                return i($m[0]);
-            }, $out);
+            return r($out, ['AM', 'Apr', 'April', 'Aug', 'August', 'Dec', 'December', 'Feb', 'February', 'Fri', 'Friday', 'Jan', 'January', 'Jul', 'July', 'Jun', 'June', 'Mar', 'March', 'May', 'May', 'Mon', 'Monday', 'Nov', 'November', 'Oct', 'October', 'PM', 'Sat', 'Saturday', 'Sep', 'September', 'Sun', 'Sunday', 'Thu', 'Thursday', 'Tue', 'Tuesday', 'Wed', 'Wednesday'], function ($v) {
+                return i($v);
+            });
         }
         return $out;
     }

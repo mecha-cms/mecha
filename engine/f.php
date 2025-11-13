@@ -1591,14 +1591,44 @@ function q($value) {
     return empty($value) ? 0 : 1;
 }
 
-function r(?string $value, $from, $to) {
-    if (is_string($from) && is_string($to)) {
-        return 1 === strlen($from) && 1 === strlen($to) ? strtr($value, $from, $to) : strtr($value, [
-            $from => $to
-        ]);
+function r(?string $value, $from, $to = null) {
+    if ("" === ($value ?? "")) {
+        return null;
     }
-    $value = strtr($value, array_combine($from, $to));
-    return "" !== $value ? $value : null;
+    // `r('…', '…', '…')`
+    if (is_string($from) && is_string($to)) {
+        return "" !== ($value = strtr($value, [$from => $to])) ? $value : null;
+    }
+    // `r('…', ['…' => '…'])`
+    if (null === $to) {
+        return "" !== ($value = strtr($value, $from)) ? $value : null;
+    }
+    // `r('…', ['…', '…'], function ($from) { … })`
+    if (is_callable($to)) {
+        usort($from, function ($a, $b) {
+            return strlen($b) <=> strlen($a);
+        });
+        $i = 0;
+        $max = strlen($value);
+        $r = "";
+        while ($i < $max) {
+            $done = false;
+            foreach ($from as $v) {
+                if (($n = strlen($v)) && $v === substr($value, $i, $n)) {
+                    $done = true;
+                    $i += $n;
+                    $r .= call_user_func($to, $v);
+                    break;
+                }
+            }
+            if (!$done) {
+                $r .= $value[$i++];
+            }
+        }
+        return "" !== $r ? $r : null;
+    }
+    // `r('…', ['…', '…'], ['…', '…'])`
+    return "" !== ($value = strtr($value, array_combine($from, array_replace($from, $to)))) ? $value : null;
 }
 
 function s($value, array $lot = []) {
