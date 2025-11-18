@@ -453,9 +453,23 @@ function cookie(...$lot) {
 }
 
 function delete(string $path, $purge = true) {
+    if (is_dir($path)) {
+        $it = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
+        $r = [];
+        foreach (new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST) as $k) {
+            $v = path($k->getPathname());
+            if ($k->isDir()) {
+                $r[$v] = rmdir($v) ? 0 : null;
+            } else {
+                $r[$v] = unlink($v) ? 1 : null;
+            }
+        }
+        $r[path($path)] = rmdir($path) ? 0 : null;
+        return $r;
+    }
     if (is_file($path)) {
         // Success?
-        $out = unlink($path) ? path($path) : null;
+        $r = unlink($path) ? path($path) : null;
         // Remove parent folder if empty
         if ($purge) {
             $folder = path(dirname($path));
@@ -469,20 +483,9 @@ function delete(string $path, $purge = true) {
                 $folder = dirname($folder);
             }
         }
-        return $out;
+        return $r;
     }
-    $out = [];
-    $it = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
-    foreach (new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST) as $k) {
-        $v = path($k->getPathname());
-        if ($k->isDir()) {
-            $out[$v] = rmdir($v) ? 0 : null;
-        } else {
-            $out[$v] = unlink($v) ? 1 : null;
-        }
-    }
-    $out[path($path)] = rmdir($path) ? 0 : null;
-    return $out;
+    return null;
 }
 
 // Remove empty array and array-like, empty string and `null` value from array and array-like
@@ -631,12 +634,12 @@ function fetch(string $url, $lot = null, $type = 'GET') {
         } else if ('POST' === $type) {
             curl_setopt($c, CURLOPT_POSTFIELDS, $chops[1] ?? "");
         }
-        if (false !== ($out = curl_exec($c))) {
-            if ('HEAD' === $out) {
-                $out = n(trim($out));
+        if (false !== ($r = curl_exec($c))) {
+            if ('HEAD' === $r) {
+                $r = n(trim($r));
             }
         }
-        if (defined('TEST') && 'curl' === TEST && false === $out) {
+        if (defined('TEST') && 'curl' === TEST && false === $r) {
             throw new UnexpectedValueException(curl_error($c));
         }
         curl_close($c);
@@ -660,28 +663,28 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             //     2 => 'HTTP/1.1 302 Moved Temporarily',
             //     3 => 'HTTP/1.1 200 OK'
             // ]
-            $out = [];
+            $r = [];
             if (isset($heads[0]) && isset($heads[1])) {
                 foreach ($heads as $k => $v) {
                     if (is_array($v)) {
                         foreach ($v as $kk => $vv) {
-                            $out[$kk][] = strtolower($k) . ': ' . $vv;
+                            $r[$kk][] = strtolower($k) . ': ' . $vv;
                         }
                         continue;
                     }
-                    $out[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
+                    $r[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
                 }
-                foreach ($out as &$v) {
+                foreach ($r as &$v) {
                     $v = implode("\n", $v);
                 }
                 unset($v);
             } else {
                 unset($heads[0]); // Remove the `HTTP/1.1 200 OK` part
                 foreach ($heads as $k => $v) {
-                    $out[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
+                    $r[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
                 }
             }
-            $out = trim(implode("\n", $out));
+            $r = trim(implode("\n", $r));
         } else {
             $context = [];
             $headers['x-requested-with'] = 'x-requested-with: PHP';
@@ -694,10 +697,10 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             $context['http']['method'] = $type;
             $context['ssl']['verify_peer'] = false;
             $context['ssl']['verify_peer_name'] = false;
-            $out = file_get_contents($target, false, stream_context_create($context));
+            $r = file_get_contents($target, false, stream_context_create($context));
         }
     }
-    return false !== $out ? $out : null;
+    return false !== $r ? $r : null;
 }
 
 function find(iterable $value, callable $valid, $that = null, $scope = 'static') {
@@ -848,43 +851,43 @@ function map(iterable $value, callable $at, $that = null, $scope = 'static') {
 }
 
 function move(string $path, string $to, ?string $as = null) {
-    $out = [];
+    $r = [];
     if (!is_dir($path) && !is_file($path)) {
         return [null, null];
     }
     $path = path($path);
     // Move a file to a folder
-    if (is_file($out[0] = $path)) {
+    if (is_file($r[0] = $path)) {
         if (is_file($file = $to . D . ($as ?? basename($path)))) {
             // Return `false` if file exists
-            $out[1] = false;
+            $r[1] = false;
         } else {
             if (!is_dir($folder = dirname($file))) {
                 mkdir($folder, 0775, true);
             }
             // Return `$file` on success, `null` on error
-            $out[1] = rename($path, $file) ? path($file) : null;
+            $r[1] = rename($path, $file) ? path($file) : null;
         }
-        return $out;
+        return $r;
     }
     // Move a folder with its contents to a folder
-    $out = [$path, null];
+    $r = [$path, null];
     if (!is_dir($to)) {
-        return $out;
+        return $r;
     }
-    $out[1] = [];
+    $r[1] = [];
     if (!is_dir($to .= D . ($as ?? basename($path)))) {
         mkdir($to, 0775, true);
     }
     if ($path === ($to = path($to))) {
-        return $out; // Nothing to move
+        return $r; // Nothing to move
     }
     foreach (g($path, 1, true) as $k => $v) {
         $file = $to . D . substr($k, strlen($path) + 1);
         if (!is_dir($folder = dirname($file))) {
-            $out[1][$folder] = mkdir($folder, 0775, true) ? 0 : null;
+            $r[1][$folder] = mkdir($folder, 0775, true) ? 0 : null;
         }
-        $out[1][$file] = rename($k, $file) ? 1 : null;
+        $r[1][$file] = rename($k, $file) ? 1 : null;
     }
     // Delete empty folder
     foreach (g($path, 0, true) as $k => $v) {
@@ -896,7 +899,7 @@ function move(string $path, string $to, ?string $as = null) {
     if (0 === q(g($path))) {
         rmdir($path);
     }
-    return $out;
+    return $r;
 }
 
 function ne($a, $b) {
@@ -1032,11 +1035,11 @@ function send(string $from, $to, string $title, string $content, array $lot = []
             $to = implode(', ', $to);
         // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
         } else {
-            $out = "";
+            $r = "";
             foreach ($to as $k => $v) {
-                $out .= ', ' . $v . ' <' . $k . '>';
+                $r .= ', ' . $v . ' <' . $k . '>';
             }
-            $to = substr($out, 2);
+            $to = substr($r, 2);
         }
     }
     $lot = array_filter(array_replace([
@@ -1098,37 +1101,37 @@ function size(float $size, ?string $unit = null, int $fix = 2, int $base = 1000)
     ];
     $x = $bases[$base] ?? [];
     $u = $unit ? array_search($unit, $x) : ($size > 0 ? floor(log($size, $base)) : 0);
-    $out = round($size / pow($base, $u), $fix);
-    return $out < 0 ? null : trim($out . ' ' . ($x[$u] ?? ""));
+    $v = round($size / pow($base, $u), $fix);
+    return $v < 0 ? null : trim($v . ' ' . ($x[$u] ?? ""));
 }
 
 function status(...$lot) {
     if (0 === count($lot)) {
-        $out = [http_response_code(), [], []];
+        $r = [http_response_code(), [], []];
         foreach ($_SERVER as $k => $v) {
             if (0 === strpos($k, 'HTTP_')) {
-                $out[1][strtolower(strtr(substr($k, 5), '_', '-'))] = e($v);
+                $r[1][strtolower(strtr(substr($k, 5), '_', '-'))] = e($v);
             }
         }
         if (function_exists('apache_request_headers')) {
-            $out[1] = e(array_change_key_case((array) apache_request_headers(), CASE_LOWER));
+            $r[1] = e(array_change_key_case((array) apache_request_headers(), CASE_LOWER));
         }
         if (function_exists('apache_response_headers')) {
-            $out[2] = e(array_change_key_case((array) apache_response_headers(), CASE_LOWER));
+            $r[2] = e(array_change_key_case((array) apache_response_headers(), CASE_LOWER));
         }
         foreach (headers_list() as $v) {
             $v = explode(':', $v, 2);
             if (isset($v[1])) {
                 $vv = e(trim($v[1]));
-                if (isset($out[2][$k = strtolower($v[0])]) && $vv !== $out[2][$k]) {
-                    $out[2][$k] = (array) $out[2][$k];
-                    $out[2][$k][] = $vv;
+                if (isset($r[2][$k = strtolower($v[0])]) && $vv !== $r[2][$k]) {
+                    $r[2][$k] = (array) $r[2][$k];
+                    $r[2][$k][] = $vv;
                     continue;
                 }
-                $out[2][$k] = $vv;
+                $r[2][$k] = $vv;
             }
         }
-        return $out;
+        return $r;
     }
     $code = array_shift($lot);
     $values = (array) array_shift($lot);
@@ -1454,21 +1457,21 @@ function i(?string $value, $lot = [], ?string $or = null) {
 }
 
 function j(array $a, array $b) {
-    $out = [];
+    $r = [];
     foreach ($a as $k => $v) {
         if (is_array($v)) {
             if (!array_key_exists($k, $b) || !is_array($b[$k])) {
-                $out[$k] = $v;
+                $r[$k] = $v;
             } else {
                 if ($vv = j($v, $b[$k])) {
-                    $out[$k] = $vv;
+                    $r[$k] = $vv;
                 }
             }
         } else if (!array_key_exists($k, $b) || $v !== $b[$k]) {
-            $out[$k] = $v;
+            $r[$k] = $v;
         }
     }
-    return $out;
+    return $r;
 }
 
 function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $content = false) {
@@ -1784,17 +1787,17 @@ function z($value, $short = true) {
         return 'new ' . get_class($value); // Broken :(
     }
     if (is_array($value)) {
-        $out = [];
+        $r = [];
         if (array_is_list($value)) {
             foreach ($value as $k => $v) {
-                $out[] = z($v, $short);
+                $r[] = z($v, $short);
             }
         } else {
             foreach ($value as $k => $v) {
-                $out[] = z($k, $short) . '=>' . z($v, $short);
+                $r[] = z($k, $short) . '=>' . z($v, $short);
             }
         }
-        return ($short ? '[' : 'array(') . implode(',', $out) . ($short ? ']' : ')');
+        return ($short ? '[' : 'array(') . implode(',', $r) . ($short ? ']' : ')');
     }
     $value = var_export($value, true);
     if ("''" === $value) {
