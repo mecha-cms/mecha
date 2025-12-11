@@ -1240,7 +1240,8 @@ function token($id = 0, $for = '+1 minute') {
 
 function type(?string $type = null) {
     if (!isset($type)) {
-        $type = status()[2]['content-type'] ?? null;
+        $t = status();
+        $type = $t[1]['content-type'] ?? $t[2]['content-type'] ?? null;
         if (is_string($type)) {
             return trim(strstr($type . ';', ';', true));
         }

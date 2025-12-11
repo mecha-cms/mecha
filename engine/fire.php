@@ -18,6 +18,20 @@ if (defined('TEST')) {
     }
 }
 
+// This allows for easy processing of request with type of `application/json` via `$_GET`, `$_POST`, or `$_REQUEST`
+$req = $_SERVER['REQUEST_METHOD'];
+if ('application/json' === type()) {
+    if (null !== ($r = json_decode(file_get_contents('php://input'), true))) {
+        if ('GET' === $req) {
+            $_GET = $_REQUEST = $r;
+        } else if ('POST' === $req) {
+            $_POST = $_REQUEST = $r;
+        } else {
+            $_REQUEST = $r;
+        }
+    }
+}
+
 lot('F', [
     '°' => '0',
     '¹' => '1',
@@ -92,8 +106,8 @@ lot('F', [
 ]);
 
 // Normalize `$_GET`, `$_POST`, `$_REQUEST` value(s)
-$any = [&$_GET, &$_POST, &$_REQUEST];
-array_walk_recursive($any, static function (&$v) {
+$value = [&$_GET, &$_POST, &$_REQUEST];
+array_walk_recursive($value, static function (&$v) {
     // Trim white-space and normalize line-break
     $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
     // Replace all empty value with `null` and evaluate other(s)
@@ -101,7 +115,7 @@ array_walk_recursive($any, static function (&$v) {
 });
 
 // Normalize `$_FILES` property to `$_POST`
-if ('POST' === $_SERVER['REQUEST_METHOD']) {
+if ('POST' === $req) {
     // <https://stackoverflow.com/a/30342756/1163000>
     $tidy = static function (array $lot) use (&$tidy) {
         $alter = [
@@ -385,6 +399,6 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($any, $e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $query, $r, $scheme, $sub, $task, $use, $uses, $v, $x);
+unset($e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $query, $r, $req, $scheme, $sub, $task, $use, $uses, $v, $value, $x);
 
 Hook::fire(['set', 'get', 'let']);
