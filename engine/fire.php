@@ -233,7 +233,7 @@ function hook(...$lot) {
 
 function kick(?string $path = null, ?int $status = null) {
     $path = Hook::fire('kick', [$path, $status]);
-    header('location: ' . $path, true, $status ?? 301);
+    header('location: ' . (($path ?? "") ?: '/'), true, $status ?? 301);
     exit;
 }
 

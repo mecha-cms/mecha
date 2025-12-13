@@ -417,7 +417,7 @@ function cookie(...$lot) {
     if (0 === count($lot)) {
         $cookie = [];
         foreach ($_COOKIE as $k => $v) {
-            if (0 === strpos($k, '*')) {
+            if (0 === strpos($k, '+')) {
                 $cookie[$k] = json_decode(base64_decode($v), true);
             } else {
                 $cookie[$k] = $v;
@@ -427,7 +427,7 @@ function cookie(...$lot) {
     }
     $key = array_shift($lot);
     if (0 === count($lot)) {
-        if (isset($_COOKIE[$k = '*' . sprintf('%u', crc32($key))])) {
+        if (isset($_COOKIE[$k = '+' . substr(md5($key), 0, 16)])) {
             return json_decode(base64_decode($_COOKIE[$k]), true);
         }
         return $_COOKIE[$key] ?? null;
@@ -448,8 +448,7 @@ function cookie(...$lot) {
     if (is_string($with['expires'])) {
         $with['expires'] = strtotime($with['expires']);
     }
-    // <https://stackoverflow.com/a/1969339/1163000>
-    setcookie('*' . sprintf('%u', crc32($key)), base64_encode(json_encode($value)), $with);
+    setcookie('+' . substr(md5($key), 0, 16), base64_encode(json_encode($value, JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE)), $with);
 }
 
 function delete(string $path, $purge = true) {
@@ -729,15 +728,23 @@ function get(iterable $from, string $key, string $join = '.') {
         return null;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    foreach ($keys as $key) {
-        $key = strtr($key, [P => $join]);
-        if (is_object($from) && $from instanceof ArrayAccess && !$from->offsetExists($key)) {
-            return null;
+    foreach ($keys as $k) {
+        $k = strtr($k, [P => $join]);
+        if ($from instanceof ArrayAccess) {
+            if (!$from->offsetExists($k)) {
+                return null;
+            }
+            $from = $from->offsetGet($k);
+            continue;
         }
-        if (!is_array($from) || !array_key_exists($key, $from)) {
-            return null;
+        if (is_array($from)) {
+            if (!array_key_exists($k, $from)) {
+                return null;
+            }
+            $from = $from[$k];
+            continue;
         }
-        $from =& $from[$key];
+        return null;
     }
     return $from;
 }
@@ -751,15 +758,23 @@ function has(iterable $from, string $key, string $join = '.') {
         return false;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    foreach ($keys as $key) {
-        $key = strtr($key, [P => $join]);
-        if (is_object($from) && $from instanceof ArrayAccess && !$from->offsetExists($key)) {
-            return false;
+    foreach ($keys as $k) {
+        $k = strtr($k, [P => $join]);
+        if ($from instanceof ArrayAccess) {
+            if (!$from->offsetExists($k)) {
+                return false;
+            }
+            $from = $from->offsetGet($k);
+            continue;
         }
-        if (!is_array($from) || !array_key_exists($key, $from)) {
-            return false;
+        if (is_array($from)) {
+            if (!array_key_exists($k, $from)) {
+                return false;
+            }
+            $from = $from[$k];
+            continue;
         }
-        $from =& $from[$key];
+        return false;
     }
     return true;
 }
@@ -794,13 +809,35 @@ function let(iterable &$from, string $key, string $join = '.') {
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     $k = strtr(array_pop($keys), [P => $join]);
-    while ($keys) {
-        $key = strtr(array_shift($keys), [P => $join]);
-        if (is_array($from) && array_key_exists($key, $from) || is_object($from) && $from instanceof ArrayAccess && $from->offsetExists($key)) {
-            $from =& $from[$key];
+    foreach ($keys as $k) {
+        $k = strtr($k, [P => $join]);
+        if ($from instanceof ArrayAccess) {
+            if (!$from->offsetExists($k)) {
+                return false;
+            }
+            $from = $from->offsetGet($k);
+            continue;
         }
+        if (is_array($from)) {
+            if (!array_key_exists($k, $from)) {
+                return false;
+            }
+            $from =& $from[$k];
+            continue;
+        }
+        return false;
     }
-    if (is_array($from) && array_key_exists($k, $from) || is_object($from) && $from instanceof ArrayAccess && $from->offsetExists($k)) {
+    if ($from instanceof ArrayAccess) {
+        if (!$from->offsetExists($k)) {
+            return false;
+        }
+        $from->offsetUnset($k);
+        return true;
+    }
+    if (is_array($from)) {
+        if (!array_key_exists($k, $from)) {
+            return false;
+        }
         unset($from[$k]);
         return true;
     }
@@ -815,7 +852,10 @@ function &lot(...$lot) {
     $pattern = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
     if (1 === count($lot)) {
         if (is_string($lot[0])) {
-            $r =& $GLOBALS[$lot[0]] ?? null;
+            if (!array_key_exists($lot[0], $GLOBALS)) {
+                $GLOBALS[$lot[0]] = null;
+            }
+            $r =& $GLOBALS[$lot[0]];
             return $r;
         }
         $lot[0] = (array) ($lot[0] ?? []);
@@ -828,7 +868,7 @@ function &lot(...$lot) {
         $r =& $lot[0];
         return $r;
     }
-    $r =& $lot[1] ?? null;
+    $r =& $lot[1];
     if ("" !== $lot[0] && is_string($lot[0]) && !is_numeric($lot[0]) && preg_match($pattern, $lot[0])) {
         $GLOBALS[$lot[0]] = $r;
     }
