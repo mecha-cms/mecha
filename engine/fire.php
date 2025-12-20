@@ -18,20 +18,6 @@ if (defined('TEST')) {
     }
 }
 
-// This allows for easy processing of request with type of `application/json` via `$_GET`, `$_POST`, or `$_REQUEST`
-$req = $_SERVER['REQUEST_METHOD'];
-if ('application/json' === type()) {
-    if (null !== ($r = json_decode(file_get_contents('php://input'), true))) {
-        if ('GET' === $req) {
-            $_GET = $_REQUEST = $r;
-        } else if ('POST' === $req) {
-            $_POST = $_REQUEST = $r;
-        } else {
-            $_REQUEST = $r;
-        }
-    }
-}
-
 lot('F', [
     '°' => '0',
     '¹' => '1',
@@ -105,57 +91,71 @@ lot('F', [
     '”' => '"'
 ]);
 
-// Normalize `$_GET`, `$_POST`, `$_REQUEST` value(s)
-$value = [&$_GET, &$_POST, &$_REQUEST];
-array_walk_recursive($value, static function (&$v) {
-    // Trim white-space and normalize line-break
-    $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
-    // Replace all empty value with `null` and evaluate other(s)
-    $v = "" === $v ? null : e($v);
-});
-
-// Normalize `$_FILES` property to `$_POST`
-if ('POST' === $req) {
-    // <https://stackoverflow.com/a/30342756/1163000>
-    $tidy = static function (array $lot) use (&$tidy) {
-        $alter = [
-            'error' => 'status',
-            'tmp_name' => 'path'
-        ];
-        $r = [];
-        if (!is_array(reset($lot))) {
+// Map the request body to the `$_GET`, `$_POST`, and/or `$_REQUEST` variable(s) if it is an `application/json` request
+// to make it easier to process. For request type(s) other than “GET” and “POST”, the `$_REQUEST` variable can be used.
+$q = strtoupper($_SERVER['REQUEST_METHOD'] ?? "");
+if ('application/json' === strtolower(type() ?? "")) {
+    if (null !== ($r = json_decode(file_get_contents('php://input'), true))) {
+        if ('GET' === $q) {
+            $_GET = $_REQUEST = $r;
+        } else if ('POST' === $q) {
+            $_POST = $_REQUEST = $r;
+        } else {
+            $_REQUEST = $r;
+        }
+    }
+} else {
+    // Evaluate `$_GET`, `$_POST`, `$_REQUEST` value(s)
+    $value = [&$_GET, &$_POST, &$_REQUEST];
+    array_walk_recursive($value, static function (&$v) {
+        // Trim white-space and normalize line-break
+        $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
+        // Replace all empty value with `null` and evaluate other(s)
+        $v = "" === $v ? null : e($v);
+    });
+    // Normalize `$_FILES` property to `$_POST`
+    if ('POST' === $q) {
+        // <https://stackoverflow.com/a/30342756/1163000>
+        $tidy = static function (array $lot) use (&$tidy) {
+            $alter = [
+                'error' => 'status',
+                'tmp_name' => 'path'
+            ];
+            $r = [];
+            if (!is_array(reset($lot))) {
+                if (isset($lot[$k = 'full_path'])) {
+                    $v = strtr($lot[$k], [D => '/']);
+                    $r['route'] = "" !== $v ? '/' . $v : null;
+                    unset($lot[$k]);
+                }
+                foreach ($lot as $k => $v) {
+                    $r[$alter[$k] ?? $k] = $v;
+                }
+                ksort($r);
+                return $r;
+            }
             if (isset($lot[$k = 'full_path'])) {
-                $v = strtr($lot[$k], [D => '/']);
-                $r['route'] = "" !== $v ? '/' . $v : null;
+                foreach ($lot[$k] as $kk => $vv) {
+                    $vv = strtr($vv, [D => '/']);
+                    $r[$kk]['route'] = "" !== $vv ? '/' . $vv : null;
+                }
                 unset($lot[$k]);
             }
             foreach ($lot as $k => $v) {
-                $r[$alter[$k] ?? $k] = $v;
+                foreach ($v as $kk => $vv) {
+                    $r[$kk][$alter[$k] ?? $k] = $vv;
+                }
+                ksort($r[$kk]);
             }
-            ksort($r);
+            foreach ($r as &$v) {
+                $v = $tidy($v);
+            }
+            unset($v);
             return $r;
+        };
+        foreach ($_FILES as $k => $v) {
+            $_POST[$k] = array_replace_recursive($_POST[$k] ?? [], $tidy($v));
         }
-        if (isset($lot[$k = 'full_path'])) {
-            foreach ($lot[$k] as $kk => $vv) {
-                $vv = strtr($vv, [D => '/']);
-                $r[$kk]['route'] = "" !== $vv ? '/' . $vv : null;
-            }
-            unset($lot[$k]);
-        }
-        foreach ($lot as $k => $v) {
-            foreach ($v as $kk => $vv) {
-                $r[$kk][$alter[$k] ?? $k] = $vv;
-            }
-            ksort($r[$kk]);
-        }
-        foreach ($r as &$v) {
-            $v = $tidy($v);
-        }
-        unset($v);
-        return $r;
-    };
-    foreach ($_FILES as $k => $v) {
-        $_POST[$k] = array_replace_recursive($_POST[$k] ?? [], $tidy($v));
     }
 }
 
@@ -399,6 +399,6 @@ if (is_file($task = PATH . D . 'task.php')) {
 
 // Reset all possible global variable(s) to keep the presence of user-defined variable(s) clean. We don’t use
 // special feature to define variable in the response so clearing user data on global scope becomes necessary.
-unset($e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $query, $r, $req, $scheme, $sub, $task, $use, $uses, $v, $value, $x);
+unset($e, $f, $file, $folder, $hash, $host, $k, $n, $name, $path, $port, $q, $query, $r, $scheme, $sub, $task, $use, $uses, $v, $value, $x);
 
 Hook::fire(['set', 'get', 'let']);

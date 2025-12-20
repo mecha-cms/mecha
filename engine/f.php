@@ -849,27 +849,43 @@ function &lot(...$lot) {
         return $GLOBALS;
     }
     // <https://www.php.net/manual/en/language.variables.php>
-    $pattern = '/^[a-zA-Z_\x7f-\xff][a-zA-Z0-9_\x7f-\xff]*$/';
+    $var = static function (string $name) {
+        if ("" === $name) {
+            return false;
+        }
+        $c = ord($name[0]);
+        // “_” or “A” to “Z” or “a” to “z” or “\x80” to “\xff”
+        if (95 !== $c && !($c >= 65 && $c <= 90) && !($c >= 97 && $c <= 122) && !($c >= 128 && $c <= 255)) {
+            return false;
+        }
+        $max = strlen($name);
+        for ($i = 1; $i < $max; ++$i) {
+            $c = ord($name[$i]);
+            // “_” or “A” to “Z” or “a” to “z” or “0” to “9” or “\x80” to “\xff”
+            if (95 !== $c && !($c >= 65 && $c <= 90) && !($c >= 97 && $c <= 122) && !($c >= 48 && $c <= 57) && !($c >= 128 && $c <= 255)) {
+                return false;
+            }
+        }
+        return true;
+    };
     if (1 === count($lot)) {
-        if (is_string($lot[0])) {
+        if (is_array($lot[0])) {
+            foreach ($lot[0] as $k => $v) {
+                if ($var($k)) {
+                    $GLOBALS[$k] = $v;
+                }
+            }
+            return $GLOBALS;
+        }
+        if ($var($lot[0])) {
             if (!array_key_exists($lot[0], $GLOBALS)) {
                 $GLOBALS[$lot[0]] = null;
             }
-            $r =& $GLOBALS[$lot[0]];
-            return $r;
+            return $GLOBALS[$lot[0]];
         }
-        $lot[0] = (array) ($lot[0] ?? []);
-        foreach ($lot[0] as $k => $v) {
-            if ("" === $k || is_int($k) || is_numeric($k[0]) || !preg_match($pattern, $k)) {
-                unset($lot[0][$k]);
-            }
-        }
-        $lot[0] = array_replace($GLOBALS, $lot[0]);
-        $r =& $lot[0];
-        return $r;
     }
     $r =& $lot[1];
-    if ("" !== $lot[0] && is_string($lot[0]) && !is_numeric($lot[0]) && preg_match($pattern, $lot[0])) {
+    if ($var($lot[0])) {
         $GLOBALS[$lot[0]] = $r;
     }
     return $r;
