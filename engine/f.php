@@ -845,9 +845,6 @@ function let(iterable &$from, string $key, string $join = '.') {
 }
 
 function &lot(...$lot) {
-    if (0 === count($lot)) {
-        return $GLOBALS;
-    }
     // <https://www.php.net/manual/en/language.variables.php>
     $var = static function (string $name) {
         if ("" === $name) {
@@ -868,21 +865,20 @@ function &lot(...$lot) {
         }
         return true;
     };
-    if (1 === count($lot)) {
-        if (is_array($lot[0])) {
-            foreach ($lot[0] as $k => $v) {
-                if ($var($k)) {
-                    $GLOBALS[$k] = $v;
-                }
+    if (0 === ($max = count($lot)) || 1 === $max && is_array($lot[0])) {
+        $r = [];
+        foreach (array_replace($GLOBALS, $lot[0] ?? []) as $k => $v) {
+            if ($var($k)) {
+                $r[$k] = $v;
             }
-            return $GLOBALS;
         }
-        if ($var($lot[0])) {
-            if (!array_key_exists($lot[0], $GLOBALS)) {
-                $GLOBALS[$lot[0]] = null;
-            }
-            return $GLOBALS[$lot[0]];
+        return $r;
+    }
+    if (1 === $max && $var($lot[0])) {
+        if (!array_key_exists($lot[0], $GLOBALS)) {
+            $GLOBALS[$lot[0]] = null;
         }
+        return $GLOBALS[$lot[0]];
     }
     $r =& $lot[1];
     if ($var($lot[0])) {
