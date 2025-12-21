@@ -845,43 +845,39 @@ function let(iterable &$from, string $key, string $join = '.') {
 }
 
 function &lot(...$lot) {
-    // <https://www.php.net/manual/en/language.variables.php>
-    $var = static function (string $name) {
+    static $test;
+    $test = $test ?? function (string $name) {
         if ("" === $name) {
             return false;
         }
-        $c = ord($name[0]);
-        // “_” or “A” to “Z” or “a” to “z” or “\x80” to “\xff”
-        if (95 !== $c && !($c >= 65 && $c <= 90) && !($c >= 97 && $c <= 122) && !($c >= 128 && $c <= 255)) {
+        // <https://www.php.net/manual/en/language.variables.php>
+        static $a, $b;
+        if (!isset($a)) {
+            $a = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz_' . implode("", range("\x80", "\xff"));
+            $b = $a . '0123456789';
+        }
+        if (1 !== strspn($name[0], $a)) {
             return false;
         }
-        $max = strlen($name);
-        for ($i = 1; $i < $max; ++$i) {
-            $c = ord($name[$i]);
-            // “_” or “A” to “Z” or “a” to “z” or “0” to “9” or “\x80” to “\xff”
-            if (95 !== $c && !($c >= 65 && $c <= 90) && !($c >= 97 && $c <= 122) && !($c >= 48 && $c <= 57) && !($c >= 128 && $c <= 255)) {
-                return false;
-            }
-        }
-        return true;
+        return strlen($name) - 1 === strspn($name, $b, 1);
     };
     if (0 === ($max = count($lot)) || 1 === $max && is_array($lot[0])) {
         $r = [];
         foreach (array_replace($GLOBALS, $lot[0] ?? []) as $k => $v) {
-            if ($var($k)) {
+            if ($test($k)) {
                 $r[$k] = $v;
             }
         }
         return $r;
     }
-    if (1 === $max && $var($lot[0])) {
+    if (1 === $max && $test($lot[0])) {
         if (!array_key_exists($lot[0], $GLOBALS)) {
             $GLOBALS[$lot[0]] = null;
         }
         return $GLOBALS[$lot[0]];
     }
     $r =& $lot[1];
-    if ($var($lot[0])) {
+    if ($test($lot[0])) {
         $GLOBALS[$lot[0]] = $r;
     }
     return $r;

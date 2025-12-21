@@ -24,7 +24,8 @@ foreach ([
         if ("" === ($from = trim($from ?? ""))) {
             return $to;
         }
-        $q = static function (array &$to, $k, $v) {
+        static $q;
+        $q = $q ?? function (array &$to, $k, $v) {
             $k = explode('[', strtr($k, [']' => ""]));
             while (count($k) > 1) {
                 if ("" === ($kk = array_shift($k))) {

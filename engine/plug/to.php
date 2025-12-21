@@ -100,7 +100,8 @@ foreach ([
         if (!$value) {
             return null;
         }
-        $q = static function (array $value, $enter) use (&$q) {
+        static $q;
+        $q = $q ?? function (array $value, $enter) use (&$q) {
             $a = [];
             $exit = $enter ? ']' : "";
             ksort($value);
