@@ -396,7 +396,7 @@ function concat(array $value, ...$lot) {
     return array_merge_recursive($value, ...$lot);
 }
 
-function content(string $path, $value = null, $seal = null) {
+function content(string $path, ?string $value = null, $seal = null) {
     if (null !== $value) {
         if (is_dir($path) || (is_file($path) && !is_writable($path))) {
             return false;
@@ -404,7 +404,7 @@ function content(string $path, $value = null, $seal = null) {
         if (!is_dir($folder = dirname($path))) {
             mkdir($folder, 0775, true);
         }
-        if (is_int(file_put_contents($path, (string) $value))) {
+        if (is_int(file_put_contents($path, $value))) {
             $seal && seal($path, $seal);
             return true;
         }
@@ -1042,7 +1042,7 @@ function pluck(iterable $from, string $key, $value = null, $that = null, $scope 
     }, $that, $scope);
 }
 
-function save(string $path, $value = "", $seal = null) {
+function save(string $path, string $value, $seal = null) {
     if (is_dir($path)) {
         // Error
         return null;
@@ -1091,32 +1091,43 @@ function send(string $from, $to, string $title, string $content, array $lot = []
         }
     }
     $lot = array_filter(array_replace([
-        'content-type' => 'text/html; charset=ISO-8859-1',
+        'content-transfer-encoding' => '8bit',
+        'content-type' => 'text/html; charset=utf-8',
         'from' => $from,
         'mime-version' => '1.0',
-        'reply-to' => $to,
-        'return-path' => $from,
+        'reply-to' => $from,
         'x-mailer' => 'PHP/' . PHP_VERSION
-    ], $lot));
+    ], array_change_key_case($lot, CASE_LOWER)));
     foreach ($lot as $k => &$v) {
         $v = $k . ': ' . $v;
     }
     // Line(s) shouldn’t be larger than 70 character(s)
-    $content = wordwrap($content, 70, "\r\n");
+    // $content = wordwrap($content, 70, "\r\n");
     return mail($to, $title, $content, implode("\r\n", $lot));
 }
 
 function set(iterable &$to, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    $k = strtr(array_pop($keys), [P => $join]);
-    while ($keys) {
-        $key = strtr(array_shift($keys), [P => $join]);
-        if (is_array($to) && !array_key_exists($key, $to) || is_object($to) && $to instanceof ArrayAccess && !$to->offsetExists($key)) {
-            $to[$key] = [];
+    $key = strtr(array_pop($keys), [P => $join]);
+    foreach ($keys as $k) {
+        $k = strtr($k, [P => $join]);
+        if ($to instanceof ArrayAccess) {
+            // if (!$to->offsetExists($k)) {
+            //     $to->offsetSet($k, []);
+            // }
+            // $to =& $to->offsetGet($k);
+            return null; // Mutation on `ArrayAccess` is not supported :(
         }
-        $to =& $to[$key];
+        if (is_array($to)) {
+            if (!array_key_exists($k, $to)) {
+                $to[$k] = [];
+            }
+            $to =& $to[$k];
+            continue;
+        }
+        return null;
     }
-    return ($to[$k] = $value);
+    return $to instanceof ArrayAccess ? $to->offsetSet($key, $value) : ($to[$key] = $value);
 }
 
 function shake(array $value, $keys = false, $that = null, $scope = 'static') {
@@ -1617,15 +1628,12 @@ function q($value) {
     if (is_countable($value)) {
         return count($value);
     }
-    if (is_int($value) || is_float($value)) {
+    if (is_float($value) || is_int($value)) {
         return $value;
     }
     if (is_object($value)) {
         if ($value instanceof EmptyIterator) {
             return 0;
-        }
-        if ($value instanceof stdClass) {
-            return count((array) $value);
         }
         if ($value instanceof Traversable) {
             if ($r = method_exists($value, 'rewind')) {
@@ -1634,6 +1642,9 @@ function q($value) {
             $v = iterator_count($value);
             $r && $value->rewind();
             return $v;
+        }
+        if ($value instanceof stdClass) {
+            return count(get_object_vars($value));
         }
         return 1;
     }
