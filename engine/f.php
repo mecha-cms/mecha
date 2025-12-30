@@ -363,24 +363,24 @@ function c2f(?string $value, $accent = false) {
     return "" !== $value ? $value : null;
 }
 
-function check(string $token, $id = 0) {
-    $prev = $_SESSION['token'][$id ?? uniqid()] ?? [0, ""];
-    return $prev[1] && $token && $prev[1] === $token ? $token : false;
+function check(string $token, $key = 0) {
+    $past = $_SESSION['token'][$key ?? uniqid()] ?? [0, ""];
+    return $past[1] && $token && $past[1] === $token ? $token : false;
 }
 
-function choke(int $for = 1, $id = 0) {
+function choke(int $for = 1, $key = 0) {
     $current = $_SERVER['REQUEST_TIME'];
-    $id = md5((string) ($id ?? uniqid()));
-    if (!is_file($file = ENGINE . D . 'log' . D . 'choke' . D . $id)) {
+    $key = md5((string) ($key ?? uniqid()));
+    if (!is_file($file = ENGINE . D . 'log' . D . 'choke' . D . $key)) {
         if (!is_dir($folder = dirname($file))) {
             mkdir($folder, 0775, true);
         }
         touch($file, $current);
         return $for;
     }
-    $prev = filemtime($file);
-    if ($for > $current - $prev) {
-        return $for - ($current - $prev);
+    $past = filemtime($file);
+    if ($for > $current - $past) {
+        return $for - ($current - $past);
     }
     touch($file, $current);
     return false;
@@ -1287,13 +1287,13 @@ function cue(callable $task, $that = null, $scope = 'static') {
     return $that ? $task->bindTo($that, $scope) : $task;
 }
 
-function token($id = 0, $for = '+1 minute') {
-    $prev = $_SESSION['token'][$id] ?? [0, ""];
-    if ($prev[0] > time()) {
-        return $prev[1];
+function token($key = 0, $for = '+1 minute') {
+    $past = $_SESSION['token'][$key] ?? [0, ""];
+    if ($past[0] > time()) {
+        return $past[1];
     }
     $t = is_string($for) ? strtotime($for) : time() + $for;
-    $_SESSION['token'][$id] = $v = [$t, sha1(uniqid(mt_rand(), true) . $id)];
+    $_SESSION['token'][$key] = $v = [$t, sha1(uniqid(mt_rand(), true) . $key)];
     return $v[1];
 }
 
@@ -1509,7 +1509,7 @@ function i(?string $value, $lot = [], ?string $or = null) {
     try {
         $value = $lot ? vsprintf($value, $lot) : $value;
         // Also translate the result after the argument(s) are applied
-        if ($value !== $raw) { // This prevents recursive function calls
+        if ($value !== $raw) { // This prevents recursive function call(s)
             $value = i($value, [], $or);
         }
     } catch (Throwable $e) {}
