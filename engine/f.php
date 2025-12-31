@@ -364,13 +364,13 @@ function c2f(?string $value, $accent = false) {
 }
 
 function check(string $token, $key = 0) {
-    $past = $_SESSION['token'][$key ?? uniqid()] ?? [0, ""];
+    $past = $_SESSION['token'][$key ?? bin2hex(random_bytes(8))] ?? [0, ""];
     return $past[1] && $token && $past[1] === $token ? $token : false;
 }
 
 function choke(int $for = 1, $key = 0) {
     $current = $_SERVER['REQUEST_TIME'];
-    $key = md5((string) ($key ?? uniqid()));
+    $key = md5((string) ($key ?? bin2hex(random_bytes(8))));
     if (!is_file($file = ENGINE . D . 'log' . D . 'choke' . D . $key)) {
         if (!is_dir($folder = dirname($file))) {
             mkdir($folder, 0775, true);
@@ -1293,7 +1293,7 @@ function token($key = 0, $for = '+1 minute') {
         return $past[1];
     }
     $t = is_string($for) ? strtotime($for) : time() + $for;
-    $_SESSION['token'][$key] = $v = [$t, sha1(uniqid(mt_rand(), true) . $key)];
+    $_SESSION['token'][$key] = $v = [$t, bin2hex(random_bytes(16) . $key)];
     return $v[1];
 }
 
