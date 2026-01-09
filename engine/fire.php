@@ -94,15 +94,13 @@ lot('F', [
 // Map the request body to the `$_GET`, `$_POST`, and/or `$_REQUEST` variable(s) if it is an `application/json` request
 // to make it easier to process. For request type(s) other than “GET” and “POST”, the `$_REQUEST` variable can be used.
 $q = strtoupper($_SERVER['REQUEST_METHOD'] ?? "");
-if ('application/json' === strtolower(type() ?? "")) {
-    if (null !== ($r = json_decode(file_get_contents('php://input'), true))) {
-        if ('GET' === $q) {
-            $_GET = $_REQUEST = $r;
-        } else if ('POST' === $q) {
-            $_POST = $_REQUEST = $r;
-        } else {
-            $_REQUEST = $r;
-        }
+if ('application/json' === strtolower(type() ?? "") && null !== ($r = json_decode(file_get_contents('php://input'), true))) {
+    if ('GET' === $q) {
+        $_GET = $_REQUEST = $r;
+    } else if ('POST' === $q) {
+        $_POST = $_REQUEST = $r;
+    } else {
+        $_REQUEST = $r;
     }
 } else {
     // Evaluate `$_GET`, `$_POST`, `$_REQUEST` value(s)
