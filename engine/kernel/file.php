@@ -51,11 +51,15 @@ class File extends Genome {
     }
 
     public function _seal() {
-        return $this->exist() && null !== ($path = $this->path) ? fileperms($path) : null;
+        return is_string($path = $this->path) ? (fileperms($path) & 0777) : null;
     }
 
     public function _size() {
-        return $this->exist() && null !== ($path = $this->path) ? filesize($path) : null;
+        return is_string($path = $this->path) ? filesize($path) : null;
+    }
+
+    public function _time() {
+        return is_string($path = $this->path) ? filectime($path) : null;
     }
 
     public function URL() {
@@ -63,7 +67,7 @@ class File extends Genome {
     }
 
     public function content() {
-        if ($this->exist() && null !== ($path = $this->path)) {
+        if (is_string($path = $this->path)) {
             $content = file_get_contents($path);
             return false !== $content ? $content : null;
         }
@@ -90,7 +94,7 @@ class File extends Genome {
     }
 
     public function name(...$lot) {
-        if ($this->exist() && null !== ($path = $this->path)) {
+        if (is_string($path = $this->path)) {
             if (true === ($x = array_shift($lot) ?? false)) {
                 return basename($path);
             }
@@ -113,49 +117,39 @@ class File extends Genome {
     }
 
     public function parent() {
-        return $this->exist() && null !== ($path = $this->path) ? new Folder(dirname($path)) : null;
+        return is_string($path = $this->path) ? new Folder(dirname($path)) : null;
     }
 
     public function route() {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            return '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/');
-        }
-        return null;
+        return is_string($path = $this->path) ? '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/') : null;
     }
 
     public function seal() {
-        return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
+        return is_int($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -3) : null;
     }
 
     public function size(?string $unit = null, int $fix = 2, int $base = 1000) {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            return size(filesize($path), $unit, $fix, $base);
-        }
-        return null;
+        return is_int($size = $this->_size()) ? size($size, $unit, $fix, $base) : null;
     }
 
     public function stream(?int $max = 1024): Traversable {
-        yield from ($this->exist() && null !== ($path = $this->path) ? stream($path, $max) : []);
+        return is_string($path = $this->path) ? stream($path, $max) : new EmptyIterator;
     }
 
     public function time(?string $format = null) {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            $time = filectime($path);
-            return $format ? (new Time($time))($format) : $time;
+        if (is_int($time = $this->_time())) {
+            $t = new Time($time);
+            return $format ? $t($format) : $t;
         }
         return null;
     }
 
     public function type() {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            $type = mime_content_type($path);
-            return false !== $type ? $type : null;
-        }
-        return null;
+        return is_string($path = $this->path) && false !== ($type = mime_content_type($path)) ? $type : null;
     }
 
     public function x() {
-        if ($this->exist() && null !== ($path = $this->path)) {
+        if (is_string($path = $this->path)) {
             if (false === strpos(basename($path), '.')) {
                 return null;
             }

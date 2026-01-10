@@ -51,15 +51,11 @@ class Folder extends Genome {
     }
 
     public function _seal() {
-        return $this->exist() && null !== ($path = $this->path) ? fileperms($path) : null;
+        return is_string($path = $this->path) ? (fileperms($path) & 0777) : null;
     }
 
     public function _size() {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            // Empty folder
-            if (0 === q(g($path, 1))) {
-                return 0;
-            }
+        if (is_string($path = $this->path)) {
             // Scan all file(s) to get the total size
             $size = 0;
             foreach (g($path, 1, true) as $k => $v) {
@@ -68,6 +64,10 @@ class Folder extends Genome {
             return $size;
         }
         return null;
+    }
+
+    public function _time() {
+        return is_string($path = $this->path) ? filectime($path) : null;
     }
 
     public function URL() {
@@ -80,7 +80,7 @@ class Folder extends Genome {
 
     public function count(): int {
         // Count file(s) only
-        return $this->exist() && null !== ($path = $this->path) ? q(g($path, 1, true)) : 0;
+        return is_string($path = $this->path) ? q(g($path, 1, true)) : 0;
     }
 
     public function exist() {
@@ -92,7 +92,7 @@ class Folder extends Genome {
     }
 
     public function name() {
-        return $this->exist() && null !== ($path = $this->path) ? basename($path) : null;
+        return is_string($path = $this->path) ? basename($path) : null;
     }
 
     public function offsetExists($key): bool {
@@ -100,7 +100,7 @@ class Folder extends Genome {
     }
 
     public function offsetGet($key) {
-        if ($this->exist() && null !== ($path = $this->path)) {
+        if (is_string($path = $this->path)) {
             $path .= D . ltrim(strtr($key, '/', D), D);
             if (is_dir($path)) {
                 return new static($path);
@@ -113,37 +113,34 @@ class Folder extends Genome {
     }
 
     public function parent() {
-        return $this->exist() && null !== ($path = $this->path) ? new static(dirname($path)) : null;
+        return is_string($path = $this->path) ? new static(dirname($path)) : null;
     }
 
     public function route() {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            return '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/');
-        }
-        return null;
+        return is_string($path = $this->path) ? '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/') : null;
     }
 
     public function seal() {
-        return null !== ($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -4) : null;
+        return is_int($seal = $this->_seal()) ? substr(sprintf('%o', $seal), -3) : null;
     }
 
     public function size(?string $unit = null, int $fix = 2, int $base = 1000) {
-        if (null !== ($size = $this->_size())) {
-            return size($size, $unit, $fix, $base);
-        }
-        return null;
+        return is_int($size = $this->_size()) ? size($size, $unit, $fix, $base) : null;
     }
 
     public function stream($x = null, $deep = 0): Traversable {
-        foreach (g($this->path, $x, $deep) as $k => $v) {
-            yield $k => 0 === $v ? new static($k) : new File($k);
+        if (is_string($path = $this->path)) {
+            foreach (g($path, $x, $deep) as $k => $v) {
+                yield $k => 0 === $v ? new static($k) : new File($k);
+            }
         }
+        return new EmptyIterator;
     }
 
     public function time(?string $format = null) {
-        if ($this->exist() && null !== ($path = $this->path)) {
-            $time = filectime($path);
-            return $format ? (new Time($time))($format) : $time;
+        if (is_int($time = $this->_time())) {
+            $t = new Time($time);
+            return $format ? $t($format) : $t;
         }
         return null;
     }

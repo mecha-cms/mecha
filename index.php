@@ -4,11 +4,11 @@
  * =========================================
  *  MECHA · CONTENT MANAGEMENT SYSTEM (CMS)
  * =========================================
- *  © 2014 – 2025 · Taufik Nurrohman
+ *  © 2014 – 2026 · Taufik Nurrohman
  * -----------------------------------------
  */
 
-define('VERSION', '3.3.0'); // Current version
+define('VERSION', '4.0.0'); // Current version
 
 define('D', DIRECTORY_SEPARATOR); // Directory separator
 define('N', PHP_EOL); // Line break
@@ -19,7 +19,7 @@ define('PATH', __DIR__);
 define('ENGINE', PATH . D . 'engine');
 define('LOT', PATH . D . 'lot');
 
-define('TEST', false); // Change to `true` to enable test mode
+define('TEST', true); // Change to `true` to enable test mode
 
 // When working with virtual host feature on a server —especially an Apache web server— you may find that the
 // application’s URL format is not formed properly after installation. Typically, this issue is indicated by a messy
