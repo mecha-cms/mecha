@@ -72,22 +72,11 @@ class File extends Genome {
     }
 
     public function count(): int {
-        if ($this->exist()) {
-            $count = 0;
-            foreach ($this->stream(null) as $v) {
-                ++$count;
-            }
-            return $count;
-        }
-        return 0;
+        return $this->path ? 1 : 0;
     }
 
     public function exist() {
         return $this->path ?? false;
-    }
-
-    public function getIterator(): Traversable {
-        return $this->stream(null);
     }
 
     public function name(...$lot) {
@@ -96,19 +85,6 @@ class File extends Genome {
                 return basename($path);
             }
             return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
-        }
-        return null;
-    }
-
-    public function offsetExists($key): bool {
-        return null !== $this->offsetGet($key);
-    }
-
-    public function offsetGet($key) {
-        foreach ($this->stream(null) as $k => $v) {
-            if ($key === $k) {
-                return $v;
-            }
         }
         return null;
     }

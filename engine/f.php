@@ -1774,7 +1774,7 @@ function x(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\'
 
 function y(iterable $value, $deep = 0) {
     if ($value instanceof Traversable) {
-        $value = iterator_to_array($value);
+        $value = iterator_to_array($value, true);
         if (true === $deep) {
             foreach ($value as &$v) {
                 $v = is_iterable($v) || $v instanceof stdClass ? y($v, $deep) : $v;

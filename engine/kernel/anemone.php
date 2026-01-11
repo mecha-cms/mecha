@@ -493,11 +493,6 @@ class Anemone extends Genome {
                 }
                 return $this;
             }
-            if (is_callable($sort)) {
-                $test = cue($sort, $this);
-                $keys ? uasort($this->lot, $test) : usort($this->lot, $test);
-                return $this;
-            }
             if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
                 $d = reset($sort);
                 $dot = false !== strpos(strtr($key, ["\\." => \P]), '.');
@@ -555,6 +550,13 @@ class Anemone extends Genome {
                     -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
                 }
             }
+            $this->lot = $lot;
+            return $this;
+        }
+        if (is_callable($sort)) {
+            $test = cue($sort, $this);
+            $lot = y($lot); // :(
+            $keys ? uasort($lot, $test) : usort($lot, $test);
             $this->lot = $lot;
             return $this;
         }

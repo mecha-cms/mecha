@@ -76,37 +76,15 @@ class Folder extends Genome {
     }
 
     public function count(): int {
-        // Count file(s) only
-        return is_string($path = $this->path) ? q(g($path, 1, true)) : 0;
+        return $this->path ? 1 : 0;
     }
 
     public function exist() {
         return $this->path ?? false;
     }
 
-    public function getIterator(): Traversable {
-        return $this->stream(null, true);
-    }
-
     public function name() {
         return is_string($path = $this->path) ? basename($path) : null;
-    }
-
-    public function offsetExists($key): bool {
-        return null !== $this->offsetGet($key);
-    }
-
-    public function offsetGet($key) {
-        if (is_string($path = $this->path)) {
-            $path .= D . ltrim(strtr($key, '/', D), D);
-            if (is_dir($path)) {
-                return new static($path);
-            }
-            if (is_file($path)) {
-                return new File($path);
-            }
-        }
-        return null;
     }
 
     public function parent() {
