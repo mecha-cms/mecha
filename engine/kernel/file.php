@@ -37,10 +37,7 @@ class File extends Genome {
     }
 
     public function __toString(): string {
-        if ($path = $this->path) {
-            return strtr($path, [PATH . D => ".\\", D => "\\"]);
-        }
-        return "";
+        return is_string($path = $this->path) ? strtr($path, [PATH . D => ".\\", D => "\\"]) : "";
     }
 
     public function __unserialize(array $lot): void {
@@ -150,10 +147,7 @@ class File extends Genome {
 
     public function x() {
         if (is_string($path = $this->path)) {
-            if (false === strpos(basename($path), '.')) {
-                return null;
-            }
-            return strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            return false !== strpos(basename($path), '.') ? strtolower(pathinfo($path, PATHINFO_EXTENSION)) : null;
         }
         return null;
     }

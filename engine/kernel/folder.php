@@ -37,10 +37,7 @@ class Folder extends Genome {
     }
 
     public function __toString(): string {
-        if ($path = $this->path) {
-            return strtr($path, [PATH . D => ".\\", D => "\\"]);
-        }
-        return "";
+        return is_string($path = $this->path) ? strtr($path, [PATH . D => ".\\", D => "\\"]) : "";
     }
 
     public function __unserialize(array $lot): void {
