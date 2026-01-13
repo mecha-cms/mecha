@@ -493,57 +493,56 @@ class Anemone extends Genome {
                 }
                 return $this;
             }
-            if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
-                $d = reset($sort);
-                $dot = false !== strpos(strtr($key, ["\\." => \P]), '.');
-                $test = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($dot, $key) {
-                    if (!is_array($b) || !is_array($a)) {
+            $d = is_array($sort) ? reset($sort) : $sort;
+            if (is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key))) {
+                $deep = false !== strpos(strtr($key, ["\\." => P]), '.');
+                $task = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($deep, $key) {
+                    if (!is_iterable($b) || !is_iterable($a)) {
                         return 0;
                     }
-                    if (($dot && null === get($b, $key) && null === get($a, $key)) || !isset($b[$key]) && !isset($a[$key])) {
+                    if (($deep && null === get($b, $key) && null === get($a, $key)) || !isset($b[$key]) && !isset($a[$key])) {
                         return 0;
                     }
-                    if (($dot && null === get($b, $key)) || !isset($b[$key])) {
+                    if (($deep && null === get($b, $key)) || !isset($b[$key])) {
                         return 1;
                     }
-                    if (($dot && null === get($a, $key)) || !isset($a[$key])) {
+                    if (($deep && null === get($a, $key)) || !isset($a[$key])) {
                         return -1;
                     }
-                    return $dot ? get($b, $key) <=> get($a, $key) : $b[$key] <=> $a[$key];
-                } : static function ($a, $b) use ($dot, $key) {
-                    if (!is_array($a) || !is_array($b)) {
+                    return $deep ? get($b, $key) <=> get($a, $key) : $b[$key] <=> $a[$key];
+                } : static function ($a, $b) use ($deep, $key) {
+                    if (!is_iterable($a) || !is_iterable($b)) {
                         return 0;
                     }
-                    if (($dot && null === get($a, $key) && null === get($b, $key)) || !isset($a[$key]) && !isset($b[$key])) {
+                    if (($deep && null === get($a, $key) && null === get($b, $key)) || !isset($a[$key]) && !isset($b[$key])) {
                         return 0;
                     }
-                    if (($dot && null === get($a, $key)) || !isset($a[$key])) {
+                    if (($deep && null === get($a, $key)) || !isset($a[$key])) {
                         return 1;
                     }
-                    if (($dot && null === get($b, $key)) || !isset($b[$key])) {
+                    if (($deep && null === get($b, $key)) || !isset($b[$key])) {
                         return -1;
                     }
-                    return $dot ? get($a, $key) <=> get($b, $key) : $a[$key] <=> $b[$key];
+                    return $deep ? get($a, $key) <=> get($b, $key) : $a[$key] <=> $b[$key];
                 };
                 if (array_key_exists(2, $sort)) {
-                    if ($dot) {
+                    if ($deep) {
                         foreach ($lot as &$v) {
-                            if (is_array($v) && null === get($v, $key)) {
+                            if (is_iterable($v) && null === get($v, $key)) {
                                 set($v, $key, $sort[2]);
                             }
                         }
                     } else {
                         foreach ($lot as &$v) {
-                            if (is_array($v) && !isset($v[$key])) {
+                            if (is_iterable($v) && !isset($v[$key])) {
                                 $v[$key] = $sort[2];
                             }
                         }
                     }
                     unset($v);
                 }
-                $keys ? uasort($lot, $test) : usort($lot, $test);
+                $keys ? uasort($lot, $task) : usort($lot, $task);
             } else {
-                $d = is_array($sort) ? reset($sort) : $sort;
                 if ($keys) {
                     -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
                 } else {
@@ -554,23 +553,19 @@ class Anemone extends Genome {
             return $this;
         }
         if (is_callable($sort)) {
-            $test = cue($sort, $this);
             $lot = y($lot); // :(
-            $keys ? uasort($lot, $test) : usort($lot, $test);
+            $task = cue($sort, $this);
+            $keys ? uasort($lot, $task) : usort($lot, $task);
             $this->lot = $lot;
             return $this;
         }
-        if (is_array($sort) && false !== ($key = $sort[1] ?? false)) {
-            $dot = false !== strpos(strtr($key, ["\\." => \P]), '.');
+        if (is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key))) {
+            $deep = false !== strpos(strtr($key, ["\\." => P]), '.');
             $value = array_key_exists(2, $sort) ? $sort[2] : null;
-            return $this->_q(function ($v, $k) use ($dot, $key, $value) {
-                if ($dot && is_array($v)) {
-                    return get($v, $key) ?? $value;
-                }
-                return $v[$key] ?? $value;
+            return $this->_q(function ($v, $k) use ($deep, $key, $value) {
+                return $deep && is_iterable($v) ? (get($v, $key) ?? $value) : ($v[$key] ?? $value);
             }, $sort[0], $keys, $this);
         }
-        $d = is_array($sort) ? reset($sort) : $sort;
         $lot = y($lot); // :(
         if ($keys) {
             -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
