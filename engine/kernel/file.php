@@ -59,6 +59,10 @@ class File extends Genome {
         return is_string($path = $this->path) ? filectime($path) : null;
     }
 
+    public function ID() {
+        return ($route = $this->route()) ? unpack('J', hex2bin(hash('xxh64', $route)))[1] : null;
+    }
+
     public function URL() {
         return ($route = $this->route()) ? long($route) : null;
     }
