@@ -72,7 +72,7 @@
     "mecha-cms/x.page": "^3.1.0",
     "mecha-cms/x.test": "^1.0.0",
     "mecha-cms/y.log": "^2.0.0",
-    "php": ">=7.3"
+    "php": ">=8.1"
   },
   "suggest": {
     "ext-curl": "We will use `file_get_contents()` if `ext-curl` is not installed. It will be more efficient when `curl_*()` functions are available.",
