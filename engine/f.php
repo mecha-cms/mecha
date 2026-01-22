@@ -1073,39 +1073,6 @@ function seal(string $path, $seal = null) {
     return chmod($path, $seal) ? $seal : null;
 }
 
-// Send email as HTML
-function send(string $from, $to, string $title, string $content, array $lot = []) {
-    // This function was intended to be used as a quick way to send HTML email. There is no such email validation
-    // proccess here. We assume that you have set the correct email address(es)
-    if (is_array($to)) {
-        // ['foo@bar', 'baz@qux']
-        if (array_is_list($to)) {
-            $to = implode(', ', $to);
-        // ['foo@bar' => 'Foo Bar', 'baz@qux' => 'Baz Qux']
-        } else {
-            $r = "";
-            foreach ($to as $k => $v) {
-                $r .= ', ' . $v . ' <' . $k . '>';
-            }
-            $to = substr($r, 2);
-        }
-    }
-    $lot = array_filter(array_replace([
-        'content-transfer-encoding' => '8bit',
-        'content-type' => 'text/html; charset=utf-8',
-        'from' => $from,
-        'mime-version' => '1.0',
-        'reply-to' => $from,
-        'x-mailer' => 'PHP/' . PHP_VERSION
-    ], array_change_key_case($lot, CASE_LOWER)));
-    foreach ($lot as $k => &$v) {
-        $v = $k . ': ' . $v;
-    }
-    // Line(s) shouldn’t be larger than 70 character(s)
-    // $content = wordwrap($content, 70, "\r\n");
-    return mail($to, $title, $content, implode("\r\n", $lot));
-}
-
 function set(iterable &$to, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     $key = strtr(array_pop($keys), [P => $join]);
