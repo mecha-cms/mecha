@@ -1,39 +1,5 @@
 <?php
 
-// <https://wiki.php.net/rfc/phase_out_serializable>
-if (!interface_exists('Serializable')) {
-    // PHP >= 10.0
-    interface Serializable {
-        public function serialize(): ?string;
-        public function unserialize(string $data): void;
-    }
-}
-
-// <https://wiki.php.net/rfc/stringable>
-if (!interface_exists('Stringable')) {
-    // PHP < 8.0
-    interface Stringable {
-        public function __toString(): string;
-    }
-}
-
-// <https://wiki.php.net/rfc/is_list>
-if (!function_exists('array_is_list')) {
-    // PHP < 8.1
-    function array_is_list(array $array): bool {
-        if (!$array) {
-            return true;
-        }
-        $key = -1;
-        foreach ($array as $k => $v) {
-            if ($k !== ++$key) {
-                return false;
-            }
-        }
-        return true;
-    }
-}
-
 // <https://wiki.php.net/rfc/json_validate>
 if (!function_exists('json_validate')) {
     // PHP < 8.3
@@ -1774,9 +1740,7 @@ function z($value, $short = true) {
                         $content .= z(substr($v[1], 1, -1), $short);
                         continue;
                     }
-                    // TODO: Prefer this one once we drop PHP 7.3 support!
-                    // if (T_NAME_FULLY_QUALIFIED === $v[0]) {
-                    if ('T_NAME_FULLY_QUALIFIED' === token_name($v[0])) {
+                    if (T_NAME_FULLY_QUALIFIED === $v[0]) {
                         $content .= trim($v[1], "\\");
                         continue;
                     }

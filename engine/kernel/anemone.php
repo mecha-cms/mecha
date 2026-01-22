@@ -49,14 +49,14 @@ class Anemone extends Genome {
         }
     }
 
-    public function __get(string $key) {
+    public function __get(string $key): mixed {
         if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
         return $this->__call($key);
     }
 
-    public function __invoke(string $join = ', ', $filter = true) {
+    public function __invoke(string $join = ', ', $filter = true): mixed {
         $lot = ($filter ? $this->is(is_callable($filter) ? $filter : function ($v, $k) {
             // Ignore value(s) that cannot be converted to a string
             if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
@@ -387,7 +387,7 @@ class Anemone extends Genome {
         return false;
     }
 
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         if (is_array($lot = $this->lot)) {
             return $lot[$key] ?? null;
         }

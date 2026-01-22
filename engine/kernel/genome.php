@@ -1,6 +1,6 @@
 <?php
 
-abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Serializable, Stringable {
+abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Stringable {
 
     public function __call(string $kin, array $lot = []) {
         foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
@@ -25,8 +25,7 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         }
     }
 
-    #[ReturnTypeWillChange]
-    public function __clone() {}
+    public function __clone(): void {}
 
     public function __construct() {}
 
@@ -36,13 +35,11 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
 
     public function __destruct() {}
 
-    #[ReturnTypeWillChange]
-    public function __get(string $key) {
+    public function __get(string $key): mixed {
         return null;
     }
 
-    #[ReturnTypeWillChange]
-    public function __invoke() {}
+    public function __invoke(): mixed {}
 
     public function __isset(string $key): bool {
         return false;
@@ -74,8 +71,7 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return new ArrayIterator($this->__serialize());
     }
 
-    #[ReturnTypeWillChange]
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         return $this->__serialize();
     }
 
@@ -83,26 +79,13 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
         return false;
     }
 
-    #[ReturnTypeWillChange]
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         return null;
     }
 
     public function offsetSet($key, $value): void {}
 
     public function offsetUnset($key): void {}
-
-    // PHP Serializable < 7.4
-    #[ReturnTypeWillChange]
-    public function serialize() {
-        return serialize($this->__serialize());
-    }
-
-    // PHP Serializable < 7.4
-    #[ReturnTypeWillChange]
-    public function unserialize($lot) {
-        $this->__unserialize(unserialize($lot));
-    }
 
     public static $_ = [];
 

@@ -28,7 +28,7 @@ final class Time extends Genome {
         }
     }
 
-    public function __get(string $key) {
+    public function __get(string $key): mixed {
         if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
@@ -40,7 +40,7 @@ final class Time extends Genome {
         return parent::__call($key);
     }
 
-    public function __invoke(string $pattern = '%Y-%m-%d %T') {
+    public function __invoke(string $pattern = '%Y-%m-%d %T'): mixed {
         return $this->i($pattern);
     }
 

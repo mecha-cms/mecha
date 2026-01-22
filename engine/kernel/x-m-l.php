@@ -183,7 +183,7 @@ class XML extends Genome {
         return 1; // Single node is always `1`
     }
 
-    public function jsonSerialize() {
+    public function jsonSerialize(): mixed {
         $lot = $this->__serialize()['lot'] ?? [];
         if (isset($lot[2])) {
             $lot[2] = (object) $lot[2];
@@ -198,7 +198,7 @@ class XML extends Genome {
         return isset($this->lot[2][$key]);
     }
 
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         if (is_numeric($key)) {
             return $this->lot[$key] ?? null;
         }

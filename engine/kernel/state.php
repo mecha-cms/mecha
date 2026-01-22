@@ -17,14 +17,14 @@ class State extends Genome {
         self::$lot[static::class] = $this->state = $value;
     }
 
-    public function __get(string $key) {
+    public function __get(string $key): mixed {
         if (parent::_($key)) {
             return $this->__call($key);
         }
         return self::get(p2f($key));
     }
 
-    public function __invoke(...$lot) {
+    public function __invoke(...$lot): mixed {
         return count($lot) < 2 ? self::get(...$lot) : self::set(...$lot);
     }
 
@@ -65,7 +65,7 @@ class State extends Genome {
         return null !== self::offsetGet($key);
     }
 
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         return self::$lot[static::class][$key] ?? null;
     }
 

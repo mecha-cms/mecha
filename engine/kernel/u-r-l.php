@@ -111,7 +111,7 @@ final class URL extends Genome {
         $this->_scheme((string) ($scheme ?? ""));
     }
 
-    public function __get(string $key) {
+    public function __get(string $key): mixed {
         if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
             return $this->{$key}();
         }
@@ -178,7 +178,7 @@ final class URL extends Genome {
         return isset($this->lot[$key]);
     }
 
-    public function offsetGet($key) {
+    public function offsetGet($key): mixed {
         if ('port' === $key) {
             return (int) ($this->lot[$key] ?? 0);
         }
