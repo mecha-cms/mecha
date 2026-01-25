@@ -21,11 +21,8 @@ class XML extends Genome {
             if ($stack > 0) {
                 if (2 === $v[1]) {
                     if ('/' === $v[0][1]) {
-                        // if (trim(substr($v[0], 2, -1)) === $current) {
-                            $stack -= 1;
-                        // }
+                        $stack -= 1;
                     } else {
-                        // $current = rtrim(strtok(substr($v[0], 1), " \n\r\t>"), '/');
                         $stack += 1;
                     }
                 }
@@ -33,7 +30,6 @@ class XML extends Genome {
                 continue;
             }
             if (2 === $v[1]) {
-                // $current = rtrim(strtok(substr($v[0], 1), " \n\r\t>"), '/');
                 $stack += 1;
             }
             $lot[++$i] = [$v[0], $v[1], $v[2] ?? strlen($v[0])];
@@ -42,7 +38,7 @@ class XML extends Genome {
         foreach ($lot as &$v) {
             // <https://www.w3.org/TR/xml#d0e2480>
             if (1 === $v[1] && false === strpos('!?', $v[0][1])) {
-                $n = rtrim(strtok(substr($t = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t"), '/');
+                $n = rtrim(substr($n = substr($t = substr($v[0], 0, $v[2]), 1, -1), 0, strcspn($n, " \n\r\t")), '/');
                 if (!empty($this->raw[$n]) && '</' . $n . '>' === substr($v[0], $x = -(2 + strlen($n) + 1))) {
                     $v = [$n, substr($v[0], $v[2], $x), $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
                     continue;
@@ -52,7 +48,7 @@ class XML extends Genome {
             }
             // <https://www.w3.org/TR/xml#sec-starttags>
             if (2 === $v[1]) {
-                $n = rtrim(strtok(substr($t = substr($v[0], 0, $v[2]), 1, -1), " \n\r\t"), '/');
+                $n = rtrim(substr($n = substr($t = substr($v[0], 0, $v[2]), 1, -1), 0, strcspn($n, " \n\r\t")), '/');
                 $r = substr($v[0], $v[2]);
                 if ('</' . $n . '>' === substr($r, $x = -(2 + strlen($n) + 1))) {
                     $r = substr($r, 0, $x);

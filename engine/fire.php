@@ -267,7 +267,7 @@ function long(string $value) {
         0 !== strpos($value, 'javascript:') &&
         0 !== strpos($value, 'mailto:')
     ) {
-        $parent = strtok($url->current, '?&#');
+        $parent = substr($v = $url->current, 0, strcspn($v, '?&#'));
         // `long('foo/bar/baz')`
         if ($value && false === strpos('.?&#', $value[0]) && $parent !== $r) {
             $parent = dirname($parent);
