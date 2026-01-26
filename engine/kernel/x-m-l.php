@@ -37,7 +37,7 @@ class XML extends Genome {
         $strict = $this->strict;
         foreach ($lot as &$v) {
             // <https://www.w3.org/TR/xml#d0e2480>
-            if (1 === $v[1] && false === strpos('!?', $v[0][1])) {
+            if (1 === $v[1] && strcspn($v[0], '!?', 1)) {
                 $n = rtrim(substr($n = substr($t = substr($v[0], 0, $v[2]), 1, -1), 0, strcspn($n, " \n\r\t")), '/');
                 if (!empty($this->raw[$n]) && '</' . $n . '>' === substr($v[0], $x = -(2 + strlen($n) + 1))) {
                     $v = [$n, substr($v[0], $v[2], $x), $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
@@ -64,7 +64,7 @@ class XML extends Genome {
             // <https://www.w3.org/TR/xml#sec-cdata-sect>
             // <https://www.w3.org/TR/xml#sec-comments>
             // <https://www.w3.org/TR/xml#sec-prolog-dtd>
-            if (1 === $v[1] && false !== strpos('!?', $v[0][1])) {
+            if (1 === $v[1] && strspn($v[0], '!?', 1)) {
                 $v = [null, $v[0], []];
                 continue;
             }

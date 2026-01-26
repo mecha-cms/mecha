@@ -65,17 +65,17 @@ final class Is extends Genome {
         if (':' !== $value[1]) {
             return false;
         }
-        if (false === strpos(';}', substr($value, -1))) {
+        if ($value && strcspn($value, ';}', -1)) {
             return false;
         }
         $v = $value[0];
         if ('s' === $v && false === strpos($value, '"')) {
             return false;
         }
-        if (false !== strpos('Oa', $v)) {
+        if (strspn($v, 'Oa')) {
             return (bool) preg_match('/^' . $v . ':[0-9]+:/s', $value);
         }
-        if (false !== strpos('bdi', $v)) {
+        if (strspn($v, 'bdi')) {
             return (bool) preg_match('/^' . $v . ':[0-9.E+-]+;$/', $value);
         }
         return false;

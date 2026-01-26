@@ -146,7 +146,7 @@ function apart(string $value, array $raw = [], array $void = []) {
             continue;
         }
         // Tag such as `<>` and `< >` is not valid because it does not have a name
-        if (false !== strpos($s . '>', substr($from, 1, 1))) {
+        if (strspn($from, $s . '>', 1)) {
             if (0 === ($to[$i][1] ?? 1)) {
                 $to[$i][0] .= substr($from, 0, 2);
             } else {
@@ -179,7 +179,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         }
         if ('<!' === substr($from, 0, 2)) {
             // DTD such as `<!>` and `<! >` is not valid because it does not have a name
-            if (false !== strpos($s . '>', substr($from, 2, 1))) {
+            if (strspn($from, $s . '>', 2)) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
                 } else {
@@ -219,7 +219,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         // <https://www.w3.org/TR/xml#sec-pi>
         if ('<?' === substr($from, 0, 2)) {
             /* PI such as `<?>` and `<? >` is not valid because it does not have a name */
-            if (false !== strpos($s . '>', substr($from, 2, 1))) {
+            if (strspn($from, $s . '>', 2)) {
                 if (0 === ($to[$i][1] ?? 1)) {
                     $to[$i][0] .= substr($from, 0, 3);
                 } else {
@@ -294,7 +294,7 @@ function apart(string $value, array $raw = [], array $void = []) {
         $last = -1;
         $to[$i][1] = 1;
         while (false !== ($last = strpos($from, '</' . $k, $last + 1))) {
-            if (false !== strpos($s . '>', substr($from, $last + strlen($k) + 2, 1))) {
+            if (strspn($from, $s . '>', $last + strlen($k) + 2)) {
                 $n = $last + strlen($k) + 2;
                 $to[$i][0] .= substr($from, 0, $n);
                 $from = substr($from, $n);

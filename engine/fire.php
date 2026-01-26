@@ -251,7 +251,7 @@ function long(string $value) {
     }
     // `long('/foo/bar/baz')`
     if (0 === strpos($value, '/')) {
-        if (false !== strpos('?&#', $value[1] ?? P)) {
+        if (strspn($value, '?&#', 1)) {
             $value = substr($value, 1);
         }
         if (0 === strpos($value, '&')) {
@@ -269,7 +269,7 @@ function long(string $value) {
     ) {
         $parent = substr($v = $url->current, 0, strcspn($v, '?&#'));
         // `long('foo/bar/baz')`
-        if ($value && false === strpos('.?&#', $value[0]) && $parent !== $r) {
+        if ($value && strcspn($value, '.?&#') && $parent !== $r) {
             $parent = dirname($parent);
         }
         if (0 !== ($count = substr_count($value . '/', '../'))) {
