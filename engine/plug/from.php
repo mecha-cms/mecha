@@ -2,16 +2,16 @@
 
 foreach ([
     'HTML' => static function (?string $value, $deep = false): ?string {
-        $out = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
-        return "" !== $out ? $out : null;
+        $r = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
+        return "" !== $r ? $r : null;
     },
     'JSON' => static function (?string $value, $array = false) {
-        $out = json_decode($value ?? "", $array);
-        return "" !== $out ? $out : null;
+        $r = json_decode($value ?? "", $array);
+        return "" !== $r ? $r : null;
     },
     'URL' => static function (?string $value, $raw = false): ?string {
-        $out = $raw ? rawurlencode($value ?? "") : urlencode($value ?? "");
-        return "" !== $out ? $out : null;
+        $r = $raw ? rawurlencode($value ?? "") : urlencode($value ?? "");
+        return "" !== $r ? $r : null;
     },
     'base64' => static function (?string $value): ?string {
         return "" !== ($value = base64_decode($value ?? "")) ? $value : null;

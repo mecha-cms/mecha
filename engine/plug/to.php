@@ -35,7 +35,7 @@ foreach ([
     },
     'camel' => "\\c",
     'entity' => static function (?string $value, $hex = false, int $pad = 4): ?string {
-        $out = "";
+        $r = "";
         $utf8 = extension_loaded('mbstring');
         $value = (string) $value;
         $value = $utf8 ? mb_str_split($value, 1, 'UTF-8') : str_split($value);
@@ -47,37 +47,45 @@ foreach ([
             if ($pad) {
                 $v = str_pad($v, $pad, '0', STR_PAD_LEFT);
             }
-            $out .= '&#' . ($hex ? 'x' : "") . $v . ';';
+            $r .= '&#' . ($hex ? 'x' : "") . $v . ';';
         }
-        return "" !== $out ? $out : null;
+        return "" !== $r ? $r : null;
     },
     'file' => static function (?string $value, string $keep = '._'): ?string {
         if ("" === trim($value ?? "")) {
             return null;
         }
-        // Trim white-space(s) around `DIRECTORY_SEPARATOR`
-        $value = preg_replace('/\s*[' . ($v = "\\\\\/") . ']\s*/', D, $value);
-        // Make sure file extension uses lower-case(s)
-        $value = preg_replace_callback('/\s*[.]\s*([a-z\d]+)$/i', static function ($m) {
-            return '.' . strtolower($m[1]);
-        }, $value);
-        // Convert to safe file path
-        $value = strtr(h($value, '-', true, $keep . $v) ?? "", ["\\" => D, '/' => D]);
-        // Convert `\.\` and `\..\` to `\`
-        $value = strtr($value, [D . '.' . D => D, D . '..' . D => D]);
-        return "" !== trim($value, '.') ? $value : null;
+        $r = [];
+        if ($value = explode('/', strtr($value, "\\", '/'))) {
+            $x = strtolower(trim(pathinfo($name = array_pop($value), PATHINFO_EXTENSION)));
+            $value[] = h(trim(pathinfo($name, PATHINFO_FILENAME)), '-', true, $keep) . ("" !== $x ? '.' . $x : "");
+        }
+        foreach ($value as $v) {
+            if ("" === ($v = trim($v))) {
+                continue;
+            }
+            if (strspn($v, '.') === strlen($v)) {
+                continue;
+            }
+            $r[] = h($v, '-', true, $keep);
+        }
+        return $r ? implode(D, $r) : null;
     },
     'folder' => static function (?string $value, string $keep = '._'): ?string {
         if ("" === trim($value ?? "")) {
             return null;
         }
-        // Trim white-space(s) around `DIRECTORY_SEPARATOR`
-        $value = preg_replace('/\s*[' . ($v = "\\\\\/") . ']\s*/', D, $value);
-        // Convert to safe folder path
-        $value = strtr(h($value, '-', true, $keep . $v) ?? "", ["\\" => D, '/' => D]);
-        // Convert `\.\` and `\..\` to `\`
-        $value = strtr($value, [D . '.' . D => D, D . '..' . D => D]);
-        return "" !== trim($value, '.') ? $value : null;
+        $r = [];
+        foreach (explode('/', strtr($value, "\\", '/')) as $v) {
+            if ("" === ($v = trim($v))) {
+                continue;
+            }
+            if (strspn($v, '.') === strlen($v)) {
+                continue;
+            }
+            $r[] = h($v, '-', true, $keep);
+        }
+        return $r ? implode(D, $r) : null;
     },
     'kebab' => static function (?string $value, string $join = '-', $accent = false): ?string {
         $value = trim(h($value, $join, $accent) ?? "", $join);
@@ -96,7 +104,7 @@ foreach ([
         return "" !== $value ? $value : null;
     },
     'query' => static function (?array $value): ?string {
-        $out = [];
+        $r = [];
         if (!$value) {
             return null;
         }
@@ -123,10 +131,10 @@ foreach ([
             // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
             $v = true !== $v ? '=' . urlencode(s($v)) : "";
             if ("" !== ($v = $k . $v)) {
-                $out[] = $v;
+                $r[] = $v;
             }
         }
-        return $out ? '?' . implode('&', $out) : null;
+        return $r ? '?' . implode('&', $r) : null;
     },
     'serial' => static function ($value): ?string {
         return "" !== ($value = serialize($value)) ? $value : null;
