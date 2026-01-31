@@ -106,8 +106,8 @@ if ('application/json' === strtolower(type() ?? "") && null !== ($r = json_decod
     // Evaluate `$_GET`, `$_POST`, `$_REQUEST` value(s)
     $value = [&$_GET, &$_POST, &$_REQUEST];
     array_walk_recursive($value, static function (&$v) {
-        // Trim white-space and normalize line-break
-        $v = trim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
+        // Trim (right) white-space and normalize line-break
+        $v = rtrim(strtr($v, ["\r\n" => "\n", "\r" => "\n"]));
         // Replace all empty value with `null` and evaluate other(s)
         $v = "" === $v ? null : e($v);
     });

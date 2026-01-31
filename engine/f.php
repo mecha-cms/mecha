@@ -487,44 +487,32 @@ function eq($a, $b) {
 }
 
 function exist($path, $type = null) {
-    if (is_array($path)) {
-        if (0 === $type) {
-            foreach ($path as $v) {
-                if ($v && $v = stream_resolve_include_path($v)) {
-                    if (!is_dir($v)) {
-                        continue;
-                    }
-                    return $v;
-                }
-            }
-            return false;
+    $test = match ($type) {
+        0 => 'is_dir',
+        1 => 'is_file',
+        default => null
+    };
+    foreach ((array) $path as $v) {
+        if (!$v) {
+            continue;
         }
-        if (1 === $type) {
-            foreach ($path as $v) {
-                if ($v && $v = stream_resolve_include_path($v)) {
-                    if (!is_file($v)) {
-                        continue;
-                    }
-                    return $v;
-                }
+        if ($r = stream_resolve_include_path($v)) {
+            if ($test && !$test($r)) {
+                continue;
             }
-            return false;
+            return $r;
         }
-        foreach ($path as $v) {
-            if ($v && $v = stream_resolve_include_path($v)) {
-                return $v;
+        if (strcspn($v, '*?[]{}') !== strlen($v)) {
+            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = reset($r))) {
+                continue;
             }
+            if ($test && !$test($r)) {
+                continue;
+            }
+            return $r;
         }
-        return false;
     }
-    $path = stream_resolve_include_path($path);
-    if (0 === $type) {
-        return is_dir($path) ? $path : false;
-    }
-    if (1 === $type) {
-        return is_file($path) ? $path : false;
-    }
-    return $path;
+    return false;
 }
 
 function extend(array $value, ...$lot) {
