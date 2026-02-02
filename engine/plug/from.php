@@ -20,35 +20,30 @@ foreach ([
         return "" !== ($value = html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES)) ? $value : null;
     },
     'query' => static function (?string $from, $eval = true, $value = true): array {
-        $to = [];
         if ("" === ($from = trim($from ?? ""))) {
-            return $to;
+            return [];
         }
-        static $q;
-        $q = $q ?? function (array &$to, $k, $v) {
-            $k = explode('[', strtr($k, [']' => ""]));
-            while (count($k) > 1) {
-                if ("" === ($kk = array_shift($k))) {
-                    $kk = count($to);
-                }
-                if (!array_key_exists($kk, $to)) {
-                    $to[$kk] = [];
-                }
-                $to =& $to[$kk];
-            }
-            if ("" === ($kk = array_shift($k))) {
-                $kk = count($to);
-            }
-            $to[$kk] = $v;
-            ksort($to);
-        };
-        if (isset($from[0]) && '?' === $from[0]) {
+        if ('?' === $from[0]) {
             $from = substr($from, 1);
         }
+        $to = [];
         foreach (explode('&', $from) as $v) {
             $v = explode('=', $v, 2);
-            $v[1] = isset($v[1]) ? urldecode($v[1]) : $value;
-            $q($to, urldecode($v[0]), $eval ? e($v[1]) : $v[1]);
+            $v[0] = urldecode($v[0]);
+            if (isset($v[1])) {
+                $v[1] = urldecode($v[1]);
+                $v[1] = $eval ? e($v[1]) : $v[1];
+            } else {
+                $v[1] = $value;
+            }
+            $keys = explode('[', strtr($v[0], [']' => ""]));
+            $r =& $to;
+            while (isset($keys[1])) {
+                $r[$k = "" === ($k = array_shift($keys)) ? count($r) : $k] ??= [];
+                $r =& $r[$k];
+            }
+            $r["" === ($k = array_shift($keys)) ? count($r) : $k] = $v[1];
+            ksort($r);
         }
         return $to;
     },

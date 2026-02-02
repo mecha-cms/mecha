@@ -104,37 +104,29 @@ foreach ([
         return "" !== $value ? $value : null;
     },
     'query' => static function (?array $value): ?string {
-        $r = [];
         if (!$value) {
             return null;
         }
-        static $q;
-        $q = $q ?? function (array $value, $enter) use (&$q) {
-            $a = [];
-            $exit = $enter ? ']' : "";
+        $from = [[$value, ""]];
+        $to = [];
+        while ($from) {
+            [$value, $x] = array_pop($from);
             ksort($value);
             foreach ($value as $k => $v) {
-                $k = urlencode($k);
+                $k = $x . urlencode($k) . ("" !== $x ? ']' : "");
                 if (is_array($v)) {
-                    $a = array_merge($a, $q($v, $enter . $k . $exit . '['));
-                } else {
-                    $a[$enter . $k . $exit] = $v;
+                    $from[] = [$v, $k . '['];
+                    continue;
                 }
-            }
-            return $a;
-        };
-        foreach ($q($value, "") as $k => $v) {
-            // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
-            if (false === $v || null === $v) {
-                continue;
-            }
-            // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
-            $v = true !== $v ? '=' . urlencode(s($v)) : "";
-            if ("" !== ($v = $k . $v)) {
-                $r[] = $v;
+                // `['a' => false, 'b' => 'false', 'c' => null, 'd' => 'null']` → `b=false&d=null`
+                if (false === $v || null === $v) {
+                    continue;
+                }
+                // `['a' => true, 'b' => 'true', 'c' => ""]` → `a&b=true&c=`
+                $to[] = true === $v ? $k : $k . '=' . urlencode(s($v));
             }
         }
-        return $r ? '?' . implode('&', $r) : null;
+        return $to ? '?' . implode('&', $to) : null;
     },
     'serial' => static function ($value): ?string {
         return "" !== ($value = serialize($value)) ? $value : null;
