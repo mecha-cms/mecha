@@ -60,7 +60,7 @@ class File extends Genome {
     }
 
     public function ID() {
-        return ($route = $this->route()) ? hash('xxh64', $route) : null;
+        return ($route = $this->route()) ? hash('xxh3', $route) : null;
     }
 
     public function URL() {
