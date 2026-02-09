@@ -12,11 +12,7 @@ final class URL extends Genome {
             }
             return null;
         }
-        $this->lot['hash'] = strtr(trim($v, '#'), [
-            '#' => '%23',
-            '&' => '%26',
-            '?' => '%3F'
-        ]);
+        $this->lot['hash'] = trim($v, '#');
     }
 
     private function _host(?string $v = null) {
@@ -38,12 +34,7 @@ final class URL extends Genome {
             }
             return null;
         }
-        $this->lot['path'] = strtr(trim($v, '/'), [
-            "\\" => '/',
-            '#' => '%23',
-            '&' => '%26',
-            '?' => '%3F'
-        ]);
+        $this->lot['path'] = trim($v, '/');
     }
 
     private function _port(?string $v = null) {
@@ -70,10 +61,7 @@ final class URL extends Genome {
             }
             return null;
         }
-        $this->lot['query'] = strtr(trim($v, '&?'), [
-            '#' => '%23',
-            '?' => '%3F'
-        ]);
+        $this->lot['query'] = trim($v, '&?');
     }
 
     private function _scheme(?string $v = null) {
