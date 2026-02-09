@@ -18,18 +18,6 @@ foreach ([
         }
         return "" !== ($value = json_encode($value ?? "", JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_TAG | JSON_PRESERVE_ZERO_FRACTION | JSON_UNESCAPED_UNICODE)) ? $value : null;
     },
-    'URL' => static function (?string $value, $raw = false): ?string {
-        $url = lot('url') . "";
-        $value = (string) $value;
-        $value = stream_resolve_include_path($value) ?: $value;
-        $value = strtr($value, [
-            PATH => $url,
-            strtr(PATH, D, '/') => $url,
-            D => '/'
-        ]);
-        $value = $raw ? rawurldecode($value) : urldecode($value);
-        return "" !== $value ? $value : null;
-    },
     'base64' => static function (?string $value): ?string {
         return "" !== ($value = base64_encode($value ?? "")) ? $value : null;
     },
@@ -91,15 +79,20 @@ foreach ([
         $value = trim(h($value, $join, $accent) ?? "", $join);
         return "" !== $value ? $value : null;
     },
+    'link' => static function (?string $value) {
+        if (0 === strpos(strtr($value ?? "", '/', D), $v = PATH . D)) {
+            $value = long('/' . substr($value, strlen($v)));
+        }
+        $value = rtrim(strtr($value, D, '/'), '/');
+        return "" !== $value ? $value : null;
+    },
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => static function (?string $value): ?string {
-        $url = lot('url') . "";
-        $value = strtr($value ?? "", [
-            $url => PATH,
-            strtr($url, '/', D) => PATH,
-            '/' => D
-        ]);
+        if (0 === strpos(strtr($value ?? "", D, '/'), $v = long('/') . '/')) {
+            $value = PATH . D . substr($value, strlen($v));
+        }
+        $value = rtrim(strtr($value, '/', D), D);
         $value = stream_resolve_include_path($value) ?: $value;
         return "" !== $value ? $value : null;
     },
@@ -144,8 +137,7 @@ foreach ([
 // Alias(es)…
 foreach ([
     'files' => 'folder',
-    'html' => 'HTML',
-    'url' => 'URL'
+    'html' => 'HTML'
 ] as $k => $v) {
     To::_($k, To::_($v));
 }

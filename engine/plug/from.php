@@ -9,16 +9,14 @@ foreach ([
         $r = json_decode($value ?? "", $array);
         return "" !== $r ? $r : null;
     },
-    'URL' => static function (?string $value, $raw = false): ?string {
-        $r = $raw ? rawurlencode($value ?? "") : urlencode($value ?? "");
-        return "" !== $r ? $r : null;
-    },
     'base64' => static function (?string $value): ?string {
         return "" !== ($value = base64_decode($value ?? "")) ? $value : null;
     },
     'entity' => static function (?string $value): ?string {
         return "" !== ($value = html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES)) ? $value : null;
     },
+    'link' => 'To::path',
+    'path' => 'To::link',
     'query' => static function (?string $from, $eval = true, $value = true): array {
         if ("" === ($from = trim($from ?? ""))) {
             return [];
@@ -57,8 +55,7 @@ foreach ([
 // Alias(es)…
 foreach ([
     'html' => 'HTML',
-    'json' => 'JSON',
-    'url' => 'URL'
+    'json' => 'JSON'
 ] as $k => $v) {
     From::_($k, From::_($v));
 }
