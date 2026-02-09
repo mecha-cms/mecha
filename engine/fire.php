@@ -196,17 +196,14 @@ $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 
 
 [$path, $query] = array_replace(["", ""], explode('?', $_SERVER['REQUEST_URI'], 2));
 
-// Prevent cross-site script attack
-$path = strtr(trim($path, '/'), [
-    '<' => '%3C',
-    '>' => '%3E',
-    '&' => '%26',
-    '"' => '%22'
-]);
-
 // Prevent directory traversal attack
+$path = trim($path, '/');
 while (false !== strpos($path, '../')) {
     $path = strtr($path, ['../' => ""]);
+}
+
+if ($path && (false !== strpos($path, '%2F') || false !== strpos($path, '%5C'))) {
+    exit; // Nasty!
 }
 
 // If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\s\d\f`
