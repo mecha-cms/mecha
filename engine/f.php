@@ -1375,7 +1375,7 @@ function f(?string $value, $accent = true, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-function g(string $folder, $x = null, $deep = 0, bool $keys = true): Countable {
+function g(string $folder, $x = null, $deep = 0, $keys = true) {
     if (!is_dir($folder)) {
         return new IteratorG(new EmptyIterator);
     }
