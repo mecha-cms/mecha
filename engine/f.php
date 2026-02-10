@@ -29,42 +29,46 @@ if (!function_exists('json_validate')) {
 }
 
 // To be used by `g()`
-class RecursiveIteratorIteratorG extends RecursiveIteratorIterator implements Countable {
-    public $c = 0;
-    public $count = [];
-    public $i = 0;
-    public $list = false;
+final class IteratorG implements Countable, Iterator {
+    private $i = 0;
+    private $it;
+    private $lot = [];
+    private $valid = true;
+    public function __construct(Iterator $it) {
+        $this->it = $it;
+    }
     public function count(): int {
-        if (-1 !== ($v = $this->count[$c = $this->c] ?? -1)) {
-            return $v;
+        if ($this->valid) {
+            foreach ($this as $v) {}
         }
-        // if (null !== ($v = content($f = LOT . D . 'cache' . D . 'g' . D . md5($c) . '.count'))) {
-        //     return (int) ($v ?? 0);
-        // }
-        $this->rewind();
-        $this->count[$c] = $v = iterator_count($this);
-        $this->rewind();
-        // if (!headers_sent()) {
-        //     save($f, (string) $v, 0600);
-        // }
-        return $v;
+        return count($this->lot);
     }
-    #[ReturnTypeWillChange]
-    public function current() {
-        $v = parent::current();
-        return $this->list ? $v : (is_dir($v) ? 0 : 1);
+    public function current(): mixed {
+        return $this->lot[$this->i][0];
     }
-    #[ReturnTypeWillChange]
-    public function key() {
-        return $this->list ? $this->i : parent::key();
+    public function key(): mixed {
+        return $this->lot[$this->i][1];
     }
     public function next(): void {
         ++$this->i;
-        parent::next();
     }
     public function rewind(): void {
         $this->i = 0;
-        parent::rewind();
+    }
+    public function valid(): bool {
+        if (array_key_exists($this->i, $this->lot)) {
+            return true;
+        }
+        if (!$this->valid) {
+            return false;
+        }
+        if (!$this->it->valid()) {
+            $this->valid = false;
+            return false;
+        }
+        $this->lot[] = [$this->it->current(), $this->it->key()];
+        $this->it->next();
+        return true;
     }
 }
 
@@ -1371,37 +1375,35 @@ function f(?string $value, $accent = true, string $keep = "") {
     return "" !== $value ? $value : null;
 }
 
-function g(string $folder, $x = null, $deep = 0, $keys = true) {
-    if (is_dir($folder) && (new FilesystemIterator($folder))->valid()) {
-        $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::CURRENT_AS_PATHNAME | FilesystemIterator::KEY_AS_PATHNAME | FilesystemIterator::SKIP_DOTS);
-        $it = new RecursiveCallbackFilterIterator($it, static function ($v, $k, $it) use ($deep, $x) {
-            if ($deep > 0 && $it->hasChildren()) {
-                return true;
-            }
-            // Filter by type (`0` for folder and `1` for file)
-            if (0 === $x) {
-                return is_dir($v);
-            }
-            if (1 === $x) {
-                return is_file($v);
-            }
-            // Filter by file extension
-            if (is_string($x)) {
-                $x = ',' . $x . ',';
-                return is_file($v) && false !== strpos($x, ',' . pathinfo($v, PATHINFO_EXTENSION) . ',');
-            }
-            // No filter
-            return true;
-        });
-        $it = new RecursiveIteratorIteratorG($it, null === $x || 0 === $x ? RecursiveIteratorIteratorG::CHILD_FIRST : RecursiveIteratorIteratorG::LEAVES_ONLY);
-        $it->c = $folder . '?deep=' . s($deep) . '&x=' . s($x);
-        $it->list = !$keys;
-        $it->setMaxDepth(true === $deep ? -1 : (is_int($deep) ? $deep : 0));
-        // To get the first element of a `RecursiveIteratorIterator` instance, a rewind is needed, somehow :(
-        $it->rewind(); // This should execute the `RecursiveIteratorIterator::beginIteration()` method
-        return $it;
+function g(string $folder, $x = null, $deep = 0, bool $keys = true): Countable {
+    if (!is_dir($folder)) {
+        return new IteratorG(new EmptyIterator);
     }
-    return new EmptyIterator;
+    $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS | FilesystemIterator::CURRENT_AS_PATHNAME);
+    $it = new RecursiveIteratorIterator($it, 0 === $x || null === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY);
+    $it->setMaxDepth(true === $deep ? -1 : (int) $deep);
+    return new IteratorG((function ($it, $keys, $x) {
+        $i = 0;
+        foreach ($it as $path) {
+            $f = !($d = is_dir($path));
+            if (0 === $x && !$d) {
+                continue;
+            }
+            if (1 === $x && !$f) {
+                continue;
+            }
+            if (is_string($x)) {
+                if ($d) {
+                    continue;
+                }
+                if (false === strpos(',' . strtolower($x) . ',', ',' . strtolower(pathinfo($path, PATHINFO_EXTENSION)) . ',')) {
+                    continue;
+                }
+            }
+            yield $keys ? $path : $i => ($keys ? ($d ? 0 : 1) : $path);
+            ++$i;
+        }
+    })($it, $keys, $x));
 }
 
 function h(?string $value, string $join = '-', $accent = false, string $keep = "") {

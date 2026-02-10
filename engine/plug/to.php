@@ -83,8 +83,14 @@ foreach ([
         if (0 === strpos(strtr($value ?? "", '/', D), $v = PATH . D)) {
             $value = long('/' . substr($value, strlen($v)));
         }
-        $value = rtrim(strtr($value, D, '/'), '/');
-        return "" !== $value ? $value : null;
+        $r = [];
+        foreach (explode('/', rtrim(strtr($value, D, '/'), '/')) as $v) {
+            $r[] = rawurlencode($v);
+        }
+        if (isset($r[0])) {
+            $r[0] = strtr($r[0], ['%3A' => ':']);
+        }
+        return $r ? implode('/', $r) : null;
     },
     'lower' => "\\l",
     'pascal' => "\\p",
@@ -92,9 +98,13 @@ foreach ([
         if (0 === strpos(strtr($value ?? "", D, '/'), $v = long('/') . '/')) {
             $value = PATH . D . substr($value, strlen($v));
         }
-        $value = rtrim(strtr($value, '/', D), D);
-        $value = stream_resolve_include_path($value) ?: $value;
-        return "" !== $value ? $value : null;
+        $r = [];
+        foreach (explode(D, rtrim(strtr($value, '/', D), D)) as $v) {
+            $r[] = rawurldecode($v);
+        }
+        $r = implode(D, $r);
+        $r = stream_resolve_include_path($r) ?: $r;
+        return "" !== $r ? $r : null;
     },
     'query' => static function (?array $value): ?string {
         if (!$value) {
