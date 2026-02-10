@@ -1377,7 +1377,7 @@ function f(?string $value, $accent = true, string $keep = "") {
 
 function g(string $folder, $x = null, $deep = 0, $keys = true) {
     if (!is_dir($folder)) {
-        return new IteratorG(new EmptyIterator);
+        return new EmptyIterator;
     }
     $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS | FilesystemIterator::CURRENT_AS_PATHNAME);
     $it = new RecursiveIteratorIterator($it, 0 === $x || null === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY);
