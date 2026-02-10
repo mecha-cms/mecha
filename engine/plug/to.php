@@ -87,8 +87,13 @@ foreach ([
         foreach (explode('/', rtrim(strtr($value, D, '/'), '/')) as $v) {
             $r[] = rawurlencode($v);
         }
-        if (isset($r[0])) {
-            $r[0] = strtr($r[0], ['%3A' => ':']);
+        // The `http:` part
+        if (isset($r[0]) && '%3A' === substr($r[0], -3)) {
+            $r[0] = substr($r[0], 0, -3) . ':';
+        }
+        // The `127.0.0.1:80` part
+        if (isset($r[2])) {
+            $r[2] = strtr($r[2], ['%3A' => ':']);
         }
         return $r ? implode('/', $r) : null;
     },
