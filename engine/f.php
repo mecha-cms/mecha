@@ -1400,7 +1400,7 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
                     continue;
                 }
             }
-            yield $keys ? $path : $i => ($keys ? ($d ? 0 : 1) : $path);
+            yield ($keys ? $path : $i) => ($keys ? ($d ? 0 : 1) : $path);
             ++$i;
         }
     })($it, $keys, $x));
