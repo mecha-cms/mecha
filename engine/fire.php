@@ -233,73 +233,59 @@ function kick(?string $path = null, ?int $status = null) {
 }
 
 function long(string $value) {
-    $url = lot('url');
-    $r = (string) $url;
+    $r = ($url = lot('url')) . "";
+    // `long("")`
     if ("" === $value) {
         return $url->current;
     }
-    // `long('//example.com')`
+    // `long('//127.0.0.1')`
     if (0 === strpos($value, '//')) {
-        return rtrim(substr($url->scheme, 0, -2) . $value, '/');
+        return $url->scheme . $value;
     }
-    // `long('./foo/bar/baz')`
-    if ('.' === $value || 0 === strpos($value, './')) {
+    if (
+        0 === strpos($value, 'blob:') ||
+        0 === strpos($value, 'data:') ||
+        0 === strpos($value, 'javascript:') ||
+        0 === strpos($value, 'mailto:') ||
+        false !== strpos($value, '://')
+    ) {
+        return $value;
+    }
+    // `long('./foo/bar')`
+    if ($value === '.' || 0 === strpos($value, './')) {
         $value = substr($value, 1);
     }
-    // `long('/foo/bar/baz')`
+    // `long('/foo/bar')`
     if (0 === strpos($value, '/')) {
-        if (strspn($value, '?&#', 1)) {
-            $value = substr($value, 1);
-        }
-        if (0 === strpos($value, '&')) {
-            $value = '?' . substr($value, 1);
-        }
-        return rtrim($r . $value, '/');
+        return $r . (strspn($value = substr($value, 1), '?&#') ? "" : '/') . $value;
     }
-    // `long('?foo=bar&baz=qux')`
-    if (
-        false === strpos($value, '://') &&
-        0 !== strpos($value, 'blob:') &&
-        0 !== strpos($value, 'data:') &&
-        0 !== strpos($value, 'javascript:') &&
-        0 !== strpos($value, 'mailto:')
-    ) {
-        $parent = substr($v = $url->current, 0, strcspn($v, '?&#'));
-        // `long('foo/bar/baz')`
-        if ($value && strcspn($value, '.?&#') && $parent !== $r) {
-            $parent = dirname($parent);
-        }
-        if (0 !== ($count = substr_count($value . '/', '../'))) {
-            while ($count && $parent !== $r) {
-                $parent = dirname($parent);
-                --$count;
-            }
-            $value = strtr($value . '/', ['../' => ""]);
-        }
-        return strtr(rtrim($parent . '/' . trim($value, '/'), '/'), [
-            '/?' => '?',
-            '/&' => '?',
-            '/#' => '#'
-        ]);
+    $path = substr($v = $url->current, 0, strcspn($v, '?&#'));
+    // `long('foo/bar')`
+    if ($value && strcspn($value, '.?&#') && $path !== $r) {
+        $path = dirname($path);
     }
-    return $value;
+    // `long('../foo/bar')`
+    while (0 === strpos($value, '../') && $path !== $r) {
+        $path = dirname($path);
+        $value = substr($value, 3);
+    }
+    return strtr(rtrim($path . '/' . ltrim($value, '/'), '/'), [
+        '/#' => '#',
+        '/&' => '?',
+        '/?' => '?'
+    ]);
 }
 
 function short(string $value) {
-    $url = lot('url');
-    $parent = $url . "";
+    $r = ($url = lot('url')) . "";
     if (0 === strpos($value, '//')) {
-        if (0 !== strpos($value, '//' . $url->host)) {
-            return $value; // Ignore external URL
-        }
         $value = $url->scheme . substr($value, 2);
-    } else {
-        if (0 !== strpos($value, $parent)) {
-            return $value; // Ignore external URL
-        }
     }
-    $value = substr($value, strlen($parent));
-    return "" === $value ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
+    // Ignore external link(s)
+    if (0 !== strpos($value . '/', $r . '/')) {
+        return $value;
+    }
+    return "" === ($value = substr($value, strlen($r))) ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
 }
 
 function state(...$lot) {

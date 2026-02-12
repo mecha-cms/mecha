@@ -80,19 +80,19 @@ foreach ([
         return "" !== $value ? $value : null;
     },
     'link' => static function (?string $value) {
-        if (0 === strpos(strtr($value ?? "", '/', D), $v = PATH . D)) {
-            $value = long('/' . substr($value, strlen($v)));
+        if (0 === strpos($value = strtr($value ?? "", '/', D), $v = PATH . D)) {
+            $value = substr($value, strlen($v));
         }
         $r = [];
-        foreach (explode('/', rtrim(strtr($value, D, '/'), '/')) as $v) {
-            $r[] = rawurlencode($v);
+        foreach (explode('/', rtrim(long('/' . strtr($value, D, '/')), '/')) as $v) {
+            $r[] = !empty($v) ? rawurlencode($v) : $v;
         }
         // The `http:` part
-        if (isset($r[0]) && '%3A' === substr($r[0], -3)) {
+        if (!empty($r[0]) && '%3A' === substr($r[0], -3)) {
             $r[0] = substr($r[0], 0, -3) . ':';
         }
         // The `127.0.0.1:80` part
-        if (isset($r[2])) {
+        if (!empty($r[2])) {
             $r[2] = strtr($r[2], ['%3A' => ':']);
         }
         return $r ? implode('/', $r) : null;
@@ -100,15 +100,14 @@ foreach ([
     'lower' => "\\l",
     'pascal' => "\\p",
     'path' => static function (?string $value): ?string {
-        if (0 === strpos(strtr($value ?? "", D, '/'), $v = long('/') . '/')) {
-            $value = PATH . D . substr($value, strlen($v));
+        if (0 === strpos($value = strtr($value ?? "", D, '/'), $v = long('/') . '/')) {
+            $value = substr($value, strlen($v));
         }
         $r = [];
-        foreach (explode(D, rtrim(strtr($value, '/', D), D)) as $v) {
-            $r[] = rawurldecode($v);
+        foreach (explode(D, rtrim(PATH . D . strtr($value, '/', D), D)) as $v) {
+            $r[] = !empty($v) ? rawurldecode($v) : $v;
         }
-        $r = implode(D, $r);
-        $r = stream_resolve_include_path($r) ?: $r;
+        $r = stream_resolve_include_path($r = implode(D, $r)) ?: $r;
         return "" !== $r ? $r : null;
     },
     'query' => static function (?array $value): ?string {

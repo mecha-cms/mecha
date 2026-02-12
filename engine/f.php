@@ -40,14 +40,15 @@ final class IteratorG implements Countable, Iterator {
     public function count(): int {
         if ($this->valid) {
             foreach ($this as $v) {}
+            $this->i = 0;
         }
         return count($this->lot);
     }
     public function current(): mixed {
-        return $this->lot[$this->i][0];
+        return $this->valid() ? $this->lot[$this->i][0] : null;
     }
     public function key(): mixed {
-        return $this->lot[$this->i][1];
+        return $this->valid() ? $this->lot[$this->i][1] : null;
     }
     public function next(): void {
         ++$this->i;
@@ -56,18 +57,19 @@ final class IteratorG implements Countable, Iterator {
         $this->i = 0;
     }
     public function valid(): bool {
-        if (array_key_exists($this->i, $this->lot)) {
+        if (isset($this->lot[$this->i])) {
             return true;
         }
         if (!$this->valid) {
             return false;
         }
-        if (!$this->it->valid()) {
+        $it = $this->it;
+        if (!$it->valid()) {
             $this->valid = false;
             return false;
         }
-        $this->lot[] = [$this->it->current(), $this->it->key()];
-        $this->it->next();
+        $this->lot[] = [$it->current(), $it->key()];
+        $it->next();
         return true;
     }
 }
@@ -984,7 +986,10 @@ function pair(string $value) {
 }
 
 function path(?string $value) {
-    return stream_resolve_include_path($value ?? "") ?: null;
+    if (0 === strpos($value = strtr($value ?? "", '/', D), D) && 0 !== strpos($value, PATH . D)) {
+        $value = PATH . $value;
+    }
+    return stream_resolve_include_path(rtrim($value, D)) ?: null;
 }
 
 function pluck(iterable $from, string $key, $value = null, $that = null, $scope = 'static') {
@@ -1377,7 +1382,7 @@ function f(?string $value, $accent = true, string $keep = "") {
 
 function g(string $folder, $x = null, $deep = 0, $keys = true) {
     if (!is_dir($folder)) {
-        return new EmptyIterator;
+        return new IteratorG(new EmptyIterator);
     }
     $it = new RecursiveDirectoryIterator($folder, FilesystemIterator::SKIP_DOTS | FilesystemIterator::CURRENT_AS_PATHNAME);
     $it = new RecursiveIteratorIterator($it, 0 === $x || null === $x ? RecursiveIteratorIterator::CHILD_FIRST : RecursiveIteratorIterator::LEAVES_ONLY);
