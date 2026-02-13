@@ -547,55 +547,93 @@ function f2p(?string $value, $accent = false) {
     return "" !== $value ? $value : null;
 }
 
-function fetch(string $url, $lot = null, $type = 'GET') {
-    $chops = explode('?', $url, 2);
-    $headers = ['x-requested-with' => 'x-requested-with: cURL'];
-    $target = 'GET' === ($type = strtoupper($type)) ? $url : $chops[0];
-    // `fetch('/', ['x-foo' => 'bar'])`
+function fetch(string $from, $lot = null, $data = "") {
+    $h = [];
     if (is_array($lot)) {
         foreach ($lot as $k => $v) {
             if (false === $v || null === $v) {
-                unset($headers[$k]);
                 continue;
             }
+            $k = strtolower($k);
             if (is_array($v)) {
-                foreach ($v as $vv) {
-                    $headers[] = $k . ': ' . $vv;
+                foreach ($v as $kk => $vv) {
+                    $h[$k . P . $kk] = $k . ': ' . s($vv);
                 }
-            } else {
-                $headers[$k] = $k . ': ' . $v;
+                continue;
             }
+            $h[$k] = $k . ': ' . s($v);
         }
     } else if (is_string($lot)) {
-        $headers['user-agent'] = 'user-agent: ' . $lot;
+        $h[$k = 'user-agent'] = $k . ': ' . $lot;
     }
-    if (!isset($headers['user-agent'])) {
+    if (empty($h[$k = 'user-agent'])) {
         // <https://www.rfc-editor.org/rfc/rfc7231#section-5.5.3>
         $port = (int) $_SERVER['SERVER_PORT'];
-        $v = 'Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
-        $headers['user-agent'] = 'user-agent: ' . $v;
+        $h[$k] = $k . ': Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
+    }
+    // `fetch('POST http://127.0.0.1/asdf')`
+    if (strpos($from = trim($from), '/') > ($n = strcspn($from, " \n\r\t"))) {
+        $link = trim(substr($from, $n + 1));
+        $type = strtoupper(substr($from, 0, $n));
+    // `fetch('http://127.0.0.1/asdf')`
+    } else {
+        $link = $from;
+        $type = 'GET';
     }
     if (extension_loaded('curl')) {
-        $c = curl_init($target);
+        $c = curl_init($link);
+        if ('HEAD' === $type) {
+            curl_setopt($c, CURLOPT_HEADER, true);
+            curl_setopt($c, CURLOPT_NOBODY, true);
+        } else if (false !== strpos(',PATCH,POST,PUT,', ',' . $type . ',')) {
+            $data_with_blob = "";
+            $has_blob = false;
+            if (is_array($data)) {
+                $task = function ($data, $prefix = "") use (&$has_blob, &$task) {
+                    $r = [];
+                    foreach ($data as $k => $v) {
+                        $kk = $prefix ? $prefix . '[' . $k . ']' : $k;
+                        if (is_array($v)) {
+                            $r += $task($v, $kk);
+                            continue;
+                        }
+                        if (is_string($v) && is_file($v = 0 === strpos($v, ".\\") ? PATH . strtr(substr($v, 1), "\\", D) : $v)) {
+                            $has_blob = true;
+                            $r[$kk] = new CURLFile($v, mime_content_type($v) ?: 'application/octet-stream', basename($v));
+                            continue;
+                        }
+                        $r[$kk] = $v;
+                    }
+                    return $r;
+                };
+                $data_with_blob = $task($data);
+            }
+            if ('application/json' === ($h['content-type'] ?? 0)) {
+                $data = json_encode($data);
+            } else if (!$has_blob && is_array($data)) {
+                $data = http_build_query($data);
+            }
+            curl_setopt($c, CURLOPT_POSTFIELDS, $has_blob ? $data_with_blob : $data);
+        }
+        $h[$k = 'x-requested-with'] = $h[$k] ?? ($k . ': PHP cURL');
         curl_setopt_array($c, [
             CURLOPT_CUSTOMREQUEST => $type,
             CURLOPT_FAILONERROR => true,
             CURLOPT_FOLLOWLOCATION => true,
-            CURLOPT_HTTPHEADER => array_values($headers),
+            CURLOPT_HTTPHEADER => array_values($h),
             CURLOPT_MAXREDIRS => 2,
             CURLOPT_RETURNTRANSFER => true,
             CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_TIMEOUT => 15
         ]);
-        if ('HEAD' === $type) {
-            curl_setopt($c, CURLOPT_HEADER, true);
-            curl_setopt($c, CURLOPT_NOBODY, true);
-        } else if ('POST' === $type) {
-            curl_setopt($c, CURLOPT_POSTFIELDS, $chops[1] ?? "");
-        }
         if (false !== ($r = curl_exec($c))) {
-            if ('HEAD' === $r) {
-                $r = n(trim($r));
+            if ('HEAD' === $type) {
+                $h = explode("\n", n(trim($r)));
+                $r = array_shift($h) . "\n";
+                foreach ($h as $v) {
+                    $r .= strtolower(strstr($v, ':', true)) . strstr($v, ':') . "\n";
+                }
+                $r = substr($r, 0, -1);
             }
         }
         if (defined('TEST') && 'curl' === TEST && false === $r) {
@@ -604,9 +642,9 @@ function fetch(string $url, $lot = null, $type = 'GET') {
         curl_close($c);
     } else {
         if ('HEAD' === $type) {
-            $heads = get_headers($target, true, stream_context_set_default(['http' => ['method' => $type]]));
-            $heads = array_change_key_case((array) $heads, CASE_LOWER);
-            // If `$target` is redirected and the new target is also redirected, we got the `Location` data as array.
+            $h = get_headers($link, true, stream_context_set_default(['http' => ['method' => $type]]));
+            $h = array_change_key_case((array) $h, CASE_LOWER);
+            // If `$link` is redirected and the new target is also redirected, we got the `Location` data as array.
             // We also got the HTTP code header in a number indexed value.
             //
             // <https://www.php.net/manual/en/function.get-headers.php#120075>
@@ -623,40 +661,45 @@ function fetch(string $url, $lot = null, $type = 'GET') {
             //     3 => 'HTTP/1.1 200 OK'
             // ]
             $r = [];
-            if (isset($heads[0]) && isset($heads[1])) {
-                foreach ($heads as $k => $v) {
+            if (isset($h[0]) && isset($h[1])) {
+                foreach ($h as $k => $v) {
+                    $k = is_int($k) ? $k : strtolower($k);
                     if (is_array($v)) {
                         foreach ($v as $kk => $vv) {
-                            $r[$kk][] = strtolower($k) . ': ' . $vv;
+                            $r[$kk][] = $k . ': ' . $vv;
                         }
                         continue;
                     }
-                    $r[0][] = (is_int($k) ? "\n" : strtolower($k) . ': ') . $v;
+                    $r[0][] = (is_int($k) ? "\n" : $k . ': ') . $v;
                 }
                 foreach ($r as &$v) {
                     $v = implode("\n", $v);
                 }
                 unset($v);
             } else {
-                unset($heads[0]); // Remove the `HTTP/1.1 200 OK` part
-                foreach ($heads as $k => $v) {
+                foreach ($h as $k => $v) {
                     $r[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
                 }
             }
             $r = trim(implode("\n", $r));
         } else {
-            $context = [];
-            $headers['x-requested-with'] = 'x-requested-with: PHP';
-            if ('POST' === $type) {
-                $context['http']['content'] = $chops[1] ?? "";
-                $headers['content-type'] = 'content-type: application/x-www-form-urlencoded';
+            $h[$k = 'x-requested-with'] = $h[$k] ?? ($k . ': PHP');
+            $x = [];
+            if (false !== strpos(',PATCH,POST,PUT,', ',' . $type . ',')) {
+                if ('application/json' === ($h['content-type'] ?? 0)) {
+                    $data = json_encode($data);
+                } else if (is_array($data)) {
+                    $data = http_build_query($data);
+                }
+                $h[$k = 'content-type'] = $h[$k] ?? ($k . ': application/x-www-form-urlencoded');
+                $x['http']['content'] = $data;
             }
-            $context['http']['header'] = implode("\r\n", array_values($headers));
-            $context['http']['ignore_errors'] = true;
-            $context['http']['method'] = $type;
-            $context['ssl']['verify_peer'] = false;
-            $context['ssl']['verify_peer_name'] = false;
-            $r = file_get_contents($target, false, stream_context_create($context));
+            $x['http']['header'] = implode("\r\n", array_values($h));
+            $x['http']['ignore_errors'] = true;
+            $x['http']['method'] = $type;
+            $x['ssl']['verify_peer'] = false;
+            $x['ssl']['verify_peer_name'] = false;
+            $r = file_get_contents($link, false, stream_context_create($x));
         }
     }
     return false !== $r ? $r : null;
