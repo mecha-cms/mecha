@@ -12,8 +12,8 @@ class File extends Genome {
     }
 
     public function __construct($path = null) {
-        if (is_string($path) && 0 === strpos($path, PATH)) {
-            $this->path = is_file($path = stream_resolve_include_path($path)) ? $path : null;
+        if (is_string($path = path($path)) && 0 === strpos($path, PATH . D)) {
+            $this->path = is_file($path) ? $path : null;
         }
     }
 
@@ -30,19 +30,24 @@ class File extends Genome {
 
     public function __serialize(): array {
         $lot = parent::__serialize();
-        if (is_string($path = $lot['path'] ?? 0) && 0 !== strpos($path, ".\\")) {
-            $lot['path'] = strtr($path, [PATH . D => ".\\", D => "\\"]);
+        if (is_string($path = $lot['path'] ?? 0) && 0 === strpos($path, $v = PATH . D)) {
+            $lot['path'] = ".\\" . strtr(substr($path, strlen($v)), [D => "\\"]);
         }
         return $lot;
     }
 
     public function __toString(): string {
-        return is_string($path = $this->path) ? strtr($path, [PATH . D => ".\\", D => "\\"]) : "";
+        if (is_string($path = $this->path)) {
+            if (0 === strpos($path, $v = PATH . D)) {
+                return ".\\" . strtr(substr($path, strlen($v)), [D => "\\"]);
+            }
+        }
+        return "";
     }
 
     public function __unserialize(array $lot): void {
         if (is_string($path = $lot['path'] ?? 0) && 0 === strpos($path, ".\\")) {
-            $lot['path'] = PATH . D . strtr(substr($path, 2), ["\\" => D]);
+            $lot['path'] = PATH . strtr(substr($path, 1), ["\\" => D]);
         }
         parent::__unserialize($lot);
     }
@@ -68,9 +73,8 @@ class File extends Genome {
     }
 
     public function content() {
-        if (is_string($path = $this->path)) {
-            $content = file_get_contents($path);
-            return false !== $content ? $content : null;
+        if (is_string($path = $this->path) && false !== ($content = file_get_contents($path))) {
+            return $content;
         }
         return null;
     }

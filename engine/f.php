@@ -568,8 +568,9 @@ function fetch(string $from, $lot = null, $data = "") {
     }
     if (empty($h[$k = 'user-agent'])) {
         // <https://www.rfc-editor.org/rfc/rfc7231#section-5.5.3>
-        $port = (int) $_SERVER['SERVER_PORT'];
-        $h[$k] = $k . ': Mecha/' . VERSION . ' (+http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "") . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
+        $port = (int) ($_SERVER['SERVER_PORT'] ?? 0);
+        $s = !empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "";
+        $h[$k] = $k . ': Mecha/' . VERSION . ' (+http' . $s . '://' . ($_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "") . ')';
     }
     // `fetch('POST http://127.0.0.1/asdf')`
     if (strpos($from = trim($from), '/') > ($n = strcspn($from, " \n\r\t"))) {
