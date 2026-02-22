@@ -30,16 +30,16 @@ class Folder extends Genome {
 
     public function __serialize(): array {
         $lot = parent::__serialize();
-        if (is_string($path = $lot['path'] ?? 0) && 0 === strpos($path, $v = PATH . D)) {
-            $lot['path'] = ".\\" . strtr(substr($path, strlen($v)), [D => "\\"]);
+        if (is_string($path = $lot['path'] ?? 0) && 0 === strpos($path, PATH . D)) {
+            $lot['path'] = '.' . strtr(substr($path, strlen(PATH)), [D => "\\"]);
         }
         return $lot;
     }
 
     public function __toString(): string {
         if (is_string($path = $this->path)) {
-            if (0 === strpos($path, $v = PATH . D)) {
-                return ".\\" . strtr(substr($path, strlen($v)), [D => "\\"]);
+            if (0 === strpos($path, PATH . D)) {
+                return '.' . strtr(substr($path, strlen(PATH)), [D => "\\"]);
             }
         }
         return "";
