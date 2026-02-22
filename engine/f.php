@@ -1734,8 +1734,7 @@ function w(?string $value, $keep = [], $break = false) {
         $value = trim(preg_replace($break ? '/[ \t]+/' : '/\s+/', ' ', strip_tags($value, $keep)));
         return "" !== $value ? $value : null;
     }
-    // Remove `-`, `.`, `_`, and `~` prefix/suffix from the file name then replace `-` with a space. If you want to keep
-    // the `-`, be sure to write it as `%2D` in the file name. Then, it decodes the file name as if it were an URL.
+    // Remove `-`, `.`, `_`, and `~` prefix/suffix from the file name then replace `-` with a space
     $value = trim(rawurldecode(preg_replace('/[-]+/', ' ', trim($value, '-._~'))));
     return "" !== $value ? $value : null;
 }

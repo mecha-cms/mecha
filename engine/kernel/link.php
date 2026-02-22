@@ -1,6 +1,6 @@
 <?php
 
-final class URL extends Genome {
+final class Link extends Genome {
 
     private $lot = [];
 
@@ -86,8 +86,7 @@ final class URL extends Genome {
     }
 
     public function __construct(?string $value = null) {
-        $value = (string) $value;
-        if ($value && 0 === strpos($value, '//')) {
+        if (0 === strpos($value = $value ?? "", '//')) {
             $value = 'http:' . $value; // Force scheme
         }
         extract(parse_url($value), EXTR_SKIP);

@@ -65,11 +65,7 @@ class File extends Genome {
     }
 
     public function ID() {
-        return ($route = $this->route()) ? hash('xxh3', $route) : null;
-    }
-
-    public function URL() {
-        return ($route = $this->route()) ? long($route) : null;
+        return ($route = $this->route()) ? sprintf('%u', crc32($route)) : null;
     }
 
     public function content() {
@@ -85,6 +81,10 @@ class File extends Genome {
 
     public function exist() {
         return $this->path ?? false;
+    }
+
+    public function link() {
+        return ($route = $this->route()) ? long($route) : null;
     }
 
     public function name(...$lot) {

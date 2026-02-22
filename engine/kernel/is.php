@@ -21,11 +21,6 @@ final class Is extends Genome {
         return json_validate($value);
     }
 
-    // Check for URL address
-    public static function URL($value) {
-        return false !== filter_var($value, FILTER_VALIDATE_URL);
-    }
-
     // Check for email address
     public static function email($value) {
         return false !== filter_var($value, FILTER_VALIDATE_EMAIL);
@@ -41,12 +36,17 @@ final class Is extends Genome {
         return is_string($value) && strlen($value) <= 260 && is_dir($value);
     }
 
+    // Check for link address
+    public static function link($value) {
+        return false !== filter_var($value, FILTER_VALIDATE_URL);
+    }
+
     // Check for valid local path address (whether it is exists or not)
     public static function path($value, $exist = false) {
         if (!is_string($value)) {
             return false;
         }
-        return 0 === strpos($value, PATH) && false === strpos($value, "\n") && (!$exist || stream_resolve_include_path($value));
+        return 0 === strpos($value, PATH . D) && false === strpos($value, "\n") && (!$exist || stream_resolve_include_path($value));
     }
 
     // Check for valid serial string <https://github.com/WordPress/wordpress-develop/blob/5.9/src/wp-includes/functions.php#L660-L716>

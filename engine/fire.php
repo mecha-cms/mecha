@@ -216,7 +216,9 @@ $path = "" !== $sub ? substr($path, strlen($sub) + 1) : $path;
 $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
 
-lot('url', $url = new URL($scheme . '://' . $host . $path . $query . $hash));
+lot('link', $link = new Link($scheme . '://' . $host . $path . $query . $hash));
+
+lot('url', $link); // Deprecated
 
 function anemone(...$lot) {
     return Anemone::from(...$lot);
@@ -233,14 +235,14 @@ function kick(?string $path = null, ?int $status = null) {
 }
 
 function long(string $value) {
-    $r = ($url = lot('url')) . "";
+    $r = ($link = lot('link')) . "";
     // `long("")`
     if ("" === $value) {
-        return $url->current;
+        return $link->current;
     }
     // `long('//127.0.0.1')`
     if (0 === strpos($value, '//')) {
-        return $url->scheme . $value;
+        return $link->scheme . $value;
     }
     if (
         0 === strpos($value, 'blob:') ||
@@ -259,7 +261,7 @@ function long(string $value) {
     if (0 === strpos($value, '/')) {
         return $r . (strspn($value = substr($value, 1), '?&#') ? "" : '/') . $value;
     }
-    $path = substr($v = $url->current, 0, strcspn($v, '?&#'));
+    $path = substr($v = $link->current, 0, strcspn($v, '?&#'));
     // `long('foo/bar')`
     if ($value && strcspn($value, '.?&#') && $path !== $r) {
         $path = dirname($path);
@@ -277,9 +279,9 @@ function long(string $value) {
 }
 
 function short(string $value) {
-    $r = ($url = lot('url')) . "";
+    $r = ($link = lot('link')) . "";
     if (0 === strpos($value, '//')) {
-        $value = $url->scheme . substr($value, 2);
+        $value = $link->scheme . substr($value, 2);
     }
     // Ignore external link(s)
     if (0 !== strpos($value . '/', $r . '/')) {
