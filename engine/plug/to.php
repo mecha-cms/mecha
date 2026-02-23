@@ -44,7 +44,7 @@ foreach ([
             return null;
         }
         $r = [];
-        if ($value = explode('/', strtr($value, "\\", '/'))) {
+        if ($value = explode('/', strtr($value, D, '/'))) {
             $x = strtolower(trim(pathinfo($name = array_pop($value), PATHINFO_EXTENSION)));
             $value[] = h(trim(pathinfo($name, PATHINFO_FILENAME)), '-', true, $keep) . ("" !== $x ? '.' . $x : "");
         }
@@ -64,7 +64,7 @@ foreach ([
             return null;
         }
         $r = [];
-        foreach (explode('/', strtr($value, "\\", '/')) as $v) {
+        foreach (explode('/', strtr($value, D, '/')) as $v) {
             if ("" === ($v = trim($v))) {
                 continue;
             }

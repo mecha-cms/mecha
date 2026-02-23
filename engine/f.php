@@ -727,7 +727,7 @@ function ge($a, $b) {
     return q($a) >= $b;
 }
 
-function get(iterable $from, string $key, string $join = '.') {
+function get(array|ArrayAccess $from, string $key, string $join = '.') {
     if (!$from || 0 === q($from)) {
         return null;
     }
@@ -757,10 +757,7 @@ function gt($a, $b) {
     return q($a) > $b;
 }
 
-function has(iterable $from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
-        return false;
-    }
+function has(array|ArrayAccess $from, string $key, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
@@ -807,10 +804,7 @@ function le($a, $b) {
     return q($a) <= $b;
 }
 
-function let(iterable &$from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
-        return false;
-    }
+function let(array|ArrayAccess &$from, string $key, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
     $k = strtr(array_pop($keys), [P => $join]);
     foreach ($keys as $k) {
@@ -850,7 +844,7 @@ function let(iterable &$from, string $key, string $join = '.') {
 
 function &lot(...$lot) {
     static $test;
-    $test = $test ?? function (string $name) {
+    $test ??= function (string $name) {
         if ("" === $name) {
             return false;
         }
@@ -1049,6 +1043,29 @@ function pluck(iterable $from, string $key, $value = null, $that = null, $scope 
     }, $that, $scope);
 }
 
+function queue(iterable $value, callable $at, $sort = -1, $keys = false, $that = null) {
+    $count = $i = 0;
+    $it = new class extends SplPriorityQueue {
+        public $sort = -1;
+        public function compare($a, $b): int {
+            return -1 === ($d = $this->sort) || SORT_DESC === $d ? $a <=> $b : $b <=> $a;
+        }
+    };
+    $it->setExtractFlags(SplPriorityQueue::EXTR_DATA);
+    $it->sort = $sort;
+    $max = PHP_INT_MAX;
+    foreach ($value as $k => $v) {
+        $it->insert($v = [$v, $keys ? $k : null], [fire($at, $v, $that) ?? PHP_INT_MIN, --$max]);
+        ++$count;
+    }
+    $r = $keys ? new ArrayIterator : new SplFixedArray($count);
+    while (!$it->isEmpty()) {
+        [$v, $k] = $it->extract();
+        $r[$k ?? $i++] = $v;
+    }
+    return $r;
+}
+
 function save(string $path, string $value, $seal = null) {
     if (is_dir($path)) {
         // Error
@@ -1080,49 +1097,88 @@ function seal(string $path, $seal = null) {
     return chmod($path, $seal) ? $seal : null;
 }
 
-function set(iterable &$to, string $key, $value = null, string $join = '.') {
+function set(array|ArrayAccess &$to, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    $key = strtr(array_pop($keys), [P => $join]);
+    if (is_array($to)) {
+        $key = array_pop($keys);
+        $r =& $to;
+        foreach ($keys as $k) {
+            $k = strtr($k, [P => $join]);
+            // In the case that the container is not valid, treat it as an empty array
+            if (!array_key_exists($k, $r) || !is_array($r[$k])) {
+                $r[$k] = [];
+            }
+            $r =& $r[$k];
+        }
+        return ($r[strtr($key, [P => $join])] = $value);
+    }
+    $r = $to;
+    $stack = [];
     foreach ($keys as $k) {
         $k = strtr($k, [P => $join]);
-        if ($to instanceof ArrayAccess) {
-            // if (!$to->offsetExists($k)) {
-            //     $to->offsetSet($k, []);
-            // }
-            // $to =& $to->offsetGet($k);
-            return null; // Mutation on `ArrayAccess` is not supported :(
-        }
-        if (is_array($to)) {
-            if (!array_key_exists($k, $to)) {
-                $to[$k] = [];
+        if ($r instanceof ArrayAccess) {
+            $stack[] = [$r, $k];
+            if (!$r->offsetExists($k)) {
+                $r[$k] = [];
             }
-            $to =& $to[$k];
+            $r = $r[$k];
             continue;
         }
-        return null;
+        if (is_array($r)) {
+            $stack[] = [$r, $k];
+            if (!array_key_exists($k, $r)) {
+                $r[$k] = [];
+            }
+            $r = $r[$k];
+            continue;
+        }
+        if (!$stack) {
+            $r = [];
+            continue;
+        }
+        // In the case that the container is not valid, treat it as an empty array
+        [$v, $k] = array_pop($stack);
+        if ($v instanceof ArrayAccess) {
+            $v->offsetSet($k, $r = []);
+        } else {
+            $v[$k] = $r = [];
+        }
+        $stack[] = [$v, $k];
     }
-    return $to instanceof ArrayAccess ? $to->offsetSet($key, $value) : ($to[$key] = $value);
+    $r = $value;
+    for ($i = count($stack) - 1; $i >= 0; --$i) {
+        [$v, $k] = $stack[$i];
+        if ($v instanceof ArrayAccess) {
+            $v->offsetSet($k, $r);
+        } else {
+            $v[$k] = $r;
+        }
+        $r = $v;
+    }
+    return $value;
 }
 
-function shake(array $value, $keys = false, $that = null, $scope = 'static') {
+function shake(iterable $value, $keys = false, $that = null, $scope = 'static') {
     if (is_callable($keys)) {
         // `$keys` as `$task`
-        $value = fire($keys, [$value], $that, $scope);
-    } else {
-        // <http://php.net/manual/en/function.shuffle.php#94697>
-        if ($keys) {
-            $keys = array_keys($value);
-            $values = [];
-            shuffle($keys);
-            foreach ($keys as $key) {
-                $values[$key] = $value[$key];
-            }
-            $value = $values;
-            unset($keys, $values);
-        } else {
-            shuffle($value);
-        }
+        return fire($keys, [$value], $that, $scope);
     }
+    if (!is_array($value)) {
+        return queue($value, function () {
+            return random_int(0, PHP_INT_MAX);
+        }, -1, $keys);
+    }
+    // <https://www.php.net/manual/en/function.shuffle.php#94697>
+    if ($keys) {
+        $keys = array_keys($value);
+        $values = [];
+        shuffle($keys);
+        foreach ($keys as $key) {
+            $values[$key] = $value[$key];
+        }
+        return $values;
+    }
+    shuffle($value);
     return $value;
 }
 

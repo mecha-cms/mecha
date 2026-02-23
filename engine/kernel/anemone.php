@@ -6,30 +6,6 @@ class Anemone extends Genome {
     protected $lot;
     protected $parent;
 
-    protected function _q(callable $at, $sort = -1, $keys = false, $that = null) {
-        $count = $i = 0;
-        $n = PHP_INT_MAX;
-        $it = new class extends SplPriorityQueue {
-            public $sort = -1;
-            public function compare($a, $b): int {
-                return -1 === ($d = $this->sort) || SORT_DESC === $d ? $a <=> $b : $b <=> $a;
-            }
-        };
-        $it->setExtractFlags(SplPriorityQueue::EXTR_DATA);
-        $it->sort = $sort;
-        foreach ($this->lot as $k => $v) {
-            $it->insert($v = [$v, $keys ? $k : null], [fire($at, $v, $that) ?? PHP_INT_MIN, --$n]);
-            ++$count;
-        }
-        $r = $keys ? new ArrayIterator : new SplFixedArray($count);
-        while ($it->valid()) {
-            [$v, $k] = $it->extract();
-            $r[$k ?? $i++] = $v;
-        }
-        $this->lot = $r;
-        return $this;
-    }
-
     public function __call(string $kin, array $lot = []) {
         if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
             return $this->{$kin};
@@ -442,7 +418,8 @@ class Anemone extends Genome {
     }
 
     public function rank(callable $at, $keys = false) {
-        return $this->_q($at, 1, $keys, $this);
+        $this->lot = queue($this->lot, $at, 1, $keys, $this);
+        return $this;
     }
 
     public function reverse($keys = false) {
@@ -454,9 +431,10 @@ class Anemone extends Genome {
             $this->lot = $keys ? $lot : array_values($lot);
             return $this;
         }
-        return $this->_q(function ($v, $k) {
+        $this->lot = queue($lot, function () {
             return 1;
         }, 1, $keys, $this);
+        return $this;
     }
 
     public function set($key, $value = null) {
@@ -481,7 +459,7 @@ class Anemone extends Genome {
     }
 
     public function shake($keys = false) {
-        $this->lot = shake(y($this->lot), $keys, $this);
+        $this->lot = shake($this->lot, $keys, $this);
         return $this;
     }
 
@@ -562,9 +540,10 @@ class Anemone extends Genome {
         if (is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key))) {
             $deep = false !== strpos(strtr($key, ["\\." => P]), '.');
             $value = array_key_exists(2, $sort) ? $sort[2] : null;
-            return $this->_q(function ($v, $k) use ($deep, $key, $value) {
+            $this->lot = queue($lot, function ($v, $k) use ($deep, $key, $value) {
                 return $deep && is_iterable($v) ? (get($v, $key) ?? $value) : ($v[$key] ?? $value);
             }, $sort[0], $keys, $this);
+            return $this;
         }
         $lot = y($lot); // :(
         if ($keys) {
@@ -577,7 +556,8 @@ class Anemone extends Genome {
     }
 
     public function vote(callable $at, $keys = false) {
-        return $this->_q($at, -1, $keys, $this);
+        $this->lot = queue($this->lot, $at, -1, $keys, $this);
+        return $this;
     }
 
     public static function from(...$lot) {
