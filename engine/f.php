@@ -325,7 +325,7 @@ function apart(string $value, array $raw = [], array $void = []) {
 
 // Convert class name to file name
 function c2f(?string $value, $accent = false) {
-    $value = implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
         return ltrim(strtr(h($v, '-', $accent, '_') ?? "", [
             '_-' => '_',
             '__-' => '.',
@@ -533,7 +533,7 @@ function extend(array $value, ...$lot) {
 
 // Convert file name to class name
 function f2c(?string $value, $accent = false) {
-    $value = implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
         return p(strtr($v, ['.' => '__']), $accent, '_');
     }));
     return "" !== $value ? $value : null;
@@ -541,7 +541,7 @@ function f2c(?string $value, $accent = false) {
 
 // Convert file name to property name
 function f2p(?string $value, $accent = false) {
-    $value = implode("\\", map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
         return c(strtr($v, ['.' => '__']), $accent, '_');
     }));
     return "" !== $value ? $value : null;
@@ -976,7 +976,7 @@ function not(iterable $value, $valid = null, $keys = false, $that = null, $scope
 
 // Convert property name to file name
 function p2f(?string $value, $accent = false) {
-    $value = implode(D, map(preg_split('/[\\\\\/]/', $value ?? ""), static function ($v) use ($accent) {
+    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
         return strtr(h($v, '-', $accent, '_') ?? "", ['__' => '.']);
     }));
     return "" !== $value ? $value : null;
@@ -1060,8 +1060,8 @@ function queue(iterable $value, callable $at, $sort = -1, $keys = false, $that =
     }
     $r = $keys ? new ArrayIterator : new SplFixedArray($count);
     while (!$it->isEmpty()) {
-        [$v, $k] = $it->extract();
-        $r[$k ?? $i++] = $v;
+        $v = $it->extract();
+        $r[$v[1] ?? $i++] = $v[0];
     }
     return $r;
 }
