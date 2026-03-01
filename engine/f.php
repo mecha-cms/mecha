@@ -111,216 +111,195 @@ function any(iterable $value, $valid = null, $that = null, $scope = 'static') {
 }
 
 function apart(string $value, array $raw = [], array $void = []) {
-    $from = $value;
-    $i = -1;
-    $s = " \n\r\t";
-    $to = [];
-    $raw = $raw ? P . implode(P, $raw) . P : P;
-    $void = $void ? P . implode(P, $void) . P : P;
-    while ("" !== $from) {
-        if ($n = strcspn($from, '<&')) {
-            if (0 === ($to[$i][1] ?? 1)) {
-                $to[$i][0] .= substr($from, 0, $n);
-                $from = substr($from, $n);
-                continue;
-            }
-            $to[++$i] = [substr($from, 0, $n), 0];
-            $from = substr($from, $n);
-        }
-        // <https://www.w3.org/TR/xml#sec-references>
-        if ('&' === ($from[0] ?? 0)) {
-            if ('#' === substr($from, 1, 1) && (
-                ($n = strspn($from, '0123456789', $x = 2)) ||
-                ($n = strspn($from, '0123456789ABCDEFabcdef', $x = 3)) && 'x' === substr($from, 2, 1)
-            ) && ';' === substr($from, $n + $x, 1)) {
-                $to[++$i] = [substr($from, 0, $n += ($x + 1)), -1];
-                $from = substr($from, $n);
-                continue;
-            }
-            if (($n = strspn($from, '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz', 1)) && ';' === substr($from, $n + 1, 1)) {
-                $to[++$i] = [substr($from, 0, $n += 2), -1];
-                $from = substr($from, $n);
-                continue;
-            }
-            // Entity that does not end with a `;` is not valid
-            if (0 === ($to[$i][1] ?? 1)) {
-                $to[$i][0] .= substr($from, 0, 1);
-            } else {
-                $to[++$i] = [substr($from, 0, 1), 0];
-            }
-            $from = substr($from, 1);
-            continue;
-        }
-        // Tag such as `<>` and `< >` is not valid because it does not have a name
-        if (strspn($from, $s . '>', 1)) {
-            if (0 === ($to[$i][1] ?? 1)) {
-                $to[$i][0] .= substr($from, 0, 2);
-            } else {
-                $to[++$i] = [substr($from, 0, 2), 0];
-            }
-            $from = substr($from, 2);
-            continue;
-        }
-        // <https://www.w3.org/TR/xml#sec-comments>
-        if ('<!--' === substr($from, 0, 4)) {
-            // Comment is left open for some reason until the end of the stream
-            if (false === ($n = strpos($from, '-->'))) {
-                $to[++$i] = [$from, 1];
-                break;
-            }
-            $to[++$i] = [substr($from, 0, $n += 3), 1];
-            $from = substr($from, $n);
-            continue;
-        }
-        // <https://www.w3.org/TR/xml#sec-cdata-sect>
-        if ('<![CDATA[' === substr($from, 0, 9)) {
-            // Character data section is left open for some reason until the end of the stream
-            if (false === ($n = strpos($from, ']]>'))) {
-                $to[++$i] = [$from, 1];
-                break;
-            }
-            $to[++$i] = [substr($from, 0, $n += 3), 1];
-            $from = substr($from, $n);
-            continue;
-        }
-        if ('<!' === substr($from, 0, 2)) {
-            // DTD such as `<!>` and `<! >` is not valid because it does not have a name
-            if (strspn($from, $s . '>', 2)) {
-                if (0 === ($to[$i][1] ?? 1)) {
-                    $to[$i][0] .= substr($from, 0, 3);
-                } else {
-                    $to[++$i] = [substr($from, 0, 3), 0];
-                }
-                $from = substr($from, 3);
-                continue;
-            }
-            $to[++$i] = [substr($from, 0, 2), 1];
-            $from = substr($from, 2);
-            // <https://www.w3.org/TR/xml#sec-entexpand>
-            // <https://www.w3.org/TR/xml#vc-roottype>
-            while (($n = strcspn($from, '["' . "'")) < strpos($from, '>')) {
-                if ($n > 0) {
-                    $to[$i][0] .= substr($from, 0, $n);
-                    $from = substr($from, $n);
-                }
-                // DTD is left open for some reason until the end of the stream
-                if (false === ($n = strpos($from, '[' === $from[0] ? ']' : $from[0], 1))) {
-                    $to[$i][0] .= $from;
-                    $from = "";
-                    break;
-                }
-                $to[$i][0] .= substr($from, 0, $n += 1);
-                $from = substr($from, $n);
-                continue;
-            }
-            // DTD is left open for some reason until the end of the stream
-            if ("" === $from || false === ($n = strpos($from, '>'))) {
-                $to[$i][0] .= $from;
-                break;
-            }
-            $to[$i][0] .= substr($from, 0, $n += 1);
-            $from = substr($from, $n);
-            continue;
-        }
-        // <https://www.w3.org/TR/xml#sec-pi>
-        if ('<?' === substr($from, 0, 2)) {
-            /* PI such as `<?>` and `<? >` is not valid because it does not have a name */
-            if (strspn($from, $s . '>', 2)) {
-                if (0 === ($to[$i][1] ?? 1)) {
-                    $to[$i][0] .= substr($from, 0, 3);
-                } else {
-                    $to[++$i] = [substr($from, 0, 3), 0];
-                }
-                $from = substr($from, 3);
-                continue;
-            }
-            $to[++$i] = [substr($from, 0, 2), 1];
-            $from = substr($from, 2);
-            while (($n = strcspn($from, '"' . "'")) < strpos($from, '?>')) {
-                if ($n > 0) {
-                    $to[$i][0] .= substr($from, 0, $n);
-                    $from = substr($from, $n);
-                }
-                // PI is left open for some reason until the end of the stream
-                if (false === ($n = strpos($from, $from[0], 1))) {
-                    $to[$i][0] .= $from;
-                    $from = "";
-                    break;
-                }
-                $to[$i][0] .= substr($from, 0, $n += 1);
-                $from = substr($from, $n);
-                continue;
-            }
-            // PI is left open for some reason until the end of the stream
-            if ("" === $from || false === ($n = strpos($from, '?>'))) {
-                $to[$i][0] .= $from;
-                break;
-            }
-            $to[$i][0] .= substr($from, 0, $n += 2);
-            $from = substr($from, $n);
-            continue;
-        }
-        // <https://www.w3.org/TR/xml#sec-starttags>
-        $k = rtrim(substr($from, 1, strcspn($from, $s . '>', 1)), '/');
-        $to[++$i] = [substr($from, 0, $n = 1 + strlen($k)), false !== strpos($void, P . $k . P) ? 1 : 2];
-        $from = substr($from, $n);
-        // <https://www.w3.org/TR/xml#NT-AttValue>
-        while (($n = strcspn($from, '"' . "'")) < strpos($from, '>')) {
-            if ($n > 0) {
-                $to[$i][0] .= substr($from, 0, $n);
-                $from = substr($from, $n);
-            }
-            // Tag is left open for some reason until the end of the stream
-            if (false === ($n = strpos($from, $from[0], 1))) {
-                $to[$i][0] .= $from;
-                $from = "";
-                break;
-            }
-            $to[$i][0] .= substr($from, 0, $n += 1);
-            $from = substr($from, $n);
-            continue;
-        }
-        // Tag is left open for some reason until the end of the stream
-        if ("" === $from || false === ($n = strpos($from, '>'))) {
-            $to[$i][0] .= $from;
-            $to[$i][1] = 0;
-            break;
-        }
-        $to[$i][0] .= substr($from, 0, $n += 1);
-        $to[$i][2] = strlen($to[$i][0]);
-        // <https://www.w3.org/TR/xml#d0e2480>
-        if ('/' === substr($from, $n - 2, 1)) {
-            $to[$i][1] = 1;
-            $to[$i][3] = true;
-        }
-        $from = substr($from, $n);
-        if (false === strpos($raw, P . $k . P)) {
-            continue;
-        }
-        $last = -1;
-        $to[$i][1] = 1;
-        while (false !== ($last = strpos($from, '</' . $k, $last + 1))) {
-            if (strspn($from, $s . '>', $last + strlen($k) + 2)) {
-                $n = $last + strlen($k) + 2;
-                $to[$i][0] .= substr($from, 0, $n);
-                $from = substr($from, $n);
-                // Raw element is left open for some reason until the end of the stream
-                if (false === ($n = strpos($from, '>'))) {
-                    $to[$i][0] .= $from;
-                    $to[$i][3] = null;
-                    break;
-                }
-                $to[$i][0] .= substr($from, 0, $n += 1);
-                $to[$i][3] = -(strlen($k) + 2 + $n);
-                $from = substr($from, $n);
-                // I still feel that this line is ugly. I’m sorry :(
-                continue 2;
-            }
-        }
-        $to[$i][0] .= $from;
-        break;
+    $r = [];
+    $s = "";
+    if ("" === $value) {
+        return $r;
     }
-    return $to;
+    $c1 = " \n\r\t";
+    $c2 = '0123456789';
+    $c3 = 'abcdef';
+    $c4 = 'ABCDEF';
+    $c5 = $c3 . 'ghijklmnopqrstuvwxyz';
+    $c6 = $c4 . 'GHIJKLMNOPQRSTUVWXYZ';
+    $c7 = $c1 . '>';
+    $i = 0;
+    $max = strlen($value);
+    $raw = $raw ? array_flip($raw) : [];
+    $void = $void ? array_flip($void) : [];
+    while ($i < $max) {
+        $c = $value[$i];
+        $next = $i + 1 < $max ? $value[$i + 1] : "\0";
+        // <https://www.w3.org/TR/xml#sec-references>
+        if ('&' === $c && false === strpos($c1, $next)) {
+            $n = $i + 1;
+            if ($n < $max && '#' === $value[$n]) {
+                ++$n;
+                if ($n < $max && ('X' === $value[$n] || 'x' === $value[$n])) {
+                    $m = strspn($value, $c2 . $c3 . $c4, $n += 1);
+                } else {
+                    $m = strspn($value, $c2, $n);
+                }
+                if ($m && $n + $m < $max && ';' === $value[$n + $m]) {
+                    "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                    $r[] = [substr($value, $i, $n + $m - $i + 1), -1];
+                    $i = $n + $m + 1;
+                    continue;
+                }
+            } else {
+                if ($m = strspn($value, $c5 . $c6, $n)) {
+                    $n += $m;
+                    $n += strspn($value, $c2 . $c5 . $c6, $n);
+                    if ($n < $max && ';' === $value[$n]) {
+                        "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                        $r[] = [substr($value, $i, $n - $i + 1), -1];
+                        $i = $n + 1;
+                        continue;
+                    }
+                }
+            }
+        }
+        if ('<' === $c && false === strpos($c7, $next)) {
+            if ('!' === $next) {
+                // <https://www.w3.org/TR/xml#sec-comments>
+                if (0 === substr_compare($value, '<!--', $i, 4)) {
+                    if (false !== ($z = strpos($value, '-->', $i + 4))) {
+                        "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                        $r[] = [substr($value, $i, $z - $i + 3), 1];
+                        $i = $z + 3;
+                        continue;
+                    }
+                }
+                // <https://www.w3.org/TR/xml#sec-cdata-sect>
+                if (0 === substr_compare($value, '<![CDATA[', $i, 9)) {
+                    if (false !== ($n = strpos($value, ']]>', $i + 9))) {
+                        "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                        $r[] = [substr($value, $i, $n - $i + 3), 1];
+                        $i = $n + 3;
+                        continue;
+                    }
+                }
+                // <https://www.w3.org/TR/xml#sec-entexpand>
+                // <https://www.w3.org/TR/xml#vc-roottype>
+                $n = $i + 2;
+                if ($n >= $max || false !== strpos($c7, $value[$n])) {
+                    $s .= '<';
+                    ++$i;
+                    continue;
+                }
+                $deep = $q = 0;
+                $n = $i + 2;
+                while ($n < $max) {
+                    $v = $value[$n];
+                    if ($q) {
+                        $q === $v && ($q = 0);
+                    } else {
+                        if ("'" === $v || '"' === $v) {
+                            $q = $v;
+                        } else if ('[' === $v) {
+                            ++$deep;
+                        } else if (']' === $v && $deep > 0) {
+                            --$deep;
+                        } else if ('>' === $v && 0 === $deep) {
+                            break;
+                        }
+                    }
+                    ++$n;
+                }
+                if ($n < $max) {
+                    "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                    $r[] = [substr($value, $i, $n - $i + 1), 1];
+                    $i = $n + 1;
+                    continue;
+                }
+            }
+            // <https://www.w3.org/TR/xml#sec-pi>
+            if ('?' === $next) {
+                $n = $i + 2;
+                $q = 0;
+                while ($n < $max) {
+                    $v = $value[$n];
+                    if ($q) {
+                        $q === $v && ($q = 0);
+                    } else {
+                        if ("'" === $v || '"' === $v) {
+                            $q = $v;
+                        } else if ('?' === $v && $n + 1 < $max && '>' === $value[$n + 1]) {
+                            break;
+                        }
+                    }
+                    ++$n;
+                }
+                if ($n < $max) {
+                    "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                    $r[] = [substr($value, $i, $n - $i + 2), 1];
+                    $i = $n + 2;
+                    continue;
+                }
+            }
+            // <https://www.w3.org/TR/xml#sec-starttags>
+            $n = $i + 1;
+            $q = 0;
+            while ($n < $max) {
+                $v = $value[$n];
+                if ($q) {
+                    $q === $v && ($q = 0);
+                } else {
+                    if ("'" === $v || '"' === $v) {
+                        $q = $v;
+                    } else if ('>' === $v) {
+                        break;
+                    }
+                }
+                ++$n;
+            }
+            $start = $n - $i + 1;
+            if ($n < $max) {
+                $z = $i + 1;
+                $z += strspn($value, $c1, $z, $n - $z);
+                $m = strlen($name = substr($value, $z, min(strcspn($value, $c1 . '/>', $z), $n - $z)));
+                if (isset($raw[$name])) {
+                    $n += 1;
+                    while (1) {
+                        // Raw HTML is left open for some reason until the end of the stream
+                        if ("" !== $name && false === ($z = strpos($value, '</' . $name, $n))) {
+                            "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                            $r[] = [substr($value, $i), 1, $start, null];
+                            return $r;
+                        }
+                        $y = $z + 2 + $m;
+                        $y += strspn($value, $c1, $y);
+                        if ($y < $max && '>' === $value[$y]) {
+                            "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                            $r[] = [substr($value, $i, $y - $i + 1), 1, $start, -($y - $z + 1)];
+                            $i = $y + 1;
+                            continue 2;
+                        }
+                        $n = max($y, $z + 1);
+                    }
+                }
+                "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+                $x = $n - 1;
+                while ($x > $i && false !== strpos($c1, $value[$x])) --$x;
+                // <https://www.w3.org/TR/xml#d0e2480>
+                $v = [substr($value, $i, $start), 2, $start];
+                if (isset($void[$name])) {
+                    $v[1] = 1;
+                    $v[3] = false;
+                } else if ($x > $i && '/' === $value[$x]) {
+                    $v[1] = 1;
+                    $v[3] = true;
+                }
+                $r[] = $v;
+                $i = $n + 1;
+                continue;
+            }
+        }
+        $s .= $c;
+        ++$i;
+    }
+    "" !== $s && ($r[] = [$s, 0]) && ($s = "");
+    return $r;
 }
 
 // Convert class name to file name
@@ -983,44 +962,53 @@ function p2f(?string $value, $accent = false) {
 }
 
 function pair(string $value) {
-    if ("" === ($from = trim($value))) {
-        return [];
+    $i = strspn($value, $c = " \n\r\t");
+    $max = strlen($value);
+    $r = [];
+    if ($i >= $max) {
+        return $r;
     }
-    $s = " \n\r\t";
-    $to = [];
-    while ("" !== $from) {
-        if ($n = strcspn($from, '"' . "'" . $s)) {
-            $k = trim(substr($from, 0, $n));
-            $from = substr($from, $n);
-            if ('=' === substr($k, -1)) {
-                $k = trim(substr($k, 0, -1));
-                if ('"' === ($c = $from[0] ?? 0) || "'" === $c) {
-                    // Attribute value is left open for some reason until the end of the stream
-                    if (false === ($n = strpos($from, $c, 1))) {
-                        $to[$k] = substr($from, 1);
-                        break;
-                    }
-                    $to[$k] = substr($from, 1, $n - 1);
-                    $from = trim(substr($from, $n + 1));
-                    continue;
-                }
-                $to[$k] = "";
-                $from = substr($from, 1);
-                continue;
-            }
-            if (($n = strpos($k, '=')) > 0) {
-                $to[substr($k, 0, $n)] = substr($k, $n + 1);
-                $from = substr($from, 1);
-                continue;
-            }
-            $to[$k] = true;
-            $from = substr($from, 1);
+    while ($i < $max) {
+        if (0 === ($n = strcspn($value, $c . '=', $i))) {
+            break;
+        }
+        $k = substr($value, $i, $n);
+        $i += $n;
+        $i += strspn($value, $c, $i);
+        if ($i >= $max || '=' !== $value[$i]) {
+            $r[$k] = true;
             continue;
         }
-        $to[trim($from)] = true;
-        break;
+        ++$i;
+        if ($i >= $max || false !== strpos($c, $value[$i])) {
+            $r[$k] = "";
+            $i += strspn($value, $c, $i);
+            continue;
+        }
+        if ($i < $max) {
+            $q = $value[$i];
+            if ("'" === $q || '"' === $q) {
+                ++$i;
+                // Attribute value is left open for some reason until the end of the stream
+                if (false === ($n = strpos($value, $q, $i))) {
+                    $r[$k] = substr($value, $i);
+                    return $r;
+                }
+                $r[$k] = substr($value, $i, $n - $i);
+                $i = $n + 1;
+                $i += strspn($value, $c, $i);
+                continue;
+            }
+        }
+        if ($n = strcspn($value, $c, $i)) {
+            $r[$k] = substr($value, $i, $n);
+            $i += $n;
+        } else {
+            $r[$k] = "";
+        }
+        $i += strspn($value, $c, $i);
     }
-    return $to;
+    return $r;
 }
 
 function path(?string $value) {
