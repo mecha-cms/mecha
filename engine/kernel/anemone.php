@@ -13,16 +13,16 @@ class Anemone extends Genome {
         return parent::__call($kin, $lot);
     }
 
+    public function __destruct() {
+        $this->lot = [];
+        if ($this->parent) {
+            unset($this->parent);
+        }
+    }
+
     public function __construct(iterable $lot = [], string $join = ', ') {
         $this->join = $join;
         $this->lot = is_array($lot) && array_is_list($lot) ? SplFixedArray::fromArray($lot, false) : $lot;
-    }
-
-    public function __destruct() {
-        $this->lot = [];
-        if ($parent = $this->parent) {
-            unset($parent);
-        }
     }
 
     public function __get(string $key): mixed {
@@ -197,7 +197,7 @@ class Anemone extends Genome {
         // `SplPriorityQueue`
         if ($lot instanceof SplHeap) {
             if (0 === (int) $key) {
-                return !!$lot->top();
+                return null !== $lot->top();
             }
         }
         return false;
@@ -235,7 +235,7 @@ class Anemone extends Genome {
     }
 
     public function key(int $index) {
-        if (!($q = $this->count()) || $index > $q) {
+        if ($index < 0 || $index >= $this->count()) {
             return null;
         }
         if (is_array($lot = $this->lot)) {
@@ -337,7 +337,7 @@ class Anemone extends Genome {
     }
 
     public function mitose() {
-        $that = new static($this->lot, $this->join);
+        $that = new static(is_object($lot = $this->lot) && (new ReflectionClass($lot))->isCloneable() ? clone $lot : $lot, $this->join);
         $that->parent = $this;
         return $that;
     }
@@ -464,6 +464,9 @@ class Anemone extends Genome {
     }
 
     public function sort($sort = 1, $keys = false) {
+        $d = is_array($sort) ? reset($sort) : $sort;
+        $deep = is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key)) ? false !== strpos(strtr($key, ["\\." => P]), '.') : null;
+        $down = -1 === $d || SORT_DESC === $d;
         if (is_array($lot = $this->lot)) {
             if (count($lot) < 2) {
                 if (!$keys && $lot) {
@@ -471,37 +474,21 @@ class Anemone extends Genome {
                 }
                 return $this;
             }
-            $d = is_array($sort) ? reset($sort) : $sort;
-            if (is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key))) {
-                $deep = false !== strpos(strtr($key, ["\\." => P]), '.');
-                $task = -1 === $d || SORT_DESC === $d ? static function ($a, $b) use ($deep, $key) {
-                    if (!is_iterable($b) || !is_iterable($a)) {
+            if (null !== $deep) {
+                $task = static function ($a, $b) use ($deep, $down, $key) {
+                    $a = is_iterable($a) ? ($deep ? get($a, $key) : ($a[$key] ?? null)) : null;
+                    $b = is_iterable($b) ? ($deep ? get($b, $key) : ($b[$key] ?? null)) : null;
+                    if ($a === $b) {
                         return 0;
                     }
-                    if (($deep && null === get($b, $key) && null === get($a, $key)) || !isset($b[$key]) && !isset($a[$key])) {
-                        return 0;
-                    }
-                    if (($deep && null === get($b, $key)) || !isset($b[$key])) {
+                    if (null === $a) {
                         return 1;
                     }
-                    if (($deep && null === get($a, $key)) || !isset($a[$key])) {
+                    if (null === $b) {
                         return -1;
                     }
-                    return $deep ? get($b, $key) <=> get($a, $key) : $b[$key] <=> $a[$key];
-                } : static function ($a, $b) use ($deep, $key) {
-                    if (!is_iterable($a) || !is_iterable($b)) {
-                        return 0;
-                    }
-                    if (($deep && null === get($a, $key) && null === get($b, $key)) || !isset($a[$key]) && !isset($b[$key])) {
-                        return 0;
-                    }
-                    if (($deep && null === get($a, $key)) || !isset($a[$key])) {
-                        return 1;
-                    }
-                    if (($deep && null === get($b, $key)) || !isset($b[$key])) {
-                        return -1;
-                    }
-                    return $deep ? get($a, $key) <=> get($b, $key) : $a[$key] <=> $b[$key];
+                    $r = $a <=> $b;
+                    return $down ? -$r : $r;
                 };
                 if (array_key_exists(2, $sort)) {
                     if ($deep) {
@@ -522,9 +509,9 @@ class Anemone extends Genome {
                 $keys ? uasort($lot, $task) : usort($lot, $task);
             } else {
                 if ($keys) {
-                    -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
+                    $down ? arsort($lot) : asort($lot);
                 } else {
-                    -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
+                    $down ? rsort($lot) : sort($lot);
                 }
             }
             $this->lot = $lot;
@@ -537,8 +524,7 @@ class Anemone extends Genome {
             $this->lot = $lot;
             return $this;
         }
-        if (is_array($sort) && (is_float($key = $sort[1] ?? 0) || is_int($key) || is_string($key))) {
-            $deep = false !== strpos(strtr($key, ["\\." => P]), '.');
+        if (null !== $deep) {
             $value = array_key_exists(2, $sort) ? $sort[2] : null;
             $this->lot = queue($lot, function ($v, $k) use ($deep, $key, $value) {
                 return $deep && is_iterable($v) ? (get($v, $key) ?? $value) : ($v[$key] ?? $value);
@@ -547,9 +533,9 @@ class Anemone extends Genome {
         }
         $lot = y($lot); // :(
         if ($keys) {
-            -1 === $d || SORT_DESC === $d ? arsort($lot) : asort($lot);
+            $down ? arsort($lot) : asort($lot);
         } else {
-            -1 === $d || SORT_DESC === $d ? rsort($lot) : sort($lot);
+            $down ? rsort($lot) : sort($lot);
         }
         $this->lot = $lot;
         return $this;

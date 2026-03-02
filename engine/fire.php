@@ -235,7 +235,7 @@ function kick(?string $path = null, ?int $status = null) {
 }
 
 function long(string $value) {
-    $r = ($link = lot('link')) . "";
+    $base = ($link = lot('link'))->base;
     // `long("")`
     if ("" === $value) {
         return $link->current;
@@ -259,15 +259,15 @@ function long(string $value) {
     }
     // `long('/foo/bar')`
     if (0 === strpos($value, '/')) {
-        return $r . (strspn($value = substr($value, 1), '?&#') ? "" : '/') . $value;
+        return $base . (strspn($value = substr($value, 1), '?&#') ? "" : '/') . $value;
     }
     $path = substr($v = $link->current, 0, strcspn($v, '?&#'));
     // `long('foo/bar')`
-    if ($value && strcspn($value, '.?&#') && $path !== $r) {
+    if ($value && strcspn($value, '.?&#') && $path !== $base) {
         $path = dirname($path);
     }
     // `long('../foo/bar')`
-    while (0 === strpos($value, '../') && $path !== $r) {
+    while (0 === strpos($value, '../') && $path !== $base) {
         $path = dirname($path);
         $value = substr($value, 3);
     }
@@ -279,15 +279,15 @@ function long(string $value) {
 }
 
 function short(string $value) {
-    $r = ($link = lot('link')) . "";
+    $base = ($link = lot('link'))->base;
     if (0 === strpos($value, '//')) {
         $value = $link->scheme . substr($value, 2);
     }
     // Ignore external link(s)
-    if (0 !== strpos($value . '/', $r . '/')) {
+    if (0 !== strpos($value . '/', $base . '/')) {
         return $value;
     }
-    return "" === ($value = substr($value, strlen($r))) ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
+    return "" === ($value = substr($value, strlen($base))) ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
 }
 
 function state(...$lot) {

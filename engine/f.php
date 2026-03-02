@@ -281,11 +281,12 @@ function apart(string $value, array $raw = [], array $void = []) {
                 "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                 $x = $n - 1;
                 while ($x > $i && false !== strpos($c1, $value[$x])) --$x;
-                // <https://www.w3.org/TR/xml#d0e2480>
                 $v = [substr($value, $i, $start), 2, $start];
+                // <https://www.w3.org/TR/2011/WD-html-markup-20110113/syntax.html#void-elements>
                 if (isset($void[$name])) {
                     $v[1] = 1;
                     $v[3] = false;
+                // <https://www.w3.org/TR/xml#d0e2480>
                 } else if ($x > $i && '/' === $value[$x]) {
                     $v[1] = 1;
                     $v[3] = true;

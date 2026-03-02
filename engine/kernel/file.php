@@ -84,7 +84,7 @@ class File extends Genome {
     }
 
     public function link() {
-        return ($route = $this->route()) ? long($route) : null;
+        return ($route = $this->route()) ? new Link(long($route)) : null;
     }
 
     public function name(...$lot) {
