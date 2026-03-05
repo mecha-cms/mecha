@@ -74,8 +74,8 @@ final class IteratorG implements Countable, Iterator {
     }
 }
 
-function all(iterable $value, $valid = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function all(array $value, $valid = null, $that = null, $scope = 'static') {
+    if (!$value) {
         return true;
     }
     if (!is_callable($valid) && null !== $valid) {
@@ -83,17 +83,17 @@ function all(iterable $value, $valid = null, $that = null, $scope = 'static') {
             return $v === $valid;
         };
     }
-    $valid = cue($valid, $that, $scope);
+    $c = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (!call_user_func($valid, $v, $k)) {
+        if (!$c($v, $k)) {
             return false;
         }
     }
     return true;
 }
 
-function any(iterable $value, $valid = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function any(array $value, $valid = null, $that = null, $scope = 'static') {
+    if (!$value) {
         return false;
     }
     if (!is_callable($valid) && null !== $valid) {
@@ -101,9 +101,9 @@ function any(iterable $value, $valid = null, $that = null, $scope = 'static') {
             return $v === $valid;
         };
     }
-    $valid = cue($valid, $that, $scope);
+    $c = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (call_user_func($valid, $v, $k)) {
+        if ($c($v, $k)) {
             return true;
         }
     }
@@ -340,7 +340,7 @@ function choke(int $for = 1, $key = 0) {
 
 function concat(array $value, ...$lot) {
     // `concat([…], […], […], false)`
-    if (count($lot) > 1 && false === end($lot)) {
+    if (count($lot) > 1 && false === last($lot)) {
         array_pop($lot);
         return array_merge($value, ...$lot);
     }
@@ -405,31 +405,23 @@ function cookie(...$lot) {
 
 function delete(string $path, $purge = true) {
     if (is_dir($path)) {
-        $it = new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS);
         $r = [];
-        foreach (new RecursiveIteratorIterator($it, RecursiveIteratorIterator::CHILD_FIRST) as $k) {
-            $v = path($k->getPathname());
-            if ($k->isDir()) {
-                $r[$v] = rmdir($v) ? 0 : null;
-            } else {
-                $r[$v] = unlink($v) ? 1 : null;
-            }
+        foreach (g($path, null, true) as $k => $v) {
+            $r[$k] = (0 === $v ? rmdir($k) : unlink($k)) ? $v : null;
         }
-        $r[path($path)] = rmdir($path) ? 0 : null;
+        $r[$path] = rmdir($path) ? 0 : null;
         return $r;
     }
     if (is_file($path)) {
-        // Success?
-        $r = unlink($path) ? path($path) : null;
-        // Remove parent folder if empty
-        if ($purge) {
-            $folder = path(dirname($path));
-            while (0 === q(g($folder))) {
-                if (PATH === $folder) {
-                    break; // Stop once we are in the root!
+        $r = unlink($path) ? $path : null;
+        if ($purge && $r) {
+            $folder = dirname($path);
+            while ($folder && PATH !== $folder) {
+                if ((new FilesystemIterator($folder, FilesystemIterator::SKIP_DOTS))->valid()) {
+                    break;
                 }
                 if (!rmdir($folder)) {
-                    break; // Error?
+                    break;
                 }
                 $folder = dirname($folder);
             }
@@ -439,28 +431,28 @@ function delete(string $path, $purge = true) {
     return null;
 }
 
-// Remove empty array and array-like, empty string and `null` value from array and array-like
-function drop(iterable $value, ?callable $valid = null, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+// Remove empty array, empty string, and `null` value from array
+function drop(array $value, ?callable $valid = null, $that = null, $scope = 'static') {
+    if (!$value) {
         return null;
     }
-    $valid = cue($valid ?? function ($v, $k) {
-        return "" === $v || null === $v || [] === $v || is_countable($v) && 0 === count($v);
+    $c = cue($valid ?? function ($v, $k) {
+        return "" === $v || null === $v || [] === $v;
     }, $that, $scope);
     foreach ($value as $k => $v) {
-        if (is_array($v) && !empty($v)) {
+        if (is_array($v)) {
             if ($v = drop($v, $valid, $that, $scope)) {
                 $value[$k] = $v;
             } else {
                 unset($value[$k]); // Drop!
             }
         } else {
-            if (call_user_func($valid, $v, $k)) {
+            if ($c($v, $k)) {
                 unset($value[$k]); // Drop!
             }
         }
     }
-    return [] !== $value ? (is_countable($value) && 0 !== count($value) ? $value : null) : null;
+    return $value ?: null;
 }
 
 // [E]scape HTML [at]tribute’s value
@@ -503,7 +495,7 @@ function exist($path, $type = null) {
 
 function extend(array $value, ...$lot) {
     // `extend([…], […], […], false)`
-    if (count($lot) > 1 && false === end($lot)) {
+    if (count($lot) > 1 && false === last($lot)) {
         array_pop($lot);
         return array_replace($value, ...$lot);
     }
@@ -659,7 +651,7 @@ function fetch(string $from, $lot = null, $data = "") {
                 unset($v);
             } else {
                 foreach ($h as $k => $v) {
-                    $r[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? end($v) : $v);
+                    $r[] = (is_int($k) ? "\n" : strtolower($k) . ': ') . (is_array($v) ? last($v) : $v);
                 }
             }
             $r = trim(implode("\n", $r));
@@ -686,13 +678,13 @@ function fetch(string $from, $lot = null, $data = "") {
     return false !== $r ? $r : null;
 }
 
-function find(iterable $value, callable $valid, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function find(array $value, callable $valid, $that = null, $scope = 'static') {
+    if (!$value) {
         return null;
     }
-    $valid = cue($valid, $that, $scope);
+    $c = cue($valid, $that, $scope);
     foreach ($value as $k => $v) {
-        if (call_user_func($valid, $v, $k)) {
+        if ($c($v, $k)) {
             return $v;
         }
     }
@@ -700,35 +692,31 @@ function find(iterable $value, callable $valid, $that = null, $scope = 'static')
 }
 
 function fire(callable $task, array $lot = [], $that = null, $scope = 'static') {
-    return call_user_func(cue($task, $that, $scope), ...$lot);
+    return cue($task, $that, $scope)(...$lot);
+}
+
+function first(array $value) {
+    if (!$value) {
+        return null;
+    }
+    return $value[array_key_first($value)] ?? null;
 }
 
 function ge($a, $b) {
     return q($a) >= $b;
 }
 
-function get(array|ArrayAccess $from, string $key, string $join = '.') {
-    if (!$from || 0 === q($from)) {
+function get(array $from, string $key, string $join = '.') {
+    if (!$from) {
         return null;
     }
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if ($from instanceof ArrayAccess) {
-            if (!$from->offsetExists($k)) {
-                return null;
-            }
-            $from = $from->offsetGet($k);
-            continue;
+    foreach ($keys as $key) {
+        $key = strtr($key, [P => $join]);
+        if (!is_array($from) || !array_key_exists($key, $from)) {
+            return null;
         }
-        if (is_array($from)) {
-            if (!array_key_exists($k, $from)) {
-                return null;
-            }
-            $from = $from[$k];
-            continue;
-        }
-        return null;
+        $from =& $from[$key];
     }
     return $from;
 }
@@ -737,25 +725,17 @@ function gt($a, $b) {
     return q($a) > $b;
 }
 
-function has(array|ArrayAccess $from, string $key, string $join = '.') {
-    $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if ($from instanceof ArrayAccess) {
-            if (!$from->offsetExists($k)) {
-                return false;
-            }
-            $from = $from->offsetGet($k);
-            continue;
-        }
-        if (is_array($from)) {
-            if (!array_key_exists($k, $from)) {
-                return false;
-            }
-            $from = $from[$k];
-            continue;
-        }
+function has(array $from, string $key, string $join = '.') {
+    if (!$from) {
         return false;
+    }
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    foreach ($keys as $key) {
+        $key = strtr($key, [P => $join]);
+        if (!is_array($from) || !array_key_exists($key, $from)) {
+            return false;
+        }
+        $from =& $from[$key];
     }
     return true;
 }
@@ -769,53 +749,54 @@ function ip() {
     return filter_var($ip, FILTER_VALIDATE_IP) ? $ip : null;
 }
 
-function is(iterable $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function is(array $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
+    if (!$value) {
         return $value;
     }
-    if (is_callable($valid) && is_object($value) && $value instanceof Traversable) {
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, cue($valid, $that, $scope));
+    if (!is_callable($valid) && null !== $valid) {
+        $valid = function ($v) use ($valid) {
+            return $v === $valid;
+        };
     }
-    $value = $valid ? array_filter($value, cue($valid, $that, $scope), ARRAY_FILTER_USE_BOTH) : array_filter($value);
-    return $keys ? $value : array_values($value);
+    $c = cue($valid, $that, $scope);
+    $r = [];
+    foreach ($value as $k => $v) {
+        if (!$c($v, $k)) {
+            continue;
+        }
+        if ($keys) {
+            $r[$k] = $v;
+            continue;
+        }
+        $r[] = $v;
+    }
+    return $r;
+}
+
+function last(array $value) {
+    if (!$value) {
+        return null;
+    }
+    return $value[array_key_last($value)] ?? null;
 }
 
 function le($a, $b) {
     return q($a) <= $b;
 }
 
-function let(array|ArrayAccess &$from, string $key, string $join = '.') {
-    $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    $k = strtr(array_pop($keys), [P => $join]);
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if ($from instanceof ArrayAccess) {
-            if (!$from->offsetExists($k)) {
-                return false;
-            }
-            $from = $from->offsetGet($k);
-            continue;
-        }
-        if (is_array($from)) {
-            if (!array_key_exists($k, $from)) {
-                return false;
-            }
-            $from =& $from[$k];
-            continue;
-        }
+function let(array &$from, string $key, string $join = '.') {
+    if (!$from) {
         return false;
     }
-    if ($from instanceof ArrayAccess) {
-        if (!$from->offsetExists($k)) {
-            return false;
+    $keys = explode($join, strtr($key, ["\\" . $join => P]));
+    $k = strtr(array_pop($keys), [P => $join]);
+    while ($keys) {
+        $key = strtr(array_shift($keys), [P => $join]);
+        if (is_array($from) && array_key_exists($key, $from)) {
+            $from =& $from[$key];
         }
-        $from->offsetUnset($k);
-        return true;
     }
-    if (is_array($from)) {
-        if (!array_key_exists($k, $from)) {
-            return false;
-        }
+    if (is_array($from) && array_key_exists($k, $from)) {
         unset($from[$k]);
         return true;
     }
@@ -865,13 +846,13 @@ function lt($a, $b) {
     return q($a) < $b;
 }
 
-function map(iterable $value, callable $at, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function map(array $value, callable $at, $that = null, $scope = 'static') {
+    if (!$value) {
         return $value;
     }
-    $at = cue($at, $that, $scope);
+    $c = cue($at, $that, $scope);
     foreach ($value as $k => $v) {
-        $value[$k] = call_user_func($at, $v, $k);
+        $value[$k] = $c($v, $k);
     }
     return $value;
 }
@@ -932,8 +913,8 @@ function ne($a, $b) {
     return q($a) !== $b;
 }
 
-function not(iterable $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
-    if (!$value || 0 === q($value)) {
+function not(array $value, $valid = null, $keys = false, $that = null, $scope = 'static') {
+    if (!$value) {
         return $value;
     }
     if (!is_callable($valid) && null !== $valid) {
@@ -941,17 +922,19 @@ function not(iterable $value, $valid = null, $keys = false, $that = null, $scope
             return $v === $valid;
         };
     }
-    if (is_callable($valid) && is_object($value) && $value instanceof Traversable) {
-        $valid = cue($valid, $that, $scope);
-        return new CallbackFilterIterator($value instanceof IteratorAggregate ? $value->getIterator() : $value, function ($v, $k) use ($valid) {
-            return !call_user_func($valid, $v, $k);
-        });
+    $c = cue($valid, $that, $scope);
+    $r = [];
+    foreach ($value as $k => $v) {
+        if ($c($v, $k)) {
+            continue;
+        }
+        if ($keys) {
+            $r[$k] = $v;
+            continue;
+        }
+        $r[] = $v;
     }
-    $valid = cue($valid, $that, $scope);
-    $value = array_filter($value, static function ($v, $k) use ($valid) {
-        return !call_user_func($valid, $v, $k);
-    }, ARRAY_FILTER_USE_BOTH);
-    return $keys ? $value : array_values($value);
+    return $r;
 }
 
 // Convert property name to file name
@@ -1019,8 +1002,8 @@ function path(?string $value) {
     return stream_resolve_include_path(rtrim($value, D)) ?: null;
 }
 
-function pluck(iterable $from, string $key, $value = null, $that = null, $scope = 'static') {
-    if (!$from || 0 === q($from)) {
+function pluck(array $from, string $key, $value = null, $that = null, $scope = 'static') {
+    if (!$from) {
         return [];
     }
     $dot = false !== strpos(strtr($key, ["\\." => P]), '.');
@@ -1032,6 +1015,7 @@ function pluck(iterable $from, string $key, $value = null, $that = null, $scope 
     }, $that, $scope);
 }
 
+#[Deprecated]
 function queue(iterable $value, callable $at, $sort = -1, $keys = false, $that = null) {
     $count = $i = 0;
     $it = new class extends SplPriorityQueue {
@@ -1086,78 +1070,21 @@ function seal(string $path, $seal = null) {
     return chmod($path, $seal) ? $seal : null;
 }
 
-function set(array|ArrayAccess &$to, string $key, $value = null, string $join = '.') {
+function set(array &$to, string $key, $value = null, string $join = '.') {
     $keys = explode($join, strtr($key, ["\\" . $join => P]));
-    if (is_array($to)) {
-        $key = array_pop($keys);
-        $r =& $to;
-        foreach ($keys as $k) {
-            $k = strtr($k, [P => $join]);
-            // In the case that the container is not valid, treat it as an empty array
-            if (!array_key_exists($k, $r) || !is_array($r[$k])) {
-                $r[$k] = [];
-            }
-            $r =& $r[$k];
+    $k = strtr(array_pop($keys), [P => $join]);
+    while ($keys) {
+        $key = strtr(array_shift($keys), [P => $join]);
+        if (!array_key_exists($key, $to)) {
+            $to[$key] = [];
         }
-        return ($r[strtr($key, [P => $join])] = $value);
+        $to =& $to[$key];
     }
-    $r = $to;
-    $stack = [];
-    foreach ($keys as $k) {
-        $k = strtr($k, [P => $join]);
-        if ($r instanceof ArrayAccess) {
-            $stack[] = [$r, $k];
-            if (!$r->offsetExists($k)) {
-                $r[$k] = [];
-            }
-            $r = $r[$k];
-            continue;
-        }
-        if (is_array($r)) {
-            $stack[] = [$r, $k];
-            if (!array_key_exists($k, $r)) {
-                $r[$k] = [];
-            }
-            $r = $r[$k];
-            continue;
-        }
-        if (!$stack) {
-            $r = [];
-            continue;
-        }
-        // In the case that the container is not valid, treat it as an empty array
-        [$v, $k] = array_pop($stack);
-        if ($v instanceof ArrayAccess) {
-            $v->offsetSet($k, $r = []);
-        } else {
-            $v[$k] = $r = [];
-        }
-        $stack[] = [$v, $k];
-    }
-    $r = $value;
-    for ($i = count($stack) - 1; $i >= 0; --$i) {
-        [$v, $k] = $stack[$i];
-        if ($v instanceof ArrayAccess) {
-            $v->offsetSet($k, $r);
-        } else {
-            $v[$k] = $r;
-        }
-        $r = $v;
-    }
-    return $value;
+    return ($to[$k] = $value);
 }
 
-function shake(iterable $value, $keys = false, $that = null, $scope = 'static') {
-    if (is_callable($keys)) {
-        // `$keys` as `$task`
-        return fire($keys, [$value], $that, $scope);
-    }
-    if (!is_array($value)) {
-        return queue($value, function () {
-            return random_int(0, PHP_INT_MAX);
-        }, -1, $keys);
-    }
-    // <https://www.php.net/manual/en/function.shuffle.php#94697>
+function shake(array $value, $keys = false) {
+    // <http://php.net/manual/en/function.shuffle.php#94697>
     if ($keys) {
         $keys = array_keys($value);
         $values = [];
@@ -1165,9 +1092,11 @@ function shake(iterable $value, $keys = false, $that = null, $scope = 'static') 
         foreach ($keys as $key) {
             $values[$key] = $value[$key];
         }
-        return $values;
+        $value = $values;
+        unset($keys, $values);
+    } else {
+        shuffle($value);
     }
-    shuffle($value);
     return $value;
 }
 
@@ -1409,7 +1338,7 @@ function d(string $folder, ?callable $task = null) {
             extract(lot(), EXTR_SKIP);
             require $file;
             if (is_callable($task)) {
-                call_user_func($task, $object, $f, $file);
+                $task($object, $f, $file);
             }
         }
     });
@@ -1697,7 +1626,7 @@ function r(?string $value, $from, $to = null) {
                 if (($n = strlen($v)) && $v === substr($value, $i, $n)) {
                     $done = true;
                     $i += $n;
-                    $r .= call_user_func($to, $v);
+                    $r .= $to($v);
                     break;
                 }
             }
