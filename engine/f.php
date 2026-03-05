@@ -1015,30 +1015,6 @@ function pluck(array $from, string $key, $value = null, $that = null, $scope = '
     }, $that, $scope);
 }
 
-#[Deprecated]
-function queue(iterable $value, callable $at, $sort = -1, $keys = false, $that = null) {
-    $count = $i = 0;
-    $it = new class extends SplPriorityQueue {
-        public $sort = -1;
-        public function compare($a, $b): int {
-            return -1 === ($d = $this->sort) || SORT_DESC === $d ? $a <=> $b : $b <=> $a;
-        }
-    };
-    $it->setExtractFlags(SplPriorityQueue::EXTR_DATA);
-    $it->sort = $sort;
-    $max = PHP_INT_MAX;
-    foreach ($value as $k => $v) {
-        $it->insert($v = [$v, $keys ? $k : null], [fire($at, $v, $that) ?? PHP_INT_MIN, --$max]);
-        ++$count;
-    }
-    $r = $keys ? new ArrayIterator : new SplFixedArray($count);
-    while (!$it->isEmpty()) {
-        $v = $it->extract();
-        $r[$v[1] ?? $i++] = $v[0];
-    }
-    return $r;
-}
-
 function save(string $path, string $value, $seal = null) {
     if (is_dir($path)) {
         // Error
