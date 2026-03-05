@@ -4,6 +4,7 @@ class Anemone extends Genome {
 
     protected $join;
     protected $lot;
+    protected $v;
 
     public function __call(string $kin, array $lot = []) {
         if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
@@ -37,7 +38,9 @@ class Anemone extends Genome {
     }
 
     public function __serialize(): array {
-        return get_object_vars($this);
+        $z = get_object_vars($this);
+        unset($z['v']);
+        return $z;
     }
 
     public function __toString(): string {
@@ -52,12 +55,17 @@ class Anemone extends Genome {
         return any($this->lot, $valid, $this);
     }
 
+    public function batch() {
+        return new static($this->v, $this->join);
+    }
+
     public function chunk(int $chunk = 5, int $at = -1, $keys = false) {
         $that = new static($this->lot, $this->join);
         if ($chunk < 1) {
             return $that;
         }
-        $lot = array_chunk($that->lot, $chunk, $keys);
+        $that->v = $lot = $that->lot;
+        $lot = array_chunk($lot, $chunk, $keys);
         if ($at > -1) {
             $lot = $lot[$at] ?? [];
         }

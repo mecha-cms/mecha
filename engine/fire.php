@@ -218,8 +218,6 @@ $query = "" !== $query ? '?' . $query : null;
 
 lot('link', $link = new Link($scheme . '://' . $host . $path . $query . $hash));
 
-lot('url', $link); // Deprecated
-
 function anemone(...$lot) {
     return Anemone::from(...$lot);
 }

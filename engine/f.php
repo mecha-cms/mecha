@@ -481,7 +481,7 @@ function exist($path, $type = null) {
             return $r;
         }
         if (strcspn($v, '*?[]{}') !== strlen($v)) {
-            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = reset($r))) {
+            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = $r[0] ?? 0)) {
                 continue;
             }
             if ($test && !$test($r)) {
@@ -1458,31 +1458,26 @@ function j(array $a, array $b) {
 
 function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $content = false) {
     $query = (array) $query;
-    return new CallbackFilterIterator(g($folder, $x, $deep, $keys), static function ($v, $k) use ($content, $keys, $query) {
-        $test = $keys ? $k : $v;
+    foreach (g($folder, $x, $deep, $keys) as $k => $v) {
+        $path = $keys ? $k : $v;
         foreach ($query as $q) {
             if ("" === $q) {
                 continue;
             }
             $strict = $q !== strtolower($q); // Case sensitive?
             // Find by query in file name…
-            if (false !== ($strict ? strpos($test, $q) : stripos($test, $q))) {
-                return true;
-            }
+            if (false !== ($strict ? strpos($path, $q) : stripos($path, $q))) {
+                yield $k => $v;
             // Find by query in file content…
-            if (!is_file($test)) {
-                return false;
-            }
-            if ($content) {
-                foreach (stream($test, strlen($q)) as $v) {
+            } else if ($content && is_file($path)) {
+                foreach (stream($path, strlen($q)) as $v) {
                     if (false !== ($strict ? strpos($v, $q) : stripos($v, $q))) {
-                        return true;
+                        yield $k => $v;
                     }
                 }
             }
         }
-        return false;
-    });
+    }
 }
 
 function l(?string $value) {
@@ -1576,7 +1571,7 @@ function q($value) {
     return empty($value) ? 0 : 1;
 }
 
-function r(?string $value, $from, $to = null) {
+function r(?string $value, $from, $to = null, $strict = true) {
     if ("" === ($value ?? "")) {
         return null;
     }
@@ -1599,10 +1594,11 @@ function r(?string $value, $from, $to = null) {
         while ($i < $max) {
             $done = false;
             foreach ($from as $v) {
-                if (($n = strlen($v)) && $v === substr($value, $i, $n)) {
+                $w = substr($value, $i, $n = strlen($v));
+                if ($n && ($strict ? $v === $w : 0 === strcasecmp($v, $w))) {
                     $done = true;
                     $i += $n;
-                    $r .= $to($v);
+                    $r .= $to($w);
                     break;
                 }
             }
