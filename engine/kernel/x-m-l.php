@@ -11,16 +11,15 @@ class XML extends Genome {
     protected $raw = [];
     protected $void = [];
 
-    protected function apart(string $value, $deep = false) {
-        $current = $stack = 0;
+    protected function apart($value, $raw, $void, $deep, $strict) {
         $i = -1;
         $lot = [];
-        $raw = array_keys(array_filter($this->raw));
-        $void = array_keys(array_filter($this->void));
+        $stack = 0;
         foreach (apart($value, $raw, $void) as $v) {
             if ($stack > 0) {
                 if (2 === $v[1]) {
                     if ('/' === $v[0][1]) {
+                        $lot[$i][3] = -$v[2];
                         $stack -= 1;
                     } else {
                         $stack += 1;
@@ -32,40 +31,40 @@ class XML extends Genome {
             if (2 === $v[1]) {
                 $stack += 1;
             }
-            $lot[++$i] = [$v[0], $v[1], $v[2] ?? strlen($v[0])];
+            $lot[++$i] = $v;
         }
-        $strict = $this->strict;
         foreach ($lot as &$v) {
-            // <https://www.w3.org/TR/xml#d0e2480>
-            if (1 === $v[1] && strcspn($v[0], '!?', 1)) {
-                $n = rtrim(substr($n = substr($t = substr($v[0], 0, $v[2]), 1, -1), 0, strcspn($n, " \n\r\t")), '/');
-                if (!empty($this->raw[$n]) && '</' . $n . '>' === substr($v[0], $x = -(2 + strlen($n) + 1))) {
-                    $v = [$n, substr($v[0], $v[2], $x), $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
+            if (1 === $v[1]) {
+                // <https://www.w3.org/TR/xml#sec-cdata-sect>
+                // <https://www.w3.org/TR/xml#sec-comments>
+                // <https://www.w3.org/TR/xml#sec-prolog-dtd>
+                if (strspn($v[0], '!?', 1)) {
+                    $v = [null, $v[0], []];
                     continue;
                 }
-                $v = [$n, false, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
+                // <https://www.w3.org/TR/xml#d0e2480>
+                $n = substr($t = substr($v[0], 1, $v[2] - 2), 0, $x = strcspn($t, " \n\r\t"));
+                $v = [$n, isset($v[3]) && is_int($v[3]) ? substr($v[0], $v[2], $v[3]) : false, $this->pair(trim(substr($t, $x), '/'))];
                 continue;
             }
             // <https://www.w3.org/TR/xml#sec-starttags>
             if (2 === $v[1]) {
-                $n = rtrim(substr($n = substr($t = substr($v[0], 0, $v[2]), 1, -1), 0, strcspn($n, " \n\r\t")), '/');
+                $n = substr($t = substr($v[0], 1, $v[2] - 2), 0, $x = strcspn($t, " \n\r\t"));
                 $r = substr($v[0], $v[2]);
-                if ('</' . $n . '>' === substr($r, $x = -(2 + strlen($n) + 1))) {
-                    $r = substr($r, 0, $x);
-                    $v = [$n, $deep ? $this->apart($r, empty($this->raw[$n]) ? $deep : false) : $r, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
+                // <https://www.w3.org/TR/xml#d0e2403>
+                if (isset($v[3]) && is_int($v[3])) {
+                    $r = substr($r, 0, $v[3]);
+                    $r = $deep ? $this->apart($r, $raw, $void, true === $deep ? $deep : (is_int($deep) && $deep > 1 ? $deep - 1 : false), $strict) : $r;
+                    if ($deep && is_array($r) && 1 === count($r) && is_string($r[0] ?? 0)) {
+                        $r = $r[0];
+                    }
+                    $v = [$n, $r ?: "", $this->pair(trim(substr($t, $x), '/'))];
                     continue;
                 }
                 if ($strict) {
                     throw new ParseError($v[0]);
                 }
-                $v = [$n, false, $this->pair(trim(substr($t, 1 + strlen($n), -1), '/'))];
-                continue;
-            }
-            // <https://www.w3.org/TR/xml#sec-cdata-sect>
-            // <https://www.w3.org/TR/xml#sec-comments>
-            // <https://www.w3.org/TR/xml#sec-prolog-dtd>
-            if (1 === $v[1] && strspn($v[0], '!?', 1)) {
-                $v = [null, $v[0], []];
+                $v = [$n, false, $this->pair(trim(substr($t, $x), '/'))];
                 continue;
             }
             // <https://www.w3.org/TR/xml#charsets>
@@ -109,11 +108,13 @@ class XML extends Genome {
             $this->lot[1] = $value[1];
             $this->lot[2] = $value[2];
         } else if (is_string($value)) {
+            $raw = array_keys(array_filter($this->raw));
+            $void = array_keys(array_filter($this->void));
             // Must start with `<` and end with `>`
             if ('<' === substr($value = trim($value), 0, 1) && '>' === substr($value, -1)) {
                 // Must be an element
-                if (1 === count($apart = $this->apart($value, $deep))) {
-                    $this->lot = reset($apart);
+                if (1 === count($lot = $this->apart($value, $raw, $void, $deep, $strict))) {
+                    $this->lot = reset($lot);
                 } else if (defined('TEST') && TEST) {
                     throw new ParseError($value);
                 }

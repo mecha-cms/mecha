@@ -117,10 +117,10 @@ class File extends Genome {
         return is_string($path = $this->path) ? stream($path, $max) : new EmptyIterator;
     }
 
-    public function time(?string $format = null) {
+    public function time(?string $pattern = null) {
         if (is_int($time = $this->_time())) {
             $t = new Time($time);
-            return $format ? $t($format) : $t;
+            return $pattern ? $t($pattern) : $t;
         }
         return null;
     }
