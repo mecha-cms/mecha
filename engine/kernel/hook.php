@@ -103,9 +103,6 @@ class Hook extends Genome {
                     self::$lot[1][$c][$name] = [];
                 }
                 self::$lot[1][$c][$name][] = [
-                    '0' => c2f($c),
-                    '1' => "",
-                    '2' => [],
                     'stack' => (float) $stack,
                     'task' => $task
                 ];
