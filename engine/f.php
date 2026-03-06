@@ -465,6 +465,7 @@ function eq($a, $b) {
 }
 
 function exist($path, $type = null) {
+    static $c = [];
     $test = match ($type) {
         0 => 'is_dir',
         1 => 'is_file',
@@ -474,20 +475,21 @@ function exist($path, $type = null) {
         if (!$v) {
             continue;
         }
+        if (isset($c[$v])) {
+            return $c[$v];
+        }
         if ($r = stream_resolve_include_path($v)) {
             if ($test && !$test($r)) {
                 continue;
             }
-            return $r;
+            return ($c[$v] = $r);
         }
         if (strcspn($v, '*?[]{}') !== strlen($v)) {
-            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = $r[0] ?? 0)) {
+            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = $r[0] ?? 0) || $test && !$test($r)) {
+                $c[$v] = false;
                 continue;
             }
-            if ($test && !$test($r)) {
-                continue;
-            }
-            return $r;
+            return ($c[$v] = $r);
         }
     }
     return false;

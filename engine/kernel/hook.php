@@ -66,7 +66,7 @@ class Hook extends Genome {
                     self::$lot[0][$c][$name] = [];
                     foreach (self::$lot[1][$c][$name] as $k => $v) {
                         if ($v['task'] === $task) {
-                            self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task] = $v;
+                            self::$lot[0][$c][$name][is_object($task) ? spl_object_id($task) : $task] = $v;
                             unset(self::$lot[1][$c][$name][$k]);
                         }
                     }
@@ -76,7 +76,7 @@ class Hook extends Genome {
                 }
             } else {
                 if (isset($task)) {
-                    self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task] = 1;
+                    self::$lot[0][$c][$name][is_object($task) ? spl_object_id($task) : $task] = 1;
                 } else {
                     self::$lot[0][$c][$name] = 1;
                 }
@@ -96,7 +96,7 @@ class Hook extends Genome {
                 self::set((string) $v, $task, $stack);
             }
         } else {
-            if (!empty(self::$lot[0][$c][$name][is_object($task) ? spl_object_hash($task) : $task])) {
+            if (!empty(self::$lot[0][$c][$name][is_object($task) ? spl_object_id($task) : $task])) {
                 // Skip!
             } else {
                 if (!isset(self::$lot[1][$c][$name])) {
@@ -110,8 +110,9 @@ class Hook extends Genome {
                     'task' => $task
                 ];
                 if (count(self::$lot[1][$c][$name]) > 1) {
-                    $v = (new Anemone(self::$lot[1][$c][$name]))->sort([1, 'stack'])->get();
-                    self::$lot[1][$c][$name] = is_array($v) ? $v : (is_object($v) && $v instanceof SplFixedArray ? $v->toArray() : y($v));
+                    usort(self::$lot[1][$c][$name], function ($a, $b) {
+                        return $a['stack'] <=> $b['stack'];
+                    });
                 }
             }
         }
