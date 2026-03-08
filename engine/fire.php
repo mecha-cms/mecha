@@ -238,6 +238,10 @@ function long(string $value) {
     if ("" === $value) {
         return $link->current;
     }
+    // `long('/')`
+    if ('/' === $value) {
+        return $base;
+    }
     // `long('//127.0.0.1')`
     if (0 === strpos($value, '//')) {
         return $link->scheme . $value;
