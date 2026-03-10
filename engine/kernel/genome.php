@@ -2,10 +2,49 @@
 
 abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Stringable {
 
+    protected static function _chains($k) {
+        static $c = [];
+        if (!isset($c[$k])) {
+            $r = class_parents($k);
+            unset($r[self::class]);
+            $c[$k] = [$k, ...$r];
+        }
+        return $c[$k];
+    }
+
+    protected static function _hasOwnMethod($key, $that) {
+        static $c = [];
+        if (isset($c[$k = get_class($that)][$key])) {
+            return true;
+        }
+        if (!method_exists($that, $key)) {
+            return false;
+        }
+        // if ((new ReflectionMethod($that, $key))->isPublic()) {
+        if (is_callable([$that, $key])) {
+            return ($c[$k][$key] = true);
+        }
+        return false;
+    }
+
+    protected static function _hasOwnProperty($key, $that) {
+        static $c = [];
+        if (isset($c[$k = get_class($that)][$key])) {
+            return true;
+        }
+        if (!property_exists($that, $key)) {
+            return false;
+        }
+        if ((new ReflectionProperty($that, $key))->isPublic()) {
+            return ($c[$k][$key] = true);
+        }
+        return false;
+    }
+
     public function __call(string $kin, array $lot = []) {
-        foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
-            if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-                $v = self::$_[$c][$kin];
+        foreach (self::_chains($c = static::class) as $k) {
+            if (!empty(self::$_[$k]) && array_key_exists($kin, self::$_[$k])) {
+                $v = self::$_[$k][$kin];
                 if (is_callable($v[0])) {
                     // Alter default function argument(s)
                     if (isset($v[1])) {
@@ -19,9 +58,9 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
                 }
                 return $v[0];
             }
-            if (defined('TEST') && TEST) {
-                throw new BadMethodCallException('Method $' . basename($c) . '->' . $kin . '() does not exist.');
-            }
+        }
+        if (defined('TEST') && TEST) {
+            throw new BadMethodCallException('Method $' . strtr($c, ["\\" => '__']) . '->' . $kin . '() does not exist.');
         }
     }
 
@@ -52,7 +91,7 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
     public function __set(string $key, $value): void {}
 
     public function __toString(): string {
-        return json_encode($this->__serialize());
+        return json_encode($this->__serialize(), JSON_UNESCAPED_UNICODE) ?: "";
     }
 
     public function __unserialize(array $lot): void {
@@ -91,12 +130,13 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
 
     public static function _(...$lot) {
         $c = static::class;
+        $max = count($lot);
         // Get
-        if (0 === count($lot)) {
+        if (0 === $max) {
             return self::$_[$c] ?? [];
         }
         // Get
-        if (1 === count($lot)) {
+        if (1 === $max) {
             return self::$_[$c][$lot[0]] ?? null;
         }
         // Let
@@ -109,30 +149,32 @@ abstract class Genome implements ArrayAccess, Countable, IteratorAggregate, Json
     }
 
     public static function __callStatic(string $kin, array $lot = []) {
-        foreach (array_merge([$n = static::class], array_slice(class_parents($n), 0, -1, false)) as $c) {
-            if (isset(self::$_[$c]) && array_key_exists($kin, self::$_[$c])) {
-                $r = self::$_[$c][$kin];
-                if (is_callable($r[0])) {
+        foreach (self::_chains($c = static::class) as $k) {
+            if (!empty(self::$_[$k]) && array_key_exists($kin, self::$_[$k])) {
+                $v = self::$_[$k][$kin];
+                if (is_callable($v[0])) {
                     // Alter default function argument(s)
-                    if (isset($r[1])) {
-                        $lot = array_replace((array) $r[1], $lot);
+                    if (isset($v[1])) {
+                        $lot = array_replace((array) $v[1], $lot);
                     }
                     // Limit function argument(s)
-                    if (isset($r[2])) {
-                        $lot = array_slice($lot, 0, $r[2]);
+                    if (isset($v[2])) {
+                        $lot = array_slice($lot, 0, $v[2]);
                     }
-                    return fire($r[0], $lot);
+                    return fire($v[0], $lot);
                 }
-                return $r[0];
+                return $v[0];
             }
-            if (defined('TEST') && TEST) {
-                throw new BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
-            }
+        }
+        if (defined('TEST') && TEST) {
+            throw new BadMethodCallException('Method ' . $c . '::' . $kin . '() does not exist.');
         }
     }
 
     public static function __set_state(array $lot): object {
-        return (new static)->__unserialize($lot);
+        $that = new static;
+        $that->__unserialize($lot);
+        return $that;
     }
 
 }

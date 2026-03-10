@@ -7,10 +7,7 @@ final class Time extends Genome {
     public $zone;
 
     public function __call(string $kin, array $lot = []) {
-        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
-            return $this->{$kin};
-        }
-        return parent::__call($kin, $lot);
+        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($value = null) {
@@ -29,13 +26,16 @@ final class Time extends Genome {
     }
 
     public function __get(string $key): mixed {
-        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
+        if (parent::_hasOwnMethod($key, $this)) {
             return $this->{$key}();
         }
         if ($v = parent::_($key)) {
             if (is_string($v = $v[0]) && false !== strpos($v, '%')) {
                 return $this->i($v);
             }
+        }
+        if (defined($pattern = 'DATE_' . strtoupper($key))) {
+            return $this->format($pattern);
         }
         return parent::__call($key);
     }

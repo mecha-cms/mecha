@@ -7,10 +7,7 @@ class Anemone extends Genome {
     protected $v;
 
     public function __call(string $kin, array $lot = []) {
-        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
-            return $this->{$kin};
-        }
-        return parent::__call($kin, $lot);
+        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct(iterable $lot = [], string $join = ', ') {
@@ -19,10 +16,7 @@ class Anemone extends Genome {
     }
 
     public function __get(string $key): mixed {
-        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
-            return $this->{$key}();
-        }
-        return $this->__call($key);
+        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __invoke(string $join = ', ', $valid = true): mixed {
@@ -82,7 +76,7 @@ class Anemone extends Genome {
     }
 
     public function get(?string $key = null) {
-        if (!$this->count()) {
+        if (!$this->lot) {
             return null;
         }
         return isset($key) ? get($this->lot, $key) : $this->lot;
@@ -97,7 +91,7 @@ class Anemone extends Genome {
     }
 
     public function index(string $key) {
-        if (!$this->count() || !array_key_exists($key, $lot = $this->lot)) {
+        if (!($lot = $this->lot) || !array_key_exists($key, $lot)) {
             return null;
         }
         $at = 0;
@@ -153,7 +147,7 @@ class Anemone extends Genome {
     }
 
     public function list() {
-        return new static($this->v, $this->join);
+        return null !== ($v = $this->v) ? new static($v, $this->join) : $this;
     }
 
     public function map(callable $at) {
@@ -173,7 +167,7 @@ class Anemone extends Genome {
     }
 
     public function offsetExists($key): bool {
-        return null !== $this->offsetGet($key);
+        return array_key_exists($key, $this->lot);
     }
 
     public function offsetGet($key): mixed {
@@ -181,13 +175,11 @@ class Anemone extends Genome {
     }
 
     public function offsetSet($key, $value): void {
-        $lot = $this->lot;
         if (isset($key)) {
-            $lot[$key] = $value;
+            $this->lot[$key] = $value;
         } else {
-            $lot[] = $value;
+            $this->lot[] = $value;
         }
-        $this->lot = $lot;
     }
 
     public function offsetUnset($key): void {
@@ -203,7 +195,7 @@ class Anemone extends Genome {
     }
 
     public function reverse($keys = false) {
-        return new static(array_reverse($this->lot), $this->join);
+        return new static(array_reverse($this->lot, $keys), $this->join);
     }
 
     public function set($key, $value = null) {
@@ -263,11 +255,37 @@ class Anemone extends Genome {
     }
 
     public function step() {
-        return $this->v ? count($this->lot) : 1;
+        return null !== $this->v ? count($this->lot) : 1;
     }
 
     public function values() {
         return new static(array_values($this->lot), $this->join);
+    }
+
+    public function with($key, $value = null) {
+        if (!$this->lot) {
+            return $this;
+        }
+        $deep = is_string($key) && false !== strpos(strtr($key, ["\\." => P]), '.');
+        $lot =& $this->lot;
+        if (!is_string($value) && is_callable($value)) {
+            $c = cue($value, $this);
+            foreach ($lot as $k => &$v) {
+                if (!is_array($v)) {
+                    continue;
+                }
+                $deep ? set($v, $key, $c($v, $k)) : ($v[$key] = $c($v, $k));
+            }
+        } else {
+            foreach ($lot as &$v) {
+                if (!is_array($v)) {
+                    continue;
+                }
+                $deep ? set($v, $key, $value) : ($v[$key] = $value);
+            }
+        }
+        unset($lot, $v);
+        return $this;
     }
 
     public static function from(...$lot) {

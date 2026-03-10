@@ -89,13 +89,9 @@ class State extends Genome {
         $kin = p2f($kin); // `fooBar_baz` → `foo-bar_baz`
         if ($lot) {
             $value = self::get($kin);
-            // Asynchronous value with closure
-            if ($value instanceof Closure) {
-                return fire($value, $lot, null, static::class);
-            }
-            // Asynchronous value with class instance
-            if (is_callable($value) && !is_string($value)) {
-                return call_user_func($value, ...$lot);
+            // Asynchronous value
+            if ($value instanceof Closure || !is_string($value) && is_callable($value)) {
+                return $value(...$lot);
             }
             // Else, static value
             return self::get($kin . '.' . $lot[0], !empty($lot[1]));

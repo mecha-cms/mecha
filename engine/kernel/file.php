@@ -5,10 +5,7 @@ class File extends Genome {
     public $path;
 
     public function __call(string $kin, array $lot = []) {
-        if (property_exists($this, $kin) && (new ReflectionProperty($this, $kin))->isPublic()) {
-            return $this->{$kin};
-        }
-        return parent::__call($kin, $lot);
+        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($path = null) {
@@ -18,10 +15,7 @@ class File extends Genome {
     }
 
     public function __get(string $key): mixed {
-        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
-            return $this->{$key}();
-        }
-        return $this->__call($key);
+        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {

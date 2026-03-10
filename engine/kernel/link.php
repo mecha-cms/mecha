@@ -94,10 +94,7 @@ final class Link extends Genome {
     }
 
     public function __get(string $key): mixed {
-        if (method_exists($this, $key) && (new ReflectionMethod($this, $key))->isPublic()) {
-            return $this->{$key}();
-        }
-        return $this->__call($key);
+        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {
@@ -105,7 +102,7 @@ final class Link extends Genome {
     }
 
     public function __serialize(): array {
-        return ['lot' => $this->lot ?? []];
+        return $this->lot ?? [];
     }
 
     public function __set(string $key, $value = null): void {
@@ -119,7 +116,7 @@ final class Link extends Genome {
     }
 
     public function __unserialize(array $lot): void {
-        $this->lot = $lot['lot'] ?? [];
+        $this->lot = $lot;
     }
 
     public function __unset(string $key): void {
