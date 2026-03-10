@@ -55,10 +55,6 @@ class Anemone extends Genome {
         return any($this->lot, $valid, $this);
     }
 
-    public function batch() {
-        return new static($this->v, $this->join);
-    }
-
     public function chunk(int $chunk = 5, int $at = -1, $keys = false) {
         $that = new static($this->lot, $this->join);
         if ($chunk < 1) {
@@ -81,11 +77,8 @@ class Anemone extends Genome {
         return find($this->lot, $valid, $this);
     }
 
-    public function first($take = false) {
-        if (!$this->count()) {
-            return null;
-        }
-        return $take ? array_shift($this->lot) : first($this->lot);
+    public function first() {
+        return first($this->lot);
     }
 
     public function get(?string $key = null) {
@@ -139,11 +132,12 @@ class Anemone extends Genome {
         return null;
     }
 
-    public function last($take = false) {
-        if (!$this->count()) {
-            return null;
-        }
-        return $take ? array_pop($this->lot) : last($this->lot);
+    public function keys() {
+        return new static(array_keys($this->lot), $this->join);
+    }
+
+    public function last() {
+        return last($this->lot);
     }
 
     public function let(?string $key = null) {
@@ -154,8 +148,24 @@ class Anemone extends Genome {
         return true;
     }
 
+    public function limit(int $limit = 5, $keys = false) {
+        return $this->slice(0, $limit, $keys);
+    }
+
+    public function list() {
+        return new static($this->v, $this->join);
+    }
+
     public function map(callable $at) {
         return new static(map($this->lot, $at, $this), $this->join);
+    }
+
+    public function max() {
+        return count($this->v ?? $this->lot);
+    }
+
+    public function min() {
+        return 0;
     }
 
     public function not($valid, $keys = false) {
@@ -188,6 +198,10 @@ class Anemone extends Genome {
         return new static(pluck($this->lot, $key, $value, $this), $this->join);
     }
 
+    public function pop($keys = false) {
+        return pop($this->lot, $keys);
+    }
+
     public function reverse($keys = false) {
         return new static(array_reverse($this->lot), $this->join);
     }
@@ -198,6 +212,14 @@ class Anemone extends Genome {
 
     public function shake($keys = false) {
         return new static(shake($this->lot, $keys), $this->join);
+    }
+
+    public function shift($keys = false) {
+        return shift($this->lot, $keys);
+    }
+
+    public function slice(int $at, ?int $limit = null, $keys = false) {
+        return new static(array_slice($this->lot, $at, $limit, $keys), $this->join);
     }
 
     public function sort($sort = 1, $keys = false) {
@@ -238,6 +260,14 @@ class Anemone extends Genome {
         }
         $this->lot = $lot;
         return $this;
+    }
+
+    public function step() {
+        return $this->v ? count($this->lot) : 1;
+    }
+
+    public function values() {
+        return new static(array_values($this->lot), $this->join);
     }
 
     public static function from(...$lot) {

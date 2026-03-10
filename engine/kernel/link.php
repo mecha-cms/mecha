@@ -105,7 +105,7 @@ final class Link extends Genome {
     }
 
     public function __serialize(): array {
-        return $this->lot ?? [];
+        return ['lot' => $this->lot ?? []];
     }
 
     public function __set(string $key, $value = null): void {
@@ -119,7 +119,7 @@ final class Link extends Genome {
     }
 
     public function __unserialize(array $lot): void {
-        $this->lot = $lot;
+        $this->lot = $lot['lot'] ?? [];
     }
 
     public function __unset(string $key): void {

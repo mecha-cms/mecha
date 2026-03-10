@@ -1017,6 +1017,18 @@ function pluck(array $from, string $key, $value = null, $that = null, $scope = '
     }, $that, $scope);
 }
 
+function pop(array &$value, $keys = false) {
+    if ($keys) {
+        if (!$value) {
+            return null;
+        }
+        $r = $value[$key = array_key_last($value)];
+        unset($value[$key]);
+        return $r;
+    }
+    return array_pop($value);
+}
+
 function save(string $path, string $value, $seal = null) {
     if (is_dir($path)) {
         // Error
@@ -1076,6 +1088,18 @@ function shake(array $value, $keys = false) {
         shuffle($value);
     }
     return $value;
+}
+
+function shift(array &$value, $keys = false) {
+    if ($keys) {
+        if (!$value) {
+            return null;
+        }
+        $r = $value[$key = array_key_first($value)];
+        unset($value[$key]);
+        return $r;
+    }
+    return array_shift($value);
 }
 
 // Tidy file size <https://en.wikipedia.org/wiki/Byte#Multiple-byte_units>
