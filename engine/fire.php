@@ -218,8 +218,8 @@ $query = "" !== $query ? '?' . $query : null;
 
 lot('link', $link = new Link($scheme . '://' . $host . $path . $query . $hash));
 
-function anemone(...$lot) {
-    return Anemone::from(...$lot);
+function batch(...$lot) {
+    return Batch::from(...$lot);
 }
 
 function hook(...$lot) {

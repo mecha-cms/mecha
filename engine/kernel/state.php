@@ -1,6 +1,6 @@
 <?php
 
-class State extends Genome {
+class State extends Proxy {
 
     protected static $lot = [];
 

@@ -1,13 +1,14 @@
 <?php
 
-class Anemone extends Genome {
+class Batch extends Proxy {
 
     protected $join;
     protected $lot;
-    protected $v;
+
+    protected static $c = [];
 
     public function __call(string $kin, array $lot = []) {
-        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
+        return $this->readable($kin) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct(iterable $lot = [], string $join = ', ') {
@@ -16,7 +17,7 @@ class Anemone extends Genome {
     }
 
     public function __get(string $key): mixed {
-        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
+        return $this->callable($key) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __invoke(string $join = ', ', $valid = true): mixed {
@@ -33,7 +34,6 @@ class Anemone extends Genome {
 
     public function __serialize(): array {
         $z = get_object_vars($this);
-        unset($z['v']);
         return $z;
     }
 
@@ -54,7 +54,7 @@ class Anemone extends Genome {
         if ($chunk < 1) {
             return $that;
         }
-        $that->v = $lot = $that->lot;
+        self::$c[spl_object_id($that)] = $lot = $that->lot;
         $lot = array_chunk($lot, $chunk, $keys);
         if ($at > -1) {
             $lot = $lot[$at] ?? [];
@@ -147,7 +147,7 @@ class Anemone extends Genome {
     }
 
     public function list() {
-        return null !== ($v = $this->v) ? new static($v, $this->join) : $this;
+        return 0 !== ($r = self::$c[spl_object_id($this)] ?? 0) ? new static($r, $this->join) : $this;
     }
 
     public function map(callable $at) {
@@ -155,7 +155,7 @@ class Anemone extends Genome {
     }
 
     public function max() {
-        return count($this->v ?? $this->lot);
+        return count(self::$c[spl_object_id($this)] ?? $this->lot);
     }
 
     public function min() {
@@ -255,7 +255,7 @@ class Anemone extends Genome {
     }
 
     public function step() {
-        return null !== $this->v ? count($this->lot) : 1;
+        return isset(self::$c[spl_object_id($this)]) ? count($this->lot) : 1;
     }
 
     public function values() {

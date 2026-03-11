@@ -1,6 +1,6 @@
 <?php
 
-class Hook extends Genome {
+class Hook extends Proxy {
 
     private function __construct() {}
 

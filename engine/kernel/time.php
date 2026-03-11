@@ -1,13 +1,12 @@
 <?php
 
-final class Time extends Genome {
+final class Time extends Proxy {
 
-    public $parent;
     public $value;
     public $zone;
 
     public function __call(string $kin, array $lot = []) {
-        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
+        return $this->readable($kin) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($value = null) {
@@ -26,7 +25,7 @@ final class Time extends Genome {
     }
 
     public function __get(string $key): mixed {
-        if (parent::_hasOwnMethod($key, $this)) {
+        if ($this->callable($key)) {
             return $this->{$key}();
         }
         if ($v = parent::_($key)) {
@@ -34,8 +33,8 @@ final class Time extends Genome {
                 return $this->i($v);
             }
         }
-        if (defined($pattern = 'DATE_' . strtoupper($key))) {
-            return $this->format($pattern);
+        if (defined($v = 'DATE_' . strtoupper($key))) {
+            return $this->format(constant($v));
         }
         return parent::__call($key);
     }
@@ -163,7 +162,6 @@ final class Time extends Genome {
             $date->modify($offset);
         }
         $that = new static($date->format('Y-m-d H:i:s'));
-        $that->parent = $this;
         $that->zone = 'UTC' !== $zone ? $zone : null;
         return $that;
     }

@@ -1,6 +1,6 @@
 <?php
 
-final class Is extends Genome {
+final class Is extends Proxy {
 
     private function __construct() {}
 

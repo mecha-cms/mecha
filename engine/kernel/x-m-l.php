@@ -1,6 +1,6 @@
 <?php
 
-class XML extends Genome {
+class XML extends Proxy {
 
     protected $lot = [
         0 => null,

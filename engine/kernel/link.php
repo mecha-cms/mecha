@@ -1,6 +1,6 @@
 <?php
 
-final class Link extends Genome {
+final class Link extends Proxy {
 
     private $lot = [];
 
@@ -94,7 +94,7 @@ final class Link extends Genome {
     }
 
     public function __get(string $key): mixed {
-        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
+        return $this->callable($key) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {

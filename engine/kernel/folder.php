@@ -1,11 +1,11 @@
 <?php
 
-class Folder extends Genome {
+class Folder extends Proxy {
 
     public $path;
 
     public function __call(string $kin, array $lot = []) {
-        return parent::_hasOwnProperty($kin, $this) ? $this->{$kin} : parent::__call($kin, $lot);
+        return $this->readable($kin) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($path = null) {
@@ -15,7 +15,7 @@ class Folder extends Genome {
     }
 
     public function __get(string $key): mixed {
-        return parent::_hasOwnMethod($key, $this) ? $this->{$key}() : $this->__call($key);
+        return $this->callable($key) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {
