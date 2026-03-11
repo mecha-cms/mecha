@@ -102,29 +102,56 @@ class State extends Proxy {
     public static function get($key = null, $array = false) {
         $c = static::class;
         if ($key && is_array($key)) {
-            $out = [];
+            $r = [];
             // `State::get(['a', 'b', 'c'])`
             if (array_is_list($key)) {
                 foreach ($key as $k) {
-                    $out[] = self::get($k, $array);
+                    $r[] = self::get($k, $array);
                 }
             // `State::get(['a' => null, 'b' => null, 'c' => null])`
             } else {
                 foreach ($key as $k => $v) {
-                    $out[$k] = self::get($k, $array) ?? $v;
+                    $r[$k] = self::get($k, $array) ?? $v;
                 }
             }
-            return $array ? $out : o($out);
+            return $array ? $r : o($r);
         }
         // `State::get('a')`
         if (isset($key) && !is_array($key)) {
-            $out = self::$lot[$c] ?? [];
-            $out = get($out, (string) $key);
-            return $array ? $out : o($out);
+            $r = self::$lot[$c] ?? [];
+            $r = get($r, (string) $key);
+            return $array ? $r : o($r);
         }
         // `State::get()`
-        $out = self::$lot[$c] ?? [];
-        return $array ? $out : o($out);
+        $r = self::$lot[$c] ?? [];
+        return $array ? $r : o($r);
+    }
+
+    public static function has($key = null) {
+        $c = static::class;
+        if ($key && is_array($key)) {
+            // `State::has(['a', 'b', 'c'])`
+            if (array_is_list($key)) {
+                foreach ($key as $k) {
+                    if (!self::has($k)) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+            // `State::has(['a' => null, 'b' => null, 'c' => null])`
+            foreach ($key as $k => $v) {
+                if ($v !== self::get($k)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        // `State::has('a')`
+        if (isset($key) && !is_array($key)) {
+            return has(self::$lot[$c], (string) $key);
+        }
+        return false;
     }
 
     public static function let($key = null) {
@@ -154,22 +181,21 @@ class State extends Proxy {
 
     public static function set($key, $value = null) {
         $c = static::class;
-        $in = [];
+        $r = [];
         if (is_array($key)) {
             if (array_is_list($key)) {
                 foreach ($key as $k) {
-                    set($in, $k, $value);
+                    set($r, $k, $value);
                 }
             } else {
                 foreach ($key as $k => $v) {
-                    set($in, $k, $v);
+                    set($r, $k, $v);
                 }
             }
         } else {
-            set($in, $key, $value);
+            set($r, $key, $value);
         }
-        $out = self::$lot[$c] ?? [];
-        self::$lot[$c] = array_replace_recursive($out, $in);
+        self::$lot[$c] = array_replace_recursive(self::$lot[$c] ?? [], $r);
     }
 
 }
