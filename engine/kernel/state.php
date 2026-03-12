@@ -127,33 +127,6 @@ class State extends Proxy {
         return $array ? $r : o($r);
     }
 
-    public static function has($key = null) {
-        $c = static::class;
-        if ($key && is_array($key)) {
-            // `State::has(['a', 'b', 'c'])`
-            if (array_is_list($key)) {
-                foreach ($key as $k) {
-                    if (!self::has($k)) {
-                        return false;
-                    }
-                }
-                return true;
-            }
-            // `State::has(['a' => null, 'b' => null, 'c' => null])`
-            foreach ($key as $k => $v) {
-                if ($v !== self::get($k)) {
-                    return false;
-                }
-            }
-            return true;
-        }
-        // `State::has('a')`
-        if (isset($key) && !is_array($key)) {
-            return has(self::$lot[$c], (string) $key);
-        }
-        return false;
-    }
-
     public static function let($key = null) {
         $c = static::class;
         if ($key && is_array($key)) {
