@@ -54,7 +54,7 @@ class Batch extends Proxy {
         if ($chunk < 1) {
             return $that;
         }
-        self::$c[spl_object_id($that)] = $lot = $that->lot;
+        self::$c[spl_object_id($that)] = [$lot = $that->lot, $chunk];
         $lot = array_chunk($lot, $chunk, $keys);
         if ($at > -1) {
             $lot = $lot[$at] ?? [];
@@ -155,7 +155,7 @@ class Batch extends Proxy {
     }
 
     public function max() {
-        return count(self::$c[spl_object_id($this)] ?? $this->lot);
+        return count(self::$c[spl_object_id($this)][0] ?? $this->lot);
     }
 
     public function min() {
@@ -255,7 +255,7 @@ class Batch extends Proxy {
     }
 
     public function step() {
-        return isset(self::$c[spl_object_id($this)]) ? count($this->lot) : 1;
+        return self::$c[spl_object_id($this)][1] ?? 1;
     }
 
     public function values() {
