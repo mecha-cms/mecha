@@ -141,7 +141,7 @@ class Batch extends Proxy {
     }
 
     public function list() {
-        return 0 !== ($r = self::$c[spl_object_id($this)] ?? 0) ? new static($r, $this->join) : $this;
+        return 0 !== ($r = self::$c[spl_object_id($this)][0] ?? 0) ? new static($r, $this->join) : $this;
     }
 
     public function map(callable $at) {
