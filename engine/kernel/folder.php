@@ -5,7 +5,7 @@ class Folder extends Proxy {
     public $path;
 
     public function __call(string $kin, array $lot = []) {
-        return $this->readable($kin) ? $this->{$kin} : parent::__call($kin, $lot);
+        return $this->__get__($kin) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($path = null) {
@@ -15,7 +15,7 @@ class Folder extends Proxy {
     }
 
     public function __get(string $key): mixed {
-        return $this->callable($key) ? $this->{$key}() : $this->__call($key);
+        return $this->__fire__($key) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {

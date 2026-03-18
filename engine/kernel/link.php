@@ -94,7 +94,7 @@ final class Link extends Proxy {
     }
 
     public function __get(string $key): mixed {
-        return $this->callable($key) ? $this->{$key}() : $this->__call($key);
+        return $this->__fire__($key) ? $this->{$key}() : $this->__call($key);
     }
 
     public function __isset(string $key): bool {

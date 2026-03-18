@@ -6,7 +6,7 @@ final class Time extends Proxy {
     public $zone;
 
     public function __call(string $kin, array $lot = []) {
-        return $this->readable($kin) ? $this->{$kin} : parent::__call($kin, $lot);
+        return $this->__get__($kin) ? $this->{$kin} : parent::__call($kin, $lot);
     }
 
     public function __construct($value = null) {
@@ -25,7 +25,7 @@ final class Time extends Proxy {
     }
 
     public function __get(string $key): mixed {
-        if ($this->callable($key)) {
+        if ($this->__fire__($key)) {
             return $this->{$key}();
         }
         if ($v = parent::_($key)) {
