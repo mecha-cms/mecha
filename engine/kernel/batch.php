@@ -21,20 +21,14 @@ class Batch extends Proxy {
     }
 
     public function __invoke(string $join = ', ', $valid = true): mixed {
-        $lot = ($valid ? $this->is(is_callable($valid) ? $valid : function ($v, $k) {
+        return implode($join, $valid ? is($this->lot, is_callable($valid) ? $valid : function ($v, $k) {
             // Ignore value(s) that cannot be converted to a string
             if (is_array($v) || is_object($v) && !method_exists($v, '__toString')) {
                 return false;
             }
             // Ignore `false` and `null` value(s)
             return false !== $v && null !== $v;
-        }) : $this)->lot;
-        return implode($join, y($lot));
-    }
-
-    public function __serialize(): array {
-        $z = get_object_vars($this);
-        return $z;
+        }, false, $this) : $this->lot);
     }
 
     public function __toString(): string {
