@@ -43,13 +43,13 @@ class Batch extends Proxy {
         return any($this->lot, $valid, $this);
     }
 
-    public function chunk(int $chunk = 5, int $at = -1, $keys = false) {
+    public function chunk(int $step = 5, int $at = -1, $keys = false) {
         $that = new static($this->lot, $this->join);
-        if ($chunk < 1) {
+        if ($step < 1) {
             return $that;
         }
-        self::$c[spl_object_id($that)] = [$lot = $that->lot, $chunk];
-        $lot = array_chunk($lot, $chunk, $keys);
+        self::$c[spl_object_id($that)] = [$lot = $that->lot, $step];
+        $lot = array_chunk($lot, $step, $keys);
         if ($at > -1) {
             $lot = $lot[$at] ?? [];
         }
@@ -148,14 +148,6 @@ class Batch extends Proxy {
         return new static(map($this->lot, $at, $this), $this->join);
     }
 
-    public function max() {
-        return count(self::$c[spl_object_id($this)][0] ?? $this->lot);
-    }
-
-    public function min() {
-        return 0;
-    }
-
     public function not($valid, $keys = false) {
         return new static(not($this->lot, $valid, $keys, $this), $this->join);
     }
@@ -250,6 +242,10 @@ class Batch extends Proxy {
 
     public function step() {
         return self::$c[spl_object_id($this)][1] ?? 1;
+    }
+
+    public function total() {
+        return count(self::$c[spl_object_id($this)][0] ?? $this->lot);
     }
 
     public function values() {
