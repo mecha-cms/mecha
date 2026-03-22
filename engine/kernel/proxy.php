@@ -31,7 +31,7 @@ abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonS
     }
 
     protected function __has__($key) {
-        return $this->__fire__($key) || $this->__get($key);
+        return $this->__fire__($key) || $this->__get__($key);
     }
 
     private static function _fire(string $kin, array $lot, $that = null) {
