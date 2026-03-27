@@ -43,6 +43,10 @@ class Batch extends Proxy {
         return any($this->lot, $valid, $this);
     }
 
+    public function batch() {
+        return 0 !== ($r = self::$c[spl_object_id($this)][0] ?? 0) ? new static($r, $this->join) : $this;
+    }
+
     public function chunk(int $step = 5, int $at = -1, $keys = false) {
         $that = new static($this->lot, $this->join);
         if ($step < 1) {
@@ -138,10 +142,6 @@ class Batch extends Proxy {
 
     public function limit(int $limit = 5, $keys = false) {
         return $this->slice(0, $limit, $keys);
-    }
-
-    public function list() {
-        return 0 !== ($r = self::$c[spl_object_id($this)][0] ?? 0) ? new static($r, $this->join) : $this;
     }
 
     public function map(callable $at) {
