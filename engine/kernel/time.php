@@ -1,6 +1,6 @@
 <?php
 
-final class Time extends Proxy {
+class Time extends Proxy {
 
     public $value;
     public $zone;

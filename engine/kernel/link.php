@@ -1,6 +1,6 @@
 <?php
 
-final class Link extends Proxy {
+class Link extends Proxy {
 
     private $lot = [];
 

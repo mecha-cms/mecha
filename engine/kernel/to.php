@@ -1,6 +1,6 @@
 <?php
 
-final class To extends Proxy {
+class To extends Proxy {
 
     private function __construct() {}
 
