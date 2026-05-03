@@ -96,7 +96,7 @@ class File extends Proxy {
     }
 
     public function route() {
-        return is_string($path = $this->path) ? '/' . trim(strtr($path, [PATH . D => '/', D => '/']), '/') : null;
+        return is_string($path = $this->path) ? '/' . strtr(rawurlencode(trim(strtr($path, [PATH . D => '/', D => '/']), '/')), ['%2F' => '/']) : null;
     }
 
     public function seal() {
