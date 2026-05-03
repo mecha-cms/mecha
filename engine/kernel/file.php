@@ -84,9 +84,11 @@ class File extends Proxy {
     public function name(...$lot) {
         if (is_string($path = $this->path)) {
             if (true === ($x = array_shift($lot) ?? false)) {
-                return basename($path);
+                $name = basename($path);
+                return "" !== $name && '.' !== $name ? $name : null;
             }
-            return pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
+            $name = pathinfo($path, PATHINFO_FILENAME) . (is_string($x) ? '.' . $x : "");
+            return "" !== $name && '.' !== $name ? $name : null;
         }
         return null;
     }

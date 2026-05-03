@@ -87,7 +87,7 @@ class Folder extends Proxy {
     }
 
     public function name() {
-        return is_string($path = $this->path) ? basename($path) : null;
+        return is_string($path = $this->path) ? ("" !== ($name = basename($path)) && '.' !== $name ? $name : null) : null;
     }
 
     public function parent() {
