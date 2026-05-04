@@ -54,8 +54,8 @@ class Folder extends Proxy {
         if (is_string($path = $this->path)) {
             // Scan all file(s) to get the total size
             $size = 0;
-            foreach (g($path, 1, true) as $k => $v) {
-                $size += filesize($k);
+            foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($path, FilesystemIterator::SKIP_DOTS)) as $v) {
+                $size += $v->getSize();
             }
             return $size;
         }
@@ -87,7 +87,7 @@ class Folder extends Proxy {
     }
 
     public function name() {
-        return is_string($path = $this->path) ? ("" !== ($name = basename($path)) && '.' !== $name ? $name : null) : null;
+        return is_string($path = $this->path) ? basename($path) : null;
     }
 
     public function parent() {
