@@ -120,7 +120,18 @@ class File extends Proxy {
     }
 
     public function type() {
-        return is_string($path = $this->path) && false !== ($type = mime_content_type($path)) ? $type : null;
+        if (is_string($path = $this->path)) {
+            $x = $this->x() ?? P;
+            // TODO: Fix `mime_content_type()` bug, prioritize static mapping
+            return [
+                'css' => 'text/css',
+                'html' => 'text/html',
+                'js' => 'application/javascript',
+                'md' => 'text/markdown',
+                'mjs' => 'application/javascript'
+            ][$x] ?? (false !== ($type = mime_content_type($path)) ? $type : null);
+        }
+        return null;
     }
 
     public function x() {
