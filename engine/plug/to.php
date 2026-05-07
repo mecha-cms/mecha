@@ -24,7 +24,7 @@ foreach ([
     'camel' => "\\c",
     'entity' => static function (?string $value, $hex = false, int $pad = 4): ?string {
         $r = "";
-        $utf8 = extension_loaded('mbstring');
+        $utf8 = function_exists('mb_ord');
         $value = (string) $value;
         $value = $utf8 ? mb_str_split($value, 1, 'UTF-8') : str_split($value);
         for ($i = 0, $count = count($value); $i < $count; ++$i) {

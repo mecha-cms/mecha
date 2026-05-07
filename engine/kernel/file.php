@@ -120,18 +120,61 @@ class File extends Proxy {
     }
 
     public function type() {
-        if (is_string($path = $this->path)) {
-            $x = $this->x() ?? P;
-            // TODO: Fix `mime_content_type()` bug, prioritize static mapping
-            return [
-                'css' => 'text/css',
-                'html' => 'text/html',
-                'js' => 'application/javascript',
-                'md' => 'text/markdown',
-                'mjs' => 'application/javascript'
-            ][$x] ?? (false !== ($type = mime_content_type($path)) ? $type : null);
+        if (!is_string($path = $this->path)) {
+            return null;
         }
-        return null;
+        // Even with the `finfo` feature available, the return type value is sometimes still messed up :(
+        static $fix = [
+            // <https://www.rfc-editor.org/rfc/rfc4287.html#section-2>
+            'atom' => 'application/atom+xml',
+            // <https://www.rfc-editor.org/rfc/rfc2318.html#section-4>
+            'css' => 'text/css',
+            // <https://www.rfc-editor.org/rfc/rfc4180.html#section-3>
+            'csv' => 'text/csv',
+            'html' => 'text/html',
+            // <https://www.rfc-editor.org/rfc/rfc9239.html#section-6.1>
+            'js' => 'text/javascript',
+            // <https://www.rfc-editor.org/rfc/rfc8259.html#section-1.2>
+            'json' => 'application/json',
+            // <https://www.rfc-editor.org/rfc/rfc7519.html#section-10.3.1>
+            'jwt' => 'application/jwt',
+            // <https://www.rfc-editor.org/rfc/rfc7763.html#section-2>
+            'markdown' => 'text/markdown',
+            'md' => 'text/markdown',
+            // <https://www.rfc-editor.org/rfc/rfc9239.html#section-6>
+            'mjs' => 'text/javascript',
+            // <https://www.php.net/manual/en/install.unix.apache2.php>
+            'php' => 'application/x-httpd-php',
+            'phps' => 'application/x-httpd-php-source',
+            'phtm' => 'application/x-httpd-php',
+            'phtml' => 'application/x-httpd-php',
+            // <https://www.iana.org/assignments/media-types/image/svg+xml>
+            'svg' => 'image/svg+xml',
+            // <https://www.iana.org/assignments/media-types/text/tab-separated-values>
+            'tsv' => 'text/tab-separated-values',
+            // <https://www.iana.org/assignments/media-types/text/vtt>
+            'vtt' => 'text/vtt',
+            // <https://www.rfc-editor.org/rfc/rfc7303.html#section-4.1>
+            'xml' => 'application/xml',
+            // <https://www.rfc-editor.org/rfc/rfc9512.html#section-2>
+            'yaml' => 'application/yaml',
+            'yml' => 'application/yaml'
+        ];
+        if (isset($fix[$x = $this->x() ?? 0])) {
+            return $fix[$x];
+        }
+        if (function_exists('finfo_open')) {
+            static $c = [];
+            static $f;
+            if (isset($c[$path])) {
+                return $c[$path];
+            }
+            $f ??= finfo_open(FILEINFO_MIME_TYPE);
+            $c[$path] = $type = finfo_file($f, $path);
+        } else {
+            $type = mime_content_type($path);
+        }
+        return is_string($type) && "" !== $type ? $type : null;
     }
 
     public function x() {

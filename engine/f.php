@@ -555,7 +555,7 @@ function fetch(string $from, $lot = null, $data = "") {
         $link = $from;
         $type = 'GET';
     }
-    if (extension_loaded('curl')) {
+    if (function_exists('curl_init')) {
         $c = curl_init($link);
         if ('HEAD' === $type) {
             curl_setopt($c, CURLOPT_HEADER, true);
@@ -1508,7 +1508,7 @@ function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $con
 
 function l(?string $value) {
     $value = (string) $value;
-    $value = extension_loaded('mbstring') ? mb_strtolower($value) : strtolower($value);
+    $value = function_exists('mb_strtolower') ? mb_strtolower($value) : strtolower($value);
     return "" !== $value ? $value : null;
 }
 
@@ -1592,7 +1592,7 @@ function q($value) {
         return 1;
     }
     if (is_string($value)) {
-        return extension_loaded('mbstring') ? mb_strlen($value) : strlen($value);
+        return function_exists('mb_strlen') ? mb_strlen($value) : strlen($value);
     }
     return empty($value) ? 0 : 1;
 }
@@ -1686,7 +1686,7 @@ function t(?string $value, string $open = '"', ?string $close = null) {
 
 function u(?string $value) {
     $value = (string) $value;
-    $value = extension_loaded('mbstring') ? mb_strtoupper($value) : strtoupper($value);
+    $value = function_exists('mb_strtoupper') ? mb_strtoupper($value) : strtoupper($value);
     return "" !== $value ? $value : null;
 }
 
