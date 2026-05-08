@@ -1483,22 +1483,26 @@ function j(array $a, array $b) {
 }
 
 function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $content = false) {
-    $query = (array) $query;
+    $strict = ($s = implode(' ', $query = (array) $query)) !== strtolower($s);
     foreach (g($folder, $x, $deep, $keys) as $k => $v) {
         $path = $keys ? $k : $v;
+        // Find by query in file name…
         foreach ($query as $q) {
-            if ("" === $q) {
-                continue;
-            }
-            $strict = $q !== strtolower($q); // Case sensitive?
-            // Find by query in file name…
-            if (false !== ($strict ? strpos($path, $q) : stripos($path, $q))) {
+            if ("" !== $q && false !== ($strict ? strpos($path, $q) : stripos($path, $q))) {
                 yield $k => $v;
-            // Find by query in file content…
-            } else if ($content && is_file($path)) {
-                foreach (stream($path, strlen($q)) as $v) {
-                    if (false !== ($strict ? strpos($v, $q) : stripos($v, $q))) {
+                continue 2;
+            }
+        }
+        // Find by query in file content…
+        if ($content && is_file($path)) {
+            foreach (stream($path, 4096) as $s) {
+                if (false !== strpbrk($s, "\0\x01\x02\x03\x04\x05\x06\x07\x08\x0B\x0C\x0E\x0F")) {
+                    continue 2; // Maybe binary, skip!
+                }
+                foreach ($query as $q) {
+                    if ("" !== $q && false !== ($strict ? strpos($s, $q) : stripos($s, $q))) {
                         yield $k => $v;
+                        continue 3;
                     }
                 }
             }
