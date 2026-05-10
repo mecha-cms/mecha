@@ -163,6 +163,9 @@ class File extends Proxy {
         if (isset($fix[$x = $this->x() ?? 0])) {
             return $fix[$x];
         }
+        if (0 === filesize($path)) {
+            return 'text/plain'; // `application/x-empty`
+        }
         if (function_exists('finfo_open')) {
             static $c = [];
             static $f;
