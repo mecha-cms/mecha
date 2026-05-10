@@ -409,12 +409,7 @@ function delete(string $path, $purge = true) {
         foreach (g($path, null, true) as $k => $v) {
             $r[$k] = (0 === $v ? rmdir($k) : unlink($k)) ? $v : null;
         }
-        $r[$path] = rmdir($path) ? 0 : null;
-        return $r;
-    }
-    if (is_file($path)) {
-        $r = unlink($path) ? $path : null;
-        if ($purge && $r) {
+        if ($purge && 0 === ($r[$path] = rmdir($path) ? 0 : null)) {
             $folder = dirname($path);
             while ($folder && PATH !== $folder) {
                 if ((new FilesystemIterator($folder, FilesystemIterator::SKIP_DOTS))->valid()) {
@@ -427,6 +422,9 @@ function delete(string $path, $purge = true) {
             }
         }
         return $r;
+    }
+    if (is_file($path) && unlink($path)) {
+        return $path;
     }
     return null;
 }
