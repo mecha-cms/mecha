@@ -2,7 +2,7 @@
 
 return [
     'description' => 'Site description.',
-    'route' => '/index',
+    'home' => '/index',
     'title' => 'Site Title',
     'zone' => zone()
 ];
