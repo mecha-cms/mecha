@@ -62,12 +62,32 @@ class Folder extends Proxy {
         return null;
     }
 
+    public function _aTime() {
+        return is_string($path = $this->path) ? fileatime($path) : null;
+    }
+
+    public function _cTime() {
+        return $this->_time();
+    }
+
+    public function _mTime() {
+        return is_string($path = $this->path) ? filemtime($path) : null;
+    }
+
     public function _time() {
         return is_string($path = $this->path) ? filectime($path) : null;
     }
 
     public function ID() {
         return ($route = $this->route()) ? sprintf('%u', crc32($route)) : null;
+    }
+
+    public function aTime(?string $pattern = null) {
+        return $this->time($pattern, $this->_aTime());
+    }
+
+    public function cTime(?string $pattern = null) {
+        return $this->time($pattern);
     }
 
     public function content() {
@@ -84,6 +104,10 @@ class Folder extends Proxy {
 
     public function link() {
         return ($route = $this->route()) ? new Link(long($route)) : null;
+    }
+
+    public function mTime(?string $pattern = null) {
+        return $this->time($pattern, $this->_mTime());
     }
 
     public function name() {
@@ -115,8 +139,8 @@ class Folder extends Proxy {
         return new EmptyIterator;
     }
 
-    public function time(?string $pattern = null) {
-        if (is_int($time = $this->_time())) {
+    public function time(?string $pattern = null, ?int $time = null) {
+        if (is_int($time ??= $this->_time())) {
             $t = new Time($time);
             return $pattern ? $t($pattern) : $t;
         }
