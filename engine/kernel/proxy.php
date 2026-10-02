@@ -2,7 +2,7 @@
 
 abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Stringable {
 
-    protected function __fire__($key) {
+    protected function c6e($key) { // Callable?
         static $c = [];
         if (isset($c[$k = static::class][$key])) {
             return $c[$k][$key];
@@ -16,7 +16,7 @@ abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonS
         return ($c[$k][$key] = false);
     }
 
-    protected function __get__($key) {
+    protected function a8e($key) { // Accessible?
         static $c = [];
         if (isset($c[$k = static::class][$key])) {
             return $c[$k][$key];
@@ -30,12 +30,8 @@ abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonS
         return ($c[$k][$key] = false);
     }
 
-    protected function __has__($key) {
-        return $this->__fire__($key) || $this->__get__($key);
-    }
-
     private static function _fire(string $kin, array $lot, $that = null) {
-        foreach (self::__chain__() as $k) {
+        foreach (self::c3n() as $k) {
             if (!empty(self::$_[$k]) && array_key_exists($kin, self::$_[$k])) {
                 $v = self::$_[$k][$kin];
                 if (is_callable($v[0])) {
@@ -58,7 +54,7 @@ abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonS
         }
     }
 
-    protected static function __chain__() {
+    protected static function c3n() {
         static $c = [];
         if (!isset($c[$k = static::class])) {
             $r = class_parents($k);

@@ -2,12 +2,12 @@
 
 foreach ([
     'HTML' => static function (?string $value, $deep = false): ?string {
-        $r = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
-        return "" !== $r ? $r : null;
+        $value = htmlspecialchars($value ?? "", ENT_HTML5 | ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8', !!$deep);
+        return "" !== $value ? $value : null;
     },
     'JSON' => static function (?string $value, $array = false) {
-        $r = json_decode($value ?? "", $array);
-        return "" !== $r ? $r : null;
+        $value = json_decode($value ?? "", $array);
+        return "" !== $value ? $value : null;
     },
     'base64' => static function (?string $value): ?string {
         return "" !== ($value = base64_decode($value ?? "")) ? $value : null;
