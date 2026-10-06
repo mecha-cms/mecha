@@ -197,6 +197,7 @@ $scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 
 [$path, $query] = array_replace(["", ""], explode('?', $_SERVER['REQUEST_URI'], 2));
 
 $path = trim(strtr($path, [
+    "\\" => '/',
     '%2E' => '.',
     '%2F' => '/',
     '%2e' => '.',
