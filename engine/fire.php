@@ -189,10 +189,10 @@ $state = is_file($file = __DIR__ . D . '..' . D . 'state.php') ? require $file :
 
 lot('state', $state = new State($state));
 
-$hash = !empty($_COOKIE['hash']) ? '#' . $_COOKIE['hash'] : null;
+$hash = $_COOKIE['hash'] ?? "";
 $host = $_SERVER['HTTP_HOST'] ?? $_SERVER['SERVER_NAME'] ?? "";
-$port = (int) $_SERVER['SERVER_PORT'];
-$scheme = 'http' . (!empty($_SERVER['HTTPS']) && 'off' !== $_SERVER['HTTPS'] || 443 === $port ? 's' : "");
+$port = (int) ($_SERVER['SERVER_PORT'] ?? 0);
+$scheme = 'http' . (443 === $port || 'off' !== ($_SERVER['HTTPS'] ?? 'off') ? 's' : "");
 
 [$path, $query] = array_replace(["", ""], explode('?', $_SERVER['REQUEST_URI'], 2));
 
@@ -211,15 +211,19 @@ while (false !== strpos($path, '../')) {
     $path = strtr($path, ['../' => ""]);
 }
 
-// If server root is `.\srv\http` and you have this system installed in `.\srv\http\a\s\d\f`
-// then the sub-folder path of this system will be `a\s\d\f`
-$sub = trim(strtr(PATH . D, [rtrim(strtr($_SERVER['DOCUMENT_ROOT'] . D, '/', D), D) . D => ""]), D);
+// If server root is `.\srv\http` and you have this system installed in `.\srv\http\asd\f`
+// then the sub-folder path of this system will be `asd\f`
+$sub = strtr(PATH . D, [rtrim(strtr($_SERVER['DOCUMENT_ROOT'], '/', D), D) . D => ""]);
 
-// Remove sub-folder from path
-$path = "" !== $sub ? substr($path, strlen($sub) + 1) : $path;
+if ("" !== ($sub = strtr(trim($sub, D), D, '/'))) {
+    // Remove sub-folder from path
+    $path = substr($path, strlen($sub) + 1);
+}
 
+$hash = "" !== $hash ? '#' . $hash : null;
 $path = "" !== $path ? '/' . $path : null;
 $query = "" !== $query ? '?' . $query : null;
+$sub = "" !== $sub ? '/' . $sub : null;
 
 lot('link', $link = new Link($scheme . '://' . $host . $path . $query . $hash));
 
