@@ -49,7 +49,7 @@ lot('F', [
 // for easier processing. For request method(s) other than “GET” and “POST”, use the `$_REQUEST` variable.
 $q = strtoupper($_SERVER['REQUEST_METHOD'] ?? "");
 if ('application/json' === strtolower(type() ?? "")) {
-    $r = json_decode(file_get_contents('php://input'), true);
+    $r = json_decode(file_get_contents('php://input'), true) ?? [];
     if ('GET' === $q) {
         $_GET = $_REQUEST = $r;
     } else if ('POST' === $q) {
