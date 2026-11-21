@@ -2,20 +2,6 @@
 
 abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonSerializable, Stringable {
 
-    protected function c6e($key) { // Callable?
-        static $c = [];
-        if (isset($c[$k = static::class][$key])) {
-            return $c[$k][$key];
-        }
-        if (!method_exists($this, $key)) {
-            return ($c[$k][$key] = false);
-        }
-        if ((new ReflectionMethod($this, $key))->isPublic()) {
-            return ($c[$k][$key] = true);
-        }
-        return ($c[$k][$key] = false);
-    }
-
     protected function a8e($key) { // Accessible?
         static $c = [];
         if (isset($c[$k = static::class][$key])) {
@@ -25,6 +11,20 @@ abstract class Proxy implements ArrayAccess, Countable, IteratorAggregate, JsonS
             return ($c[$k][$key] = false);
         }
         if ((new ReflectionProperty($this, $key))->isPublic()) {
+            return ($c[$k][$key] = true);
+        }
+        return ($c[$k][$key] = false);
+    }
+
+    protected function c6e($key) { // Callable?
+        static $c = [];
+        if (isset($c[$k = static::class][$key])) {
+            return $c[$k][$key];
+        }
+        if (!method_exists($this, $key)) {
+            return ($c[$k][$key] = false);
+        }
+        if ((new ReflectionMethod($this, $key))->isPublic()) {
             return ($c[$k][$key] = true);
         }
         return ($c[$k][$key] = false);

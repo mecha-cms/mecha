@@ -19,82 +19,37 @@ if (defined('TEST')) {
 }
 
 lot('F', [
-    '°' => '0',
-    '¹' => '1',
-    '²' => '2',
-    '³' => '3',
-    'À' => 'A',
-    'Á' => 'A',
-    'Â' => 'A',
-    'Ã' => 'A',
-    'Ä' => 'AE',
-    'Å' => 'A',
-    'Æ' => 'AE',
+    '°' => '0', '¹' => '1', '²' => '2', '³' => '3',
+    'À' => 'A', 'Á' => 'A', 'Â' => 'A', 'Ã' => 'A', 'Ä' => 'AE', 'Å' => 'A', 'Æ' => 'AE',
     'Ç' => 'C',
-    'È' => 'E',
-    'É' => 'E',
-    'Ê' => 'E',
-    'Ë' => 'E',
-    'Ì' => 'I',
-    'Í' => 'I',
-    'Î' => 'I',
-    'Ï' => 'I',
+    'È' => 'E', 'É' => 'E', 'Ê' => 'E', 'Ë' => 'E',
+    'Ì' => 'I', 'Í' => 'I', 'Î' => 'I', 'Ï' => 'I',
     'Ð' => 'Dj',
     'Ñ' => 'N',
-    'Ò' => 'O',
-    'Ó' => 'O',
-    'Ô' => 'O',
-    'Õ' => 'O',
-    'Ö' => 'OE',
-    'Ø' => 'O',
-    'Ù' => 'U',
-    'Ú' => 'U',
-    'Û' => 'U',
-    'Ü' => 'UE',
+    'Ò' => 'O', 'Ó' => 'O', 'Ô' => 'O', 'Õ' => 'O', 'Ö' => 'OE', 'Ø' => 'O',
+    'Ù' => 'U', 'Ú' => 'U', 'Û' => 'U', 'Ü' => 'UE',
     'Ý' => 'Y',
     'Þ' => 'TH',
     'ß' => 'ss',
-    'à' => 'a',
-    'á' => 'a',
-    'â' => 'a',
-    'ã' => 'a',
-    'ä' => 'ae',
-    'å' => 'a',
-    'æ' => 'ae',
+    'à' => 'a', 'á' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'ae', 'å' => 'a', 'æ' => 'ae',
     'ç' => 'c',
-    'è' => 'e',
-    'é' => 'e',
-    'ê' => 'e',
-    'ë' => 'e',
-    'ì' => 'i',
-    'í' => 'i',
-    'î' => 'i',
-    'ï' => 'i',
+    'è' => 'e', 'é' => 'e', 'ê' => 'e', 'ë' => 'e',
+    'ì' => 'i', 'í' => 'i', 'î' => 'i', 'ï' => 'i',
     'ð' => 'dj',
     'ñ' => 'n',
-    'ò' => 'o',
-    'ó' => 'o',
-    'ô' => 'o',
-    'õ' => 'o',
-    'ö' => 'oe',
-    'ø' => 'o',
-    'ù' => 'u',
-    'ú' => 'u',
-    'û' => 'u',
-    'ü' => 'ue',
+    'ò' => 'o', 'ó' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'oe', 'ø' => 'o',
+    'ù' => 'u', 'ú' => 'u', 'û' => 'u', 'ü' => 'ue',
     'ý' => 'y',
     'þ' => 'th',
     'ÿ' => 'y',
-    '‘' => "'",
-    '’' => "'",
-    '“' => '"',
-    '”' => '"'
+    '‘' => "'", '’' => "'", '“' => '"', '”' => '"'
 ]);
 
-// Map the request body to the `$_GET`, `$_POST`, and/or `$_REQUEST` variable(s) if it is an `application/json` request
-// to make it easier to process. For request type(s) other than “GET” and “POST”, the `$_REQUEST` variable can be used.
+// Map the request body to the `$_GET`, `$_POST`, and/or `$_REQUEST` variable(s) if it was sent as `application/json`
+// for easier processing. For request method(s) other than “GET” and “POST”, use the `$_REQUEST` variable.
 $q = strtoupper($_SERVER['REQUEST_METHOD'] ?? "");
-if ('application/json' === strtolower(type() ?? "") && null !== ($r = json_decode(file_get_contents('php://input'), true))) {
+if ('application/json' === strtolower(type() ?? "")) {
+    $r = json_decode(file_get_contents('php://input'), true);
     if ('GET' === $q) {
         $_GET = $_REQUEST = $r;
     } else if ('POST' === $q) {
@@ -226,88 +181,6 @@ $query = "" !== $query ? '?' . $query : null;
 $sub = "" !== $sub ? '/' . $sub : null;
 
 lot('link', $link = new Link($scheme . '://' . $host . $path . $query . $hash));
-
-function batch(...$lot) {
-    return Batch::from(...$lot);
-}
-
-function hook(...$lot) {
-    return count($lot) < 2 ? Hook::get(...$lot) : Hook::set(...$lot);
-}
-
-function kick(?string $to = null, ?int $status = null) {
-    $to = Hook::fire('kick', [$to, $status]);
-    header('location: ' . ("" === $to ? '/' : ($to ?? '/')), true, $status ?? 301);
-    exit;
-}
-
-function long(string $value) {
-    $base = ($link = lot('link'))->base;
-    // `long("")`
-    if ("" === $value) {
-        return $link->current;
-    }
-    // `long('/')`
-    if ('/' === $value) {
-        return $base;
-    }
-    // `long('//127.0.0.1')`
-    if (0 === strpos($value, '//')) {
-        return $link->scheme . $value;
-    }
-    if (
-        0 === strpos($value, 'blob:') ||
-        0 === strpos($value, 'data:') ||
-        0 === strpos($value, 'javascript:') ||
-        0 === strpos($value, 'mailto:') ||
-        false !== strpos($value, '://')
-    ) {
-        return $value;
-    }
-    // `long('./foo/bar')`
-    if ($value === '.' || 0 === strpos($value, './')) {
-        $value = substr($value, 1);
-    }
-    // `long('/foo/bar')`
-    if (0 === strpos($value, '/')) {
-        return $base . (strspn($value = substr($value, 1), '?&#') ? "" : '/') . $value;
-    }
-    $path = substr($v = $link->current, 0, strcspn($v, '?&#'));
-    // `long('foo/bar')`
-    if ($value && strcspn($value, '.?&#') && $path !== $base) {
-        $path = dirname($path);
-    }
-    // `long('../foo/bar')`
-    while (0 === strpos($value, '../') && $path !== $base) {
-        $path = dirname($path);
-        $value = substr($value, 3);
-    }
-    return strtr(rtrim($path . '/' . ltrim($value, '/'), '/'), [
-        '/#' => '#',
-        '/&' => '?',
-        '/?' => '?'
-    ]);
-}
-
-function short(string $value) {
-    $base = ($link = lot('link'))->base;
-    if (0 === strpos($value, '//')) {
-        $value = $link->scheme . substr($value, 2);
-    }
-    // Ignore external link(s)
-    if (0 !== strpos($value . '/', $base . '/')) {
-        return $value;
-    }
-    return "" === ($value = substr($value, strlen($base))) ? '/' : (0 === strpos($value, '&') ? '?' . substr($value, 1) : $value);
-}
-
-function state(...$lot) {
-    if (count($lot) < 2) {
-        $lot[] = true; // Force to array
-        return State::get(...$lot);
-    }
-    return State::set(...$lot);
-}
 
 try {
     $uses = [];
