@@ -468,28 +468,38 @@ function exist($path, $type = null) {
     $test = match ($type) {
         0 => 'is_dir',
         1 => 'is_file',
-        default => null
+        default => 0
     };
     foreach ((array) $path as $v) {
         if (!$v) {
             continue;
         }
-        if (isset($c[$v])) {
-            return $c[$v];
+        if (isset($c[$test][$v])) {
+            if (false !== $c[$test][$v]) {
+                return $c[$test][$v];
+            }
+            continue;
         }
         if ($r = stream_resolve_include_path($v)) {
-            if ($test && !$test($r)) {
-                continue;
+            if (!$test || $test($r)) {
+                return ($c[$test][$v] = $r);
             }
-            return ($c[$v] = $r);
+            $c[$test][$v] = false;
+            continue;
         }
-        if (strcspn($v, '*?[]{}') !== strlen($v)) {
-            if (!($r = glob($v, GLOB_BRACE | GLOB_NOSORT)) || !($r = $r[0] ?? 0) || $test && !$test($r)) {
-                $c[$v] = false;
-                continue;
+        if (strcspn($v, '*?[]{}') === strlen($v)) {
+            $c[$test][$v] = false;
+            continue;
+        }
+        foreach (g2y($v) as $vv) {
+            foreach (glob($vv, GLOB_NOSORT) ?: [] as $r) {
+                $r = stream_resolve_include_path($r);
+                if ($r && (!$test || $test($r))) {
+                    return ($c[$test][$v] = $r);
+                }
             }
-            return ($c[$v] = $r);
         }
+        $c[$test][$v] = false;
     }
     return false;
 }
@@ -701,6 +711,58 @@ function first(array $value) {
         return null;
     }
     return $value[array_key_first($value)] ?? null;
+}
+
+function g2y(string $path) {
+    $i = 0;
+    $max = strlen($path);
+    while ($i < $max) {
+        $i += strcspn($path, "\\{", $i);
+        if ($i >= $max) {
+            break;
+        }
+        if ("\\" === $path[$i]) {
+            $i += 2;
+            continue;
+        }
+        $m = [];
+        $stack = $end = 0;
+        $start = ($n = $i) + 1;
+        while ($n < $max) {
+            $n += strcspn($path, "\\{},", $n);
+            if ($n >= $max) {
+                break;
+            }
+            if ("\\" === ($c = $path[$n])) {
+                $n += 2;
+                continue;
+            }
+            if ('{' === $c) {
+                ++$stack;
+            } else if ('}' === $c) {
+                if (0 === --$stack) {
+                    $m[] = substr($path, $start, ($end = $n) - $start);
+                    break;
+                }
+            } else if (1 === $stack) {
+                $m[] = substr($path, $start, $n - $start);
+                $start = $n + 1;
+            }
+            ++$n;
+        }
+        if (0 === $end || $i + 1 === $end) {
+            ++$i;
+            continue;
+        }
+        $end = substr($path, $end + 1);
+        $r = [];
+        $start = substr($path, 0, $i);
+        foreach ($m as $v) {
+            yield from g2y($start . $v . $end);
+        }
+        return;
+    }
+    yield $path;
 }
 
 function ge($a, $b) {
