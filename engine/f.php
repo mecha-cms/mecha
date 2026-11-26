@@ -124,23 +124,23 @@ function apart(string $value, array $raw = [], array $void = []) {
     $c6 = $c4 . 'GHIJKLMNOPQRSTUVWXYZ';
     $c7 = $c1 . '>';
     $i = 0;
-    $max = strlen($value);
+    $limit = strlen($value);
     $raw = $raw ? array_flip($raw) : [];
     $void = $void ? array_flip($void) : [];
-    while ($i < $max) {
+    while ($i < $limit) {
         $c = $value[$i];
-        $next = $i + 1 < $max ? $value[$i + 1] : "\0";
+        $next = $i + 1 < $limit ? $value[$i + 1] : "\0";
         // <https://www.w3.org/TR/xml#sec-references>
         if ('&' === $c && false === strpos($c1, $next)) {
             $n = $i + 1;
-            if ($n < $max && '#' === $value[$n]) {
+            if ($n < $limit && '#' === $value[$n]) {
                 ++$n;
-                if ($n < $max && ('X' === $value[$n] || 'x' === $value[$n])) {
+                if ($n < $limit && ('X' === $value[$n] || 'x' === $value[$n])) {
                     $m = strspn($value, $c2 . $c3 . $c4, $n += 1);
                 } else {
                     $m = strspn($value, $c2, $n);
                 }
-                if ($m && $n + $m < $max && ';' === $value[$n + $m]) {
+                if ($m && $n + $m < $limit && ';' === $value[$n + $m]) {
                     "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                     $r[] = [substr($value, $i, $n + $m - $i + 1), -1];
                     $i = $n + $m + 1;
@@ -150,7 +150,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                 if ($m = strspn($value, $c5 . $c6, $n)) {
                     $n += $m;
                     $n += strspn($value, $c2 . $c5 . $c6, $n);
-                    if ($n < $max && ';' === $value[$n]) {
+                    if ($n < $limit && ';' === $value[$n]) {
                         "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                         $r[] = [substr($value, $i, $n - $i + 1), -1];
                         $i = $n + 1;
@@ -182,14 +182,14 @@ function apart(string $value, array $raw = [], array $void = []) {
                 // <https://www.w3.org/TR/xml#sec-entexpand>
                 // <https://www.w3.org/TR/xml#vc-roottype>
                 $n = $i + 2;
-                if ($n >= $max || false !== strpos($c7, $value[$n])) {
+                if ($n >= $limit || false !== strpos($c7, $value[$n])) {
                     $s .= '<';
                     ++$i;
                     continue;
                 }
                 $deep = $q = 0;
                 $n = $i + 2;
-                while ($n < $max) {
+                while ($n < $limit) {
                     $v = $value[$n];
                     if ($q) {
                         $q === $v && ($q = 0);
@@ -206,7 +206,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                     }
                     ++$n;
                 }
-                if ($n < $max) {
+                if ($n < $limit) {
                     "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                     $r[] = [substr($value, $i, $n - $i + 1), 1];
                     $i = $n + 1;
@@ -217,20 +217,20 @@ function apart(string $value, array $raw = [], array $void = []) {
             if ('?' === $next) {
                 $n = $i + 2;
                 $q = 0;
-                while ($n < $max) {
+                while ($n < $limit) {
                     $v = $value[$n];
                     if ($q) {
                         $q === $v && ($q = 0);
                     } else {
                         if ("'" === $v || '"' === $v) {
                             $q = $v;
-                        } else if ('?' === $v && $n + 1 < $max && '>' === $value[$n + 1]) {
+                        } else if ('?' === $v && $n + 1 < $limit && '>' === $value[$n + 1]) {
                             break;
                         }
                     }
                     ++$n;
                 }
-                if ($n < $max) {
+                if ($n < $limit) {
                     "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                     $r[] = [substr($value, $i, $n - $i + 2), 1];
                     $i = $n + 2;
@@ -240,7 +240,7 @@ function apart(string $value, array $raw = [], array $void = []) {
             // <https://www.w3.org/TR/xml#sec-starttags>
             $n = $i + 1;
             $q = 0;
-            while ($n < $max) {
+            while ($n < $limit) {
                 $v = $value[$n];
                 if ($q) {
                     $q === $v && ($q = 0);
@@ -254,7 +254,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                 ++$n;
             }
             $start = $n - $i + 1;
-            if ($n < $max) {
+            if ($n < $limit) {
                 $z = $i + 1;
                 $z += strspn($value, $c1, $z, $n - $z);
                 $m = strlen($name = substr($value, $z, min(strcspn($value, $c1 . '/>', $z), $n - $z)));
@@ -269,7 +269,7 @@ function apart(string $value, array $raw = [], array $void = []) {
                         }
                         $y = $z + 2 + $m;
                         $y += strspn($value, $c1, $y);
-                        if ($y < $max && '>' === $value[$y]) {
+                        if ($y < $limit && '>' === $value[$y]) {
                             "" !== $s && ($r[] = [$s, 0]) && ($s = "");
                             $r[] = [substr($value, $i, $y - $i + 1), 1, $start, -($y - $z + 1)];
                             $i = $y + 1;
@@ -304,9 +304,9 @@ function apart(string $value, array $raw = [], array $void = []) {
 }
 
 // Convert class name to file name
-function c2f(?string $value, $accent = false) {
-    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
-        return ltrim(strtr(h($v, '-', $accent, '_') ?? "", [
+function c2f(?string $value, $f = false) {
+    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($f) {
+        return ltrim(strtr(h($v, '-', $f, '_') ?? "", [
             '_-' => '_',
             '__-' => '.',
             '__' => '.'
@@ -515,17 +515,17 @@ function extend(array $value, ...$lot) {
 }
 
 // Convert file name to class name
-function f2c(?string $value, $accent = false) {
-    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
-        return p(strtr($v, ['.' => '__']), $accent, '_');
+function f2c(?string $value, $f = false) {
+    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($f) {
+        return p(strtr($v, ['.' => '__']), $f, '_');
     }));
     return "" !== $value ? $value : null;
 }
 
 // Convert file name to property name
-function f2p(?string $value, $accent = false) {
-    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
-        return c(strtr($v, ['.' => '__']), $accent, '_');
+function f2p(?string $value, $f = false) {
+    $value = implode("\\", map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($f) {
+        return c(strtr($v, ['.' => '__']), $f, '_');
     }));
     return "" !== $value ? $value : null;
 }
@@ -715,50 +715,41 @@ function first(array $value) {
 
 function g2y(string $path) {
     $i = 0;
-    $max = strlen($path);
-    while ($i < $max) {
-        $i += strcspn($path, "\\{", $i);
-        if ($i >= $max) {
+    $limit = strlen($path);
+    while ($i < $limit) {
+        $i += strcspn($path, '{', $i);
+        if ($i >= $limit) {
             break;
         }
-        if ("\\" === $path[$i]) {
-            $i += 2;
-            continue;
-        }
-        $m = [];
-        $stack = $end = 0;
-        $start = ($n = $i) + 1;
-        while ($n < $max) {
-            $n += strcspn($path, "\\{},", $n);
-            if ($n >= $max) {
+        $deep = $eat = 0;
+        $r = [];
+        $start = ($next = $i) + 1;
+        while ($next < $limit) {
+            $next += strcspn($path, '{},', $next);
+            if ($next >= $limit) {
                 break;
             }
-            if ("\\" === ($c = $path[$n])) {
-                $n += 2;
-                continue;
-            }
-            if ('{' === $c) {
-                ++$stack;
+            if ('{' === ($c = $path[$next])) {
+                ++$deep;
             } else if ('}' === $c) {
-                if (0 === --$stack) {
-                    $m[] = substr($path, $start, ($end = $n) - $start);
+                if (0 === --$deep) {
+                    $r[] = substr($path, $start, ($eat = $next) - $start);
                     break;
                 }
-            } else if (1 === $stack) {
-                $m[] = substr($path, $start, $n - $start);
-                $start = $n + 1;
+            } else if (1 === $deep) {
+                $r[] = substr($path, $start, $next - $start);
+                $start = $next + 1;
             }
-            ++$n;
+            ++$next;
         }
-        if (0 === $end || $i + 1 === $end) {
+        if (0 === $eat || $i + 1 === $eat) {
             ++$i;
             continue;
         }
-        $end = substr($path, $end + 1);
-        $r = [];
+        $end = substr($path, $eat + 1);
         $start = substr($path, 0, $i);
-        foreach ($m as $v) {
-            yield from g2y($start . $v . $end);
+        foreach ($r as $part) {
+            yield from g2y($start . $part . $end);
         }
         return;
     }
@@ -883,7 +874,7 @@ function &lot(...$lot) {
         }
         return strlen($name) - 1 === strspn($name, $b, 1);
     };
-    if (0 === ($max = count($lot)) || 1 === $max && is_array($lot[0])) {
+    if (0 === ($limit = count($lot)) || 1 === $limit && is_array($lot[0])) {
         $r = [];
         foreach (array_replace($GLOBALS, $lot[0] ?? []) as $k => $v) {
             if ($test($k)) {
@@ -892,7 +883,7 @@ function &lot(...$lot) {
         }
         return $r;
     }
-    if (1 === $max && $test($lot[0])) {
+    if (1 === $limit && $test($lot[0])) {
         if (!array_key_exists($lot[0], $GLOBALS)) {
             $GLOBALS[$lot[0]] = null;
         }
@@ -1001,38 +992,38 @@ function not(array $value, $valid = null, $keys = false, $that = null, $scope = 
 }
 
 // Convert property name to file name
-function p2f(?string $value, $accent = false) {
-    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($accent) {
-        return strtr(h($v, '-', $accent, '_') ?? "", ['__' => '.']);
+function p2f(?string $value, $f = false) {
+    $value = implode(D, map(explode(P, strtr($value ?? "", "\\/", P . P)), static function ($v) use ($f) {
+        return strtr(h($v, '-', $f, '_') ?? "", ['__' => '.']);
     }));
     return "" !== $value ? $value : null;
 }
 
 function pair(string $value) {
     $i = strspn($value, $c = " \n\r\t");
-    $max = strlen($value);
+    $limit = strlen($value);
     $r = [];
-    if ($i >= $max) {
+    if ($i >= $limit) {
         return $r;
     }
-    while ($i < $max) {
+    while ($i < $limit) {
         if (0 === ($n = strcspn($value, $c . '=', $i))) {
             break;
         }
         $k = substr($value, $i, $n);
         $i += $n;
         $i += strspn($value, $c, $i);
-        if ($i >= $max || '=' !== $value[$i]) {
+        if ($i >= $limit || '=' !== $value[$i]) {
             $r[$k] = true;
             continue;
         }
         ++$i;
-        if ($i >= $max || false !== strpos($c, $value[$i])) {
+        if ($i >= $limit || false !== strpos($c, $value[$i])) {
             $r[$k] = "";
             $i += strspn($value, $c, $i);
             continue;
         }
-        if ($i < $max) {
+        if ($i < $limit) {
             $q = $value[$i];
             if ("'" === $q || '"' === $q) {
                 ++$i;
@@ -1275,10 +1266,10 @@ function store(string $path, array $blob, ?string $as = null) {
 }
 
 // Get file content line by line
-function stream(string $path, ?int $max = 1024) {
+function stream(string $path, ?int $limit = 1024) {
     if (is_file($path) && $h = fopen($path, 'r')) {
-        $max = is_int($max) ? $max + 1 : $max;
-        while (false !== ($v = fgets($h, $max))) {
+        $limit = is_int($limit) ? $limit + 1 : $limit;
+        while (false !== ($v = fgets($h, $limit))) {
             yield strtr($v, [
                 "\r\n" => "\n",
                 "\r" => "\n"
@@ -1384,14 +1375,14 @@ function b($value, array $range = [0, null]) {
     return $value;
 }
 
-function c(?string $value, $accent = false, string $keep = "") {
-    $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . ']+)([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
-        if (' ' !== substr($m[1], -1)) {
+function c(?string $value, $f = false, string $keep = "") {
+    $s = strtr(preg_replace_callback('/([^\p{L}\p{M}\p{N}])([\p{L}\p{M}\p{N}])/u', static function ($m) use ($keep) {
+        if (false !== strpos($keep, $m[1])) {
             return $m[1] . $m[2];
         }
         return $m[1] . u($m[2]);
-    }, f($value, $accent, $keep ?? "") ?? ""), [' ' => ""]);
-    return "" !== $value ? $value : null;
+    }, f($value, $f, $keep) ?? ""), [' ' => ""]);
+    return "" !== $s ? $s : null;
 }
 
 function d(string $folder, ?callable $task = null) {
@@ -1439,26 +1430,14 @@ function e($value, array $lot = []) {
     return $value;
 }
 
-function f(?string $value, $accent = true, string $keep = "") {
-    // Remove HTML tag(s) and character(s) reference
-    $value = preg_replace('/<("[^"]*"|\'[^\']*\'|[^>])+>|&(?>[a-z\d]+|#\d+|#x[a-f\d]+);/i', ' ', $value ?? "");
-    if (!$accent || is_array($accent)) {
-        // If this condition is not checked, the translation below will incorrectly translate all `'0'` to `false`
-        // (which will be casted as an empty string), and so any string containing a `'0'` character will always drop
-        // that character in the output :(
-        if (false === $accent) {
-            $accent = []; // Because `(array) false` will turn into `[0 => false]` which we don’t want
-        }
-        $value = ($any = (array) lot('F')) ? strtr($value, array_replace($any, (array) $accent)) : $value;
+function f(?string $value, $f = true, string $keep = "") {
+    static $lot = (array) lot('F');
+    $s = strip_tags(html_entity_decode($value ?? "", ENT_HTML5 | ENT_QUOTES, 'UTF-8'));
+    if (!$f || is_array($f)) {
+        $s = $lot ? strtr($s, array_replace($lot, false === $f ? [] : (array) $f)) : $s;
     }
-    $value = preg_replace([
-        // Remove anything except character(s) white-list
-        '/[^\p{L}\p{N}«»‘’“”\s' . x($keep) . ']/u',
-        // Convert multiple white-space to single space
-        '/\s+/'
-    ], ' ', $value);
-    // This function does not trim white-space at the start and end of the string
-    return "" !== $value ? $value : null;
+    $s = preg_replace('/[^\p{L}\p{M}\p{N}' . x($keep) . ']+/u', ' ', $s);
+    return "" !== $s ? $s : null;
 }
 
 function g(string $folder, $x = null, $deep = 0, $keys = true) {
@@ -1492,15 +1471,15 @@ function g(string $folder, $x = null, $deep = 0, $keys = true) {
     })($it, $keys, $x));
 }
 
-function h(?string $value, string $join = '-', $accent = false, string $keep = "") {
-    $value = strtr(preg_replace_callback('/\p{Lu}/u', static function ($m) use ($join) {
+function h(?string $value, string $join = '-', $f = false, string $keep = "") {
+    $s = strtr(preg_replace_callback('/\p{Lu}/u', static function ($m) use ($join) {
         return $join . l($m[0]);
-    }, f($value, $accent, $join . $keep) ?? ""), [
+    }, f($value, $f, $keep) ?? ""), [
         ' ' => $join,
         ' ' . $join => $join,
         $join . $join => $join
     ]);
-    return "" !== $value ? $value : null;
+    return "" !== $s ? $s : null;
 }
 
 function i(?string $value, $lot = [], ?string $or = null) {
@@ -1572,9 +1551,7 @@ function k(string $folder, $x = null, $deep = 0, $keys = true, $query = [], $con
 }
 
 function l(?string $value) {
-    $value = (string) $value;
-    $value = function_exists('mb_strtolower') ? mb_strtolower($value) : strtolower($value);
-    return "" !== $value ? $value : null;
+    return "" !== ($s = function_exists('mb_strtolower') ? mb_strtolower($value ?? "") : strtolower($value ?? "")) ? $s : null;
 }
 
 function m($value, array $a, array $b) {
@@ -1583,29 +1560,23 @@ function m($value, array $a, array $b) {
 }
 
 function n(?string $value, $tab = '    ', string $c = ' ') {
-    $value = (string) $value;
-    // <https://stackoverflow.com/a/18870840/1163000>
-    $value = strtr($value, ["\xEF\xBB\xBF" => ""]);
-    // Tab to 4 space(s), line-break to `\n`
-    $value = strtr($value, [
-        "\r\n" => "\n",
-        "\r" => "\n"
-    ]);
-    // Tab(s) to pad(s)
-    if (is_int($tab)) {
-        $value = explode("\n", $value);
-        foreach ($value as &$v) {
-            while (false !== ($pad = strstr($v, "\t", true))) {
-                $v = $pad . str_repeat($c, $tab - ($n = strlen($pad)) % $tab) . substr($v, $n + 1);
+    if ("" === ($s = $value ?? "")) {
+        return $s;
+    }
+    $s = strtr($s ?? "", ["\xef\xbb\xbf" => "", "\r\n" => "\n", "\r" => "\n"]);
+    if (is_int($tab) && $tab > 0) {
+        $s = explode("\n", $s);
+        foreach ($s as &$ss) {
+            while (false !== ($pad = strstr($ss, "\t", true))) {
+                $ss = $pad . str_repeat($c, $tab - ($n = strlen($pad)) % $tab) . substr($ss, $n + 1);
             }
         }
-        unset($v);
-        $value = implode("\n", $value);
-    // Tab(s) to character(s)
+        unset($ss);
+        $s = implode("\n", $s);
     } else if (is_string($tab)) {
-        $value = strtr($value, ["\t" => $tab]);
+        $s = strtr($s, ["\t" => $tab]);
     }
-    return "" !== $value ? $value : null;
+    return "" !== $s ? $s : null;
 }
 
 function o($value, $safe = true) {
@@ -1619,11 +1590,11 @@ function o($value, $safe = true) {
     return $value;
 }
 
-function p(?string $value, $accent = false, string $keep = "") {
-    $value = strtr(preg_replace_callback('/([ ' . ($keep = x($keep)) . ']+)([\p{L}\p{N}' . $keep . '])/u', static function ($m) {
+function p(?string $value, $f = false, string $keep = "") {
+    $s = strtr(preg_replace_callback('/(^|[^\p{L}\p{M}\p{N}])([\p{L}\p{M}\p{N}])/u', static function ($m) use ($keep) {
         return $m[1] . u($m[2]);
-    }, f(' ' . $value, $accent, $keep ?? "") ?? ""), [' ' => ""]);
-    return "" !== $value ? $value : null;
+    }, f($value, $f, $keep) ?? ""), [' ' => ""]);
+    return "" !== $s ? $s : null;
 }
 
 function q($value) {
@@ -1680,9 +1651,9 @@ function r(?string $value, $from, $to = null, $strict = true) {
             return strlen($b) <=> strlen($a);
         });
         $i = 0;
-        $max = strlen($value);
+        $limit = strlen($value);
         $r = "";
-        while ($i < $max) {
+        while ($i < $limit) {
             $done = false;
             foreach ($from as $v) {
                 $w = substr($value, $i, $n = strlen($v));
@@ -1750,9 +1721,7 @@ function t(?string $value, string $open = '"', ?string $close = null) {
 }
 
 function u(?string $value) {
-    $value = (string) $value;
-    $value = function_exists('mb_strtoupper') ? mb_strtoupper($value) : strtoupper($value);
-    return "" !== $value ? $value : null;
+    return "" !== ($s = function_exists('mb_strtoupper') ? mb_strtoupper($value ?? "") : strtoupper($value ?? "")) ? $s : null;
 }
 
 function v(?string $value, string $c = "'", string $d = '-+*/=:()[]{}<>^$.?!|\\') {
